@@ -2,47 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Intranet\Sao {
-    use RuntimeException;
-
-    /**
-     * Acció SAO dummy per provar flux d'èxit.
-     */
-    class Testdummy
-    {
-        public function __construct($digitalSignatureService)
-        {
-        }
-
-        public function index($driver, $request)
-        {
-            return redirect('/ok-sao');
-        }
-    }
-
-    /**
-     * Acció SAO dummy per provar flux amb error.
-     */
-    class Testdummythrow
-    {
-        public function __construct($digitalSignatureService)
-        {
-        }
-
-        public function index($driver, $request)
-        {
-            throw new RuntimeException('Error SAO simulat');
-        }
-    }
-}
-
 namespace Tests\Unit\Controllers {
-    use Facebook\WebDriver\Remote\RemoteWebDriver;
     use Illuminate\Auth\GenericUser;
     use Illuminate\Http\RedirectResponse;
     use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
     use Intranet\Http\Requests\PasswordRequest;
+    use Intranet\Sao\Support\SaoRunner;
     use Mockery;
+    use RuntimeException;
     use Tests\TestCase;
 
     /**
@@ -65,18 +32,17 @@ namespace Tests\Unit\Controllers {
                 'dni' => '12345678A',
             ]), 'profesor');
 
-            $driver = Mockery::mock(RemoteWebDriver::class);
-            $driver->shouldReceive('quit')->once();
-
-            $seleniumAlias = Mockery::mock('alias:Intranet\Services\Automation\SeleniumService');
-            $seleniumAlias->shouldReceive('loginSAO')->once()->andReturn($driver);
+            $runner = Mockery::mock(SaoRunner::class);
+            $runner->shouldReceive('run')
+                ->once()
+                ->andReturn(redirect('/ok-sao'));
 
             $request = PasswordRequest::create('/externalAuth', 'POST', [
-                'accion' => 'testdummy',
+                'accion' => 'a2',
                 'password' => 'secret',
             ]);
 
-            $response = app(RedirectAfterAuthenticationController::class)($request);
+            $response = (new RedirectAfterAuthenticationController($runner))($request);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertSame(url('/ok-sao'), $response->getTargetUrl());
@@ -91,18 +57,17 @@ namespace Tests\Unit\Controllers {
                 'dni' => '12345678A',
             ]), 'profesor');
 
-            $driver = Mockery::mock(RemoteWebDriver::class);
-            $driver->shouldReceive('quit')->once();
-
-            $seleniumAlias = Mockery::mock('alias:Intranet\Services\Automation\SeleniumService');
-            $seleniumAlias->shouldReceive('loginSAO')->once()->andReturn($driver);
+            $runner = Mockery::mock(SaoRunner::class);
+            $runner->shouldReceive('run')
+                ->once()
+                ->andThrow(new RuntimeException('Error SAO simulat'));
 
             $request = PasswordRequest::create('/externalAuth', 'POST', [
-                'accion' => 'testdummythrow',
+                'accion' => 'a2',
                 'password' => 'secret',
             ]);
 
-            $response = app(RedirectAfterAuthenticationController::class)($request);
+            $response = (new RedirectAfterAuthenticationController($runner))($request);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertSame(url()->previous(), $response->getTargetUrl());

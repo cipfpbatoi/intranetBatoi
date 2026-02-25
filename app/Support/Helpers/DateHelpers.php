@@ -76,9 +76,9 @@ function fechaString($fecha = null, $idioma = null)
     $fecha = is_string($fecha) ? new Jenssegers\Date\Date($fecha) : $fecha;
     $fc1 = $fecha ?? new Jenssegers\Date\Date();
     if (!isset($idioma)) {
-        $idioma = Session::get('lang');
+        $idioma = Session::get('lang') ?: config('app.locale', 'es');
     }
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\Date::setlocale((string) $idioma);
 
     return $fc1->format('d') . ' de ' . $fc1->format('F') .
             ' de ' . $fc1->format('Y');
@@ -185,9 +185,9 @@ function day($fecha)
  */
 function month($fecha)
 {
-    $idioma = Session::get('lang');
+    $idioma = Session::get('lang') ?: config('app.locale', 'es');
     $fc1 = new Jenssegers\Date\Date($fecha);
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\Date::setlocale((string) $idioma);
     return $fc1->format('F');
 }
 
@@ -206,9 +206,9 @@ function year($fecha)
 
 function hour($fecha)
 {
-    $idioma = Session::get('lang');
+    $idioma = Session::get('lang') ?: config('app.locale', 'es');
     $fc1 = new Jenssegers\Date\Date($fecha);
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\Date::setlocale((string) $idioma);
     return $fc1->format('H:i');
 }
 

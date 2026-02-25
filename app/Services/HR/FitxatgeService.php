@@ -29,8 +29,9 @@ class FitxatgeService
         $ara = Carbon::now();
 
         if ($ultim) {
-            $last = $ultim->salida ? new Carbon($ultim->salida) : new Carbon($ultim->entrada);
-            if ($ara->diffInMinutes($last) < 10) {
+            $lastTime = $ultim->salida ?: $ultim->entrada;
+            $last = Carbon::parse((string) $ultim->dia . ' ' . (string) $lastTime);
+            if ($ara->diffInMinutes($last, true) < 10) {
                 return null;
             }
         }

@@ -72,6 +72,12 @@ class Menu
      */
     protected $activeUrl;
     /**
+     * Base URL de l'aplicació per comparar rutes actives.
+     *
+     * @var string
+     */
+    protected $baseUrl;
+    /**
      * Allow dynamic parameters for routes and actions.
      *
      * @var array
