@@ -11,13 +11,13 @@
         {{ config('contacto.provincia') }}
 
         <a href="{{ config('contacto.mapa') }}" target="_blank">
-            {!! Html::image('img/direccion.png', 'direccion', ['class' => 'iconopequeno']) !!}
+            <img src="{{ asset('img/direccion.png') }}" alt="direccion" class="iconopequeno">
         </a>
     </div><br/>
 
     {{-- Telèfon, fax i email --}}
     <div class="salto">
-        {!! Html::image('img/telefono.png', 'telefono', ['class' => 'iconopequeno']) !!}
+        <img src="{{ asset('img/telefono.png') }}" alt="telefono" class="iconopequeno">
         <strong>{{ trans('messages.generic.telefono') }}:</strong> {{ config('contacto.telefono') }}
         <strong> - Fax:</strong> {{ config('contacto.fax') }}
         <strong> - Email:</strong> {{ config('contacto.email') }}

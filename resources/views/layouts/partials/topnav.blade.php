@@ -22,9 +22,9 @@
                         
                             <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">
                                 @if ($insideAuth ?? false)
-                                    {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                    <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                                 @else
-                                    {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                    <img src="{{ asset('img/clock-icon-rojo.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                                 @endif
                             </a>
                        

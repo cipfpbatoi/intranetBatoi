@@ -26,13 +26,13 @@
                             <div class="left col-xs-8">
                                 <ul class="list-unstyled">
                                     @php $justificacion = ''; @endphp
-                                    @foreach ($usuario as $elemento)
+                                        @foreach ($usuario as $elemento)
                                         @php $justificacion .= $elemento->justificacion; @endphp
                                         <li>
                                             @if ($elemento->enCentro)
-                                                {!! Html::image('img/clock-icon.png', 'reloj', ['class' => 'iconopequeno']) !!}
+                                                <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconopequeno">
                                             @else
-                                                {!! Html::image('img/clock-icon-rojo.png', 'reloj', ['class' => 'iconopequeno', 'id' => 'imgFitxar']) !!}
+                                                <img src="{{ asset('img/clock-icon-rojo.png') }}" alt="reloj" class="iconopequeno" id="imgFitxar">
                                             @endif
                                             {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
                                         </li>
@@ -55,4 +55,3 @@
     </div>
 </div>
 @endforeach
-
