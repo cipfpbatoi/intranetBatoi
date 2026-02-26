@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             'throttle:600,1',
+            \Intranet\Http\Middleware\LegacyApiTokenDeprecation::class,
             'bindings',
         ],
         'profesor' => [

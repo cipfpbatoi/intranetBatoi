@@ -12,12 +12,21 @@ class ApiBaseController extends ApiResourceController
 
     private ?ProfesorService $profesorService = null;
 
+    /**
+     * Resol usuari API en mode coexistència (`sanctum`/`api` + token legacy).
+     */
     public function ApiUser(Request $request){
+        $authUser = $request->user('sanctum') ?? $request->user('api');
+        if ($authUser !== null) {
+            return $authUser;
+        }
+
         if ($this->profesorService === null) {
             $this->profesorService = app(ProfesorService::class);
         }
 
-        return $this->profesorService->findByApiToken((string) $request->api_token);
+        $token = (string) ($request->query('api_token') ?? $request->input('api_token') ?? '');
+        return $token !== '' ? $this->profesorService->findByApiToken($token) : null;
     }
 
     public function show($cadena, $send = true)

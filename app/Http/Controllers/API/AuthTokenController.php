@@ -85,4 +85,26 @@ class AuthTokenController extends ApiResourceController
             ],
         ]);
     }
+
+    /**
+     * Revoca el token actual quan la petició entra amb Sanctum.
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        /** @var Profesor|null $user */
+        $user = $request->user();
+        if (!$user) {
+            return $this->sendError('Unauthorized', 401);
+        }
+
+        $currentToken = $user->currentAccessToken();
+        if ($currentToken !== null) {
+            $currentToken->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['revoked' => true],
+        ]);
+    }
 }

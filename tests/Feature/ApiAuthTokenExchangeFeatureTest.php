@@ -102,6 +102,29 @@ class ApiAuthTokenExchangeFeatureTest extends TestCase
         $response->assertJsonPath('data.dni', 'PAX010');
     }
 
+    public function test_auth_logout_revoca_token_actual(): void
+    {
+        $this->insertProfesor('PAX020', 'legacy-token-020');
+
+        $exchange = $this->postJson('/api/auth/exchange', [
+            'api_token' => 'legacy-token-020',
+            'device_name' => 'test-logout',
+        ]);
+        $exchange->assertOk();
+        $token = (string) $exchange->json('data.access_token');
+
+        $this->assertSame(1, DB::table('personal_access_tokens')->count());
+
+        $logout = $this->withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->postJson('/api/auth/logout');
+
+        $logout->assertOk();
+        $logout->assertJsonPath('success', true);
+        $logout->assertJsonPath('data.revoked', true);
+        $this->assertSame(0, DB::table('personal_access_tokens')->count());
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {

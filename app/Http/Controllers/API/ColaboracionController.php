@@ -60,14 +60,19 @@ class ColaboracionController extends ApiResourceController
         return $this->sendResponse($colaboracion, 'OK');
     }
 
-    public function switch($id)
+    public function switch($id, Request $request)
     {
         $colaboracion = Colaboracion::find($id);
         if ($colaboracion === null) {
             return $this->sendFail(['success' => false, 'message' => 'Colaboració no trobada.'], 404);
         }
 
-        $profesor = $this->profesores()->findByApiToken((string) request()->query('api_token', ''));
+        $legacyToken = (string) $request->query('api_token', '');
+        if ($legacyToken !== '') {
+            $profesor = $this->profesores()->findByApiToken($legacyToken);
+        } else {
+            $profesor = $request->user('sanctum') ?? $request->user('api');
+        }
         if ($profesor === null) {
             return $this->sendFail(['success' => false, 'message' => 'Professor no trobat.'], 404);
         }

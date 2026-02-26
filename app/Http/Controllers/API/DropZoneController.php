@@ -57,6 +57,9 @@ class DropZoneController extends ApiResourceController
     public function attachFile(Request $request)
     {
         $user = $this->ApiUser($request);
+        if (!$user) {
+            return $this->sendFail("Persona no identificada", 401);
+        }
         $path = "$request->modelo/$request->id";
         if (AttachedFileService::save($request->file('file'), $path, $user->dni)) {
             return $this->sendResponse(['data'=>'OK'], 'OK');

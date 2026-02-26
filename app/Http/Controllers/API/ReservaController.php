@@ -69,12 +69,21 @@ class   ReservaController extends ApiResourceController
 
     public function unsecure(Request $datosProfesor)
     {
-        $profesor = $this->profesores()->find((string) $datosProfesor->dni);
-        if (!$profesor || $datosProfesor->api_token !== $profesor->api_token) {
-            return $this->sendError('Persona no identificada', 401);
+        $authUser = $datosProfesor->user('sanctum') ?? $datosProfesor->user('api');
+        if ($authUser !== null) {
+            $dni = (string) ($datosProfesor->input('dni', $authUser->dni));
+            if ($dni !== (string) $authUser->dni) {
+                return $this->sendError('Persona no identificada', 401);
+            }
+            $profesor = $authUser;
+        } else {
+            $profesor = $this->profesores()->find((string) $datosProfesor->dni);
+            if (!$profesor || (string) $datosProfesor->input('api_token', '') !== (string) $profesor->api_token) {
+                return $this->sendError('Persona no identificada', 401);
+            }
         }
 
-        $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+        $reserva = Reserva::where('idProfesor', $profesor->dni)
             ->where('dia', Hoy())
             ->where('hora', sesion(hora()))
             ->first();
@@ -100,7 +109,7 @@ class   ReservaController extends ApiResourceController
         }
 
         // Si no hi ha reserva en l'hora actual, intenta almenys tancar la porta de la reserva d'avui
-        $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+        $reserva = Reserva::where('idProfesor', $profesor->dni)
             ->where('dia', Hoy())
             ->first();
 

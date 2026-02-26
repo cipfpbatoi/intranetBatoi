@@ -101,6 +101,8 @@ Mantindre el **codi fix de professor** per a l’ús humà (fitxar, etc.), però
   - coexistència `auth:api,sanctum` en rutes API protegides,
   - endpoint `POST /api/auth/exchange` (legacy `api_token` -> bearer Sanctum),
   - endpoint `GET /api/auth/me` (usuari autenticat),
+  - endpoint `POST /api/auth/logout` (revoca token Sanctum actual),
+  - middleware `LegacyApiTokenDeprecation` en grup `api` amb capçaleres de deprecació,
   - migració frontend inicial a header `Authorization: Bearer` en components de fitxatge/guardies/reserves.
 - Correcció de model de dades Sanctum per a `Profesor::dni` (PK string):
   - `tokenable_id` de `personal_access_tokens` passat a `string`.

@@ -301,16 +301,30 @@ function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
 }
 
 /**
- * Resol l'usuari professor autenticat per API token.
+ * Resol l'usuari professor per context API.
+ *
+ * Prioritat:
+ * 1. Usuari autenticat (`sanctum` o `api`).
+ * 2. Token explícit passat per paràmetre.
+ * 3. Token legacy en request (`api_token`).
  *
  * @param string|null $token
  * @return \Intranet\Entities\Profesor|null
  */
 function apiAuthUser($token=null)
 {
-    if ($token==null) {
-        $token = $_GET['api_token']??null;
+    $request = request();
+    if ($request !== null) {
+        $authUser = $request->user('sanctum') ?? $request->user('api');
+        if ($authUser !== null) {
+            return $authUser;
+        }
     }
+
+    if ($token === null && $request !== null) {
+        $token = $request->query('api_token') ?? $request->input('api_token');
+    }
+
     return $token ? profesorService()->findByApiToken((string) $token) : null;
 }
 
