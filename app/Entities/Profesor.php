@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
+use Laravel\Sanctum\HasApiTokens;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Notifications\MyResetPassword;
@@ -101,6 +102,7 @@ class Profesor extends Authenticatable
     ];
 
     use Notifiable;
+    use HasApiTokens;
     use \Intranet\Entities\Concerns\BatoiModels;
     use \Illuminate\Auth\Passwords\CanResetPassword;
 

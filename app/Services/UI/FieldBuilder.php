@@ -133,18 +133,20 @@ class FieldBuilder
 
     /**
      * @param string $name
-     * @param array<int|string, mixed> $options
+     * @param array<int|string, mixed>|null $options
      * @param mixed $selected
      * @param array<int|string, mixed> $attributes
      * @param array<int|string, mixed> $extra
      */
-    public function select(string $name, array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
+    public function select(string $name, ?array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
     {
         if (is_array($selected) && empty($attributes)) {
             $extra = $attributes;
             $attributes = $selected;
             $selected = null;
         }
+
+        $options = $options ?? [];
 
         return $this->doBuild('select', $name, $selected, $attributes, $extra, $options);
     }
@@ -191,7 +193,7 @@ class FieldBuilder
      * @param mixed $value
      * @param array<int|string, mixed> $attributes
      * @param array<int|string, mixed> $extra
-     * @param array<int|string, mixed>|null $options
+     * @param mixed $options
      */
     private function build(
         string $type,
@@ -199,7 +201,7 @@ class FieldBuilder
         mixed $value = null,
         array $attributes = [],
         array $extra = [],
-        ?array $options = null
+        mixed $options = null
     ): string {
         if (is_array($value)) {
             $extra = $attributes;
@@ -216,7 +218,7 @@ class FieldBuilder
      * @param mixed $value
      * @param array<int|string, mixed> $attributes
      * @param array<int|string, mixed> $extra
-     * @param array<int|string, mixed>|null $options
+     * @param mixed $options
      */
     private function doBuild(
         string $type,
@@ -224,7 +226,7 @@ class FieldBuilder
         mixed $value = null,
         array $attributes = [],
         array $extra = [],
-        ?array $options = null
+        mixed $options = null
     ): string {
         $attributes = $this->replaceAttributes($attributes);
 
@@ -456,7 +458,7 @@ class FieldBuilder
      * @param string $name
      * @param mixed $value
      * @param array<int|string, mixed> $attributes
-     * @param array<int|string, mixed>|null $options
+     * @param mixed $options
      * @param string $htmlName
      */
     private function buildControl(
@@ -464,10 +466,12 @@ class FieldBuilder
         string $name,
         mixed $value,
         array $attributes,
-        ?array $options,
+        mixed $options,
         string $htmlName,
         bool $hasErrors = false
     ): string {
+        $optionsList = $this->normalizeOptionsArray($options);
+
         switch ($type) {
             case 'password':
             case 'file':
@@ -475,25 +479,35 @@ class FieldBuilder
             case 'select':
                 return (string) $this->form->select(
                     $htmlName,
-                    $this->addEmptyOption($name, $this->getOptionsList($name, $options ?? []), $attributes),
+                    $this->addEmptyOption($name, $this->getOptionsList($name, $optionsList), $attributes),
                     $value,
                     $attributes
                 );
             case 'radios':
-                return (string) $this->renderRadioCollection($htmlName, $this->getOptionsList($name, $options ?? []), $value, $attributes);
+                return (string) $this->renderRadioCollection($htmlName, $this->getOptionsList($name, $optionsList), $value, $attributes);
             case 'checkboxes':
                 return (string) $this->renderCheckboxCollection(
                     $htmlName,
-                    $this->getOptionsList($name, $options ?? []),
+                    $this->getOptionsList($name, $optionsList),
                     $value,
                     $attributes,
                     $hasErrors
                 );
             case 'checkbox':
-                return (string) $this->form->checkbox($htmlName, $options[0] ?? 1, $value, $attributes);
+                $checkboxValue = is_array($options) ? ($options[0] ?? 1) : ($options ?? 1);
+                return (string) $this->form->checkbox($htmlName, $checkboxValue, $value, $attributes);
             default:
                 return (string) $this->form->{$type}($htmlName, $value, $attributes);
         }
+    }
+
+    /**
+     * @param mixed $options
+     * @return array<int|string, mixed>
+     */
+    private function normalizeOptionsArray(mixed $options): array
+    {
+        return is_array($options) ? $options : [];
     }
 
     /**

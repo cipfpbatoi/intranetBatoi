@@ -1,6 +1,7 @@
 @php
-if (strpos($input->__toString(),'>')){
-    $cadena = substr($input->__toString(),strpos($input->__toString(),'>')+1,strlen($input->__toString()));
+$inputHtml = is_object($input) && method_exists($input, '__toString') ? $input->__toString() : (string) $input;
+if (strpos($inputHtml,'>')){
+    $cadena = substr($inputHtml,strpos($inputHtml,'>')+1,strlen($inputHtml));
     $value = substr($cadena,0,strpos($cadena,'<'));
 }
 else $value = '';
@@ -24,4 +25,3 @@ else $clase = 'form-control has-feedback-left';
         @endswitch
     </div>
 </div>
-

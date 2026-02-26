@@ -95,9 +95,18 @@ Mantindre el **codi fix de professor** per a l’ús humà (fitxar, etc.), però
 3. Migrar primers components Vue que ara lligen `#_token` (`fichar`, `guardias`, `reservas`) a bearer curt.
 4. Deixar `api_token` legacy només en endpoints imprescindibles i amb data de sunset.
 
+## Estat d'implementació (branca `api-seguretat`)
+
+- Fase 1 iniciada:
+  - coexistència `auth:api,sanctum` en rutes API protegides,
+  - endpoint `POST /api/auth/exchange` (legacy `api_token` -> bearer Sanctum),
+  - endpoint `GET /api/auth/me` (usuari autenticat),
+  - migració frontend inicial a header `Authorization: Bearer` en components de fitxatge/guardies/reserves.
+- Correcció de model de dades Sanctum per a `Profesor::dni` (PK string):
+  - `tokenable_id` de `personal_access_tokens` passat a `string`.
+
 ## Impacte funcional esperat
 
 - Professorat: quasi transparent si el flux de fitxar es conserva.
 - Seguretat: millora molt alta (exposició i abast del token es redueixen dràsticament).
 - Manteniment: autenticació més clara per domini/cas d’ús.
-
