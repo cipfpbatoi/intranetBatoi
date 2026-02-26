@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Intranet\Presentation\AlumnoFct;
 
 use Intranet\Entities\AlumnoFct;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Presenter de UI per a AlumnoFct.
@@ -92,9 +92,9 @@ final class AlumnoFctPresenter
 
     private function backgroundByDates(): string
     {
-        $today = Date::now();
-        $fechaHasta = new Date((string) $this->alumnoFct->hasta);
-        $fechaDesde = new Date((string) $this->alumnoFct->desde);
+        $today = Carbon::now();
+        $fechaHasta = new Carbon((string) $this->alumnoFct->hasta);
+        $fechaDesde = new Carbon((string) $this->alumnoFct->desde);
 
         if ($fechaHasta->format('Y-m-d') <= $today->format('Y-m-d')) {
             return self::BG_BLUE_SKY;

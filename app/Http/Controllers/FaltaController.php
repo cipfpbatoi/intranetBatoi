@@ -13,7 +13,7 @@ use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Notifications\ConfirmAndSend;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 
 /**
@@ -102,7 +102,7 @@ class FaltaController extends ModalController
 
     protected function createWithDefaultValues($default = [])
     {
-        $data = new Date('today');
+        $data = new Carbon('today');
         return new Falta(['desde'=>$data,'hasta'=>$data,'idProfesor'=>AuthUser()->dni]);
     }
 

@@ -10,7 +10,7 @@ use Intranet\Entities\Falta;
 use Intranet\Services\General\StateService;
 use Intranet\Services\Notifications\AdviseTeacher;
 use Intranet\Services\School\TeacherSubstitutionService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Casos d'ús d'aplicació per al domini de faltes de professorat.
@@ -93,7 +93,7 @@ class FaltaService
 
         DB::transaction(function () use ($falta): void {
             $falta->estado = 3;
-            $falta->hasta = new Date();
+            $falta->hasta = new Carbon();
             $falta->baja = 0;
             $falta->save();
 

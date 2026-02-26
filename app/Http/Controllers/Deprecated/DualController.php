@@ -19,7 +19,7 @@ use Intranet\Entities\Fct;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
 use Intranet\Http\Traits\Core\Imprimir;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use mikehaertl\pdftk\Pdf;
 use Styde\Html\Facades\Alert;
 
@@ -279,8 +279,8 @@ class DualController extends ModalController
                 if ($data != null ) {
                     $zip->addFile($this->printAnexeVII($fct, $data), $carpeta_formacio . "ANEXO_VII.pdf");
                 } else {
-                    $fc1 = new Date($fct->desde);
-                    $fc2 = new Date($fct->hasta);
+                    $fc1 = new Carbon($fct->desde);
+                    $fc2 = new Carbon($fct->hasta);
                     $i = 1;
                     while ($fc1 < $fc2){
                         $zip->addFile($this->printAnexeVII($fct, $fc1,$i), $carpeta_formacio . "ANEXO_VII_".$i.".pdf");
@@ -409,8 +409,8 @@ class DualController extends ModalController
         $array[28] = config(self::CONTACTO_POBLACION);
         $array[29] = config(self::CONTACTO_PROVINCIA);
         $array[30] = config('contacto.email');
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
+        $fc1 = new Carbon($data);
+        Carbon::setLocale('ca');
         $array[31] = config(self::CONTACTO_POBLACION);
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');
@@ -507,8 +507,8 @@ class DualController extends ModalController
         $array[14] = $array[6];
         $array[15] = $array[7];
         $array[16] = $array[8];
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
+        $fc1 = new Carbon($data);
+        Carbon::setLocale('ca');
         $array[17] = config(self::CONTACTO_POBLACION);
         $array[18] = $fc1->format('d');
         $array[19] = $fc1->format('F');
@@ -583,8 +583,8 @@ class DualController extends ModalController
         $array[19] = 1;
         $array[20] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
         $array[27] = config(self::CONTACTO_POBLACION);
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 = new Carbon();
+        Carbon::setLocale('ca');
         $array[28] = $fc1->format('d');
         $array[29] = $fc1->format('F');
         $array[30] = $fc1->format('Y');
@@ -612,8 +612,8 @@ class DualController extends ModalController
         $array[51] = 1;
         $array[52] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
         $array[53] = config(self::CONTACTO_POBLACION);
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
+        $fc1 = new Carbon($data);
+        Carbon::setLocale('ca');
         $array[54] = $fc1->format('d');
         $array[55] = $fc1->format('F');
         $array[56] = $fc1->format('Y');
@@ -700,8 +700,8 @@ class DualController extends ModalController
         $array['Casilla de verificación4'] = 'Sí';
         $array['Text52'] = $array['Texto9'];
 
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
+        $fc1 = new Carbon($data);
+        Carbon::setLocale('ca');
         $array['Text53'] = $fc1->format('d');
         $array['Text54'] = $fc1->format('F');
         $array['Text55'] = $fc1->format('Y');
@@ -739,10 +739,10 @@ class DualController extends ModalController
         $array['11a'] = $fct->Fct->Centro;
         $array['11b'] = $fct->Fct->Instructor->Nombre;
         $array['11c'] = $fct->Fct->Instructor->dni;
-        $fc1 = new Date($data);
-        $fc2 = new Date($data);
+        $fc1 = new Carbon($data);
+        $fc2 = new Carbon($data);
         $fc2->addDays(6);
-        Date::setlocale('ca');
+        Carbon::setLocale('ca');
         $array[12] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
         $array[13] = $fc1->format(self::D_M_Y).' a '.$fc2->format(self::D_M_Y);
         $fc1->addDays(7);
@@ -917,8 +917,8 @@ class DualController extends ModalController
         $array[227] = $diferentes;
         $array[230] = $europa;
         $array[236] = config('contacto.poblacion');
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 = new Carbon();
+        Carbon::setLocale('ca');
         $array[237] = $fc1->format('d');
         $array[238] = $fc1->format('F');
         $array[239] = $fc1->format('Y');
@@ -985,8 +985,8 @@ class DualController extends ModalController
             $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_LLOC[0].B_LLOC$indice"."[0]"] = "Programador Web";
         }
 
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 = new Carbon();
+        Carbon::setLocale('ca');
         $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_TEXTFIRMA1[0]"] = AuthUser()->fullName;
         $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_MES[0]"] = $fc1->format('F');
         $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_LLOC[0]"] = config('contacto.poblacion');

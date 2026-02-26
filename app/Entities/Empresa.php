@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
 
@@ -71,7 +71,7 @@ class Empresa extends Model
 
     public function scopeMenor($query, $fecha = null)
     {
-        $hoy = $fecha ? new Date($fecha) : new Date();
+        $hoy = $fecha ? new Carbon($fecha) : new Carbon();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
@@ -95,8 +95,8 @@ class Empresa extends Model
         }
         $date_file = date("Y-m-d", $mtime);
 
-        $date1 = new Date($date_file);
-        $date2 = new Date();
+        $date1 = new Carbon($date_file);
+        $date2 = new Carbon();
 
         $diferencia = $date2->diff($date1);
         return $diferencia->days < 120;
@@ -113,8 +113,8 @@ class Empresa extends Model
         $date_intranet = date("Y-m-d", $mtime);
         $date_sao = $this->data_signatura;
 
-        $date1 = new Date($date_intranet);
-        $date2 = new Date($date_sao);
+        $date1 = new Carbon($date_intranet);
+        $date2 = new Carbon($date_sao);
 
         $diferencia = $date1->diff($date2);
         return $diferencia->days > 90;
@@ -134,7 +134,7 @@ class Empresa extends Model
         if (!$entrada) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 

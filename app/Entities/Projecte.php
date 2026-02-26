@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Projecte extends Model
 {
@@ -70,7 +70,7 @@ class Projecte extends Model
 
     public function getDefensaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 

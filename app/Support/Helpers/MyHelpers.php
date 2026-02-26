@@ -1,7 +1,7 @@
 <?php
 
 use Intranet\Application\Profesor\ProfesorService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Resol el servei de professorat per als helpers globals.
@@ -157,7 +157,7 @@ function evaluacion()
  */
 function curso()
 {
-    $hoy = new Date();
+    $hoy = new Carbon();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -172,7 +172,7 @@ function curso()
  */
 function cursoAnterior()
 {
-    $hoy = new Date();
+    $hoy = new Carbon();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;

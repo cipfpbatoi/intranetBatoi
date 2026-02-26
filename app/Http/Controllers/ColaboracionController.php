@@ -11,7 +11,7 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use mikehaertl\pdftk\Pdf;
 use Response;
 
@@ -192,8 +192,8 @@ class ColaboracionController extends ModalController
         $array[28] = config('contacto.poblacion');
         $array[29] = config('contacto.provincia');
         $array[30] = config('contacto.email');
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 = new Carbon();
+        Carbon::setLocale('ca');
         $array[31] = config('contacto.poblacion');
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');

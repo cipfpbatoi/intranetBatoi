@@ -12,7 +12,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Instructor;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\InstructorCrudSchema;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -227,7 +227,7 @@ class InstructorController extends IntranetController
         }
 
         // 🔒 Calcula la data posterior de forma segura
-        $fecha = $this->instructors()->ultimaFecha($fcts) ?? new Date(); // fallback si totes tenen 'hasta' buit
+        $fecha = $this->instructors()->ultimaFecha($fcts) ?? new Carbon(); // fallback si totes tenen 'hasta' buit
 
         $secretario = cargo('secretario');
         $director   = cargo('director');

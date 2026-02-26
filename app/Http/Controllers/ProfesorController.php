@@ -22,7 +22,7 @@ use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Mail\Comunicado;
 use Intranet\Services\UI\FormBuilder;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -264,7 +264,7 @@ use Autorizacion,
     {
         $record = $this->profesores()->find((string) $profesor);
         $profesores = $record ? collect([$record]) : collect();
-        return $this->hazPdf('pdf.carnet', $profesores, [Date::now()->format('Y'), 'Professorat - Teacher'], 'portrait', [85.6, 53.98])->stream();
+        return $this->hazPdf('pdf.carnet', $profesores, [Carbon::now()->format('Y'), 'Professorat - Teacher'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function tarjeta($profesor)

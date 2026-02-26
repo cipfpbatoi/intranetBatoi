@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Fct;

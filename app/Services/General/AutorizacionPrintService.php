@@ -3,7 +3,7 @@
 namespace Intranet\Services\General;
 
 use Intranet\Services\Document\PdfService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Servei d'impressió en lot per a fluxos d'autorització.
@@ -57,7 +57,7 @@ class AutorizacionPrintService
         }
 
         $pdf = $this->pdfService->hazPdf("pdf.$modelo", $todos, null, $orientacion);
-        $nom = $model . new Date() . '.pdf';
+        $nom = $model . new Carbon() . '.pdf';
         $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
         $tags = config("modelos.$model.documento");
 

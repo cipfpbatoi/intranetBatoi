@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\TutoriaCrudSchema;
 
@@ -41,7 +41,7 @@ class Tutoria extends Model
         if (empty($entrada)) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -50,7 +50,7 @@ class Tutoria extends Model
         if (empty($entrada)) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
     public function getGruposOptions()

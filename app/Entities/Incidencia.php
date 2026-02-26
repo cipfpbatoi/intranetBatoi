@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\Notifications\AdviseService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use function authUser;
@@ -105,7 +105,7 @@ class Incidencia extends Model
             return '';
         }
 
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y');
     }
 

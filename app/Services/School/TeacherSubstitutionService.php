@@ -13,7 +13,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Gestiona lògica d'alta/baixa de professorat amb cadena de substitucions.
@@ -52,7 +52,7 @@ class TeacherSubstitutionService
             return;
         }
 
-        $profe->fecha_baja = new Date($fecha);
+        $profe->fecha_baja = new Carbon($fecha);
         $profe->save();
     }
 

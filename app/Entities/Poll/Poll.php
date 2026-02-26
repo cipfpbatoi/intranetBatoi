@@ -5,7 +5,7 @@ namespace Intranet\Entities\Poll;
 
 use Intranet\Entities\Concerns\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 
 class Poll extends Model
@@ -41,7 +41,7 @@ class Poll extends Model
         if (vigente($this->desde, $this->hasta)) {
             return 'Activa';
         }
-        $fin = new Date($this->hasta);
+        $fin = new Carbon($this->hasta);
         if (hoy()>$fin->format('Y-m-d')) {
             return 'Finalitzada';
         }
@@ -83,14 +83,14 @@ class Poll extends Model
     public function getDesdeAttribute($entrada)
     {
         //desde
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)
     {
         // hasta
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 }

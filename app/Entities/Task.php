@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Presentation\Crud\TaskCrudSchema;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Services\School\TaskFileService;
 
 
@@ -79,7 +79,7 @@ class Task extends Model
         if (empty($entrada)) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -92,7 +92,7 @@ class Task extends Model
             return $this->informativa ? 'informacion.jpeg' : 'task.png';
         }
 
-        $vencimientoDate = (new Date($vencimiento))->format('Y-m-d');
+        $vencimientoDate = (new Carbon($vencimiento))->format('Y-m-d');
         if ($vencimientoDate <= date('Y-m-d')) {
             return 'warning.png';
         }

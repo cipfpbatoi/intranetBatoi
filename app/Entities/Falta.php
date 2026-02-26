@@ -2,7 +2,7 @@
 
 namespace Intranet\Entities;
 
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
@@ -56,7 +56,7 @@ class Falta extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -67,7 +67,7 @@ class Falta extends Model
 
     public function getHorainiAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('H:i');
     }
 

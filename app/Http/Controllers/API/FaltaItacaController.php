@@ -8,7 +8,7 @@ use Intranet\Entities\Falta_itaca;
 use Illuminate\Http\Request;
 use Intranet\Services\General\StateService;
 use Intranet\Services\HR\FitxatgeService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use function sumarHoras;
 
 class FaltaItacaController extends ApiResourceController
@@ -101,7 +101,7 @@ class FaltaItacaController extends ApiResourceController
                 } else
 
                 if ($hora['checked']) {
-                    $dia = new Date($hora['dia']);
+                    $dia = new Carbon($hora['dia']);
                     $falta = new Falta_itaca();
                     $falta->idProfesor = $hora['idProfesor'];
                     $falta->dia = $dia->format('Y-m-d');
