@@ -118,6 +118,10 @@ Ens hem d'assegurar que l'usuari _www-data_ tinga permís d'escriptura en la car
 Si utilitzem Docker, la imatge ja inclou **wkhtmltopdf** i totes les dependències necessàries per a generar PDF.
 
 Si instal·lem directament en una màquina (sense Docker), hem d'instal·lar els paquets **libxrender1**, **libxtst6** i **libssl1.0-dev**.
+Cal configurar també en `.env`:
+
+- `WKHTMLTOPDF_BINARY` (p. ex. `/usr/local/bin/wkhtmltopdf`)
+- `WKHTMLTOIMAGE_BINARY` (p. ex. `/usr/local/bin/wkhtmltoimage`)
 
 ## Configurar la intranet
 
