@@ -7,7 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\SignaturaStoreRequest;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Mail\MyMail;
@@ -56,13 +56,8 @@ class SignaturaController extends ModalController
         return $this->alumnoFctService;
     }
 
-    public function store(Request $request )
+    public function store(SignaturaStoreRequest $request)
     {
-        $request->validate([
-            'tipus' => 'required',
-            'fct' => 'required',
-            'file' => 'required|file|mimes:pdf|max:2048',
-        ]);
         $file = $request->file('file');
         $tipus = $request->tipus;
         $idSao =  $request->fct ;

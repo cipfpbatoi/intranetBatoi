@@ -31,12 +31,13 @@ final class ReunionCrudSchema
      */
     public const FORM_FIELDS = [
         'idProfesor' => ['type' => 'hidden'],
-        'numero' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
+        'numero' => ['type' => 'select'],
         'grupo' => ['type' => 'select'],
         'curso' => ['disabled' => 'disabled'],
         'fecha' => ['type' => 'datetime'],
         'descripcion' => ['type' => 'textarea'],
+        'objetivos' => ['type' => 'textarea'],
         'idEspacio' => ['type' => 'select'],
         'fichero' => ['type' => 'file'],
     ];

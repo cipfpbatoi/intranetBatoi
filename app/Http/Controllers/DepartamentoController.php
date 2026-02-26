@@ -47,14 +47,13 @@ class DepartamentoController extends ModalController
 
     public function store(DepartamentoRequest $request)
     {
-        $new = new Departamento();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(DepartamentoRequest $request, $id)
     {
-        Departamento::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

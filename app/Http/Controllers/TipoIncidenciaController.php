@@ -50,14 +50,13 @@ class TipoIncidenciaController extends ModalController
 
     public function store(TipoIncidenciaRequest $request)
     {
-        $new = new TipoIncidencia();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TipoIncidenciaRequest $request, $id)
     {
-        TipoIncidencia::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

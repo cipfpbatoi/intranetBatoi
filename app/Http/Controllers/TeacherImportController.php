@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intranet\Application\Import\Concerns\SharedImportFieldTransformers;
 use Intranet\Application\Import\ImportSchemaProvider;
 use Intranet\Application\Import\ImportService;
@@ -13,12 +14,15 @@ use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Application\Import\TeacherImportExecutionService;
 use Intranet\Entities\ImportRun;
+use Intranet\Http\Requests\TeacherImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
 class TeacherImportController extends Seeder
 {
     use SharedImportFieldTransformers;
+
+    private const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
 
     private ?ImportService $importService = null;
     private ?ImportWorkflowService $importWorkflowService = null;
@@ -33,11 +37,14 @@ class TeacherImportController extends Seeder
 
     public function create()
     {
+        $this->authorizeMutation();
         return view('seeder.createTeacher');
     }
 
     public function store(Request $request)
     {
+        $this->authorizeMutation();
+        Validator::make($request->all(), (new TeacherImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -53,6 +60,7 @@ class TeacherImportController extends Seeder
 
     public function storeAsync(Request $request, mixed $validatedFile = null)
     {
+        $this->authorizeMutation();
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -100,6 +108,7 @@ class TeacherImportController extends Seeder
 
     public function run($fxml, Request $request)
     {
+        $this->authorizeMutation(true);
         $execution = $this->executions();
 
         if ($request->horari) {
@@ -115,7 +124,7 @@ class TeacherImportController extends Seeder
                     $xmltable,
                     $table,
                     (string) $idProfesor,
-                    fn ($atrxml, $llave, $func = 1) => $this->saca_campos($atrxml, $llave, $func),
+                    fn ($atrxml, $llave, $func = 1) => $this->sacaCampos($atrxml, $llave, $func),
                     fn ($filtro, $campos) => $this->filtro($filtro, $campos),
                     fn ($required, $campos) => $this->required($required, $campos),
                     $this->resolveImportMode($request),
@@ -124,7 +133,7 @@ class TeacherImportController extends Seeder
         );
     }
 
-    private function saca_campos($atrxml, $llave, $func = 1)
+    private function sacaCampos($atrxml, $llave, $func = 1)
     {
         return $this->xmlHelper()->extractField($atrxml, $llave, $func, $this);
     }
@@ -216,5 +225,18 @@ class TeacherImportController extends Seeder
         $mode = (string) $request->input('mode', 'full');
 
         return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
+    }
+
+    private function authorizeMutation(bool $allowConsole = false): void
+    {
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
+        if ($allowConsole && app()->runningInConsole()) {
+            return;
+        }
+
+        abort_unless(userIsAllow(config(self::ROLES_ROL_ADMINISTRADOR)), 403);
     }
 }

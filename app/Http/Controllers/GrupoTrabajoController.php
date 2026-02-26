@@ -37,13 +37,12 @@ class GrupoTrabajoController extends ModalController
 
     public function store(GrupoTrabajoRequest $request)
     {
-        $new = new GrupoTrabajo();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
     public function update(GrupoTrabajoRequest $request, $id)
     {
-        GrupoTrabajo::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

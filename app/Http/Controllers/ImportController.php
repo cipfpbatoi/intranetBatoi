@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intranet\Application\Import\Concerns\SharedImportFieldTransformers;
 use Intranet\Application\Import\GeneralImportExecutionService;
 use Intranet\Application\Import\ImportSchemaProvider;
@@ -13,12 +14,15 @@ use Intranet\Application\Import\ImportService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Entities\ImportRun;
+use Intranet\Http\Requests\ImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
 class ImportController extends Seeder
 {
     use SharedImportFieldTransformers;
+
+    private const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
 
     private ?ImportService $importService = null;
     private ?ImportWorkflowService $importWorkflowService = null;
@@ -33,11 +37,14 @@ class ImportController extends Seeder
 
     public function create()
     {
+        $this->authorizeMutation();
         return view('seeder.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorizeMutation();
+        Validator::make($request->all(), (new ImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -53,6 +60,7 @@ class ImportController extends Seeder
 
     public function storeAsync(Request $request, mixed $validatedFile = null)
     {
+        $this->authorizeMutation();
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -98,6 +106,7 @@ class ImportController extends Seeder
 
     public function history()
     {
+        $this->authorizeMutation();
         if (!Schema::hasTable('import_runs')) {
             Alert::warning('No existeix la taula import_runs.');
             return view('seeder.history', ['runs' => collect()]);
@@ -110,6 +119,7 @@ class ImportController extends Seeder
 
     public function status(int $importRunId)
     {
+        $this->authorizeMutation();
         $run = ImportRun::findOrFail($importRunId);
 
         return response()->json([
@@ -128,11 +138,13 @@ class ImportController extends Seeder
 
     public function asignarTutores()
     {
+        $this->authorizeMutation(true);
         $this->workflows()->assignTutores();
     }
 
     public function run($fxml, Request $request)
     {
+        $this->authorizeMutation(true);
         $execution = $this->executions();
 
         $this->workflows()->executeXmlImportWithHooks(
@@ -254,5 +266,18 @@ class ImportController extends Seeder
         $mode = (string) $request->input('mode', 'full');
 
         return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
+    }
+
+    private function authorizeMutation(bool $allowConsole = false): void
+    {
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
+        if ($allowConsole && app()->runningInConsole()) {
+            return;
+        }
+
+        abort_unless(userIsAllow(config(self::ROLES_ROL_ADMINISTRADOR)), 403);
     }
 }

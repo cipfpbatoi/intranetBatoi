@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Intranet\Mail\MatriculaAlumne;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
+use Intranet\Http\Requests\SendAvaluacioEmailStoreRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 
@@ -38,7 +39,7 @@ class SendAvaluacioEmailController extends Seeder
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function store(Request $request)
+    public function store(SendAvaluacioEmailStoreRequest $request)
     {
         $aR = AlumnoReunion::where('idAlumno', $request->nia)->get()->last();
         if (!$aR) {

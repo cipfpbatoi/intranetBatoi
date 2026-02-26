@@ -8,6 +8,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Services\Mail\MyMail;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\MyMailStoreRequest;
 use Styde\Html\Facades\Alert;
 
 
@@ -57,7 +58,7 @@ class MyMailController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(MyMailStoreRequest $request)
     {
         $stringFinder = 'Intranet\\Finders\\MailFinders\\'.$request->collect.'Finder';
         $finder = new $stringFinder();

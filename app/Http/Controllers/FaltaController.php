@@ -4,9 +4,10 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
-use Intranet\Http\Controllers\Core\IntranetController;
-
+use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\FaltaRequest;
 use Illuminate\Http\Request;
+
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
@@ -19,7 +20,7 @@ use Jenssegers\Date\Date;
  * Class FaltaController
  * @package Intranet\Http\Controllers
  */
-class FaltaController extends IntranetController
+class FaltaController extends ModalController
 {
     private ?FaltaService $faltaService = null;
 
@@ -37,11 +38,6 @@ class FaltaController extends IntranetController
      * @var array
      */
     protected $gridFields = FaltaCrudSchema::GRID_FIELDS;
-    /**
-     * @var bool
-     */
-    protected $modal = true;
-
     public function __construct(?FaltaService $faltaService = null)
     {
         parent::__construct();
@@ -76,8 +72,7 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
-        $this->validateAll($request, new Falta());
-
+        $this->validate($request, (new FaltaRequest())->rules());
         $id = $this->faltas()->create($request);
 
         if (!$request->boolean('baja') && UserisAllow(config('roles.rol.direccion'))) {
@@ -98,8 +93,7 @@ class FaltaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $this->validateAll($request, Falta::findOrFail($id));
-
+        $this->validate($request, (new FaltaRequest())->rules());
         $this->faltas()->update($id, $request);
         return $this->redirect();
     }

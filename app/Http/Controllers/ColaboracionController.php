@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Ciclo;
@@ -41,22 +40,6 @@ class ColaboracionController extends ModalController
     protected $titulo = [];
     protected $profile = false;
     protected $formFields = ColaboracionCrudSchema::FORM_FIELDS;
-
-
-    /**
-     * @param Request $request
-     * @param null $id
-     * @return mixed
-     */
-    protected function realStore(Request $request, $id = null)
-    {
-        $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
-        if ($id) {
-            $elemento->setRule('idCentro', $elemento->getRule('idCentro').','.$id);
-        }
-        $this->validateAll($request, $elemento);    // valida les dades
-        return $elemento->fillAll($request);        // ompli i guarda
-    }
 
     /**
      *
@@ -116,8 +99,8 @@ class ColaboracionController extends ModalController
      */
     public function update(ColaboracionRequest $request, $id)
     {
+        $this->persist($request, $id);
         $colaboracion = Colaboracion::findOrFail($id);
-        $colaboracion->fillAll($request);
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();

@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Colaboracion\ColaboracionService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Requests\ColaboracionRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -14,6 +15,7 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
@@ -222,6 +224,8 @@ class PanelColaboracionController extends IntranetController
 
     public function update(Request $request, $id)
     {
+        $this->authorizeMutation();
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
@@ -234,6 +238,8 @@ class PanelColaboracionController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->authorizeMutation();
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
@@ -243,6 +249,11 @@ class PanelColaboracionController extends IntranetController
     private function showEmpresa($id)
     {
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+    }
+
+    private function authorizeMutation(): void
+    {
+        abort_unless(userIsAllow(config(self::ROLES_ROL_TUTOR)), 403);
     }
 
     /**
@@ -264,7 +275,7 @@ class PanelColaboracionController extends IntranetController
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo
-        $validator = Validator::make($copia->toArray(), $copia->getRules());
+        $validator = Validator::make($copia->toArray(), ColaboracionCrudSchema::RULES);
         if ($validator->fails()) {
             return Redirect::back()->withInput()->withErrors($validator);
         }

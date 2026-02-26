@@ -123,11 +123,11 @@ class IncidenciaController extends ModalController
 
     public function store(IncidenciaRequest $request)
     {
-        $new = new Incidencia();
         $request->merge(['idProfesor' => AuthUser()->dni]);
-        $new->fillAll($request);
-        $this->storeImagen($new, $request);
-        Incidencia::putEstado($new->id, $this->init);
+        $id = $this->persist($request);
+        $incidencia = Incidencia::findOrFail($id);
+        $this->storeImagen($incidencia, $request);
+        Incidencia::putEstado($incidencia->id, $this->init);
         return $this->redirect();
     }
 
@@ -142,7 +142,8 @@ class IncidenciaController extends ModalController
         $this->guardIncidenciaOwnerOrResponsible($elemento);
 
         $tipo = $elemento->tipo;
-        $elemento->fillAll($request);
+        $this->persist($request, $id);
+        $elemento = Incidencia::findOrFail($id);
         $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;

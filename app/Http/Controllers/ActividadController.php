@@ -55,14 +55,13 @@ class ActividadController extends ModalController
 
     public function store(ActividadRequest $request)
     {
-        $new = new Actividad();
-        $new->fillAll($request);
-        return $this->showDetalle($new);
+        $id = $this->persist($request);
+        return $this->showDetalle(Actividad::findOrFail($id));
     }
 
     public function update(ActividadRequest $request, $id)
     {
-        Actividad::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

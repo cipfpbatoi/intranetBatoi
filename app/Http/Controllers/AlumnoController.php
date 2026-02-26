@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoUpdateRequest;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
@@ -35,6 +36,7 @@ class AlumnoController extends PerfilController
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new AlumnoUpdateRequest())->rules());
         $new = Alumno::find($id);
 
         parent::update($request, $new);

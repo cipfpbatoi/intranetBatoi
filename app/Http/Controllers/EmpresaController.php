@@ -5,12 +5,9 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Empresa;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Colaboracion;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
@@ -19,6 +16,8 @@ use Styde\Html\Facades\Alert;
 
 class EmpresaController extends IntranetController
 {
+    private const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+
     private ?GrupoService $grupoService = null;
     private ?EmpresaService $empresaService = null;
 
@@ -88,97 +87,29 @@ class EmpresaController extends IntranetController
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config(self::ROLES_ROL_TUTOR)]));
      }
 
     public function store(Request $request)
     {
-        $id = $this->realStore($request);
+        $this->authorize('create', Empresa::class);
+        $id = $this->empreses()->saveFromRequest($request);
 
-        $idCentro = $this->createCenter($id, $request);
+        $idCentro = $this->empreses()->createCenter($id, $request);
         $idCicloTutoria = $this->grupos()->firstByTutor(AuthUser()->dni)?->idCiclo;
         if ($idCicloTutoria) {
-            $this->createColaboration($idCentro, $request, $idCicloTutoria);
+            $this->empreses()->createColaboration($idCentro, $request, $idCicloTutoria, AuthUser()->FullName);
         }
 
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
-
-
-
-    private function createCenter($id, Request $request)
-    {
-        $centro = new Centro();
-        $centro->idEmpresa = $id;
-        $centro->direccion = $request->direccion;
-        $centro->nombre = $request->nombre;
-        $centro->localidad = $request->localidad;
-        $centro->save();
-        return $centro->id;
-    }
-    private function createColaboration($id, Request $request, $idCicloTutoria)
-    {
-        $colaboracion = new Colaboracion();
-        $colaboracion->idCentro = $id;
-        $colaboracion->telefono = $request->telefono;
-        $colaboracion->email = $request->email;
-        $colaboracion->puestos = 1;
-        $colaboracion->tutor = AuthUser()->FullName;
-        $colaboracion->idCiclo = $idCicloTutoria;
-        $colaboracion->save();
-        return $colaboracion->id;
-    }
-    
-    protected function realStore(Request $request, $id = null)
-    {
-        $request = $this->normalitzaEmpresaRequest($request);
-        $this->validate($request, EmpresaCrudSchema::requestRules($id));
-
-        $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
-        return $elemento->fillAll($request);        // ompli i guarda
-    }
     
     public function update(Request $request, $id)
     {
-        $elemento = Empresa::find($this->realStore($request, $id));
-
-        foreach ($elemento->centros as $centro) {
-            $touched = false;
-            if ($centro->direccion == '') {
-                $centro->direccion = $elemento->direccion;
-                $touched = true;
-            }
-            if ($centro->localidad == '') {
-                $centro->localidad = $elemento->localidad;
-                $touched = true;
-            }
-            if ($centro->nombre == '') {
-                $centro->nombre = $elemento->nombre;
-                $touched = true;
-            }
-            if ($touched) {
-                $centro->save();
-            }
-        }
+        $this->authorize('update', Empresa::findOrFail((int) $id));
+        $elemento = Empresa::findOrFail($this->empreses()->saveFromRequest($request, $id));
+        $this->empreses()->fillMissingCenterData($elemento);
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
-    }
-
-    private function normalitzaEmpresaRequest(Request $request): Request
-    {
-        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores'];
-        $normalized = [];
-
-        foreach ($checkboxes as $field) {
-            $normalized[$field] = $request->boolean($field);
-        }
-
-        if ($request->filled('cif')) {
-            $normalized['cif'] = strtoupper((string) $request->input('cif'));
-        }
-
-        $request->merge($normalized);
-
-        return $request;
     }
 
     /*
