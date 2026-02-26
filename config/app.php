@@ -220,6 +220,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         
         'Form' => Collective\Html\FormFacade::class,
+        'Field' => Intranet\Support\Facades\Field::class,
         'Formulario' => Intranet\Services\FormBuilder::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
