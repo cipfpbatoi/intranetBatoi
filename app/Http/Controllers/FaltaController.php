@@ -136,4 +136,18 @@ class FaltaController extends ModalController
     {
         return Falta::findOrFail($id);
     }
+
+    /**
+     * Mostra el detall d'una falta.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function show($id)
+    {
+        $elemento = $this->findFaltaOrFail((int) $id);
+        $this->authorize('view', $elemento);
+        $modelo = $this->model;
+        return view('intranet.show', compact('elemento', 'modelo'));
+    }
 }
