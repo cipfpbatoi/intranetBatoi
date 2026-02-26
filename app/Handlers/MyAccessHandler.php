@@ -4,9 +4,14 @@ namespace Intranet\Handlers;
 
 use Illuminate\Contracts\Auth\Access\Gate as Gate;
 use Illuminate\Contracts\Auth\Guard as Auth;
-use Styde\Html\Access\AccessHandler;
 
-class MyAccessHandler implements AccessHandler
+/**
+ * Controlador d'accés per a menús/camps legacy.
+ *
+ * Es manté com a classe d'adaptació interna perquè el codi d'aplicació no
+ * depenga de tipus de `styde/html`.
+ */
+class MyAccessHandler
 {
 
     /**
@@ -75,7 +80,7 @@ class MyAccessHandler implements AccessHandler
     protected function checkGate($arguments)
     {
         if ($this->gate == null) {
-            throw new MissingGateException(
+            throw new \RuntimeException(
             'You have to upgrade to Laravel 5.1.12 or superior'
             . ' to use the allows, checks or denies options'
             );
