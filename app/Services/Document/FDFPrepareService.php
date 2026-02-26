@@ -83,14 +83,24 @@ class FDFPrepareService
         return $nameFile;
     }
 
+    /**
+     * Concatena diversos PDFs i retorna la ruta relativa del resultat.
+     *
+     * @param array<int, string> $pdfs
+     * @param string $nameFile
+     * @return string
+     */
     public static function joinPDFs($pdfs, $nameFile)
     {
         $tmpFileName = storage_path("tmp/$nameFile.pdf");
-        $pdf = new Pdf();
-        foreach ($pdfs as $file) {
-            $pdf->addFile($file);
+        try {
+            app(PdfMergeService::class)->merge($pdfs, $tmpFileName);
+        } catch (Exception $e) {
+            Log::error('Error concatenant PDFs amb FPDI', [
+                'file' => $tmpFileName,
+                'message' => $e->getMessage(),
+            ]);
         }
-        $pdf->saveAs($tmpFileName);
         return "tmp/$nameFile.pdf";
     }
 }
