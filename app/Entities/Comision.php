@@ -2,7 +2,7 @@
 
 namespace Intranet\Entities;
 
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Presentation\Crud\ComisionCrudSchema;
@@ -81,13 +81,13 @@ class Comision extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
     public function getHastaAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y H:i');
     }
 

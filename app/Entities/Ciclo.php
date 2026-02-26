@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Illuminate\Support\Facades\App;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Ciclo extends Model
 {

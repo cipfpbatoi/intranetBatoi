@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\ReunionCreated;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
@@ -160,13 +160,13 @@ class Reunion extends Model
 
     public function getFechaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
     public function getUpdatedAtAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 

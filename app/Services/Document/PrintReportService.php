@@ -4,7 +4,7 @@ namespace Intranet\Services\Document;
 
 use Intranet\Services\Document\PdfService;
 use Intranet\Finders\Finder;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 class PrintReportService
@@ -39,7 +39,7 @@ class PrintReportService
     {
         if ($this->elements->Count()) {
             $pdf = app(PdfService::class)->hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
-            $nom = $this->document->modelo . new Date() . '.pdf';
+            $nom = $this->document->modelo . new Carbon() . '.pdf';
             $nomComplet = 'gestor/' . curso() . '/informes/' . $nom;
             $gestor = new GestorService();
             $doc = $gestor->save([

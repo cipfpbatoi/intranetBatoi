@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\DocumentoCrudSchema;
@@ -29,7 +29,7 @@ class Documento extends Model
 
     public function getCreatedAtAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 

@@ -20,7 +20,7 @@ use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\General\StateService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 
 /**
@@ -128,7 +128,7 @@ class ComisionController extends ModalController
 
     protected function createWithDefaultValues($default=[])
     {
-        $manana = new Date('tomorrow');
+        $manana = new Carbon('tomorrow');
         $manana->addHours(8);
         if (Fct::misFcts()->count()) {
             $fct = 1;

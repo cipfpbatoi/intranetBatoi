@@ -10,7 +10,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Guardia;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 
 class NotifyDailyFaults extends Command
@@ -98,7 +98,7 @@ class NotifyDailyFaults extends Command
         $profesores = $this->profesorService->activosOrdered();
         foreach ($profesores as $profesor) {
             if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0 &&
-                $this->horarioService->countByProfesorAndDay((string) $profesor->dni, nameDay(new Date($dia))) > 1) {
+                $this->horarioService->countByProfesorAndDay((string) $profesor->dni, nameDay(new Carbon($dia))) > 1) {
                 $noHanFichado[$profesor->dni] = $profesor->dni;
             }
         }

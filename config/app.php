@@ -220,8 +220,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         
-        'Date' => Jenssegers\Date\Date::class,
-       
         'Form' => Collective\Html\FormFacade::class,
         'Formulario' => Intranet\Services\FormBuilder::class,
         'Html' => Collective\Html\HtmlFacade::class,

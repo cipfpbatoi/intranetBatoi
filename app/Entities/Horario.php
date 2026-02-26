@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Hora;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
 

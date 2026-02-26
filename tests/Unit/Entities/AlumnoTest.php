@@ -4,7 +4,7 @@ namespace Tests\Unit\Entities;
 use Tests\TestCase;
 use Intranet\Entities\Alumno;
 use Mockery;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class AlumnoTest extends TestCase
 {
@@ -38,7 +38,7 @@ class AlumnoTest extends TestCase
     public function testGetEdatAttribute()
     {
         $alumno = Mockery::mock(Alumno::class)->makePartial();
-        $alumno->fecha_nac = (new Date())->subYears(20)->format('Y-m-d'); // Nascut fa 20 anys
+        $alumno->fecha_nac = (new Carbon())->subYears(20)->format('Y-m-d'); // Nascut fa 20 anys
 
         $this->assertEquals(20, $alumno->edat);
     }
@@ -46,8 +46,8 @@ class AlumnoTest extends TestCase
     public function testGetEsMenorAttribute()
     {
         $alumno = Mockery::mock(Alumno::class)->makePartial();
-        $alumno->fecha_nac = (new Date())->subYears(17)->format('d-m-Y'); // Té 17 anys
-        $alumno->fecha_nac2 = (new Date())->subYears(17)->format('Y-m-d');
+        $alumno->fecha_nac = (new Carbon())->subYears(17)->format('d-m-Y'); // Té 17 anys
+        $alumno->fecha_nac2 = (new Carbon())->subYears(17)->format('Y-m-d');
 
         $this->assertTrue($alumno->esMenor);
         $this->assertTrue($alumno->esMenor);

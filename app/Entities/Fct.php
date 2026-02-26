@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\Vote;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
 use Illuminate\Support\Arr;
@@ -264,7 +264,7 @@ class Fct extends Model
     }
     public function getDesdeAttribute($entrada)
     {
-        return (new Date($entrada))->format('d-m-Y');
+        return (new Carbon($entrada))->format('d-m-Y');
     }
 
 

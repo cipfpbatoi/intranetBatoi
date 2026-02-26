@@ -7,7 +7,7 @@ namespace Intranet\Application\FaltaItaca;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Services\General\StateService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class FaltaItacaWorkflowService
 {
@@ -27,7 +27,7 @@ class FaltaItacaWorkflowService
 
     public function monthlyReportFileName(string $desde): string
     {
-        $fecha = new Date($desde);
+        $fecha = new Carbon($desde);
         return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
     }
 

@@ -24,7 +24,7 @@ use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\GoogleCalendarService;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ActividadParticipantsService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -51,7 +51,7 @@ class ActividadController extends ModalController
 
     protected function createWithDefaultValues( $default=[])
     {
-        $data = new Date('tomorrow');
+        $data = new Carbon('tomorrow');
         return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 0,'recomanada'=>1,'complementaria'=>1,'fueraCentro'=>0,'transport'=>0]);
     }
 
@@ -399,7 +399,7 @@ class ActividadController extends ModalController
             'where' => ['estado', '<', '2'],
             'data-confirm' => 'Segur que vols eliminar esta activitat?',
         ]));
-        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Carbon::yesterday()]]));
     }
 
     /**

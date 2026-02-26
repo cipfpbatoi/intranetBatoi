@@ -7,7 +7,7 @@ use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
 
 use Intranet\Http\Resources\MaterialResource;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class MaterialController extends ApiResourceController
 {
@@ -195,7 +195,7 @@ class MaterialController extends ApiResourceController
 
     public function putInventario(Request $request)
     {
-        $fecha = new Date();
+        $fecha = new Carbon();
 
         $material = Material::findOrFail($request->id);
         if ($request->inventario == 'true') {

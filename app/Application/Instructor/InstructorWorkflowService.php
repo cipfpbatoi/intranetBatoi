@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class InstructorWorkflowService
 {
@@ -79,7 +79,7 @@ class InstructorWorkflowService
         return (int) Centro::findOrFail($sourceCentro)->idEmpresa;
     }
 
-    public function ultimaFecha(Collection|array|null $fcts): ?Date
+    public function ultimaFecha(Collection|array|null $fcts): ?Carbon
     {
         $fcts = $fcts instanceof Collection ? $fcts : collect($fcts);
         $conHasta = $fcts->filter(fn ($fct) => !empty($fct->hasta));
@@ -88,7 +88,7 @@ class InstructorWorkflowService
             return null;
         }
 
-        $posterior = new Date($conHasta->first()->hasta);
+        $posterior = new Carbon($conHasta->first()->hasta);
         foreach ($conHasta as $fct) {
             $posterior = FechaPosterior($fct->hasta, $posterior);
         }

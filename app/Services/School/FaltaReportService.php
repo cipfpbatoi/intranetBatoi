@@ -3,12 +3,12 @@
 namespace Intranet\Services\School;
 
 use Intranet\Entities\Falta;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Services\General\StateService;
 
 class FaltaReportService
 {
-    public function getComunicacioElements(Date $desde, Date $hasta)
+    public function getComunicacioElements(Carbon $desde, Carbon $hasta)
     {
         return $this->buildQuery($desde, $hasta, '5')
             ->orderBy('idProfesor')
@@ -16,7 +16,7 @@ class FaltaReportService
             ->get();
     }
 
-    public function getMensualElements(Date $desde, Date $hasta)
+    public function getMensualElements(Carbon $desde, Carbon $hasta)
     {
         return $this->buildQuery($desde, $hasta, '4')
             ->orderBy('idProfesor')
@@ -24,7 +24,7 @@ class FaltaReportService
             ->get();
     }
 
-    public function markPrinted(Date $hasta): void
+    public function markPrinted(Carbon $hasta): void
     {
         foreach (Falta::where([
             ['estado', '>', '0'],
@@ -38,10 +38,10 @@ class FaltaReportService
 
     public function nameFile(): string
     {
-        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Date() . '.pdf';
+        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Carbon() . '.pdf';
     }
 
-    private function buildQuery(Date $desde, Date $hasta, string $estadoUpper)
+    private function buildQuery(Carbon $desde, Carbon $hasta, string $estadoUpper)
     {
         return Falta::where(function ($query) use ($desde, $hasta, $estadoUpper) {
             $query->where(function ($query) use ($desde, $hasta, $estadoUpper) {

@@ -55,10 +55,7 @@
             "Intranet\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "bootstrap/legacy_jenssegers_date.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

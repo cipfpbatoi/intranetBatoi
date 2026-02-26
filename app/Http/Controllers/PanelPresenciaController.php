@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Gate;
 use Intranet\Services\HR\FitxatgeService;
-use Jenssegers\Date\Date;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 class PanelPresenciaController extends BaseController
@@ -46,7 +45,7 @@ class PanelPresenciaController extends BaseController
         Gate::authorize('manageAttendance', Profesor::class);
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $dia = $dia ? $dia : Hoy();
-        $fdia = new Date($dia);
+        $fdia = new Carbon($dia);
         $this->panel->dia = $fdia->toDateString();
         $this->panel->anterior = $fdia->subDay()->toDateString();
         $this->panel->posterior = $fdia->addDays(2)->toDateString();
@@ -108,7 +107,7 @@ class PanelPresenciaController extends BaseController
         $noHanFichado = [];
         foreach ($profesores as $profesor) {
             if (!$fitxatgeService->hasFichado($dia, (string) $profesor->dni)) {
-                if (self::horarios()->countByProfesorAndDay((string) $profesor->dni, nameDay(new Date($dia))) > 1) {
+                if (self::horarios()->countByProfesorAndDay((string) $profesor->dni, nameDay(new Carbon($dia))) > 1) {
                     $noHanFichado[$profesor->dni] = $profesor->dni;
                 }
             }

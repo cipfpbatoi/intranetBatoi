@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\Notifications\AdviseService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Falta_itaca extends Model
 {
@@ -48,7 +48,7 @@ class Falta_itaca extends Model
     }
     public function getDiaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -56,7 +56,7 @@ class Falta_itaca extends Model
     {
         
         $elemento = static::findOrFail($id);
-        $dia = new Date($elemento->dia);
+        $dia = new Carbon($elemento->dia);
         $elementos = static::where('idProfesor', $elemento->idProfesor)
                 ->where('dia', $dia->format('Y-m-d'))
                 ->get();

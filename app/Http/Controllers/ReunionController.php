@@ -26,7 +26,7 @@ use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Response;
 use Styde\Html\Facades\Alert;
 use function dispatch;
@@ -315,7 +315,7 @@ class ReunionController extends ModalController
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.ics',
-                ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]
+                ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Carbon::yesterday()]]
             )
         );
         $this->panel->setBoton('grid',
@@ -324,7 +324,7 @@ class ReunionController extends ModalController
                     'where' => [
                         'idProfesor', '==', $actual,
                         'archivada', '==', '0',
-                        'fecha', 'anterior', Date::yesterday()
+                        'fecha', 'anterior', Carbon::yesterday()
                     ]
                 ]
             )
@@ -336,7 +336,7 @@ class ReunionController extends ModalController
                     'where' => [
                         'idProfesor', '==', $actual,
                         'archivada', '==', '1',
-                        'fecha', 'anterior', Date::yesterday()
+                        'fecha', 'anterior', Carbon::yesterday()
                     ]
                 ]
             )
@@ -404,7 +404,7 @@ class ReunionController extends ModalController
                     'supervisor' => $elemento->Creador->FullName,
                     'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
                     'tags' => TipoReunionService::find($elemento->tipo)->vliteral,
-                    'created_at' => new Date($elemento->fecha),
+                    'created_at' => new Carbon($elemento->fecha),
                     'rol' => config('roles.rol.profesor')]);
                 $elemento->save();
             });
@@ -475,10 +475,10 @@ class ReunionController extends ModalController
     private function construye_pdf($id)
     {
         $elemento = Reunion::findOrFail($id);
-        $hoy = new Date($elemento->fecha);
+        $hoy = new Carbon($elemento->fecha);
         $elemento->dia = FechaString($hoy);
         $elemento->hora = $hoy->format('H:i');
-        $hoy = new Date($elemento->updated_at);
+        $hoy = new Carbon($elemento->updated_at);
         $elemento->hoy = haVencido($elemento->fecha) ? $elemento->dia : FechaString($hoy);
         return $this->hazPdf(
             $this->informe($elemento),
@@ -500,7 +500,7 @@ class ReunionController extends ModalController
 
     public static function preparePdf($informe, $aR)
     {
-        $hoy = new Date();
+        $hoy = new Carbon();
         $elemento = FechaString($hoy,'ca');
         return self::hazPdf($informe, $aR,$elemento ,'portrait','a4');
     }

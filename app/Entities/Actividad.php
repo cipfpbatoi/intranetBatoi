@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Presentation\Crud\ActividadCrudSchema;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
 
@@ -119,7 +119,7 @@ class Actividad extends Model
      */
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
@@ -131,7 +131,7 @@ class Actividad extends Model
      */
     public function getHastaAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y H:i');
     }
 

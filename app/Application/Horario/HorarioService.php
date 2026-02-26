@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Entities\Horario;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 /**
  * Casos d'ús d'aplicació per al domini d'horaris.
@@ -204,7 +204,7 @@ class HorarioService
      */
     public function situacionAhora(string $dni): ?array
     {
-        $ahora = Date::now();
+        $ahora = Carbon::now();
         $sesionActual = sesion(Hora($ahora));
         $dia = (string) config("auxiliares.diaSemana." . $ahora->format('w'));
         $horasDentro = $this->byProfesorDiaOrdered($dni, $dia);

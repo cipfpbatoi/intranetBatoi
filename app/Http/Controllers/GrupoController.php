@@ -13,7 +13,7 @@ use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
 use Intranet\Http\Traits\Core\Imprimir;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -191,7 +191,7 @@ class GrupoController extends IntranetController
         return $this->hazPdf('pdf.carnet', Alumno::QGrupo($grupo)
             ->OrderBy('apellido1')
             ->OrderBy('apellido2')
-            ->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+            ->get(), [Carbon::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function list(Request $request)

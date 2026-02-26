@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Notifications\MyResetPassword;
@@ -229,7 +229,7 @@ class Profesor extends Authenticatable
     public function getfechaIngresoAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha = new Carbon($fecha);
             return $fecha->format('d-m-Y');
         }
     }
@@ -237,7 +237,7 @@ class Profesor extends Authenticatable
     public function getFechaNacAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha = new Carbon($fecha);
             return $fecha->format('d-m-Y');
         }
     }
@@ -245,7 +245,7 @@ class Profesor extends Authenticatable
     public function getFechaBajaAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha = new Carbon($fecha);
             return $fecha->format('d-m-Y');
         }
     }

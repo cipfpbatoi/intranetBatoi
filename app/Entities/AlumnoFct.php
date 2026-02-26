@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Intranet\Application\AlumnoFct\AlumnoFctSignatureService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\FctAlDeleted;
 use Intranet\Presentation\AlumnoFct\AlumnoFctPresenter;
 
@@ -254,7 +254,7 @@ class AlumnoFct extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        return (new Date($entrada))->format('d-m-Y');
+        return (new Carbon($entrada))->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)

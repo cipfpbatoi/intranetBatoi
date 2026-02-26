@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Presentation\Crud\SolicitudCrudSchema;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Solicitud extends Model
 {
@@ -30,7 +30,7 @@ class Solicitud extends Model
         if (empty($entrada)) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -39,7 +39,7 @@ class Solicitud extends Model
         if (empty($salida)) {
             return '';
         }
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y');
     }
 

@@ -24,7 +24,7 @@ use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\School\ModuloGrupoService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -153,7 +153,7 @@ class PanelListadoEntregasController extends BaseController
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
                         'tags' => TipoReunionService::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
-                        'created_at' => new Date($reunion->fecha),
+                        'created_at' => new Carbon($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
         });

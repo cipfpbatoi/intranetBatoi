@@ -10,7 +10,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\UI\Botones\BotonIcon;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Entities\Alumno;
 
 
@@ -50,7 +50,7 @@ class AlumnoController extends PerfilController
      */
     public function carnet($alumno)
     {
-        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Carbon::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function checkFol($id)
