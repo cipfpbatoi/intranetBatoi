@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Automation\SeleniumService;
-use Intranet\Sao\Sync;
+use Intranet\Sao\SaoSyncAction;
 use Intranet\Services\UI\AlertLogger;
 
 class SaoConnect extends Command
@@ -29,7 +29,7 @@ class SaoConnect extends Command
                 config('services.selenium.SAO_PASS')
             );
 
-            (new Sync())->execute($driver,function () {
+            (new SaoSyncAction())->execute($driver,function () {
                 return AlumnoFct::whereNotNull('idSao')
                     ->noHaAcabado()
                     ->haEmpezado()

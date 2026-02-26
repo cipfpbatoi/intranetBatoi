@@ -538,8 +538,8 @@ Route::get(
 );
 
 Route::post('/externalAuth', RedirectAfterAuthenticationController::class);
-Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
-Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
+Route::post('/sao/importa', [Intranet\Sao\SaoImportaAction::class,'importa']);
+Route::post('/sao/compara', [Intranet\Sao\SaoComparaAction::class,'compara']);
 
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 

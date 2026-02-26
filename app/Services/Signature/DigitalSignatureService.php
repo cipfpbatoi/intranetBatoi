@@ -273,6 +273,13 @@ class DigitalSignatureService
 
     private function signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
+        if (!is_string($file) || $file === '' || !file_exists($file)) {
+            throw new IntranetException("No s'ha trobat el PDF d'entrada per a signar.");
+        }
+        if (!is_string($newFile) || $newFile === '') {
+            throw new IntranetException("No s'ha indicat un fitxer d'eixida vàlid per a la signatura.");
+        }
+
         $config = config('signatures.jsignpdf');
         $java = $config['java'] ?? 'java';
         $jar = $config['jar'] ?? null;

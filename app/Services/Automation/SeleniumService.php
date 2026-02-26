@@ -81,7 +81,7 @@ class SeleniumService
         sleep(2);
         $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
         if ($name === 'login') {
-            $driver->close();
+            $driver->quit();
             throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
         }
         return $driver;
@@ -106,7 +106,7 @@ class SeleniumService
         sleep(1);
         try {
             $driver->findElement(WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"));
-            $driver->close();
+            $driver->quit();
             throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
         }  catch ( NoSuchElementException $e) {
             // cap error, continua
