@@ -167,7 +167,6 @@ return [
         Intranet\Providers\EventServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
-        Intranet\Providers\HtmlServiceProvider::class,
         Intranet\Providers\ValidationServiceProvider::class,
         Intranet\Providers\SettingsProvider::class
 
