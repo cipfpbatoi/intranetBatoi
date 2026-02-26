@@ -17,7 +17,7 @@ use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
 use Intranet\Services\PhotoCarnet;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class PerfilController extends Perfil

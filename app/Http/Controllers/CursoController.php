@@ -14,7 +14,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\General\GestorService;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class CursoController

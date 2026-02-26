@@ -12,7 +12,7 @@ use Intranet\Exceptions\IntranetException;
 use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Interactions\WebDriverActions;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ItacaController extends Controller
 {

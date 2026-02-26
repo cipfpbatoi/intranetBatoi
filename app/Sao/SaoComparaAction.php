@@ -8,7 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

@@ -10,7 +10,7 @@ use Intranet\Sao\Support\SaoDownloadManager;
 use Intranet\Sao\Support\SaoNavigator;
 use Intranet\Services\Signature\DigitalSignatureService;
 use setasign\Fpdi\Fpdi;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Gestiona la descàrrega i processat de l'annex A5.

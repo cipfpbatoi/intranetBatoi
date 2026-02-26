@@ -21,7 +21,7 @@ use Intranet\Http\Requests\DualRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Document\PdfFormService;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

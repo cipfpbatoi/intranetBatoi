@@ -12,7 +12,7 @@ use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\School\ModuloGrupoService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

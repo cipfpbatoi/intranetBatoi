@@ -22,7 +22,7 @@ use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
 use Illuminate\Support\Facades\Gate;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

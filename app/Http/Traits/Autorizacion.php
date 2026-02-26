@@ -5,7 +5,7 @@ namespace Intranet\Http\Traits;
 use Illuminate\Http\Request;
 use Intranet\Services\General\AutorizacionPrintService;
 use Intranet\Services\General\AutorizacionStateService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

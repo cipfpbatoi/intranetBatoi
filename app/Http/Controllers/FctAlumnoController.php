@@ -36,7 +36,7 @@ use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\UI\FormBuilder;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class FctAlumnoController extends ModalController

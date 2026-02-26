@@ -6,7 +6,7 @@ namespace Intranet\Application\Import;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Servei d'aplicació per a operacions comunes d'importació.

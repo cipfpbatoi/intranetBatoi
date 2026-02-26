@@ -7,7 +7,7 @@ namespace Intranet\Application\Import;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Support\Facades\DB;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class TeacherImportExecutionService
 {

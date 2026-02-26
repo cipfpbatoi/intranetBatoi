@@ -8,7 +8,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura as Firma;
 use Intranet\Sao\Support\SaoDownloadManager;
 use Intranet\Sao\Support\SaoNavigator;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Gestiona la descàrrega de l'annex A1/A1DUAL.

@@ -10,7 +10,7 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Ciclo;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class PanelProyectoController extends BaseController

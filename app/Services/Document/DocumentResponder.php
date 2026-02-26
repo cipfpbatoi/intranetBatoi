@@ -2,7 +2,7 @@
 
 namespace Intranet\Services\Document;
 
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class DocumentResponder
 {

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Intranet\Http\Requests\FicharStoreRequest;
 
 use Intranet\Services\HR\FitxatgeService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class FicharController extends IntranetController

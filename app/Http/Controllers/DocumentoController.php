@@ -19,7 +19,7 @@ use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Controlador de gestió de documents i fluxos associats de FCT/qualitat.

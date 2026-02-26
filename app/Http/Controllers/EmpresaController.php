@@ -12,7 +12,7 @@ use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\UI\Botones\BotonBasico;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class EmpresaController extends IntranetController
 {

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\Mail\EmailPostSendService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Envia correus a partir d'un MyMail.

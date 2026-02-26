@@ -13,7 +13,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ModuloGrupoService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ProgramacionController extends IntranetController
 {

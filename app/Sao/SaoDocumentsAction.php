@@ -13,7 +13,7 @@ use Intranet\Sao\Documents\A2DocumentService;
 use Intranet\Sao\Documents\A5DocumentService;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 

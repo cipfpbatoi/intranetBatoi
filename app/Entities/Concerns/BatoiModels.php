@@ -4,7 +4,7 @@ namespace Intranet\Entities\Concerns;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Utilitats comunes de model per a formularis, validació i càrrega de fitxers.

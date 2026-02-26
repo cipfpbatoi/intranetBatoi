@@ -9,7 +9,7 @@ use Response;
 use Intranet\Entities\Tutoria;
 use Intranet\Entities\TutoriaGrupo;
 use Intranet\Presentation\Crud\TutoriaCrudSchema;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Session;
 
 class TutoriaController extends IntranetController

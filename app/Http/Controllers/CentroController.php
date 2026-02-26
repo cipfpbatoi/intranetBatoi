@@ -11,7 +11,7 @@ use Intranet\Entities\Empresa;
 use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class CentroController

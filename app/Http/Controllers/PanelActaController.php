@@ -8,7 +8,7 @@ use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

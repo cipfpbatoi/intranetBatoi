@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\Comunicado;
 use Intranet\Services\Document\AttachedFileService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;

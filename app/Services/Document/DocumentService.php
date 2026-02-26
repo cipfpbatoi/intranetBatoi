@@ -6,7 +6,7 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 /**

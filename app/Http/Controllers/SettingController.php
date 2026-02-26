@@ -7,7 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Setting;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
