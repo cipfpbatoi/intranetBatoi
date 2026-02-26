@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\Controller;
+use Intranet\Services\Document\DocumentPathService;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\UI\Panels\Panel;
+use Styde\Html\Facades\Alert;
 
 /**
  * Controlador base per a recursos amb UX modal.
@@ -250,6 +252,27 @@ abstract class ModalController extends Controller
         $elemento->delete();
 
         return $this->redirect();
+    }
+
+    /**
+     * Retorna el document físic associat al registre.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function document($id)
+    {
+        $modelClass = $this->resolveModelClass();
+        $elemento = $modelClass::findOrFail($id);
+        $path = $elemento->fichero ? storage_path('app/' . $elemento->fichero) : null;
+        $pathService = new DocumentPathService();
+
+        if ($path && $response = $pathService->responseFromPath($path)) {
+            return $response;
+        }
+
+        Alert::danger(trans("messages.generic.nodocument"));
+        return back();
     }
 
 
