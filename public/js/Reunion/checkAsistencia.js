@@ -1,20 +1,35 @@
 'use strict';
 
 $(function () {
+    function apiAuthOptions(extraData) {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var data = extraData || {};
+        var headers = {};
+
+        if (bearerToken) {
+            headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
     $('.checkbox').on('change', function (event) {
         var idProfesor = $(this).prop('name');
-        var token = $("#_token").text();
         var idReunion = $(this).parent(1).parent(1).parent(1).parent(1).parent(1).prop('id');
         var asiste = $(this).prop("checked")?1:0;
+        var auth = apiAuthOptions({
+            idProfesor: idProfesor,
+            idReunion: idReunion,
+            asiste: asiste,
+        });
         $.ajax({
             method: "PUT",
             url: "/api/asistencia/cambiar",
-            data: {
-                idProfesor: idProfesor,
-                idReunion: idReunion,
-                asiste: asiste,
-                api_token: token,
-            },
+            headers: auth.headers,
+            data: auth.data,
         }).then(function (res) {
             console.log(res)
         }, function (res) {

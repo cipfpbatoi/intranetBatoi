@@ -21,6 +21,21 @@ const COLUMNS=[
         ];
 const ID = 'id';
 const TABLA ='Empresa';
+
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
     
 if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
     // Ja inicialitzada per una altra capa.
@@ -33,7 +48,7 @@ if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
     // Evita salts visuals mentre es calculen les amplades.
     table.css('visibility', 'hidden');
 
-    var token = $("#_token").text();
+    var authDatatable = apiAuthOptions();
     const dataTable = table.DataTable({
         language: {
             url: '/json/cattable.json'
@@ -41,7 +56,8 @@ if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
         ajax : {
             method: "GET",
             url: '/api/convenio',
-            data: { api_token: token},
+            headers: authDatatable.headers,
+            data: authDatatable.data,
         },
         deferRender: true,
         autoWidth: false,

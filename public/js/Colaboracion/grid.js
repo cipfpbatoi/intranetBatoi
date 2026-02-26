@@ -9,9 +9,22 @@ var day;
 var month;
 var tipo;
 
-$(function() {
-    var token = $("#_token").text();
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
 
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
+$(function() {
     $("#tab_colabora").find(".resolve").hide();
     $('#tab_pendiente').find(".unauthorize").hide();
     $('#tab_resta').find(".book").hide();
@@ -22,7 +35,8 @@ $(function() {
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/resolve",
-            data: { api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function () {
             boton.hide();
             boton.siblings(".unauthorize").show();
@@ -33,14 +47,15 @@ $(function() {
             }
         });
     });
-    $(".refuse").on("click", function(){
+    $(".refuse").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
         var boton = $(this);
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/refuse",
-            data: { api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function () {
             boton.hide();
             boton.siblings(".resolve").show();
@@ -51,14 +66,15 @@ $(function() {
             }
         });
     });
-    $(".unauthorize").on("click", function(){
+    $(".unauthorize").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
         var boton = $(this);
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/unauthorize",
-            data: { api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function () {
             boton.hide();
             if (boton.siblings(".switch").length === 0){
@@ -71,14 +87,15 @@ $(function() {
             }
         });
     });
-    $(".switch").on("click", function(){
+    $(".switch").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
         var boton = $(this);
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/switch",
-            data: { api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function (result) {
             boton.hide();
             boton.siblings(".resolve").show();
@@ -110,9 +127,8 @@ $(function() {
         $.ajax({
             method: "GET",
             url: "/api/activity/" + id ,
-            data: {
-                api_token: token,
-            }
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function (result) {
             $("#dialogo").find("#explicacion").val(result.data.comentari);
         }, function () {
@@ -121,16 +137,15 @@ $(function() {
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         tipo = 'seguimiento';
     });
-    $("#formDialogo").on("submit", function(){
+    $("#formDialogo").on("submit", function(event){
         event.preventDefault();
         if (tipo === 'book') {
+            var authBook = apiAuthOptions({explicacion: this.explicacion.value});
             $.ajax({
                 method: "POST",
                 url: "/api/colaboracion/" + col + "/book",
-                data: {
-                    api_token: token,
-                    explicacion: this.explicacion.value
-                }
+                headers: authBook.headers,
+                data: authBook.data
             }).then(function (result) {
                 texto = list.html();
                 day = new Date;
@@ -144,13 +159,12 @@ $(function() {
             });
         }
         if (tipo === 'telefonico') {
+            var authTelefonico = apiAuthOptions({explicacion: this.explicacion.value});
             $.ajax({
                 method: "POST",
                 url: "/api/colaboracion/" + id + "/telefonico",
-                data: {
-                    api_token: token,
-                    explicacion: this.explicacion.value
-                }
+                headers: authTelefonico.headers,
+                data: authTelefonico.data
             }).then(function (result) {
                 texto = list.html();
                 day = new Date;
@@ -164,13 +178,12 @@ $(function() {
             });
         }
         if (tipo === 'seguimiento'){
+            var authSeguimiento = apiAuthOptions({comentari: this.explicacion.value});
             $.ajax({
                 method: "PUT",
                 url: "/api/activity/" + id ,
-                data: {
-                    api_token: token,
-                    comentari: this.explicacion.value
-                }
+                headers: authSeguimiento.headers,
+                data: authSeguimiento.data
             }).then(function () {
                 $("#dialogo").modal('hide');
             }, function () {
@@ -179,16 +192,18 @@ $(function() {
             });
         }
     });
-    $('.fa-minus').on("click", function(){
+    $('.fa-minus').on("click", function(event){
         event.preventDefault();
         event.stopPropagation();
         var id=$(this).parents(".small").attr("id");
         if (confirm('Vas a esborrar esta evidencia')) {
+            var authDelete = apiAuthOptions();
             $.ajax({
                 method: "DELETE",
                 url: "/api/activity/" + id,
                 dataType: 'json',
-                data: {api_token: token}
+                headers: authDelete.headers,
+                data: authDelete.data
             }).then(() => this.parentElement.remove());
         }
     });
@@ -201,7 +216,8 @@ $(function() {
             method: "GET",
             url: "/api/colaboracion/instructores/" + id ,
             dataType: 'json',
-            data: {api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function (result) {
                       instructor.empty(); // remove old options
                         $.each(result.data, function (key, value) {
@@ -247,13 +263,14 @@ $(function() {
             event.preventDefault();
             let id = event.dataTransfer.getData('text/plain');
             let newFct = event.currentTarget;
-            var token = $("#_token").text();
             if (confirm('Vas a moure esta evidencia a una altra FCT')){
+                var authMove = apiAuthOptions();
                 $.ajax({
                     method: "GET",
                     url: "/api/activity/"+id+"/move/" + newFct.id ,
                     dataType: 'json',
-                    data: {api_token: token}
+                    headers: authMove.headers,
+                    data: authMove.data
                 }).then(function () {
                     newFct.querySelector('.listActivity').appendChild(document.getElementById(id).parentElement);
                 }, function (result) {

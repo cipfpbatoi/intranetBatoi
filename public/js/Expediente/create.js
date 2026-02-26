@@ -1,8 +1,21 @@
 'use strict';
 
 $(function () {
+    function apiAuthOptions(extraData) {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var data = extraData || {};
+        var headers = {};
 
-    var token = $("#_token").text();
+        if (bearerToken) {
+            headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
     var profesor = $('#idProfesor_id').val();
 
 
@@ -13,7 +26,8 @@ $(function () {
             method: "GET",
             url: "/api/tipoExpediente/" + tipo,
             dataType: 'json',
-            data: {api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         })
             .then(function (result) {
                 var rol = result.data.rol;
@@ -23,7 +37,8 @@ $(function () {
                         method: "GET",
                         url: "/api/alumnoGrupo/" + profesor,
                         dataType: 'json',
-                        data: {api_token: token}
+                        headers: apiAuthOptions().headers,
+                        data: apiAuthOptions().data
                     })
                         .then(function (result) {
                             alumnos.empty(); // remove old options
@@ -49,7 +64,8 @@ $(function () {
             method: "GET",
             url: "/api/alumnoGrupoModulo/" + profesor + "/" + modulo,
             dataType: 'json',
-            data: {api_token: token}
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data
         }).then(function (result) {
             alumnos.empty(); // remove old options
             $.each(result, function (key, value) {

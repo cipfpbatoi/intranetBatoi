@@ -3,6 +3,21 @@
 var esDireccion=false;
 var profe;
 
+function apiAuthOptions(extraData) {
+	var legacyToken = $.trim($("#_token").text());
+	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var data = extraData || {};
+	var headers = {};
+
+	if (bearerToken) {
+		headers.Authorization = "Bearer " + bearerToken;
+	} else if (legacyToken) {
+		data.api_token = legacyToken;
+	}
+
+	return { headers: headers, data: data };
+}
+
 window.onload=function() {
 	esDireccion=($('#rol').text()%2 == 0);
 	if (esDireccion){
@@ -14,15 +29,18 @@ window.onload=function() {
 
 	cargaCambios();
 	$('#init').on('click', function(ev) {
+		ev.preventDefault();
 		var datos={
 			estado: 'Pendiente',
 			cambios: [],
 			obs: ''
-		}
+		};
+		var auth = apiAuthOptions({data: JSON.stringify(datos)});
 		$.ajax({
 			type: "POST",
-			url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text()+'&data='+JSON.stringify(datos),
-			contentType: "application/json",
+			url: "/api/horarioChange/"+profe,
+			headers: auth.headers,
+			data: auth.data,
 			dataType: "json"
 		}).then(function(res) {
 			alert("Ja pots modificar l'horari");
@@ -34,16 +52,19 @@ window.onload=function() {
 	});
 
 	$('#guardar').on('click', function(ev) {
+		ev.preventDefault();
 		var cambios=anotaCambios();
 		var datos={
 			estado: (esDireccion)?'Aceptado':'Pendiente',
 			cambios: cambios,
 			obs: $('#obs').val()
-		}
+		};
+		var auth = apiAuthOptions({data: JSON.stringify(datos)});
 		$.ajax({
 		    type: "POST",
-		    url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text()+'&data='+JSON.stringify(datos),
-		    contentType: "application/json",
+		    url: "/api/horarioChange/"+profe,
+			headers: auth.headers,
+			data: auth.data,
 		    dataType: "json"
 		}).then(function(res) {
 			if (esDireccion) {
@@ -103,10 +124,12 @@ function anotaCambios() {
 
 function cargaCambios() {
 	//var profe= document.getElementById('dni').textContent;
+	var auth = apiAuthOptions();
 	$.ajax({
 	    type: "GET",
-	    url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text(),
-	    contentType: "application/json",
+	    url: "/api/horarioChange/"+profe,
+		headers: auth.headers,
+		data: auth.data,
 	    dataType: "json"
 	}).then(function(res) {
 		var datos=JSON.parse(res.data);

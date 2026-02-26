@@ -1,3 +1,18 @@
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 Dropzone.options.myDropzone = {
     autoProcessQueue: true,
     uploadMultiple: true,
@@ -16,9 +31,16 @@ Dropzone.options.myDropzone = {
     },
 
     init: function() {
+        var auth = apiAuthOptions();
         var expediente = $('#id').attr('value');
         var modelo = $('#modelo').attr('value');
         myDropzone = this;
+
+        if (auth.headers.Authorization) {
+            this.options.headers.Authorization = auth.headers.Authorization;
+        } else if (auth.data.api_token) {
+            this.options.params = $.extend({}, this.options.params, { api_token: auth.data.api_token });
+        }
 
         this.on("complete", function(file) {
             $(".dz-remove").html(
@@ -32,7 +54,8 @@ Dropzone.options.myDropzone = {
             url: '/api/getAttached/'+modelo+'/'+expediente,
             type: 'GET',
             dataType: 'json',
-            data: {api_token: $("#_token").text()},
+            headers: auth.headers,
+            data: auth.data,
             success: function(data){
                 $.each(data.data, function (key, mockFile) {
                     myDropzone.emit("addedfile", mockFile);
@@ -80,7 +103,8 @@ Dropzone.options.myDropzone = {
                     url: '/api/removeAttached/' + modelo + '/' + expediente + '/' + file.name,
                     type: 'GET',
                     dataType: 'json',
-                    data: {api_token: $("#_token").text()},
+                    headers: auth.headers,
+                    data: auth.data,
                     error: function(data){
                         alert("No s'ha pogut esborrar: "+data.responseText);
                         myDropzone.emit("addedfile", file);

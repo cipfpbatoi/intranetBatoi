@@ -8,6 +8,21 @@ $(function(){
 	$('#error').hide();
 })
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 function editRow() {
         cancelEdit();
         var contenido =`<div id="alerts"></div>
@@ -135,7 +150,7 @@ function cancelEdit(ev) {
 }
 
 function saveEdit(ev) {
-        var token = $("#_token").text();
+    var auth = apiAuthOptions();
  	var datos={};
  	var id=$(this).parents('tr').attr('id');
         var tabla=$(this).parents('table').attr('name');
@@ -145,10 +160,13 @@ function saveEdit(ev) {
  		if ($(span).attr('name'))
 	 		datos[$(span).attr('name')]=$(span).val();
  	});
-        datos['api_token']=token;
+    if (!auth.headers.Authorization && auth.data.api_token) {
+        datos.api_token = auth.data.api_token;
+    }
  	$.ajax({
  		url: "/api/"+tabla+"/"+id,
  		method: "PUT",
+        headers: auth.headers,
  		data: datos
  	}).then(function(res) {
  		console.log(res);

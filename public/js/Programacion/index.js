@@ -1,13 +1,31 @@
 'use strict';
 $(function () {
+    function apiAuthOptions() {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var options = {
+            headers: {},
+            data: {}
+        };
+
+        if (bearerToken) {
+            options.headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            options.data.api_token = legacyToken;
+        }
+
+        return options;
+    }
+
     $("#idModulo_id").change(function () {
         var modulo = $('#idModulo_id').val();
-        var token = $("#_token").text();
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/modulo/" + modulo,
             dataType: 'json',
-            data: {api_token: token},
+            headers: auth.headers,
+            data: auth.data,
         })
             .then(function (result) {
                 var ciclo = result.data.idCiclo;
@@ -15,7 +33,8 @@ $(function () {
                     method: "GET",
                     url: "/api/ciclo/" + ciclo,
                     dataType: 'json',
-                    data: {api_token: token},
+                    headers: auth.headers,
+                    data: auth.data,
                 })
                     .then(function (result) {
                         $("#ciclo_id").empty().val(result.data.ciclo);
@@ -27,5 +46,4 @@ $(function () {
             });
     });
 });
-
 

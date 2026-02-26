@@ -1,15 +1,31 @@
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 $(".selecciona").on("click",function(event){
     event.preventDefault();
     $(this).attr("data-toggle", "modal").attr("data-target", "#seleccion").attr("href", "");
-    var token = $("#_token").text();
+    var auth = apiAuthOptions();
     var url = $(this).attr("data-url");
     $('#formSeleccion').attr("action",url.substring(4));
     $.ajax({
         method: "GET",
         url: url,
         dataType: 'json',
-        data: {api_token: token}
+        headers: auth.headers,
+        data: auth.data
     })
         .then(function (result) {
             pintaTablaSeleccion(result.data,"#tableSeleccion");
@@ -18,11 +34,10 @@ $(".selecciona").on("click",function(event){
         });
 });
 
-$("#seleccion .submit").click(function() {
+$("#seleccion .submit").click(function(event) {
     event.preventDefault();
     $("#checkall").prop('checked',false);
     $("#formSeleccion" ).submit();
 });
-
 
 

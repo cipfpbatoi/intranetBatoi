@@ -1,13 +1,26 @@
 'use strict';
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
 
 var app = new Vue({
     el: '#gestion',
     data: {
         dia: '',
         horario: [],
-        idProfesor: $('#dni').text(),
-        token: $("#_token").text()
+        idProfesor: $('#dni').text()
     },
 //    components: {
 //      Datepicker
@@ -15,16 +28,23 @@ var app = new Vue({
     methods: {
         elige: function () {
             var diaF = toEnglish(this.dia);
-            axios.get('/api/itaca/' + diaF + '/' + this.idProfesor + '?api_token=' + this.token).then((response) => {
+            var auth = apiAuthOptions();
+            axios.get('/api/itaca/' + diaF + '/' + this.idProfesor, {
+                headers: auth.headers,
+                params: auth.data
+            }).then((response) => {
                 this.horario = response.data.data;
             }, (error) => {
                 console.log(error);
             });
         },
         confirmar: function () {
+            var auth = apiAuthOptions();
             let req = {
-                url: '/api/itaca?api_token=' + this.token,
+                url: '/api/itaca',
                 method: 'POST',
+                headers: auth.headers,
+                params: auth.data,
                 data: this.horario
             };
             axios(req).then(response => {
