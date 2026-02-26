@@ -5,14 +5,25 @@ namespace Intranet\Http\Middleware;
 use Closure;
 use Illuminate\Session\Store;
 use Illuminate\Support\Facades\Auth;
+use Intranet\Services\Auth\ApiSessionTokenService;
 
 class SessionTimeout {
 
     protected $session;
     protected $timeout = 3600;
+    private ?ApiSessionTokenService $apiSessionTokenService = null;
 
     public function __construct(Store $session){
         $this->session = $session;
+    }
+
+    private function apiSessionTokens(): ApiSessionTokenService
+    {
+        if ($this->apiSessionTokenService === null) {
+            $this->apiSessionTokenService = app(ApiSessionTokenService::class);
+        }
+
+        return $this->apiSessionTokenService;
     }
     /**
      * Handle an incoming request.
@@ -34,6 +45,7 @@ class SessionTimeout {
             $usuario = authUser();
             if ($usuario == null) return redirect()->route('login');
             if (isset(authUser()->codigo)){
+                $this->apiSessionTokens()->revokeCurrentFromSession();
                 Auth::guard('profesor')->logout();
             }
             else {
