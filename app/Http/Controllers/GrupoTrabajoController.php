@@ -63,7 +63,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function detalle($id)
     {
-        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $id));
+        $this->authorize('viewMembers', GrupoTrabajo::findOrFail((int) $id));
         foreach (app(ProfesorService::class)->allOrderedBySurname() as $profesor) {
             $tProfesores[$profesor->dni] = $profesor->nameFull;
         }
