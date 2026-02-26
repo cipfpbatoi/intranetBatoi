@@ -25,7 +25,6 @@
         "lcobucci/jwt": "^5.3",
         "livewire/livewire": "3.7.3",
         "maatwebsite/excel": "*",
-        "mikehaertl/php-pdftk": "^0.8.1",
         "php-webdriver/webdriver": "^1.13",
         "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",

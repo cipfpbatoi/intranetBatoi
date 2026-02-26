@@ -122,6 +122,7 @@ Cal configurar també en `.env`:
 
 - `WKHTMLTOPDF_BINARY` (p. ex. `/usr/local/bin/wkhtmltopdf`)
 - `WKHTMLTOIMAGE_BINARY` (p. ex. `/usr/local/bin/wkhtmltoimage`)
+- `PDFTK_BINARY` (p. ex. `/usr/local/bin/pdftk`)
 
 ## Configurar la intranet
 

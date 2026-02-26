@@ -31,6 +31,40 @@ function asset_nocache(string $path)
 }
 
 /**
+ * Retorna la URL de la foto de perfil o un placeholder si no existeix.
+ *
+ * Evita múltiples 404 en llistats grans comprovant existència en servidor
+ * i cachejant el resultat durant la mateixa petició.
+ *
+ * @param string|null $foto
+ * @return string
+ */
+function profile_photo_url(?string $foto): string
+{
+    static $existsCache = [];
+    $placeholder = asset('img/coordinador.png');
+
+    if (empty($foto)) {
+        return $placeholder;
+    }
+
+    $raw = trim($foto);
+    $normalized = basename(str_replace('\\', '/', $raw));
+
+    if ($normalized === '' || $normalized === '.') {
+        return $placeholder;
+    }
+
+    if (!array_key_exists($normalized, $existsCache)) {
+        $existsCache[$normalized] = file_exists(public_path('storage/fotos/' . $normalized));
+    }
+
+    return $existsCache[$normalized]
+        ? asset('storage/fotos/' . $normalized)
+        : $placeholder;
+}
+
+/**
  * Genera un correu institucional de Conselleria a partir del nom i cognoms.
  *
  * @param string $nombre

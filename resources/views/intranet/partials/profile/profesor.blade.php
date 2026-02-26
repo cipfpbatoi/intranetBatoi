@@ -3,7 +3,7 @@
             id="{{$elemento->dni}}"
             cab1="{{ $elemento->FullName }}"
             cab2="{{ $elemento->Departamento->literal}}"
-            title="{{ asset('storage/fotos/'.$elemento->foto) }}"
+            title="{{ profile_photo_url($elemento->foto) }}"
             view="people"
     >
             @if (isset(authUser()->codigo))

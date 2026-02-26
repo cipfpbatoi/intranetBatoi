@@ -63,6 +63,17 @@ class PerfilController extends Perfil
         return redirect()->back();
     }
 
+    /**
+     * Processa la pujada de foto de perfil i garanteix persistència en BBDD.
+     *
+     * Sempre genera un nou fitxer PNG i actualitza el camp `foto` del professor.
+     * Si hi havia una foto anterior, elimina la vella i intenta traslladar
+     * signatura/peu vinculats al nom antic.
+     *
+     * @param PerfilFilesRequest $request
+     * @param Profesor $profesor
+     * @return void
+     */
     private function updatePhoto(PerfilFilesRequest $request, Profesor $profesor)
     {
         if (!$request->hasFile('foto')) {
@@ -75,24 +86,67 @@ class PerfilController extends Perfil
             return;
         }
 
-        if ($profesor->foto) {
-            // Actualitzem la foto si ja existia
-            try {
-                ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
-                Alert::info('Modificació de la foto feta amb èxit');
-            } catch (\RuntimeException $e) {
-                Alert::info($e->getMessage());
-            }
-        } else {
-            // Guardem una foto nova si no en tenia
-            try {
-                $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
-                $profesor->foto = $fileName;
-                $profesor->save();
+        try {
+            $oldPhoto = $profesor->foto;
+            $newPhoto = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
+            $newPhoto = basename((string) $newPhoto);
 
-                Alert::info('Foto nova guardada amb èxit');
-            } catch (\RuntimeException $e) {
-                Alert::info($e->getMessage());
+            $profesor->foto = $newPhoto;
+            $profesor->save();
+
+            $this->cleanupAndRelinkProfileAssets($oldPhoto, $newPhoto);
+
+            Alert::info($oldPhoto ? 'Modificació de la foto feta amb èxit' : 'Foto nova guardada amb èxit');
+        } catch (\RuntimeException $e) {
+            Alert::info($e->getMessage());
+        }
+    }
+
+    /**
+     * Elimina/relaciona fitxers antics lligats a la foto anterior.
+     *
+     * @param string|null $oldPhoto
+     * @param string $newPhoto
+     * @return void
+     */
+    private function cleanupAndRelinkProfileAssets(?string $oldPhoto, string $newPhoto): void
+    {
+        $oldPhoto = $oldPhoto ? basename(str_replace('\\', '/', $oldPhoto)) : null;
+        $newPhoto = basename(str_replace('\\', '/', $newPhoto));
+
+        if (empty($oldPhoto) || $oldPhoto === $newPhoto) {
+            return;
+        }
+
+        $oldPhotoPath = storage_path('app/public/fotos/' . $oldPhoto);
+        if (is_file($oldPhotoPath)) {
+            @unlink($oldPhotoPath);
+        }
+
+        $this->moveProfileAsset('signatures', $oldPhoto, $newPhoto);
+        $this->moveProfileAsset('peus', $oldPhoto, $newPhoto);
+    }
+
+    /**
+     * Mou un fitxer d'asset de perfil si existeix amb el nom antic.
+     *
+     * @param string $folder
+     * @param string $oldPhoto
+     * @param string $newPhoto
+     * @return void
+     */
+    private function moveProfileAsset(string $folder, string $oldPhoto, string $newPhoto): void
+    {
+        $oldPath = storage_path('app/public/' . $folder . '/' . $oldPhoto);
+        $newPath = storage_path('app/public/' . $folder . '/' . $newPhoto);
+
+        if (!is_file($oldPath) || is_file($newPath)) {
+            return;
+        }
+
+        if (!@rename($oldPath, $newPath)) {
+            if (@copy($oldPath, $newPath)) {
+                @unlink($oldPath);
             }
         }
     }
