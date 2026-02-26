@@ -2,17 +2,19 @@
 
 namespace Intranet\Services\UI;
 
-use Styde\Html\Facades\Alert as StydeAlert;
+use Illuminate\Support\HtmlString;
 
 /**
  * Façana pròpia d'alertes de la intranet.
  *
  * Manté la mateixa API estàtica que s'usa al codi legacy (`info`, `warning`,
- * `danger`, `success`, `error`, `message`) i encapsula la dependència de
- * `styde/html` en un únic punt.
+ * `danger`, `success`, `error`, `message`) i gestiona la persistència en
+ * sessió perquè les vistes puguen renderitzar-les sense dependre de Styde.
  */
 class AppAlert
 {
+    private const SESSION_KEY = 'app_alerts';
+
     /**
      * Mostra un missatge informatiu.
      *
@@ -81,6 +83,26 @@ class AppAlert
     }
 
     /**
+     * Renderitza i buida les alertes pendents de la sessió.
+     *
+     * @return HtmlString
+     */
+    public static function render(): HtmlString
+    {
+        if (!app()->bound('session') || !app('session')->isStarted()) {
+            return new HtmlString('');
+        }
+
+        $messages = app('session')->pull(self::SESSION_KEY, []);
+        if (!is_array($messages) || $messages === []) {
+            return new HtmlString('');
+        }
+
+        $html = view('components.ui.app-alerts', ['messages' => $messages])->render();
+        return new HtmlString($html);
+    }
+
+    /**
      * Encapsula l'enviament real de l'alerta.
      *
      * @param string $level
@@ -92,6 +114,21 @@ class AppAlert
         $allowedLevels = ['info', 'warning', 'danger', 'success'];
         $normalizedLevel = in_array($level, $allowedLevels, true) ? $level : 'info';
 
-        StydeAlert::{$normalizedLevel}($message);
+        if (!app()->bound('session')) {
+            return;
+        }
+
+        $session = app('session');
+        $messages = $session->get(self::SESSION_KEY, []);
+        if (!is_array($messages)) {
+            $messages = [];
+        }
+
+        $messages[] = [
+            'type' => $normalizedLevel,
+            'message' => $message,
+        ];
+
+        $session->put(self::SESSION_KEY, $messages);
     }
 }

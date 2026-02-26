@@ -8,7 +8,7 @@
                         {{ $panel->getTitulo() }}
                     </x-layouts.titlebar>
                     <div class="x_content">
-                        {!! Alert::render() !!}
+                        {!! \Intranet\Services\UI\AppAlert::render() !!}
                     </div>
                     <div class="x_content">
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
