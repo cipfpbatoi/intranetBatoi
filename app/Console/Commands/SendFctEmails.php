@@ -15,6 +15,9 @@ use Intranet\Entities\Fct;
 use Swift_RfcComplianceException;
 use Swift_TransportException;
 
+/**
+ * Envia correus diaris de FCT a alumnat i instructors.
+ */
 class SendFctEmails extends Command
 {
 
@@ -86,6 +89,19 @@ class SendFctEmails extends Command
     private function correuInstructor($fct): int
     {
         try {
+            $instructor = $fct->Instructor;
+            $emailInstructor = $this->normalizeEmail($instructor?->email ?? null);
+            if (!$emailInstructor) {
+                $mensaje = 'Error : Enviant certificats al Instructor: '.
+                    ($instructor->nombre ?? 'Sense instructor').' al email '.
+                    ($instructor->email ?? '').': Email invàlid o buit.';
+                avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                if ($fct->Encarregat != null) {
+                    avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
+                }
+                return 0;
+            }
+
             $encarregat = $fct->Encarregat;
 
             if (!$encarregat && $fct->AlFct && $fct->AlFct->first()) {
@@ -95,14 +111,14 @@ class SendFctEmails extends Command
             if (!$encarregat) {
                 throw new \ErrorException('No hi ha tutor assignat a la FCT ni encarregat directe.');
             }
-            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+            Mail::to($emailInstructor, $instructor->nombre ?? '')
                 ->cc($encarregat->email)
                 ->send(new AvalFct($fct, 'instructor'));
-            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+            Mail::to($emailInstructor, $instructor->nombre ?? '')
                 ->cc($encarregat->email)
                 ->send(new CertificatInstructorFct($fct, $encarregat));
             avisa($encarregat->dni,
-                'El correu amb el certificat de FCT de '.$fct->Instructor->nombre." ha estat enviat a l'adreça ".$fct->Instructor->email,
+                'El correu amb el certificat de FCT de '.$instructor->nombre." ha estat enviat a l'adreça ".$emailInstructor,
                 '#', 'Servidor de correu');
             $fct->correoInstructor = 1;
             $fct->save();
@@ -117,6 +133,22 @@ class SendFctEmails extends Command
             }
             return 0;
         }
+    }
+
+    /**
+     * Normalitza i valida un email.
+     *
+     * @param string|null $email
+     * @return string|null
+     */
+    private function normalizeEmail(?string $email): ?string
+    {
+        $email = is_string($email) ? trim($email) : null;
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
+        return $email;
     }
 
 
