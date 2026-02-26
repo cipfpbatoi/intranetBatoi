@@ -3,11 +3,11 @@
     $hasCustomScript = file_exists(public_path($modeloCreateScript));
 @endphp
 <x-layouts.app :title="__('models.' . $modelo . '.create')">
-     {{ $formulario->render('post') }}
+    {{ $formulario->render('post') }}
      @push('scripts')
         @if ($hasCustomScript)
-            {{ Html::script(asset($modeloCreateScript)) }}
+            <script src="{{ asset($modeloCreateScript) }}"></script>
         @endif
-        {{ Html::script("/js/datepicker.js") }}
+        <script src="{{ asset('js/datepicker.js') }}"></script>
     @endpush
 </x-layouts.app>

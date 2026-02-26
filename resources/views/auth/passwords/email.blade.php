@@ -9,7 +9,7 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
         <!-- Bootstrap -->
-        {{ Html::style('/css/app.css')}}
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     </head>
     <body class="login">
@@ -60,7 +60,7 @@
                 </section>
             </div>
         </div>          
-        {{ HTML::script('/assets/gentelella/vendors/jquery/dist/jquery.min.js') }}
-        {{ HTML::script('/assets/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js') }}
+        <script src="{{ asset('assets/gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     </body>
 </html>
