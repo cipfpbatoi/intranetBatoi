@@ -176,7 +176,7 @@ class PerfilController extends Perfil
         $this->validate($request, (new ProfesorPerfilUpdateRequest())->rules());
         $new = $this->profesores()->find((string) Auth::user('profesor')->dni);
         if (!$new) {
-            return redirect("/home");
+            return redirect()->route('home.profesor');
         }
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
@@ -192,7 +192,7 @@ class PerfilController extends Perfil
         
         parent::update($request, $new);
         Alert::info(system('php ./../artisan cache:clear'));
-        return redirect("/home");
+        return redirect()->route('home.profesor');
     }
 
 }

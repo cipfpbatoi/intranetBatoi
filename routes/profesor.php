@@ -34,7 +34,6 @@ Route::delete('/actividad/{actividad}/grupo/{grupo}', ['as' => 'actividad.grupo.
 Route::post('/actividad/{actividad}/nuevoProfesor', ['as' => 'actividad.profesor.store', 'uses' => 'ActividadController@altaProfesor']);
 Route::delete('/actividad/{actividad}/profesor/{profesor}', ['as' => 'actividad.profesor.destroy', 'uses' => 'ActividadController@borrarProfesor']);
 Route::post('/actividad/{actividad}/coordinador/{profesor}', ['as' => 'actividad.profesor.coordinador', 'uses' => 'ActividadController@Coordinador']);
-Route::get('actividad/campo/{campo}', 'ActividadController@includegrid');
 Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => 'ActividadController@init']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
@@ -50,21 +49,27 @@ Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.pdfVal', 'uses' 
 Route::get('/actividad/{actividad}/showVal', ['as' => 'actividad.showVal', 'uses' => 'ActividadController@showValue']);
 
 
-Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'update']]);
+Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
 Route::post('/reunion/create', ['as' => 'reunion.store', 'uses' => 'ReunionController@store']);
 Route::put('/reunion/{reunion}/edit', ['as' => 'reunion.update', 'uses' => 'ReunionController@update']);
-Route::post('/reunion/{reunion}/nuevoOrden', 'ReunionController@altaOrden');
-Route::get('/reunion/{reunion}/borrarOrden/{orden}', 'ReunionController@borrarOrden');
-Route::post('/reunion/{reunion}/nuevoProfesor', 'ReunionController@altaProfesor');
-Route::post('/reunion/{reunion}/nuevoAlumno', 'ReunionController@altaAlumno');
-Route::get('/reunion/{reunion}/borrarProfesor/{profesor}', 'ReunionController@borrarProfesor');
-Route::get('/reunion/{reunion}/borrarAlumno/{alumno}', 'ReunionController@borrarAlumno');
-Route::get('/reunion/{reunion}/coordinador/{profesor}', 'ReunionController@Coordinador');
-Route::get('reunion/campo/{campo}', 'ReunionController@includegrid');
+Route::post('/reunion/{reunion}/nuevoOrden', ['as' => 'reunion.orden.store', 'uses' => 'ReunionController@altaOrden']);
+Route::get(
+    '/reunion/{reunion}/borrarOrden/{orden}',
+    ['as' => 'reunion.orden.destroy', 'uses' => 'ReunionController@borrarOrden']
+);
+Route::post('/reunion/{reunion}/nuevoProfesor', ['as' => 'reunion.profesor.store', 'uses' => 'ReunionController@altaProfesor']);
+Route::post('/reunion/{reunion}/nuevoAlumno', ['as' => 'reunion.alumno.store', 'uses' => 'ReunionController@altaAlumno']);
+Route::get(
+    '/reunion/{reunion}/borrarProfesor/{profesor}',
+    ['as' => 'reunion.profesor.destroy', 'uses' => 'ReunionController@borrarProfesor']
+);
+Route::get(
+    '/reunion/{reunion}/borrarAlumno/{alumno}',
+    ['as' => 'reunion.alumno.destroy', 'uses' => 'ReunionController@borrarAlumno']
+);
 Route::get('/reunion/{reunion}/email', ['as' => 'reunion.email', 'uses' => 'ReunionController@email']);
 Route::get('/reunion/{reunion}/pdf', ['as' => 'reunion.pdf', 'uses' => 'ReunionController@pdf']);
-Route::get('/reunion/{reunion}/show', ['as' => 'reunion.show', 'uses' => 'ReunionController@show']);
 Route::get('/reunion/{reunion}/notification', ['as' => 'reunion.notificar', 'uses' => 'ReunionController@notify']);
 Route::get('/reunion/{reunion}/autorizacion', ['as' => 'reunion.autorizacion', 'uses' => 'ReunionController@autorizacion']);
 Route::get('/ordenreunion/update', ['as' => 'ordenreunion.update', 'uses' => 'ReunionController@oupdate']);
@@ -74,17 +79,26 @@ Route::get('/reunion/{reunion}/ics', ['as' => 'reunion.ics', 'uses' => 'ReunionC
 Route::get('/reunion/{reunion}/informe', ['as' => 'reunion.informeAlumno', 'uses' => 'ReunionController@printInformes']);
 
 
-Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update', 'edit']]);
+Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update', 'edit', 'show']]);
 Route::get('/grupotrabajo/{grupotrabajo}/delete', ['as' => 'grupotrabajo.destroy', 'uses' => 'GrupoTrabajoController@destroy'])->middleware('owner:GrupoTrabajo');
 Route::post('/grupotrabajo/create', ['as' => 'grupotrabajo.store', 'uses' => 'GrupoTrabajoController@store']);
 Route::get('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.edit', 'uses' => 'GrupoTrabajoController@edit'])->middleware('owner:GrupoTrabajo');
 Route::put('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.update', 'uses' => 'GrupoTrabajoController@update'])->middleware('owner:GrupoTrabajo');
 Route::get('/grupotrabajo/{grupotrabajo}/detalle', ['as' => 'grupotrabajo.detalle', 'uses' => 'GrupoTrabajoController@detalle']);
-Route::post('/grupotrabajo/{grupotrabajo}/nuevoProfesor', 'GrupoTrabajoController@altaProfesor');
-Route::get('/grupotrabajo/{grupotrabajo}/borrarProfesor/{profesor}', 'GrupoTrabajoController@borrarProfesor');
-Route::get('/grupotrabajo/{grupotrabajo}/coordinador/{profesor}', 'GrupoTrabajoController@Coordinador');
+Route::post(
+    '/grupotrabajo/{grupotrabajo}/nuevoProfesor',
+    ['as' => 'grupotrabajo.profesor.store', 'uses' => 'GrupoTrabajoController@altaProfesor']
+);
+Route::get(
+    '/grupotrabajo/{grupotrabajo}/borrarProfesor/{profesor}',
+    ['as' => 'grupotrabajo.profesor.destroy', 'uses' => 'GrupoTrabajoController@borrarProfesor']
+);
+Route::get(
+    '/grupotrabajo/{grupotrabajo}/coordinador/{profesor}',
+    ['as' => 'grupotrabajo.profesor.coordinador', 'uses' => 'GrupoTrabajoController@Coordinador']
+);
 
-Route::resource('/curso', 'CursoController', ['except' => ['destroy', 'update']]);
+Route::resource('/curso', 'CursoController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/curso/{curso}/delete', ['as' => 'curso.destroy', 'uses' => 'CursoController@destroy']);
 Route::post('/curso/create', ['as' => 'curso.store', 'uses' => 'CursoController@store']);
 Route::put('/curso/{curso}/edit', ['as' => 'curso.update', 'uses' => 'CursoController@update']);
@@ -129,7 +143,7 @@ Route::post('grupo/list',['as' => 'grupo.list', 'uses' => 'GrupoController@list'
 // Route::get('/grupo/{grupo}/list', ['as' => 'grupo.list', 'uses' => 'GrupoController@list']);
 Route::get('/fse/acta', ['as' => 'profesor.fse', 'uses' => 'ProfesorController@fse']);
 
-Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
+Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update', 'store', 'show']]);
 Route::put('/alumno_grupo/{grupo}/show/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@updateModal']);
 Route::put('/alumno_grupo/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@update']);
 Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'AlumnoGrupoController@indice']);
@@ -253,7 +267,7 @@ Route::put('/centro/{centro}/edit', ['as' => 'centro.update', 'uses' => 'CentroC
 Route::post('/centro/create', ['as' => 'centro.store', 'uses' => 'CentroController@store']);
 
 
-Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show', 'edit']]);
+Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show', 'edit', 'store']]);
 Route::post('/empresa/create', ['as' => 'empresa.store', 'uses' => 'EmpresaController@store']);
 Route::get('/colaboracion/{colaboracion}/show', ['as' => 'colaboracion.show', 'uses' => 'ColaboracionController@show']);
 Route::get('/colaboracion/{colaboracion}/print', 'ColaboracionController@print');
@@ -319,7 +333,7 @@ Route::get('/fct/estadisticas',['as' => 'fct.stat', 'uses' => 'PanelFctAvalContr
 Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
 Route::get('/alumnofct/{id}/AutDual', ['as' => 'alumnofct.AutDual', 'uses' => 'FctAlumnoController@AutDual']);
 
-Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
+Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show', 'store']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);
 Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'FctAlumnoController@destroy']);
 Route::get('/alumnofct/convalidacion', ['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@nuevaConvalidacion']);
@@ -383,7 +397,6 @@ Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notific
 //RUTAS ESPACIOS
 Route::resource('/espacio', 'EspacioController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/espacio/{espacio}/delete', ['as' => 'espacio.destroy', 'uses' => 'EspacioController@destroy']);
-Route::get('/espacio/verMateriales/{espacio}', 'EspacioController@getMateriales');
 Route::get('/espacio/{espacio}/barcode/{posicion?}', ['as' => 'espacio.barcode', 'uses'=> 'EspacioController@barcode']);
 Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.store', 'uses' => 'EspacioController@update']);
 Route::post('/espacio/create', ['as' => 'espacio.create', 'uses' => 'EspacioController@store']);
@@ -525,8 +538,8 @@ Route::get(
 );
 
 Route::post('/externalAuth', RedirectAfterAuthenticationController::class);
-Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
-Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
+Route::post('/sao/importa', [Intranet\Sao\SaoImportaAction::class,'importa']);
+Route::post('/sao/compara', [Intranet\Sao\SaoComparaAction::class,'compara']);
 
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 

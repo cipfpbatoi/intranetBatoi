@@ -67,7 +67,7 @@ class ProfesorControllerTest extends TestCase
         $response = $this->callProtectedMethod($controller, 'backChange');
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame(url('/'), $response->getTargetUrl());
+        $this->assertSame(url('/home'), $response->getTargetUrl());
         $this->assertFalse(session()->has('userChange'));
     }
 
@@ -99,4 +99,3 @@ class DummyProfesorController extends ProfesorController
         // Evita inicialitzar UI/panel en proves unitàries.
     }
 }
-

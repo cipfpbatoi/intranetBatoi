@@ -25,6 +25,7 @@ class CotxeController extends ModalController
 
     public function store(CotxeRequest $request)
     {
+        $this->authorize('create', Cotxe::class);
         $request->merge(['idProfesor' => authUser()->dni]);
         $this->persist($request);
         return $this->redirect();
@@ -32,8 +33,21 @@ class CotxeController extends ModalController
 
     public function update(CotxeRequest $request, $id)
     {
+        $this->authorize('update', Cotxe::findOrFail((int) $id));
+        $request->merge(['idProfesor' => authUser()->dni]);
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un cotxe amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Cotxe::findOrFail((int) $id));
+        return parent::destroy($id);
     }
     protected function iniBotones()
     {

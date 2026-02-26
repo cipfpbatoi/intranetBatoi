@@ -20,7 +20,7 @@
                 <th>{{ $row['nom'] }}</th>
                 <td>
                     <span class="fichaje">{{ $row['horario'] }}</span>
-                    <a href="/profesor/{{ $row['dni'] }}/horario" class="btn-success btn btn-xs iconButton">
+                    <a href="{{ route('profesor.horario', ['profesor' => $row['dni']]) }}" class="btn-success btn btn-xs iconButton">
                         <i class="fa fa-table"></i>
                     </a>
                 </td>

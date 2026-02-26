@@ -11,7 +11,7 @@
         @include('reunion.partials.alumnos')
     @endif
 </div>
-<a href="/reunion" class="btn btn-success">@lang("messages.buttons.atras") </a>
+<a href="{{ route('reunion.index') }}" class="btn btn-success">@lang("messages.buttons.atras") </a>
 @endsection
 @section('titulo')
     @lang("models.Reunion.detalle")

@@ -69,11 +69,12 @@ class ResultadoController extends ModalController
 
     private function rellenaPropuestasMejora($idModulo){
         $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
-        return redirect("/programacion/$programacion/seguimiento");
+        return redirect()->route('programacion.seguimiento', ['programacion' => $programacion]);
     }
 
     public function store(ResultadoStoreRequest $request)
     {
+        $this->authorize('create', Resultado::class);
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             // Assegurem professor informant abans de guardar
             if (!$request->filled('idProfesor')) {
@@ -88,8 +89,20 @@ class ResultadoController extends ModalController
 
     public function update(ResultadoUpdateRequest $request, $id)
     {
+        $this->authorize('update', Resultado::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un resultat amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Resultado::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
     /**

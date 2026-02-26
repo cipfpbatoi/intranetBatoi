@@ -331,7 +331,7 @@ class FctAlumnoController extends ModalController
     public function show($id)
     {
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        return redirect("/fct/$fct->idFct/show");
+        return redirect()->route('fct.show', ['id' => $fct->idFct]);
     }
 
     public function pdf($id)
@@ -464,7 +464,7 @@ class FctAlumnoController extends ModalController
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->pg0301 = $fct->pg0301 ? 0 : 1;
         $fct->save();
-        return redirect()->action('PanelPG0301Controller@indice', ['id' => $fct->Grup]);
+        return redirect()->route('fctcap.acta', ['grupo' => $fct->Grup]);
     }
 
     public function email($id)

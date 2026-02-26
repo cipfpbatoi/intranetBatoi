@@ -3,7 +3,9 @@
 /storage
 /vendor
 /.idea
-/.vscode
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/launch.json
 /.vagrant
 Homestead.json
 Homestead.yaml
@@ -14,6 +16,7 @@ yarn-error.log
 composer.lock
 /nbproject/private/
 /.DS_Store
+package-lock.json
 .phpunit.result.cache
 .phpunit.cache/
 /storage/framework/cache

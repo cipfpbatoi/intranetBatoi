@@ -8,9 +8,9 @@
             <td>{!! $profesor->apellido1 !!} {!! $profesor->apellido2 !!},{!! $profesor->nombre !!}</td>
             <td>@if ($profesor->coordinador) <strong>Coordinador</strong> @endif</td>
             <td>
-                <a href="/grupotrabajo/{!!$Gt->id!!}/borrarProfesor/{!! $profesor->dni !!}" >{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
+                <a href="{{ route('grupotrabajo.profesor.destroy', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
                 @if (!$profesor->coordinador)
-                    <a href="/grupotrabajo/{!!$Gt->id!!}/coordinador/{!! $profesor->dni !!}" >{!! Html::image('img/coordinador.png',trans("messages.buttons.coordinador"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.coordinador"))) !!}</a>
+                    <a href="{{ route('grupotrabajo.profesor.coordinador', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/coordinador.png',trans("messages.buttons.coordinador"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.coordinador"))) !!}</a>
                 @endif
             </td>
         </tr>
@@ -18,7 +18,7 @@
     </table>
 </div>
 <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-    <form method="POST" class="agua" action="/grupotrabajo/{!!$Gt->id!!}/nuevoProfesor">
+    <form method="POST" class="agua" action="{{ route('grupotrabajo.profesor.store', ['grupotrabajo' => $Gt->id]) }}">
         {{ csrf_field() }}
         <input type='hidden' name='idGrupoTrabajo' value="{!!$Gt->id!!}">
         {{ Form::select('idProfesor',$tProfesores,0,['id'=>'idProfesor']) }}
@@ -27,5 +27,4 @@
     <br/>
 </div>
 <x-ui.errors />
-
 

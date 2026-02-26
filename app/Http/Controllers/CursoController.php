@@ -39,12 +39,14 @@ class CursoController extends ModalController
 
     public function store(CursoRequest $request)
     {
+        $this->authorize('create', Curso::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(CursoRequest $request, $id)
     {
+        $this->authorize('update', Curso::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -98,6 +100,7 @@ class CursoController extends ModalController
      */
     public function saveFile($id)
     {
+        $this->authorize('update', Curso::findOrFail((int) $id));
         $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
             $gestor = new GestorService($elemento);
@@ -159,6 +162,7 @@ class CursoController extends ModalController
     public function email($id)
     {
         $curso = Curso::findOrFail($id);
+        $this->authorize('update', $curso);
         $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
         foreach ($curso->Asistentes as $alumno){
             $id = $alumno->pivot->id;
@@ -181,6 +185,7 @@ class CursoController extends ModalController
     public function active($id)
     {
         $elemento = $this->class::findOrFail($id);
+        $this->authorize('update', $elemento);
         if ($elemento->activo) {
             $elemento->activo = false;
         } else {
@@ -188,6 +193,17 @@ class CursoController extends ModalController
         }
         $elemento->save();
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un curs amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Curso::findOrFail((int) $id));
+        return parent::destroy($id);
     }
     
 }

@@ -6,6 +6,16 @@ use Intranet\Entities\Empresa;
 
 class EmpresaPolicy
 {
+    /**
+     * Determina si l'usuari pot accedir als llistats d'empreses.
+     *
+     * @param mixed $user
+     */
+    public function viewAny($user): bool
+    {
+        return $this->canMutate($user);
+    }
+
     public function create($user): bool
     {
         return $this->canMutate($user);
@@ -29,4 +39,3 @@ class EmpresaPolicy
             || $rol % (int) config('roles.rol.direccion') === 0;
     }
 }
-

@@ -14,6 +14,7 @@
 
 ## Coding Style & Naming Conventions
 - PSR-12: 4-space indent, clear method names; suffix classes with `Controller`, `Job`, `Event`, `Policy` where applicable.
+- Every modified or newly created class must include/update `phpDoc` documentation blocks using standard PHPDoc nomenclature (`/** ... */`) for class and relevant methods/properties.
 - Prefer Blade layouts/components under `resources/views/layouts` and `resources/views/components`; keep strings in `resources/lang`.
 - Keep JS/SCSS modular inside `resources/assets`; align class names with Blade markup and add new Mix entry points in `webpack.mix.js` when needed.
 
@@ -23,7 +24,15 @@
 - Run the suite before PRs and add regression tests with every bug fix.
 
 ## Commit & Pull Request Guidelines
-- Write imperative, specific commit titles (e.g., `Add calendar export to events`); keep related changes together.
+- Prefix commit titles with a tag that categorizes the change:
+  - `[MOD]` – Modification of existing code or files.
+  - `[ADD]` – Addition of new files or features.
+  - `[DEL]` – Deletion of files or code.
+  - `[FIX]` – Bug fix or error correction.
+- Write imperative, specific commit titles after the tag (e.g., `[ADD] Calendar export to events`, `[FIX] Null pointer in user login`); keep related changes together.
+- **Before committing**: Check if there are related GitHub issues using `gh issue list` or `gh issue status`. If your changes address or relate to an issue, reference it in the commit message using `#issue_number` for traceability (e.g., `[FIX] Null pointer in user login #42`).
+- For multiple related issues, include all references (e.g., `[MOD] Refactor authentication flow #15 #23`).
+- **Do not include** `Co-Authored-By: Claude` or similar AI attribution in commit messages.
 - PRs should summarize intent, link issues/tasks, and list tests run (`phpunit`, `npm run production` when assets change). Add screenshots for UI updates and call out migrations or new env vars.
 
 ## Security & Configuration Tips

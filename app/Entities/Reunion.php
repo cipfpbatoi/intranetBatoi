@@ -7,12 +7,14 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Jenssegers\Date\Date;
-use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\ReunionCreated;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 
 
+/**
+ * Model de reunions.
+ */
 class Reunion extends Model
 {
 
@@ -33,9 +35,10 @@ class Reunion extends Model
     ];
     protected $rules = ReunionCrudSchema::RULES;
     protected $inputTypes = ReunionCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => ReunionCreated::class,

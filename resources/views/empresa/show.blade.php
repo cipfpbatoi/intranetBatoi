@@ -10,13 +10,13 @@
         <h4>
             @lang("validation.attributes.concierto") : {{$elemento->concierto}} - {{$elemento->data_signatura??''}}
             @if (!empty($elemento->fichero))
-                <a href="/empresa/{{$elemento->id}}/document"><em class="fa fa-eye"></em></a>
+                <a href="{{ route('empresa.document', ['empresa' => $elemento->id]) }}"><em class="fa fa-eye"></em></a>
             @endif
         </h4>
         @if (!empty($elemento->fichero))
             <embed
                     type="application/pdf"
-                    src="/empresa/{{$elemento->id}}/document?v={{ time() }}#toolbar=0&navpanes=0&scrollbar=0"
+                    src="{{ route('empresa.document', ['empresa' => $elemento->id]) }}?v={{ time() }}#toolbar=0&navpanes=0&scrollbar=0"
                     width="100%"
                     height="150px"
             />
@@ -35,13 +35,13 @@
                 {{ $elemento->email }}
             </li>
         </ul>
-        <a href="/empresa/{{$elemento->id}}/edit" class="btn btn-success">
+        <a href="{{ route('empresa.edit', ['empresa' => $elemento->id]) }}" class="btn btn-success">
             <em class="fa fa-edit m-right-xs"></em>Editar</a>
         @if (esRol(authUser()->rol, config('roles.rol.jefe_practicas')))
-            <a href="/empresa/{{$elemento->id}}/delete" id='Borrar' class="btn btn-danger">
+            <a href="{{ route('empresa.destroy', ['empresa' => $elemento->id]) }}" id='Borrar' class="btn btn-danger">
                 <em class="fa fa-delete m-right-xs"></em>Esborrar</a>
         @endif
-        <a href="/empresa" class="btn btn-success">
+        <a href="{{ route('empresa.index') }}" class="btn btn-success">
             <em class="fa fa-arrow-left m-right-xs"></em>Volver</a>
         <br/>
 
@@ -174,13 +174,13 @@
                                         <a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                                     </li>
                                     <li>
-                                        <a class="centro" id="{{$centro->id}}" href="/centro/{{$centro->id}}/edit">
+                                        <a class="centro" id="{{$centro->id}}" href="{{ route('centro.edit', ['centro' => $centro->id]) }}">
                                             <em class="fa fa-edit"></em>
                                         </a>
                                     </li>
                                     <li>
                                         @if ($centro->colaboraciones->count() == 0)
-                                            <a href="/centro/{!!$centro->id!!}/delete">
+                                            <a href="{{ route('centro.destroy', ['centro' => $centro->id]) }}">
                                                 <em class="fa fa-trash"></em>
                                             </a>
                                         @endif

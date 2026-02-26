@@ -7,8 +7,10 @@ use Intranet\Http\Controllers\Core\IntranetController;
 
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Gate;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
+use Intranet\Entities\Fct;
 use Intranet\Http\Traits\Core\Panel;
 
 
@@ -75,6 +77,7 @@ class PanelFctController extends IntranetController
      */
     public function index()
     {
+        Gate::authorize('viewAny', Fct::class);
         $todos = $this->search();
         $this->setTabs(
             [ 0 => 'Actius', 1 => 'Finalizats'],
@@ -190,6 +193,7 @@ class PanelFctController extends IntranetController
      */
     public function search()
     {
+        Gate::authorize('viewAny', Fct::class);
         return $this->fcts()->panelListingByProfesor((string) authUser()->dni);
     }
 

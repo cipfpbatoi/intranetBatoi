@@ -37,12 +37,14 @@ class CicloController extends ModalController
 
     public function store(CicloRequest $request)
     {
+        $this->authorize('create', Ciclo::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(CicloRequest $request, $id)
     {
+        $this->authorize('update', Ciclo::findOrFail((int) $id));
         $this->persist($request, $id);
         if ($file = $request->file('competencies')) {
             $file->storeAs(
@@ -51,6 +53,17 @@ class CicloController extends ModalController
             );
         }
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un cicle amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Ciclo::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 }

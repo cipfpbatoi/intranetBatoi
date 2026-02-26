@@ -37,10 +37,10 @@
                         {{ strtoupper(optional(optional($fct->Colaboracion)->Centro)->localidad ?? '') }}<br/>
                     </p>
                     <em class="btn-success btn btn-xs">{{count($fct->Alumnos)}}</em>
-                    <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs" title="Mostrar Fct">
+                    <a href="{{ route('fct.show', ['id' => $fct->id]) }}" class="btn-success btn btn-xs" title="Mostrar Fct">
                         <i class="fa fa-eye"></i>
                     </a>
-                    <a href="/documentacionFCT/{{$fct->id}}/finEmpresa"
+                    <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
                        class="btn-success btn btn-xs"
                        title="Enviar Correu">
                         <i class="fa fa-envelope-o"></i>

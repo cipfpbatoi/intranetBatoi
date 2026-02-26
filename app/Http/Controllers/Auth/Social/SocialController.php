@@ -60,7 +60,7 @@ class SocialController extends Controller
     private function successloginProfesor($user){
         Auth::login($user);
         session(['lang' => AuthUser()->idioma]);
-        return redirect('/home');
+        return redirect()->route('home.profesor');
     }
 
     public function getSocialAuthCallback(Request $request)
@@ -76,7 +76,7 @@ class SocialController extends Controller
                 if (isPrivateAddress(getClientIpAddress())){
                     Auth::guard('alumno')->login($the_user);
                     session(['lang' => AuthUser()->idioma]);
-                    return redirect('/alumno/home');
+                    return redirect()->route('home.alumno');
                 }
                 else {
                     abort('401','Ho sentim però no et pots loguejar des de fora del centre');

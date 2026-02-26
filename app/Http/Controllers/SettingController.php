@@ -6,14 +6,12 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Setting;
 use Styde\Html\Facades\Alert;
 
 
 /**
- * Class LoteController
- * @package Intranet\Http\Controllers
+ * Controlador de manteniment de settings de sistema.
  */
 class SettingController extends ModalController
 {
@@ -39,6 +37,7 @@ class SettingController extends ModalController
 
     public function store(SettingRequest $request)
     {
+        $this->authorize('create', Setting::class);
         $this->persist($request);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
@@ -46,10 +45,21 @@ class SettingController extends ModalController
 
     public function update(SettingRequest $request, $id)
     {
+        $this->authorize('update', Setting::findOrFail($id));
         $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
+    /**
+     * Elimina un setting existent.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Setting::findOrFail($id));
+        return parent::destroy($id);
+    }
 
 }

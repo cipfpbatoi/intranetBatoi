@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Controllers\Api;
+namespace Intranet\Http\Controllers\API;
 
 use Intranet\Services\HR\PresenciaResumenService;
 use Illuminate\Http\Request;

@@ -72,6 +72,7 @@ class FaltaController extends ModalController
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Falta::class);
         $this->validate($request, (new FaltaRequest())->rules());
         $id = $this->faltas()->create($request);
 
@@ -93,6 +94,7 @@ class FaltaController extends ModalController
      */
     public function update(Request $request, $id)
     {
+        $this->authorize('update', $this->findFaltaOrFail((int) $id));
         $this->validate($request, (new FaltaRequest())->rules());
         $this->faltas()->update($id, $request);
         return $this->redirect();
@@ -110,6 +112,7 @@ class FaltaController extends ModalController
      */
     public function init($id)
     {
+        $this->authorize('update', $this->findFaltaOrFail((int) $id));
         $this->faltas()->init($id);
         return $this->redirect();
     }
@@ -121,7 +124,16 @@ class FaltaController extends ModalController
      */
     public function alta($id)
     {
+        $this->authorize('update', $this->findFaltaOrFail((int) $id));
         $elemento = $this->faltas()->alta($id);
         return back()->with('pestana', $elemento->estado);
+    }
+
+    /**
+     * Recupera la falta per aplicar autorització explícita.
+     */
+    private function findFaltaOrFail(int $id): Falta
+    {
+        return Falta::findOrFail($id);
     }
 }

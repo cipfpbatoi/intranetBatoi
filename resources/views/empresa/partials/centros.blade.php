@@ -17,21 +17,21 @@
             <ul class="nav navbar-right panel_toolbox">
                 @if ($misColaboracionesIds->contains($colaboracion->id))
                     <li>
-                        <a href="/colaboracion/{!!$colaboracion->id!!}/delete">
+                        <a href="{{ route('colaboracion.destroy', ['colaboracion' => $colaboracion->id]) }}">
                             <em class="fa fa-trash"></em>
                         </a>
                     </li>
                 @endif
                 @if (in_array($colaboracion->idCiclo, $ciclosDepartamentoIds, true))
                     <li>
-                        <a class='editar' id="{{$colaboracion->id}}" href="/colaboracion/{!!$colaboracion->id!!}/edit">
+                        <a class='editar' id="{{$colaboracion->id}}" href="{{ route('colaboracion.edit', ['colaboracion' => $colaboracion->id]) }}">
                             <em class="fa fa-edit"></em>
                         </a>
                     </li>
                 @endif
                 @if (!$existeColaboracion)
                     <li>
-                        <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo">
+                        <a href="{{ route('colaboracion.copy', ['colaboracion' => $colaboracion->id]) }}" class="copGrupo">
                             <em class="fa fa-copy">Duplicar</em>
                         </a>
                     </li>

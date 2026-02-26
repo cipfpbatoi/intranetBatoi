@@ -41,6 +41,16 @@ class ComisionControllerTest extends TestCase
         DB::reconnect('sqlite');
 
         $this->createSchema();
+        DB::table('profesores')->updateOrInsert(['dni' => 'P001'], [
+            'dni' => 'P001',
+            'nombre' => 'Prova',
+            'apellido1' => 'Tutor',
+            'apellido2' => 'Unit',
+            'email' => 'p001@test.local',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+        ]);
+        $this->authenticateAsProfesor('P001');
     }
 
     protected function tearDown(): void
@@ -51,6 +61,7 @@ class ComisionControllerTest extends TestCase
         Schema::connection('sqlite')->dropIfExists('colaboraciones');
         Schema::connection('sqlite')->dropIfExists('centros');
         Schema::connection('sqlite')->dropIfExists('comisiones');
+        Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -177,8 +188,7 @@ class ComisionControllerTest extends TestCase
     {
         $comisionId = $this->seedComision(1);
 
-        DB::table('profesores')->insert([
-            'dni' => 'P001',
+        DB::table('profesores')->updateOrInsert(['dni' => 'P001'], [
             'nombre' => 'Prova',
             'apellido1' => 'Tutor',
             'apellido2' => 'Unit',
@@ -272,6 +282,19 @@ class ComisionControllerTest extends TestCase
             });
         }
 
+        if (!Schema::connection('sqlite')->hasTable('activities')) {
+            Schema::connection('sqlite')->create('activities', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->string('action')->nullable();
+                $table->text('comentari')->nullable();
+                $table->string('document')->nullable();
+                $table->string('model_class')->nullable();
+                $table->unsignedBigInteger('model_id')->nullable();
+                $table->string('author_id')->nullable();
+                $table->timestamps();
+            });
+        }
+
         if (!Schema::connection('sqlite')->hasTable('fcts')) {
             Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
                 $table->id();
@@ -331,6 +354,12 @@ class ComisionControllerTest extends TestCase
     {
         $request = Request::create('/dummy', 'GET', [], [], [], ['HTTP_REFERER' => $referer]);
         $this->app->instance('request', $request);
+    }
+
+    private function authenticateAsProfesor(string $dni): void
+    {
+        $profesor = Profesor::on('sqlite')->findOrFail($dni);
+        $this->actingAs($profesor, 'profesor');
     }
 }
 

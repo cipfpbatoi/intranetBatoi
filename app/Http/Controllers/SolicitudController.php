@@ -37,6 +37,8 @@ class SolicitudController extends ModalController
 
     public function store(SolicitudRequest $request)
     {
+        $this->authorize('create', Solicitud::class);
+        $request->merge(['idProfesor' => AuthUser()->dni]);
         $id = $this->persist($request);
         return $this->confirm($id);
     }
@@ -44,12 +46,14 @@ class SolicitudController extends ModalController
 
     public function update(SolicitudRequest $request, $id)
     {
+        $this->authorize('update', Solicitud::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
     }
 
     public function confirm($id){
         $solicitud = Solicitud::findOrFail($id);
+        $this->authorize('view', $solicitud);
         if ($solicitud->estado == 0 && $solicitud->idOrientador) {
             return ConfirmAndSend::render($this->model, $id,'Enviar a '.$solicitud->Orientador->FullName);
         } else {
@@ -79,7 +83,8 @@ class SolicitudController extends ModalController
      */
     protected function init($id)
     {
-        $expediente = Solicitud::find($id);
+        $expediente = Solicitud::findOrFail((int) $id);
+        $this->authorize('update', $expediente);
         $expediente->estado = 1;
         $expediente->save();
         app(NotificationService::class)->send($expediente->idOrientador, "T'he remes un cas per al seu estudi", '#', AuthUser()->fullName);
@@ -102,8 +107,20 @@ class SolicitudController extends ModalController
     public function show($id)
     {
         $elemento = Solicitud::findOrFail($id);
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('solicitud.show', compact('elemento', 'modelo'));
+    }
+
+    /**
+     * Elimina una sol·licitud amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Solicitud::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 }

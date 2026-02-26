@@ -15,11 +15,13 @@ use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
+use Intranet\Entities\Fct;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
+use Illuminate\Support\Facades\Gate;
 use Styde\Html\Facades\Alert;
 
 
@@ -36,7 +38,6 @@ class PanelFctAvalController extends IntranetController
     private ?AlumnoFctService $alumnoFctService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
 
     /**
      * @var string
@@ -181,6 +182,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function apte($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $this->avals()->apte((int) $id);
 
         return back();
@@ -192,6 +194,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noApte($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
         $this->avals()->noApte((int) $id, (bool) ($grupo?->proyecto));
 
@@ -204,6 +207,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noAval($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $this->avals()->noAval((int) $id);
 
         return back();
@@ -215,6 +219,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noProyecto($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $this->avals()->noProyecto((int) $id);
 
         return back();
@@ -226,6 +231,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function nullProyecto($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $this->avals()->nullProyecto((int) $id);
 
 
@@ -237,6 +243,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function nuevoProyecto($id)
     {
+        Gate::authorize('manageAval', Fct::class);
         $this->avals()->nuevoProyecto((int) $id);
 
         return back();
@@ -248,6 +255,7 @@ class PanelFctAvalController extends IntranetController
      */
     public function empresa($id)
     {
+       Gate::authorize('manageAval', Fct::class);
        $this->avals()->toggleInsercion((int) $id);
        return $this->redirect();
     }
@@ -257,6 +265,7 @@ class PanelFctAvalController extends IntranetController
      */
     public function demanarActa()
     {
+        Gate::authorize('requestActa', Fct::class);
         $grupos = $this->grupos()->qTutor(AuthUser()->dni);
         if ($grupos->isEmpty()) {
             Alert::message('No tens grups assignats', 'warning');
@@ -441,7 +450,7 @@ class PanelFctAvalController extends IntranetController
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
         ];
-        if ($ara >= $inici && $ara <= $fi && userIsAllow(config(self::ROLES_ROL_CAPAC)))  {
+        if ($ara >= $inici && $ara <= $fi && Gate::forUser(AuthUser())->allows('manageQualityFinal', $registre))  {
             $botones['final'] = [
                     'link' =>"/fct/$id/upload",
                     'message' => "Este procediment l'has de fer quan tingues tota
@@ -456,6 +465,7 @@ class PanelFctAvalController extends IntranetController
 
     public function send($id)
     {
+        Gate::authorize('sendA56', Fct::class);
         $document = array();
 
         $fct = $this->alumnoFcts()->findOrFail((int) $id); //cerque el que toca
@@ -515,6 +525,7 @@ class PanelFctAvalController extends IntranetController
 
     public function estadistiques()
     {
+        Gate::authorize('viewStats', Fct::class);
         $grupos = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
         $ciclos = $this->avals()->estadistiques($grupos);
         return view('fct.estadisticas', compact('ciclos', 'grupos'));

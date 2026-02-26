@@ -8,6 +8,7 @@ use Intranet\Http\Controllers\Core\BaseController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Actividad;
@@ -36,8 +37,20 @@ class PanelListadoEntregasController extends BaseController
     protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
 
+    /**
+     * Mostra el llistat d'entregues amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
+        return parent::index();
+    }
+
     public function search()
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         // Obtenim els mòduls rellevants
         $modulos = hazArray(
             Modulo_ciclo::whereIn(
@@ -92,6 +105,7 @@ class PanelListadoEntregasController extends BaseController
     
     public function hazInformeTrimestral(Request $request)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre, $request->proyectos);
 
         // cree reunio
@@ -148,6 +162,7 @@ class PanelListadoEntregasController extends BaseController
 
     public function modificaInformeTrimestral(Request $request)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
 
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre,$request->proyectos);
         $oR = OrdenReunion::where('idReunion', $request->reunion)
@@ -186,6 +201,7 @@ class PanelListadoEntregasController extends BaseController
     
     public function avisaTodos()
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
         {
             if ($modulo->seguimiento == 0) {
@@ -197,6 +213,7 @@ class PanelListadoEntregasController extends BaseController
     
     public function avisaFaltaEntrega($id)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         $modulo = Modulo_grupo::find($id);
         foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
                 $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
@@ -209,6 +226,7 @@ class PanelListadoEntregasController extends BaseController
     
     protected function pdf($id)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         return response()->file(storage_path('app/' . Reunion::findOrFail($id)->fichero));
     }
     

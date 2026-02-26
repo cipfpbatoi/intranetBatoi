@@ -10,6 +10,18 @@ use Tests\TestCase;
 
 class EmpresaPolicyTest extends TestCase
 {
+    public function test_view_any_aplica_la_mateixa_regla_que_create(): void
+    {
+        $policy = new EmpresaPolicy();
+
+        $this->assertTrue($policy->viewAny((object) ['rol' => (int) config('roles.rol.tutor')]));
+        $this->assertTrue($policy->viewAny((object) ['rol' => (int) config('roles.rol.jefe_practicas')]));
+        $this->assertTrue($policy->viewAny((object) ['rol' => (int) config('roles.rol.direccion')]));
+        $this->assertFalse($policy->viewAny((object) ['rol' => (int) config('roles.rol.alumno')]));
+        $this->assertFalse($policy->viewAny((object) []));
+        $this->assertFalse($policy->viewAny(null));
+    }
+
     public function test_create_permet_tutor_jefe_practiques_i_direccio(): void
     {
         $policy = new EmpresaPolicy();

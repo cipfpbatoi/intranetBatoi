@@ -217,7 +217,8 @@ use Autorizacion,
     public function update(Request $request, $id)
     {
         $this->validate($request, (new ProfesorUpdateRequest())->rules());
-        $new = $this->profesores()->find((string) $id);
+        $new = $this->profesores()->findOrFail((string) $id);
+        $this->authorize('update', $new);
         parent::update($request, $new);
         return back();
     }
@@ -354,7 +355,7 @@ use Autorizacion,
 
         Session::put('userChange', AuthUser()->dni);
         Auth::login($profesor);
-        return redirect('/');
+        return redirect()->route('home.profesor');
     }
     protected function backChange()
     {
@@ -363,12 +364,12 @@ use Autorizacion,
         if (!$profesor) {
             Session::forget('userChange');
             Alert::danger('No s\'ha pogut restaurar la sessió original');
-            return redirect('/');
+            return redirect()->route('home.profesor');
         }
 
         Auth::login($profesor);
         Session::forget('userChange');
-        return redirect('/');
+        return redirect()->route('home.profesor');
     }
 
 }

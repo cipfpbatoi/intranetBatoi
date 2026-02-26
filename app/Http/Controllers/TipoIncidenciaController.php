@@ -50,14 +50,27 @@ class TipoIncidenciaController extends ModalController
 
     public function store(TipoIncidenciaRequest $request)
     {
+        $this->authorize('create', TipoIncidencia::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TipoIncidenciaRequest $request, $id)
     {
+        $this->authorize('update', TipoIncidencia::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un tipus d'incidència amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', TipoIncidencia::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 }

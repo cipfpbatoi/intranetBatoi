@@ -10,6 +10,9 @@ use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Elimina la FCT si es queda sense alumnes.
+ */
 class FctDelete
 {
 
@@ -26,7 +29,7 @@ class FctDelete
     /**
      * Handle the event.
      *
-     * @param  ActividadCreated  $event
+     * @param  FctAlDeleted  $event
      * @return void
      */
     public function handle(FctAlDeleted $event)

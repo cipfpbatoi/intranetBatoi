@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Ciclo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
@@ -17,10 +18,22 @@ class PanelProyectoController extends BaseController
     
     protected $model = 'Documento';
     protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo'];
+
+    /**
+     * Mostra el panell de projectes documentals amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Documento::class);
+        return parent::index();
+    }
     
     
     protected function iniPestanas($parametres = null)
     {
+        Gate::authorize('viewAny', Documento::class);
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $ciclos = Ciclo::select('ciclo')
                  ->where('departamento', $dep)
@@ -35,6 +48,7 @@ class PanelProyectoController extends BaseController
     
     public function search()
     {
+        Gate::authorize('viewAny', Documento::class);
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $ciclos = hazArray(Ciclo::select('ciclo')
             ->where('departamento', $dep)

@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Intranet\Http\Requests\SignaturaStoreRequest;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
@@ -14,6 +15,7 @@ use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\AttachedFileService;
+use Styde\Html\Facades\Alert;
 
 
 
@@ -58,6 +60,7 @@ class SignaturaController extends ModalController
 
     public function store(SignaturaStoreRequest $request)
     {
+        $this->authorize('create', Signatura::class);
         $file = $request->file('file');
         $tipus = $request->tipus;
         $idSao =  $request->fct ;
@@ -91,7 +94,7 @@ class SignaturaController extends ModalController
             )
         );
 
-        $this->panel->setBotonera(['create'],['delete','pdf','show']);
+        $this->panel->setBotonera(['create'],['delete','pdf']);
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -188,8 +191,10 @@ class SignaturaController extends ModalController
 
     protected function deleteAll()
     {
+        $this->authorize('manage', Signatura::class);
         $signatures = $this->search();
         foreach ($signatures as $signature){
+            $this->authorize('delete', $signature);
             $signature->delete();
         }
         return back();
@@ -197,7 +202,8 @@ class SignaturaController extends ModalController
 
     protected function pdf($id)
     {
-        $sig = Signatura::find($id);
+        $sig = Signatura::findOrFail((int) $id);
+        $this->authorize('view', $sig);
         if (!$sig || empty($sig->routeFile)) {
             Alert::danger("No s'ha trobat el fitxer sol·licitat");
             return back();
@@ -212,20 +218,22 @@ class SignaturaController extends ModalController
 
     public function destroy($id)
     {
-        if ($elemento = Signatura::find($id)) {
-            $fctAl = $this->alumnoFcts()->firstByIdSao((string) $elemento->idSao);
-            $file = $fctAl?->routeFile($elemento->tipus);
-            if ($file && file_exists($file)){
-                unlink($file);
-            }
-            $elemento->delete();
+        $elemento = Signatura::findOrFail((int) $id);
+        $this->authorize('delete', $elemento);
+
+        $fctAl = $this->alumnoFcts()->firstByIdSao((string) $elemento->idSao);
+        $file = $fctAl?->routeFile($elemento->tipus);
+        if ($file && file_exists($file)){
+            unlink($file);
         }
+        $elemento->delete();
         return back();
     }
 
     public function sendUnique($id)
     {
-        $signatura = Signatura::find($id);
+        $signatura = Signatura::findOrFail((int) $id);
+        $this->authorize('update', $signatura);
         if ($signatura->sendTo < 2) {
             $signatura->sendTo += 2;
         }
@@ -241,14 +249,16 @@ class SignaturaController extends ModalController
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
             //per a marcar-lo com a enviat a l'instructor
-        session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+        session()->flash('email_action', 'annexe_individual');
         return $mail->render('/signatura');
     }
     public function sendMultiple(Request $request,$tipus)
     {
+        $this->authorize('manage', Signatura::class);
         if ($tipus === 'A3'){ //al alumno
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value === 'on' && $signatura = Signatura::find($key)) {
+                    $this->authorize('update', $signatura);
                     if (!$signatura->Alumno) {
                         Log::error("Signatura amb id $key no té Alumno relacionat.");
                         continue;
@@ -277,10 +287,11 @@ class SignaturaController extends ModalController
                     return back();
                 }
                 $signatures = [];
-                foreach ($alumnoFct->signatures as $signatura){
-                    $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                    $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
-                }
+                    foreach ($alumnoFct->signatures as $signatura){
+                        $this->authorize('update', $signatura);
+                        $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
+                    }
                 $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                 $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                 $col = new Collection();
@@ -290,7 +301,7 @@ class SignaturaController extends ModalController
                     view($view),
                     ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
                     $signatures);
-                session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                session()->flash('email_action', 'annexe_individual');
                 return $mail->render('/signatura');
             }
             foreach ($request->all() as $key => $value) {
@@ -302,6 +313,7 @@ class SignaturaController extends ModalController
                     $signatures = [];
                     $a1 = false;
                     foreach ($alumnoFct->signatures as $signatura){
+                        $this->authorize('update', $signatura);
                         $signatures[$signatura->simpleRouteFile] = 'application/pdf';
                         if ($signatura->tipus === 'A1'){
                             $a1 = true;
@@ -316,7 +328,7 @@ class SignaturaController extends ModalController
                         $view,
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
-                    session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                    session()->flash('email_action', 'annexe_individual');
                     $mail->send();
                 }
             }
@@ -328,10 +340,11 @@ class SignaturaController extends ModalController
 
     public function upload(Request $request,$id)
     {
+        $signatura = Signatura::findOrFail((int) $id);
+        $this->authorize('update', $signatura);
         $request->validate([
             'file' => 'required|file|mimes:pdf|max:2048',
         ]);
-        $signatura = Signatura::find($id);
         $file = $request->file('file');
         $file->move($signatura->path, $signatura->fileName);
         if ($signatura->signed == 2){
@@ -343,9 +356,11 @@ class SignaturaController extends ModalController
     }
 
     public function a5(){
+        $this->authorize('manage', Signatura::class);
 
         $signatures = Signatura::where('tipus','A5')->where('idProfesor', authUser()->dni)->get();
         foreach ($signatures as $signature){
+            $this->authorize('delete', $signature);
             $alFct = $this->alumnoFcts()->firstByIdSao((string) $signature->idSao);
             if ($alFct === null) {
                 continue;

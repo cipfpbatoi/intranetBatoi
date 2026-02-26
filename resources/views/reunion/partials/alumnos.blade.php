@@ -21,14 +21,14 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><a href="/reunion/{!!$formulario->getElemento()->id!!}/borrarAlumno/{!! $alumno->nia !!}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
+                    <td><a href="{{ route('reunion.alumno.destroy', ['reunion' => $formulario->getElemento()->id, 'alumno' => $alumno->nia]) }}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
                 </tr>
                 @endforeach
             </table>
         </div>
         @if (count($tAlumnos))
             <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-                <form method="POST" class="agua" action="/reunion/{!!$formulario->getElemento()->id!!}/nuevoAlumno">
+                <form method="POST" class="agua" action="{{ route('reunion.alumno.store', ['reunion' => $formulario->getElemento()->id]) }}">
                     {{ csrf_field() }}
                     <input type='hidden' name='idReunion' value="{!!$formulario->getElemento()->id!!}">
                     {{ Form::select('idAlumno',$tAlumnos,0,['id'=>'idAlumno']) }}

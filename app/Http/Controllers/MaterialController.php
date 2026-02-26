@@ -72,7 +72,7 @@ class MaterialController extends IntranetController
         $copia = new Material;
         $copia->fill($elemento->toArray());
         $copia->save();
-        return redirect("/material/$copia->id/edit");
+        return redirect()->route('material.edit', ['material' => $copia->id]);
     }
 
     /**

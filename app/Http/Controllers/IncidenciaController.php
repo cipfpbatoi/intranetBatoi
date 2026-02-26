@@ -46,7 +46,7 @@ class IncidenciaController extends ModalController
         return Incidencia::with('Tipos')
             ->with('Responsables')
             ->with('Creador')
-            ->where('idProfesor', '=', AuthUser()->dni)
+            ->where('idProfesor', '=', $this->currentProfesorDni())
             ->get();
     }
     /**
@@ -56,11 +56,11 @@ class IncidenciaController extends ModalController
     protected function generarOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($incidencia);
+        $this->authorize('update', $incidencia);
 
         $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
                 ->where('estado', 0)
-                ->where('idProfesor', AuthUser()->dni)
+                ->where('idProfesor', $this->currentProfesorDni())
                 ->get()
                 ->first();
 
@@ -82,12 +82,14 @@ class IncidenciaController extends ModalController
      */
     protected function generateOrder(Incidencia $incidencia):OrdenTrabajo
     {
+        $dni = $this->currentProfesorDni();
+        $user = AuthUser();
         $orden = new OrdenTrabajo();
-        $orden->idProfesor = AuthUser()->dni;
+        $orden->idProfesor = $dni;
         $orden->estado = 0;
         $orden->tipo = $incidencia->tipo;
         $orden->descripcion =
-            'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
+            'Ordre oberta el dia '.Hoy().' pel profesor '.($user->FullName ?? $user->fullName ?? $dni).' relativa a '.$incidencia->Tipos->literal;
         $orden->save();
         return $orden;
     }
@@ -99,7 +101,7 @@ class IncidenciaController extends ModalController
     public function removeOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($incidencia);
+        $this->authorize('update', $incidencia);
         $incidencia->orden = null;
         $incidencia->save();
         return back();
@@ -113,7 +115,7 @@ class IncidenciaController extends ModalController
     public function edit($id=null)
     {
         $elemento = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($elemento);
+        $this->authorize('update', $elemento);
 
         $formulario = new FormBuilder($elemento, IncidenciaCrudSchema::editFormFields());
         $modelo = $this->model;
@@ -123,7 +125,8 @@ class IncidenciaController extends ModalController
 
     public function store(IncidenciaRequest $request)
     {
-        $request->merge(['idProfesor' => AuthUser()->dni]);
+        $this->authorize('create', Incidencia::class);
+        $request->merge(['idProfesor' => $this->currentProfesorDni()]);
         $id = $this->persist($request);
         $incidencia = Incidencia::findOrFail($id);
         $this->storeImagen($incidencia, $request);
@@ -139,7 +142,7 @@ class IncidenciaController extends ModalController
     public function update(IncidenciaRequest $request, $id)
     {
         $elemento =  Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($elemento);
+        $this->authorize('update', $elemento);
 
         $tipo = $elemento->tipo;
         $this->persist($request, $id);
@@ -208,7 +211,7 @@ class IncidenciaController extends ModalController
 
     protected function createWithDefaultValues($default = [])
     {
-        return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
+        return new Incidencia(['idProfesor' => $this->currentProfesorDni(), 'fecha' => Hoy('Y-m-d')]);
     }
 
     /*
@@ -217,7 +220,7 @@ class IncidenciaController extends ModalController
     public function show($id)
     {
         $elemento = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($elemento);
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
     }
@@ -228,7 +231,7 @@ class IncidenciaController extends ModalController
     protected function notify($id)
     {
         $elemento = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($elemento);
+        $this->authorize('update', $elemento);
 
         if ($elemento->responsable) {
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
@@ -255,7 +258,7 @@ class IncidenciaController extends ModalController
     public function destroy($id)
     {
         $elemento = Incidencia::findOrFail($id);
-        $this->guardIncidenciaOwnerOrResponsible($elemento);
+        $this->authorize('delete', $elemento);
 
         if (!empty($elemento->imagen)) {
             Storage::disk('public')->delete($elemento->imagen);
@@ -266,14 +269,12 @@ class IncidenciaController extends ModalController
         return $this->redirect();
     }
 
-    private function guardIncidenciaOwnerOrResponsible(Incidencia $incidencia): void
+    private function currentProfesorDni(): string
     {
-        $dni = (string) AuthUser()->dni;
-        if ($incidencia->idProfesor === $dni || (string) ($incidencia->responsable ?? '') === $dni) {
-            return;
-        }
+        $user = AuthUser();
+        abort_unless(is_object($user) && isset($user->dni) && (string) $user->dni !== '', 403);
 
-        abort(403);
+        return (string) $user->dni;
     }
 
 

@@ -73,7 +73,7 @@ class LoginController extends Controller
         if (isPrivateAddress(getClientIpAddress())) {
             Auth::guard('profesor')->logout();
             Session()->flush();
-            return redirect('/login');
+            return redirect()->route('login');
         }
         Auth::guard('profesor')->logout();
         Session()->flush();
@@ -131,7 +131,7 @@ class LoginController extends Controller
             $profesor->save();
             Auth::login($profesor);
             session(['lang' => $profesor->idioma]);
-            return redirect('/home');
+            return redirect()->route('home.profesor');
         }
 
     }

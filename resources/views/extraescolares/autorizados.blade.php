@@ -16,16 +16,16 @@
                     <td>{!! $menor->Fullname !!}</td>
                     <td>
                         @if (!$menor->pivot->autorizado)
-                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}"
+                            <a href="{{ route('actividad.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
                                class="delGrupo">{!! Html::image('img/unauthorized.png',trans("messages.buttons.autorizacion"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.authorize"))) !!}</a>
                         @else
-                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}"
+                            <a href="{{ route('actividad.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
                                class="delGrupo">{!! Html::image('img/check.jpeg',trans("messages.buttons.unauthorize"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.unauthorize"))) !!}</a>
                         @endif
                     </td>
                 </tr>
             @endforeach
         </table>
-        <a href="/actividad" class="btn btn-success">@lang("messages.buttons.atras") </a>
+        <a href="{{ route('actividad.index') }}" class="btn btn-success">@lang("messages.buttons.atras") </a>
     </div>
 @endsection

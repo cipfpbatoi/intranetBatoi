@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Menu\MenuService;
+use Intranet\Entities\Menu;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class MenuController extends IntranetController
     public function realStore(Request $request, $id = null)
     {
         $elemento = $this->menus()->saveFromRequest($request, $id);
-        return redirect("/menu/$elemento->id/edit");
+        return redirect()->route('menu.edit', ['menu' => $elemento->id]);
     }
 
     /**
@@ -56,8 +57,9 @@ class MenuController extends IntranetController
      */
     public function copy($id)
     {
+        $this->authorize('update', Menu::findOrFail((int) $id));
         $copia = $this->menus()->copy($id);
-        return redirect("/menu/$copia->id/edit");
+        return redirect()->route('menu.edit', ['menu' => $copia->id]);
     }
 
     /**
@@ -66,8 +68,9 @@ class MenuController extends IntranetController
      */
     public function up($id)
     {
+        $this->authorize('update', Menu::findOrFail((int) $id));
         $this->menus()->moveUp($id);
-        return redirect('/menu');
+        return redirect()->route('menu.index');
     }
 
     /**
@@ -76,12 +79,34 @@ class MenuController extends IntranetController
      */
     public function down($id)
     {
+        $this->authorize('update', Menu::findOrFail((int) $id));
         $this->menus()->moveDown($id);
-        return redirect('/menu');
+        return redirect()->route('menu.index');
+    }
+
+    /**
+     * Guarda un nou menú amb autorització explícita.
+     */
+    public function store(Request $request)
+    {
+        $this->authorize('create', Menu::class);
+        return parent::store($request);
+    }
+
+    /**
+     * Actualitza un menú amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function update(Request $request, $id)
+    {
+        $this->authorize('update', Menu::findOrFail((int) $id));
+        return parent::update($request, $id);
     }
 
     public function active($id)
     {
+        $this->authorize('update', Menu::findOrFail((int) $id));
         $response = parent::active($id);
         $this->menus()->clearCache();
 
@@ -90,6 +115,7 @@ class MenuController extends IntranetController
 
     public function destroy($id)
     {
+        $this->authorize('delete', Menu::findOrFail((int) $id));
         $response = parent::destroy($id);
         $this->menus()->clearCache();
 

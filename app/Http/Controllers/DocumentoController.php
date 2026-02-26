@@ -21,7 +21,9 @@ use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
-
+/**
+ * Controlador de gestió de documents i fluxos associats de FCT/qualitat.
+ */
 class DocumentoController extends IntranetController
 {
     private ?DocumentoFormService $documentoFormService = null;
@@ -95,6 +97,7 @@ class DocumentoController extends IntranetController
 
     public function store(Request $request, $fct = null)
     {
+        $this->authorize('create', Documento::class);
         $this->validate($request, (new DocumentoStoreRequest())->rules());
        
         if ($request->filled('nota')) {
@@ -131,6 +134,7 @@ class DocumentoController extends IntranetController
 
     public function project($idFct)
     {
+        $this->authorize('create', Documento::class);
         if ($fct = $this->alumnoFcts()->findOrFail((int) $idFct)) {
             $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
             $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
@@ -151,6 +155,7 @@ class DocumentoController extends IntranetController
 
     public function qualitatUpload($id)
     {
+        $this->authorize('create', Documento::class);
         $profesor = app(ProfesorService::class)->findOrFail((string) $id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
@@ -205,7 +210,7 @@ class DocumentoController extends IntranetController
                 Adjunto::destroy($adjunto);
                 unlink($file);
             }
-            return redirect('/alumnofct');
+            return redirect()->route('alumnofct.index');
         }
         $elemento->delete();
         return back();
@@ -214,6 +219,7 @@ class DocumentoController extends IntranetController
 
     public function qualitat()
     {
+        $this->authorize('create', Documento::class);
         $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
         if (!$grupo) {
             Alert::danger('No hi ha grup de tutoria assignat');
@@ -234,6 +240,7 @@ class DocumentoController extends IntranetController
     public function edit($id = null)
     {
         $elemento = Documento::findOrFail($id);
+        $this->authorize('update', $elemento);
         $formulario = new FormBuilder($elemento, DocumentoCrudSchema::editFormFields((bool) $elemento->enlace));
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
@@ -241,13 +248,16 @@ class DocumentoController extends IntranetController
     
     public function show($id)
     {
-        $gestor = new GestorService(null, Documento::find($id));
+        $documento = Documento::findOrFail($id);
+        $this->authorize('view', $documento);
+        $gestor = new GestorService(null, $documento);
         return $gestor->render();
     }
 
     public function destroy($id)
     {
         $borrar = Documento::findOrFail($id);
+        $this->authorize('delete', $borrar);
         $this->documentos()->delete($borrar);
         return $this->redirect();
     }

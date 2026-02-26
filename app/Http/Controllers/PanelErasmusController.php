@@ -3,6 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\UI\Botones\BotonImg;
+use Illuminate\Support\Facades\Gate;
+use Intranet\Entities\Empresa;
 
 
 /**
@@ -16,6 +18,7 @@ class PanelErasmusController extends PanelEmpresaSCController
      */
     public function search()
     {
+        Gate::authorize('viewAny', Empresa::class);
         return $this->empreses()->erasmusList();
     }
 
@@ -24,6 +27,7 @@ class PanelErasmusController extends PanelEmpresaSCController
      */
     protected function iniBotones()
     {
+       Gate::authorize('viewAny', Empresa::class);
        $this->panel->setBoton(
            'grid',
            new BotonImg(

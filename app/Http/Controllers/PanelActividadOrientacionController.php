@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Actividad;
+use Illuminate\Support\Facades\Gate;
 use Jenssegers\Date\Date;
 
 
@@ -40,12 +41,24 @@ class PanelActividadOrientacionController extends IntranetController
      */
     protected $modal = false;
 
+    /**
+     * Mostra el panell d'activitats d'orientació amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Actividad::class);
+        return parent::index();
+    }
+
 
     /**
      *
      */
     protected function iniBotones()
     {
+        Gate::authorize('viewAny', Actividad::class);
 
         $this->panel->setBoton('index',new BotonBasico('actividadOrientacion.create',['roles'=>config('roles.rol.orientador')]));
         $this->panel->setBothBoton('actividad.detalle');
@@ -62,6 +75,7 @@ class PanelActividadOrientacionController extends IntranetController
      */
     public function search($grupo = null)
     {
+        Gate::authorize('viewAny', Actividad::class);
         return Actividad::where('extraescolar', 0)->get();
     }
 

@@ -2,7 +2,7 @@
 @section('content')
     <div class="col-md-6 col-sm-6 col-xs-12">
         <div class="x_panel">
-            <form method="post" action="/secure">
+            <form method="post" action="{{ route('secure.door') }}">
                 @csrf
                 Selecciona dispositiu:
                 <select name="dispositivo">
@@ -11,7 +11,7 @@
                     @endforeach
                 </select>
                 <input type="submit" class="btn btn-dark" value="Tanca" />
-                <a href="/" class="btn btn-light">Tornar</a>
+                <a href="{{ route('home') }}" class="btn btn-light">Tornar</a>
             </form>
             @isset($missatge)
                 <br/>{{$missatge}}<br/>
@@ -22,4 +22,3 @@
 @section('titulo')
     Tancar la porta
 @endsection
-

@@ -33,6 +33,8 @@ class TipoActividadController extends ModalController
 
     public function store(TipoActividadRequest $request)
     {
+        $this->authorize('create', TipoActividad::class);
+
         if (esRol(authUser()->rol,config('roles.rol.jefe_dpto'))) {
             $request->merge(['departamento_id' => authUser()->departamento]);
         }
@@ -43,9 +45,21 @@ class TipoActividadController extends ModalController
 
     public function update(TipoActividadUpdateRequest $request, $id)
     {
+        $this->authorize('update', TipoActividad::findOrFail((int) $id));
         $request->merge(['departamento_id' => authUser()->departamento]);
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un tipus d'activitat amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', TipoActividad::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
     public function search()

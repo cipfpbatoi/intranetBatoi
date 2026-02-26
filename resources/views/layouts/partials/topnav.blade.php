@@ -69,7 +69,7 @@
                             @endphp
 
                             <li id='{{$notifications->id}}'>
-                                <a class="papelera" href="/notification/{{$notifications->id}}/delete">
+                                <a class="papelera" href="{{ route('notification.delete', ['notification' => $notifications->id]) }}">
                                     <span class="image">
                                         <img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno"/>
                                     </span>
@@ -90,7 +90,7 @@
                             </li>
                          @endforeach
                         <div class="text-center">
-                            <a href="/notification">
+                            <a href="{{ route('notificacion.index') }}">
                                 <strong>@lang("messages.buttons.seeAll")</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>

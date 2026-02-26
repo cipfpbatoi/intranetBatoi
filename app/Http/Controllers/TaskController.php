@@ -15,8 +15,7 @@ use Intranet\Http\Requests\TaskRequest;
 
 
 /**
- * Class ImportController
- * @package Intranet\Http\Controllers
+ * Controlador de manteniment i validació de tasques.
  */
 class TaskController extends ModalController
 {
@@ -62,12 +61,14 @@ class TaskController extends ModalController
 
     public function store(TaskRequest $request)
     {
+        $this->authorize('create', Task::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TaskRequest $request, $id)
     {
+        $this->authorize('update', Task::findOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -75,6 +76,7 @@ class TaskController extends ModalController
     public function check($id)
     {
         $this->tarea = Task::findOrFail($id);
+        $this->authorize('check', $this->tarea);
         $taskTeacher = $this->tarea->myDetails;
         if ($taskTeacher) {
             $this->tarea->Profesores()->detach(AuthUser()->dni);

@@ -30,7 +30,7 @@ class PerfilController extends Perfil
         }
         $new->setConnection(config('database.default'));
         parent::update($request, $new);
-        return redirect("/alumno/home");
+        return redirect()->route('home.alumno');
     }
 
 }

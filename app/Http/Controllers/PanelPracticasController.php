@@ -5,7 +5,9 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
+use Illuminate\Support\Facades\Gate;
 use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Fct;
 
 class PanelPracticasController extends BaseController
 {
@@ -39,9 +41,21 @@ class PanelPracticasController extends BaseController
 
         return $this->grupoService;
     }
+
+    /**
+     * Mostra el panell de control FCT amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageFctControl', Fct::class);
+        return parent::index();
+    }
     
     protected function iniBotones()
     {
+        Gate::authorize('manageFctControl', Fct::class);
         $this->panel->setBoton('grid',new BotonImg(
             'direccion.acta',
             [
@@ -66,7 +80,9 @@ class PanelPracticasController extends BaseController
         );
         
     }
-    protected function search(){
+    protected function search()
+    {
+        Gate::authorize('manageFctControl', Fct::class);
         return $this->grupos()->withStudents();
 
 
@@ -79,6 +95,7 @@ class PanelPracticasController extends BaseController
 
     protected function show($id)
     {
+        Gate::authorize('manageFctControl', Fct::class);
         $grupo = $this->grupos()->find((string) $id);
         abort_unless($grupo !== null, 404);
         return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);

@@ -36,19 +36,33 @@ class ArticuloController extends ModalController
     public function detalle($id)
     {
         $article = Articulo::findOrFail($id);
+        $this->authorize('view', $article);
         return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
     }
 
     public function store(ArticuloRequest $request)
     {
+        $this->authorize('create', Articulo::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(ArticuloRequest $request, $id)
     {
+        $this->authorize('update', Articulo::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un article amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Articulo::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
     protected function borrarFichero($fichero){

@@ -29,7 +29,7 @@
         {{-- Opció per tornar si s'ha fet canvi d'usuari --}}
         @if ($userChange)
             <li>
-                <a href="/profesor/backChange">
+                <a href="{{ route('profesor.backChange') }}">
                     <i class="fa fa-user pull-right"></i>
                     {!! trans("messages.generic.backChange") !!}
                 </a>

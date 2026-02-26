@@ -37,11 +37,13 @@ class GrupoTrabajoController extends ModalController
 
     public function store(GrupoTrabajoRequest $request)
     {
+        $this->authorize('create', GrupoTrabajo::class);
         $this->persist($request);
         return $this->redirect();
     }
     public function update(GrupoTrabajoRequest $request, $id)
     {
+        $this->authorize('update', GrupoTrabajo::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -61,6 +63,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function detalle($id)
     {
+        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $id));
         foreach (app(ProfesorService::class)->allOrderedBySurname() as $profesor) {
             $tProfesores[$profesor->dni] = $profesor->nameFull;
         }
@@ -82,6 +85,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function altaProfesor(GTProfesorRequest $request, $gtId)
     {
+        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $gtId));
         Miembro::create($request->all());
         return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
@@ -93,6 +97,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function borrarProfesor($gtId, $profesorId)
     {
+        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $gtId));
         Miembro::where('idGrupoTrabajo', '=', $gtId)
             ->where('idProfesor', '=', $profesorId)
             ->where('coordinador', 0)
@@ -108,6 +113,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function coordinador($grupoId, $profesorId)
     {
+        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $grupoId));
         if ($this->removeCoord($grupoId)) {
             $this->addCoord($grupoId, $profesorId);
         }
@@ -159,6 +165,17 @@ class GrupoTrabajoController extends ModalController
                 ['img' => 'fa-group', 'text' => 'participantes']
             )
         );
+    }
+
+    /**
+     * Elimina un grup de treball amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', GrupoTrabajo::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 }

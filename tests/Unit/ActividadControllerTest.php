@@ -467,8 +467,23 @@ class AlumnoLite extends Model
 
 class DummyActividadController extends ActividadController
 {
+    /**
+     * Constructor buit per evitar la inicialització de UI/panell en proves unitàries.
+     */
     public function __construct()
     {
-        // Evitem inicialització de UI/panell en proves unitàries.
+        // Intencionalment buit.
+    }
+
+    /**
+     * Omet l'autorització en tests unitaris de comportament intern del controlador.
+     *
+     * @param mixed $ability
+     * @param mixed $arguments
+     * @return true
+     */
+    public function authorize($ability, $arguments = [])
+    {
+        return true;
     }
 }

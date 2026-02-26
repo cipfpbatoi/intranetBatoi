@@ -1,30 +1,42 @@
-version: '3'
 services:
     laravel.test:
-        build:
-            context: ./vendor/laravel/sail/runtimes/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.2/app
+        
+        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel11-dev}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
-        ports:
-            - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        expose:
+          - "80"
+        
         environment:
-            WWWUSER: '${WWWUSER}'
+            WWWUSER: "${WWWUSER:-${UID:-1000}}"
+            WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
             LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            XDEBUG_MODE: "debug,develop"
+            XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003 start_with_request=yes"
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
+            - selenium-downloads:/srv/documentsfct
         networks:
             - sail
         depends_on:
             - mysql
             - mailpit
+            - selenium
+    
+    caddy:
+        image: caddy:2-alpine
+        ports:
+            - "127.0.0.1:80:80"
+            - "127.0.0.1:443:443"
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile:ro
+            - caddy_data:/data
+            - caddy_config:/config
+        depends_on:
+            - laravel.test
+        networks:
+            - sail
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -38,7 +50,6 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - sail
         healthcheck:
@@ -52,7 +63,7 @@ services:
     myadmin:
         image: 'phpmyadmin:latest'
         ports:
-            - '8080:80'
+            - '${FORWARD_PHPMYADMIN_PORT:-8080}:80'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             UPLOAD_LIMIT: 100M
@@ -69,9 +80,24 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - sail
+    selenium:
+        image: selenium/standalone-firefox:latest
+        ports:
+            - '${FORWARD_SELENIUM_PORT:-4444}:4444'
+            - '${FORWARD_SELENIUM_VNC_PORT:-7900}:7900'
+        shm_size: '2gb'
+        networks:
+            - sail
+        volumes:
+          - selenium-downloads:/home/seluser/Downloads
+        command: ["sh", "-lc", "chmod 0777 /home/seluser/Downloads && /opt/bin/entry_point.sh"]
 networks:
     sail:
         driver: bridge
 volumes:
     sail-mysql:
+        driver: local
+    caddy_data:
+    caddy_config:
+    selenium-downloads:
         driver: local

@@ -52,14 +52,27 @@ class LoteController extends ModalController
 
     public function store(LoteRequest $request)
     {
+        $this->authorize('create', Lote::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(LoteRequest $request, $id)
     {
+        $this->authorize('update', Lote::findOrFail((string) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un lot amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Lote::findOrFail((string) $id));
+        return parent::destroy($id);
     }
 
     protected function iniBotones()
@@ -68,15 +81,19 @@ class LoteController extends ModalController
     }
 
     protected function print($id,$posicion=1){
-        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, $posicion, 'portrait',[210,297],5)->stream();
+        $lote = Lote::findOrFail((string) $id);
+        $this->authorize('update', $lote);
+        return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 
     protected function capture($lote){
+        $this->authorize('update', Lote::findOrFail((string) $lote));
         $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
         return view('lote.inventario',compact('lote','materiales'));
     }
 
     protected function postCapture($lote,Request $request){
+       $this->authorize('update', Lote::findOrFail((string) $lote));
        foreach ($request->except('_token') as $key => $value){
            $material = Material::find($key);
            if (!$value) {

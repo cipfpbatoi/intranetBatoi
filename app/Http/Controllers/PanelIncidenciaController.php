@@ -3,7 +3,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\BaseController;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Incidencia;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Traits\Core\Panel;
@@ -23,6 +25,7 @@ class   PanelIncidenciaController extends BaseController
     
     public function index()
     {
+        Gate::authorize('viewAny', Incidencia::class);
         $this->panel->setPestana(
             'NoAsig',
             0,
@@ -53,6 +56,7 @@ class   PanelIncidenciaController extends BaseController
    
     protected function iniBotones()
     {
+        Gate::authorize('viewAny', Incidencia::class);
         $this->panel->setBoton('profile', new BotonIcon("$this->model.authorize", ['class' => 'btn-success authorize', 'where' => ['estado', '==', '1','orden','==',null]], 'mantenimiento'));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '2','orden','==',null]], 'mantenimiento'));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '==', '1','orden','==',null]], 'mantenimiento'));

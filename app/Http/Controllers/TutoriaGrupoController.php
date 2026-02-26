@@ -28,6 +28,7 @@ class TutoriaGrupoController extends ModalController
 
     public function create($default = [])
     {
+        $this->authorize('create', TutoriaGrupo::class);
         $formulario = new FormBuilder($this->createWithDefaultValues($default), $this->formFields);
         $modelo = $this->model;
         return view('intranet.create', compact('formulario', 'modelo'));
@@ -40,6 +41,7 @@ class TutoriaGrupoController extends ModalController
         } catch (ModelNotFoundException $e) {
             return back()->with('warning', "No s'ha trobat {$this->model} #{$id}");
         }
+        $this->authorize('view', $record);
 
         $formulario = new FormBuilder($record, $this->formFields);
         $modelo = $this->model;
@@ -48,14 +50,27 @@ class TutoriaGrupoController extends ModalController
 
     public function store(TutoriaGrupoStoreRequest $request)
     {
+        $this->authorize('create', TutoriaGrupo::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TutoriaGrupoUpdateRequest $request, $id)
     {
+        $this->authorize('update', TutoriaGrupo::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina una relació tutoria-grup amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', TutoriaGrupo::findOrFail((int) $id));
+        return parent::destroy($id);
     }
     
     public function search()

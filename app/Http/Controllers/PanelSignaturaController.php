@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
@@ -44,12 +45,23 @@ class PanelSignaturaController extends BaseController
      */
     protected $parametresVista = [ 'modal' => ['signaturaDirector']];
 
+    /**
+     * Mostra el panell de signatures de direcció amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
+        return parent::index();
+    }
 
     /**
      *
      */
     protected function iniBotones()
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         if (authUser()->dni === config('avisos.director') || authUser()->dni === config('avisos.errores')) {
             $this->panel->setBotonera([], ['pdf','delete']);
             $this->panel->setBoton(
@@ -67,6 +79,7 @@ class PanelSignaturaController extends BaseController
      */
     protected function search()
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         return Signatura::where(function ($query) {
             $query->where('tipus', 'like', 'A1%') // Canviat a 'like' i afegit '%'
             ->where('signed', 0);
@@ -81,6 +94,7 @@ class PanelSignaturaController extends BaseController
 
     public function sign(Request $request)
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         $signatures = array_keys($request->toArray(), "on");
         $decrypt = $request['decrypt']??null;
         $passCert = $request['cert']??null;

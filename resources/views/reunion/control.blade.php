@@ -5,7 +5,7 @@
 @section('content')
 <div id="app">
     <div class="clearfix col-md-6 col-lg-6">
-        <form action='/direccion/reunion/aviso' method="POST">
+        <form action="{{ route('reunion.avisaFalta') }}" method="POST">
             {{ csrf_field() }}
             <select id='tipo_id' name='tipo' class='form-control select' required >
                 @foreach (config('auxiliares.reunionesControlables') as $index => $howMany )

@@ -3,6 +3,7 @@ namespace Intranet\Services\Document;
 
 use Intranet\Services\Mail\MyMail;
 use Intranet\Services\Document\PdfService;
+use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
@@ -198,6 +199,14 @@ class DocumentService
         $resource = PrintResource::build($this->document->printResource, $this->elements);
         $resource->setFlatten(true);
         $tmp_name = FDFPrepareService::exec($resource);
+        if (!is_string($tmp_name) || $tmp_name === '' || !file_exists($tmp_name)) {
+            Log::error('No s\'ha pogut generar el PDF temporal per a signatura', [
+                'resource' => $this->document->printResource,
+                'path' => $tmp_name,
+            ]);
+            Alert::danger('No s\'ha pogut generar el document temporal per a signar.');
+            return response()->json(['error' => 'No s\'ha pogut generar el document temporal per a signar'], 400);
+        }
 
         if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
             try {

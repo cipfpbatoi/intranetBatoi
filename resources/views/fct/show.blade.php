@@ -7,7 +7,7 @@
             </div>
         @else
         <h3>
-            <a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>
+            <a href="{{ route('empresa.detalle', ['empresa' => $fct->Colaboracion->Centro->idEmpresa]) }}">
                 {{$fct->Colaboracion->Centro->nombre}}
             </a>
         </h3>

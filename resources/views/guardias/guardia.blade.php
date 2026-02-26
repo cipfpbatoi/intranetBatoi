@@ -59,7 +59,7 @@
 
                  <div class='form-group item'>
                      @if ($estoy)
-                        <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
+                        <a href="{{ route('guardia.control') }}" class="btn btn-dark">Control Personal</a>
                      @endif
                     <input id="submit" class="btn btn-success" type="submit" value="Guardar">
                  </div>

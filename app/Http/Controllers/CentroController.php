@@ -45,7 +45,7 @@ class CentroController extends ModalController
 
     private function showEmpresa($id)
     {
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $id]);
     }
 
     /**

@@ -4,9 +4,11 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 use Intranet\Services\General\StateService;
 
+/**
+ * Model de programacio.
+ */
 class Programacion extends Model
 {
 
@@ -26,8 +28,10 @@ class Programacion extends Model
         'idModuloCiclo' => ['type' => 'select']
     ];
     
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
         'created' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
