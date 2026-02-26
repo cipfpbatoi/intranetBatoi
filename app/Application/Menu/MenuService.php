@@ -6,6 +6,7 @@ namespace Intranet\Application\Menu;
 
 use Illuminate\Support\HtmlString;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Menu;
 
@@ -286,7 +287,7 @@ class MenuService
             $itemId = 'menu_' . md5((string) $title);
             $url = e((string) ($item['url'] ?? '#'));
             $iconClass = trim((string) ($item['class'] ?? ''));
-            $titleText = e(trans('messages.menu.' . $title));
+            $titleText = e($this->translateMenuTitle((string) $title));
             $hasSubmenu = !empty($item['submenu']) && is_array($item['submenu']);
 
             $html .= '<li id="' . e($itemId) . '">';
@@ -313,7 +314,7 @@ class MenuService
                         $subUrl = (string) ($subItem['url'] ?? '#');
                     }
 
-                    $subText = e(trans('messages.menu.' . $subTitle));
+                    $subText = e($this->translateMenuTitle((string) $subTitle));
                     $html .= '<li><a href="' . e($subUrl) . '"' . $target . '>' . $subText . '</a></li>';
                 }
 
@@ -324,6 +325,37 @@ class MenuService
         }
 
         return new HtmlString($html);
+    }
+
+    /**
+     * Resol la traducció d'un ítem de menú amb fallback compatible amb legacy.
+     *
+     * En l'implementació antiga, si no existia `messages.menu.<key>`, el títol
+     * acabava en format Title Case (`Fichar`, `Documents`, ...), que sí encaixa
+     * amb moltes claus del fitxer de traduccions.
+     *
+     * @param string $key
+     * @return string
+     */
+    private function translateMenuTitle(string $key): string
+    {
+        $rawKey = trim($key);
+        if ($rawKey === '') {
+            return '';
+        }
+
+        $direct = trans('messages.menu.' . $rawKey);
+        if ($direct !== 'messages.menu.' . $rawKey) {
+            return (string) $direct;
+        }
+
+        $titleKey = Str::title($rawKey);
+        $title = trans('messages.menu.' . $titleKey);
+        if ($title !== 'messages.menu.' . $titleKey) {
+            return (string) $title;
+        }
+
+        return $titleKey;
     }
 
     /**
