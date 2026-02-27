@@ -8,6 +8,9 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Hora;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Component Livewire per proposar canvis temporals d'horari del professorat.
+ */
 class HorariProfessorCanvi extends Component
 {
     private ?ProfesorService $profesorService = null;
@@ -190,7 +193,8 @@ class HorariProfessorCanvi extends Component
                 'titulo' => $titulo,
                 'subtitulo' => $subtitulo,
                 'aula' => $horario->aula ?? '',
-                'is_guardia' => in_array($horario->ocupacion, config('constants.ocupacionesGuardia'), true),
+                'ocupacion' => $horario->ocupacion ?? null,
+                'is_guardia' => $this->isGuardiaOcupacion($horario->ocupacion ?? null, $titulo),
             ];
             $this->grid[$cell] = $itemId;
         }
@@ -282,6 +286,10 @@ class HorariProfessorCanvi extends Component
             return;
         }
 
+        if ($this->isDifferentDay($from, $to)) {
+            return;
+        }
+
         $fromId = $this->grid[$from] ?? null;
         if (!$fromId) {
             return;
@@ -360,6 +368,11 @@ class HorariProfessorCanvi extends Component
         $this->selectedCell = null;
     }
 
+    /**
+     * Mou la cel·la seleccionada a la destinació respectant restriccions d'horari.
+     *
+     * @param string $dest
+     */
     protected function moveSelectedTo(string $dest): void
     {
         $from = $this->selectedCell;
@@ -571,6 +584,7 @@ class HorariProfessorCanvi extends Component
         foreach ($this->items as $item) {
             if ($item['cell'] !== $item['orig']) {
                 $cambios[] = [
+                    'id' => $item['id'],
                     'de' => $item['orig'],
                     'a' => $item['cell'],
                 ];
@@ -673,6 +687,59 @@ class HorariProfessorCanvi extends Component
     protected function itemIsGuardia(string $itemId): bool
     {
         return (bool) ($this->items[$itemId]['is_guardia'] ?? false);
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     */
+    protected function isDifferentDay(string $from, string $to): bool
+    {
+        $fromParts = explode('-', $from, 2);
+        $toParts = explode('-', $to, 2);
+
+        if (count($fromParts) < 2 || count($toParts) < 2) {
+            return false;
+        }
+
+        return $fromParts[1] !== $toParts[1];
+    }
+
+    /**
+     * Determina si una ocupacio s'ha de tractar com a guardia (no movible).
+     *
+     * @param string|null $ocupacion
+     * @param string $titulo
+     */
+    protected function isGuardiaOcupacion(?string $ocupacion, string $titulo): bool
+    {
+        if (!$ocupacion) {
+            return false;
+        }
+
+        return $this->isOcupacionGuardiaCode($ocupacion) || $this->isReunionDepartament($titulo);
+    }
+
+    /**
+     * @param string $ocupacion
+     */
+    protected function isOcupacionGuardiaCode(string $ocupacion): bool
+    {
+        return in_array($ocupacion, config('constants.ocupacionesGuardia'), true);
+    }
+
+    /**
+     * @param string $titulo
+     */
+    protected function isReunionDepartament(string $titulo): bool
+    {
+        $clean = trim($titulo);
+        if ($clean === '') {
+            return false;
+        }
+
+        return stripos($clean, 'reun') !== false
+            && stripos($clean, 'depart') !== false;
     }
 
     public function render()
