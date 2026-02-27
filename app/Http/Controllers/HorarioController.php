@@ -16,6 +16,9 @@ use Intranet\Services\Notifications\NotificationService;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Services\UI\FormBuilder;
 
+/**
+ * Gestiona el canvi temporal d'horaris i la revisió de propostes.
+ */
 class HorarioController extends ModalController
 {
 
@@ -51,21 +54,55 @@ class HorarioController extends ModalController
         return null;
     }
 
-    private function changeHorary($dni,$cambios){
+    /**
+     * Aplica els canvis d'horari utilitzant la posició original com a referència.
+     *
+     * @param string $dni
+     * @param iterable|null $cambios
+     */
+    private function changeHorary(string $dni, $cambios): void
+    {
+        if (!is_iterable($cambios)) {
+            return;
+        }
+        $horarios = $this->horarios()->byProfesor((string) $dni)->sortBy('id');
+        $horariosById = [];
+        $horariosByCell = [];
+
+        foreach ($horarios as $horario) {
+            $horariosById[(string) $horario->id] = $horario;
+            $cell = $horario->sesion_orden . '-' . $horario->dia_semana;
+            if (!isset($horariosByCell[$cell])) {
+                $horariosByCell[$cell] = $horario;
+            }
+        }
+
         foreach ($cambios as $cambio) {
+            $from = is_array($cambio) ? ($cambio['de'] ?? null) : ($cambio->de ?? null);
+            $to = is_array($cambio) ? ($cambio['a'] ?? null) : ($cambio->a ?? null);
+            $id = is_array($cambio) ? ($cambio['id'] ?? null) : ($cambio->id ?? null);
 
-            $de=explode("-",$cambio->de);
-            $a=explode("-", $cambio->a);
-
-            $horario = $this->horarios()->firstByProfesorDiaSesion((string) $dni, (string) $de[1], (int) $de[0]);
-            if ($horario){
-                $horario->dia_semana = $a[1];
-                $horario->sesion_orden = $a[0];
-                $horario->save();
-            } else {
-                Alert::info("Horari".$de[1].' '.$de[0]." del profesor $dni no trobat");
+            if (!$from || !$to) {
+                continue;
             }
 
+            $horario = $id ? ($horariosById[(string) $id] ?? null) : ($horariosByCell[(string) $from] ?? null);
+            if (!$horario) {
+                $deParts = explode('-', (string) $from, 2);
+                $dia = $deParts[1] ?? '';
+                $sesion = $deParts[0] ?? '';
+                Alert::info("Horari" . $dia . ' ' . $sesion . " del profesor $dni no trobat");
+                continue;
+            }
+
+            $aParts = explode('-', (string) $to, 2);
+            if (count($aParts) < 2) {
+                continue;
+            }
+
+            $horario->sesion_orden = (int) $aParts[0];
+            $horario->dia_semana = (string) $aParts[1];
+            $horario->save();
         }
     }
     private function saveCopy($dni,$data){
