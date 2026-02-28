@@ -126,6 +126,9 @@ final class DocblockIndexGenerator
 
                 $classes[$currentClass]['methods'][] = [
                     'name' => $methodName,
+                    'parameters' => $this->readFunctionParameters($tokens, $i + 1),
+                    'return' => $this->readFunctionReturnType($tokens, $i + 1)
+                        ?: $this->docblockReturnType($lastDocblock),
                     'summary' => $this->docblockSummary($lastDocblock),
                 ];
                 $lastDocblock = null;
@@ -197,6 +200,144 @@ final class DocblockIndexGenerator
         }
 
         return null;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function readFunctionParameters(array $tokens, int $index): string
+    {
+        $count = count($tokens);
+        $start = null;
+
+        for ($i = $index; $i < $count; $i++) {
+            $token = $tokens[$i];
+            if (is_string($token) && $token === '(') {
+                $start = $i;
+                break;
+            }
+        }
+
+        if ($start === null) {
+            return '';
+        }
+
+        $depth = 0;
+        $raw = '';
+
+        for ($i = $start; $i < $count; $i++) {
+            $token = $tokens[$i];
+            $text = is_array($token) ? $token[1] : $token;
+
+            if ($text === '(') {
+                $depth++;
+                if ($depth === 1) {
+                    continue;
+                }
+            } elseif ($text === ')') {
+                $depth--;
+                if ($depth === 0) {
+                    break;
+                }
+            }
+
+            if ($depth >= 1) {
+                $raw .= $text;
+            }
+        }
+
+        $normalized = trim((string) preg_replace('/\s+/', ' ', $raw));
+        $normalized = (string) preg_replace('/\s*,\s*/', ', ', $normalized);
+        return $normalized;
+    }
+
+    /**
+     * @param array<int, mixed> $tokens
+     */
+    private function readFunctionReturnType(array $tokens, int $index): string
+    {
+        $count = count($tokens);
+        $start = null;
+
+        for ($i = $index; $i < $count; $i++) {
+            $token = $tokens[$i];
+            if (is_string($token) && $token === '(') {
+                $start = $i;
+                break;
+            }
+        }
+
+        if ($start === null) {
+            return '';
+        }
+
+        $depth = 0;
+        $closeIndex = null;
+        for ($i = $start; $i < $count; $i++) {
+            $token = $tokens[$i];
+            $text = is_array($token) ? $token[1] : $token;
+
+            if ($text === '(') {
+                $depth++;
+            } elseif ($text === ')') {
+                $depth--;
+                if ($depth === 0) {
+                    $closeIndex = $i;
+                    break;
+                }
+            }
+        }
+
+        if ($closeIndex === null) {
+            return '';
+        }
+
+        $colonIndex = null;
+        for ($i = $closeIndex + 1; $i < $count; $i++) {
+            $token = $tokens[$i];
+            $text = is_array($token) ? $token[1] : $token;
+
+            if (is_array($token) && in_array($token[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)) {
+                continue;
+            }
+
+            if ($text === ':') {
+                $colonIndex = $i;
+            }
+            break;
+        }
+
+        if ($colonIndex === null) {
+            return '';
+        }
+
+        $raw = '';
+        for ($i = $colonIndex + 1; $i < $count; $i++) {
+            $token = $tokens[$i];
+            $text = is_array($token) ? $token[1] : $token;
+
+            if ($text === '{' || $text === ';' || $text === '=') {
+                break;
+            }
+
+            $raw .= $text;
+        }
+
+        $normalized = trim((string) preg_replace('/\s+/', '', $raw));
+        return $normalized;
+    }
+
+    private function docblockReturnType(?string $docblock): string
+    {
+        if ($docblock === null) {
+            return '';
+        }
+
+        if (preg_match('/@return\s+([^\s\*]+)/', $docblock, $matches) === 1) {
+            return trim($matches[1]);
+        }
+
+        return '';
     }
 
     private function docblockSummary(?string $docblock): string
@@ -330,8 +471,13 @@ final class DocblockIndexGenerator
 
                     $out[] = '- Metodes:';
                     foreach ($classData['methods'] as $method) {
-                        $out[] = '  - `'.$method['name'].'`';
+                        $signature = '**`'.$method['name'].'`**(' . ($method['parameters'] ?? '') . ')';
+                        if (($method['return'] ?? '') !== '') {
+                            $signature .= ': '.$method['return'];
+                        }
+                        $out[] = '  - '.$signature;
                         if ($method['summary'] !== 'Sense doc-block') {
+                            $out[] = '';
                             $out[] = '    '.$method['summary'];
                         }
                     }

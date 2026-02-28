@@ -8,59 +8,59 @@ Fitxer generat automaticament des dels doc-blocks de `app/`.
 
 #### `Intranet\Http\Controllers\API\ActividadController`
 - Metodes:
-  - `getFiles`
+  - **`getFiles`**($id)
 
 
 ### `app/Http/Controllers/API/ActivityController.php`
 
 #### `Intranet\Http\Controllers\API\ActivityController`
 - Metodes:
-  - `move`
+  - **`move`**($id, $fct)
 
 
 ### `app/Http/Controllers/API/AlumnoController.php`
 
 #### `Intranet\Http\Controllers\API\AlumnoController`
 - Metodes:
-  - `putImage`
-  - `putDades`
+  - **`putImage`**(Request $request, $id)
+  - **`putDades`**(Request $request, $id)
 
 
 ### `app/Http/Controllers/API/AlumnoFctController.php`
 
 #### `Intranet\Http\Controllers\API\AlumnoFctController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\API\grupoService`
 - Metodes:
-  - `alumnoFcts`
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\API\alumnoFctService`
 - Metodes:
-  - `indice`
-  - `dual`
-  - `update`
-  - `show`
+  - **`indice`**($grupo)
+  - **`dual`**($grupo)
+  - **`update`**(Request $request, $id)
+  - **`show`**($id)
 
 
 ### `app/Http/Controllers/API/AlumnoGrupoController.php`
 
 #### `Intranet\Http\Controllers\API\AlumnoGrupoController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?ModuloGrupoService $moduloGrupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\API\grupoService`
 - Metodes:
-  - `moduloGrupos`
+  - **`moduloGrupos`**(): ModuloGrupoService
 
 #### `Intranet\Http\Controllers\API\moduloGrupoService`
 - Metodes:
-  - `alumnos`
-  - `show`
-  - `getModulo`
+  - **`alumnos`**($misgrupos)
+  - **`show`**($id)
+  - **`getModulo`**($dni, $modulo)
 
 
 ### `app/Http/Controllers/API/AlumnoResultadoContoller.php`
@@ -73,61 +73,69 @@ Fitxer generat automaticament des dels doc-blocks de `app/`.
 
 #### `Intranet\Http\Controllers\API\AlumnoReunionController`
 - Metodes:
-  - `getDades`
-  - `getDadesMatricula`
-  - `generaToken`
-  - `sendMatricula`
-  - `getTestMatricula`
+  - **`getDades`**($nia)
+  - **`getDadesMatricula`**($token)
+  - **`generaToken`**()
+  - **`sendMatricula`**(Request $request)
+  - **`getTestMatricula`**($token)
 
 
 ### `app/Http/Controllers/API/ApiBaseController.php`
 
 #### `Intranet\Http\Controllers\API\ApiBaseController`
 - Metodes:
-  - `ApiUser`
+  - **`ApiUser`**(Request $request)
+
     Resol usuari API en mode coexistència (`sanctum`/`api` + token legacy).
-  - `show`
-  - `fields`
-  - `sendFail`
-  - `isLegacyFilterExpression`
-  - `queryLegacy`
-  - `applyLegacyCondition`
+  - **`show`**($cadena, $send = true)
+  - **`fields`**($fields)
+  - **`sendFail`**($error, $code = 400)
+  - **`isLegacyFilterExpression`**(string $cadena): bool
+  - **`queryLegacy`**(string $cadena): Collection
+  - **`applyLegacyCondition`**($query, string $filter): void
 
 
 ### `app/Http/Controllers/API/ApiResourceController.php`
 
 #### `Intranet\Http\Controllers\API\ApiResourceController`
 - Metodes:
-  - `__construct`
-  - `index`
-  - `destroy`
-  - `store`
-  - `update`
-  - `show`
-  - `edit`
-  - `resolveClass`
+  - **`__construct`**()
+  - **`index`**()
+  - **`destroy`**($id)
+  - **`store`**(Request $request)
+  - **`update`**(Request $request, $id)
+  - **`show`**($id)
+  - **`edit`**($id)
+  - **`resolveClass`**(): string
 
 #### `Intranet\Http\Controllers\API\ltrim`
 - Metodes:
-  - `hasResource`
-  - `validatedPayloadForStore`
+  - **`hasResource`**(): bool
+  - **`validatedPayloadForStore`**(Request $request): array
+
     /
-  - `validatedPayloadForUpdate`
+  - **`validatedPayloadForUpdate`**(Request $request): array
+
     /
-  - `storeRules`
+  - **`storeRules`**(): array
+
     Sobrescriu en controladors concrets quan necessites validació en create.
-  - `updateRules`
+  - **`updateRules`**(): array
+
     Sobrescriu en controladors concrets quan necessites validació en update.
-  - `mutableFields`
+  - **`mutableFields`**(): ?array
+
     Permet limitar camps mutables per endpoint sense tocar el model.
-  - `filterMutationPayload`
+  - **`filterMutationPayload`**(Request $request): array
+
     /
-  - `sendResponse`
-  - `sendError`
-  - `sendNotFound`
-  - `sendFail`
-  - `ApiUser`
-  - `markLegacyUsage`
+  - **`sendResponse`**($result, $message = null)
+  - **`sendError`**($error, $code = 400)
+  - **`sendNotFound`**(string $error = 'Not found')
+  - **`sendFail`**($error, $code = 400)
+  - **`ApiUser`**(Request $request)
+  - **`markLegacyUsage`**(JsonResponse $response, string $legacyContract, ?string $replacementHint = null): JsonResponse
+
     Marca resposta d'endpoint legacy per facilitar deprecació controlada.
 
 
@@ -135,22 +143,22 @@ Fitxer generat automaticament des dels doc-blocks de `app/`.
 
 #### `Intranet\Http\Controllers\API\ArticuloController`
 - Metodes:
-  - `index`
+  - **`index`**()
 
 
 ### `app/Http/Controllers/API/ArticuloLoteController.php`
 
 #### `Intranet\Http\Controllers\API\ArticuloLoteController`
 - Metodes:
-  - `store`
-  - `getMateriales`
+  - **`store`**(Request $request)
+  - **`getMateriales`**($articulo)
 
 
 ### `app/Http/Controllers/API/AsistenciaController.php`
 
 #### `Intranet\Http\Controllers\API\AsistenciaController`
 - Metodes:
-  - `cambiar`
+  - **`cambiar`**(Request $request)
 
 
 ### `app/Http/Controllers/API/AuthTokenController.php`
@@ -159,25 +167,28 @@ Fitxer generat automaticament des dels doc-blocks de `app/`.
 Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `exchange`
-  - `me`
-  - `logout`
+  - **`exchange`**(Request $request): JsonResponse
+  - **`me`**(Request $request): JsonResponse
+  - **`logout`**(Request $request): JsonResponse
 
 
 ### `app/Http/Controllers/API/CentroController.php`
 
 #### `Intranet\Http\Controllers\API\CentroController`
 - Metodes:
-  - `fusionar`
-  - `fusion`
+  - **`fusionar`**(Request $request)
+  - **`fusion`**($codiCentre, &$centroQ): void
+
     /
-  - `fusionCenter`
+  - **`fusionCenter`**($codiCentre, &$centroQ): mixed
+
     /
-  - `fusionColaboration`
+  - **`fusionColaboration`**($colaboracion, $colaboracionQ): void
+
     /
 
 
@@ -191,28 +202,28 @@ Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 
 #### `Intranet\Http\Controllers\API\ColaboracionController`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `instructores`
-  - `resolve`
-  - `refuse`
-  - `unauthorize`
-  - `telefon`
-  - `alumnat`
-  - `book`
-  - `changeState`
-  - `upsertDailyActivity`
+  - **`instructores`**($id)
+  - **`resolve`**($id)
+  - **`refuse`**($id)
+  - **`unauthorize`**($id)
+  - **`telefon`**($id, Request $request)
+  - **`alumnat`**($id, Request $request)
+  - **`book`**($id, Request $request)
+  - **`changeState`**(string|int $id, string $action)
+  - **`upsertDailyActivity`**(string $action, string|int $modelId, string $explicacion, callable $modelResolver, string $document): Activity
 
 
 ### `app/Http/Controllers/API/ComisionController.php`
 
 #### `Intranet\Http\Controllers\API\ComisionController`
 - Metodes:
-  - `__construct`
-  - `autorizar`
-  - `prePay`
+  - **`__construct`**(ComisionService $comisionService)
+  - **`autorizar`**()
+  - **`prePay`**($dni)
 
 
 ### `app/Http/Controllers/API/CotxeController.php`
@@ -222,14 +233,16 @@ Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 
 #### `Intranet\Http\Controllers\API\CotxeController`
 - Metodes:
-  - `__construct`
-  - `eventEntrada`
-  - `obrirAutomatica`
-  - `eventSortida`
-  - `obrirTest`
+  - **`__construct`**(private CotxeAccessService $access, private FitxatgeService $fitxatge, )
+  - **`eventEntrada`**(Request $request)
+  - **`obrirAutomatica`**(Request $request)
+  - **`eventSortida`**(Request $request)
+  - **`obrirTest`**()
+
     Obertura manual per proves: no necessita matrícula.
-  - `handleEvent`
-  - `normalizePayload`
+  - **`handleEvent`**(Request $request, Direccio $direccio)
+  - **`normalizePayload`**(Request $request, Direccio $direccio): array
+
     Accepta payloads heterogenis (Milesight, etc.)
 
 
@@ -243,17 +256,17 @@ Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 
 #### `Intranet\Http\Controllers\API\DepartamentoController`
 - Metodes:
-  - `index`
+  - **`index`**()
 
 
 ### `app/Http/Controllers/API/DocumentacionFCTController.php`
 
 #### `Intranet\Http\Controllers\API\DocumentacionFCTController`
 - Metodes:
-  - `exec`
-  - `signatura`
-  - `signaturaA1`
-  - `signaturaDirector`
+  - **`exec`**($documento)
+  - **`signatura`**()
+  - **`signaturaA1`**()
+  - **`signaturaDirector`**()
 
 
 ### `app/Http/Controllers/API/DocumentoController.php`
@@ -266,10 +279,10 @@ Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 
 #### `Intranet\Http\Controllers\API\DropZoneController`
 - Metodes:
-  - `getAttached`
-  - `getNameAttached`
-  - `removeAttached`
-  - `attachFile`
+  - **`getAttached`**($modelo, $id)
+  - **`getNameAttached`**($modelo, $id, $name)
+  - **`removeAttached`**($modelo, $id, $file)
+  - **`attachFile`**(Request $request)
 
 
 ### `app/Http/Controllers/API/DualController.php`
@@ -278,19 +291,19 @@ Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
 Només es manté per lectura/compatibilitat temporal.
 
 - Metodes:
-  - `store`
+  - **`store`**(Request $request)
 
 
 ### `app/Http/Controllers/API/EmpresaController.php`
 
 #### `Intranet\Http\Controllers\API\EmpresaController`
 - Metodes:
-  - `__construct`
-  - `empreses`
+  - **`__construct`**(?EmpresaService $empresaService = null)
+  - **`empreses`**(): EmpresaService
 
 #### `Intranet\Http\Controllers\API\empresaService`
 - Metodes:
-  - `indexConvenio`
+  - **`indexConvenio`**()
 
 
 ### `app/Http/Controllers/API/EspacioController.php`
@@ -315,16 +328,16 @@ Només es manté per lectura/compatibilitat temporal.
 
 #### `Intranet\Http\Controllers\API\FaltaItacaController`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\API\horarioService`
 - Metodes:
-  - `fitxatge`
+  - **`fitxatge`**(): FitxatgeService
 
 #### `Intranet\Http\Controllers\API\fitxatgeService`
 - Metodes:
-  - `potencial`
-  - `guarda`
+  - **`potencial`**($dia, $idProfesor)
+  - **`guarda`**(Request $request)
 
 #### `Intranet\Http\Controllers\API\send`
 - Metodes: cap
@@ -334,26 +347,26 @@ Només es manté per lectura/compatibilitat temporal.
 
 #### `Intranet\Http\Controllers\API\FaltaProfesorController`
 - Metodes:
-  - `index`
-  - `show`
-  - `horas`
-  - `queryByLegacyConditions`
-  - `queryByRequestFilters`
-  - `extractQueryFilters`
-  - `isLegacyFilterExpression`
-  - `applyLegacyCondition`
+  - **`index`**()
+  - **`show`**($id)
+  - **`horas`**($cadena)
+  - **`queryByLegacyConditions`**(string $cadena)
+  - **`queryByRequestFilters`**(array $filters)
+  - **`extractQueryFilters`**(Request $request): array
+  - **`isLegacyFilterExpression`**(string $cadena): bool
+  - **`applyLegacyCondition`**($query, string $filter): void
 
 
 ### `app/Http/Controllers/API/FctController.php`
 
 #### `Intranet\Http\Controllers\API\FctController`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `llist`
-  - `seguimiento`
+  - **`llist`**($id)
+  - **`seguimiento`**($id, Request $request)
 
 
 ### `app/Http/Controllers/API/FicharController.php`
@@ -362,13 +375,14 @@ Només es manté per lectura/compatibilitat temporal.
 Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `fichar`
+  - **`fichar`**(Request $request, FitxatgeService $fitxatgeService)
+
     Registra entrada/eixida de fitxatge.
-  - `entrefechas`
+  - **`entrefechas`**(Request $datos)
 
 #### `Intranet\Http\Controllers\API\registrosEntreFechas`
 - Metodes: cap
@@ -378,8 +392,8 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\GrupoController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\API\grupoService`
 - Metodes: cap
@@ -395,13 +409,13 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\GuardiaController`
 - Metodes:
-  - `show`
-  - `range`
-  - `getServerTime`
-  - `queryByDiaRange`
-  - `isLegacyFilterExpression`
-  - `queryLegacy`
-  - `applyLegacyCondition`
+  - **`show`**($id)
+  - **`range`**(Request $request)
+  - **`getServerTime`**()
+  - **`queryByDiaRange`**(string $desde, string $hasta)
+  - **`isLegacyFilterExpression`**(string $cadena): bool
+  - **`queryLegacy`**(string $cadena)
+  - **`applyLegacyCondition`**($query, string $filter): void
 
 
 ### `app/Http/Controllers/API/HoraController.php`
@@ -414,32 +428,32 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\HorarioController`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\API\horarioService`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `show`
-  - `index`
-  - `guardia`
-  - `HorariosDia`
-  - `getChange`
-  - `Change`
-  - `isLegacyFilterExpression`
-  - `queryLegacy`
-  - `extractQueryFilters`
-  - `queryByRequestFilters`
-  - `applyLegacyCondition`
+  - **`show`**($id)
+  - **`index`**()
+  - **`guardia`**($idProfesor)
+  - **`HorariosDia`**($fecha)
+  - **`getChange`**($dni)
+  - **`Change`**(Request $request, $dni)
+  - **`isLegacyFilterExpression`**(string $cadena): bool
+  - **`queryLegacy`**(string $cadena)
+  - **`extractQueryFilters`**(Request $request): array
+  - **`queryByRequestFilters`**(array $filters, $fields = null)
+  - **`applyLegacyCondition`**($query, string $filter): void
 
 
 ### `app/Http/Controllers/API/IPController.php`
 
 #### `Intranet\Http\Controllers\API\IPController`
 - Metodes:
-  - `miIP`
+  - **`miIP`**()
 
 
 ### `app/Http/Controllers/API/IncidenciaController.php`
@@ -458,41 +472,41 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\IpGuardiaController`
 - Metodes:
-  - `arrayIps`
+  - **`arrayIps`**()
 
 
 ### `app/Http/Controllers/API/LoteController.php`
 
 #### `Intranet\Http\Controllers\API\LoteController`
 - Metodes:
-  - `destroy`
-  - `index`
-  - `getArticulos`
-  - `putArticulos`
+  - **`destroy`**($id)
+  - **`index`**()
+  - **`getArticulos`**($lote)
+  - **`putArticulos`**(Request $request, $lote)
 
 
 ### `app/Http/Controllers/API/MaterialBajaController.php`
 
 #### `Intranet\Http\Controllers\API\MaterialBajaController`
 - Metodes:
-  - `show`
+  - **`show`**($id)
 
 
 ### `app/Http/Controllers/API/MaterialController.php`
 
 #### `Intranet\Http\Controllers\API\MaterialController`
 - Metodes:
-  - `getMaterial`
-  - `getInventario`
-  - `espai`
-  - `inventario`
-  - `index`
-  - `put`
-  - `putUnidades`
-  - `putUbicacion`
-  - `putEstado`
-  - `resolveApiUser`
-  - `putInventario`
+  - **`getMaterial`**($espacio)
+  - **`getInventario`**(Request $request, $espai = null)
+  - **`espai`**(Request $request, $espai)
+  - **`inventario`**(Request $request)
+  - **`index`**()
+  - **`put`**(Request $request)
+  - **`putUnidades`**(Request $request)
+  - **`putUbicacion`**(Request $request)
+  - **`putEstado`**(Request $request)
+  - **`resolveApiUser`**(Request $request)
+  - **`putInventario`**(Request $request)
 
 
 ### `app/Http/Controllers/API/ModuloController.php`
@@ -511,7 +525,7 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\NotificationController`
 - Metodes:
-  - `leer`
+  - **`leer`**($id)
 
 #### `Intranet\Http\Controllers\API\markAsRead`
 - Metodes: cap
@@ -539,19 +553,19 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\PresenciaResumenController`
 - Metodes:
-  - `rango`
+  - **`rango`**(Request $request, PresenciaResumenService $svc)
 
 
 ### `app/Http/Controllers/API/ProfesorController.php`
 
 #### `Intranet\Http\Controllers\API\ProfesorController`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `rol`
-  - `getRol`
+  - **`rol`**($dni)
+  - **`getRol`**($rol)
 
 
 ### `app/Http/Controllers/API/ProgramacionController.php`
@@ -570,21 +584,21 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\ReservaController`
 - Metodes:
-  - `index`
-  - `profesores`
+  - **`index`**()
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\API\profesorService`
 - Metodes:
-  - `show`
-  - `unsecure`
-  - `getJson`
-  - `action`
-  - `checkSecuredStatus`
-  - `isLegacyFilterExpression`
-  - `queryLegacy`
-  - `extractQueryFilters`
-  - `queryByRequestFilters`
-  - `applyLegacyCondition`
+  - **`show`**($id)
+  - **`unsecure`**(Request $datosProfesor)
+  - **`getJson`**($dispositivo)
+  - **`action`**($action, $espacio): bool
+  - **`checkSecuredStatus`**($data): bool
+  - **`isLegacyFilterExpression`**(string $cadena): bool
+  - **`queryLegacy`**(string $cadena)
+  - **`extractQueryFilters`**(Request $request): array
+  - **`queryByRequestFilters`**(array $filters, $fields = null)
+  - **`applyLegacyCondition`**($query, string $filter): void
 
 
 ### `app/Http/Controllers/API/ResultadoController.php`
@@ -597,7 +611,7 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\ReunionController`
 - Metodes:
-  - `putAlumno`
+  - **`putAlumno`**($idReunion, $idAlumno, Request $request)
 
 
 ### `app/Http/Controllers/API/SettingController.php`
@@ -646,7 +660,7 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 
 #### `Intranet\Http\Controllers\API\TipoReunionController`
 - Metodes:
-  - `show`
+  - **`show`**($id)
 
 
 ### `app/Http/Controllers/API/TutoriaGrupoController.php`
@@ -661,63 +675,82 @@ Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
 Controlador d'activitats extraescolars i complementàries.
 
 - Metodes:
-  - `search`
-  - `createWithDefaultValues`
-  - `store`
+  - **`search`**()
+  - **`createWithDefaultValues`**($default=[])
+  - **`store`**(ActividadRequest $request): \Illuminate\Http\RedirectResponse
+
     Guarda una activitat i aplica els participants per defecte.
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `valoracion`
-  - `showValue`
+  - **`update`**(ActividadRequest $request, $id)
+  - **`valoracion`**(ValoracionRequest $request)
+  - **`showValue`**($id): \Illuminate\Contracts\View\View
+
     Mostra la pantalla de valoració d'una activitat.
-  - `value`
+  - **`value`**($id): \Illuminate\Contracts\View\View
+
     Mostra el formulari per omplir la valoració.
-  - `printValue`
+  - **`printValue`**($id): \Symfony\Component\HttpFoundation\StreamedResponse
+
     Genera el PDF de la valoració d'una activitat.
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `autorize`
+  - **`autorize`**($id): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+
     Mostra la pantalla de control d'autoritzacions de menors.
-  - `iniBotones`
+  - **`iniBotones`**(): void
+
     Inicialitza la botonera del grid i perfil.
-  - `autorizar`
+  - **`autorizar`**(): \Illuminate\Http\RedirectResponse
+
     Autoritza activitats en estat 1 i, si hi ha credencials, les exporta a calendari.
-  - `accept`
+  - **`accept`**($id, $redirect = true): mixed
+
     Accepta l'activitat incrementant estat i sincronitzant calendari extern.
-  - `printAutoritzats`
+  - **`printAutoritzats`**(): mixed
+
     Imprimeix el llistat d'autoritzats.
-  - `itaca`
+  - **`itaca`**($id): \Illuminate\Http\RedirectResponse
+
     Marca l'activitat com a tramitada en ITACA.
-  - `menorAuth`
+  - **`menorAuth`**($nia, $id): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+
     Alterna l'estat d'autorització d'un alumne menor.
-  - `gestor`
+  - **`gestor`**($id): mixed
+
     Renderitza el document associat a l'activitat amb GestorService.
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes:
-  - `grupos`
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `detalle`
+  - **`detalle`**($id): \Illuminate\Contracts\View\View
+
     Mostra el detall d'una activitat amb professors i grups associats.
 
 #### `Intranet\Http\Controllers\activosOrdered`
 - Metodes:
-  - `altaGrupo`
+  - **`altaGrupo`**(Request $request, $actividad_id): \Illuminate\Http\RedirectResponse
+
     Afig un grup a una activitat sense esborrar els existents.
-  - `borrarGrupo`
+  - **`borrarGrupo`**($actividad_id, $grupo_id): \Illuminate\Http\RedirectResponse
+
     Esborra un grup assignat a l'activitat.
-  - `altaProfesor`
+  - **`altaProfesor`**(Request $request, $actividad_id): \Illuminate\Http\RedirectResponse
+
     Afig un professor participant a l'activitat.
-  - `borrarProfesor`
+  - **`borrarProfesor`**($actividad_id, $profesor_id): \Illuminate\Http\RedirectResponse
+
     Esborra un professor participant.
-  - `coordinador`
+  - **`coordinador`**($actividad_id, $profesor_id): \Illuminate\Http\RedirectResponse
+
     Assigna el coordinador de l'activitat.
-  - `notify`
+  - **`notify`**($id): \Illuminate\Http\RedirectResponse
+
     Notifica a professorat afectat i tutors dels grups de l'activitat.
 
 #### `Intranet\Http\Controllers\find`
@@ -725,7 +758,8 @@ Controlador d'activitats extraescolars i complementàries.
 
 #### `Intranet\Http\Controllers\notifyActivity`
 - Metodes:
-  - `autorizacion`
+  - **`autorizacion`**($id): \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+
     Genera/mostra l'autorització de menors i crea registres si encara no existixen.
 
 
@@ -735,11 +769,12 @@ Controlador d'activitats extraescolars i complementàries.
 Class ActualizacionController
 
 - Metodes:
-  - `actualizacion`
+  - **`actualizacion`**(): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `runShell`
-  - `gitEnv`
-  - `markRepoAsSafe`
+  - **`runShell`**(string $command, string $label): void
+  - **`gitEnv`**(): array
+  - **`markRepoAsSafe`**(): void
 
 
 ### `app/Http/Controllers/AdministracionController.php`
@@ -748,48 +783,54 @@ Class ActualizacionController
 Class AdministracionController
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `alumnoFcts`
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `lang`
+  - **`lang`**($lang): \Illuminate\Http\RedirectResponse
+
     /
-  - `allApiToken`
+  - **`allApiToken`**(): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\activos`
 - Metodes:
-  - `cleanCache`
-  - `nuevoCursoIndex`
+  - **`cleanCache`**()
+  - **`nuevoCursoIndex`**(): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `esborrarProgramacions`
-  - `esborrarEnquestes`
-  - `ferVotsPermanents`
-  - `nuevoCurso`
+  - **`esborrarProgramacions`**()
+  - **`esborrarEnquestes`**()
+  - **`ferVotsPermanents`**()
+  - **`nuevoCurso`**(Request $request): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\clearFechaBaja`
 - Metodes:
-  - `help`
+  - **`help`**($fichero, $enlace): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `exe_actualizacion`
+  - **`exe_actualizacion`**($VersionAntigua)
+
     /
-  - `v3_00`
-  - `v3_01`
+  - **`v3_00`**()
+  - **`v3_01`**()
 
 #### `Intranet\Http\Controllers\all`
 - Metodes:
-  - `consulta`
-  - `v2_01`
-  - `importaAnexoI`
-  - `centres_amb_mateixa_adreça`
-  - `showDoor`
-  - `secure`
+  - **`consulta`**()
+  - **`v2_01`**()
+  - **`importaAnexoI`**()
+  - **`centres_amb_mateixa_adreça`**()
+  - **`showDoor`**()
+  - **`secure`**(Request $request)
 
 
 ### `app/Http/Controllers/AlumnoController.php`
@@ -798,22 +839,27 @@ Class AdministracionController
 Class AlumnoController
 
 - Metodes:
-  - `update`
+  - **`update`**(Request $request, $id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void
+
     /
-  - `carnet`
+  - **`carnet`**($alumno): mixed
+
     /
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `checkFol`
-  - `equipo`
+  - **`checkFol`**($id)
+  - **`equipo`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\byGrupo`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `alerta`
+  - **`alerta`**(Request $request, $id): \Illuminate\Http\RedirectResponse
+
     /
 
 
@@ -821,33 +867,34 @@ Class AlumnoController
 
 #### `Intranet\Http\Controllers\AlumnoCursoController`
 - Metodes:
-  - `search`
-  - `active`
-  - `destroy`
-  - `iniBotones`
-  - `pdf`
+  - **`search`**()
+  - **`active`**($id)
+  - **`destroy`**($id)
+  - **`iniBotones`**()
+  - **`pdf`**($id)
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `registerGrup`
-  - `registerAlumn`
-  - `register`
-  - `getRegister`
-  - `unregister`
+  - **`registerGrup`**($grupo, $id)
+  - **`registerAlumn`**($alumno, $id)
+  - **`register`**($id, $alumno = null)
+  - **`getRegister`**($alumno, $curso)
+  - **`unregister`**($id, $alumno = null, $redirect = 1)
 
 
 ### `app/Http/Controllers/AlumnoGrupoController.php`
 
 #### `Intranet\Http\Controllers\AlumnoGrupoController`
 - Metodes:
-  - `indice`
+  - **`indice`**($grupo): \Illuminate\Contracts\View\View
+
     Punt d'entrada legacy per a rutes que passen el grup en URL.
-  - `search`
-  - `redirect`
-  - `updateModal`
-  - `realStore`
-  - `update`
-  - `iniBotones`
+  - **`search`**()
+  - **`redirect`**()
+  - **`updateModal`**(AlumnoGrupoUpdateRequest $request, $grupo, $alumno)
+  - **`realStore`**(AlumnoGrupoUpdateRequest $request, $id = null)
+  - **`update`**(AlumnoGrupoUpdateRequest $request, $id)
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/ArticuloController.php`
@@ -856,17 +903,19 @@ Class AlumnoController
 Class MaterialController
 
 - Metodes:
-  - `iniBotones`
-  - `detalle`
+  - **`iniBotones`**()
+  - **`detalle`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `store`
+  - **`store`**(ArticuloRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(ArticuloRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un article amb autorització explícita.
-  - `borrarFichero`
+  - **`borrarFichero`**($fichero)
 
 
 ### `app/Http/Controllers/ArticuloLoteController.php`
@@ -875,8 +924,8 @@ Class MaterialController
 Class MaterialController
 
 - Metodes:
-  - `search`
-  - `iniBotones`
+  - **`search`**()
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/Auth/Alumno/HomeController.php`
@@ -891,32 +940,32 @@ Description of HomeIdentifyController
 
 #### `Intranet\Http\Controllers\Auth\Alumno\LoginController`
 - Metodes:
-  - `username`
-  - `credentials`
-  - `guard`
-  - `showLoginForm`
-  - `logout`
-  - `plogin`
+  - **`username`**()
+  - **`credentials`**(Request $request)
+  - **`guard`**()
+  - **`showLoginForm`**()
+  - **`logout`**()
+  - **`plogin`**(Request $request)
 
 
 ### `app/Http/Controllers/Auth/Alumno/PerfilController.php`
 
 #### `Intranet\Http\Controllers\Auth\Alumno\PerfilController`
 - Metodes:
-  - `editar`
-  - `update`
+  - **`editar`**()
+  - **`update`**(Request $request, $id = null)
 
 
 ### `app/Http/Controllers/Auth/ExternLoginController.php`
 
 #### `Intranet\Http\Controllers\Auth\ExternLoginController`
 - Metodes:
-  - `username`
-  - `authenticated`
+  - **`username`**()
+  - **`authenticated`**(Request $request, $user)
 
 #### `Intranet\Http\Controllers\Auth\apiSessionTokenService`
 - Metodes:
-  - `showExternLoginForm`
+  - **`showExternLoginForm`**($token)
 
 #### `Intranet\Http\Controllers\Auth\profesorService`
 - Metodes: cap
@@ -926,7 +975,8 @@ Description of HomeIdentifyController
 
 #### `Intranet\Http\Controllers\Auth\ForgotPasswordController`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create a new controller instance.
 
 
@@ -934,23 +984,23 @@ Description of HomeIdentifyController
 
 #### `Intranet\Http\Controllers\Auth\HomeController`
 - Metodes:
-  - `__construct`
-  - `index`
-  - `legal`
+  - **`__construct`**()
+  - **`index`**(FitxatgeService $fitxatgeService, PerfilService $perfilService)
+  - **`legal`**()
 
 
 ### `app/Http/Controllers/Auth/LoginController.php`
 
 #### `Intranet\Http\Controllers\Auth\LoginController`
 - Metodes:
-  - `login`
+  - **`login`**()
 
 
 ### `app/Http/Controllers/Auth/PerfilController.php`
 
 #### `Intranet\Http\Controllers\Auth\PerfilController`
 - Metodes:
-  - `update`
+  - **`update`**(Request $request, $new)
 
 
 ### `app/Http/Controllers/Auth/Profesor/HomeController.php`
@@ -965,65 +1015,72 @@ Description of HomeIdentifyController
 
 #### `Intranet\Http\Controllers\Auth\Profesor\LoginController`
 - Metodes:
-  - `username`
-  - `profesores`
+  - **`username`**()
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\Auth\Profesor\profesorService`
 - Metodes:
-  - `apiSessionTokens`
+  - **`apiSessionTokens`**(): ApiSessionTokenService
 
 #### `Intranet\Http\Controllers\Auth\Profesor\apiSessionTokenService`
 - Metodes:
-  - `authenticated`
+  - **`authenticated`**(Request $request, $user): void
+
     Hook del trait AuthenticatesUsers després de login satisfactori.
-  - `credentials`
-  - `guard`
-  - `showLoginForm`
-  - `logout`
-  - `plogin`
-  - `firstLogin`
+  - **`credentials`**(Request $request)
+  - **`guard`**()
+  - **`showLoginForm`**()
+  - **`logout`**()
+  - **`plogin`**(Request $request)
+  - **`firstLogin`**(Request $request)
 
 
 ### `app/Http/Controllers/Auth/Profesor/PerfilController.php`
 
 #### `Intranet\Http\Controllers\Auth\Profesor\PerfilController`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\Auth\Profesor\profesorService`
 - Metodes:
-  - `editar`
-  - `files`
-  - `updateFiles`
-  - `updatePhoto`
+  - **`editar`**()
+  - **`files`**()
+  - **`updateFiles`**(PerfilFilesRequest $request)
+  - **`updatePhoto`**(PerfilFilesRequest $request, Profesor $profesor): void
+
     Processa la pujada de foto de perfil i garanteix persistència en BBDD.
-  - `cleanupAndRelinkProfileAssets`
+  - **`cleanupAndRelinkProfileAssets`**(?string $oldPhoto, string $newPhoto): void
+
     Elimina/relaciona fitxers antics lligats a la foto anterior.
-  - `moveProfileAsset`
+  - **`moveProfileAsset`**(string $folder, string $oldPhoto, string $newPhoto): void
+
     Mou un fitxer d'asset de perfil si existeix amb el nom antic.
-  - `updateSignature`
-  - `updatePeu`
-  - `deleteCertificate`
-  - `updateDigitalCertificate`
-  - `update`
+  - **`updateSignature`**(PerfilFilesRequest $request, Profesor $profesor)
+  - **`updatePeu`**(PerfilFilesRequest $request, Profesor $profesor)
+  - **`deleteCertificate`**(PerfilFilesRequest $request, Profesor $profesor)
+  - **`updateDigitalCertificate`**(PerfilFilesRequest $request, Profesor $profesor)
+  - **`update`**(Request $request, $id=null)
 
 
 ### `app/Http/Controllers/Auth/Profesor/ResetProfesorController.php`
 
 #### `Intranet\Http\Controllers\Auth\Profesor\ResetProfesorController`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Http/Controllers/Auth/RegisterController.php`
 
 #### `Intranet\Http\Controllers\Auth\RegisterController`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create a new controller instance.
-  - `validator`
+  - **`validator`**(array $data): \Illuminate\Contracts\Validation\Validator
+
     Get a validator for an incoming registration request.
-  - `create`
+  - **`create`**(array $data): \Intranet\User
+
     Create a new user instance after a valid registration.
 
 
@@ -1031,37 +1088,44 @@ Description of HomeIdentifyController
 
 #### `Intranet\Http\Controllers\Auth\ResetPasswordController`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create a new controller instance.
-  - `resetPassword`
+  - **`resetPassword`**($user, $password)
 
 
 ### `app/Http/Controllers/Auth/Social/SocialController.php`
 
 #### `Intranet\Http\Controllers\Auth\Social\SocialController`
 - Metodes:
-  - `__construct`
-  - `profesores`
+  - **`__construct`**()
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\Auth\Social\profesorService`
 - Metodes:
-  - `apiSessionTokens`
+  - **`apiSessionTokens`**(): ApiSessionTokenService
 
 #### `Intranet\Http\Controllers\Auth\Social\apiSessionTokenService`
 - Metodes:
-  - `getSocialAuth`
-  - `checkTokenAndRedirect`
-  - `successloginProfesor`
-  - `getSocialAuthCallback`
+  - **`getSocialAuth`**($token=null)
+  - **`checkTokenAndRedirect`**(Request $request, $user)
+  - **`successloginProfesor`**($user)
+  - **`getSocialAuthCallback`**(Request $request)
 
 
 ### `app/Http/Controllers/CalendariFctController.php`
 
 #### `Intranet\Http\Controllers\CalendariFctController`
+Class CalendariFctController
+
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `days`
+  - **`search`**(): \Illuminate\Support\Collection
+
+    Recupera els alumnes del professor autenticat.
+  - **`iniBotones`**()
+  - **`days`**($id): \Illuminate\Contracts\View\View
+
+    Mostra el calendari FCT d'un alumne.
 
 
 ### `app/Http/Controllers/CentroController.php`
@@ -1070,14 +1134,17 @@ Description of HomeIdentifyController
 Class CentroController
 
 - Metodes:
-  - `update`
+  - **`update`**(CentroRequest $request, $id): \Illuminate\Http\RedirectResponse
+
     /
-  - `showEmpresa`
-  - `store`
+  - **`showEmpresa`**($id)
+  - **`store`**(CentroRequest $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `empresaCreateCentro`
+  - **`empresaCreateCentro`**(EmpresaCentroRequest $request, $id)
 
 
 ### `app/Http/Controllers/CicloController.php`
@@ -1086,13 +1153,14 @@ Class CentroController
 Class CicloController
 
 - Metodes:
-  - `iniBotones`
-  - `store`
+  - **`iniBotones`**()
+  - **`store`**(CicloRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(CicloRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un cicle amb autorització explícita.
 
 
@@ -1102,13 +1170,13 @@ Class CicloController
 Class CicloController
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `edit`
-  - `update`
+  - **`edit`**()
+  - **`update`**(CicloDualRequest $request)
 
 
 ### `app/Http/Controllers/ColaboracionAlumnoController.php`
@@ -1117,9 +1185,11 @@ Class CicloController
 Class PanelColaboracionController
 
 - Metodes:
-  - `index`
+  - **`index`**(): mixed
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 
@@ -1129,21 +1199,25 @@ Class PanelColaboracionController
 Class ColaboracionController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
-  - `update`
+  - **`update`**(ColaboracionRequest $request, $id): \Illuminate\Http\RedirectResponse
+
     Actualitza una col·laboració des del formulari específic de panell.
-  - `show`
+  - **`show`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `printAnexeIV`
+  - **`printAnexeIV`**($colaboracion)
 
 #### `Intranet\Http\Controllers\fillAndSave`
 - Metodes:
-  - `makeArrayPdfAnexoIV`
-  - `makeArrayPdfConveni`
-  - `deleteDir`
+  - **`makeArrayPdfAnexoIV`**($colaboracion)
+  - **`makeArrayPdfConveni`**($colaboracion)
+  - **`deleteDir`**($folder)
 
 
 ### `app/Http/Controllers/ComisionController.php`
@@ -1152,40 +1226,46 @@ Class ColaboracionController
 Class ComisionController
 
 - Metodes:
-  - `__construct`
-  - `comisionService`
+  - **`__construct`**(?ComisionService $comisionService = null)
+  - **`comisionService`**(): ComisionService
 
 #### `Intranet\Http\Controllers\comisionService`
 - Metodes:
-  - `store`
+  - **`store`**(ComisionRequest $request)
 
 #### `Intranet\Http\Controllers\merge`
 - Metodes:
-  - `update`
-  - `confirm`
-  - `iniBotones`
+  - **`update`**(ComisionRequest $request, $id)
+  - **`confirm`**($id)
+  - **`iniBotones`**()
+
     /
-  - `createWithDefaultValues`
-  - `enviarCorreos`
-  - `sendEmail`
-  - `init`
-  - `payment`
+  - **`createWithDefaultValues`**($default=[])
+  - **`enviarCorreos`**($comision)
+  - **`sendEmail`**($elemento, $fecha)
+  - **`init`**($id)
+  - **`payment`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `printAutoritzats`
-  - `paid`
+  - **`printAutoritzats`**()
+  - **`paid`**($id)
+
     /
-  - `unpaid`
+  - **`unpaid`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `autorizar`
+  - **`autorizar`**(): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\StateService`
 - Metodes:
-  - `detalle`
-  - `createFct`
-  - `deleteFct`
-  - `setEstado`
-  - `buildFctOptions`
+  - **`detalle`**($id)
+  - **`createFct`**(Request $request, $comisionId)
+  - **`deleteFct`**($comisionId, $fctId)
+  - **`setEstado`**($id, int $estado): void
+  - **`buildFctOptions`**(): array
+
     Retorna opcions de FCT per al selector de detall:
 
 
@@ -1193,40 +1273,52 @@ Class ComisionController
 
 #### `Intranet\Http\Controllers\Controller`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Http/Controllers/Core/BaseController.php`
 
 #### `Intranet\Http\Controllers\Core\BaseController`
 - Metodes:
-  - `__construct`
-  - `chooseView`
+  - **`__construct`**()
+  - **`chooseView`**($tipo): string
+
     Resol la vista a utilitzar per a una acció.
-  - `grid`
+  - **`grid`**($todos, $modal=false): \Illuminate\Contracts\View\View
+
     Renderitza el grid amb o sense formulari modal.
-  - `parametres`
+  - **`parametres`**(): array
+
     Extensió per a paràmetres addicionals en classes filles.
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Acció index estàndard.
-  - `confirm`
+  - **`confirm`**($id): mixed
+
     Mostra modal de confirmació per a un registre.
-  - `indice`
+  - **`indice`**($search): \Illuminate\Contracts\View\View
+
     Variante d'index amb filtre extern.
-  - `search`
+  - **`search`**(): \Illuminate\Support\Collection
+
     Cerca per defecte del controlador base.
-  - `llist`
+  - **`llist`**($todos, $panel): \Illuminate\Contracts\View\View
+
     Renderitza una vista de llistat sobre un panell concret.
-  - `iniBotones`
+  - **`iniBotones`**(): void
+
     Punt d'extensió per inicialitzar botons en classes filles.
-  - `iniPestanas`
+  - **`iniPestanas`**($parametres = null): void
+
     Inicialitza pestanyes per defecte.
-  - `resolveModelClass`
+  - **`resolveModelClass`**(): string
+
     Resol la classe de model actual del controlador.
 
 #### `Intranet\Http\Controllers\Core\ltrim`
 - Metodes:
-  - `hasModelColumn`
+  - **`hasModelColumn`**(string $class, string $column): bool
+
     Comprova si un model té una columna, amb cache en memòria.
 
 
@@ -1234,29 +1326,41 @@ Class ComisionController
 
 #### `Intranet\Http\Controllers\Core\IntranetController`
 - Metodes:
-  - `redirect`
+  - **`redirect`**(): \Illuminate\Http\RedirectResponse
+
     Calcula la redirecció de retorn després de store/update/destroy.
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     Elimina un registre i fitxers associats si escau.
-  - `borrarFichero`
+  - **`borrarFichero`**($fichero): void
+
     Esborra un fitxer del `public/` o `storage/app/` si la ruta és segura.
-  - `store`
+  - **`store`**(Request $request): \Illuminate\Http\RedirectResponse
+
     Guarda un nou registre.
-  - `realStore`
+  - **`realStore`**(Request $request, $id = null): mixed
+
     Crea o actualitza un registre i retorna la clau primària resultant.
-  - `persist`
+  - **`persist`**(Request $request, $id = null): mixed
+
     Alias semàntic de persistència per compatibilitat amb flux modal.
-  - `update`
+  - **`update`**(Request $request, $id): \Illuminate\Http\RedirectResponse
+
     Actualitza un registre existent.
-  - `active`
+  - **`active`**($id): \Illuminate\Http\RedirectResponse
+
     Alterna l'estat `activo` d'un registre.
-  - `document`
+  - **`document`**($id): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+
     Retorna el document físic associat al registre.
-  - `gestor`
+  - **`gestor`**($id): \Illuminate\Http\RedirectResponse
+
     Redirigeix al gestor documental del registre si està enllaçat.
-  - `validateAll`
+  - **`validateAll`**($request, $elemento): array
+
     Valida el request segons les regles del model.
-  - `manageCheckBox`
+  - **`manageCheckBox`**($request, $elemento): Request
+
     Normalitza camps checkbox en el request abans de validar/guardar.
 
 
@@ -1264,32 +1368,46 @@ Class ComisionController
 
 #### `Intranet\Http\Controllers\Core\ModalController`
 - Metodes:
-  - `__construct`
-  - `index`
-  - `grid`
+  - **`__construct`**()
+  - **`index`**()
+  - **`grid`**(): \Illuminate\Contracts\View\View
+
     Renderitza la vista modal amb grid i formulari d'alta.
-  - `resolveIndexView`
+  - **`resolveIndexView`**(): string
+
     Resol la vista d'index del modal.
-  - `search`
+  - **`search`**()
+
     Cerca per defecte del modal:
-  - `hasModelColumn`
+  - **`hasModelColumn`**(string $modelClass, string $column): bool
+
     Comprova si la taula del model té una columna.
-  - `resolveModelClass`
+  - **`resolveModelClass`**(): string
+
     Resol la classe de model del controlador modal.
-  - `create`
+  - **`create`**()
+
     Per a recursos amb vista modal, la ruta create redirigeix a l'índex
-  - `edit`
-  - `persist`
+  - **`edit`**($id = null)
+  - **`persist`**(Request $request, $id = null): mixed
+
     Persistix un model del controlador modal.
-  - `createWithDefaultValues`
+  - **`createWithDefaultValues`**($default = []): mixed
+
     Crea una instància buida del model per al formulari modal.
-  - `destroy`
-  - `confirm`
+  - **`destroy`**($id)
+  - **`document`**($id): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+
+    Retorna el document físic associat al registre.
+  - **`confirm`**($id): mixed
+
     Retorna la vista de confirmació per al model.
-  - `iniBotones`
-  - `iniPestanas`
+  - **`iniBotones`**()
+  - **`iniPestanas`**(): void
+
     Inicialitza pestanyes per defecte.
-  - `redirect`
+  - **`redirect`**(): \Illuminate\Http\RedirectResponse
+
     Resol redirecció de retorn en fluxos modal.
 
 
@@ -1297,14 +1415,15 @@ Class ComisionController
 
 #### `Intranet\Http\Controllers\CotxeController`
 - Metodes:
-  - `store`
+  - **`store`**(CotxeRequest $request)
 
 #### `Intranet\Http\Controllers\merge`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(CotxeRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un cotxe amb autorització explícita.
-  - `iniBotones`
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/CursoController.php`
@@ -1313,29 +1432,37 @@ Class ComisionController
 Class CursoController
 
 - Metodes:
-  - `store`
+  - **`store`**(CursoRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `detalle`
+  - **`update`**(CursoRequest $request, $id)
+  - **`detalle`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `indexAlumno`
+  - **`indexAlumno`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `iniAluBotones`
+  - **`iniAluBotones`**()
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `saveFile`
+  - **`saveFile`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `makeReport`
+  - **`makeReport`**($id): mixed
+
     /
-  - `document`
-  - `pdf`
+  - **`document`**($id)
+  - **`pdf`**($id): mixed
+
     /
-  - `email`
-  - `active`
-  - `destroy`
+  - **`email`**($id)
+  - **`active`**($id)
+  - **`destroy`**($id)
+
     Elimina un curs amb autorització explícita.
 
 
@@ -1345,15 +1472,16 @@ Class CursoController
 Class CicloController
 
 - Metodes:
-  - `iniBotones`
-  - `store`
+  - **`iniBotones`**()
+  - **`store`**(DepartamentoRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(DepartamentoRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un departament amb autorització explícita.
-  - `search`
+  - **`search`**()
 
 
 ### `app/Http/Controllers/Deprecated/DualController.php`
@@ -1362,47 +1490,56 @@ Class CicloController
 Class DualAlumnoController
 
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
-  - `grupos`
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\Deprecated\grupoService`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `show`
+  - **`show`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+
     /
-  - `update`
+  - **`update`**(DualRequest $request, $id): \Illuminate\Http\RedirectResponse
+
     /
-  - `create`
+  - **`create`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `store`
+  - **`store`**(DualRequest $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `destroy`
-  - `informe`
+  - **`destroy`**($id)
+  - **`informe`**($fct, $informe='anexe_vii', $stream=true, $data=null): mixed
+
     /
-  - `getGestor`
-  - `chooseAction`
-  - `certificado`
-  - `getInforme`
-  - `deleteDir`
-  - `putInforme`
-  - `printAnexeXII`
+  - **`getGestor`**($doc, $ciclo)
+  - **`chooseAction`**($fct, $document, &$zip, $data)
+  - **`certificado`**($fct, $date)
+  - **`getInforme`**($id)
+  - **`deleteDir`**($folder)
+  - **`putInforme`**($id, Request $request)
+  - **`printAnexeXII`**($fct, $data)
 
 #### `Intranet\Http\Controllers\Deprecated\fillAndSave`
 - Metodes:
-  - `makeArrayPdfAnexoVII`
-  - `printAnexeVI`
+  - **`makeArrayPdfAnexoVII`**($fct, $data)
+  - **`printAnexeVI`**()
 
 #### `Intranet\Http\Controllers\Deprecated\semanalByGrupo`
 - Metodes:
-  - `makeArrayPdfAnexoXII`
+  - **`makeArrayPdfAnexoXII`**($fct, $data): mixed
+
     /
-  - `printAnexeXIII`
+  - **`printAnexeXIII`**($fct, $data)
 
 #### `Intranet\Http\Controllers\Deprecated\fillAndSend`
 - Metodes:
-  - `makeArrayPdfAnexoXIV`
+  - **`makeArrayPdfAnexoXIV`**(): mixed
+
     /
 
 
@@ -1412,15 +1549,28 @@ Class DualAlumnoController
 /
 
 - Metodes:
-  - `create`
+  - **`create`**(): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `hazDNI`
-  - `store`
+  - **`hazDNI`**($dni, $nia)
+  - **`store`**(Request $request): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `modifica`
+  - **`modifica`**($key, $email)
 
 #### `Intranet\Http\Controllers\Deprecated\find`
 - Metodes: cap
+
+
+### `app/Http/Controllers/Docs/DocblockDocsController.php`
+
+#### `Intranet\Http\Controllers\Docs\DocblockDocsController`
+Renderitza la documentacio de doc-blocks de l'aplicacio.
+
+- Metodes:
+  - **`index`**(): \Illuminate\Http\Response
+
+    Mostra la pagina de documentacio amb index lateral de seccions.
 
 
 ### `app/Http/Controllers/DocumentoController.php`
@@ -1429,71 +1579,71 @@ Class DualAlumnoController
 Controlador de gestió de documents i fluxos associats de FCT/qualitat.
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null, ?DocumentoLifecycleService $documentoLifecycleService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `alumnoFcts`
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `documentos`
+  - **`documentos`**(): DocumentoLifecycleService
 
 #### `Intranet\Http\Controllers\documentoLifecycleService`
 - Metodes:
-  - `forms`
+  - **`forms`**(): DocumentoFormService
 
 #### `Intranet\Http\Controllers\documentoFormService`
 - Metodes:
-  - `redirect`
-  - `store`
+  - **`redirect`**()
+  - **`store`**(Request $request, $fct = null)
 
 #### `Intranet\Http\Controllers\validate`
 - Metodes:
-  - `createWithDefaultValues`
-  - `project`
-  - `qualitatUpload`
+  - **`createWithDefaultValues`**($default=[])
+  - **`project`**($idFct)
+  - **`qualitatUpload`**($id)
 
 #### `Intranet\Http\Controllers\app`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\findOrFail`
 - Metodes:
-  - `qualitat`
+  - **`qualitat`**()
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes:
-  - `edit`
-  - `show`
-  - `destroy`
-  - `readFile`
+  - **`edit`**($id = null)
+  - **`show`**($id)
+  - **`destroy`**($id)
+  - **`readFile`**($name)
 
 
 ### `app/Http/Controllers/EmpresaController.php`
 
 #### `Intranet\Http\Controllers\EmpresaController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?EmpresaService $empresaService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `empreses`
+  - **`empreses`**(): EmpresaService
 
 #### `Intranet\Http\Controllers\empresaService`
 - Metodes:
-  - `search`
-  - `create`
-  - `show`
-  - `iniBotones`
-  - `store`
+  - **`search`**()
+  - **`create`**($default=[])
+  - **`show`**($id)
+  - **`iniBotones`**()
+  - **`store`**(Request $request)
 
 #### `Intranet\Http\Controllers\empreses`
 - Metodes:
-  - `update`
-  - `document`
-  - `A1`
+  - **`update`**(Request $request, $id)
+  - **`document`**($id)
+  - **`A1`**($id)
 
 
 ### `app/Http/Controllers/EspacioController.php`
@@ -1502,19 +1652,22 @@ Controlador de gestió de documents i fluxos associats de FCT/qualitat.
 Class EspacioController
 
 - Metodes:
-  - `search`
-  - `store`
+  - **`search`**()
+  - **`store`**(EspacioRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(EspacioRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un espai amb autorització explícita.
-  - `detalle`
+  - **`detalle`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `barcode`
+  - **`barcode`**($id, $posicion=1)
 
 
 ### `app/Http/Controllers/ExpedienteController.php`
@@ -1523,44 +1676,51 @@ Class EspacioController
 Class ExpedienteController
 
 - Metodes:
-  - `__construct`
-  - `expedients`
+  - **`__construct`**(?ExpedienteService $expedienteService = null)
+  - **`expedients`**(): ExpedienteService
 
 #### `Intranet\Http\Controllers\expedienteService`
 - Metodes:
-  - `store`
+  - **`store`**(ExpedienteRequest $request)
 
 #### `Intranet\Http\Controllers\expedients`
 - Metodes:
-  - `update`
-  - `iniBotones`
+  - **`update`**(ExpedienteRequest $request, $id)
+  - **`iniBotones`**()
+
     /
-  - `autorizar`
+  - **`autorizar`**(): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\authorizePending`
 - Metodes:
-  - `init`
+  - **`init`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\init`
 - Metodes:
-  - `createWithDefaultValues`
-  - `pasaOrientacion`
+  - **`createWithDefaultValues`**($default = [])
+  - **`pasaOrientacion`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\passToOrientation`
 - Metodes:
-  - `assigna`
+  - **`assigna`**($id, Request $request)
 
 #### `Intranet\Http\Controllers\assignCompanion`
 - Metodes:
-  - `pdf`
+  - **`pdf`**($id): mixed
+
     /
-  - `imprimir`
+  - **`imprimir`**(): \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+
     /
-  - `show`
-  - `destroy`
+  - **`show`**($id)
+  - **`destroy`**($id)
+
     Elimina un expedient amb autorització explícita.
 
 
@@ -1570,87 +1730,98 @@ Class ExpedienteController
 Class FaltaController
 
 - Metodes:
-  - `__construct`
-  - `faltas`
+  - **`__construct`**(?FaltaService $faltaService = null)
+  - **`faltas`**(): FaltaService
 
 #### `Intranet\Http\Controllers\faltaService`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `store`
+  - **`store`**(Request $request): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\validate`
 - Metodes:
-  - `update`
+  - **`update`**(Request $request, $id): \Illuminate\Http\RedirectResponse
+
     /
-  - `createWithDefaultValues`
-  - `init`
+  - **`createWithDefaultValues`**($default = [])
+  - **`init`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `alta`
+  - **`alta`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `findFaltaOrFail`
+  - **`findFaltaOrFail`**(int $id): Falta
+
     Recupera la falta per aplicar autorització explícita.
+  - **`show`**($id): \Illuminate\Contracts\View\View
+
+    Mostra el detall d'una falta.
 
 
 ### `app/Http/Controllers/FaltaItacaController.php`
 
 #### `Intranet\Http\Controllers\FaltaItacaController`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `faltes`
+  - **`faltes`**(): FaltaItacaWorkflowService
 
 #### `Intranet\Http\Controllers\faltaItacaWorkflowService`
 - Metodes:
-  - `index`
-  - `printReport`
+  - **`index`**()
+  - **`printReport`**($request)
 
 #### `Intranet\Http\Controllers\findElements`
 - Metodes:
-  - `resolve`
-  - `refuse`
+  - **`resolve`**($id)
+  - **`refuse`**($id, Request $request)
 
 
 ### `app/Http/Controllers/FctAlumnoController.php`
 
 #### `Intranet\Http\Controllers\FctAlumnoController`
 - Metodes:
-  - `__construct`
-  - `alumnoFcts`
+  - **`__construct`**(?AlumnoFctService $alumnoFctService = null)
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `setQualityB`
+  - **`search`**()
+  - **`iniBotones`**()
+  - **`setQualityB`**(): void
+
     /
-  - `days`
-  - `nuevaConvalidacion`
-  - `unlink`
-  - `storeConvalidacion`
-  - `update`
-  - `show`
-  - `pdf`
-  - `Signatura`
-  - `Valoratiu`
-  - `AVI`
-  - `AEng`
-  - `auth`
-  - `AutDual`
-  - `preparePdf`
+  - **`days`**($id)
+  - **`nuevaConvalidacion`**()
+  - **`unlink`**($id)
+  - **`storeConvalidacion`**(FctConvalidacionStoreRequest $request)
+  - **`update`**(AlumnoFctUpdateRequest $request, $id)
+  - **`show`**($id)
+  - **`pdf`**($id)
+  - **`Signatura`**($id, $num)
+  - **`Valoratiu`**($id)
+  - **`AVI`**($id)
+  - **`AEng`**($id)
+  - **`auth`**($id)
+  - **`AutDual`**($id)
+  - **`preparePdf`**($id)
 
 #### `Intranet\Http\Controllers\findOrFail`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `pg0301`
+  - **`pg0301`**($id)
+
     public function email($id)
-  - `email`
-  - `importa`
+  - **`email`**($id)
+  - **`importa`**($id)
 
 
 ### `app/Http/Controllers/FctController.php`
@@ -1659,82 +1830,92 @@ Class FaltaController
 Class FctController
 
 - Metodes:
-  - `__construct`
-  - `fcts`
+  - **`__construct`**(?FctService $fctService = null)
+  - **`fcts`**(): FctService
 
 #### `Intranet\Http\Controllers\fctService`
 - Metodes:
-  - `certificates`
+  - **`certificates`**(): FctCertificateService
 
 #### `Intranet\Http\Controllers\fctCertificateService`
 - Metodes:
-  - `edit`
-  - `update`
+  - **`edit`**($id=null)
+  - **`update`**(Request $request, $id): \Illuminate\Http\RedirectResponse
+
     /
-  - `certificat`
-  - `certificatColaboradores`
+  - **`certificat`**($id)
+  - **`certificatColaboradores`**($id)
 
 #### `Intranet\Http\Controllers\findOrFail`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\streamColaboradorCertificate`
 - Metodes:
-  - `store`
+  - **`store`**(Request $request): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\validate`
 - Metodes:
-  - `show`
+  - **`show`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `nouAlumno`
+  - **`nouAlumno`**($idFct, Request $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `nouFctAlumno`
+  - **`nouFctAlumno`**(Request $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `nouInstructor`
+  - **`nouInstructor`**($idFct, ColaboradorRequest $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `deleteInstructor`
+  - **`deleteInstructor`**($idFct, $idInstructor): \Illuminate\Http\RedirectResponse
+
     /
-  - `alumnoDelete`
+  - **`alumnoDelete`**($idFct, $idAlumno): \Illuminate\Http\RedirectResponse
+
     /
-  - `modificaHoras`
+  - **`modificaHoras`**($idFct, Request $request): \Illuminate\Http\RedirectResponse
+
     /
-  - `cotutor`
+  - **`cotutor`**(Request $request, $idFct)
 
 
 ### `app/Http/Controllers/FctMailController.php`
 
 #### `Intranet\Http\Controllers\FctMailController`
 - Metodes:
-  - `__construct`
-  - `showMailById`
-  - `showMailByRequest`
+  - **`__construct`**(FctMailService $fctMailService)
+  - **`showMailById`**($id, $documento)
+  - **`showMailByRequest`**(Request $request, $documento)
 
 
 ### `app/Http/Controllers/FicharController.php`
 
 #### `Intranet\Http\Controllers\FicharController`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\profesorService`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `ficha`
-  - `search`
-  - `store`
+  - **`ficha`**(FitxatgeService $fitxatgeService)
+  - **`search`**()
+  - **`store`**(Request $request)
 
 #### `Intranet\Http\Controllers\profesores`
 - Metodes:
-  - `control`
-  - `controlDia`
-  - `loadHoraries`
-  - `loadHorary`
-  - `resumenRango`
+  - **`control`**()
+  - **`controlDia`**()
+  - **`loadHoraries`**($profesores)
+  - **`loadHorary`**($profesor)
+  - **`resumenRango`**()
 
 
 ### `app/Http/Controllers/GrupoController.php`
@@ -1743,37 +1924,46 @@ Class FctController
 Class GrupoController
 
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `grupos`
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `workflows`
+  - **`workflows`**(): GrupoWorkflowService
 
 #### `Intranet\Http\Controllers\grupoWorkflowService`
 - Metodes:
-  - `search`
+  - **`search`**(): \Illuminate\Database\Eloquent\Collection|Grupo[]|mixed
+
     /
-  - `detalle`
+  - **`detalle`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `horario`
+  - **`horario`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `asigna`
+  - **`asigna`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `pdf`
+  - **`pdf`**($grupo): mixed
+
     /
-  - `carnet`
+  - **`carnet`**($grupo): mixed
+
     /
-  - `certificados`
+  - **`certificados`**($grupo): mixed
+
     /
-  - `certificado`
+  - **`certificado`**($alumno): mixed
+
     /
-  - `checkFol`
+  - **`checkFol`**($id)
 
 
 ### `app/Http/Controllers/GrupoTrabajoController.php`
@@ -1782,31 +1972,40 @@ Class GrupoController
 Class GrupoTrabajoController
 
 - Metodes:
-  - `store`
+  - **`store`**(GrupoTrabajoRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `seach`
+  - **`update`**(GrupoTrabajoRequest $request, $id)
+  - **`seach`**(): mixed
+
     /
-  - `detalle`
+  - **`detalle`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\allOrderedBySurname`
 - Metodes:
-  - `altaProfesor`
+  - **`altaProfesor`**(GTProfesorRequest $request, $gtId): \Illuminate\Http\RedirectResponse
+
     /
-  - `borrarProfesor`
+  - **`borrarProfesor`**($gtId, $profesorId): \Illuminate\Http\RedirectResponse
+
     /
-  - `coordinador`
+  - **`coordinador`**($grupoId, $profesorId): \Illuminate\Http\RedirectResponse
+
     /
-  - `removeCoord`
+  - **`removeCoord`**($grupoId): bool
+
     /
-  - `addCoord`
+  - **`addCoord`**($grupoId, $profesorId)
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `destroy`
+  - **`destroy`**($id)
+
     Elimina un grup de treball amb autorització explícita.
 
 
@@ -1816,45 +2015,56 @@ Class GrupoTrabajoController
 Class GuardiaController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 
 ### `app/Http/Controllers/HorarioController.php`
 
 #### `Intranet\Http\Controllers\HorarioController`
+Gestiona el canvi temporal d'horaris i la revisió de propostes.
+
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\profesorService`
 - Metodes:
-  - `getJsonFromFile`
-  - `changeHorary`
-  - `saveCopy`
-  - `changeTable`
-  - `changeTableAll`
+  - **`getJsonFromFile`**($dni)
+  - **`changeHorary`**(string $dni, $cambios): void
+
+    Aplica els canvis d'horari utilitzant la posició original com a referència.
+  - **`saveCopy`**($dni, $data)
+  - **`changeTable`**($dni, $redirect=true)
+  - **`changeTableAll`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `changeIndex`
+  - **`changeIndex`**(): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `propuestas`
-  - `aceptarPropuesta`
+  - **`propuestas`**(Request $request)
+  - **`aceptarPropuesta`**($dni, $id)
 
 #### `Intranet\Http\Controllers\send`
 - Metodes:
-  - `esborrarProposta`
-  - `sendAcceptationEmail`
-  - `horarioCambiar`
+  - **`esborrarProposta`**($dni, $id)
+  - **`sendAcceptationEmail`**(string $dni, array $data, string $id): void
+  - **`horarioCambiar`**($id = null): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `update`
-  - `modificarHorario`
+  - **`update`**(HorarioUpdateRequest $request, $id)
+  - **`modificarHorario`**($idProfesor): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 
@@ -1862,41 +2072,42 @@ Class GuardiaController
 
 #### `Intranet\Http\Controllers\ImportController`
 - Metodes:
-  - `create`
-  - `store`
-  - `storeAsync`
-  - `history`
-  - `status`
-  - `asignarTutores`
-  - `run`
-  - `sacaCampos`
-  - `filtro`
-  - `required`
-  - `imports`
+  - **`create`**()
+  - **`store`**(Request $request)
+  - **`storeAsync`**(Request $request, mixed $validatedFile = null)
+  - **`history`**()
+  - **`status`**(int $importRunId)
+  - **`asignarTutores`**()
+  - **`run`**($fxml, Request $request)
+  - **`sacaCampos`**($atrxml, $llave, $func = 1)
+  - **`filtro`**($filtro, $campos)
+  - **`required`**($required, $campos)
+  - **`imports`**(): ImportService
 
 #### `Intranet\Http\Controllers\importService`
 - Metodes:
-  - `workflows`
+  - **`workflows`**(): ImportWorkflowService
 
 #### `Intranet\Http\Controllers\importWorkflowService`
 - Metodes:
-  - `schemas`
+  - **`schemas`**(): ImportSchemaProvider
 
 #### `Intranet\Http\Controllers\importSchemaProvider`
 - Metodes:
-  - `xmlHelper`
+  - **`xmlHelper`**(): ImportXmlHelperService
 
 #### `Intranet\Http\Controllers\importXmlHelperService`
 - Metodes:
-  - `executions`
+  - **`executions`**(): GeneralImportExecutionService
 
 #### `Intranet\Http\Controllers\generalImportExecutionService`
 - Metodes:
-  - `camposBdXml`
+  - **`camposBdXml`**(): array
+
     /
-  - `executeSyncImport`
-  - `resolveImportMode`
-  - `authorizeImportManagement`
+  - **`executeSyncImport`**(mixed $file, Request $request)
+  - **`resolveImportMode`**(Request $request): string
+  - **`authorizeImportManagement`**(bool $allowConsole = false): void
 
 
 ### `app/Http/Controllers/IncidenciaController.php`
@@ -1905,29 +2116,35 @@ Class GuardiaController
 Class IncidenciaController
 
 - Metodes:
-  - `search`
-  - `generarOrden`
+  - **`search`**()
+  - **`generarOrden`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `generateOrder`
+  - **`generateOrder`**(Incidencia $incidencia): OrdenTrabajo
+
     /
-  - `removeOrden`
+  - **`removeOrden`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `edit`
+  - **`edit`**($id=null): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `store`
+  - **`store`**(IncidenciaRequest $request)
 
 #### `Intranet\Http\Controllers\merge`
 - Metodes:
-  - `update`
-  - `storeImagen`
-  - `createWithDefaultValues`
-  - `show`
-  - `notify`
+  - **`update`**(IncidenciaRequest $request, $id)
+  - **`storeImagen`**(Incidencia $incidencia, IncidenciaRequest $request): void
+  - **`createWithDefaultValues`**($default = [])
+  - **`show`**($id)
+  - **`notify`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `destroy`
-  - `currentProfesorDni`
+  - **`destroy`**($id)
+  - **`currentProfesorDni`**(): string
 
 
 ### `app/Http/Controllers/InstructorController.php`
@@ -1936,32 +2153,43 @@ Class IncidenciaController
 Class InstructorController
 
 - Metodes:
-  - `instructors`
+  - **`instructors`**(): InstructorWorkflowService
 
 #### `Intranet\Http\Controllers\instructorWorkflowService`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
-  - `show`
+  - **`show`**($id): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+
     /
-  - `crea`
+  - **`crea`**($centro): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `edita`
+  - **`edita`**($id, $empresa): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `guarda`
+  - **`guarda`**(Request $request, $id, $centro): \Illuminate\Http\RedirectResponse
+
     /
-  - `showEmpresa`
-  - `almacena`
+  - **`showEmpresa`**($id)
+  - **`almacena`**(Request $request, $centro): \Illuminate\Http\RedirectResponse
+
     /
-  - `delete`
+  - **`delete`**($id, $centro): \Illuminate\Http\RedirectResponse
+
     /
-  - `copy`
+  - **`copy`**($id, $idCentro): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `toCopy`
+  - **`toCopy`**(Request $request, $id, $idCentro): \Illuminate\Http\RedirectResponse
+
     /
-  - `pdf`
+  - **`pdf`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
 
 
@@ -1971,9 +2199,10 @@ Class InstructorController
 Class MaterialController
 
 - Metodes:
-  - `barcode`
-  - `edit`
-  - `espacio`
+  - **`barcode`**(Request $request)
+  - **`edit`**($id = null)
+  - **`espacio`**($espacio): mixed
+
     /
 
 
@@ -1983,14 +2212,15 @@ Class MaterialController
 Class LoteController
 
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `store`
+  - **`search`**()
+  - **`iniBotones`**()
+  - **`store`**(IpGuardiaRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(IpGuardiaRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina una IP de guàrdia amb autorització explícita.
 
 
@@ -1998,10 +2228,10 @@ Class LoteController
 
 #### `Intranet\Http\Controllers\ItacaController`
 - Metodes:
-  - `extraescolars`
-  - `birret`
-  - `faltes`
-  - `tryOne`
+  - **`extraescolars`**(Request $request)
+  - **`birret`**(Request $request)
+  - **`faltes`**(PasswordRequest $request)
+  - **`tryOne`**(ItacaService $itacaService, mixed $falta, $fecha): int
 
 
 ### `app/Http/Controllers/LoteController.php`
@@ -2010,17 +2240,18 @@ Class LoteController
 Class LoteController
 
 - Metodes:
-  - `search`
-  - `store`
+  - **`search`**()
+  - **`store`**(LoteRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(LoteRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un lot amb autorització explícita.
-  - `iniBotones`
-  - `capture`
-  - `postCapture`
+  - **`iniBotones`**()
+  - **`capture`**($lote)
+  - **`postCapture`**($lote, Request $request)
 
 
 ### `app/Http/Controllers/MaterialBajaController.php`
@@ -2029,12 +2260,13 @@ Class LoteController
 Class MaterialController
 
 - Metodes:
-  - `search`
+  - **`search`**()
+
     /
-  - `iniBotones`
-  - `delete`
-  - `active`
-  - `recover`
+  - **`iniBotones`**()
+  - **`delete`**($id)
+  - **`active`**($id)
+  - **`recover`**($id)
 
 
 ### `app/Http/Controllers/MaterialController.php`
@@ -2043,13 +2275,17 @@ Class MaterialController
 Class MaterialController
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     MaterialController constructor.
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `copy`
+  - **`copy`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `incidencia`
+  - **`incidencia`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 
@@ -2059,20 +2295,21 @@ Class MaterialController
 Class MaterialController
 
 - Metodes:
-  - `search`
+  - **`search`**()
+
     /
-  - `iniBotones`
-  - `refuse`
-  - `resolve`
+  - **`iniBotones`**()
+  - **`refuse`**($id)
+  - **`resolve`**($id)
 
 
 ### `app/Http/Controllers/MensualController.php`
 
 #### `Intranet\Http\Controllers\MensualController`
 - Metodes:
-  - `vistaImpresion`
-  - `imprimir`
-  - `printFaltaReport`
+  - **`vistaImpresion`**()
+  - **`imprimir`**(DesdeHastaRequest $request, FaltaReportService $faltaReportService)
+  - **`printFaltaReport`**(DesdeHastaRequest $request, FaltaReportService $faltaReportService)
 
 
 ### `app/Http/Controllers/MenuController.php`
@@ -2081,29 +2318,36 @@ Class MaterialController
 Class MenuController
 
 - Metodes:
-  - `search`
+  - **`search`**(): \Illuminate\Database\Eloquent\Collection|Menu[]|mixed
+
     /
-  - `realStore`
-  - `copy`
+  - **`realStore`**(Request $request, $id = null)
+  - **`copy`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `up`
+  - **`up`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `down`
+  - **`down`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+
     /
-  - `store`
+  - **`store`**(Request $request)
+
     Guarda un nou menú amb autorització explícita.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `update`
+  - **`update`**(Request $request, $id)
+
     Actualitza un menú amb autorització explícita.
-  - `active`
-  - `destroy`
-  - `menus`
+  - **`active`**($id)
+  - **`destroy`**($id)
+  - **`menus`**(): MenuService
 
 #### `Intranet\Http\Controllers\menuService`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2113,9 +2357,10 @@ Class MenuController
 Class ModuloController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `update`
+  - **`update`**(ModuloRequest $request, $id)
 
 
 ### `app/Http/Controllers/ModuloGrupoController.php`
@@ -2124,13 +2369,14 @@ Class ModuloController
 Class Modulo_cicloController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\misModulos`
 - Metodes:
-  - `link`
+  - **`link`**($id)
 
 
 ### `app/Http/Controllers/Modulo_cicloController.php`
@@ -2139,14 +2385,16 @@ Class Modulo_cicloController
 Class Modulo_cicloController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `store`
+  - **`store`**(ModuloCicloRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(ModuloCicloRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un enllaç mòdul-cicle amb autorització explícita.
 
 
@@ -2156,9 +2404,9 @@ Class Modulo_cicloController
 Class AdministracionController
 
 - Metodes:
-  - `send`
-  - `store`
-  - `create`
+  - **`send`**(Request $request)
+  - **`store`**(MyMailStoreRequest $request)
+  - **`create`**()
 
 
 ### `app/Http/Controllers/NotificationController.php`
@@ -2167,23 +2415,30 @@ Class AdministracionController
 Class NotificationController
 
 - Metodes:
-  - `inbox`
+  - **`inbox`**(): NotificationInboxService
 
 #### `Intranet\Http\Controllers\notificationInboxService`
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
-  - `read`
+  - **`read`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `readAll`
+  - **`readAll`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `deleteAll`
+  - **`deleteAll`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `show`
+  - **`show`**($id)
+
     /
 
 
@@ -2191,7 +2446,7 @@ Class NotificationController
 
 #### `Intranet\Http\Controllers\OcrController`
 - Metodes:
-  - `index`
+  - **`index`**()
 
 
 ### `app/Http/Controllers/OptionController.php`
@@ -2200,12 +2455,14 @@ Class NotificationController
 Class OptionController
 
 - Metodes:
-  - `store`
+  - **`store`**(OptionStoreRequest $request): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 
@@ -2215,17 +2472,22 @@ Class OptionController
 Class OrdenTrabajoController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `store`
-  - `update`
-  - `imprime`
+  - **`store`**(OrdenTrabajoRequest $request)
+  - **`update`**(OrdenTrabajoRequest $request, $id)
+  - **`imprime`**($id, $orientacion = 'portrait'): mixed
+
     /
-  - `resolve`
+  - **`resolve`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `open`
+  - **`open`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 
@@ -2233,14 +2495,15 @@ Class OrdenTrabajoController
 
 #### `Intranet\Http\Controllers\PPollController`
 - Metodes:
-  - `iniBotones`
-  - `show`
-  - `store`
+  - **`iniBotones`**()
+  - **`show`**($id)
+  - **`store`**(PPollRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(PPollRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina una plantilla de poll amb autorització explícita.
 
 
@@ -2250,23 +2513,27 @@ Class OrdenTrabajoController
 Class PanelActaController
 
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\profesorService`
 - Metodes:
-  - `index`
+  - **`index`**($grupo=null): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\Session`
 - Metodes:
-  - `search`
+  - **`search`**($grupo = null): mixed
+
     /
 
 #### `Intranet\Http\Controllers\RolesUser`
 - Metodes:
-  - `createGrupsPestana`
+  - **`createGrupsPestana`**($grupos)
+
     /
-  - `iniPestanas`
+  - **`iniPestanas`**($grupo = null): bool|void
+
     /
 
 
@@ -2276,17 +2543,19 @@ Class PanelActaController
 Class PanelActasController
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `indice`
+  - **`indice`**($search): \Illuminate\Contracts\View\View
+
     Mostra l'acta pendent del grup indicat amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 #### `Intranet\Http\Controllers\grupos`
@@ -2302,7 +2571,8 @@ Class PanelActasController
 Class PanelActividadController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2312,22 +2582,26 @@ Class PanelActividadController
 Class PanelActividadOrientacionController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell d'activitats d'orientació amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes:
-  - `search`
+  - **`search`**($grupo = null): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Actividad`
 - Metodes:
-  - `createWithDefaultValues`
+  - **`createWithDefaultValues`**($default=[]): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
 
 
@@ -2337,17 +2611,20 @@ Class PanelActividadOrientacionController
 Class PanelAlumnoCursoController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el llistat de cursos d'alumne amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Curso`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 #### `Intranet\Http\Controllers\panel`
@@ -2360,34 +2637,41 @@ Class PanelAlumnoCursoController
 Class PanelColaboracionController
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?ColaboracionService $colaboracionService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `colaboraciones`
+  - **`colaboraciones`**(): ColaboracionService
 
 #### `Intranet\Http\Controllers\colaboracionService`
 - Metodes:
-  - `index`
+  - **`index`**(): mixed
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): \Illuminate\Support\Collection<int,
+
     Carrega les col·laboracions del tutor i les relacionades per centre/departament.
-  - `update`
+  - **`update`**(Request $request, $id): \Illuminate\Http\RedirectResponse
+
     /
-  - `store`
+  - **`store`**(Request $request): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\validate`
 - Metodes:
-  - `showEmpresa`
-  - `copy`
+  - **`showEmpresa`**($id)
+  - **`copy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `destroy`
+  - **`destroy`**($id): \Illuminate\Http\RedirectResponse
+
     /
-  - `live`
+  - **`live`**()
 
 
 ### `app/Http/Controllers/PanelComisionController.php`
@@ -2396,7 +2680,8 @@ Class PanelColaboracionController
 Class PanelComisionController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2406,9 +2691,10 @@ Class PanelComisionController
 Class PanelControlProgramacionController
 
 - Metodes:
-  - `search`
+  - **`search`**(): \Illuminate\Database\Eloquent\Collection|Modulo_ciclo[]|mixed
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/PanelCursoController.php`
@@ -2417,9 +2703,11 @@ Class PanelControlProgramacionController
 Class PanelCursoController
 
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2429,17 +2717,20 @@ Class PanelCursoController
 Class PanelDocAgrupadosController
 
 - Metodes:
-  - `index`
+  - **`index`**($grupo=null): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\iniPestanas`
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Documento`
 - Metodes:
-  - `iniPestanas`
+  - **`iniPestanas`**($grupo= null)
+
     /
 
 
@@ -2449,14 +2740,17 @@ Class PanelDocAgrupadosController
 Class PanelDocumentoController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\Session`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Documento`
@@ -2467,25 +2761,26 @@ Class PanelDocumentoController
 
 #### `Intranet\Http\Controllers\PanelDualController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell de control dual amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\Fct`
 - Metodes:
-  - `show`
+  - **`show`**($id)
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes: cap
@@ -2497,22 +2792,25 @@ Class PanelDocumentoController
 Class PanelEmpresaSCController
 
 - Metodes:
-  - `__construct`
-  - `empreses`
+  - **`__construct`**(?EmpresaService $empresaService = null)
+  - **`empreses`**(): EmpresaService
 
 #### `Intranet\Http\Controllers\empresaService`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell d'empreses amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\empreses`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2522,12 +2820,14 @@ Class PanelEmpresaSCController
 Class PanelEmpresaSCController
 
 - Metodes:
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\empreses`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 #### `Intranet\Http\Controllers\panel`
@@ -2540,9 +2840,11 @@ Class PanelEmpresaSCController
 Class PanelExpedienteController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 
@@ -2552,8 +2854,9 @@ Class PanelExpedienteController
 Class PanelFaltaController
 
 - Metodes:
-  - `search`
-  - `iniBotones`
+  - **`search`**()
+  - **`iniBotones`**()
+
     /
 
 
@@ -2563,7 +2866,8 @@ Class PanelFaltaController
 Class PanelFaltaItacaController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
 
 
@@ -2573,29 +2877,33 @@ Class PanelFaltaItacaController
 Class PanelFctAvalController
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `alumnoFcts`
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `avals`
+  - **`avals`**(): AlumnoFctAvalService
 
 #### `Intranet\Http\Controllers\alumnoFctAvalService`
 - Metodes:
-  - `search`
+  - **`search`**(): \Illuminate\Support\Collection|mixed
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `apte`
+  - **`apte`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\avals`
 - Metodes:
-  - `demanarActa`
+  - **`demanarActa`**(): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\grupos`
@@ -2603,8 +2911,8 @@ Class PanelFctAvalController
 
 #### `Intranet\Http\Controllers\findOrFail`
 - Metodes:
-  - `send`
-  - `estadistiques`
+  - **`send`**($id)
+  - **`estadistiques`**()
 
 
 ### `app/Http/Controllers/PanelFctController.php`
@@ -2613,19 +2921,22 @@ Class PanelFctAvalController
 Class FctController
 
 - Metodes:
-  - `__construct`
-  - `fcts`
+  - **`__construct`**(?FctService $fctService = null)
+  - **`fcts`**(): FctService
 
 #### `Intranet\Http\Controllers\fctService`
 - Metodes:
-  - `index`
+  - **`index`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\search`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\fcts`
@@ -2638,40 +2949,41 @@ Class FctController
 Class PanelActaController
 
 - Metodes:
-  - `index`
+  - **`index`**($profesor=null): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 #### `Intranet\Http\Controllers\find`
 - Metodes:
-  - `profesor`
-  - `mantenimiento`
-  - `direccion`
-  - `jefe_dpto`
-  - `tutor`
-  - `lookForCheckFol`
+  - **`profesor`**()
+  - **`mantenimiento`**()
+  - **`direccion`**()
+  - **`jefe_dpto`**()
+  - **`tutor`**()
+  - **`lookForCheckFol`**(&$avisos)
 
 #### `Intranet\Http\Controllers\misGrupos`
 - Metodes:
-  - `lookForIssues`
-  - `lookForActesPendents`
+  - **`lookForIssues`**(&$avisos)
+  - **`lookForActesPendents`**(&$avisos)
 
 #### `Intranet\Http\Controllers\withActaPendiente`
 - Metodes:
-  - `lookforInformsDepartment`
-  - `lookAtQualitatUpload`
-  - `lookAtActasUpload`
-  - `lookAtPollsTutor`
-  - `lookAtFctsProjects`
+  - **`lookforInformsDepartment`**(&$avisos)
+  - **`lookAtQualitatUpload`**(&$avisos)
+  - **`lookAtActasUpload`**(&$avisos)
+  - **`lookAtPollsTutor`**(&$avisos)
+  - **`lookAtFctsProjects`**(&$avisos)
 
 #### `Intranet\Http\Controllers\firstByTutor`
 - Metodes:
-  - `loadPreviousVotes`
-  - `lookForMyResults`
+  - **`loadPreviousVotes`**($poll)
+  - **`lookForMyResults`**(&$avisos)
 
 #### `Intranet\Http\Controllers\misModulos`
 - Metodes:
-  - `lookforMyPrograms`
-  - `lookUnPaidBills`
+  - **`lookforMyPrograms`**(&$avisos)
+  - **`lookUnPaidBills`**(&$avisos)
 
 #### `Intranet\Http\Controllers\hasPendingUnpaidByProfesor`
 - Metodes: cap
@@ -2681,44 +2993,45 @@ Class PanelActaController
 
 #### `Intranet\Http\Controllers\PanelGuardiaController`
 - Metodes:
-  - `comisions`
+  - **`comisions`**(): ComisionService
 
 #### `Intranet\Http\Controllers\profesores`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\horarios`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\fitxatge`
 - Metodes:
-  - `fitxatge`
+  - **`fitxatge`**(): FitxatgeService
 
 #### `Intranet\Http\Controllers\index`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell de guàrdies amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\sesion`
 - Metodes:
-  - `coincideHorario`
-  - `getHorasAfectas`
+  - **`coincideHorario`**($elemento, $sesion): bool
+  - **`getHorasAfectas`**($elemento): array
 
 
 ### `app/Http/Controllers/PanelIncidenciaController.php`
 
 #### `Intranet\Http\Controllers\PanelIncidenciaController`
 - Metodes:
-  - `index`
+  - **`index`**()
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes: cap
@@ -2728,49 +3041,50 @@ Class PanelActaController
 
 #### `Intranet\Http\Controllers\PanelInfDptoController`
 - Metodes:
-  - `search`
-  - `iniPestanas`
+  - **`search`**()
+  - **`iniPestanas`**($parametres = null)
 
 
 ### `app/Http/Controllers/PanelListadoEntregasController.php`
 
 #### `Intranet\Http\Controllers\PanelListadoEntregasController`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el llistat d'entregues amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\hazArray`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\distinctModulos`
 - Metodes:
-  - `iniBotones`
-  - `hazInformeTrimestral`
+  - **`iniBotones`**()
+  - **`hazInformeTrimestral`**(Request $request)
 
 #### `Intranet\Http\Controllers\hazPdfInforme`
 - Metodes:
-  - `avisaTodos`
-  - `avisaFaltaEntrega`
+  - **`avisaTodos`**()
+  - **`avisaFaltaEntrega`**($id)
 
 #### `Intranet\Http\Controllers\Modulo_grupo`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\profesorIds`
 - Metodes:
-  - `pdf`
+  - **`pdf`**($id)
 
 #### `Intranet\Http\Controllers\response`
 - Metodes:
-  - `existeInforme`
-  - `hazPdfInforme`
+  - **`existeInforme`**()
+  - **`hazPdfInforme`**($observaciones, $trimestre, $proyectos = null)
 
 #### `Intranet\Http\Controllers\byDepartamento`
 - Metodes:
-  - `faltan`
+  - **`faltan`**()
 
 
 ### `app/Http/Controllers/PanelLoteController.php`
@@ -2779,59 +3093,61 @@ Class PanelActaController
 Class LoteController
 
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `barcode`
+  - **`search`**()
+  - **`iniBotones`**()
+  - **`barcode`**($id, $posicion=1)
 
 
 ### `app/Http/Controllers/PanelModuloGrupoController.php`
 
 #### `Intranet\Http\Controllers\PanelModuloGrupoController`
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `pdf`
+  - **`search`**()
+  - **`iniBotones`**()
+  - **`pdf`**($id)
 
 
 ### `app/Http/Controllers/PanelOrdenTrabajoController.php`
 
 #### `Intranet\Http\Controllers\PanelOrdenTrabajoController`
 - Metodes:
-  - `indice`
+  - **`indice`**($search): \Illuminate\Contracts\View\View
+
     Mostra el detall d'orde de treball amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\Incidencia`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes:
-  - `iniPestanas`
+  - **`iniPestanas`**($parametres = null)
 
 
 ### `app/Http/Controllers/PanelPG0301Controller.php`
 
 #### `Intranet\Http\Controllers\PanelPG0301Controller`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `indice`
+  - **`indice`**($search): \Illuminate\Contracts\View\View
+
     Mostra el llistat per grup amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\Session`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes: cap
@@ -2841,21 +3157,22 @@ Class LoteController
 
 #### `Intranet\Http\Controllers\PanelPGDualController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `indice`
+  - **`indice`**($search): \Illuminate\Contracts\View\View
+
     Mostra el llistat dual per grup amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\Session`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes: cap
@@ -2865,37 +3182,38 @@ Class LoteController
 
 #### `Intranet\Http\Controllers\PanelPollResponseController`
 - Metodes:
-  - `iniBotones`
-  - `search`
+  - **`iniBotones`**()
+  - **`search`**()
 
 
 ### `app/Http/Controllers/PanelPollResultController.php`
 
 #### `Intranet\Http\Controllers\PanelPollResultController`
 - Metodes:
-  - `iniBotones`
-  - `search`
+  - **`iniBotones`**()
+  - **`search`**()
 
 
 ### `app/Http/Controllers/PanelPracticasController.php`
 
 #### `Intranet\Http\Controllers\PanelPracticasController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell de control FCT amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 #### `Intranet\Http\Controllers\panel`
 - Metodes:
-  - `search`
+  - **`search`**()
 
 #### `Intranet\Http\Controllers\grupos`
 - Metodes: cap
@@ -2905,30 +3223,30 @@ Class LoteController
 
 #### `Intranet\Http\Controllers\PanelPresenciaController`
 - Metodes:
-  - `comisions`
+  - **`comisions`**(): ComisionService
 
 #### `Intranet\Http\Controllers\profesores`
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\horarios`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\indice`
 - Metodes:
-  - `indice`
+  - **`indice`**($dia = null)
 
 #### `Intranet\Http\Controllers\Session`
 - Metodes:
-  - `email`
+  - **`email`**($usuario, $dia)
 
 #### `Intranet\Http\Controllers\self`
 - Metodes: cap
 
 #### `Intranet\Http\Controllers\fitxaDiaManual`
 - Metodes:
-  - `noHanFichado`
+  - **`noHanFichado`**($dia)
 
 
 ### `app/Http/Controllers/PanelProcedimientoAcompanyantController.php`
@@ -2937,10 +3255,12 @@ Class LoteController
 Class PanelExpedienteOrientacionController
 
 - Metodes:
-  - `iniPestanas`
-  - `iniBotones`
+  - **`iniPestanas`**($parametres = null)
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 
@@ -2950,13 +3270,15 @@ Class PanelExpedienteOrientacionController
 Class PanelExpedienteOrientacionController
 
 - Metodes:
-  - `index`
+  - **`index`**()
 
 #### `Intranet\Http\Controllers\search`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Expediente`
@@ -2969,54 +3291,57 @@ Class PanelExpedienteOrientacionController
 Class PanelProjecteController
 
 - Metodes:
-  - `profesores`
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\profesorService`
 - Metodes:
-  - `grupos`
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `myTutorGroup`
-  - `search`
+  - **`myTutorGroup`**()
+  - **`search`**()
+
     Recupera els projectes del grup del tutor autenticat.
-  - `store`
+  - **`store`**(ProyectoRequest $request)
 
 #### `Intranet\Http\Controllers\myTutorGroup`
 - Metodes:
-  - `pdf`
+  - **`pdf`**($id)
 
 #### `Intranet\Http\Controllers\hazZip`
 - Metodes:
-  - `acta`
+  - **`acta`**()
+
     Genera l'acta de valoració de propostes del grup.
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/PanelProyectoController.php`
 
 #### `Intranet\Http\Controllers\PanelProyectoController`
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell de projectes documentals amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniPestanas`
-  - `search`
-  - `iniBotones`
+  - **`iniPestanas`**($parametres = null)
+  - **`search`**()
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/PanelSeguimientoAlumnosController.php`
 
 #### `Intranet\Http\Controllers\PanelSeguimientoAlumnosController`
 - Metodes:
-  - `indice`
-  - `store`
-  - `destroy`
+  - **`indice`**($search)
+  - **`store`**(Request $request)
+  - **`destroy`**($id)
 
 
 ### `app/Http/Controllers/PanelSignaturaController.php`
@@ -3025,19 +3350,22 @@ Class PanelProjecteController
 Class PanelExpedienteController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\View
+
     Mostra el panell de signatures de direcció amb autorització prèvia.
 
 #### `Intranet\Http\Controllers\parent`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\Signatura`
 - Metodes:
-  - `sign`
+  - **`sign`**(Request $request)
 
 #### `Intranet\Http\Controllers\array_keys`
 - Metodes: cap
@@ -3052,13 +3380,17 @@ Class PanelExpedienteController
 Class PanelSolicitudOrientacionController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `active`
+  - **`active`**($id)
+
     Activa una sol·licitud d'orientació pendent.
-  - `resolve`
+  - **`resolve`**(Request $request, $id)
+
     Resol una sol·licitud d'orientació activa.
-  - `search`
+  - **`search`**()
+
     Recupera les sol·licituds visibles per a l'orientador autenticat.
 
 
@@ -3066,86 +3398,86 @@ Class PanelSolicitudOrientacionController
 
 #### `Intranet\Http\Controllers\PdfController`
 - Metodes:
-  - `index`
+  - **`index`**()
 
 
 ### `app/Http/Controllers/PollController.php`
 
 #### `Intranet\Http\Controllers\PollController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `polls`
+  - **`polls`**(): PollWorkflowService
 
 #### `Intranet\Http\Controllers\pollWorkflowService`
 - Metodes:
-  - `iniBotones`
-  - `preparaEnquesta`
-  - `guardaEnquesta`
-  - `lookAtMyVotes`
-  - `lookAtAllVotes`
+  - **`iniBotones`**()
+  - **`preparaEnquesta`**($id)
+  - **`guardaEnquesta`**(Request $request, $id)
+  - **`lookAtMyVotes`**($id)
+  - **`lookAtAllVotes`**($id)
 
 
 ### `app/Http/Controllers/ProfesorController.php`
 
 #### `Intranet\Http\Controllers\ProfesorController`
 - Metodes:
-  - `__construct`
-  - `profesores`
+  - **`__construct`**(?ProfesorService $profesorService = null, ?HorarioService $horarioService = null, ?GrupoService $grupoService = null)
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Http\Controllers\profesorService`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `grupos`
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `index`
-  - `departamento`
-  - `fse`
-  - `equipoDirectivo`
-  - `comissio`
-  - `rol`
-  - `equipo`
-  - `update`
-  - `miApiToken`
-  - `avisaColectivo`
-  - `alerta`
-  - `carnet`
-  - `tarjeta`
-  - `iniBotones`
-  - `iniProfileBotones`
-  - `horario`
-  - `imprimirHorarios`
-  - `change`
-  - `backChange`
+  - **`index`**()
+  - **`departamento`**()
+  - **`fse`**()
+  - **`equipoDirectivo`**()
+  - **`comissio`**()
+  - **`rol`**($rol)
+  - **`equipo`**($grupo)
+  - **`update`**(Request $request, $id)
+  - **`miApiToken`**()
+  - **`avisaColectivo`**(Request $request)
+  - **`alerta`**(Request $request, $id)
+  - **`carnet`**($profesor)
+  - **`tarjeta`**($profesor)
+  - **`iniBotones`**()
+  - **`iniProfileBotones`**()
+  - **`horario`**($id)
+  - **`imprimirHorarios`**()
+  - **`change`**($idProfesor)
+  - **`backChange`**()
 
 
 ### `app/Http/Controllers/ProgramacionController.php`
 
 #### `Intranet\Http\Controllers\ProgramacionController`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Http\Controllers\horarioService`
 - Metodes:
-  - `search`
-  - `init`
-  - `seguimiento`
-  - `avisaFaltaEntrega`
+  - **`search`**()
+  - **`init`**($id)
+  - **`seguimiento`**($id)
+  - **`avisaFaltaEntrega`**($id)
 
 #### `Intranet\Http\Controllers\profesorIds`
 - Metodes:
-  - `advise`
-  - `updateSeguimiento`
-  - `link`
-  - `iniBotones`
+  - **`advise`**($id)
+  - **`updateSeguimiento`**(Request $request, $id)
+  - **`link`**($id)
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/ProjecteController.php`
@@ -3154,18 +3486,18 @@ Class PanelSolicitudOrientacionController
 Class EspacioController
 
 - Metodes:
-  - `search`
-  - `store`
-  - `update`
-  - `email`
+  - **`search`**()
+  - **`store`**(ProyectoRequest $request)
+  - **`update`**(ProyectoRequest $request, $id)
+  - **`email`**($id)
 
 #### `Intranet\Http\Controllers\send`
 - Metodes:
-  - `pdf`
+  - **`pdf`**($id)
 
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/QualitatDocumentoController.php`
@@ -3174,11 +3506,14 @@ Class EspacioController
 Class PanelDocumentoController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 
@@ -3188,11 +3523,11 @@ Class PanelDocumentoController
 Orquestra l'execució d'accions SAO després de validar la contrasenya.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?SaoRunner $saoRunner = null)
 
 #### `Intranet\Http\Controllers\__invoke`
 - Metodes:
-  - `__invoke`
+  - **`__invoke`**(PasswordRequest $request)
 
 #### `Intranet\Http\Controllers\method_exists`
 - Metodes: cap
@@ -3204,7 +3539,8 @@ Orquestra l'execució d'accions SAO després de validar la contrasenya.
 Class ReservaController
 
 - Metodes:
-  - `index`
+  - **`index`**(): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
 
 
@@ -3214,26 +3550,30 @@ Class ReservaController
 Class ResultadoController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `rellenaPropuestasMejora`
-  - `store`
-  - `update`
-  - `destroy`
+  - **`rellenaPropuestasMejora`**($idModulo)
+  - **`store`**(ResultadoStoreRequest $request)
+  - **`update`**(ResultadoUpdateRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un resultat amb autorització explícita.
-  - `search`
+  - **`search`**(): mixed
+
     /
 
 #### `Intranet\Http\Controllers\misModulos`
 - Metodes:
-  - `listado`
+  - **`listado`**(): \Illuminate\Http\RedirectResponse
+
     /
-  - `createWithDefaultValues`
+  - **`createWithDefaultValues`**($default=[])
 
 
 ### `app/Http/Controllers/ReunionController.php`
@@ -3242,45 +3582,45 @@ Class ResultadoController
 Controlador de gestió de reunions i assistències.
 
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null, ?ReunionService $reunionService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `reunionService`
+  - **`reunionService`**(): ReunionService
 
 #### `Intranet\Http\Controllers\reunionService`
 - Metodes:
-  - `search`
-  - `createWithDefaultValues`
-  - `store`
+  - **`search`**()
+  - **`createWithDefaultValues`**($default=[])
+  - **`store`**(ReunionStoreRequest $request)
 
 #### `Intranet\Http\Controllers\DB`
 - Metodes:
-  - `edit`
+  - **`edit`**($id = null)
 
 #### `Intranet\Http\Controllers\activosOrdered`
 - Metodes:
-  - `update`
-  - `tAlumnos`
-  - `altaProfesor`
-  - `borrarProfesor`
-  - `borrarAlumno`
-  - `altaAlumno`
-  - `altaOrden`
-  - `borrarOrden`
-  - `notify`
-  - `email`
-  - `iniBotones`
-  - `pdf`
-  - `actaCompleta`
-  - `saveFile`
-  - `deleteFile`
-  - `listado`
-  - `avisaFaltaActa`
-  - `construye_pdf`
-  - `informe`
-  - `preparePdf`
+  - **`update`**(ReunionUpdateRequest $request, $id)
+  - **`tAlumnos`**($reunion, $sAlumnos)
+  - **`altaProfesor`**(Request $request, $reunion_id)
+  - **`borrarProfesor`**($reunion_id, $profesor_id)
+  - **`borrarAlumno`**($reunion_id, $alumno_id)
+  - **`altaAlumno`**(Request $request, $reunion_id)
+  - **`altaOrden`**(OrdenReunionStoreRequest $request, $reunion_id)
+  - **`borrarOrden`**($reunion_id, $orden_id)
+  - **`notify`**($id)
+  - **`email`**($id)
+  - **`iniBotones`**()
+  - **`pdf`**($id)
+  - **`actaCompleta`**(Reunion $reunion)
+  - **`saveFile`**($id)
+  - **`deleteFile`**(Request $request, $id)
+  - **`listado`**($dia = null)
+  - **`avisaFaltaActa`**(Request $request)
+  - **`construye_pdf`**($id)
+  - **`informe`**($elemento)
+  - **`preparePdf`**($informe, $aR)
 
 
 ### `app/Http/Controllers/SendAvaluacioEmailController.php`
@@ -3289,14 +3629,16 @@ Controlador de gestió de reunions i assistències.
 Class ImportController
 
 - Metodes:
-  - `create`
+  - **`create`**(): \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+
     /
-  - `generaToken`
-  - `store`
+  - **`generaToken`**()
+  - **`store`**(SendAvaluacioEmailStoreRequest $request): \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+
     /
-  - `getToken`
-  - `obtenToken`
-  - `sendMatricula`
+  - **`getToken`**(Request $request)
+  - **`obtenToken`**($aR)
+  - **`sendMatricula`**($aR)
 
 
 ### `app/Http/Controllers/SettingController.php`
@@ -3305,14 +3647,15 @@ Class ImportController
 Controlador de manteniment de settings de sistema.
 
 - Metodes:
-  - `search`
-  - `iniBotones`
-  - `store`
+  - **`search`**()
+  - **`iniBotones`**()
+  - **`store`**(SettingRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(SettingRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un setting existent.
 
 
@@ -3322,16 +3665,17 @@ Controlador de manteniment de settings de sistema.
 Class PanelExpedienteController
 
 - Metodes:
-  - `__construct`
-  - `alumnoFcts`
+  - **`__construct`**(?AlumnoFctService $alumnoFctService = null)
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `index`
-  - `grid`
-  - `pdf`
+  - **`index`**()
+  - **`grid`**()
+  - **`pdf`**($id): mixed
+
     /
-  - `iniBotones`
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/SignaturaController.php`
@@ -3340,27 +3684,28 @@ Class PanelExpedienteController
 Class PanelExpedienteController
 
 - Metodes:
-  - `__construct`
-  - `alumnoFcts`
+  - **`__construct`**(?AlumnoFctService $alumnoFctService = null)
+  - **`alumnoFcts`**(): AlumnoFctService
 
 #### `Intranet\Http\Controllers\alumnoFctService`
 - Metodes:
-  - `store`
+  - **`store`**(SignaturaStoreRequest $request)
 
 #### `Intranet\Http\Controllers\file`
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `deleteAll`
+  - **`deleteAll`**()
 
 #### `Intranet\Http\Controllers\search`
 - Metodes:
-  - `pdf`
-  - `destroy`
-  - `sendUnique`
-  - `sendMultiple`
-  - `upload`
-  - `a5`
+  - **`pdf`**($id)
+  - **`destroy`**($id)
+  - **`sendUnique`**($id)
+  - **`sendMultiple`**(Request $request, $tipus)
+  - **`upload`**(Request $request, $id)
+  - **`a5`**()
 
 #### `Intranet\Http\Controllers\Signatura`
 - Metodes: cap
@@ -3372,22 +3717,25 @@ Class PanelExpedienteController
 Class ExpedienteController
 
 - Metodes:
-  - `store`
+  - **`store`**(SolicitudRequest $request)
 
 #### `Intranet\Http\Controllers\merge`
 - Metodes:
-  - `update`
-  - `confirm`
-  - `iniBotones`
+  - **`update`**(SolicitudRequest $request, $id)
+  - **`confirm`**($id)
+  - **`iniBotones`**()
+
     /
-  - `init`
+  - **`init`**($id): \Illuminate\Http\RedirectResponse
+
     /
 
 #### `Intranet\Http\Controllers\send`
 - Metodes:
-  - `createWithDefaultValues`
-  - `show`
-  - `destroy`
+  - **`createWithDefaultValues`**($default = [])
+  - **`show`**($id)
+  - **`destroy`**($id)
+
     Elimina una sol·licitud amb autorització explícita.
 
 
@@ -3397,56 +3745,57 @@ Class ExpedienteController
 Controlador de manteniment i validació de tasques.
 
 - Metodes:
-  - `__construct`
-  - `validationService`
+  - **`__construct`**(?TaskValidationService $taskValidationService = null)
+  - **`validationService`**(): TaskValidationService
 
 #### `Intranet\Http\Controllers\taskValidationService`
 - Metodes:
-  - `iniBotones`
-  - `store`
+  - **`iniBotones`**()
+  - **`store`**(TaskRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `check`
+  - **`update`**(TaskRequest $request, $id)
+  - **`check`**($id)
 
 
 ### `app/Http/Controllers/TeacherImportController.php`
 
 #### `Intranet\Http\Controllers\TeacherImportController`
 - Metodes:
-  - `create`
-  - `store`
-  - `storeAsync`
-  - `run`
-  - `sacaCampos`
-  - `filtro`
-  - `required`
-  - `imports`
+  - **`create`**()
+  - **`store`**(Request $request)
+  - **`storeAsync`**(Request $request, mixed $validatedFile = null)
+  - **`run`**($fxml, Request $request)
+  - **`sacaCampos`**($atrxml, $llave, $func = 1)
+  - **`filtro`**($filtro, $campos)
+  - **`required`**($required, $campos)
+  - **`imports`**(): ImportService
 
 #### `Intranet\Http\Controllers\importService`
 - Metodes:
-  - `workflows`
+  - **`workflows`**(): ImportWorkflowService
 
 #### `Intranet\Http\Controllers\importWorkflowService`
 - Metodes:
-  - `schemas`
+  - **`schemas`**(): ImportSchemaProvider
 
 #### `Intranet\Http\Controllers\importSchemaProvider`
 - Metodes:
-  - `xmlHelper`
+  - **`xmlHelper`**(): ImportXmlHelperService
 
 #### `Intranet\Http\Controllers\importXmlHelperService`
 - Metodes:
-  - `executions`
+  - **`executions`**(): TeacherImportExecutionService
 
 #### `Intranet\Http\Controllers\teacherImportExecutionService`
 - Metodes:
-  - `camposBdXml`
+  - **`camposBdXml`**(): array
+
     /
-  - `executeSyncImport`
-  - `resolveImportMode`
-  - `authorizeImportManagement`
+  - **`executeSyncImport`**(mixed $file, Request $request)
+  - **`resolveImportMode`**(Request $request): string
+  - **`authorizeImportManagement`**(bool $allowConsole = false): void
 
 
 ### `app/Http/Controllers/TipoActividadController.php`
@@ -3455,12 +3804,13 @@ Controlador de manteniment i validació de tasques.
 Class LoteController
 
 - Metodes:
-  - `store`
-  - `update`
-  - `destroy`
+  - **`store`**(TipoActividadRequest $request)
+  - **`update`**(TipoActividadUpdateRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un tipus d'activitat amb autorització explícita.
-  - `search`
-  - `iniBotones`
+  - **`search`**()
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/TipoIncidenciaController.php`
@@ -3469,15 +3819,17 @@ Class LoteController
 Class ComisionController
 
 - Metodes:
-  - `iniBotones`
+  - **`iniBotones`**()
+
     /
-  - `search`
-  - `store`
+  - **`search`**()
+  - **`store`**(TipoIncidenciaRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(TipoIncidenciaRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina un tipus d'incidència amb autorització explícita.
 
 
@@ -3485,46 +3837,47 @@ Class ComisionController
 
 #### `Intranet\Http\Controllers\TutoriaController`
 - Metodes:
-  - `__construct`
-  - `grupos`
+  - **`__construct`**(?GrupoService $grupoService = null)
+  - **`grupos`**(): GrupoService
 
 #### `Intranet\Http\Controllers\grupoService`
 - Metodes:
-  - `index`
-  - `search`
-  - `detalle`
-  - `indexTutoria`
-  - `anexo`
-  - `iniTutBotones`
-  - `iniBotones`
+  - **`index`**()
+  - **`search`**()
+  - **`detalle`**($id)
+  - **`indexTutoria`**()
+  - **`anexo`**($id)
+  - **`iniTutBotones`**()
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/TutoriaGrupoController.php`
 
 #### `Intranet\Http\Controllers\TutoriaGrupoController`
 - Metodes:
-  - `createfrom`
-  - `create`
+  - **`createfrom`**($tutoria, $grupo)
+  - **`create`**($default = [])
 
 #### `Intranet\Http\Controllers\FormBuilder`
 - Metodes:
-  - `edit`
-  - `store`
+  - **`edit`**($id = null)
+  - **`store`**(TutoriaGrupoStoreRequest $request)
 
 #### `Intranet\Http\Controllers\persist`
 - Metodes:
-  - `update`
-  - `destroy`
+  - **`update`**(TutoriaGrupoUpdateRequest $request, $id)
+  - **`destroy`**($id)
+
     Elimina una relació tutoria-grup amb autorització explícita.
-  - `search`
-  - `iniBotones`
+  - **`search`**()
+  - **`iniBotones`**()
 
 
 ### `app/Http/Controllers/VotesController.php`
 
 #### `Intranet\Http\Controllers\VotesController`
 - Metodes:
-  - `showColaboracion`
+  - **`showColaboracion`**($colaboracion)
 
 
 
@@ -3539,47 +3892,60 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\grupos`
 - Metodes:
-  - `grupos`
+  - **`grupos`**()
 
 #### `Intranet\Entities\profesores`
 - Metodes:
-  - `profesores`
+  - **`profesores`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `tipoActividad`
+  - **`tipoActividad`**()
 
 #### `Intranet\Entities\Creador`
 - Metodes:
-  - `Creador`
+  - **`Creador`**(): string
+
     Devueld el id del Coordinador
-  - `scopeProfesor`
-  - `getDesdeAttribute`
+  - **`scopeProfesor`**($query, $dni)
+  - **`getDesdeAttribute`**($entrada): string|null
+
     Accessor de `desde` en format de visualització.
-  - `getHastaAttribute`
+  - **`getHastaAttribute`**($salida): string|null
+
     Accessor de `hasta` en format de visualització.
-  - `scopeNext`
+  - **`scopeNext`**($query): \Illuminate\Database\Eloquent\Builder
+
     Filtra activitats futures.
-  - `scopeAuth`
+  - **`scopeAuth`**($query): \Illuminate\Database\Eloquent\Builder
+
     Filtra activitats autoritzades o no extraescolars.
-  - `scopeDia`
+  - **`scopeDia`**($query, $dia): \Illuminate\Database\Eloquent\Builder
+
     Filtra activitats que cauen en un dia concret.
-  - `scopeDepartamento`
+  - **`scopeDepartamento`**($query, $dep): \Illuminate\Database\Eloquent\Builder
+
     Filtra per departament a través dels grups de l'activitat.
-  - `Tutor`
+  - **`Tutor`**(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+
     Relació de professor coordinador de l'activitat.
 
 #### `Intranet\Entities\wherePivot`
 - Metodes:
-  - `getcoordAttribute`
+  - **`getcoordAttribute`**(): int
+
     Accessor booleà per saber si l'usuari autenticat és coordinador.
-  - `getsituacionAttribute`
+  - **`getsituacionAttribute`**(): string
+
     Accessor de text de situació segons estat.
-  - `loadPoll`
+  - **`loadPoll`**(): \Illuminate\Support\Collection
+
     Carrega activitats de poll dels grups de l'usuari.
-  - `getRecomendadaAttribute`
+  - **`getRecomendadaAttribute`**(): string
+
     Accessor de "recomanada" en format Sí/No.
-  - `getTipoActividadIdOptions`
+  - **`getTipoActividadIdOptions`**(): array
+
     Opcions de tipus d'activitat segons departament de l'usuari.
 
 
@@ -3587,7 +3953,7 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\ActividadGrupo`
 - Metodes:
-  - `scopeDepartamento`
+  - **`scopeDepartamento`**($query, $dep)
 
 #### `Intranet\Entities\byDepartamento`
 - Metodes: cap
@@ -3597,90 +3963,92 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\ActividadProfesor`
 - Metodes:
-  - `scopeTutor`
+  - **`scopeTutor`**($query)
 
 
 ### `app/Entities/Activity.php`
 
 #### `Intranet\Entities\Activity`
 - Metodes:
-  - `record`
+  - **`record`**(string $action, ?Model $model = null, ?string $comentari = null, ?string $fecha = null, ?string $document = null): self
+
     Manté API estàtica legacy delegant en el servei d'aplicació.
 
 #### `Intranet\Entities\record`
 - Metodes:
-  - `scopeProfesor`
-  - `scopeModelo`
+  - **`scopeProfesor`**($query, $profesor)
+  - **`scopeModelo`**($query, $modelo)
+
     Filtra per classe de model emmagatzemada en format FQCN.
-  - `scopeNotUpdate`
-  - `scopeMail`
-  - `scopeId`
-  - `scopeIds`
-  - `scopeRelationId`
-  - `propietario`
+  - **`scopeNotUpdate`**($query)
+  - **`scopeMail`**($query)
+  - **`scopeId`**($query, $id)
+  - **`scopeIds`**($query, $ids)
+  - **`scopeRelationId`**($query, $id)
+  - **`propietario`**()
 
 #### `Intranet\Entities\getUpdatedAtAttribute`
 - Metodes:
-  - `getUpdatedAtAttribute`
+  - **`getUpdatedAtAttribute`**($value)
 
 
 ### `app/Entities/Adjunto.php`
 
 #### `Intranet\Entities\Adjunto`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\scopeFindByName`
 - Metodes:
-  - `scopeFindByName`
-  - `scopeGetByPath`
-  - `getPathAttribute`
-  - `getFileAttribute`
-  - `getDirectoryAttribute`
-  - `getModeloAttribute`
-  - `getModeloIdAttribute`
+  - **`scopeFindByName`**($query, $path, $name)
+  - **`scopeGetByPath`**($query, $path)
+  - **`getPathAttribute`**()
+  - **`getFileAttribute`**()
+  - **`getDirectoryAttribute`**()
+  - **`getModeloAttribute`**()
+  - **`getModeloIdAttribute`**()
 
 
 ### `app/Entities/Alumno.php`
 
 #### `Intranet\Entities\Alumno`
 - Metodes:
-  - `Curso`
+  - **`Curso`**(): BelongsToMany
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `AlumnoFct`
+  - **`AlumnoFct`**(): HasMany
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**(): BelongsToMany
 
 #### `Intranet\Entities\Fcts`
 - Metodes:
-  - `Fcts`
+  - **`Fcts`**(): BelongsToMany
 
 #### `Intranet\Entities\FctsColaboracion`
 - Metodes:
-  - `FctsColaboracion`
-  - `AlumnoResultado`
+  - **`FctsColaboracion`**(int $colaboracion): BelongsToMany
+  - **`AlumnoResultado`**(): HasMany
 
 #### `Intranet\Entities\Provincia`
 - Metodes:
-  - `Provincia`
+  - **`Provincia`**(): BelongsTo
 
 #### `Intranet\Entities\Municipio`
 - Metodes:
-  - `Municipio`
+  - **`Municipio`**(): BelongsTo
 
 #### `Intranet\Entities\where`
 - Metodes:
-  - `Projecte`
+  - **`Projecte`**()
 
 #### `Intranet\Entities\scopeQGrupo`
 - Metodes:
-  - `scopeQGrupo`
-  - `scopeMenor`
-  - `scopeMisAlumnos`
+  - **`scopeQGrupo`**(Builder $query, string|array $grupo): Builder
+  - **`scopeMenor`**(Builder $query, ?string $fecha = null): Builder
+  - **`scopeMisAlumnos`**(Builder $query, ?string $profesor = null, bool $dual = false): Builder
 
 #### `Intranet\Entities\qTutor`
 - Metodes: cap
@@ -3690,20 +4058,20 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\AlumnoCurso`
 - Metodes:
-  - `scopeCurso`
-  - `scopeFinalizado`
-  - `Alumno`
+  - **`scopeCurso`**($query, $curso)
+  - **`scopeFinalizado`**($query)
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Curso`
 - Metodes:
-  - `Curso`
+  - **`Curso`**()
 
 #### `Intranet\Entities\getNombreAttribute`
 - Metodes:
-  - `getNombreAttribute`
-  - `getSexoAttribute`
-  - `getFullNameAttribute`
-  - `getDniAttribute`
+  - **`getNombreAttribute`**()
+  - **`getSexoAttribute`**()
+  - **`getFullNameAttribute`**()
+  - **`getDniAttribute`**()
 
 
 ### `app/Entities/AlumnoFct.php`
@@ -3713,203 +4081,206 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\null`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Fct`
 - Metodes:
-  - `Fct`
+  - **`Fct`**()
 
 #### `Intranet\Entities\Dual`
 - Metodes:
-  - `Dual`
+  - **`Dual`**()
 
 #### `Intranet\Entities\Signatures`
 - Metodes:
-  - `Signatures`
+  - **`Signatures`**()
 
 #### `Intranet\Entities\Tutor`
 - Metodes:
-  - `Tutor`
+  - **`Tutor`**()
 
 #### `Intranet\Entities\Contactos`
 - Metodes:
-  - `Contactos`
+  - **`Contactos`**()
 
 #### `Intranet\Entities\mail`
 - Metodes: cap
 
 #### `Intranet\Entities\scopeMisFcts`
 - Metodes:
-  - `scopeMisFcts`
-  - `scopeTotesFcts`
-  - `scopeMisProyectos`
-  - `scopeEsFct`
-  - `scopeEsAval`
-  - `scopeEsDual`
-  - `scopeMisDual`
-  - `scopeMisConvalidados`
-  - `scopeNoAval`
-  - `scopePendiente`
-  - `scopeAval`
-  - `scopePendienteNotificar`
-  - `scopeCalificados`
-  - `scopeAprobados`
-  - `scopeTitulan`
-  - `scopeRealFcts`
-  - `scopeAvaluables`
-  - `scopeMisErasmus`
-  - `scopeEsErasmus`
-  - `scopeEsExempt`
-  - `scopeEstaSao`
-  - `scopeActiva`
-  - `scopeHaEmpezado`
-  - `scopeNoHaAcabado`
-  - `getEmailAttribute`
-  - `getCentroAttribute`
-  - `getNombreAttribute`
-  - `getNomEdatAttribute`
-  - `getQualificacioAttribute`
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
-  - `getFinPracticasAttribute`
-  - `getClassAttribute`
-  - `presenter`
-  - `getAdjuntosAttribute`
-  - `routeFile`
-  - `getSignAttribute`
-  - `getContactoAttribute`
-  - `getFullNameAttribute`
-  - `getHorasRealizadasAttribute`
-  - `getHorasTotalAttribute`
-  - `getPeriodeAttribute`
-  - `getProjecteAttribute`
-  - `getAsociacionAttribute`
-  - `getMiniCentroAttribute`
-  - `getInstructorAttribute`
-  - `getGrupAttribute`
-  - `scopeGrupo`
-  - `getQuienAttribute`
-  - `getSaoAnnexesAttribute`
-  - `getA2Attribute`
-  - `getA1Attribute`
-  - `getA3Attribute`
-  - `getIdPrintAttribute`
-  - `getAnnexesCollection`
-  - `signatureService`
+  - **`scopeMisFcts`**($query, $profesor = null)
+  - **`scopeTotesFcts`**($query, $profesor = null)
+  - **`scopeMisProyectos`**($query, $profesor = null)
+  - **`scopeEsFct`**($query)
+  - **`scopeEsAval`**($query)
+  - **`scopeEsDual`**($query)
+  - **`scopeMisDual`**($query, $profesor=null)
+  - **`scopeMisConvalidados`**($query, $profesor=null)
+  - **`scopeNoAval`**($query)
+  - **`scopePendiente`**($query)
+  - **`scopeAval`**($query)
+  - **`scopePendienteNotificar`**($query)
+  - **`scopeCalificados`**($query)
+  - **`scopeAprobados`**($query)
+  - **`scopeTitulan`**($query)
+  - **`scopeRealFcts`**($query, $profesor = null)
+  - **`scopeAvaluables`**($query, $profesor = null)
+  - **`scopeMisErasmus`**($query, $profesor = null)
+  - **`scopeEsErasmus`**($query)
+  - **`scopeEsExempt`**($query)
+  - **`scopeEstaSao`**($query)
+  - **`scopeActiva`**($query)
+  - **`scopeHaEmpezado`**($query)
+  - **`scopeNoHaAcabado`**($query)
+  - **`getEmailAttribute`**()
+  - **`getCentroAttribute`**()
+  - **`getNombreAttribute`**()
+  - **`getNomEdatAttribute`**()
+  - **`getQualificacioAttribute`**()
+  - **`getDesdeAttribute`**($entrada)
+  - **`getHastaAttribute`**($entrada)
+  - **`getFinPracticasAttribute`**()
+  - **`getClassAttribute`**()
+  - **`presenter`**(): AlumnoFctPresenter
+  - **`getAdjuntosAttribute`**()
+  - **`routeFile`**($anexe)
+  - **`getSignAttribute`**()
+  - **`getContactoAttribute`**()
+  - **`getFullNameAttribute`**()
+  - **`getHorasRealizadasAttribute`**()
+  - **`getHorasTotalAttribute`**()
+  - **`getPeriodeAttribute`**()
+  - **`getProjecteAttribute`**()
+  - **`getAsociacionAttribute`**()
+  - **`getMiniCentroAttribute`**()
+  - **`getInstructorAttribute`**()
+  - **`getGrupAttribute`**()
+  - **`scopeGrupo`**($query, $grupo)
+  - **`getQuienAttribute`**()
+  - **`getSaoAnnexesAttribute`**()
+  - **`getA2Attribute`**()
+  - **`getA1Attribute`**()
+  - **`getA3Attribute`**()
+  - **`getIdPrintAttribute`**()
+  - **`getAnnexesCollection`**(): \Illuminate\Support\Collection
+  - **`signatureService`**(): AlumnoFctSignatureService
 
 
 ### `app/Entities/AlumnoGrupo.php`
 
 #### `Intranet\Entities\AlumnoGrupo`
 - Metodes:
-  - `find`
+  - **`find`**($params, $columns = ['*']): static|\Illuminate\Database\Eloquent\Collection<static>|null
+
     Troba un registre d'alumne-grup.
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\getNombreAttribute`
 - Metodes:
-  - `getNombreAttribute`
-  - `getPoblacionAttribute`
-  - `getEmailAttribute`
-  - `getTelef2Attribute`
-  - `getTelef1Attribute`
-  - `getFolAttribute`
-  - `getFotoAttribute`
-  - `getDretsAttribute`
-  - `getExtraescolarsAttribute`
-  - `getDAAttribute`
+  - **`getNombreAttribute`**()
+  - **`getPoblacionAttribute`**()
+  - **`getEmailAttribute`**()
+  - **`getTelef2Attribute`**()
+  - **`getTelef1Attribute`**()
+  - **`getFolAttribute`**()
+  - **`getFotoAttribute`**()
+  - **`getDretsAttribute`**()
+  - **`getExtraescolarsAttribute`**()
+  - **`getDAAttribute`**()
 
 
 ### `app/Entities/AlumnoResultado.php`
 
 #### `Intranet\Entities\AlumnoResultado`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\ModuloGrupo`
 - Metodes:
-  - `ModuloGrupo`
+  - **`ModuloGrupo`**()
 
 #### `Intranet\Entities\getNombreAttribute`
 - Metodes:
-  - `getNombreAttribute`
-  - `getidAlumnoOptions`
-  - `getValoracionAttribute`
-  - `getModuloAttribute`
+  - **`getNombreAttribute`**()
+  - **`getidAlumnoOptions`**()
+  - **`getValoracionAttribute`**()
+  - **`getModuloAttribute`**()
 
 
 ### `app/Entities/AlumnoReunion.php`
 
 #### `Intranet\Entities\AlumnoReunion`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Reunion`
 - Metodes:
-  - `Reunion`
+  - **`Reunion`**()
 
 
 ### `app/Entities/Articulo.php`
 
 #### `Intranet\Entities\Articulo`
 - Metodes:
-  - `Lote`
+  - **`Lote`**()
+
     Lots on apareix l'article a través de la taula pivot `articulos_lote`.
 
 #### `Intranet\Entities\getMiniaturaAttribute`
 - Metodes:
-  - `getMiniaturaAttribute`
-  - `fillFile`
+  - **`getMiniaturaAttribute`**()
+  - **`fillFile`**($file): ?string
+
     Guarda la imatge de l'article en `public/Articulos` i retorna la ruta relativa.
-  - `setDescripcionAttribute`
+  - **`setDescripcionAttribute`**($value)
 
 
 ### `app/Entities/ArticuloLote.php`
 
 #### `Intranet\Entities\ArticuloLote`
 - Metodes:
-  - `Articulo`
+  - **`Articulo`**()
 
 #### `Intranet\Entities\Lote`
 - Metodes:
-  - `Lote`
+  - **`Lote`**()
 
 #### `Intranet\Entities\Materiales`
 - Metodes:
-  - `Materiales`
+  - **`Materiales`**()
 
 #### `Intranet\Entities\getDescripcionAttribute`
 - Metodes:
-  - `getDescripcionAttribute`
+  - **`getDescripcionAttribute`**()
 
 
 ### `app/Entities/Asistencia.php`
 
 #### `Intranet\Entities\Asistencia`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 
 ### `app/Entities/BustiaVioleta.php`
 
 #### `Intranet\Entities\BustiaVioleta`
 - Metodes:
-  - `getAutorDisplayNameAttribute`
-  - `scopePendents`
-  - `scopeAmbCategoria`
-  - `scopeDeTipus`
+  - **`getAutorDisplayNameAttribute`**()
+  - **`scopePendents`**($q)
+  - **`scopeAmbCategoria`**($q, $c)
+  - **`scopeDeTipus`**($q, string $tipus)
 
 
 ### `app/Entities/CalendariEscolar.php`
 
 #### `Intranet\Entities\CalendariEscolar`
 - Metodes:
-  - `esNoLectiu`
-  - `esFestiu`
+  - **`esNoLectiu`**($date)
+  - **`esFestiu`**($date)
 
 
 ### `app/Entities/Centro.php`
@@ -3922,20 +4293,20 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\Empresa`
 - Metodes:
-  - `Empresa`
+  - **`Empresa`**()
 
 #### `Intranet\Entities\scopeEmpresa`
 - Metodes:
-  - `scopeEmpresa`
-  - `colaboraciones`
+  - **`scopeEmpresa`**($query, $empresa)
+  - **`colaboraciones`**()
 
 #### `Intranet\Entities\instructores`
 - Metodes:
-  - `instructores`
+  - **`instructores`**()
 
 #### `Intranet\Entities\getIdiomaOptions`
 - Metodes:
-  - `getIdiomaOptions`
+  - **`getIdiomaOptions`**()
 
 
 ### `app/Entities/Ciclo.php`
@@ -3948,39 +4319,39 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\Grupos`
 - Metodes:
-  - `Grupos`
+  - **`Grupos`**()
 
 #### `Intranet\Entities\Departament`
 - Metodes:
-  - `Departament`
+  - **`Departament`**()
 
 #### `Intranet\Entities\TutoresFct`
 - Metodes:
-  - `TutoresFct`
+  - **`TutoresFct`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes: cap
 
 #### `Intranet\Entities\where`
 - Metodes:
-  - `colaboraciones`
+  - **`colaboraciones`**()
 
 #### `Intranet\Entities\fcts`
 - Metodes:
-  - `fcts`
+  - **`fcts`**()
 
 #### `Intranet\Entities\Colaboracion`
 - Metodes: cap
 
 #### `Intranet\Entities\getTipoOptions`
 - Metodes:
-  - `getTipoOptions`
-  - `getDepartamentoOptions`
-  - `getXtipoAttribute`
-  - `getCtipoAttribute`
-  - `getXdepartamentoAttribute`
-  - `getLiteralAttribute`
-  - `getCompleteDualAttribute`
+  - **`getTipoOptions`**()
+  - **`getDepartamentoOptions`**()
+  - **`getXtipoAttribute`**()
+  - **`getCtipoAttribute`**()
+  - **`getXdepartamentoAttribute`**()
+  - **`getLiteralAttribute`**()
+  - **`getCompleteDualAttribute`**()
 
 
 ### `app/Entities/Colaboracion.php`
@@ -3993,54 +4364,54 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\Centro`
 - Metodes:
-  - `Centro`
+  - **`Centro`**()
 
 #### `Intranet\Entities\Ciclo`
 - Metodes:
-  - `Ciclo`
+  - **`Ciclo`**()
 
 #### `Intranet\Entities\fcts`
 - Metodes:
-  - `fcts`
+  - **`fcts`**()
 
 #### `Intranet\Entities\incidencias`
 - Metodes:
-  - `incidencias`
+  - **`incidencias`**()
 
 #### `Intranet\Entities\Propietario`
 - Metodes:
-  - `Propietario`
+  - **`Propietario`**()
 
 #### `Intranet\Entities\votes`
 - Metodes:
-  - `votes`
+  - **`votes`**()
 
 #### `Intranet\Entities\scopeCiclo`
 - Metodes:
-  - `scopeCiclo`
-  - `scopeEmpresa`
-  - `scopeMiColaboracion`
+  - **`scopeCiclo`**($query, $ciclo)
+  - **`scopeEmpresa`**($query, $empresa)
+  - **`scopeMiColaboracion`**($query, $empresa=null, $dni=null)
 
 #### `Intranet\Entities\qTutor`
 - Metodes:
-  - `getEmpresaAttribute`
-  - `getShortAttribute`
-  - `getXCicloAttribute`
-  - `getXEstadoAttribute`
-  - `getLocalidadAttribute`
-  - `getHorariAttribute`
-  - `getEstadoOptions`
-  - `getAnotacioAttribute`
-  - `getProfesorAttribute`
-  - `getUltimoAttribute`
-  - `getSituationAttribute`
+  - **`getEmpresaAttribute`**()
+  - **`getShortAttribute`**()
+  - **`getXCicloAttribute`**()
+  - **`getXEstadoAttribute`**()
+  - **`getLocalidadAttribute`**()
+  - **`getHorariAttribute`**()
+  - **`getEstadoOptions`**()
+  - **`getAnotacioAttribute`**()
+  - **`getProfesorAttribute`**()
+  - **`getUltimoAttribute`**()
+  - **`getSituationAttribute`**()
 
 
 ### `app/Entities/Colaborador.php`
 
 #### `Intranet\Entities\Colaborador`
 - Metodes:
-  - `Fct`
+  - **`Fct`**()
 
 
 ### `app/Entities/Comision.php`
@@ -4053,29 +4424,29 @@ Model d'activitats extraescolars/complementàries.
 
 #### `Intranet\Entities\Creador`
 - Metodes:
-  - `Creador`
-  - `scopeActual`
-  - `scopeNext`
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
-  - `Profesor`
+  - **`Creador`**()
+  - **`scopeActual`**($query)
+  - **`scopeNext`**($query)
+  - **`getDesdeAttribute`**($entrada)
+  - **`getHastaAttribute`**($salida)
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Fcts`
 - Metodes:
-  - `Fcts`
+  - **`Fcts`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `getMedioOptions`
-  - `getEstadoOptions`
-  - `getIdProfesorOptions`
-  - `scopeDia`
-  - `getnombreAttribute`
-  - `getsituacionAttribute`
-  - `getTotalAttribute`
-  - `getDescripcionAttribute`
-  - `getTipoVehiculoAttribute`
-  - `showConfirm`
+  - **`getMedioOptions`**()
+  - **`getEstadoOptions`**()
+  - **`getIdProfesorOptions`**()
+  - **`scopeDia`**($query, $dia)
+  - **`getnombreAttribute`**()
+  - **`getsituacionAttribute`**()
+  - **`getTotalAttribute`**()
+  - **`getDescripcionAttribute`**()
+  - **`getTipoVehiculoAttribute`**()
+  - **`showConfirm`**()
 
 
 ### `app/Entities/Concerns/BatoiModels.php`
@@ -4084,45 +4455,65 @@ Model d'activitats extraescolars/complementàries.
 Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
 
 - Metodes:
-  - `getDateFormat`
+  - **`getDateFormat`**(): string
+
     /
-  - `getRules`
+  - **`getRules`**(): mixed
+
     /
-  - `isRequired`
+  - **`isRequired`**($campo): bool
+
     /
-  - `setInputType`
+  - **`setInputType`**($id, array $tipo)
+
     /
-  - `deleteInputType`
+  - **`deleteInputType`**($id)
+
     /
-  - `addFillable`
+  - **`addFillable`**($field, $first=false)
+
     /
-  - `setRule`
+  - **`setRule`**($id, $rule)
+
     /
-  - `getRule`
+  - **`getRule`**($id): mixed
+
     /
-  - `getInputType`
+  - **`getInputType`**($campo): array
+
     /
-  - `getInputTypes`
+  - **`getInputTypes`**(): array
+
     Retorna la definició completa de tipus d'input del model.
-  - `existsDatepicker`
+  - **`existsDatepicker`**(): bool
+
     /
-  - `isTypeDate`
+  - **`isTypeDate`**($type): bool
+
     /
-  - `fillAll`
+  - **`fillAll`**(Request $request): mixed
+
     Emplena i persisteix els camps `fillable` des d'un request.
-  - `fillField`
+  - **`fillField`**($key, $value): mixed
+
     Normalitza i transforma el valor d'un camp segons el seu tipus d'input.
-  - `fillFile`
+  - **`fillFile`**($file): string|null
+
     Valida i guarda un fitxer annex retornant la ruta final.
-  - `getDirectory`
+  - **`getDirectory`**($clase): string
+
     Construeix el directori de destí del fitxer segons curs i classe.
-  - `getFileName`
+  - **`getFileName`**($extension, $clase): string
+
     Construeix el nom final del fitxer pujat.
-  - `has`
+  - **`has`**($field): bool
+
     /
-  - `getLinkAttribute`
+  - **`getLinkAttribute`**(): bool
+
     /
-  - `showConfirm`
+  - **`showConfirm`**(): array
+
     Retorna el model serialitzat per a pantalles de confirmació.
 
 
@@ -4130,11 +4521,11 @@ Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
 
 #### `Intranet\Entities\Cotxe`
 - Metodes:
-  - `professor`
+  - **`professor`**(): BelongsTo
 
 #### `Intranet\Entities\scopePlateHamming1`
 - Metodes:
-  - `scopePlateHamming1`
+  - **`scopePlateHamming1`**($query, string $matricula)
 
 
 ### `app/Entities/CotxeAcces.php`
@@ -4159,38 +4550,38 @@ Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
 
 #### `Intranet\Entities\Alumnos`
 - Metodes:
-  - `Alumnos`
+  - **`Alumnos`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `Registrado`
-  - `getFechaInicioAttribute`
-  - `getFechaFinAttribute`
-  - `getHorainiAttribute`
-  - `getHorafinAttribute`
-  - `getNAlumnosAttribute`
-  - `getEstadoAttribute`
-  - `scopeActivo`
+  - **`Registrado`**()
+  - **`getFechaInicioAttribute`**($entrada)
+  - **`getFechaFinAttribute`**($salida)
+  - **`getHorainiAttribute`**($salida)
+  - **`getHorafinAttribute`**($salida)
+  - **`getNAlumnosAttribute`**()
+  - **`getEstadoAttribute`**()
+  - **`scopeActivo`**($query)
 
 
 ### `app/Entities/Departamento.php`
 
 #### `Intranet\Entities\Departamento`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Modulo`
 - Metodes:
-  - `Modulo`
+  - **`Modulo`**()
 
 #### `Intranet\Entities\Jefe`
 - Metodes:
-  - `Jefe`
+  - **`Jefe`**()
 
 #### `Intranet\Entities\getLiteralAttribute`
 - Metodes:
-  - `getLiteralAttribute`
-  - `getidProfesorOptions`
+  - **`getLiteralAttribute`**()
+  - **`getidProfesorOptions`**()
 
 
 ### `app/Entities/Documento.php`
@@ -4203,13 +4594,13 @@ Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
 
 #### `Intranet\Entities\getCreatedAtAttribute`
 - Metodes:
-  - `getCreatedAtAttribute`
-  - `getGrupoOptions`
-  - `getTipoDocumentoOptions`
-  - `getExistAttribute`
-  - `getSituacionAttribute`
-  - `getLinkAttribute`
-  - `deleteDoc`
+  - **`getCreatedAtAttribute`**($entrada)
+  - **`getGrupoOptions`**()
+  - **`getTipoDocumentoOptions`**()
+  - **`getExistAttribute`**()
+  - **`getSituacionAttribute`**()
+  - **`getLinkAttribute`**()
+  - **`deleteDoc`**()
 
 #### `Intranet\Entities\delete`
 - Metodes: cap
@@ -4221,8 +4612,8 @@ Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
 Mantingut temporalment per compatibilitat amb fluxos antics.
 
 - Metodes:
-  - `getIdAlumnoOptions`
-  - `getIdColaboracionOptions`
+  - **`getIdAlumnoOptions`**()
+  - **`getIdColaboracionOptions`**()
 
 #### `Intranet\Entities\firstByTutor`
 - Metodes: cap
@@ -4238,29 +4629,29 @@ Mantingut temporalment per compatibilitat amb fluxos antics.
 
 #### `Intranet\Entities\null`
 - Metodes:
-  - `centros`
+  - **`centros`**()
 
 #### `Intranet\Entities\colaboraciones`
 - Metodes:
-  - `colaboraciones`
+  - **`colaboraciones`**()
 
 #### `Intranet\Entities\Centro`
 - Metodes: cap
 
 #### `Intranet\Entities\scopeCiclo`
 - Metodes:
-  - `scopeCiclo`
+  - **`scopeCiclo`**($query, $tutor)
 
 #### `Intranet\Entities\firstByTutor`
 - Metodes:
-  - `scopeMenor`
-  - `getConveniNouAttribute`
-  - `getConveniRenovatAttribute`
-  - `getRenovatConveniAttribute`
-  - `getConveniCaducatAttribute`
-  - `getDataSignaturaAttribute`
-  - `getCiclesAttribute`
-  - `convenioFileMtime`
+  - **`scopeMenor`**($query, $fecha = null)
+  - **`getConveniNouAttribute`**()
+  - **`getConveniRenovatAttribute`**()
+  - **`getRenovatConveniAttribute`**()
+  - **`getConveniCaducatAttribute`**()
+  - **`getDataSignaturaAttribute`**($entrada)
+  - **`getCiclesAttribute`**()
+  - **`convenioFileMtime`**(): ?int
 
 
 ### `app/Entities/Espacio.php`
@@ -4273,26 +4664,26 @@ Mantingut temporalment per compatibilitat amb fluxos antics.
 
 #### `Intranet\Entities\Departamento`
 - Metodes:
-  - `Departamento`
+  - **`Departamento`**()
 
 #### `Intranet\Entities\GruposMati`
 - Metodes:
-  - `GruposMati`
+  - **`GruposMati`**()
 
 #### `Intranet\Entities\GruposVesprada`
 - Metodes:
-  - `GruposVesprada`
+  - **`GruposVesprada`**()
 
 #### `Intranet\Entities\getIdDepartamentoOptions`
 - Metodes:
-  - `getIdDepartamentoOptions`
-  - `getGMatiOptions`
+  - **`getIdDepartamentoOptions`**()
+  - **`getGMatiOptions`**()
 
 #### `Intranet\Entities\all`
 - Metodes:
-  - `getGVespradaOptions`
-  - `getXDepartamentoAttribute`
-  - `Materiales`
+  - **`getGVespradaOptions`**()
+  - **`getXDepartamentoAttribute`**()
+  - **`Materiales`**()
 
 #### `Intranet\Entities\where`
 - Metodes: cap
@@ -4308,45 +4699,45 @@ Mantingut temporalment per compatibilitat amb fluxos antics.
 
 #### `Intranet\Entities\tipoExpediente`
 - Metodes:
-  - `tipoExpediente`
+  - **`tipoExpediente`**()
 
 #### `Intranet\Entities\getfechaAttribute`
 - Metodes:
-  - `getfechaAttribute`
-  - `getfechasolucionAttribute`
-  - `getfechatramiteAttribute`
-  - `getTipoOptions`
-  - `getIdModuloOptions`
-  - `getIdAlumnoOptions`
+  - **`getfechaAttribute`**($entrada)
+  - **`getfechasolucionAttribute`**($salida)
+  - **`getfechatramiteAttribute`**($entrada)
+  - **`getTipoOptions`**()
+  - **`getIdModuloOptions`**()
+  - **`getIdAlumnoOptions`**()
 
 #### `Intranet\Entities\misGrupos`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Acompanyant`
 - Metodes:
-  - `Acompanyant`
+  - **`Acompanyant`**()
 
 #### `Intranet\Entities\Alumno`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Modulo`
 - Metodes:
-  - `Modulo`
+  - **`Modulo`**()
 
 #### `Intranet\Entities\getNomAlumAttribute`
 - Metodes:
-  - `getNomAlumAttribute`
-  - `getNomProfeAttribute`
-  - `getSituacionAttribute`
-  - `getXtipoAttribute`
-  - `getXmoduloAttribute`
-  - `getShortAttribute`
-  - `getEsInformeAttribute`
-  - `getQuienAttribute`
-  - `scopeListos`
-  - `getAnnexoAttribute`
+  - **`getNomAlumAttribute`**()
+  - **`getNomProfeAttribute`**()
+  - **`getSituacionAttribute`**()
+  - **`getXtipoAttribute`**()
+  - **`getXmoduloAttribute`**()
+  - **`getShortAttribute`**()
+  - **`getEsInformeAttribute`**()
+  - **`getQuienAttribute`**()
+  - **`scopeListos`**($query)
+  - **`getAnnexoAttribute`**()
 
 
 ### `app/Entities/Falta.php`
@@ -4361,49 +4752,49 @@ Model de faltes.
 
 #### `Intranet\Entities\profesor`
 - Metodes:
-  - `profesor`
+  - **`profesor`**()
 
 #### `Intranet\Entities\getDesdeAttribute`
 - Metodes:
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
-  - `getHorainiAttribute`
-  - `getHorafinAttribute`
-  - `getDesdeHoraAttribute`
-  - `getMotivosOptions`
-  - `getIdProfesorOptions`
-  - `scopeDia`
-  - `getNombreAttribute`
-  - `getSituacionAttribute`
-  - `getMotivoAttribute`
-  - `showConfirm`
-  - `getHoraIniOptions`
-  - `getHoraFinOptions`
+  - **`getDesdeAttribute`**($entrada)
+  - **`getHastaAttribute`**($entrada)
+  - **`getHorainiAttribute`**($salida)
+  - **`getHorafinAttribute`**($salida)
+  - **`getDesdeHoraAttribute`**()
+  - **`getMotivosOptions`**()
+  - **`getIdProfesorOptions`**()
+  - **`scopeDia`**($query, $dia)
+  - **`getNombreAttribute`**()
+  - **`getSituacionAttribute`**()
+  - **`getMotivoAttribute`**()
+  - **`showConfirm`**()
+  - **`getHoraIniOptions`**()
+  - **`getHoraFinOptions`**()
 
 
 ### `app/Entities/Falta_itaca.php`
 
 #### `Intranet\Entities\Falta_itaca`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Hora`
 - Metodes:
-  - `Hora`
+  - **`Hora`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\getNombreAttribute`
 - Metodes:
-  - `getNombreAttribute`
-  - `getHorasAttribute`
-  - `getXGrupoAttribute`
-  - `getFichajeAttribute`
-  - `getXestadoAttribute`
-  - `getDiaAttribute`
-  - `putEstado`
+  - **`getNombreAttribute`**()
+  - **`getHorasAttribute`**()
+  - **`getXGrupoAttribute`**()
+  - **`getFichajeAttribute`**()
+  - **`getXestadoAttribute`**()
+  - **`getDiaAttribute`**($entrada)
+  - **`putEstado`**($id, $estado, $mensaje = null)
 
 
 ### `app/Entities/Falta_profesor.php`
@@ -4412,18 +4803,20 @@ Model de faltes.
 Model de fitxatges de professorat.
 
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\scopeHoy`
 - Metodes:
-  - `scopeHoy`
-  - `scopehaFichado`
-  - `fichar`
+  - **`scopeHoy`**($query, $profesor)
+  - **`scopehaFichado`**($query, $dia, $profesor)
+  - **`fichar`**($profesor = null)
+
     /
 
 #### `Intranet\Entities\fitxar`
 - Metodes:
-  - `fichaDia`
+  - **`fichaDia`**($profesor, $dia)
+
     /
 
 #### `Intranet\Entities\fitxaDiaManual`
@@ -4443,77 +4836,77 @@ Model de fitxatges de professorat.
 
 #### `Intranet\Entities\Comision`
 - Metodes:
-  - `Comision`
+  - **`Comision`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `AlFct`
+  - **`AlFct`**()
 
 #### `Intranet\Entities\Instructor`
 - Metodes:
-  - `Instructor`
+  - **`Instructor`**()
 
 #### `Intranet\Entities\Contactos`
 - Metodes:
-  - `Contactos`
+  - **`Contactos`**()
 
 #### `Intranet\Entities\mail`
 - Metodes:
-  - `Colaboradores`
+  - **`Colaboradores`**()
 
 #### `Intranet\Entities\Alumnos`
 - Metodes:
-  - `Alumnos`
+  - **`Alumnos`**()
 
 #### `Intranet\Entities\votes`
 - Metodes:
-  - `votes`
+  - **`votes`**()
 
 #### `Intranet\Entities\cotutor`
 - Metodes:
-  - `cotutor`
+  - **`cotutor`**()
 
 #### `Intranet\Entities\hasSignatures`
 - Metodes:
-  - `hasSignatures`
-  - `tutor`
+  - **`hasSignatures`**()
+  - **`tutor`**()
 
 #### `Intranet\Entities\Colaboracion`
 - Metodes: cap
 
 #### `Intranet\Entities\scopeCentro`
 - Metodes:
-  - `scopeCentro`
-  - `scopeEmpresa`
-  - `scopeMisFcts`
-  - `scopeWithCotutor`
-  - `getEncarregatAttribute`
-  - `scopeMisFctsColaboracion`
-  - `scopeEsExempt`
-  - `scopeEsErasmus`
-  - `scopeEsFct`
-  - `scopeEsAval`
-  - `scopeEsDual`
-  - `scopeNoAval`
-  - `getIdColaboracionOptions`
+  - **`scopeCentro`**($query, $centro)
+  - **`scopeEmpresa`**($query, $empresa)
+  - **`scopeMisFcts`**($query, $profesor=null)
+  - **`scopeWithCotutor`**($query, $cotutor=null)
+  - **`getEncarregatAttribute`**()
+  - **`scopeMisFctsColaboracion`**($query, $profesor = null, $cotutor = null)
+  - **`scopeEsExempt`**($query)
+  - **`scopeEsErasmus`**($query)
+  - **`scopeEsFct`**($query)
+  - **`scopeEsAval`**($query)
+  - **`scopeEsDual`**($query)
+  - **`scopeNoAval`**($query)
+  - **`getIdColaboracionOptions`**()
 
 #### `Intranet\Entities\firstByTutor`
 - Metodes:
-  - `getIdAlumnoOptions`
-  - `getIdInstructorOptions`
-  - `getTipusAttribute`
-  - `getDesdeAttribute`
-  - `getDualAttribute`
-  - `getExentoAttribute`
-  - `getCentroAttribute`
-  - `getCicloAttribute`
-  - `getQuantsAttribute`
-  - `getNalumnesAttribute`
-  - `getLalumnesAttribute`
-  - `getEmailAttribute`
-  - `getContactoAttribute`
-  - `getXinstructorAttribute`
-  - `getSendCorreoAttribute`
+  - **`getIdAlumnoOptions`**()
+  - **`getIdInstructorOptions`**()
+  - **`getTipusAttribute`**()
+  - **`getDesdeAttribute`**($entrada)
+  - **`getDualAttribute`**()
+  - **`getExentoAttribute`**()
+  - **`getCentroAttribute`**()
+  - **`getCicloAttribute`**()
+  - **`getQuantsAttribute`**()
+  - **`getNalumnesAttribute`**()
+  - **`getLalumnesAttribute`**()
+  - **`getEmailAttribute`**()
+  - **`getContactoAttribute`**()
+  - **`getXinstructorAttribute`**()
+  - **`getSendCorreoAttribute`**()
 
 
 ### `app/Entities/FctColaborador.php`
@@ -4532,12 +4925,13 @@ Model de fitxatges de professorat.
 
 #### `Intranet\Entities\FctDay`
 - Metodes:
-  - `Colaboracion`
+  - **`Colaboracion`**()
 
 #### `Intranet\Entities\getHorariAttribute`
 - Metodes:
-  - `getHorariAttribute`
-  - `setColaboracionIdAttribute`
+  - **`getHorariAttribute`**()
+  - **`setColaboracionIdAttribute`**($value): void
+
     Normalitza valors buits perquè la BBDD no reba '' en una FK integer nullable.
 
 
@@ -4551,61 +4945,61 @@ Model de fitxatges de professorat.
 
 #### `Intranet\Entities\Alumnos`
 - Metodes:
-  - `Alumnos`
+  - **`Alumnos`**()
 
 #### `Intranet\Entities\Actividades`
 - Metodes:
-  - `Actividades`
+  - **`Actividades`**()
 
 #### `Intranet\Entities\Tutor`
 - Metodes:
-  - `Tutor`
+  - **`Tutor`**()
 
 #### `Intranet\Entities\Ciclo`
 - Metodes:
-  - `Ciclo`
+  - **`Ciclo`**()
 
 #### `Intranet\Entities\Horario`
 - Metodes:
-  - `Horario`
+  - **`Horario`**()
 
 #### `Intranet\Entities\Modulos`
 - Metodes:
-  - `Modulos`
+  - **`Modulos`**()
 
 #### `Intranet\Entities\getTodosOptions`
 - Metodes:
-  - `getTodosOptions`
+  - **`getTodosOptions`**()
 
 #### `Intranet\Entities\all`
 - Metodes:
-  - `getIdCicloOptions`
-  - `getTutorOptions`
-  - `scopeQTutor`
-  - `scopeLargestByAlumnes`
-  - `scopeMisGrupos`
-  - `scopeMiGrupoModulo`
-  - `scopeMatriculado`
-  - `scopeDepartamento`
-  - `scopeCurso`
-  - `getProyectoAttribute`
-  - `getXcicloAttribute`
-  - `getXtutorAttribute`
-  - `getActaAttribute`
-  - `getCalidadAttribute`
-  - `getMatriculadosAttribute`
-  - `getAvalFctAttribute`
-  - `getEnDualAttribute`
-  - `getAprobFctAttribute`
-  - `getAvalProAttribute`
-  - `getAprobProAttribute`
-  - `getColocadosAttribute`
-  - `getExentosAttribute`
-  - `getResfctAttribute`
-  - `getResempresaAttribute`
-  - `getResproAttribute`
-  - `getIsSemiAttribute`
-  - `getTornAttribute`
+  - **`getIdCicloOptions`**()
+  - **`getTutorOptions`**()
+  - **`scopeQTutor`**($query, $profesor = null)
+  - **`scopeLargestByAlumnes`**($query)
+  - **`scopeMisGrupos`**($query, $profesor = null)
+  - **`scopeMiGrupoModulo`**($query, $dni, $modulo)
+  - **`scopeMatriculado`**($query, $alumno)
+  - **`scopeDepartamento`**($query, $dep)
+  - **`scopeCurso`**($query, $curso)
+  - **`getProyectoAttribute`**()
+  - **`getXcicloAttribute`**()
+  - **`getXtutorAttribute`**()
+  - **`getActaAttribute`**()
+  - **`getCalidadAttribute`**()
+  - **`getMatriculadosAttribute`**()
+  - **`getAvalFctAttribute`**()
+  - **`getEnDualAttribute`**()
+  - **`getAprobFctAttribute`**()
+  - **`getAvalProAttribute`**()
+  - **`getAprobProAttribute`**()
+  - **`getColocadosAttribute`**()
+  - **`getExentosAttribute`**()
+  - **`getResfctAttribute`**()
+  - **`getResempresaAttribute`**()
+  - **`getResproAttribute`**()
+  - **`getIsSemiAttribute`**()
+  - **`getTornAttribute`**()
 
 
 ### `app/Entities/GrupoTrabajo.php`
@@ -4623,15 +5017,15 @@ Model de grup de treball.
 
 #### `Intranet\Entities\profesores`
 - Metodes:
-  - `profesores`
+  - **`profesores`**()
 
 #### `Intranet\Entities\Miembro`
 - Metodes: cap
 
 #### `Intranet\Entities\Creador`
 - Metodes:
-  - `Creador`
-  - `scopeMisGruposTrabajo`
+  - **`Creador`**()
+  - **`scopeMisGruposTrabajo`**($query)
 
 
 ### `app/Entities/Guardia.php`
@@ -4644,72 +5038,72 @@ Model de grup de treball.
 
 #### `Intranet\Entities\Profesor`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\scopeProfesor`
 - Metodes:
-  - `scopeProfesor`
-  - `scopeDiaHora`
+  - **`scopeProfesor`**($query, $idProfesor)
+  - **`scopeDiaHora`**($query, $dia, $hora)
 
 
 ### `app/Entities/Hora.php`
 
 #### `Intranet\Entities\Hora`
 - Metodes:
-  - `Horario`
+  - **`Horario`**()
 
 #### `Intranet\Entities\horasAfectadas`
 - Metodes:
-  - `horasAfectadas`
+  - **`horasAfectadas`**(string $horaIni, string $horaFin): Collection
 
 
 ### `app/Entities/Horario.php`
 
 #### `Intranet\Entities\Horario`
 - Metodes:
-  - `Modulo`
+  - **`Modulo`**()
 
 #### `Intranet\Entities\Ocupacion`
 - Metodes:
-  - `Ocupacion`
+  - **`Ocupacion`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\Hora`
 - Metodes:
-  - `Hora`
+  - **`Hora`**()
 
 #### `Intranet\Entities\Mestre`
 - Metodes:
-  - `Mestre`
+  - **`Mestre`**()
 
 #### `Intranet\Entities\scopeProfesor`
 - Metodes:
-  - `scopeProfesor`
-  - `scopeGrup`
-  - `scopeDia`
-  - `scopeOrden`
-  - `scopeGuardia`
-  - `scopeGuardiaBiblio`
-  - `scopeGuardiaAll`
-  - `scopeLectivos`
-  - `scopePrimera`
-  - `HorarioSemanal`
-  - `HorarioGrupo`
-  - `getProfesorAttribute`
-  - `getXGrupoAttribute`
-  - `getXModuloAttribute`
-  - `getXOcupacionAttribute`
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
-  - `getModuloOptions`
-  - `getIdGrupoOptions`
+  - **`scopeProfesor`**($query, $profesor)
+  - **`scopeGrup`**($query, $grupo)
+  - **`scopeDia`**($query, $dia)
+  - **`scopeOrden`**($query, $sesion)
+  - **`scopeGuardia`**($query)
+  - **`scopeGuardiaBiblio`**($query)
+  - **`scopeGuardiaAll`**($query)
+  - **`scopeLectivos`**($query)
+  - **`scopePrimera`**($query, $profesor, $date = null)
+  - **`HorarioSemanal`**($profesor)
+  - **`HorarioGrupo`**($grupo)
+  - **`getProfesorAttribute`**()
+  - **`getXGrupoAttribute`**()
+  - **`getXModuloAttribute`**()
+  - **`getXOcupacionAttribute`**()
+  - **`getDesdeAttribute`**()
+  - **`getHastaAttribute`**()
+  - **`getModuloOptions`**()
+  - **`getIdGrupoOptions`**()
 
 #### `Intranet\Entities\all`
 - Metodes:
-  - `getOcupacionOptions`
+  - **`getOcupacionOptions`**()
 
 
 ### `app/Entities/ImportRun.php`
@@ -4730,39 +5124,39 @@ Model d'incidencies.
 
 #### `Intranet\Entities\null`
 - Metodes:
-  - `Creador`
+  - **`Creador`**()
 
 #### `Intranet\Entities\Responsables`
 - Metodes:
-  - `Responsables`
+  - **`Responsables`**()
 
 #### `Intranet\Entities\Tipos`
 - Metodes:
-  - `Tipos`
+  - **`Tipos`**()
 
 #### `Intranet\Entities\Materiales`
 - Metodes:
-  - `Materiales`
+  - **`Materiales`**()
 
 #### `Intranet\Entities\Espacios`
 - Metodes:
-  - `Espacios`
+  - **`Espacios`**()
 
 #### `Intranet\Entities\getEspacioOptions`
 - Metodes:
-  - `getEspacioOptions`
-  - `getTipoOptions`
-  - `getEstadoOptions`
-  - `getPrioridadOptions`
-  - `getFechasolucionAttribute`
-  - `getXestadoAttribute`
-  - `getXcreadorAttribute`
-  - `getXespacioAttribute`
-  - `getXresponsableAttribute`
-  - `getXtipoAttribute`
-  - `getDesCurtaAttribute`
-  - `putEstado`
-  - `getSubTipoAttribute`
+  - **`getEspacioOptions`**()
+  - **`getTipoOptions`**()
+  - **`getEstadoOptions`**()
+  - **`getPrioridadOptions`**()
+  - **`getFechasolucionAttribute`**($salida)
+  - **`getXestadoAttribute`**()
+  - **`getXcreadorAttribute`**()
+  - **`getXespacioAttribute`**()
+  - **`getXresponsableAttribute`**()
+  - **`getXtipoAttribute`**()
+  - **`getDesCurtaAttribute`**()
+  - **`putEstado`**($id, $estado)
+  - **`getSubTipoAttribute`**()
 
 
 ### `app/Entities/Instructor.php`
@@ -4775,30 +5169,30 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Fcts`
 - Metodes:
-  - `Fcts`
+  - **`Fcts`**(): HasMany
 
 #### `Intranet\Entities\Centros`
 - Metodes:
-  - `Centros`
+  - **`Centros`**(): BelongsToMany
 
 #### `Intranet\Entities\getXcentrosAttribute`
 - Metodes:
-  - `getXcentrosAttribute`
-  - `getXNcentrosAttribute`
-  - `getNfctsAttribute`
-  - `getNombreAttribute`
-  - `getContactoAttribute`
-  - `getIdAttribute`
+  - **`getXcentrosAttribute`**()
+  - **`getXNcentrosAttribute`**()
+  - **`getNfctsAttribute`**()
+  - **`getNombreAttribute`**()
+  - **`getContactoAttribute`**()
+  - **`getIdAttribute`**()
 
 
 ### `app/Entities/Inventario.php`
 
 #### `Intranet\Entities\Inventario`
 - Metodes:
-  - `getEspaiAttribute`
-  - `getDescripcioAttribute`
-  - `getEstatAttribute`
-  - `getOrigeAttribute`
+  - **`getEspaiAttribute`**()
+  - **`getDescripcioAttribute`**()
+  - **`getEstatAttribute`**()
+  - **`getOrigeAttribute`**()
 
 
 ### `app/Entities/IpGuardia.php`
@@ -4811,30 +5205,31 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Lote`
 - Metodes:
-  - `ArticuloLote`
+  - **`ArticuloLote`**()
 
 #### `Intranet\Entities\Departamento`
 - Metodes:
-  - `Departamento`
+  - **`Departamento`**()
 
 #### `Intranet\Entities\getProcedenciaOptions`
 - Metodes:
-  - `getProcedenciaOptions`
-  - `getDepartamentoIdOptions`
-  - `Materiales`
+  - **`getProcedenciaOptions`**()
+  - **`getDepartamentoIdOptions`**()
+  - **`Materiales`**()
 
 #### `Intranet\Entities\ArticuloLote`
 - Metodes: cap
 
 #### `Intranet\Entities\getOrigenAttribute`
 - Metodes:
-  - `getOrigenAttribute`
-  - `getEstadoAttribute`
-  - `resolveArticuloLoteCount`
-  - `resolveMaterialesStats`
+  - **`getOrigenAttribute`**()
+  - **`getEstadoAttribute`**()
+  - **`resolveArticuloLoteCount`**(): int
+  - **`resolveMaterialesStats`**(): array
+
     /
-  - `getEstatAttribute`
-  - `getDepartamentAttribute`
+  - **`getEstatAttribute`**()
+  - **`getDepartamentAttribute`**()
 
 
 ### `app/Entities/Material.php`
@@ -4847,51 +5242,52 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Espacios`
 - Metodes:
-  - `Espacios`
+  - **`Espacios`**()
 
 #### `Intranet\Entities\LoteArticulo`
 - Metodes:
-  - `LoteArticulo`
+  - **`LoteArticulo`**()
 
 #### `Intranet\Entities\getEstadoOptions`
 - Metodes:
-  - `getEstadoOptions`
-  - `getStateAttribute`
-  - `getEspacioOptions`
-  - `getEspaiAttribute`
-  - `getProcedenciaOptions`
+  - **`getEstadoOptions`**()
+  - **`getStateAttribute`**()
+  - **`getEspacioOptions`**()
+  - **`getEspaiAttribute`**()
+  - **`getProcedenciaOptions`**()
 
 
 ### `app/Entities/MaterialBaja.php`
 
 #### `Intranet\Entities\MaterialBaja`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Material`
 - Metodes:
-  - `Material`
+  - **`Material`**()
 
 #### `Intranet\Entities\getDescripcionAttribute`
 - Metodes:
-  - `getDescripcionAttribute`
-  - `getSolicitanteAttribute`
-  - `getEspacioAttribute`
-  - `getFechaBajaAttribute`
-  - `getStateAttribute`
-  - `getTipusAttribute`
-  - `getNuevoAttribute`
+  - **`getDescripcionAttribute`**()
+  - **`getSolicitanteAttribute`**()
+  - **`getEspacioAttribute`**()
+  - **`getFechaBajaAttribute`**()
+  - **`getStateAttribute`**()
+  - **`getTipusAttribute`**()
+  - **`getNuevoAttribute`**()
 
 
 ### `app/Entities/Menu.php`
 
 #### `Intranet\Entities\Menu`
 - Metodes:
-  - `getXrolAttribute`
-  - `getXactivoAttribute`
-  - `getCategoriaAttribute`
-  - `getDescripcionAttribute`
-  - `getXajudaAttribute`
+  - **`getXrolAttribute`**()
+  - **`getXactivoAttribute`**()
+  - **`getCategoriaAttribute`**()
+  - **`getDescripcionAttribute`**()
+  - **`getXajudaAttribute`**()
+
     Versió segura de l'ajuda per al grid (sense HTML).
 
 
@@ -4911,18 +5307,18 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Horario`
 - Metodes:
-  - `Horario`
+  - **`Horario`**()
 
 #### `Intranet\Entities\Grupos`
 - Metodes:
-  - `Grupos`
+  - **`Grupos`**()
 
 #### `Intranet\Entities\scopeMisModulos`
 - Metodes:
-  - `scopeMisModulos`
-  - `scopeModulosGrupo`
-  - `scopeLectivos`
-  - `getliteralAttribute`
+  - **`scopeMisModulos`**($query, $profesor = null)
+  - **`scopeModulosGrupo`**($query, $grupo)
+  - **`scopeLectivos`**($query)
+  - **`getliteralAttribute`**()
 
 
 ### `app/Entities/Modulo_ciclo.php`
@@ -4935,72 +5331,72 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Ciclo`
 - Metodes:
-  - `Ciclo`
+  - **`Ciclo`**()
 
 #### `Intranet\Entities\Modulo`
 - Metodes:
-  - `Modulo`
+  - **`Modulo`**()
 
 #### `Intranet\Entities\Departamento`
 - Metodes:
-  - `Departamento`
+  - **`Departamento`**()
 
 #### `Intranet\Entities\Programacion`
 - Metodes: cap
 
 #### `Intranet\Entities\Profesor`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\getXmoduloAttribute`
 - Metodes:
-  - `getXmoduloAttribute`
-  - `getXdepartamentoAttribute`
-  - `getXcicloAttribute`
-  - `getAcicloAttribute`
-  - `getNombreAttribute`
-  - `getIdCicloOptions`
-  - `getIdModuloOptions`
-  - `getIdDepartamentoOptions`
-  - `getEstadoAttribute`
-  - `getSituacionAttribute`
+  - **`getXmoduloAttribute`**()
+  - **`getXdepartamentoAttribute`**()
+  - **`getXcicloAttribute`**()
+  - **`getAcicloAttribute`**()
+  - **`getNombreAttribute`**()
+  - **`getIdCicloOptions`**()
+  - **`getIdModuloOptions`**()
+  - **`getIdDepartamentoOptions`**()
+  - **`getEstadoAttribute`**()
+  - **`getSituacionAttribute`**()
 
 
 ### `app/Entities/Modulo_grupo.php`
 
 #### `Intranet\Entities\Modulo_grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\ModuloCiclo`
 - Metodes:
-  - `ModuloCiclo`
+  - **`ModuloCiclo`**()
 
 #### `Intranet\Entities\resultados`
 - Metodes:
-  - `resultados`
+  - **`resultados`**()
 
 #### `Intranet\Entities\scopeCurso`
 - Metodes:
-  - `scopeCurso`
+  - **`scopeCurso`**($query, $curso)
 
 #### `Intranet\Entities\byCurso`
 - Metodes:
-  - `getXGrupoAttribute`
-  - `getXModuloAttribute`
-  - `getXcicloAttribute`
-  - `getXdepartamentoAttribute`
-  - `getXtornAttribute`
-  - `getliteralAttribute`
-  - `getseguimientoAttribute`
+  - **`getXGrupoAttribute`**()
+  - **`getXModuloAttribute`**()
+  - **`getXcicloAttribute`**()
+  - **`getXdepartamentoAttribute`**()
+  - **`getXtornAttribute`**()
+  - **`getliteralAttribute`**()
+  - **`getseguimientoAttribute`**()
 
 #### `Intranet\Entities\hasSeguimiento`
 - Metodes:
-  - `getprofesorAttribute`
+  - **`getprofesorAttribute`**()
 
 #### `Intranet\Entities\profesorNombres`
 - Metodes:
-  - `getProgramacioLinkAttribute`
+  - **`getProgramacioLinkAttribute`**()
 
 #### `Intranet\Entities\programacioLink`
 - Metodes: cap
@@ -5010,120 +5406,134 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Municipio`
 - Metodes:
-  - `Provincia`
+  - **`Provincia`**()
 
 
 ### `app/Entities/Notification.php`
 
 #### `Intranet\Entities\Notification`
 - Metodes:
-  - `getMotivoAttribute`
-  - `getEmisorAttribute`
-  - `getFechaAttribute`
-  - `getLeidoAttribute`
-  - `decodedData`
+  - **`getMotivoAttribute`**()
+  - **`getEmisorAttribute`**()
+  - **`getFechaAttribute`**()
+  - **`getLeidoAttribute`**()
+  - **`decodedData`**(): array
 
 
 ### `app/Entities/Ocupacion.php`
 
 #### `Intranet\Entities\Ocupacion`
 - Metodes:
-  - `Ocupacion`
-  - `getliteralAttribute`
+  - **`Ocupacion`**()
+  - **`getliteralAttribute`**()
 
 
 ### `app/Entities/OrdenReunion.php`
 
 #### `Intranet\Entities\OrdenReunion`
+Model d'ordres de reunió.
+
 - Metodes:
-  - `Reunion`
+  - **`Reunion`**(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+
+    /
 
 #### `Intranet\Entities\scopeForReunion`
 - Metodes:
-  - `scopeForReunion`
-  - `scopeOrderNumber`
-  - `firstByReunionAndOrder`
-  - `resumenByReunionAndOrder`
+  - **`scopeForReunion`**($query, $idReunion): \Illuminate\Database\Eloquent\Builder
+
+    /
+  - **`scopeOrderNumber`**($query, int $orden): \Illuminate\Database\Eloquent\Builder
+
+    /
+  - **`firstByReunionAndOrder`**($idReunion, int $orden): ?self
+
+    /
+  - **`resumenByReunionAndOrder`**($idReunion, int $orden): string
+
+    /
 
 
 ### `app/Entities/OrdenTrabajo.php`
 
 #### `Intranet\Entities\OrdenTrabajo`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Tipos`
 - Metodes:
-  - `Tipos`
+  - **`Tipos`**()
 
 #### `Intranet\Entities\getTipoOptions`
 - Metodes:
-  - `getTipoOptions`
-  - `getEstadoOptions`
-  - `getCreatedAtAttribute`
-  - `getXestadoAttribute`
-  - `getXtipoAttribute`
+  - **`getTipoOptions`**()
+  - **`getEstadoOptions`**()
+  - **`getCreatedAtAttribute`**($entrada)
+  - **`getXestadoAttribute`**()
+  - **`getXtipoAttribute`**()
 
 
 ### `app/Entities/Poll/Actividad.php`
 
 #### `Intranet\Entities\Poll\Actividad`
 - Metodes:
-  - `loadPoll`
+  - **`loadPoll`**($allVotes)
 
 
 ### `app/Entities/Poll/AlumnoFct.php`
 
 #### `Intranet\Entities\Poll\AlumnoFct`
 - Metodes:
-  - `loadPoll`
-  - `loadVotes`
-  - `aggregate`
-  - `loadGroupVotes`
-  - `vista`
-  - `has`
+  - **`loadPoll`**($votes)
+  - **`loadVotes`**($id)
+  - **`aggregate`**(&$votes, $option1, $option2)
+  - **`loadGroupVotes`**($id)
+  - **`vista`**()
+  - **`has`**()
 
 
 ### `app/Entities/Poll/Fct.php`
 
 #### `Intranet\Entities\Poll\Fct`
 - Metodes:
-  - `loadPoll`
-  - `interviewed`
-  - `keyInterviewed`
-  - `loadVotes`
-  - `aggregate`
-  - `loadGroupVotes`
-  - `has`
+  - **`loadPoll`**($votes)
+  - **`interviewed`**()
+  - **`keyInterviewed`**()
+  - **`loadVotes`**($id)
+  - **`aggregate`**(&$votes, $option1, $option2)
+  - **`loadGroupVotes`**($id)
+  - **`has`**()
 
 
 ### `app/Entities/Poll/ModelPoll.php`
 
 #### `Intranet\Entities\Poll\ModelPoll`
 - Metodes:
-  - `loadPoll`
-  - `loadVotes`
-  - `loadGroupVotes`
-  - `interviewed`
-  - `keyInterviewed`
-  - `vista`
+  - **`loadPoll`**($votes)
+  - **`loadVotes`**($id)
+  - **`loadGroupVotes`**($id)
+  - **`interviewed`**()
+  - **`keyInterviewed`**()
+  - **`vista`**()
 
 #### `Intranet\Entities\Poll\aggregate`
 - Metodes:
-  - `aggregate`
-  - `has`
+  - **`aggregate`**(&$votes, $option1, $option2)
+  - **`has`**()
 
 
 ### `app/Entities/Poll/Option.php`
 
 #### `Intranet\Entities\Poll\Option`
 - Metodes:
-  - `poll`
+  - **`poll`**(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+
     An option belongs to one poll
 
 #### `Intranet\Entities\Poll\isPollClosed`
 - Metodes:
-  - `isPollClosed`
+  - **`isPollClosed`**(): bool
+
     Check if the option is Closed
 
 
@@ -5131,60 +5541,64 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Poll\PPoll`
 - Metodes:
-  - `polls`
+  - **`polls`**()
 
 #### `Intranet\Entities\Poll\options`
 - Metodes:
-  - `options`
+  - **`options`**(): \Illuminate\Database\Eloquent\Relations\HasMany
+
     A poll has many options related to
 
 #### `Intranet\Entities\Poll\getWhatOptions`
 - Metodes:
-  - `getWhatOptions`
+  - **`getWhatOptions`**()
 
 
 ### `app/Entities/Poll/Poll.php`
 
 #### `Intranet\Entities\Poll\Poll`
 - Metodes:
-  - `Plantilla`
+  - **`Plantilla`**(): \Illuminate\Database\Eloquent\Relations\HasMany
+
     A poll has many options related to
 
 #### `Intranet\Entities\Poll\getStateAttribute`
 - Metodes:
-  - `getStateAttribute`
-  - `getKeyUserAttribute`
-  - `getAnonymousAttribute`
-  - `getQueAttribute`
-  - `getRemainsAttribute`
-  - `getModeloAttribute`
-  - `getVistaAttribute`
-  - `getIdPPollOptions`
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
+  - **`getStateAttribute`**()
+  - **`getKeyUserAttribute`**()
+  - **`getAnonymousAttribute`**()
+  - **`getQueAttribute`**()
+  - **`getRemainsAttribute`**()
+  - **`getModeloAttribute`**()
+  - **`getVistaAttribute`**()
+  - **`getIdPPollOptions`**()
+  - **`getDesdeAttribute`**($entrada)
+  - **`getHastaAttribute`**($entrada)
 
 
 ### `app/Entities/Poll/Profesor.php`
 
 #### `Intranet\Entities\Poll\Profesor`
 - Metodes:
-  - `loadPoll`
-  - `loadVotes`
+  - **`loadPoll`**($votes)
+  - **`loadVotes`**($id)
 
 #### `Intranet\Entities\Poll\misModulos`
 - Metodes:
-  - `loadGroupVotes`
+  - **`loadGroupVotes`**($id)
 
 #### `Intranet\Entities\Poll\misGrupos`
 - Metodes:
-  - `aggregate`
-  - `has`
-  - `aggregateGrupo`
+  - **`aggregate`**(&$votes, $option1, $option2)
+  - **`has`**()
+  - **`aggregateGrupo`**($option1, &$votes): void
+
     /
 
 #### `Intranet\Entities\Poll\all`
 - Metodes:
-  - `aggregateDepartamento`
+  - **`aggregateDepartamento`**($option2, &$votes): void
+
     /
 
 
@@ -5192,62 +5606,62 @@ Model d'incidencies.
 
 #### `Intranet\Entities\Poll\Vote`
 - Metodes:
-  - `Option`
+  - **`Option`**()
 
 #### `Intranet\Entities\Poll\ModuloGrupo`
 - Metodes:
-  - `ModuloGrupo`
+  - **`ModuloGrupo`**()
 
 #### `Intranet\Entities\Poll\Actividad`
 - Metodes:
-  - `Actividad`
+  - **`Actividad`**()
 
 #### `Intranet\Entities\Poll\Fct`
 - Metodes:
-  - `Fct`
+  - **`Fct`**()
 
 #### `Intranet\Entities\Poll\Profesor`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Poll\Poll`
 - Metodes:
-  - `Poll`
+  - **`Poll`**()
 
 #### `Intranet\Entities\Poll\getIsValueAttribute`
 - Metodes:
-  - `getIsValueAttribute`
-  - `optionsPoll`
-  - `optionsNumericPoll`
-  - `scopeMyVotes`
-  - `scopeGetVotes`
-  - `scopeMyGroupVotes`
-  - `scopeAllNumericVotes`
-  - `getGrupoAttribute`
-  - `getDepartmentoAttribute`
-  - `getCicloAttribute`
-  - `getQuestionAttribute`
-  - `getAnswerAttribute`
-  - `getYearAttribute`
-  - `getInstructorAttribute`
-  - `scopeTipusEnquesta`
+  - **`getIsValueAttribute`**()
+  - **`optionsPoll`**($id)
+  - **`optionsNumericPoll`**($id)
+  - **`scopeMyVotes`**($query, $id, $modulo)
+  - **`scopeGetVotes`**($query, $poll, $option1, $option2=null)
+  - **`scopeMyGroupVotes`**($query, $id, $modulos)
+  - **`scopeAllNumericVotes`**($query, $id)
+  - **`getGrupoAttribute`**()
+  - **`getDepartmentoAttribute`**()
+  - **`getCicloAttribute`**()
+  - **`getQuestionAttribute`**()
+  - **`getAnswerAttribute`**()
+  - **`getYearAttribute`**()
+  - **`getInstructorAttribute`**()
+  - **`scopeTipusEnquesta`**($query, $tipusEnquesta)
 
 
 ### `app/Entities/Poll/VoteAnt.php`
 
 #### `Intranet\Entities\Poll\VoteAnt`
 - Metodes:
-  - `Option`
+  - **`Option`**()
 
 #### `Intranet\Entities\Poll\Colaboracion`
 - Metodes:
-  - `Colaboracion`
+  - **`Colaboracion`**()
 
 #### `Intranet\Entities\Poll\getIsValueAttribute`
 - Metodes:
-  - `getIsValueAttribute`
-  - `getQuestionAttribute`
-  - `getAnswerAttribute`
+  - **`getIsValueAttribute`**()
+  - **`getQuestionAttribute`**()
+  - **`getAnswerAttribute`**()
 
 
 ### `app/Entities/Profesor.php`
@@ -5262,83 +5676,83 @@ Model de professor.
 
 #### `Intranet\Entities\Notifiable`
 - Metodes:
-  - `Comision`
+  - **`Comision`**()
 
 #### `Intranet\Entities\Faltas`
 - Metodes:
-  - `Faltas`
+  - **`Faltas`**()
 
 #### `Intranet\Entities\Actividad`
 - Metodes:
-  - `Actividad`
+  - **`Actividad`**()
 
 #### `Intranet\Entities\Departamento`
 - Metodes:
-  - `Departamento`
+  - **`Departamento`**()
 
 #### `Intranet\Entities\Sustituye`
 - Metodes:
-  - `Sustituye`
+  - **`Sustituye`**()
 
 #### `Intranet\Entities\Reserva`
 - Metodes:
-  - `Reserva`
-  - `Horari`
+  - **`Reserva`**()
+  - **`Horari`**()
 
 #### `Intranet\Entities\Cotxes`
 - Metodes:
-  - `Cotxes`
+  - **`Cotxes`**(): HasMany
 
 #### `Intranet\Entities\grupos`
 - Metodes:
-  - `grupos`
-  - `Activity`
+  - **`grupos`**()
+  - **`Activity`**()
 
 #### `Intranet\Entities\scopeActivo`
 - Metodes:
-  - `scopeActivo`
-  - `getRol`
-  - `scopePlantilla`
-  - `scopeTutoresFCT`
+  - **`scopeActivo`**($query)
+  - **`getRol`**($rol)
+  - **`scopePlantilla`**($query)
+  - **`scopeTutoresFCT`**($query)
 
 #### `Intranet\Entities\byCurso`
 - Metodes:
-  - `scopeGrupo`
-  - `scopeGrupoT`
-  - `scopeApiToken`
-  - `getfechaIngresoAttribute`
-  - `getFechaNacAttribute`
-  - `getFechaBajaAttribute`
-  - `getIdiomaOptions`
-  - `getIdAttribute`
-  - `getDepartamentoOptions`
-  - `sendPasswordResetNotification`
-  - `getXrolAttribute`
-  - `getXdepartamentoAttribute`
-  - `getLdepartamentoAttribute`
-  - `getEntradaAttribute`
-  - `getSalidaAttribute`
-  - `getHorarioAttribute`
-  - `getFullNameAttribute`
-  - `getNameFullAttribute`
-  - `getSurNamesAttribute`
-  - `getShortNameAttribute`
-  - `getAhoraAttribute`
-  - `getMiJefeAttribute`
-  - `getQualitatFile`
-  - `getGrupoTutoriaAttribute`
+  - **`scopeGrupo`**($query, $grupo)
+  - **`scopeGrupoT`**($query, $grupoT)
+  - **`scopeApiToken`**($query, $api)
+  - **`getfechaIngresoAttribute`**($fecha)
+  - **`getFechaNacAttribute`**($fecha)
+  - **`getFechaBajaAttribute`**($fecha)
+  - **`getIdiomaOptions`**()
+  - **`getIdAttribute`**()
+  - **`getDepartamentoOptions`**()
+  - **`sendPasswordResetNotification`**($token)
+  - **`getXrolAttribute`**()
+  - **`getXdepartamentoAttribute`**()
+  - **`getLdepartamentoAttribute`**()
+  - **`getEntradaAttribute`**()
+  - **`getSalidaAttribute`**()
+  - **`getHorarioAttribute`**()
+  - **`getFullNameAttribute`**()
+  - **`getNameFullAttribute`**()
+  - **`getSurNamesAttribute`**()
+  - **`getShortNameAttribute`**()
+  - **`getAhoraAttribute`**()
+  - **`getMiJefeAttribute`**()
+  - **`getQualitatFile`**()
+  - **`getGrupoTutoriaAttribute`**()
 
 #### `Intranet\Entities\byTutorOrSubstitute`
 - Metodes: cap
 
 #### `Intranet\Entities\firstByTutorDual`
 - Metodes:
-  - `getFileNameAttribute`
-  - `getSubstitutAttribute`
-  - `getSustituidosAttribute`
-  - `getSubstituts`
-  - `getHasCertificateAttribute`
-  - `getPathCertificateAttribute`
+  - **`getFileNameAttribute`**()
+  - **`getSubstitutAttribute`**()
+  - **`getSustituidosAttribute`**()
+  - **`getSubstituts`**($dni)
+  - **`getHasCertificateAttribute`**()
+  - **`getPathCertificateAttribute`**()
 
 
 ### `app/Entities/Programacion.php`
@@ -5353,90 +5767,90 @@ Model de programacio.
 
 #### `Intranet\Entities\ModuloCiclo`
 - Metodes:
-  - `ModuloCiclo`
+  - **`ModuloCiclo`**()
 
 #### `Intranet\Entities\Departament`
 - Metodes:
-  - `Departament`
+  - **`Departament`**()
 
 #### `Intranet\Entities\Modulo_ciclo`
 - Metodes: cap
 
 #### `Intranet\Entities\Ciclo`
 - Metodes:
-  - `Ciclo`
+  - **`Ciclo`**()
 
 #### `Intranet\Entities\Modulo`
 - Metodes:
-  - `Modulo`
+  - **`Modulo`**()
 
 #### `Intranet\Entities\Profesor`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\Modulo_grupo`
 - Metodes: cap
 
 #### `Intranet\Entities\getidModuloCicloOptions`
 - Metodes:
-  - `getidModuloCicloOptions`
-  - `scopeMisProgramaciones`
-  - `scopeDepartamento`
-  - `nomFichero`
-  - `getXdepartamentoAttribute`
-  - `getXModuloAttribute`
-  - `getXCicloAttribute`
-  - `getDescripcionAttribute`
-  - `getXnombreAttribute`
-  - `getSituacionAttribute`
-  - `resolve`
+  - **`getidModuloCicloOptions`**()
+  - **`scopeMisProgramaciones`**($query, $dni = null)
+  - **`scopeDepartamento`**($query, $departamento = null)
+  - **`nomFichero`**()
+  - **`getXdepartamentoAttribute`**()
+  - **`getXModuloAttribute`**()
+  - **`getXCicloAttribute`**()
+  - **`getDescripcionAttribute`**()
+  - **`getXnombreAttribute`**()
+  - **`getSituacionAttribute`**()
+  - **`resolve`**($id, $mensaje = null)
 
 
 ### `app/Entities/Projecte.php`
 
 #### `Intranet\Entities\Projecte`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\Grupo`
 - Metodes:
-  - `Grupo`
+  - **`Grupo`**()
 
 #### `Intranet\Entities\getStatusAttribute`
 - Metodes:
-  - `getStatusAttribute`
-  - `getAlumneAttribute`
-  - `getGrupOptions`
-  - `getIdAlumneOptions`
+  - **`getStatusAttribute`**()
+  - **`getAlumneAttribute`**()
+  - **`getGrupOptions`**()
+  - **`getIdAlumneOptions`**()
 
 #### `Intranet\Entities\byTutorOrSubstitute`
 - Metodes:
-  - `getDefensaAttribute`
+  - **`getDefensaAttribute`**($entrada)
 
 
 ### `app/Entities/Provincia.php`
 
 #### `Intranet\Entities\Provincia`
 - Metodes:
-  - `Municipio`
+  - **`Municipio`**()
 
 
 ### `app/Entities/Recurso.php`
 
 #### `Intranet\Entities\Recurso`
 - Metodes:
-  - `Reserva`
+  - **`Reserva`**()
 
 
 ### `app/Entities/Reserva.php`
 
 #### `Intranet\Entities\Reserva`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 
 ### `app/Entities/Resultado.php`
@@ -5451,29 +5865,29 @@ Model de resultats.
 
 #### `Intranet\Entities\getEvaluacionOptions`
 - Metodes:
-  - `getEvaluacionOptions`
-  - `getIdModuloGrupoOptions`
+  - **`getEvaluacionOptions`**()
+  - **`getIdModuloGrupoOptions`**()
 
 #### `Intranet\Entities\misModulos`
 - Metodes:
-  - `scopeQGrupo`
-  - `scopeDepartamento`
-  - `scopeTrimestreCurso`
-  - `Grupo`
+  - **`scopeQGrupo`**($query, $grupo)
+  - **`scopeDepartamento`**($query, $dep)
+  - **`scopeTrimestreCurso`**($query, $trimestre, $ciclo, $curso)
+  - **`Grupo`**()
 
 #### `Intranet\Entities\Profesor`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\ModuloGrupo`
 - Metodes:
-  - `ModuloGrupo`
+  - **`ModuloGrupo`**()
 
 #### `Intranet\Entities\getModuloAttribute`
 - Metodes:
-  - `getModuloAttribute`
-  - `getXEvaluacionAttribute`
-  - `getXProfesorAttribute`
+  - **`getModuloAttribute`**()
+  - **`getXEvaluacionAttribute`**()
+  - **`getXProfesorAttribute`**()
 
 
 ### `app/Entities/Reunion.php`
@@ -5491,68 +5905,68 @@ Model de reunions.
 
 #### `Intranet\Entities\Creador`
 - Metodes:
-  - `Creador`
+  - **`Creador`**()
 
 #### `Intranet\Entities\profesores`
 - Metodes:
-  - `profesores`
+  - **`profesores`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `Departament`
+  - **`Departament`**()
 
 #### `Intranet\Entities\alumnos`
 - Metodes:
-  - `alumnos`
+  - **`alumnos`**()
 
 #### `Intranet\Entities\Profesor`
 - Metodes: cap
 
 #### `Intranet\Entities\scopeMisReuniones`
 - Metodes:
-  - `scopeMisReuniones`
-  - `scopeConvocante`
-  - `scopeTipo`
-  - `scopeNumero`
-  - `scopeArchivada`
-  - `scopeActaFinal`
-  - `getTipoOptions`
-  - `getIdEspacioOptions`
-  - `getNumeroOptions`
-  - `getGrupoOptions`
-  - `getDepartamentoAttribute`
-  - `getAvaluacioAttribute`
-  - `getModificableAttribute`
-  - `getFechaAttribute`
-  - `getUpdatedAtAttribute`
-  - `Tipos`
-  - `Grupos`
+  - **`scopeMisReuniones`**($query)
+  - **`scopeConvocante`**($query, $dni=null)
+  - **`scopeTipo`**($query, $tipo)
+  - **`scopeNumero`**($query, $numero)
+  - **`scopeArchivada`**($query)
+  - **`scopeActaFinal`**($query, $tutor)
+  - **`getTipoOptions`**()
+  - **`getIdEspacioOptions`**()
+  - **`getNumeroOptions`**()
+  - **`getGrupoOptions`**()
+  - **`getDepartamentoAttribute`**()
+  - **`getAvaluacioAttribute`**()
+  - **`getModificableAttribute`**()
+  - **`getFechaAttribute`**($entrada)
+  - **`getUpdatedAtAttribute`**($entrada)
+  - **`Tipos`**()
+  - **`Grupos`**()
 
 #### `Intranet\Entities\Espacio`
 - Metodes:
-  - `Espacio`
+  - **`Espacio`**()
 
 #### `Intranet\Entities\Responsable`
 - Metodes:
-  - `Responsable`
+  - **`Responsable`**()
 
 #### `Intranet\Entities\getXgrupoAttribute`
 - Metodes:
-  - `getXgrupoAttribute`
+  - **`getXgrupoAttribute`**()
 
 #### `Intranet\Entities\largestByTutor`
 - Metodes:
-  - `getInformeAttribute`
-  - `getIsSemiAttribute`
-  - `scopeNext`
+  - **`getInformeAttribute`**()
+  - **`getIsSemiAttribute`**()
+  - **`scopeNext`**($query)
 
 #### `Intranet\Entities\firstByTutor`
 - Metodes:
-  - `getXtipoAttribute`
-  - `getXnumeroAttribute`
-  - `getAvaluacioFinalAttribute`
-  - `getExtraOrdinariaAttribute`
-  - `getGrupoClaseAttribute`
+  - **`getXtipoAttribute`**()
+  - **`getXnumeroAttribute`**()
+  - **`getAvaluacioFinalAttribute`**()
+  - **`getExtraOrdinariaAttribute`**()
+  - **`getGrupoClaseAttribute`**()
 
 
 ### `app/Entities/Setting.php`
@@ -5565,90 +5979,90 @@ Model de reunions.
 
 #### `Intranet\Entities\Signatura`
 - Metodes:
-  - `Fct`
+  - **`Fct`**()
 
 #### `Intranet\Entities\Teacher`
 - Metodes:
-  - `Teacher`
+  - **`Teacher`**()
 
 #### `Intranet\Entities\Alumno`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\AlumnoFct`
 - Metodes: cap
 
 #### `Intranet\Entities\deleteFile`
 - Metodes:
-  - `deleteFile`
-  - `saveIfNotExists`
-  - `getProfesorAttribute`
-  - `getAlumneAttribute`
-  - `getCentreAttribute`
-  - `getPathAttribute`
-  - `getFileNameAttribute`
-  - `getRouteFileAttribute`
-  - `getSimpleRouteFileAttribute`
-  - `getEmailAttribute`
-  - `getContactoAttribute`
-  - `getSignAttribute`
-  - `getSendAttribute`
-  - `getEstatAttribute`
-  - `getClassAttribute`
-  - `getFctOptions`
-  - `getTipusOptions`
-  - `statusService`
+  - **`deleteFile`**()
+  - **`saveIfNotExists`**($anexe, $idSao, $signat = 0)
+  - **`getProfesorAttribute`**()
+  - **`getAlumneAttribute`**()
+  - **`getCentreAttribute`**()
+  - **`getPathAttribute`**()
+  - **`getFileNameAttribute`**()
+  - **`getRouteFileAttribute`**()
+  - **`getSimpleRouteFileAttribute`**()
+  - **`getEmailAttribute`**()
+  - **`getContactoAttribute`**()
+  - **`getSignAttribute`**()
+  - **`getSendAttribute`**()
+  - **`getEstatAttribute`**()
+  - **`getClassAttribute`**()
+  - **`getFctOptions`**()
+  - **`getTipusOptions`**()
+  - **`statusService`**(): SignaturaStatusService
 
 
 ### `app/Entities/Solicitud.php`
 
 #### `Intranet\Entities\Solicitud`
 - Metodes:
-  - `getfechaAttribute`
-  - `getfechasolucionAttribute`
-  - `getIdOrientadorOptions`
-  - `getIdAlumnoOptions`
+  - **`getfechaAttribute`**($entrada)
+  - **`getfechasolucionAttribute`**($salida)
+  - **`getIdOrientadorOptions`**()
+  - **`getIdAlumnoOptions`**()
 
 #### `Intranet\Entities\misGrupos`
 - Metodes:
-  - `Profesor`
+  - **`Profesor`**()
 
 #### `Intranet\Entities\Orientador`
 - Metodes:
-  - `Orientador`
+  - **`Orientador`**()
 
 #### `Intranet\Entities\Alumno`
 - Metodes:
-  - `Alumno`
+  - **`Alumno`**()
 
 #### `Intranet\Entities\getNomAlumAttribute`
 - Metodes:
-  - `getNomAlumAttribute`
-  - `getSituacionAttribute`
-  - `getMotiuAttribute`
-  - `getQuienAttribute`
-  - `scopeListos`
+  - **`getNomAlumAttribute`**()
+  - **`getSituacionAttribute`**()
+  - **`getMotiuAttribute`**()
+  - **`getQuienAttribute`**()
+  - **`scopeListos`**($query)
 
 
 ### `app/Entities/Task.php`
 
 #### `Intranet\Entities\Task`
 - Metodes:
-  - `Profesores`
+  - **`Profesores`**()
 
 #### `Intranet\Entities\withPivot`
 - Metodes:
-  - `scopeMisTareas`
-  - `getmyDetailsAttribute`
-  - `getValidAttribute`
-  - `getLinkAttribute`
-  - `getVencimientoAttribute`
-  - `getImageAttribute`
-  - `getDestinoAttribute`
-  - `getDestinatarioOptions`
-  - `getActionOptions`
-  - `getAccioAttribute`
-  - `fillFile`
+  - **`scopeMisTareas`**($query, $profesor=null)
+  - **`getmyDetailsAttribute`**()
+  - **`getValidAttribute`**()
+  - **`getLinkAttribute`**()
+  - **`getVencimientoAttribute`**($entrada)
+  - **`getImageAttribute`**()
+  - **`getDestinoAttribute`**()
+  - **`getDestinatarioOptions`**()
+  - **`getActionOptions`**()
+  - **`getAccioAttribute`**()
+  - **`fillFile`**($file)
 
 #### `Intranet\Entities\store`
 - Metodes: cap
@@ -5658,38 +6072,38 @@ Model de reunions.
 
 #### `Intranet\Entities\TipoActividad`
 - Metodes:
-  - `actividades`
+  - **`actividades`**()
 
 #### `Intranet\Entities\departament`
 - Metodes:
-  - `departament`
+  - **`departament`**()
 
 #### `Intranet\Entities\getDepartamentoAttribute`
 - Metodes:
-  - `getDepartamentoAttribute`
+  - **`getDepartamentoAttribute`**()
 
 
 ### `app/Entities/TipoExpediente.php`
 
 #### `Intranet\Entities\TipoExpediente`
 - Metodes:
-  - `expedientes`
+  - **`expedientes`**()
 
 
 ### `app/Entities/TipoIncidencia.php`
 
 #### `Intranet\Entities\TipoIncidencia`
 - Metodes:
-  - `getLiteralAttribute`
-  - `getTipoAttribute`
-  - `Responsable`
+  - **`getLiteralAttribute`**()
+  - **`getTipoAttribute`**()
+  - **`Responsable`**()
 
 #### `Intranet\Entities\getIdProfesorOptions`
 - Metodes:
-  - `getIdProfesorOptions`
-  - `getTipusOptions`
-  - `Rol`
-  - `getProfesorAttribute`
+  - **`getIdProfesorOptions`**()
+  - **`getTipusOptions`**()
+  - **`Rol`**($rol)
+  - **`getProfesorAttribute`**()
 
 
 ### `app/Entities/Tutoria.php`
@@ -5702,22 +6116,22 @@ Model de reunions.
 
 #### `Intranet\Entities\Grupos`
 - Metodes:
-  - `Grupos`
+  - **`Grupos`**()
 
 #### `Intranet\Entities\TutoriaGrupo`
 - Metodes: cap
 
 #### `Intranet\Entities\getDesdeAttribute`
 - Metodes:
-  - `getDesdeAttribute`
-  - `getHastaAttribute`
-  - `getGruposOptions`
-  - `getTipoOptions`
-  - `getXobligatoriaAttribute`
-  - `getGrupoAttribute`
-  - `getTiposAttribute`
-  - `getEstatAttribute`
-  - `getFeedBackAttribute`
+  - **`getDesdeAttribute`**($entrada)
+  - **`getHastaAttribute`**($entrada)
+  - **`getGruposOptions`**()
+  - **`getTipoOptions`**()
+  - **`getXobligatoriaAttribute`**()
+  - **`getGrupoAttribute`**()
+  - **`getTiposAttribute`**()
+  - **`getEstatAttribute`**()
+  - **`getFeedBackAttribute`**()
 
 
 ### `app/Entities/TutoriaGrupo.php`
@@ -5730,9 +6144,9 @@ Model de reunions.
 
 #### `Intranet\Entities\getFechaAttribute`
 - Metodes:
-  - `getFechaAttribute`
-  - `getNombreAttribute`
-  - `Grupo`
+  - **`getFechaAttribute`**($entrada)
+  - **`getNombreAttribute`**()
+  - **`Grupo`**()
 
 
 
@@ -5744,9 +6158,11 @@ Model de reunions.
 Servei d'aplicació per al registre d'activitat d'usuari.
 
 - Metodes:
-  - `record`
+  - **`record`**(string $action, ?Model $model = null, ?string $comentari = null, ?string $fecha = null, ?string $document = null): Activity
+
     Crea un registre d'activitat i, si hi ha usuari autenticat, el persistix associat a l'autor.
-  - `notifyUser`
+  - **`notifyUser`**(Activity $activity): void
+
     Mostra una alerta de confirmació quan el registre està vinculat a un model.
 
 
@@ -5754,18 +6170,18 @@ Servei d'aplicació per al registre d'activitat d'usuari.
 
 #### `Intranet\Application\AlumnoFct\AlumnoFctAvalService`
 - Metodes:
-  - `__construct`
-  - `latestByProfesor`
-  - `apte`
-  - `noApte`
-  - `noAval`
-  - `noProyecto`
-  - `nullProyecto`
-  - `nuevoProyecto`
-  - `toggleInsercion`
-  - `requestActaForTutor`
-  - `estadistiques`
-  - `markStudentsAsActaPending`
+  - **`__construct`**(private readonly AlumnoFctService $alumnoFctService)
+  - **`latestByProfesor`**(string $dni): Collection
+  - **`apte`**(int|string $id): void
+  - **`noApte`**(int|string $id, bool $projectRequired): void
+  - **`noAval`**(int|string $id): void
+  - **`noProyecto`**(int|string $id): void
+  - **`nullProyecto`**(int|string $id): void
+  - **`nuevoProyecto`**(int|string $id): void
+  - **`toggleInsercion`**(int|string $id): void
+  - **`requestActaForTutor`**(string $dni, Collection $grupos): array
+  - **`estadistiques`**(Collection $grupos): array
+  - **`markStudentsAsActaPending`**(string $dni, bool $projectNeeded, mixed $grupo = null): bool
 
 
 ### `app/Application/AlumnoFct/AlumnoFctService.php`
@@ -5774,32 +6190,45 @@ Servei d'aplicació per al registre d'activitat d'usuari.
 Servei d'aplicació per a casos d'ús d'AlumnoFct.
 
 - Metodes:
-  - `__construct`
-  - `all`
+  - **`__construct`**(private readonly AlumnoFctRepositoryInterface $alumnoFctRepository)
+  - **`all`**(): EloquentCollection
+
     Recupera tots els registres d'alumnat en FCT.
-  - `totesFcts`
+  - **`totesFcts`**(?string $profesor = null): EloquentCollection
+
     Recupera les FCT visibles per al tutor indicat.
-  - `find`
+  - **`find`**(int|string $id): ?AlumnoFct
+
     Cerca un registre per identificador.
-  - `findOrFail`
+  - **`findOrFail`**(int|string $id): AlumnoFct
+
     Cerca un registre per identificador o llança excepció.
-  - `firstByIdSao`
+  - **`firstByIdSao`**(int|string $idSao): ?AlumnoFct
+
     Recupera el primer registre associat a un id SAO.
-  - `byAlumno`
+  - **`byAlumno`**(string $nia): EloquentCollection
+
     Llista tots els registres d'un alumne.
-  - `byAlumnoWithA56`
+  - **`byAlumnoWithA56`**(string $nia): EloquentCollection
+
     Llista registres d'un alumne amb annex A56 en curs.
-  - `byGrupoEsFct`
+  - **`byGrupoEsFct`**(string $grupo): EloquentCollection
+
     Llista registres d'un grup que són FCT.
-  - `byGrupoEsDual`
+  - **`byGrupoEsDual`**(string $grupo): EloquentCollection
+
     Llista registres d'un grup que són dual.
-  - `reassignProfesor`
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+
     Reassigna en bloc el tutor responsable.
-  - `avalDistinctAlumnoIdsByProfesor`
+  - **`avalDistinctAlumnoIdsByProfesor`**(?string $profesor = null): array
+
     Recupera identificadors d'alumnes amb FCT avaluable del tutor.
-  - `latestAvalByAlumnoAndProfesor`
+  - **`latestAvalByAlumnoAndProfesor`**(string $idAlumno, ?string $profesor = null): ?AlumnoFct
+
     Recupera l'últim registre avaluable d'un alumne per tutor.
-  - `avaluablesNoAval`
+  - **`avaluablesNoAval`**(?string $profesor = null, mixed $grupo = null): EloquentCollection
+
     Recupera registres avaluables no tancats en acta.
 
 
@@ -5809,11 +6238,14 @@ Servei d'aplicació per a casos d'ús d'AlumnoFct.
 Casos d'ús de signatures vinculades a AlumnoFct.
 
 - Metodes:
-  - `hasAnySignature`
+  - **`hasAnySignature`**(AlumnoFct $alumnoFct): bool
+
     Determina si el registre té alguna signatura associada.
-  - `findByType`
+  - **`findByType`**(AlumnoFct $alumnoFct, string $tipus, ?bool $signed = null): ?Signatura
+
     Cerca la signatura per tipus i estat de signatura.
-  - `routeFile`
+  - **`routeFile`**(AlumnoFct $alumnoFct, string $annexCode): string
+
     Construeix la ruta física de l'annex per al registre.
 
 
@@ -5823,13 +6255,17 @@ Casos d'ús de signatures vinculades a AlumnoFct.
 Consultes de lectura per al domini de col·laboracions.
 
 - Metodes:
-  - `myColaboraciones`
+  - **`myColaboraciones`**(string $dni): Collection
+
     /
-  - `relatedByCenterDepartment`
+  - **`relatedByCenterDepartment`**(Collection $meves): Collection
+
     /
-  - `groupedActivitiesByColaboracion`
+  - **`groupedActivitiesByColaboracion`**(Collection $colaboraciones): Collection
+
     /
-  - `attachRelatedAndContacts`
+  - **`attachRelatedAndContacts`**(Collection $meves, Collection $relacionades, Collection $activitiesByColab): Collection
+
     /
 
 
@@ -5839,10 +6275,12 @@ Consultes de lectura per al domini de col·laboracions.
 Casos d'ús d'aplicació per al panell de col·laboracions.
 
 - Metodes:
-  - `__construct`
-  - `panelListingByTutor`
+  - **`__construct`**(private readonly ColaboracionQueryService $queryService)
+  - **`panelListingByTutor`**(string $dni): Collection
+
     /
-  - `resolvePanelTitle`
+  - **`resolvePanelTitle`**(Collection $colaboraciones): ?string
+
     /
 
 
@@ -5852,32 +6290,37 @@ Casos d'ús d'aplicació per al panell de col·laboracions.
 Casos d'ús d'aplicació per al domini de comissions.
 
 - Metodes:
-  - `__construct`
-  - `pendingAuthorization`
+  - **`__construct`**(private readonly ComisionRepositoryInterface $comisionRepository)
+  - **`pendingAuthorization`**(): EloquentCollection
+
     /
-  - `find`
-  - `findOrFail`
-  - `byDay`
+  - **`find`**(int $id): ?Comision
+  - **`findOrFail`**(int $id): Comision
+  - **`byDay`**(string $dia): EloquentCollection
+
     /
-  - `withProfesorByDay`
+  - **`withProfesorByDay`**(string $dia): EloquentCollection
+
     /
-  - `authorizationApiList`
+  - **`authorizationApiList`**(): EloquentCollection
+
     /
-  - `prePayByProfesor`
+  - **`prePayByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `hasPendingUnpaidByProfesor`
-  - `setEstado`
-  - `attachFct`
-  - `detachFct`
+  - **`hasPendingUnpaidByProfesor`**(string $dni): bool
+  - **`setEstado`**(int $id, int $estado): Comision
+  - **`attachFct`**(int $comisionId, int $fctId, string $horaIni, bool $aviso): void
+  - **`detachFct`**(int $comisionId, int $fctId): void
 
 
 ### `app/Application/Documento/DocumentoFormService.php`
 
 #### `Intranet\Application\Documento\DocumentoFormService`
 - Metodes:
-  - `updateNota`
-  - `projectDefaults`
-  - `qualitatDefaults`
+  - **`updateNota`**(AlumnoFctService $alumnoFctService, int|string $fctId, mixed $nota): void
+  - **`projectDefaults`**(AlumnoFct $fct, string $ciclo, string $supervisor): array
+  - **`qualitatDefaults`**(mixed $grupo, string $fullName): array
 
 
 ### `app/Application/Documento/DocumentoLifecycleService.php`
@@ -5886,9 +6329,10 @@ Casos d'ús d'aplicació per al domini de comissions.
 Servei de cicle de vida per a Documento.
 
 - Metodes:
-  - `delete`
+  - **`delete`**(Documento $documento): bool
+
     Esborra un document i, si aplica, també el fitxer físic associat.
-  - `mustDeleteFile`
+  - **`mustDeleteFile`**(Documento $documento): bool
 
 
 ### `app/Application/Empresa/EmpresaService.php`
@@ -5897,29 +6341,40 @@ Servei de cicle de vida per a Documento.
 Casos d'ús d'aplicació per al domini d'empreses.
 
 - Metodes:
-  - `__construct`
-  - `listForGrid`
+  - **`__construct`**(private readonly EmpresaRepositoryInterface $empresaRepository)
+  - **`listForGrid`**(): EloquentCollection
+
     /
-  - `findForShow`
-  - `colaboracionIdsForTutorCycle`
+  - **`findForShow`**(int $empresaId): Empresa
+  - **`colaboracionIdsForTutorCycle`**(?int $tutorCycleId, Empresa $empresa): Collection
+
     /
-  - `departmentCycles`
+  - **`departmentCycles`**(?string $department): EloquentCollection
+
     /
-  - `convenioList`
+  - **`convenioList`**(): EloquentCollection
+
     /
-  - `socialConcertList`
+  - **`socialConcertList`**(): EloquentCollection
+
     /
-  - `erasmusList`
+  - **`erasmusList`**(): EloquentCollection
+
     /
-  - `saveFromRequest`
+  - **`saveFromRequest`**(Request $request, $id = null): mixed
+
     Persisteix una empresa (alta o edició) amb validació i normalització.
-  - `createCenter`
+  - **`createCenter`**(int|string $empresaId, Request $request): int
+
     Crea el centre inicial d'una empresa.
-  - `createColaboration`
+  - **`createColaboration`**(int|string $centroId, Request $request, int|string $cicloId, string $tutorName): int
+
     Crea col·laboració inicial associada al cicle del tutor.
-  - `fillMissingCenterData`
+  - **`fillMissingCenterData`**(Empresa $empresa): void
+
     Propaga camps bàsics d'empresa a centres incomplets.
-  - `normalizeRequest`
+  - **`normalizeRequest`**(Request $request): Request
+
     Normalitza checkbox i CIF en l'entrada del formulari d'empresa.
 
 
@@ -5929,16 +6384,19 @@ Casos d'ús d'aplicació per al domini d'empreses.
 Casos d'ús d'aplicació per al domini d'expedients.
 
 - Metodes:
-  - `__construct`
-  - `find`
-  - `findOrFail`
-  - `createFromRequest`
-  - `updateFromRequest`
-  - `pendingAuthorization`
+  - **`__construct`**(private readonly ExpedienteRepositoryInterface $expedienteRepository)
+  - **`find`**(int|string $id): ?Expediente
+  - **`findOrFail`**(int|string $id): Expediente
+  - **`createFromRequest`**(Request $request): Expediente
+  - **`updateFromRequest`**(int|string $id, Request $request): Expediente
+  - **`pendingAuthorization`**(): EloquentCollection
+
     /
-  - `readyToPrint`
+  - **`readyToPrint`**(): EloquentCollection
+
     /
-  - `allTypes`
+  - **`allTypes`**(): EloquentCollection
+
     /
 
 
@@ -5948,16 +6406,16 @@ Casos d'ús d'aplicació per al domini d'expedients.
 Casos d'ús d'aplicació per al domini de faltes de professorat.
 
 - Metodes:
-  - `create`
+  - **`create`**(Request $request): int
 
 #### `Intranet\Application\Falta\markLeave`
 - Metodes:
-  - `update`
-  - `init`
+  - **`update`**(int|string $id, Request $request): Falta
+  - **`init`**(int|string $id): Falta
 
 #### `Intranet\Application\Falta\sendTutorEmail`
 - Metodes:
-  - `alta`
+  - **`alta`**(int|string $id): Falta
 
 #### `Intranet\Application\Falta\reactivate`
 - Metodes: cap
@@ -5967,19 +6425,19 @@ Casos d'ús d'aplicació per al domini de faltes de professorat.
 
 #### `Intranet\Application\FaltaItaca\FaltaItacaWorkflowService`
 - Metodes:
-  - `findElements`
-  - `monthlyReportFileName`
-  - `deletePreviousMonthlyReport`
-  - `resolveByAbsenceId`
-  - `refuseByAbsenceId`
+  - **`findElements`**(string $desde, string $hasta)
+  - **`monthlyReportFileName`**(string $desde): string
+  - **`deletePreviousMonthlyReport`**(string $path): void
+  - **`resolveByAbsenceId`**(int|string $id): bool
+  - **`refuseByAbsenceId`**(int|string $id, ?string $explicacion = null): bool
 
 
 ### `app/Application/Fct/FctCertificateService.php`
 
 #### `Intranet\Application\Fct\FctCertificateService`
 - Metodes:
-  - `colaboradorCertificateData`
-  - `streamColaboradorCertificate`
+  - **`colaboradorCertificateData`**(): array
+  - **`streamColaboradorCertificate`**(mixed $fct)
 
 #### `Intranet\Application\Fct\hazPdf`
 - Metodes: cap
@@ -5991,23 +6449,24 @@ Casos d'ús d'aplicació per al domini de faltes de professorat.
 Casos d'ús d'aplicació per al domini FCT.
 
 - Metodes:
-  - `__construct`
-  - `find`
-  - `findOrFail`
-  - `panelListingByProfesor`
+  - **`__construct`**(private readonly FctRepositoryInterface $fctRepository)
+  - **`find`**(int|string $id): ?Fct
+  - **`findOrFail`**(int|string $id): Fct
+  - **`panelListingByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `setInstructor`
-  - `findBySignature`
-  - `createFromRequest`
-  - `attachAlumnoFromStoreRequest`
-  - `attachAlumnoSimple`
-  - `detachAlumno`
-  - `addColaborador`
-  - `deleteColaborador`
-  - `updateColaboradorHoras`
-  - `setCotutor`
-  - `empresaIdByFct`
-  - `deleteFct`
+  - **`setInstructor`**(int|string $idFct, string $idInstructor): Fct
+  - **`findBySignature`**(int|string $idColaboracion, int|string $asociacion, int|string $idInstructor): ?Fct
+  - **`createFromRequest`**(Request $request): Fct
+  - **`attachAlumnoFromStoreRequest`**(Fct $fct, Request $request): void
+  - **`attachAlumnoSimple`**(int|string $idFct, Request $request): void
+  - **`detachAlumno`**(int|string $idFct, string $idAlumno): void
+  - **`addColaborador`**(int|string $idFct, Colaborador $colaborador): void
+  - **`deleteColaborador`**(int|string $idFct, string $idInstructor): int
+  - **`updateColaboradorHoras`**(int|string $idFct, array $horasByInstructor): void
+  - **`setCotutor`**(int|string $idFct, ?string $cotutor): void
+  - **`empresaIdByFct`**(int|string $idFct): ?int
+  - **`deleteFct`**(int|string $idFct): void
 
 
 ### `app/Application/Grupo/GrupoService.php`
@@ -6016,39 +6475,53 @@ Casos d'ús d'aplicació per al domini FCT.
 Servei d'aplicació per a casos d'ús relacionats amb grups.
 
 - Metodes:
-  - `__construct`
-  - `create`
+  - **`__construct`**(private readonly GrupoRepositoryInterface $grupoRepository)
+  - **`create`**(array $attributes): Grupo
+
     /
-  - `find`
-  - `all`
+  - **`find`**(string $codigo): ?Grupo
+  - **`all`**(): EloquentCollection
+
     /
-  - `qTutor`
+  - **`qTutor`**(string $dni): EloquentCollection
+
     /
-  - `firstByTutor`
-  - `largestByTutor`
-  - `byCurso`
+  - **`firstByTutor`**(string $dni): ?Grupo
+  - **`largestByTutor`**(string $dni): ?Grupo
+  - **`byCurso`**(int $curso): EloquentCollection
+
     /
-  - `byDepartamento`
+  - **`byDepartamento`**(int $departamento): EloquentCollection
+
     /
-  - `tutoresDniList`
+  - **`tutoresDniList`**(): array
+
     /
-  - `reassignTutor`
-  - `misGrupos`
+  - **`reassignTutor`**(string $fromDni, string $toDni): int
+  - **`misGrupos`**(): EloquentCollection
+
     /
-  - `misGruposByProfesor`
+  - **`misGruposByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `withActaPendiente`
+  - **`withActaPendiente`**(): EloquentCollection
+
     /
-  - `byTutorOrSubstitute`
+  - **`byTutorOrSubstitute`**(string $dni, ?string $sustituyeA): ?Grupo
+
     Retorna el primer grup on el professor és tutor o substitueix al tutor.
-  - `withStudents`
+  - **`withStudents`**(): EloquentCollection
+
     /
-  - `firstByTutorDual`
-  - `byCodes`
+  - **`firstByTutorDual`**(string $dni): ?Grupo
+  - **`byCodes`**(array $codigos): EloquentCollection
+
     /
-  - `allWithTutorAndCiclo`
+  - **`allWithTutorAndCiclo`**(): EloquentCollection
+
     /
-  - `misGruposWithCiclo`
+  - **`misGruposWithCiclo`**(): EloquentCollection
+
     Retorna els grups del professor amb la relació de cicle carregada.
 
 
@@ -6056,9 +6529,10 @@ Servei d'aplicació per a casos d'ús relacionats amb grups.
 
 #### `Intranet\Application\Grupo\GrupoWorkflowService`
 - Metodes:
-  - `assignMissingCiclo`
-  - `selectedStudentsPlainText`
-  - `sendFolCertificates`
+  - **`assignMissingCiclo`**(): int
+  - **`selectedStudentsPlainText`**(array $payload): string
+  - **`sendFolCertificates`**(Grupo $grupo, callable $pdfSaver): array
+
     /
 
 
@@ -6068,50 +6542,69 @@ Servei d'aplicació per a casos d'ús relacionats amb grups.
 Casos d'ús d'aplicació per al domini d'horaris.
 
 - Metodes:
-  - `__construct`
-  - `semanalByProfesor`
+  - **`__construct`**(private readonly HorarioRepositoryInterface $horarioRepository)
+  - **`semanalByProfesor`**(string $dni): array
+
     /
-  - `semanalByGrupo`
+  - **`semanalByGrupo`**(string $grupo): array
+
     /
-  - `lectivosByDayAndSesion`
+  - **`lectivosByDayAndSesion`**(string $dia, int $sesion): EloquentCollection
+
     /
-  - `countByProfesorAndDay`
-  - `guardiaAllByDia`
+  - **`countByProfesorAndDay`**(string $dni, string $dia): int
+  - **`guardiaAllByDia`**(string $dia): EloquentCollection
+
     /
-  - `guardiaAllByProfesorAndDiaAndSesiones`
+  - **`guardiaAllByProfesorAndDiaAndSesiones`**(string $dni, string $dia, array $sesiones): EloquentCollection
+
     /
-  - `guardiaAllByProfesorAndDia`
+  - **`guardiaAllByProfesorAndDia`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `guardiaAllByProfesor`
+  - **`guardiaAllByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `firstByProfesorDiaSesion`
-  - `byProfesor`
+  - **`firstByProfesorDiaSesion`**(string $dni, string $dia, int|string $sesion): ?Horario
+  - **`byProfesor`**(string $dni): EloquentCollection
+
     /
-  - `byProfesorWithRelations`
+  - **`byProfesorWithRelations`**(string $dni, array $relations): EloquentCollection
+
     /
-  - `lectivasByProfesorAndDayOrdered`
+  - **`lectivasByProfesorAndDayOrdered`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `reassignProfesor`
-  - `deleteByProfesor`
-  - `gruposByProfesor`
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+  - **`deleteByProfesor`**(string $dni): int
+  - **`gruposByProfesor`**(string $dni): Collection
+
     /
-  - `gruposByProfesorDiaAndSesiones`
+  - **`gruposByProfesorDiaAndSesiones`**(string $dni, string $dia, array $sesiones): Collection
+
     /
-  - `profesoresByGruposExcept`
+  - **`profesoresByGruposExcept`**(array $grupos, string $emisorDni): Collection
+
     /
-  - `primeraByProfesorAndDateOrdered`
+  - **`primeraByProfesorAndDateOrdered`**(string $dni, string $date): EloquentCollection
+
     /
-  - `firstByModulo`
-  - `byProfesorDiaOrdered`
+  - **`firstByModulo`**(string $modulo): ?Horario
+  - **`byProfesorDiaOrdered`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `distinctModulos`
+  - **`distinctModulos`**(): Collection
+
     /
-  - `create`
+  - **`create`**(array $data): Horario
+
     /
-  - `forProgramacionImport`
+  - **`forProgramacionImport`**(): EloquentCollection
+
     /
-  - `firstForDepartamentoAsignacion`
-  - `situacionAhora`
+  - **`firstForDepartamentoAsignacion`**(string $dni): ?Horario
+  - **`situacionAhora`**(string $dni): ?array
+
     Retorna la situació actual del professor segons el seu horari.
 
 
@@ -6119,56 +6612,62 @@ Casos d'ús d'aplicació per al domini d'horaris.
 
 #### `Intranet\Application\Import\Concerns\SharedImportFieldTransformers`
 - Metodes:
-  - `emailConselleriaImport`
-  - `emailProfesorImport`
-  - `aleatorio`
-  - `hazDNI`
-  - `getFechaFormatoIngles`
+  - **`emailConselleriaImport`**($nombre, $apellido1, $apellido2)
+  - **`emailProfesorImport`**($nombre, $apellido)
+  - **`aleatorio`**($length = 60): string
+  - **`hazDNI`**(string $dni, int $nia)
+  - **`getFechaFormatoIngles`**($fecha): string|null
+
     /
-  - `cifrar`
-  - `digitos`
-  - `hazDomicilio`
-  - `creaCodigoProfesor`
+  - **`cifrar`**($cadena)
+  - **`digitos`**($telefono)
+  - **`hazDomicilio`**($tipo_via, $domicilio, $numero, $puerta, $escalera, $letra, $piso)
+  - **`creaCodigoProfesor`**($unused = null): int
 
 #### `Intranet\Application\Import\Concerns\usedCodigosBetween`
 - Metodes:
-  - `crea_codigo_profesor`
+  - **`crea_codigo_profesor`**($unused = null): int
 
 
 ### `app/Application/Import/GeneralImportExecutionService.php`
 
 #### `Intranet\Application\Import\GeneralImportExecutionService`
 - Metodes:
-  - `__construct`
-  - `handlePreImport`
-  - `handlePostImport`
-  - `importTable`
+  - **`__construct`**(private readonly HorarioService $horarioService, private readonly ProfesorService $profesorService, private readonly GrupoService $grupoService, )
+  - **`handlePreImport`**(string $className, string $xmlName): void
+  - **`handlePostImport`**(string $className, string $xmlName, mixed $firstImport): void
+  - **`importTable`**(mixed $xmltable, array $tabla, callable $extractField, callable $passesFilter, callable $requiredCheck, string $mode = 'full'): void
+
     /
-  - `createRecordByClass`
+  - **`createRecordByClass`**(string $className, array $arrayDatos): mixed
+
     /
-  - `createHorario`
+  - **`createHorario`**(array $arrayDatos): void
+
     /
-  - `createModuloCicloAndGrupoFromHorarios`
-  - `createModuloCiclo`
-  - `markAllAlumnosAsBaja`
-  - `cleanupSustituciones`
-  - `assignDepartamentoByHorario`
-  - `disableProfesores`
-  - `removeBajaAlumnosFromGroups`
-  - `markAllGruposWithoutTutor`
-  - `deleteBajaGrupos`
-  - `normalizeEmptyTutor`
-  - `truncateTables`
+  - **`createModuloCicloAndGrupoFromHorarios`**(): void
+  - **`createModuloCiclo`**(mixed $horario, mixed $departamentoProfesor = null): Modulo_ciclo
+  - **`markAllAlumnosAsBaja`**(): void
+  - **`cleanupSustituciones`**(): void
+  - **`assignDepartamentoByHorario`**(): void
+  - **`disableProfesores`**(): void
+  - **`removeBajaAlumnosFromGroups`**(): void
+  - **`markAllGruposWithoutTutor`**(): void
+  - **`deleteBajaGrupos`**(): void
+  - **`normalizeEmptyTutor`**(): void
+  - **`truncateTables`**(array|string $tables): void
+
     /
-  - `cloneTable`
-  - `deleteBlankRecords`
-  - `restoreAlumnosGrupoCopy`
-  - `keepLatestHorarioPlantilla`
-  - `setForeignKeys`
-  - `preloadExistingRecords`
+  - **`cloneTable`**(string $table): void
+  - **`deleteBlankRecords`**(string $table, string $column): void
+  - **`restoreAlumnosGrupoCopy`**(): void
+  - **`keepLatestHorarioPlantilla`**(): void
+  - **`setForeignKeys`**(bool $enabled): void
+  - **`preloadExistingRecords`**(mixed $xmltable, array $tabla, callable $extractField, string $class): array
+
     /
-  - `normalizeCacheKey`
-  - `loadEstadoFromHorarioJson`
+  - **`normalizeCacheKey`**(mixed $key): ?string
+  - **`loadEstadoFromHorarioJson`**(): void
 
 
 ### `app/Application/Import/ImportSchemaProvider.php`
@@ -6177,9 +6676,11 @@ Casos d'ús d'aplicació per al domini d'horaris.
 Proveeix l'esquema de mapatge XML -> camps de BD per als imports.
 
 - Metodes:
-  - `forGeneralImport`
+  - **`forGeneralImport`**(): array
+
     /
-  - `forTeacherImport`
+  - **`forTeacherImport`**(): array
+
     /
 
 
@@ -6189,11 +6690,13 @@ Proveeix l'esquema de mapatge XML -> camps de BD per als imports.
 Servei d'aplicació per a operacions comunes d'importació.
 
 - Metodes:
-  - `resolveXmlFile`
+  - **`resolveXmlFile`**(Request $request, string $field = 'fichero'): ?UploadedFile
+
     Valida i retorna el fitxer XML d'importació.
-  - `runWithExtendedTimeout`
+  - **`runWithExtendedTimeout`**(callable $runner, UploadedFile $file, Request $request): void
+
     Executa una importació amb timeout ampliat.
-  - `isFirstImport`
+  - **`isFirstImport`**(Request $request): bool
 
 
 ### `app/Application/Import/ImportWorkflowService.php`
@@ -6202,16 +6705,19 @@ Servei d'aplicació per a operacions comunes d'importació.
 Servei d'orquestració del flux d'importació.
 
 - Metodes:
-  - `__construct`
-  - `executeXmlImport`
+  - **`__construct`**(private readonly ProfesorService $profesorService, private readonly GrupoService $grupoService)
+  - **`executeXmlImport`**(mixed $fxml, array $camposBdXml, mixed $firstImport, callable $tableHandler): void
+
     Executa el recorregut de taules d'un XML d'importació.
-  - `resolveXmlPath`
-  - `executeXmlImportWithHooks`
+  - **`resolveXmlPath`**(mixed $fxml): string
+  - **`executeXmlImportWithHooks`**(mixed $fxml, array $camposBdXml, mixed $context, callable $preHandler, callable $inHandler, callable $postHandler): void
+
     Executa el recorregut amb pipeline pre/in/post.
-  - `executeXmlImportSimple`
+  - **`executeXmlImportSimple`**(mixed $fxml, array $camposBdXml, mixed $context, callable $inHandler): void
+
     Executa el recorregut amb pipeline simple.
-  - `assignTutores`
-  - `applyTutorRoleRules`
+  - **`assignTutores`**(): void
+  - **`applyTutorRoleRules`**(bool $isTutor, mixed $role): mixed
 
 
 ### `app/Application/Import/ImportXmlHelperService.php`
@@ -6220,12 +6726,15 @@ Servei d'orquestració del flux d'importació.
 Utilitats compartides per a parseig i validació de camps XML.
 
 - Metodes:
-  - `extractField`
-  - `passesFilter`
+  - **`extractField`**(mixed $attributes, mixed $key, int $func, object $context): mixed
+  - **`passesFilter`**(array $filter, mixed $fields): bool
+
     /
-  - `findMissingRequired`
+  - **`findMissingRequired`**(array $required, mixed $fields, bool $strictSpaceCheck = false): ?string
+
     /
-  - `invokeContextMethod`
+  - **`invokeContextMethod`**(object $context, string $method, array $params): mixed
+
     /
 
 
@@ -6233,27 +6742,30 @@ Utilitats compartides per a parseig i validació de camps XML.
 
 #### `Intranet\Application\Import\TeacherImportExecutionService`
 - Metodes:
-  - `__construct`
-  - `clearTeacherHorarios`
-  - `importTable`
+  - **`__construct`**(private readonly HorarioService $horarioService, private readonly ProfesorService $profesorService, )
+  - **`clearTeacherHorarios`**(string $idProfesor, bool $lost = false): void
+  - **`importTable`**(mixed $xmltable, array $tabla, string $idProfesor, callable $extractField, callable $passesFilter, callable $requiredCheck, string $mode = 'full'): void
+
     /
-  - `createRecordByClass`
+  - **`createRecordByClass`**(string $className, array $arrayDatos, string $idProfesor): mixed
+
     /
-  - `preloadExistingRecords`
+  - **`preloadExistingRecords`**(mixed $xmltable, array $tabla, callable $extractField, string $class): array
+
     /
-  - `normalizeCacheKey`
+  - **`normalizeCacheKey`**(mixed $key): ?string
 
 
 ### `app/Application/Instructor/InstructorWorkflowService.php`
 
 #### `Intranet\Application\Instructor\InstructorWorkflowService`
 - Metodes:
-  - `searchForTutorFcts`
-  - `empresaIdFromInstructor`
-  - `upsertAndAttachToCentro`
-  - `detachFromCentroAndDeleteIfOrphan`
-  - `copyInstructorToCentro`
-  - `ultimaFecha`
+  - **`searchForTutorFcts`**(): Collection
+  - **`empresaIdFromInstructor`**(int|string $id): ?int
+  - **`upsertAndAttachToCentro`**(object $request, int|string $centro, callable $createInstructor): int
+  - **`detachFromCentroAndDeleteIfOrphan`**(int|string $id, int|string $centro, callable $deleteInstructor): int
+  - **`copyInstructorToCentro`**(int|string $id, int|string $sourceCentro, int|string $targetCentro, string $action): int
+  - **`ultimaFecha`**(Collection|array|null $fcts): ?Carbon
 
 
 ### `app/Application/Menu/MenuService.php`
@@ -6262,35 +6774,50 @@ Utilitats compartides per a parseig i validació de camps XML.
 Servei d'aplicació per construir i cachejar menús de navegació.
 
 - Metodes:
-  - `make`
+  - **`make`**(string $nom, bool $array = false, $user = null): mixed
+
     Construeix el menú per nom i usuari.
-  - `clearCache`
+  - **`clearCache`**(?string $nom = null, ?string $dni = null): void
+
     Neteja el cache de menú (global o filtrat per nom/dni).
-  - `listForGrid`
+  - **`listForGrid`**()
+
     Retorna menús ordenats per al grid, normalitzant ordres abans.
-  - `saveFromRequest`
+  - **`saveFromRequest`**(Request $request, $id = null): Menu
+
     Persisteix un menú des del request.
-  - `copy`
+  - **`copy`**(int|string $id): Menu
+
     Duplica un menú dins del mateix grup/submenú.
-  - `moveUp`
+  - **`moveUp`**(int|string $id): void
+
     Mou un menú cap amunt dins del bloc actual.
-  - `moveDown`
+  - **`moveDown`**(int|string $id): void
+
     Mou un menú cap avall dins del bloc actual.
-  - `build`
+  - **`build`**(string $nom, object $user): array
+
     Construeix l'estructura de menú a partir dels registres actius.
-  - `tipoUrl`
+  - **`tipoUrl`**($url): string
+
     Determina si una URL és externa o interna per a StydeMenu.
-  - `cacheKey`
+  - **`cacheKey`**(string $nom, string $dni): string
+
     Compon la clau de cache per menú i usuari.
-  - `registerCacheKey`
+  - **`registerCacheKey`**(string $key): void
+
     Registra la clau en l'índex global per permetre invalidació selectiva.
-  - `isAdminUser`
+  - **`isAdminUser`**(object $user): bool
+
     Comprovació local de rol admin sobre l'usuari rebut.
-  - `renderMenu`
+  - **`renderMenu`**(array $menu): HtmlString
+
     Renderitza l'arbre de menú amb el markup legacy del tema bootstrap.
-  - `translateMenuTitle`
+  - **`translateMenuTitle`**(string $key): string
+
     Resol la traducció d'un ítem de menú amb fallback compatible amb legacy.
-  - `sortForGrid`
+  - **`sortForGrid`**(): void
+
     Reordena pares i fills per mantindre seqüència contínua.
 
 
@@ -6300,34 +6827,35 @@ Servei d'aplicació per construir i cachejar menús de navegació.
 Casos d'ús per a la safata de notificacions d'usuari.
 
 - Metodes:
-  - `__construct`
-  - `listForUser`
+  - **`__construct`**(?ProfesorService $profesorService = null)
+  - **`listForUser`**(object $user): EloquentCollection
+
     /
-  - `markAsRead`
-  - `markAllAsRead`
-  - `deleteAll`
-  - `deleteById`
-  - `findForShow`
-  - `profesores`
+  - **`markAsRead`**(int|string $id): bool
+  - **`markAllAsRead`**(object $user): bool
+  - **`deleteAll`**(object $user): bool
+  - **`deleteById`**(int|string $id): void
+  - **`findForShow`**(int|string $id): ?Notification
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Application\Notification\profesorService`
 - Metodes:
-  - `resolveNotifiable`
-  - `hydratePayload`
+  - **`resolveNotifiable`**(object $user): mixed
+  - **`hydratePayload`**(Notification $notification): Notification
 
 
 ### `app/Application/Poll/PollWorkflowService.php`
 
 #### `Intranet\Application\Poll\PollWorkflowService`
 - Metodes:
-  - `prepareSurvey`
-  - `saveSurvey`
-  - `myVotes`
-  - `allVotes`
-  - `userKey`
-  - `loadPreviousVotes`
-  - `saveVote`
-  - `initValues`
+  - **`prepareSurvey`**(int|string $id, object $user): ?array
+  - **`saveSurvey`**(Request $request, int|string $id, object $user): bool
+  - **`myVotes`**(int|string $id): ?array
+  - **`allVotes`**(int|string $id, GrupoService $grupoService): ?array
+  - **`userKey`**(Poll $poll, object $user): string
+  - **`loadPreviousVotes`**(Poll $poll, object $user): array
+  - **`saveVote`**(Poll $poll, mixed $option, mixed $option1, mixed $option2, mixed $value, object $user): void
+  - **`initValues`**(array &$votes, mixed $options, GrupoService $grupoService): void
 
 
 ### `app/Application/Profesor/ProfesorService.php`
@@ -6336,48 +6864,65 @@ Casos d'ús per a la safata de notificacions d'usuari.
 Casos d'ús d'aplicació per al domini de professorat.
 
 - Metodes:
-  - `__construct`
-  - `plantillaOrderedWithDepartamento`
+  - **`__construct`**(private readonly ProfesorRepositoryInterface $profesorRepository)
+  - **`plantillaOrderedWithDepartamento`**(): EloquentCollection
+
     /
-  - `activosByDepartamentosWithHorario`
+  - **`activosByDepartamentosWithHorario`**(array $departamentosIds, string $dia, int $sesion): EloquentCollection
+
     /
-  - `activosOrdered`
+  - **`activosOrdered`**(): EloquentCollection
+
     /
-  - `all`
+  - **`all`**(): EloquentCollection
+
     /
-  - `plantilla`
+  - **`plantilla`**(): EloquentCollection
+
     /
-  - `plantillaByDepartamento`
+  - **`plantillaByDepartamento`**(int|string $departamento): EloquentCollection
+
     /
-  - `activos`
+  - **`activos`**(): EloquentCollection
+
     /
-  - `byDepartamento`
+  - **`byDepartamento`**(int|string $departamento): EloquentCollection
+
     /
-  - `byGrupo`
+  - **`byGrupo`**(string $grupo): EloquentCollection
+
     /
-  - `byGrupoTrabajo`
+  - **`byGrupoTrabajo`**(string $grupoTrabajo): EloquentCollection
+
     /
-  - `byDnis`
+  - **`byDnis`**(array $dnis): EloquentCollection
+
     /
-  - `find`
-  - `findOrFail`
-  - `findBySustituyeA`
-  - `findByCodigo`
-  - `findByApiToken`
-  - `findByEmail`
-  - `plantillaOrderedByDepartamento`
+  - **`find`**(string $dni): ?Profesor
+  - **`findOrFail`**(string $dni): Profesor
+  - **`findBySustituyeA`**(string $dni): ?Profesor
+  - **`findByCodigo`**(string $codigo): ?Profesor
+  - **`findByApiToken`**(string $apiToken): ?Profesor
+  - **`findByEmail`**(string $email): ?Profesor
+  - **`plantillaOrderedByDepartamento`**(): EloquentCollection
+
     /
-  - `plantillaForResumen`
+  - **`plantillaForResumen`**(): EloquentCollection
+
     /
-  - `allOrderedBySurname`
+  - **`allOrderedBySurname`**(): EloquentCollection
+
     /
-  - `clearFechaBaja`
-  - `countByCodigo`
-  - `usedCodigosBetween`
+  - **`clearFechaBaja`**(): int
+  - **`countByCodigo`**(int|string $codigo): int
+  - **`usedCodigosBetween`**(int $min, int $max): array
+
     /
-  - `create`
+  - **`create`**(array $data): Profesor
+
     /
-  - `withSustituyeAssigned`
+  - **`withSustituyeAssigned`**(): EloquentCollection
+
     /
 
 
@@ -6387,31 +6932,44 @@ Casos d'ús d'aplicació per al domini de professorat.
 Contracte d'accés a dades d'AlumnoFct.
 
 - Metodes:
-  - `all`
+  - **`all`**(): EloquentCollection
+
     Recupera tots els registres d'alumnat en FCT.
-  - `totesFcts`
+  - **`totesFcts`**(?string $profesor = null): EloquentCollection
+
     Recupera les FCT visibles per a un tutor (incloent substitucions).
-  - `find`
+  - **`find`**(int|string $id): ?AlumnoFct
+
     Cerca un registre per identificador.
-  - `findOrFail`
+  - **`findOrFail`**(int|string $id): AlumnoFct
+
     Cerca un registre per identificador o llança excepció.
-  - `firstByIdSao`
+  - **`firstByIdSao`**(int|string $idSao): ?AlumnoFct
+
     Recupera el primer registre associat a un id SAO.
-  - `byAlumno`
+  - **`byAlumno`**(string $nia): EloquentCollection
+
     Llista tots els registres d'un alumne.
-  - `byAlumnoWithA56`
+  - **`byAlumnoWithA56`**(string $nia): EloquentCollection
+
     Llista registres d'un alumne amb annex A56 en curs.
-  - `byGrupoEsFct`
+  - **`byGrupoEsFct`**(string $grupo): EloquentCollection
+
     Llista registres d'un grup que són FCT (no dual).
-  - `byGrupoEsDual`
+  - **`byGrupoEsDual`**(string $grupo): EloquentCollection
+
     Llista registres d'un grup que són dual.
-  - `reassignProfesor`
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+
     Reassigna tutor responsable en bloc.
-  - `avalDistinctAlumnoIdsByProfesor`
+  - **`avalDistinctAlumnoIdsByProfesor`**(?string $profesor = null): array
+
     Recupera els identificadors d'alumnat amb FCT avaluable del tutor.
-  - `latestAvalByAlumnoAndProfesor`
+  - **`latestAvalByAlumnoAndProfesor`**(string $idAlumno, ?string $profesor = null): ?AlumnoFct
+
     Recupera l'últim registre avaluable d'un alumne per tutor.
-  - `avaluablesNoAval`
+  - **`avaluablesNoAval`**(?string $profesor = null, mixed $grupo = null): EloquentCollection
+
     Recupera registres avaluables que encara no estan tancats en acta.
 
 
@@ -6421,23 +6979,28 @@ Contracte d'accés a dades d'AlumnoFct.
 Contracte de persistència per al domini de Comissió.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `byDay`
+  - **`find`**(int $id): ?Comision
+  - **`findOrFail`**(int $id): Comision
+  - **`byDay`**(string $dia): EloquentCollection
+
     /
-  - `withProfesorByDay`
+  - **`withProfesorByDay`**(string $dia): EloquentCollection
+
     /
-  - `pendingAuthorization`
+  - **`pendingAuthorization`**(): EloquentCollection
+
     /
-  - `authorizationApiList`
+  - **`authorizationApiList`**(): EloquentCollection
+
     Llistat per a l'API d'autorització (inclou nom concatenat de professor/a).
-  - `authorizeAllPending`
-  - `prePayByProfesor`
+  - **`authorizeAllPending`**(): int
+  - **`prePayByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `setEstado`
-  - `hasPendingUnpaidByProfesor`
-  - `attachFct`
-  - `detachFct`
+  - **`setEstado`**(int $id, int $estado): Comision
+  - **`hasPendingUnpaidByProfesor`**(string $dni): bool
+  - **`attachFct`**(int $comisionId, int $fctId, string $horaIni, bool $aviso): void
+  - **`detachFct`**(int $comisionId, int $fctId): void
 
 
 ### `app/Domain/Empresa/EmpresaRepositoryInterface.php`
@@ -6446,18 +7009,24 @@ Contracte de persistència per al domini de Comissió.
 Contracte de persistència per al domini d'empreses.
 
 - Metodes:
-  - `listForGrid`
+  - **`listForGrid`**(): EloquentCollection
+
     /
-  - `findForShow`
-  - `colaboracionIdsByCycleAndCenters`
+  - **`findForShow`**(int $id): Empresa
+  - **`colaboracionIdsByCycleAndCenters`**(int $cycleId, array $centerIds): Collection
+
     /
-  - `cyclesByDepartment`
+  - **`cyclesByDepartment`**(string $department): EloquentCollection
+
     /
-  - `convenioList`
+  - **`convenioList`**(): EloquentCollection
+
     /
-  - `socialConcertList`
+  - **`socialConcertList`**(): EloquentCollection
+
     /
-  - `erasmusList`
+  - **`erasmusList`**(): EloquentCollection
+
     /
 
 
@@ -6467,15 +7036,18 @@ Contracte de persistència per al domini d'empreses.
 Contracte de persistència per al domini d'expedients.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `createFromRequest`
-  - `updateFromRequest`
-  - `pendingAuthorization`
+  - **`find`**(int|string $id): ?Expediente
+  - **`findOrFail`**(int|string $id): Expediente
+  - **`createFromRequest`**(Request $request): Expediente
+  - **`updateFromRequest`**(int|string $id, Request $request): Expediente
+  - **`pendingAuthorization`**(): EloquentCollection
+
     /
-  - `readyToPrint`
+  - **`readyToPrint`**(): EloquentCollection
+
     /
-  - `allTypes`
+  - **`allTypes`**(): EloquentCollection
+
     /
 
 
@@ -6485,13 +7057,15 @@ Contracte de persistència per al domini d'expedients.
 Contracte de persistència per al domini de fitxatges de professorat.
 
 - Metodes:
-  - `lastTodayByProfesor`
-  - `hasFichadoOnDay`
-  - `createEntry`
-  - `closeExit`
-  - `byDayAndProfesor`
+  - **`lastTodayByProfesor`**(string $dni): ?Falta_profesor
+  - **`hasFichadoOnDay`**(string $dia, string $dni): bool
+  - **`createEntry`**(string $dni, string $dia, string $hora): Falta_profesor
+  - **`closeExit`**(Falta_profesor $fichaje, string $hora): Falta_profesor
+  - **`byDayAndProfesor`**(string $dia, string $dni): EloquentCollection
+
     /
-  - `rangeByProfesor`
+  - **`rangeByProfesor`**(string $dni, string $desde, string $hasta): EloquentCollection
+
     /
 
 
@@ -6501,20 +7075,21 @@ Contracte de persistència per al domini de fitxatges de professorat.
 Contracte de persistència per al domini FCT.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `firstByColaboracionAsociacionInstructor`
-  - `panelListingByProfesor`
+  - **`find`**(int|string $id): ?Fct
+  - **`findOrFail`**(int|string $id): Fct
+  - **`firstByColaboracionAsociacionInstructor`**(int|string $idColaboracion, int|string $asociacion, int|string $idInstructor): ?Fct
+  - **`panelListingByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `save`
-  - `create`
-  - `attachAlumno`
-  - `detachAlumno`
-  - `saveColaborador`
-  - `deleteColaborador`
-  - `updateColaboradorHoras`
-  - `setCotutor`
-  - `empresaIdByFct`
+  - **`save`**(Fct $fct): Fct
+  - **`create`**(array $attributes): Fct
+  - **`attachAlumno`**(int|string $idFct, string $idAlumno, array $pivotAttributes): void
+  - **`detachAlumno`**(int|string $idFct, string $idAlumno): void
+  - **`saveColaborador`**(int|string $idFct, Colaborador $colaborador): void
+  - **`deleteColaborador`**(int|string $idFct, string $idInstructor): int
+  - **`updateColaboradorHoras`**(int|string $idFct, string $idInstructor, int|string $horas): int
+  - **`setCotutor`**(int|string $idFct, ?string $cotutor): void
+  - **`empresaIdByFct`**(int|string $idFct): ?int
 
 
 ### `app/Domain/Grupo/GrupoRepositoryInterface.php`
@@ -6523,38 +7098,52 @@ Contracte de persistència per al domini FCT.
 Contracte d'accés a dades de l'agregat Grupo.
 
 - Metodes:
-  - `create`
+  - **`create`**(array $attributes): Grupo
+
     /
-  - `find`
-  - `all`
+  - **`find`**(string $codigo): ?Grupo
+  - **`all`**(): EloquentCollection
+
     /
-  - `qTutor`
+  - **`qTutor`**(string $dni): EloquentCollection
+
     /
-  - `firstByTutor`
-  - `largestByTutor`
-  - `byCurso`
+  - **`firstByTutor`**(string $dni): ?Grupo
+  - **`largestByTutor`**(string $dni): ?Grupo
+  - **`byCurso`**(int $curso): EloquentCollection
+
     /
-  - `byDepartamento`
+  - **`byDepartamento`**(int $departamento): EloquentCollection
+
     /
-  - `tutoresDniList`
+  - **`tutoresDniList`**(): array
+
     /
-  - `reassignTutor`
-  - `misGrupos`
+  - **`reassignTutor`**(string $fromDni, string $toDni): int
+  - **`misGrupos`**(): EloquentCollection
+
     /
-  - `misGruposByProfesor`
+  - **`misGruposByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `withActaPendiente`
+  - **`withActaPendiente`**(): EloquentCollection
+
     /
-  - `byTutorOrSubstitute`
+  - **`byTutorOrSubstitute`**(string $dni, ?string $sustituyeA): ?Grupo
+
     Retorna el primer grup on el professor és tutor o tutor substituït.
-  - `withStudents`
+  - **`withStudents`**(): EloquentCollection
+
     /
-  - `firstByTutorDual`
-  - `byCodes`
+  - **`firstByTutorDual`**(string $dni): ?Grupo
+  - **`byCodes`**(array $codigos): EloquentCollection
+
     /
-  - `allWithTutorAndCiclo`
+  - **`allWithTutorAndCiclo`**(): EloquentCollection
+
     /
-  - `misGruposWithCiclo`
+  - **`misGruposWithCiclo`**(): EloquentCollection
+
     /
 
 
@@ -6564,48 +7153,66 @@ Contracte d'accés a dades de l'agregat Grupo.
 Contracte de persistència per a l'agregat Horario.
 
 - Metodes:
-  - `semanalByProfesor`
+  - **`semanalByProfesor`**(string $dni): array
+
     /
-  - `semanalByGrupo`
+  - **`semanalByGrupo`**(string $grupo): array
+
     /
-  - `lectivosByDayAndSesion`
+  - **`lectivosByDayAndSesion`**(string $dia, int $sesion): EloquentCollection
+
     /
-  - `countByProfesorAndDay`
-  - `guardiaAllByDia`
+  - **`countByProfesorAndDay`**(string $dni, string $dia): int
+  - **`guardiaAllByDia`**(string $dia): EloquentCollection
+
     /
-  - `guardiaAllByProfesorAndDiaAndSesiones`
+  - **`guardiaAllByProfesorAndDiaAndSesiones`**(string $dni, string $dia, array $sesiones): EloquentCollection
+
     /
-  - `guardiaAllByProfesorAndDia`
+  - **`guardiaAllByProfesorAndDia`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `guardiaAllByProfesor`
+  - **`guardiaAllByProfesor`**(string $dni): EloquentCollection
+
     /
-  - `firstByProfesorDiaSesion`
-  - `byProfesor`
+  - **`firstByProfesorDiaSesion`**(string $dni, string $dia, int|string $sesion): ?Horario
+  - **`byProfesor`**(string $dni): EloquentCollection
+
     /
-  - `byProfesorWithRelations`
+  - **`byProfesorWithRelations`**(string $dni, array $relations): EloquentCollection
+
     /
-  - `lectivasByProfesorAndDayOrdered`
+  - **`lectivasByProfesorAndDayOrdered`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `reassignProfesor`
-  - `deleteByProfesor`
-  - `gruposByProfesor`
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+  - **`deleteByProfesor`**(string $dni): int
+  - **`gruposByProfesor`**(string $dni): Collection
+
     /
-  - `gruposByProfesorDiaAndSesiones`
+  - **`gruposByProfesorDiaAndSesiones`**(string $dni, string $dia, array $sesiones): Collection
+
     /
-  - `profesoresByGruposExcept`
+  - **`profesoresByGruposExcept`**(array $grupos, string $emisorDni): Collection
+
     /
-  - `primeraByProfesorAndDateOrdered`
+  - **`primeraByProfesorAndDateOrdered`**(string $dni, string $date): EloquentCollection
+
     /
-  - `firstByModulo`
-  - `byProfesorDiaOrdered`
+  - **`firstByModulo`**(string $modulo): ?Horario
+  - **`byProfesorDiaOrdered`**(string $dni, string $dia): EloquentCollection
+
     /
-  - `distinctModulos`
+  - **`distinctModulos`**(): Collection
+
     /
-  - `create`
+  - **`create`**(array $data): Horario
+
     /
-  - `forProgramacionImport`
+  - **`forProgramacionImport`**(): EloquentCollection
+
     /
-  - `firstForDepartamentoAsignacion`
+  - **`firstForDepartamentoAsignacion`**(string $dni): ?Horario
 
 
 ### `app/Domain/Profesor/ProfesorRepositoryInterface.php`
@@ -6614,47 +7221,64 @@ Contracte de persistència per a l'agregat Horario.
 Contracte de persistència per a l'agregat Profesor.
 
 - Metodes:
-  - `plantillaOrderedWithDepartamento`
+  - **`plantillaOrderedWithDepartamento`**(): EloquentCollection
+
     /
-  - `activosByDepartamentosWithHorario`
+  - **`activosByDepartamentosWithHorario`**(array $departamentosIds, string $dia, int $sesion): EloquentCollection
+
     /
-  - `activosOrdered`
+  - **`activosOrdered`**(): EloquentCollection
+
     /
-  - `all`
+  - **`all`**(): EloquentCollection
+
     /
-  - `plantilla`
+  - **`plantilla`**(): EloquentCollection
+
     /
-  - `plantillaByDepartamento`
+  - **`plantillaByDepartamento`**(int|string $departamento): EloquentCollection
+
     /
-  - `activos`
+  - **`activos`**(): EloquentCollection
+
     /
-  - `byDepartamento`
+  - **`byDepartamento`**(int|string $departamento): EloquentCollection
+
     /
-  - `byGrupo`
+  - **`byGrupo`**(string $grupo): EloquentCollection
+
     /
-  - `byGrupoTrabajo`
+  - **`byGrupoTrabajo`**(string $grupoTrabajo): EloquentCollection
+
     /
-  - `byDnis`
+  - **`byDnis`**(array $dnis): EloquentCollection
+
     /
-  - `find`
-  - `findOrFail`
-  - `findBySustituyeA`
-  - `findByCodigo`
-  - `findByApiToken`
-  - `findByEmail`
-  - `plantillaOrderedByDepartamento`
+  - **`find`**(string $dni): ?Profesor
+  - **`findOrFail`**(string $dni): Profesor
+  - **`findBySustituyeA`**(string $dni): ?Profesor
+  - **`findByCodigo`**(string $codigo): ?Profesor
+  - **`findByApiToken`**(string $apiToken): ?Profesor
+  - **`findByEmail`**(string $email): ?Profesor
+  - **`plantillaOrderedByDepartamento`**(): EloquentCollection
+
     /
-  - `plantillaForResumen`
+  - **`plantillaForResumen`**(): EloquentCollection
+
     /
-  - `allOrderedBySurname`
+  - **`allOrderedBySurname`**(): EloquentCollection
+
     /
-  - `clearFechaBaja`
-  - `countByCodigo`
-  - `usedCodigosBetween`
+  - **`clearFechaBaja`**(): int
+  - **`countByCodigo`**(int|string $codigo): int
+  - **`usedCodigosBetween`**(int $min, int $max): array
+
     /
-  - `create`
+  - **`create`**(array $data): Profesor
+
     /
-  - `withSustituyeAssigned`
+  - **`withSustituyeAssigned`**(): EloquentCollection
+
     /
 
 
@@ -6664,11 +7288,14 @@ Contracte de persistència per a l'agregat Profesor.
 Gestiona el token Sanctum de sessió web per al professorat.
 
 - Metodes:
-  - `issueForProfesor`
+  - **`issueForProfesor`**(Profesor $profesor, string $deviceName = 'web-session'): string
+
     Emet un token Sanctum i el guarda en sessió per a ús del client web.
-  - `revokeCurrentFromSession`
+  - **`revokeCurrentFromSession`**(): void
+
     Revoca el token actual emmagatzemat en sessió i neteja claus de sessió.
-  - `currentToken`
+  - **`currentToken`**(): ?string
+
     Retorna el token de sessió actual, si existeix.
 
 
@@ -6676,162 +7303,167 @@ Gestiona el token Sanctum de sessió web per al professorat.
 
 #### `Intranet\Services\Auth\JWTTokenService`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?ProfesorService $profesorService = null)
 
 #### `Intranet\Services\Auth\createTokenProgramacio`
 - Metodes:
-  - `createTokenProgramacio`
-  - `getTokenLink`
-  - `role`
-  - `turno`
+  - **`createTokenProgramacio`**($idModuleGrupo, $dni=null)
+  - **`getTokenLink`**($id, $dni = null)
+  - **`role`**($role): array
+  - **`turno`**($turno)
 
 
 ### `app/Services/Auth/PerfilService.php`
 
 #### `Intranet\Services\Auth\PerfilService`
 - Metodes:
-  - `__construct`
-  - `carregarDadesProfessor`
-  - `carregarDadesAlumne`
+  - **`__construct`**(ComisionService $comisionService, HorarioService $horarioService)
+  - **`carregarDadesProfessor`**(string $dni): array
+  - **`carregarDadesAlumne`**(string $nia): array
 
 
 ### `app/Services/Auth/RemoteLoginService.php`
 
 #### `Intranet\Services\Auth\RemoteLoginService`
 - Metodes:
-  - `login`
+  - **`login`**($link, $user, $pass)
 
 
 ### `app/Services/Auth/VioletHasher.php`
 
 #### `Intranet\Services\Auth\VioletHasher`
 - Metodes:
-  - `dniHash`
+  - **`dniHash`**(string $dni, ?string $pepper = null): string
 
 
 ### `app/Services/Automation/SeleniumService.php`
 
 #### `Intranet\Services\Automation\SeleniumService`
 - Metodes:
-  - `__construct`
-  - `getDriverSelenium`
+  - **`__construct`**($dni, $password)
+  - **`getDriverSelenium`**(mixed $desiredCapabilities=null): RemoteWebDriver
+
     /
-  - `getDriver`
+  - **`getDriver`**(): ?RemoteWebDriver
+
     /
-  - `quit`
-  - `loginSAO`
+  - **`quit`**()
+  - **`loginSAO`**($dni, $password, $desiredCapabilities=null): RemoteWebDriver
+
     /
-  - `loginItaca`
+  - **`loginItaca`**($dni, $password): RemoteWebDriver
+
     /
-  - `restartSelenium`
-  - `fill`
-  - `waitAndClick`
-  - `gTPersonalLlist`
-  - `closeNoticias`
+  - **`restartSelenium`**()
+  - **`fill`**($selector, $keys, $driver = null)
+  - **`waitAndClick`**($xpath, $driver = null)
+  - **`gTPersonalLlist`**()
+  - **`closeNoticias`**()
 
 
 ### `app/Services/Calendar/CalendarService.php`
 
 #### `Intranet\Services\Calendar\CalendarService`
 - Metodes:
-  - `build`
+  - **`build`**($elemento, $descripcion='descripcion', $objetivos='objetivos'): Calendar
+
     /
-  - `render`
+  - **`render`**($ini, $fin, $descripcion, $objetivos, $location)
 
 
 ### `app/Services/Calendar/GoogleCalendarService.php`
 
 #### `Intranet\Services\Calendar\GoogleCalendarService`
 - Metodes:
-  - `__construct`
-  - `getClient`
-  - `getCalendar`
-  - `addEvent`
-  - `dateToGoogle`
-  - `saveEvents`
+  - **`__construct`**()
+  - **`getClient`**()
+  - **`getCalendar`**()
+  - **`addEvent`**($title, $description, $start, $end, $attendees = [])
+  - **`dateToGoogle`**($dataHoraOriginal)
+  - **`saveEvents`**()
 
 
 ### `app/Services/Calendar/MeetingOrderGenerateService.php`
 
 #### `Intranet\Services\Calendar\MeetingOrderGenerateService`
 - Metodes:
-  - `__construct`
-  - `exec`
-  - `isOrderAdvanced`
-  - `storeAdvancedItems`
-  - `getResumenAdvanced`
-  - `storeItem`
+  - **`__construct`**($reunion)
+  - **`exec`**()
+  - **`isOrderAdvanced`**($texto)
+  - **`storeAdvancedItems`**($query, $resumen, &$contador)
+  - **`getResumenAdvanced`**($query, $asArray = false)
+  - **`storeItem`**(&$contador, $text, $resumen)
 
 
 ### `app/Services/Document/AttachedFileService.php`
 
 #### `Intranet\Services\Document\AttachedFileService`
 - Metodes:
-  - `safeFile`
-  - `saveLink`
-  - `save`
-  - `delete`
-  - `saveExistingFile`
-  - `moveAndPreserveDualFiles`
-  - `deleteNonDualFiles`
+  - **`safeFile`**($file, string $route, ?string $dni, ?string $title): int
+  - **`saveLink`**(string $nameFile, string $referencesTo, string $title, string $extension, string $route, ?string $dni = null): int
+  - **`save`**($files, string $route, ?string $dni = null, ?string $title = null): array
+  - **`delete`**(Adjunto $attached): int
+  - **`saveExistingFile`**(string $filePath, string $route, string $dni, ?string $title = null): int
+  - **`moveAndPreserveDualFiles`**()
+  - **`deleteNonDualFiles`**($dualRoutes)
 
 
 ### `app/Services/Document/CreateOrUpdateDocumentAction.php`
 
 #### `Intranet\Services\Document\CreateOrUpdateDocumentAction`
 - Metodes:
-  - `fromRequest`
-  - `fromArray`
-  - `build`
-  - `applyDefaults`
-  - `firstAvailable`
-  - `resolveElementoId`
+  - **`fromRequest`**(Request $request, array $overrides = [], ?Documento $document = null, $elemento = null): Documento
+  - **`fromArray`**(array $data, ?Documento $document = null, $elemento = null): Documento
+  - **`build`**(array $data, ?Documento $document = null, $elemento = null): Documento
+  - **`applyDefaults`**(array $data, ?Documento $document, $elemento = null): array
+  - **`firstAvailable`**(array $data, ?Documento $document, string $property)
+  - **`resolveElementoId`**($elemento, array $payload, ?Documento $document): ?string
 
 
 ### `app/Services/Document/DocumentAccessChecker.php`
 
 #### `Intranet\Services\Document\DocumentAccessChecker`
 - Metodes:
-  - `isAllowed`
+  - **`isAllowed`**(DocumentContext $context): bool
 
 
 ### `app/Services/Document/DocumentContext.php`
 
 #### `Intranet\Services\Document\DocumentContext`
 - Metodes:
-  - `__construct`
-  - `document`
-  - `link`
-  - `isFile`
+  - **`__construct`**(?Documento $document, ?string $link, bool $isFile)
+  - **`document`**(): ?Documento
+  - **`link`**(): ?string
+  - **`isFile`**(): bool
 
 
 ### `app/Services/Document/DocumentPathService.php`
 
 #### `Intranet\Services\Document\DocumentPathService`
 - Metodes:
-  - `resolvePath`
-  - `exists`
-  - `mimeType`
-  - `responseFile`
-  - `existsPath`
-  - `responseFromPath`
+  - **`resolvePath`**(DocumentContext $context): ?string
+  - **`exists`**(DocumentContext $context): bool
+  - **`mimeType`**(DocumentContext $context): ?string
+  - **`responseFile`**(DocumentContext $context)
+  - **`existsPath`**(string $path): bool
+  - **`responseFromPath`**(string $path)
 
 
 ### `app/Services/Document/DocumentResolver.php`
 
 #### `Intranet\Services\Document\DocumentResolver`
 - Metodes:
-  - `resolve`
-  - `findDocument`
-  - `getFileIfExistFromModel`
+  - **`resolve`**($elemento = null, $documento = null): DocumentContext
+  - **`findDocument`**($elemento): ?Documento
+  - **`getFileIfExistFromModel`**($elemento): array
 
 
 ### `app/Services/Document/DocumentResponder.php`
 
 #### `Intranet\Services\Document\DocumentResponder`
 - Metodes:
-  - `__construct`
-  - `respond`
+  - **`__construct`**(?DocumentAccessChecker $accessChecker = null, ?DocumentPathService $pathService = null)
+  - **`respond`**(DocumentContext $context)
 
 
 ### `app/Services/Document/DocumentService.php`
@@ -6840,16 +7472,21 @@ Gestiona el token Sanctum de sessió web per al professorat.
 Servei per generar documents (PDF, ZIP o correus) a partir de la configuració
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(Finder $finder)
+
     DocumentService constructor.
-  - `__get`
-  - `load`
+  - **`__get`**($key)
+  - **`load`**(): \Illuminate\Support\Collection
+
     Retorna els elements carregats pel Finder.
-  - `render`
+  - **`render`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Renderitza el document segons la configuració (email o impressió).
-  - `mail`
+  - **`mail`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\RedirectResponse
+
     Envia el document per correu utilitzant la configuració del Finder.
-  - `generatePdfFromView`
+  - **`generatePdfFromView`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Genera un PDF a partir d'una vista Blade.
 
 #### `Intranet\Services\Document\hazZip`
@@ -6857,18 +7494,23 @@ Servei per generar documents (PDF, ZIP o correus) a partir de la configuració
 
 #### `Intranet\Services\Document\hazPdf`
 - Metodes:
-  - `generatePdfFromTemplate`
+  - **`generatePdfFromTemplate`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Genera un PDF a partir d'una plantilla (`printResource`).
-  - `generateSignedPdf`
+  - **`generateSignedPdf`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Genera un PDF signat si està activada la signatura digital.
-  - `generateMultiplePdfs`
+  - **`generateMultiplePdfs`**(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Genera diversos PDFs i els empaqueta si cal.
 
 #### `Intranet\Services\Document\merge`
 - Metodes:
-  - `generateZip`
+  - **`generateZip`**($pdfs, $filename): \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+
     Genera un ZIP amb els PDFs indicats i retorna una resposta de fitxer.
-  - `normalizePdfPaths`
+  - **`normalizePdfPaths`**($elements): array
+
     Normalitza un conjunt d'entrades a rutes de fitxers PDF existents.
 
 
@@ -6876,9 +7518,10 @@ Servei per generar documents (PDF, ZIP o correus) a partir de la configuració
 
 #### `Intranet\Services\Document\ExcelService`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($inputFileName)
+
     /
-  - `render`
+  - **`render`**(...$colums)
 
 
 ### `app/Services/Document/FDFPrepareService.php`
@@ -6887,12 +7530,14 @@ Servei per generar documents (PDF, ZIP o correus) a partir de la configuració
 Servei per preparar PDFs de plantilles FDF i concatenar fitxers resultants.
 
 - Metodes:
-  - `exec`
+  - **`exec`**(PrintResource $resource, $id=null): string|null
+
     Genera un PDF a partir d'un recurs imprimible i retorna la ruta absoluta.
 
 #### `Intranet\Services\Document\fillForResource`
 - Metodes:
-  - `joinPDFs`
+  - **`joinPDFs`**($pdfs, $nameFile): string
+
     Concatena diversos PDFs i retorna la ruta relativa del resultat.
 
 #### `Intranet\Services\Document\merge`
@@ -6905,23 +7550,32 @@ Servei per preparar PDFs de plantilles FDF i concatenar fitxers resultants.
 Encapsula les operacions de formularis PDF basades en pdftk via CLI.
 
 - Metodes:
-  - `fillAndSave`
+  - **`fillAndSave`**(string $templatePath, array $fields, string $outputPath, bool $flatten = false): void
+
     Emplena una plantilla PDF i desa el resultat en un fitxer.
-  - `fillAndSend`
+  - **`fillAndSend`**(string $templatePath, array $fields, string $downloadName, bool $flatten = false): void
+
     Emplena una plantilla PDF i l'envia al navegador.
-  - `fillForResource`
+  - **`fillForResource`**(string $templatePath, array $fields, string $outputPath, bool $flatten = false, ?string $stampPath = null): void
+
     Emplena una plantilla i aplica el flux de preparació utilitzat pels recursos FDF.
-  - `runCommand`
+  - **`runCommand`**(array $args): void
+
     Executa un comandament de procés i valida l'eixida.
-  - `createTempFdf`
+  - **`createTempFdf`**(array $fields): string
+
     Crea un fitxer temporal FDF amb les dades del formulari.
-  - `escapeFdfString`
+  - **`escapeFdfString`**(string $value): string
+
     Escapa valors per a cadenes literals en FDF.
-  - `resolveTemplatePath`
+  - **`resolveTemplatePath`**(string $templatePath): string
+
     Resol una ruta de plantilla relativa o absoluta.
-  - `binary`
+  - **`binary`**(): string
+
     Retorna el binari pdftk configurat.
-  - `ensureOutputDirectory`
+  - **`ensureOutputDirectory`**(string $outputPath): void
+
     Crea el directori de destí si no existix.
 
 
@@ -6931,7 +7585,8 @@ Encapsula les operacions de formularis PDF basades en pdftk via CLI.
 Servei per concatenar múltiples PDFs en un únic document amb FPDI.
 
 - Metodes:
-  - `merge`
+  - **`merge`**(array $pdfs, string $outputPath): void
+
     Concatena els fitxers PDF indicats i guarda el resultat en la ruta de destí.
 
 
@@ -6941,15 +7596,20 @@ Servei per concatenar múltiples PDFs en un únic document amb FPDI.
 Servei de generació de PDFs i ZIPs.
 
 - Metodes:
-  - `footerText`
+  - **`footerText`**($informe): string
+
     Calcula el text del peu segons el document.
-  - `hazPdf`
+  - **`hazPdf`**($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4', $marginTop = 15, $driver = null): mixed
+
     Genera un PDF amb el driver indicat.
-  - `hazZip`
+  - **`hazZip`**($informe, $all, $datosInforme = null, $orientacion = 'portrait', $field = 'id'): string|null
+
     Genera un ZIP amb PDFs per a cada element.
-  - `hazSnappyPdf`
+  - **`hazSnappyPdf`**($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4', $marginTop = 15): mixed
+
     Genera un PDF amb Snappy.
-  - `hazDomPdf`
+  - **`hazDomPdf`**($informe, $todos, $datosInforme, $orientacion, $dimensiones): mixed
+
     Genera un PDF amb DomPDF.
 
 
@@ -6957,33 +7617,34 @@ Servei de generació de PDFs i ZIPs.
 
 #### `Intranet\Services\Document\TipoDocumentoService`
 - Metodes:
-  - `allPestana`
-  - `allDocuments`
-  - `allRol`
-  - `rol`
-  - `all`
-  - `get`
+  - **`allPestana`**()
+  - **`allDocuments`**()
+  - **`allRol`**($grupo)
+  - **`rol`**($index)
+  - **`all`**($grupo)
+  - **`get`**($index)
 
 
 ### `app/Services/Document/TipoReunionService.php`
 
 #### `Intranet\Services\Document\TipoReunionService`
 - Metodes:
-  - `__construct`
-  - `__get`
-  - `__isset`
-  - `allSelect`
-  - `find`
-  - `all`
-  - `literal`
-  - `get`
+  - **`__construct`**($id)
+  - **`__get`**($key)
+  - **`__isset`**($key)
+  - **`allSelect`**($colectivo = null, $superUsuari=false)
+  - **`find`**($id)
+  - **`all`**()
+  - **`literal`**($a)
+  - **`get`**()
 
 
 ### `app/Services/Document/ZipService.php`
 
 #### `Intranet\Services\Document\ZipService`
 - Metodes:
-  - `exec`
+  - **`exec`**(iterable $files, string $nameFile): string
+
     Crea un fitxer ZIP amb els paths indicats i retorna el path relatiu dins de storage/tmp.
 
 
@@ -6993,8 +7654,9 @@ Servei de generació de PDFs i ZIPs.
 Servei d'impressió en lot per a fluxos d'autorització.
 
 - Metodes:
-  - `__construct`
-  - `imprimir`
+  - **`__construct`**(PdfService $pdfService)
+  - **`imprimir`**(string $class, string $model, ?string $modelo = null, ?int $inicial = null, int|string|null $final = null, string $orientacion = 'portrait', bool $link = true): mixed
+
     Executa la generació de document i canvi d'estat en lot.
 
 
@@ -7004,22 +7666,30 @@ Servei d'impressió en lot per a fluxos d'autorització.
 Servei d'aplicació per a transicions d'estat en fluxos d'autorització.
 
 - Metodes:
-  - `__construct`
-  - `cancel`
+  - **`__construct`**(string $class)
+  - **`cancel`**(int|string $id): bool
+
     Mou l'element a estat de cancel·lació.
-  - `init`
+  - **`init`**(int|string $id, int $initState = 1): bool
+
     Inicialitza l'element a l'estat configurat pel caller.
-  - `resolve`
+  - **`resolve`**(int|string $id, ?string $explicacion = null): array|false
+
     /
-  - `accept`
+  - **`accept`**(int|string $id): array|false
+
     /
-  - `resign`
+  - **`resign`**(int|string $id): array|false
+
     /
-  - `refuse`
+  - **`refuse`**(int|string $id, ?string $explicacion = null): array|false
+
     /
-  - `setState`
+  - **`setState`**(int|string $id, int $state): bool
+
     Assigna un estat concret i retorna si l'operació és correcta.
-  - `transitionWithResult`
+  - **`transitionWithResult`**(int|string $id, callable $resolver): array|false
+
     Executa una transició i retorna els estats per a la capa de presentació.
 
 
@@ -7027,10 +7697,10 @@ Servei d'aplicació per a transicions d'estat en fluxos d'autorització.
 
 #### `Intranet\Services\General\GestorService`
 - Metodes:
-  - `__construct`
-  - `save`
-  - `render`
-  - `saveDocument`
+  - **`__construct`**($elemento = null, $documento = null, ?DocumentResolver $resolver = null, ?DocumentResponder $responder = null)
+  - **`save`**($parametres = null)
+  - **`render`**()
+  - **`saveDocument`**($filePath, $tags, $descripcion = null, $supervisor = null)
 
 
 ### `app/Services/General/StateService.php`
@@ -7039,29 +7709,41 @@ Servei d'aplicació per a transicions d'estat en fluxos d'autorització.
 Servei per gestionar canvis d'estat d'un model i accions associades.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**($class, $id = null)
+
     Crea el servei amb un model o una classe.
-  - `putEstado`
+  - **`putEstado`**($estado, $mensaje = null, $fecha = null): int|false
+
     Canvia l'estat i executa accions associades.
-  - `makeDocument`
+  - **`makeDocument`**()
+
     Guarda el document associat si hi ha fitxer.
-  - `dateResolve`
+  - **`dateResolve`**($fecha, $mensaje)
+
     Assigna la data de resolucio i el missatge al camp configurat.
-  - `resolve`
+  - **`resolve`**($mensaje = null): int|false
+
     Resol l'element segons la configuracio del model.
-  - `refuse`
+  - **`refuse`**($mensaje = null): int|false
+
     Rebutja l'element segons la configuracio del model.
-  - `_print`
+  - **`_print`**(): int|false
+
     Marca l'element com a imprimit segons la configuracio del model.
-  - `getEstado`
+  - **`getEstado`**(): int|null
+
     Retorna l'estat actual de l'element.
-  - `normalizeStatesElement`
+  - **`normalizeStatesElement`**(): void
+
     Normalitza la configuracio del model.
-  - `getConfiguredState`
+  - **`getConfiguredState`**(string $key): ?int
+
     Retorna un estat configurat o null si falta.
-  - `makeAll`
+  - **`makeAll`**($todos, $accio)
+
     Modifica l'estat d'un conjunt d'elements
-  - `makeLink`
+  - **`makeLink`**($todos, $doc)
+
     Enllaça múltiples elements a un document.
 
 
@@ -7071,15 +7753,16 @@ Servei per gestionar canvis d'estat d'un model i accions associades.
 Servei de gestio de fitxatges.
 
 - Metodes:
-  - `__construct`
-  - `fitxar`
-  - `fitxaDiaManual`
-  - `hasFichado`
-  - `isInside`
-  - `sessionEntry`
-  - `sessionExit`
-  - `wasInsideAt`
-  - `registrosEntreFechas`
+  - **`__construct`**(private readonly FaltaProfesorRepositoryInterface $faltaProfesorRepository)
+  - **`fitxar`**(?string $dni = null): Falta_profesor|bool|null
+  - **`fitxaDiaManual`**(string $dni, string $dia, string $hora = '12:00:00'): Falta_profesor
+  - **`hasFichado`**(string $dia, string $dni): bool
+  - **`isInside`**(?string $dni = null, bool $storeInSession = true): bool
+  - **`sessionEntry`**(): ?string
+  - **`sessionExit`**(): ?string
+  - **`wasInsideAt`**(string $dni, string $dia, string $hora): bool
+  - **`registrosEntreFechas`**(string $dni, string $desde, string $hasta): EloquentCollection
+
     /
 
 
@@ -7087,26 +7770,28 @@ Servei de gestio de fitxatges.
 
 #### `Intranet\Services\HR\PresenciaResumenService`
 - Metodes:
-  - `__construct`
-  - `resumenDia`
+  - **`__construct`**(private int $GRACE_MINUTES = 10, // tolerància general private bool $FLEX_NO_DOCENCIA = true, // trams no docents més flexibles private bool $DOCENCIA_RIGIDA = true, // trams docents estrictes private int $MIN_CHUNK_MINUTES = 3, // fusionar intervals molt propers private int $NO_SALIDA_AFTER_MIN = 30 // després de quant temps marquem NO_SALIDA)
+  - **`resumenDia`**(\DateTimeInterface|string $dia, ?Collection $profes = null): array
+
     Resum d'un dia per a un conjunt de professors.
-  - `firstEntry`
-  - `weekdayLetter`
-  - `buildPlannedSlotsFromDbRows`
-  - `sanitizeFichajes`
+  - **`firstEntry`**(?Collection $fichajesRows): ?string
+  - **`weekdayLetter`**(Carbon $date): string
+  - **`buildPlannedSlotsFromDbRows`**(Collection $rows, Carbon $day): array
+  - **`sanitizeFichajes`**(Collection $rows, array $plan, Carbon $day): Collection
+
     El professor a vegades marca una "entrada" quan en realitat està eixint.
-  - `lastPlannedEnd`
-  - `hasOpenStay`
-  - `buildStayIntervals`
-  - `buildExceptionIntervals`
-  - `computeCoverage`
-  - `decideStatus`
-  - `clampToDay`
-  - `overlapMinutes`
-  - `overlapWithGrace`
-  - `mergeOverlappingOrClose`
-  - `mergeTouchingByType`
-  - `mergeByType`
+  - **`lastPlannedEnd`**(array $plan): ?Carbon
+  - **`hasOpenStay`**(Collection $fichajesRows): bool
+  - **`buildStayIntervals`**(Collection $fichajes, Carbon $day): array
+  - **`buildExceptionIntervals`**(Collection $acts, Collection $coms, Collection $faltas, Carbon $day): array
+  - **`computeCoverage`**(array $plan, array $stays, array $exc): array
+  - **`decideStatus`**(array $c, bool $hasOpenStay, array $plan, Carbon $date): string
+  - **`clampToDay`**(Carbon $t, Carbon $start, Carbon $end): Carbon
+  - **`overlapMinutes`**(array $a, array $b): int
+  - **`overlapWithGrace`**(array $slot, array $stay, int $graceStart, int $graceEnd): int
+  - **`mergeOverlappingOrClose`**(array $intervals, int $gapMinutes): array
+  - **`mergeTouchingByType`**(array $slots): array
+  - **`mergeByType`**(array $exc): array
 
 
 ### `app/Services/Mail/EmailPostSendService.php`
@@ -7115,13 +7800,17 @@ Servei de gestio de fitxatges.
 Accions post-enviament per a correus.
 
 - Metodes:
-  - `handleAnnexeIndividual`
+  - **`handleAnnexeIndividual`**($signatura): void
+
     Actualitza l'estat d'enviament d'annexos individuals.
-  - `markFctEmailSent`
+  - **`markFctEmailSent`**($elemento, string $correo): void
+
     Marca el correu enviat per a FCT.
-  - `updateAlumnoFct`
+  - **`updateAlumnoFct`**(AlumnoFct $alumnoFct): void
+
     /
-  - `updateSignatura`
+  - **`updateSignatura`**(Signatura $signatura): void
+
     /
 
 
@@ -7129,11 +7818,14 @@ Accions post-enviament per a correus.
 
 #### `Intranet\Services\Mail\FctMailService`
 - Metodes:
-  - `getMailById`
+  - **`getMailById`**(int $id, string $documento): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+
     Obté un correu per ID.
-  - `getMailByRequest`
+  - **`getMailByRequest`**($request, string $documento): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+
     Obté un correu a partir d'una petició.
-  - `generateMail`
+  - **`generateMail`**($finder): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+
     Genera el correu a partir d'un Finder.
 
 
@@ -7143,11 +7835,14 @@ Accions post-enviament per a correus.
 Envia correus a partir d'un MyMail.
 
 - Metodes:
-  - `send`
+  - **`send`**(MyMail $mail, $fecha = null): void
+
     Envia el correu a tots els receptors.
-  - `sendMail`
+  - **`sendMail`**(MyMail $mail, $element, $fecha): void
+
     Envia un correu a un receptor.
-  - `handlePostSend`
+  - **`handlePostSend`**(MyMail $mail): void
+
     Lança l'esdeveniment definit en sessió, si existeix.
 
 #### `Intranet\Services\Mail\handleAnnexeIndividual`
@@ -7160,19 +7855,26 @@ Envia correus a partir d'un MyMail.
 Correu compost a partir de dades de configuració i receptors.
 
 - Metodes:
-  - `__get`
+  - **`__get`**($key): mixed
+
     Retorna propietats internes o del mapa de característiques.
-  - `__set`
+  - **`__set`**($key, $value): void
+
     Assigna propietats internes o del mapa de característiques.
-  - `__construct`
+  - **`__construct`**($elements = null, $view = null, $features = [], $attach = null, $editable = null, RecipientResolver $resolver = null, MailSender $sender = null)
+
     /
-  - `render`
+  - **`render`**($route): \Illuminate\Contracts\View\View
+
     Renderitza la vista d'edició del correu.
-  - `send`
+  - **`send`**($fecha = null): void
+
     Envia el correu a tots els receptors.
-  - `resolveViewForSend`
+  - **`resolveViewForSend`**(): string
+
     Resol la vista a enviar (carrega el fitxer si cal).
-  - `getTo`
+  - **`getTo`**(): mixed
+
     Retorna la col·lecció o element(s) a qui s'enviarà el correu.
 
 
@@ -7182,13 +7884,17 @@ Correu compost a partir de dades de configuració i receptors.
 Resol i formata receptors per a MyMail.
 
 - Metodes:
-  - `resolveElements`
+  - **`resolveElements`**($elements, $class = null): \Illuminate\Support\Collection
+
     Converteix una llista d'elements en col·lecció d'objectes.
-  - `resolveElement`
+  - **`resolveElement`**($element, $class = null): mixed|null
+
     Resol un element a objecte, si cal.
-  - `formatReceivers`
+  - **`formatReceivers`**($elements): string
+
     Dona format a la llista de receptors per a la vista.
-  - `formatReceiver`
+  - **`formatReceiver`**($element): string
+
     Dona format a un receptor: id(mail;contacte).
 
 
@@ -7196,15 +7902,17 @@ Resol i formata receptors per a MyMail.
 
 #### `Intranet\Services\Media\ImageService`
 - Metodes:
-  - `openGdImage`
+  - **`openGdImage`**($source)
+
     Obri una imatge GD des d'un UploadedFile o path, detectant el tipus real.
-  - `imagetypeFromMime`
-  - `convertHeicToPng`
-  - `transform`
+  - **`imagetypeFromMime`**(?string $mime): ?int
+  - **`convertHeicToPng`**(string $inputPath): string
+  - **`transform`**($fitxerOriginal)
+
     Redimensiona a 68x90 mantenint proporció i farcint amb transparent (PNG).
-  - `updatePhotoCarnet`
-  - `newPhotoCarnet`
-  - `toPng`
+  - **`updatePhotoCarnet`**($fitxerOriginal, $fitxerDesti)
+  - **`newPhotoCarnet`**($fitxerOriginal, $directoriDesti): string
+  - **`toPng`**($fitxerOriginal, $fitxerDesti)
 
 
 ### `app/Services/Notifications/ActividadNotificationService.php`
@@ -7213,7 +7921,7 @@ Resol i formata receptors per a MyMail.
 Servei d'enviament de notificacions relacionades amb activitats.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(private ?NotificationService $notificationService = null, ?callable $groupTeachersResolver = null, ?callable $adviseTeacherExecutor = null)
 
 #### `Intranet\Services\Notifications\app`
 - Metodes: cap
@@ -7223,11 +7931,14 @@ Servei d'enviament de notificacions relacionades amb activitats.
 
 #### `Intranet\Services\Notifications\advise`
 - Metodes:
-  - `notifyActivity`
+  - **`notifyActivity`**(Actividad $actividad, Profesor $coordinador): void
+
     Envia notificacions a professorat de grups i participants.
-  - `notifyGroups`
+  - **`notifyGroups`**(Actividad $actividad, Profesor $coordinador): void
+
     Envia missatge als professors dels grups inclosos en l'activitat.
-  - `notifyParticipants`
+  - **`notifyParticipants`**(Actividad $actividad): void
+
     Envia avís als professors participants de la pròpia activitat.
 
 
@@ -7235,27 +7946,27 @@ Servei d'enviament de notificacions relacionades amb activitats.
 
 #### `Intranet\Services\Notifications\AdviseService`
 - Metodes:
-  - `exec`
-  - `__construct`
-  - `file`
-  - `getAdvises`
-  - `addDescriptionToMessage`
-  - `advise`
+  - **`exec`**(object $element, ?string $message = null): void
+  - **`__construct`**(object $element, ?string $message = null)
+  - **`file`**(): string
+  - **`getAdvises`**(): array
+  - **`addDescriptionToMessage`**(): string
+  - **`advise`**($dnis): void
 
 #### `Intranet\Services\Notifications\send`
 - Metodes:
-  - `setExplanation`
-  - `setLink`
-  - `resolveRecipients`
-  - `buildMessage`
-  - `send`
+  - **`setExplanation`**(?string $message): void
+  - **`setLink`**(): void
+  - **`resolveRecipients`**(): array
+  - **`buildMessage`**(): array
+  - **`send`**(): void
 
 
 ### `app/Services/Notifications/AdviseTeacher.php`
 
 #### `Intranet\Services\Notifications\AdviseTeacher`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(private ?NotificationService $notificationService = null, private ?ProfesorService $profesorService = null, private ?HorarioService $horarioService = null, private ?GrupoService $grupoService = null)
 
 #### `Intranet\Services\Notifications\profesorService`
 - Metodes: cap
@@ -7268,33 +7979,34 @@ Servei d'enviament de notificacions relacionades amb activitats.
 
 #### `Intranet\Services\Notifications\advise`
 - Metodes:
-  - `advise`
+  - **`advise`**(object $elemento, ?string $mensaje = null, ?string $idEmisor = null, mixed $emisor = null): void
+
     API nova injectable.
-  - `affectedGroups`
-  - `sendTutorEmail`
-  - `horarioAltreGrup`
-  - `teachersAffected`
-  - `hoursAffected`
+  - **`affectedGroups`**(object $elemento, string $idProfesor): Collection
+  - **`sendTutorEmail`**(object $elemento): void
+  - **`horarioAltreGrup`**(object $elemento, string $professorId): Collection
+  - **`teachersAffected`**(Collection $grupos, string $emisor): Collection
+  - **`hoursAffected`**(object $elemento): Collection
 
 
 ### `app/Services/Notifications/ConfirmAndSend.php`
 
 #### `Intranet\Services\Notifications\ConfirmAndSend`
 - Metodes:
-  - `render`
+  - **`render`**($model, $id, $message=null, $route=null, $back=null)
 
 
 ### `app/Services/Notifications/NotificationService.php`
 
 #### `Intranet\Services\Notifications\NotificationService`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?callable $findAlumno = null, ?callable $findProfesor = null, ?callable $hasTable = null, ?callable $fechaProvider = null)
 
 #### `Intranet\Services\Notifications\findAlumno`
 - Metodes:
-  - `receptor`
-  - `emisor`
-  - `send`
+  - **`receptor`**($id)
+  - **`emisor`**($emisor)
+  - **`send`**($id, $mensaje, $enlace = '#', $emisor = null)
 
 
 ### `app/Services/School/ActividadParticipantsService.php`
@@ -7303,20 +8015,26 @@ Servei d'enviament de notificacions relacionades amb activitats.
 Gestiona participants i coordinació d'activitats.
 
 - Metodes:
-  - `assignInitialParticipants`
+  - **`assignInitialParticipants`**(Actividad $actividad, ?string $dni = null): void
+
     Assigna coordinador i grup per defecte en crear l'activitat.
 
 #### `Intranet\Services\School\largestByTutor`
 - Metodes:
-  - `addGroup`
+  - **`addGroup`**(int|string $actividadId, string $groupId): void
+
     Afig un grup sense desassignar els existents.
-  - `removeGroup`
+  - **`removeGroup`**(int|string $actividadId, string $groupId): void
+
     Esborra un grup del pivot.
-  - `addProfesor`
+  - **`addProfesor`**(int|string $actividadId, string $profesorId): void
+
     Afig un professor sense duplicar pivots.
-  - `removeProfesor`
+  - **`removeProfesor`**(int|string $actividadId, string $profesorId): bool
+
     Esborra un professor i, si era coordinador, en reassigna un de nou.
-  - `assignCoordinator`
+  - **`assignCoordinator`**(int|string $actividadId, string $profesorId): bool
+
     Marca un únic coordinador per a l'activitat.
 
 
@@ -7324,11 +8042,14 @@ Gestiona participants i coordinació d'activitats.
 
 #### `Intranet\Services\School\CotxeAccessService`
 - Metodes:
-  - `recentAccessWithin`
+  - **`recentAccessWithin`**(string $matricula, int $seconds): bool
+
     Comprova si hi ha hagut un accés recent d'una matrícula.
-  - `registrarAcces`
+  - **`registrarAcces`**(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null): void
+
     Registra un nou accés al pàrquing.
-  - `obrirIPorta`
+  - **`obrirIPorta`**(): bool
+
     Envia les ordres d'obrir i tancar la porta al dispositiu IoT.
 
 
@@ -7338,18 +8059,22 @@ Gestiona participants i coordinació d'activitats.
 Fluxos de negoci d'estat per a expedients.
 
 - Metodes:
-  - `__construct`
-  - `expedients`
+  - **`__construct`**(?ExpedienteService $expedienteService = null)
+  - **`expedients`**(): ExpedienteService
 
 #### `Intranet\Services\School\expedienteService`
 - Metodes:
-  - `authorizePending`
+  - **`authorizePending`**(): void
+
     Autoritza en lot tots els expedients pendents (estat 1 -> 2).
-  - `init`
+  - **`init`**(int|string $id): bool
+
     Inicialitza un expedient.
-  - `passToOrientation`
+  - **`passToOrientation`**(int|string $id): bool
+
     Passa l'expedient a orientació tancada (estat 5) i fixa data de solució.
-  - `assignCompanion`
+  - **`assignCompanion`**(int|string $id, ?string $idAcompanyant): bool
+
     Assigna professor acompanyant i passa l'expedient a estat 5.
 
 
@@ -7357,92 +8082,92 @@ Fluxos de negoci d'estat per a expedients.
 
 #### `Intranet\Services\School\FaltaReportService`
 - Metodes:
-  - `getComunicacioElements`
-  - `getMensualElements`
-  - `markPrinted`
-  - `nameFile`
-  - `buildQuery`
+  - **`getComunicacioElements`**(Carbon $desde, Carbon $hasta)
+  - **`getMensualElements`**(Carbon $desde, Carbon $hasta)
+  - **`markPrinted`**(Carbon $hasta): void
+  - **`nameFile`**(): string
+  - **`buildQuery`**(Carbon $desde, Carbon $hasta, string $estadoUpper)
 
 
 ### `app/Services/School/ItacaService.php`
 
 #### `Intranet\Services\School\ItacaService`
 - Metodes:
-  - `__construct`
-  - `close`
-  - `goToLlist`
-  - `processActivitat`
-  - `processFalta`
-  - `closeNoticias`
+  - **`__construct`**(string $dni, string $password, $selenium = null, bool $validateDriver = true)
+  - **`close`**()
+  - **`goToLlist`**()
+  - **`processActivitat`**(Actividad $activitat): bool
+  - **`processFalta`**(Falta_itaca $falta): bool
+  - **`closeNoticias`**()
 
 
 ### `app/Services/School/ModuloGrupoService.php`
 
 #### `Intranet\Services\School\ModuloGrupoService`
 - Metodes:
-  - `hasSeguimiento`
-  - `profesorNombres`
-  - `programacioLink`
-  - `profesorIds`
-  - `misModulos`
-  - `buildProgramacioUrl`
+  - **`hasSeguimiento`**(Modulo_grupo $moduloGrupo): bool
+  - **`profesorNombres`**(Modulo_grupo $moduloGrupo): string
+  - **`programacioLink`**(Modulo_grupo $moduloGrupo): string
+  - **`profesorIds`**(Modulo_grupo $moduloGrupo): Collection
+  - **`misModulos`**(string $dni, ?string $modulo = null): array
+  - **`buildProgramacioUrl`**(string $centerId, string $cycleId, string $moduleCode, string $turn): string
 
 
 ### `app/Services/School/ReunionService.php`
 
 #### `Intranet\Services\School\ReunionService`
 - Metodes:
-  - `makeMessage`
-  - `addProfesor`
-  - `removeProfesor`
-  - `addAlumno`
-  - `removeAlumno`
-  - `notify`
+  - **`makeMessage`**(Reunion $reunion): string
+  - **`addProfesor`**(Reunion $reunion, string $idProfesor): void
+  - **`removeProfesor`**(Reunion $reunion, string $idProfesor): void
+  - **`addAlumno`**(Reunion $reunion, string $idAlumno, int $capacitats): void
+  - **`removeAlumno`**(Reunion $reunion, string $idAlumno): void
+  - **`notify`**(Reunion $reunion): void
 
 
 ### `app/Services/School/SecretariaService.php`
 
 #### `Intranet\Services\School\SecretariaService`
 - Metodes:
-  - `__construct`
-  - `uploadFile`
-  - `error`
+  - **`__construct`**()
+  - **`uploadFile`**($document)
+  - **`error`**($response)
 
 
 ### `app/Services/School/SignaturaStatusService.php`
 
 #### `Intranet\Services\School\SignaturaStatusService`
 - Metodes:
-  - `estat`
-  - `cssClass`
-  - `yesNo`
-  - `estatA1`
-  - `estatA2`
-  - `estatA3`
+  - **`estat`**(Signatura $sig): string
+  - **`cssClass`**(Signatura $sig): string
+  - **`yesNo`**(bool|int $value): string
+  - **`estatA1`**(Signatura $sig): string
+  - **`estatA2`**(Signatura $sig): string
+  - **`estatA3`**(Signatura $sig): string
 
 
 ### `app/Services/School/TaskFileService.php`
 
 #### `Intranet\Services\School\TaskFileService`
 - Metodes:
-  - `store`
+  - **`store`**(UploadedFile $file, Task $task): ?string
 
 
 ### `app/Services/School/TaskValidationService.php`
 
 #### `Intranet\Services\School\TaskValidationService`
 - Metodes:
-  - `resolve`
-  - `avalPrg`
-  - `entrPrg`
-  - `segAval`
+  - **`resolve`**(?string $action, ?string $dni = null): int
+  - **`avalPrg`**(): int
+  - **`entrPrg`**(): int
+  - **`segAval`**(string $dni): int
 
 #### `Intranet\Services\School\misModulos`
 - Metodes:
-  - `actAval`
-  - `actaDel`
-  - `actaFse`
-  - `infDept`
+  - **`actAval`**(string $dni): int
+  - **`actaDel`**(string $dni): int
+  - **`actaFse`**(string $dni): int
+  - **`infDept`**(string $dni): int
 
 
 ### `app/Services/School/TeacherSubstitutionService.php`
@@ -7451,7 +8176,7 @@ Fluxos de negoci d'estat per a expedients.
 Gestiona lògica d'alta/baixa de professorat amb cadena de substitucions.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?ProfesorService $profesorService = null, ?HorarioService $horarioService = null, ?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
 
 #### `Intranet\Services\School\horarioService`
 - Metodes: cap
@@ -7464,13 +8189,17 @@ Gestiona lògica d'alta/baixa de professorat amb cadena de substitucions.
 
 #### `Intranet\Services\School\markLeave`
 - Metodes:
-  - `markLeave`
+  - **`markLeave`**(string $idProfesor, string $fecha): void
+
     Marca un professor com de baixa en una data.
-  - `reactivate`
+  - **`reactivate`**(string $idProfesor): void
+
     Reactiva un professor i reverteix canvis dels substituts en cadena.
-  - `changeWithSubstitute`
+  - **`changeWithSubstitute`**(Profesor $profesorAlta, Profesor $sustituto): void
+
     Mou càrrega docent/administrativa del substitut al professor original.
-  - `markAssistenceMeetings`
+  - **`markAssistenceMeetings`**(string $dniProfesor, Asistencia $meeting): void
+
     Marca assistència pendent del professor reactiu a una reunió.
 
 
@@ -7478,55 +8207,57 @@ Gestiona lògica d'alta/baixa de professorat amb cadena de substitucions.
 
 #### `Intranet\Services\Signature\DigitalSignatureService`
 - Metodes:
-  - `readCertificat`
+  - **`readCertificat`**($certificat, $password): array
+
     Llig i valida un certificat PKCS#12 amb OpenSSL.
-  - `readCertificate`
+  - **`readCertificate`**($certificat, $password): array
+
     Llig i valida un certificat PKCS#12 amb OpenSSL.
-  - `cryptCertificate`
-  - `encryptCertificate`
-  - `decryptCertificate`
-  - `decryptUserCertificate`
-  - `decryptCertificateUser`
-  - `decryptUserCertificateInstance`
-  - `deleteCertificate`
-  - `removeCertificate`
-  - `validateUserSign`
-  - `validateUserSignature`
-  - `sign`
-  - `signDocument`
-  - `signWithJSignPdf`
-  - `buildJSignPdfCommand`
-  - `resolveJSignPdfOutputFile`
-  - `stringifyCommand`
-  - `prepareBackgroundImage`
-  - `composeLogoBackground`
-  - `getLastPageNumber`
-  - `buildVisibleSignatureText`
-  - `normalizePdf`
-  - `getEncrypter`
-  - `fileNameCrypt`
-  - `fileNameDeCrypt`
+  - **`cryptCertificate`**($certificat, $fileName, $password): void
+  - **`encryptCertificate`**($certificat, $fileName, $password): void
+  - **`decryptCertificate`**($fileName, $password): string
+  - **`decryptUserCertificate`**($fileName, $password): string
+  - **`decryptCertificateUser`**($decrypt, $user): ?string
+  - **`decryptUserCertificateInstance`**($decrypt, $user): ?string
+  - **`deleteCertificate`**($user): void
+  - **`removeCertificate`**($user): void
+  - **`validateUserSign`**($file)
+  - **`validateUserSignature`**($file, $dni = null): bool
+  - **`sign`**($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
+  - **`signDocument`**($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
+  - **`signWithJSignPdf`**($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
+  - **`buildJSignPdfCommand`**(string $java, string $jar, string $inputFile, string $outputDir, float $coordx, float $coordy, float $width, float $height, int $page, string $certPath, string $certPassword, bool $append, string $visibleText, ?string $bgPath, ?string $bgScale, ?string $imgPath): array
+  - **`resolveJSignPdfOutputFile`**(string $outputDir, string $inputFile): ?string
+  - **`stringifyCommand`**(array $command): string
+  - **`prepareBackgroundImage`**(string $sourcePath, int $threshold): ?string
+  - **`composeLogoBackground`**(string $sourcePath, int $boxWidth, int $boxHeight, float $scale, int $topPadding, float $maxHeightRatio): ?string
+  - **`getLastPageNumber`**(string $inputFile, int $fallback): int
+  - **`buildVisibleSignatureText`**(string $certPath, string $certPassword): string
+  - **`normalizePdf`**(string $inputFile): string
+  - **`getEncrypter`**($password): Encrypter
+  - **`fileNameCrypt`**($fileName): string
+  - **`fileNameDeCrypt`**($fileName): string
 
 
 ### `app/Services/Signature/SignaturaService.php`
 
 #### `Intranet\Services\Signature\SignaturaService`
 - Metodes:
-  - `exec`
+  - **`exec`**($dni, $style='', $ratio=1, $notFound=null)
 
 #### `Intranet\Services\Signature\find`
 - Metodes:
-  - `getFile`
+  - **`getFile`**($dni)
 
 
 ### `app/Services/UI/AlertLogger.php`
 
 #### `Intranet\Services\UI\AlertLogger`
 - Metodes:
-  - `info`
-  - `warning`
-  - `error`
-  - `log`
+  - **`info`**($message, $channel='sao')
+  - **`warning`**($message, $channel='sao')
+  - **`error`**($message, $channel='sao')
+  - **`log`**($message, $level, $channel)
 
 
 ### `app/Services/UI/AppAlert.php`
@@ -7535,21 +8266,29 @@ Gestiona lògica d'alta/baixa de professorat amb cadena de substitucions.
 Façana pròpia d'alertes de la intranet.
 
 - Metodes:
-  - `info`
+  - **`info`**(string $message): void
+
     Mostra un missatge informatiu.
-  - `warning`
+  - **`warning`**(string $message): void
+
     Mostra un missatge d'avís.
-  - `danger`
+  - **`danger`**(string $message): void
+
     Mostra un missatge d'error.
-  - `success`
+  - **`success`**(string $message): void
+
     Mostra un missatge d'èxit.
-  - `error`
+  - **`error`**(string $message): void
+
     Mostra un missatge d'error (alias de danger per compatibilitat).
-  - `message`
+  - **`message`**(string $message, string $level = 'info'): void
+
     Mostra un missatge amb nivell explícit.
-  - `render`
+  - **`render`**(): HtmlString
+
     Renderitza i buida les alertes pendents de la sessió.
-  - `send`
+  - **`send`**(string $level, string $message): void
+
     Encapsula l'enviament real de l'alerta.
 
 
@@ -7559,77 +8298,113 @@ Façana pròpia d'alertes de la intranet.
 Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(CollectiveFormBuilder $form, Translator $lang, ViewFactory $view)
+
     /
-  - `setAbbreviations`
+  - **`setAbbreviations`**(array $abbreviations): void
+
     /
-  - `setCssClasses`
+  - **`setCssClasses`**(array $cssClasses): void
+
     /
-  - `setTemplates`
+  - **`setTemplates`**(array $templates): void
+
     /
-  - `__call`
+  - **`__call`**(string $method, array $parameters): string
+
     Redirigix qualsevol mètode desconegut a un build dinàmic per tipus.
-  - `text`
+  - **`text`**(string $name, mixed $value = null, array $attributes = [], array $extra = []): string
+
     /
-  - `textarea`
+  - **`textarea`**(string $name, mixed $value = null, array $attributes = [], array $extra = []): string
+
     /
-  - `hidden`
+  - **`hidden`**(string $name, mixed $value = null, array $attributes = []): string
+
     /
-  - `file`
+  - **`file`**(string $name, array $attributes = [], array $extra = []): string
+
     /
-  - `select`
+  - **`select`**(string $name, ?array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
+
     /
-  - `checkbox`
+  - **`checkbox`**(string $name, mixed $value = 1, mixed $selected = null, array $attributes = [], array $extra = []): string
+
     /
-  - `checkboxes`
+  - **`checkboxes`**(string $name, array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
+
     /
-  - `radios`
+  - **`radios`**(string $name, array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
+
     /
-  - `build`
+  - **`build`**(string $type, string $name, mixed $value = null, array $attributes = [], array $extra = [], mixed $options = null): string
+
     /
-  - `doBuild`
+  - **`doBuild`**(string $type, string $name, mixed $value = null, array $attributes = [], array $extra = [], mixed $options = null): string
+
     /
-  - `resolveFieldTemplate`
+  - **`resolveFieldTemplate`**(?string $customTemplate, string $defaultTemplate): string
+
     /
-  - `getDefaultTemplate`
+  - **`getDefaultTemplate`**(string $type): string
+
     /
-  - `getCustomTemplate`
+  - **`getCustomTemplate`**(array $attributes): ?string
+
     /
-  - `getHtmlName`
+  - **`getHtmlName`**(string $name): string
+
     /
-  - `getHtmlId`
+  - **`getHtmlId`**(string $name, array $attributes): string
+
     /
-  - `getRequired`
+  - **`getRequired`**(array $attributes): bool
+
     /
-  - `getLabel`
+  - **`getLabel`**(string $name, array $attributes = []): string
+
     /
-  - `getDefaultClasses`
+  - **`getDefaultClasses`**(string $type): string
+
     /
-  - `getClasses`
+  - **`getClasses`**(string $type, array $attributes = [], array $errors = []): string
+
     /
-  - `getControlErrors`
+  - **`getControlErrors`**(string $name): array
+
     /
-  - `getHtmlAttributes`
+  - **`getHtmlAttributes`**(string $type, array $attributes, array $errors, string $htmlId): array
+
     /
-  - `replaceAttributes`
+  - **`replaceAttributes`**(array $attributes): array
+
     /
-  - `checkAccess`
+  - **`checkAccess`**(array $attributes): bool
+
     /
-  - `buildControl`
+  - **`buildControl`**(string $type, string $name, mixed $value, array $attributes, mixed $options, string $htmlName, bool $hasErrors = false): string
+
     /
-  - `normalizeOptionsArray`
+  - **`normalizeOptionsArray`**(mixed $options): array
+
     /
-  - `getOptionsList`
+  - **`getOptionsList`**(string $name, array $options): array
+
     /
-  - `getOptionsFromModel`
+  - **`getOptionsFromModel`**(string $name): array
+
     /
-  - `addEmptyOption`
+  - **`addEmptyOption`**(string $name, array $options, array &$attributes): array
+
     /
-  - `getEmptyOption`
+  - **`getEmptyOption`**(string $name): string|false
+
     /
-  - `renderRadioCollection`
+  - **`renderRadioCollection`**(string $name, array $options, mixed $selected, array $attributes): string
+
     /
-  - `renderCheckboxCollection`
+  - **`renderCheckboxCollection`**(string $name, array $options, mixed $selected, array $attributes, bool $hasErrors = false): string
+
     /
 
 
@@ -7637,17 +8412,20 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Services\UI\FormBuilder`
 - Metodes:
-  - `__construct`
-  - `getElemento`
+  - **`__construct`**($elemento, $formFields = null)
+  - **`getElemento`**(): mixed
+
     /
-  - `getDefault`
+  - **`getDefault`**(): array
+
     /
-  - `render`
-  - `modal`
-  - `fillDefaultOptionsToForm`
-  - `translate`
-  - `aspect`
-  - `fillDefaultOptionsFromModel`
+  - **`render`**(string $method = 'POST', ? string $afterView = null): View
+  - **`modal`**()
+  - **`fillDefaultOptionsToForm`**($formFields)
+  - **`translate`**($key)
+  - **`aspect`**(&$parametres, $originalType)
+  - **`fillDefaultOptionsFromModel`**(): array
+
     /
 
 
@@ -7655,10 +8433,10 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Services\UI\NavigationService`
 - Metodes:
-  - `customBack`
-  - `dropFromHistory`
-  - `addToHistory`
-  - `getPreviousUrl`
+  - **`customBack`**($default = '/home')
+  - **`dropFromHistory`**()
+  - **`addToHistory`**()
+  - **`getPreviousUrl`**($default = '/')
 
 
 
@@ -7668,9 +8446,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ActividadRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7678,48 +8458,50 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\AlumnoFctUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/AlumnoGrupoUpdateRequest.php`
 
 #### `Intranet\Http\Requests\AlumnoGrupoUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/AlumnoPerfilUpdateRequest.php`
 
 #### `Intranet\Http\Requests\AlumnoPerfilUpdateRequest`
 - Metodes:
-  - `rules`
+  - **`rules`**()
 
 
 ### `app/Http/Requests/AlumnoResultadoStoreRequest.php`
 
 #### `Intranet\Http\Requests\AlumnoResultadoStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/AlumnoUpdateRequest.php`
 
 #### `Intranet\Http\Requests\AlumnoUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ArticuloLoteRequest.php`
 
 #### `Intranet\Http\Requests\ArticuloLoteRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7727,9 +8509,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ArticuloRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7737,25 +8521,27 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\AuthPerfilUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/CentroRequest.php`
 
 #### `Intranet\Http\Requests\CentroRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/CicloDualRequest.php`
 
 #### `Intranet\Http\Requests\CicloDualRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7763,9 +8549,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\CicloRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7773,11 +8561,14 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ColaboracionRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
-  - `messages`
+  - **`messages`**(): array<string,
+
     Missatges curts per al formulari d'edició de col·laboració.
 
 
@@ -7785,9 +8576,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ColaboradorRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7795,9 +8588,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ComisionRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7805,9 +8600,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\CotxeRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7815,9 +8612,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\CursoRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7825,9 +8624,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\DepartamentoRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7835,9 +8636,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\DesdeHastaRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7845,17 +8648,19 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\DocumentoStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/DualRequest.php`
 
 #### `Intranet\Http\Requests\DualRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7863,9 +8668,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\EmpresaCentroRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7873,11 +8680,14 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\EmpresaRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determina si l'usuari està autoritzat a fer la petició.
-  - `rules`
+  - **`rules`**(): array
+
     Regles de validació del formulari d'empresa.
-  - `prepareForValidation`
+  - **`prepareForValidation`**(): void
+
     Normalitza dades abans de validar/guardar.
 
 
@@ -7885,9 +8695,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\EspacioRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7895,9 +8707,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ExpedienteRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7905,60 +8719,64 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\FaltaRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/FctConvalidacionStoreRequest.php`
 
 #### `Intranet\Http\Requests\FctConvalidacionStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/FctStoreRequest.php`
 
 #### `Intranet\Http\Requests\FctStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/FctUpdateRequest.php`
 
 #### `Intranet\Http\Requests\FctUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/FicharStoreRequest.php`
 
 #### `Intranet\Http\Requests\FicharStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/GTProfesorRequest.php`
 
 #### `Intranet\Http\Requests\GTProfesorRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
-  - `messages`
+  - **`messages`**(): array
 
 
 ### `app/Http/Requests/GrupoTrabajoRequest.php`
 
 #### `Intranet\Http\Requests\GrupoTrabajoRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7966,25 +8784,27 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\HorarioUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ImportStoreRequest.php`
 
 #### `Intranet\Http\Requests\ImportStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/IncidenciaRequest.php`
 
 #### `Intranet\Http\Requests\IncidenciaRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -7992,17 +8812,19 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\IpGuardiaRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/LoteRequest.php`
 
 #### `Intranet\Http\Requests\LoteRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8010,41 +8832,45 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ModuloCicloRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ModuloRequest.php`
 
 #### `Intranet\Http\Requests\ModuloRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/MyMailStoreRequest.php`
 
 #### `Intranet\Http\Requests\MyMailStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/OptionStoreRequest.php`
 
 #### `Intranet\Http\Requests\OptionStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/OrdenReunionStoreRequest.php`
 
 #### `Intranet\Http\Requests\OrdenReunionStoreRequest`
+Validació per a l'alta d'ordres de reunió.
+
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8052,25 +8878,27 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\OrdenTrabajoRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/PPollRequest.php`
 
 #### `Intranet\Http\Requests\PPollRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/PasswordRequest.php`
 
 #### `Intranet\Http\Requests\PasswordRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8078,35 +8906,39 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\PerfilFilesRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
-  - `messages`
+  - **`messages`**()
 
 
 ### `app/Http/Requests/ProfesorPerfilUpdateRequest.php`
 
 #### `Intranet\Http\Requests\ProfesorPerfilUpdateRequest`
 - Metodes:
-  - `rules`
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ProfesorUpdateRequest.php`
 
 #### `Intranet\Http\Requests\ProfesorUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ProyectoRequest.php`
 
 #### `Intranet\Http\Requests\ProyectoRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8114,9 +8946,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ResultadoStoreRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8124,9 +8958,11 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ResultadoUpdateRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8134,33 +8970,35 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\ReunionStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ReunionUpdateRequest.php`
 
 #### `Intranet\Http\Requests\ReunionUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/SendAvaluacioEmailStoreRequest.php`
 
 #### `Intranet\Http\Requests\SendAvaluacioEmailStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/SettingRequest.php`
 
 #### `Intranet\Http\Requests\SettingRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**()
+
     Determina si l'usuari autenticat pot modificar settings.
-  - `rules`
+  - **`rules`**(): array<string,
+
     Retorna les regles de validació del formulari de settings.
 
 
@@ -8168,17 +9006,19 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\SignaturaStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/SolicitudRequest.php`
 
 #### `Intranet\Http\Requests\SolicitudRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8186,18 +9026,20 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\StoreBustiaRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
-  - `messages`
+  - **`authorize`**(): bool
+  - **`rules`**(): array
+  - **`messages`**(): array
 
 
 ### `app/Http/Requests/TaskRequest.php`
 
 #### `Intranet\Http\Requests\TaskRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8205,33 +9047,35 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\TeacherImportStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/TipoActividadRequest.php`
 
 #### `Intranet\Http\Requests\TipoActividadRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**(): bool
+  - **`rules`**(): array
 
 
 ### `app/Http/Requests/TipoActividadUpdateRequest.php`
 
 #### `Intranet\Http\Requests\TipoActividadUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**(): bool
+  - **`rules`**(): array
 
 
 ### `app/Http/Requests/TipoIncidenciaRequest.php`
 
 #### `Intranet\Http\Requests\TipoIncidenciaRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8239,25 +9083,27 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 
 #### `Intranet\Http\Requests\TutoriaGrupoStoreRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/TutoriaGrupoUpdateRequest.php`
 
 #### `Intranet\Http\Requests\TutoriaGrupoUpdateRequest`
 - Metodes:
-  - `authorize`
-  - `rules`
+  - **`authorize`**()
+  - **`rules`**()
 
 
 ### `app/Http/Requests/ValoracionRequest.php`
 
 #### `Intranet\Http\Requests\ValoracionRequest`
 - Metodes:
-  - `authorize`
+  - **`authorize`**(): bool
+
     Determine if the user is authorized to make this request.
-  - `rules`
+  - **`rules`**(): array
+
     Get the validation rules that apply to the request.
 
 
@@ -8270,19 +9116,26 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
 Policy d'autorització per al flux d'activitats.
 
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     /
-  - `create`
+  - **`create`**($user): bool
+
     /
-  - `view`
+  - **`view`**($user, Actividad $actividad): bool
+
     /
-  - `update`
+  - **`update`**($user, Actividad $actividad): bool
+
     /
-  - `manageParticipants`
+  - **`manageParticipants`**($user, Actividad $actividad): bool
+
     /
-  - `notify`
+  - **`notify`**($user, Actividad $actividad): bool
+
     /
-  - `canManage`
+  - **`canManage`**($user, Actividad $actividad): bool
+
     Regla de gestió: coordinador de l'activitat o rol elevat.
 
 
@@ -8292,13 +9145,17 @@ Policy d'autorització per al flux d'activitats.
 Policy d'autorització per a catàleg d'articles.
 
 - Metodes:
-  - `view`
+  - **`view`**($user, Articulo $articulo): bool
+
     Determina si l'usuari pot veure articles.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear articles.
-  - `update`
+  - **`update`**($user, Articulo $articulo): bool
+
     Determina si l'usuari pot actualitzar articles.
-  - `delete`
+  - **`delete`**($user, Articulo $articulo): bool
+
     Determina si l'usuari pot eliminar articles.
 
 
@@ -8308,11 +9165,14 @@ Policy d'autorització per a catàleg d'articles.
 Policy d'autorització per a cicles.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear cicles.
-  - `update`
+  - **`update`**($user, Ciclo $ciclo): bool
+
     Determina si l'usuari pot actualitzar cicles.
-  - `delete`
+  - **`delete`**($user, Ciclo $ciclo): bool
+
     Determina si l'usuari pot eliminar cicles.
 
 
@@ -8320,9 +9180,9 @@ Policy d'autorització per a cicles.
 
 #### `Intranet\Policies\ColaboracionPolicy`
 - Metodes:
-  - `create`
-  - `update`
-  - `isTutor`
+  - **`create`**($user): bool
+  - **`update`**($user, Colaboracion $colaboracion): bool
+  - **`isTutor`**($user): bool
 
 
 ### `app/Policies/ComisionPolicy.php`
@@ -8331,15 +9191,20 @@ Policy d'autorització per a cicles.
 Policy d'autorització per a comissions de servei.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     /
-  - `update`
+  - **`update`**($user, Comision $comision): bool
+
     /
-  - `view`
+  - **`view`**($user, Comision $comision): bool
+
     /
-  - `manageFct`
+  - **`manageFct`**($user, Comision $comision): bool
+
     /
-  - `isOwner`
+  - **`isOwner`**($user, Comision $comision): bool
+
     Regla de propietat de la comissió.
 
 
@@ -8349,13 +9214,17 @@ Policy d'autorització per a comissions de servei.
 Utilitats de policy per a regles basades en propietari professor i rols elevats.
 
 - Metodes:
-  - `hasProfesorIdentity`
+  - **`hasProfesorIdentity`**($user): bool
+
     Comprova que l'usuari tinga identitat de professor.
-  - `hasRole`
+  - **`hasRole`**($user, string $roleConfigKey): bool
+
     Comprova si l'usuari té un rol concret (bitmask de rols).
-  - `isDirectionOrAdmin`
+  - **`isDirectionOrAdmin`**($user): bool
+
     Comprova si l'usuari és direcció o administració.
-  - `ownsOrIsDirectionOrAdmin`
+  - **`ownsOrIsDirectionOrAdmin`**($user, string $ownerDni): bool
+
     Regla genèrica: propietari professor o rols elevats.
 
 
@@ -8365,13 +9234,17 @@ Utilitats de policy per a regles basades en propietari professor i rols elevats.
 Policy d'autorització per a vehicles de professorat.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear vehicles.
-  - `view`
+  - **`view`**($user, Cotxe $cotxe): bool
+
     Determina si l'usuari pot veure vehicles.
-  - `update`
+  - **`update`**($user, Cotxe $cotxe): bool
+
     Determina si l'usuari pot actualitzar vehicles.
-  - `delete`
+  - **`delete`**($user, Cotxe $cotxe): bool
+
     Determina si l'usuari pot eliminar vehicles.
 
 
@@ -8381,13 +9254,17 @@ Policy d'autorització per a vehicles de professorat.
 Policy d'autorització per a cursos.
 
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     Determina si l'usuari pot accedir als llistats de cursos.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear cursos.
-  - `update`
+  - **`update`**($user, Curso $curso): bool
+
     Determina si l'usuari pot actualitzar cursos.
-  - `delete`
+  - **`delete`**($user, Curso $curso): bool
+
     Determina si l'usuari pot eliminar cursos.
 
 
@@ -8397,11 +9274,14 @@ Policy d'autorització per a cursos.
 Policy d'autorització per a departaments.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear departaments.
-  - `update`
+  - **`update`**($user, Departamento $departamento): bool
+
     Determina si l'usuari pot actualitzar departaments.
-  - `delete`
+  - **`delete`**($user, Departamento $departamento): bool
+
     Determina si l'usuari pot eliminar departaments.
 
 
@@ -8411,17 +9291,23 @@ Policy d'autorització per a departaments.
 Policy d'autorització per a la gestió de documents.
 
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     Determina si l'usuari pot accedir als panells de llistat documental.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear documents.
-  - `view`
+  - **`view`**($user, Documento $documento): bool
+
     Determina si l'usuari pot veure documents.
-  - `update`
+  - **`update`**($user, Documento $documento): bool
+
     Determina si l'usuari pot actualitzar documents.
-  - `delete`
+  - **`delete`**($user, Documento $documento): bool
+
     Determina si l'usuari pot eliminar documents.
-  - `hasIdentity`
+  - **`hasIdentity`**($user): bool
+
     /
 
 
@@ -8429,11 +9315,12 @@ Policy d'autorització per a la gestió de documents.
 
 #### `Intranet\Policies\EmpresaPolicy`
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     Determina si l'usuari pot accedir als llistats d'empreses.
-  - `create`
-  - `update`
-  - `canMutate`
+  - **`create`**($user): bool
+  - **`update`**($user, Empresa $empresa): bool
+  - **`canMutate`**($user): bool
 
 
 ### `app/Policies/EspacioPolicy.php`
@@ -8442,13 +9329,17 @@ Policy d'autorització per a la gestió de documents.
 Policy d'autorització per a espais.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear espais.
-  - `update`
+  - **`update`**($user, Espacio $espacio): bool
+
     Determina si l'usuari pot actualitzar espais.
-  - `delete`
+  - **`delete`**($user, Espacio $espacio): bool
+
     Determina si l'usuari pot eliminar espais.
-  - `printBarcode`
+  - **`printBarcode`**($user, Espacio $espacio): bool
+
     Determina si l'usuari pot imprimir codis de barres de l'espai.
 
 
@@ -8458,13 +9349,17 @@ Policy d'autorització per a espais.
 Policy d'autorització per a expedients.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear expedients.
-  - `view`
+  - **`view`**($user, Expediente $expediente): bool
+
     Determina si l'usuari pot veure expedients.
-  - `update`
+  - **`update`**($user, Expediente $expediente): bool
+
     Determina si l'usuari pot actualitzar expedients.
-  - `delete`
+  - **`delete`**($user, Expediente $expediente): bool
+
     Determina si l'usuari pot eliminar expedients.
 
 
@@ -8474,13 +9369,17 @@ Policy d'autorització per a expedients.
 Policy d'autorització per a la gestió de faltes.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear una falta.
-  - `view`
+  - **`view`**($user, Falta $falta): bool
+
     Determina si l'usuari pot veure una falta.
-  - `update`
+  - **`update`**($user, Falta $falta): bool
+
     Determina si l'usuari pot actualitzar una falta.
-  - `delete`
+  - **`delete`**($user, Falta $falta): bool
+
     Determina si l'usuari pot eliminar una falta.
 
 
@@ -8490,27 +9389,38 @@ Policy d'autorització per a la gestió de faltes.
 Policy d'autorització per a les operacions de FCT.
 
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     Determina si l'usuari pot accedir al panell general de FCT.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear una FCT.
-  - `update`
+  - **`update`**($user, Fct $fct): bool
+
     Determina si l'usuari pot actualitzar una FCT.
-  - `delete`
+  - **`delete`**($user, Fct $fct): bool
+
     Determina si l'usuari pot eliminar una FCT.
-  - `manageAval`
+  - **`manageAval`**($user): bool
+
     Determina si l'usuari pot gestionar avaluacions FCT (apte/no apte/projecte/inserció).
-  - `requestActa`
+  - **`requestActa`**($user): bool
+
     Determina si l'usuari pot demanar actes d'avaluació.
-  - `sendA56`
+  - **`sendA56`**($user): bool
+
     Determina si l'usuari pot enviar annexos A56 a secretaria.
-  - `viewStats`
+  - **`viewStats`**($user): bool
+
     Determina si l'usuari pot consultar estadístiques d'avaluació FCT.
-  - `managePendingActa`
+  - **`managePendingActa`**($user): bool
+
     Determina si l'usuari pot validar/rebutjar actes pendents de FCT.
-  - `manageFctControl`
+  - **`manageFctControl`**($user): bool
+
     Determina si l'usuari pot gestionar el panell de control de dual.
-  - `canMutate`
+  - **`canMutate`**($user): bool
+
     Regla comuna de permisos per a mutacions de FCT.
 
 
@@ -8520,15 +9430,26 @@ Policy d'autorització per a les operacions de FCT.
 Policy d'autorització per a grups de treball.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear grups de treball.
-  - `update`
+  - **`update`**($user, GrupoTrabajo $grupoTrabajo): bool
+
     Determina si l'usuari pot actualitzar un grup de treball.
-  - `delete`
+  - **`delete`**($user, GrupoTrabajo $grupoTrabajo): bool
+
     Determina si l'usuari pot eliminar un grup de treball.
-  - `manageMembers`
+  - **`manageMembers`**($user, GrupoTrabajo $grupoTrabajo): bool
+
     Determina si l'usuari pot gestionar membres/coordinador del grup.
-  - `isOwner`
+  - **`viewMembers`**($user, GrupoTrabajo $grupoTrabajo): bool
+
+    Determina si l'usuari pot veure els membres del grup.
+  - **`isOwner`**($user, GrupoTrabajo $grupoTrabajo): bool
+
+    /
+  - **`isMember`**($user, GrupoTrabajo $grupoTrabajo): bool
+
     /
 
 
@@ -8536,9 +9457,9 @@ Policy d'autorització per a grups de treball.
 
 #### `Intranet\Policies\ImportRunPolicy`
 - Metodes:
-  - `manage`
-  - `viewAny`
-  - `view`
+  - **`manage`**($user): bool
+  - **`viewAny`**($user): bool
+  - **`view`**($user, ImportRun $importRun): bool
 
 
 ### `app/Policies/IncidenciaPolicy.php`
@@ -8547,17 +9468,23 @@ Policy d'autorització per a grups de treball.
 Policy d'autorització per a incidències.
 
 - Metodes:
-  - `viewAny`
+  - **`viewAny`**($user): bool
+
     Determina si l'usuari pot accedir als llistats d'incidències.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear incidències.
-  - `view`
+  - **`view`**($user, Incidencia $incidencia): bool
+
     Determina si l'usuari pot veure una incidència.
-  - `update`
+  - **`update`**($user, Incidencia $incidencia): bool
+
     Determina si l'usuari pot actualitzar una incidència.
-  - `delete`
+  - **`delete`**($user, Incidencia $incidencia): bool
+
     Determina si l'usuari pot eliminar una incidència.
-  - `ownsOrIsResponsible`
+  - **`ownsOrIsResponsible`**($user, Incidencia $incidencia): bool
+
     Regla: creador o responsable.
 
 
@@ -8567,11 +9494,14 @@ Policy d'autorització per a incidències.
 Policy d'autorització per a IPs de guàrdia.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear IPs.
-  - `update`
+  - **`update`**($user, IpGuardia $ipGuardia): bool
+
     Determina si l'usuari pot actualitzar IPs.
-  - `delete`
+  - **`delete`**($user, IpGuardia $ipGuardia): bool
+
     Determina si l'usuari pot eliminar IPs.
 
 
@@ -8581,11 +9511,14 @@ Policy d'autorització per a IPs de guàrdia.
 Policy d'autorització per a lots d'inventari.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear lots.
-  - `update`
+  - **`update`**($user, Lote $lote): bool
+
     Determina si l'usuari pot actualitzar lots.
-  - `delete`
+  - **`delete`**($user, Lote $lote): bool
+
     Determina si l'usuari pot eliminar lots.
 
 
@@ -8595,11 +9528,14 @@ Policy d'autorització per a lots d'inventari.
 Policy d'autorització per a gestió de baixes de material.
 
 - Metodes:
-  - `update`
+  - **`update`**($user, MaterialBaja $materialBaja): bool
+
     Determina si l'usuari pot actualitzar una baixa de material.
-  - `delete`
+  - **`delete`**($user, MaterialBaja $materialBaja): bool
+
     Determina si l'usuari pot eliminar una baixa de material.
-  - `recover`
+  - **`recover`**($user, MaterialBaja $materialBaja): bool
+
     Determina si l'usuari pot recuperar material des de baixa.
 
 
@@ -8609,11 +9545,14 @@ Policy d'autorització per a gestió de baixes de material.
 Policy d'autorització per a opcions de menú.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear menús.
-  - `update`
+  - **`update`**($user, Menu $menu): bool
+
     Determina si l'usuari pot actualitzar menús.
-  - `delete`
+  - **`delete`**($user, Menu $menu): bool
+
     Determina si l'usuari pot eliminar menús.
 
 
@@ -8623,11 +9562,14 @@ Policy d'autorització per a opcions de menú.
 Policy d'autorització per a l'enllaç mòdul-cicle.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear enllaços mòdul-cicle.
-  - `update`
+  - **`update`**($user, Modulo_ciclo $moduloCiclo): bool
+
     Determina si l'usuari pot actualitzar enllaços mòdul-cicle.
-  - `delete`
+  - **`delete`**($user, Modulo_ciclo $moduloCiclo): bool
+
     Determina si l'usuari pot eliminar enllaços mòdul-cicle.
 
 
@@ -8637,9 +9579,11 @@ Policy d'autorització per a l'enllaç mòdul-cicle.
 Policy d'autorització per a opcions de polls.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear opcions.
-  - `delete`
+  - **`delete`**($user, Option $option): bool
+
     Determina si l'usuari pot eliminar opcions.
 
 
@@ -8649,13 +9593,17 @@ Policy d'autorització per a opcions de polls.
 Policy d'autorització per a plantilles de polls.
 
 - Metodes:
-  - `view`
+  - **`view`**($user, PPoll $ppoll): bool
+
     Determina si l'usuari pot veure la plantilla.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear plantilles.
-  - `update`
+  - **`update`**($user, PPoll $ppoll): bool
+
     Determina si l'usuari pot actualitzar plantilles.
-  - `delete`
+  - **`delete`**($user, PPoll $ppoll): bool
+
     Determina si l'usuari pot eliminar plantilles.
 
 
@@ -8665,11 +9613,14 @@ Policy d'autorització per a plantilles de polls.
 Policy d'autorització per a professorat.
 
 - Metodes:
-  - `update`
+  - **`update`**($user, Profesor $profesor): bool
+
     Determina si l'usuari pot actualitzar el perfil d'un professor.
-  - `manageQualityFinal`
+  - **`manageQualityFinal`**($user, Profesor $profesor): bool
+
     Determina si l'usuari pot gestionar la qualitat final (cap de pràctiques).
-  - `manageAttendance`
+  - **`manageAttendance`**($user): bool
+
     Determina si l'usuari pot gestionar incidències de fitxatge/presència.
 
 
@@ -8679,23 +9630,32 @@ Policy d'autorització per a professorat.
 Policy d'autorització per al flux de propostes de projecte.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear propostes dins del seu grup de tutoria.
-  - `view`
+  - **`view`**($user, Projecte $projecte): bool
+
     Determina si l'usuari pot vore una proposta del seu grup de tutoria.
-  - `update`
+  - **`update`**($user, Projecte $projecte): bool
+
     Determina si l'usuari pot actualitzar una proposta del seu grup.
-  - `delete`
+  - **`delete`**($user, Projecte $projecte): bool
+
     Determina si l'usuari pot eliminar una proposta del seu grup.
-  - `check`
+  - **`check`**($user, Projecte $projecte): bool
+
     Determina si l'usuari pot validar una proposta del seu grup.
-  - `send`
+  - **`send`**($user): bool
+
     Determina si l'usuari pot enviar projectes del seu grup.
-  - `createActa`
+  - **`createActa`**($user): bool
+
     Determina si l'usuari pot crear l'acta de valoració del seu grup.
-  - `createDefenseActa`
+  - **`createDefenseActa`**($user): bool
+
     Determina si l'usuari pot crear l'acta de defenses del seu grup.
-  - `isTutorOfAnyGroup`
+  - **`isTutorOfAnyGroup`**($user): bool
+
     /
 
 #### `Intranet\Policies\byTutorOrSubstitute`
@@ -8708,13 +9668,17 @@ Policy d'autorització per al flux de propostes de projecte.
 Policy d'autorització per a resultats acadèmics.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear resultats.
-  - `view`
+  - **`view`**($user, Resultado $resultado): bool
+
     Determina si l'usuari pot veure resultats.
-  - `update`
+  - **`update`**($user, Resultado $resultado): bool
+
     Determina si l'usuari pot actualitzar resultats.
-  - `delete`
+  - **`delete`**($user, Resultado $resultado): bool
+
     Determina si l'usuari pot eliminar resultats.
 
 
@@ -8724,19 +9688,26 @@ Policy d'autorització per a resultats acadèmics.
 Policy d'autorització per a la gestió de reunions.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear reunions.
-  - `update`
+  - **`update`**($user, Reunion $reunion): bool
+
     Determina si l'usuari pot veure/editar la reunió.
-  - `manageParticipants`
+  - **`manageParticipants`**($user, Reunion $reunion): bool
+
     Determina si l'usuari pot modificar participants de la reunió.
-  - `manageOrder`
+  - **`manageOrder`**($user, Reunion $reunion): bool
+
     Determina si l'usuari pot gestionar l'orde de reunió.
-  - `notify`
+  - **`notify`**($user, Reunion $reunion): bool
+
     Determina si l'usuari pot notificar o enviar correu de la reunió.
-  - `manageDepartmentReport`
+  - **`manageDepartmentReport`**($user): bool
+
     Determina si l'usuari pot gestionar l'informe trimestral de departament.
-  - `isOwner`
+  - **`isOwner`**($user, Reunion $reunion): bool
+
     /
 
 
@@ -8746,13 +9717,17 @@ Policy d'autorització per a la gestió de reunions.
 Policy d'autorització per a la gestió de settings.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear settings (rol administrador).
-  - `update`
+  - **`update`**($user, Setting $setting): bool
+
     Determina si l'usuari pot actualitzar settings (rol administrador).
-  - `delete`
+  - **`delete`**($user, Setting $setting): bool
+
     Determina si l'usuari pot eliminar settings (rol administrador).
-  - `isAdministrador`
+  - **`isAdministrador`**($user): bool
+
     /
 
 
@@ -8762,17 +9737,23 @@ Policy d'autorització per a la gestió de settings.
 Policy d'autorització per a signatures de FCT.
 
 - Metodes:
-  - `manageDirectionPanel`
+  - **`manageDirectionPanel`**($user): bool
+
     Determina si l'usuari pot accedir al panell de signatures de direcció.
-  - `manage`
+  - **`manage`**($user): bool
+
     Determina si l'usuari pot gestionar fluxos globals de signatures.
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear signatures.
-  - `view`
+  - **`view`**($user, Signatura $signatura): bool
+
     Determina si l'usuari pot veure signatures.
-  - `update`
+  - **`update`**($user, Signatura $signatura): bool
+
     Determina si l'usuari pot actualitzar signatures.
-  - `delete`
+  - **`delete`**($user, Signatura $signatura): bool
+
     Determina si l'usuari pot eliminar signatures.
 
 
@@ -8782,17 +9763,23 @@ Policy d'autorització per a signatures de FCT.
 Policy d'autorització per a sol·licituds.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear sol·licituds.
-  - `view`
+  - **`view`**($user, Solicitud $solicitud): bool
+
     Determina si l'usuari pot veure sol·licituds.
-  - `update`
+  - **`update`**($user, Solicitud $solicitud): bool
+
     Determina si l'usuari pot actualitzar sol·licituds.
-  - `activate`
+  - **`activate`**($user, Solicitud $solicitud): bool
+
     Determina si l'usuari pot activar una sol·licitud d'orientació.
-  - `resolve`
+  - **`resolve`**($user, Solicitud $solicitud): bool
+
     Determina si l'usuari pot resoldre una sol·licitud d'orientació.
-  - `delete`
+  - **`delete`**($user, Solicitud $solicitud): bool
+
     Determina si l'usuari pot eliminar sol·licituds.
 
 
@@ -8802,13 +9789,17 @@ Policy d'autorització per a sol·licituds.
 Policy d'autorització per a tasques.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear tasques (rol administrador).
-  - `update`
+  - **`update`**($user, Task $task): bool
+
     Determina si l'usuari pot actualitzar tasques (rol administrador).
-  - `check`
+  - **`check`**($user, Task $task): bool
+
     Determina si l'usuari pot marcar/desmarcar una tasca pròpia.
-  - `isAdministrador`
+  - **`isAdministrador`**($user): bool
+
     /
 
 
@@ -8818,13 +9809,17 @@ Policy d'autorització per a tasques.
 Policy d'autorització per a tipus d'activitat.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear tipus d'activitat.
-  - `update`
+  - **`update`**($user, TipoActividad $tipoActividad): bool
+
     Determina si l'usuari pot actualitzar un tipus d'activitat.
-  - `delete`
+  - **`delete`**($user, TipoActividad $tipoActividad): bool
+
     Determina si l'usuari pot eliminar un tipus d'activitat.
-  - `isDirectionOrHeadOfDepartment`
+  - **`isDirectionOrHeadOfDepartment`**($user): bool
+
     Comprova si l'usuari té rol de direcció/admin o cap de departament.
 
 
@@ -8834,11 +9829,14 @@ Policy d'autorització per a tipus d'activitat.
 Policy d'autorització per a tipus d'incidència.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear tipus d'incidència.
-  - `update`
+  - **`update`**($user, TipoIncidencia $tipoIncidencia): bool
+
     Determina si l'usuari pot actualitzar tipus d'incidència.
-  - `delete`
+  - **`delete`**($user, TipoIncidencia $tipoIncidencia): bool
+
     Determina si l'usuari pot eliminar tipus d'incidència.
 
 
@@ -8848,13 +9846,17 @@ Policy d'autorització per a tipus d'incidència.
 Policy d'autorització per a tutories de grup.
 
 - Metodes:
-  - `create`
+  - **`create`**($user): bool
+
     Determina si l'usuari pot crear registres de tutoria-grup.
-  - `view`
+  - **`view`**($user, TutoriaGrupo $tutoriaGrupo): bool
+
     Determina si l'usuari pot veure registres de tutoria-grup.
-  - `update`
+  - **`update`**($user, TutoriaGrupo $tutoriaGrupo): bool
+
     Determina si l'usuari pot actualitzar registres de tutoria-grup.
-  - `delete`
+  - **`delete`**($user, TutoriaGrupo $tutoriaGrupo): bool
+
     Determina si l'usuari pot eliminar registres de tutoria-grup.
 
 
@@ -8867,7 +9869,8 @@ Policy d'autorització per a tutories de grup.
 Event de registre d'activitat.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(Model $model)
+
     /
 
 
@@ -8877,7 +9880,8 @@ Event de registre d'activitat.
 Event de baixa d'alumne en FCT.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(AlumnoFct $fctAl)
+
     /
 
 
@@ -8887,7 +9891,19 @@ Event de baixa d'alumne en FCT.
 Event de FCT creada.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(Fct $fct)
+
+    /
+
+
+### `app/Events/FichaCreated.php`
+
+#### `Intranet\Events\FichaCreated`
+Event de fitxatge creat.
+
+- Metodes:
+  - **`__construct`**(Falta_profesor $fichaje)
+
     /
 
 
@@ -8897,7 +9913,8 @@ Event de FCT creada.
 Event de grup creat.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(GrupoTrabajo $grupo)
+
     /
 
 
@@ -8907,7 +9924,8 @@ Event de grup creat.
 Event de reunio creada.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(Reunion $reunion)
+
     /
 
 
@@ -8918,20 +9936,26 @@ Event de reunio creada.
 
 #### `Intranet\Listeners\AsistentesCreate`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?ProfesorService $profesorService = null): void
+
     Create the event listener.
 
 #### `Intranet\Listeners\queAlumnes`
 - Metodes:
-  - `queAlumnes`
+  - **`queAlumnes`**(Reunion $reunion): void
+
     Handle the event.
-  - `assignaAlumnes`
+  - **`assignaAlumnes`**(Reunion $reunion): void
+
     /
-  - `handle`
+  - **`handle`**(ReunionCreated $event): void
+
     Handle the event.
-  - `esJefe`
+  - **`esJefe`**(): array
+
     /
-  - `asignaProfeReunion`
+  - **`asignaProfeReunion`**($profesores, Reunion $reunion): void
+
     /
 
 
@@ -8941,9 +9965,11 @@ Event de reunio creada.
 Marca la col·laboració com a finalitzada en crear una FCT.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(FctCreated $event): void
+
     Handle the event.
 
 
@@ -8951,9 +9977,11 @@ Marca la col·laboració com a finalitzada en crear una FCT.
 
 #### `Intranet\Listeners\CoordinadorCreate`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(GrupoCreated $event): void
+
     Handle the event.
 
 
@@ -8963,9 +9991,11 @@ Marca la col·laboració com a finalitzada en crear una FCT.
 Elimina la FCT si es queda sense alumnes.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(FctAlDeleted $event): void
+
     Handle the event.
 
 
@@ -8973,9 +10003,11 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Listeners\LogLastLogin`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(Login $event): void
+
     Handle the event.
 
 
@@ -8983,9 +10015,11 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Listeners\RegisterActivity`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(ActivityReport $event): void
+
     Handle the event.
 
 
@@ -8993,9 +10027,11 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Listeners\UpdateLastLoggedAt`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(): void
+
     Create the event listener.
-  - `handle`
+  - **`handle`**(Logout $event): void
+
     Handle the event.
 
 
@@ -9006,8 +10042,8 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Jobs\RunImportJob`
 - Metodes:
-  - `__construct`
-  - `handle`
+  - **`__construct`**(private readonly int $importRunId)
+  - **`handle`**(): void
 
 #### `Intranet\Jobs\run`
 - Metodes: cap
@@ -9017,8 +10053,9 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Jobs\SendEmail`
 - Metodes:
-  - `__construct`
-  - `handle`
+  - **`__construct`**($correo, $remitente, $vista, $elemento, $attach=null)
+  - **`handle`**(Mailer $mailer): void
+
     Execute the job.
 
 #### `Intranet\Jobs\markFctEmailSent`
@@ -9032,7 +10069,7 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\CreateDailyGuards`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 #### `Intranet\Console\Commands\profesorService`
 - Metodes: cap
@@ -9042,12 +10079,14 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\substitutoActual`
 - Metodes:
-  - `substitutoActual`
+  - **`substitutoActual`**($dni): mixed
+
     Execute the console command.
-  - `handle`
-  - `creaGuardia`
-  - `saveGuardia`
-  - `createGuardias`
+  - **`handle`**()
+  - **`creaGuardia`**($elemento, $mensaje, $idProfesor = null)
+  - **`saveGuardia`**($dades)
+  - **`createGuardias`**(): mixed
+
     /
 
 
@@ -9055,14 +10094,14 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\DeleteOldCotxeAccessos`
 - Metodes:
-  - `handle`
+  - **`handle`**()
 
 
 ### `app/Console/Commands/NotifyDailyFaults.php`
 
 #### `Intranet\Console\Commands\NotifyDailyFaults`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 #### `Intranet\Console\Commands\profesorService`
 - Metodes: cap
@@ -9072,16 +10111,21 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\handle`
 - Metodes:
-  - `handle`
+  - **`handle`**(): mixed
+
     Execute the console command.
-  - `noHanFichado`
-  - `profeSinFichar`
+  - **`noHanFichado`**($dia)
+  - **`profeSinFichar`**($dia, array &$noHanFichado): void
+
     /
-  - `profesoresEnActividad`
+  - **`profesoresEnActividad`**($dia, array &$noHanFichado): void
+
     /
-  - `profesoresDeComision`
+  - **`profesoresDeComision`**($dia, array &$noHanFichado): void
+
     /
-  - `profesoresDeBaja`
+  - **`profesoresDeBaja`**($dia, array &$noHanFichado): void
+
     /
 
 
@@ -9089,7 +10133,8 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\SaoAnnexes`
 - Metodes:
-  - `handle`
+  - **`handle`**(): mixed
+
     Execute the console command.
 
 
@@ -9097,17 +10142,18 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\SaoConnect`
 - Metodes:
-  - `handle`
+  - **`handle`**()
 
 
 ### `app/Console/Commands/SendAvaluacioEmails.php`
 
 #### `Intranet\Console\Commands\SendAvaluacioEmails`
 - Metodes:
-  - `generaToken`
-  - `obtenToken`
-  - `sendMatricula`
-  - `handle`
+  - **`generaToken`**()
+  - **`obtenToken`**($aR)
+  - **`sendMatricula`**($aR)
+  - **`handle`**(): mixed
+
     Execute the console command.
 
 
@@ -9115,28 +10161,38 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\Commands\SendDailyEmails`
 - Metodes:
-  - `__construct`
-  - `handle`
+  - **`__construct`**(private readonly ProfesorService $profesorService)
+  - **`handle`**(): mixed
+
     Execute the console command.
 
 
 ### `app/Console/Commands/SendFctEmails.php`
 
 #### `Intranet\Console\Commands\SendFctEmails`
+Envia correus diaris de FCT a alumnat i instructors.
+
 - Metodes:
-  - `handle`
+  - **`handle`**(): mixed
+
     Execute the console command.
-  - `correuInstructor`
+  - **`correuInstructor`**($fct): int
+
     /
+  - **`normalizeEmail`**(?string $email): ?string
+
+    Normalitza i valida un email.
 
 
 ### `app/Console/Commands/UploadAnexes.php`
 
 #### `Intranet\Console\Commands\UploadAnexes`
 - Metodes:
-  - `handle`
+  - **`handle`**(): mixed
+
     Execute the console command.
-  - `buscaDocuments`
+  - **`buscaDocuments`**($fct, array &$document): string
+
     /
 
 
@@ -9171,9 +10227,11 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Console\schedule`
 - Metodes:
-  - `schedule`
+  - **`schedule`**(Schedule $schedule): void
+
     Define the application's command schedule.
-  - `commands`
+  - **`commands`**(): void
+
     Register the commands for the application.
 
 
@@ -9199,7 +10257,7 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Exceptions\render`
 - Metodes:
-  - `render`
+  - **`render`**($request, Throwable $exception)
 
 #### `Intranet\Exceptions\send`
 - Metodes: cap
@@ -9215,189 +10273,190 @@ Elimina la FCT si es queda sense alumnes.
 
 #### `Intranet\Exceptions\SeleniumException`
 - Metodes:
-  - `__construct`
-  - `incrementCounter`
+  - **`__construct`**($message = null, $code = 0, \Exception $previous = null)
+  - **`incrementCounter`**()
 
 
 ### `app/Exports/PollResultsExport.php`
 
 #### `Intranet\Exports\PollResultsExport`
 - Metodes:
-  - `__construct`
-  - `sheets`
+  - **`__construct`**($poll, $votes, $options_numeric, $hasVotes, $stats)
+  - **`sheets`**(): array
 
 
 ### `app/Exports/PollResultsSheet.php`
 
 #### `Intranet\Exports\PollResultsSheet`
 - Metodes:
-  - `__construct`
-  - `view`
-  - `title`
+  - **`__construct`**(string $view, string $title, array $data)
+  - **`view`**(): View
+  - **`title`**(): string
 
 
 ### `app/Finders/A1Finder.php`
 
 #### `Intranet\Finders\A1Finder`
 - Metodes:
-  - `exec`
+  - **`exec`**()
 
 
 ### `app/Finders/A2Finder.php`
 
 #### `Intranet\Finders\A2Finder`
 - Metodes:
-  - `exec`
+  - **`exec`**()
 
 
 ### `app/Finders/A3Finder.php`
 
 #### `Intranet\Finders\A3Finder`
 - Metodes:
-  - `exec`
+  - **`exec`**()
 
 
 ### `app/Finders/AlumnoEnFctFinder.php`
 
 #### `Intranet\Finders\AlumnoEnFctFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/AlumnoFctFinder.php`
 
 #### `Intranet\Finders\AlumnoFctFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/AlumnoFctNoFinder.php`
 
 #### `Intranet\Finders\AlumnoFctNoFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/AlumnoNoFctFinder.php`
 
 #### `Intranet\Finders\AlumnoNoFctFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/ColaboracionFinder.php`
 
 #### `Intranet\Finders\ColaboracionFinder`
 - Metodes:
-  - `exec`
-  - `filter`
-  - `checkFcts`
+  - **`exec`**()
+  - **`filter`**(&$elements)
+  - **`checkFcts`**($needsFcts, $existsFcts)
 
 
 ### `app/Finders/FctActivaFinder.php`
 
 #### `Intranet\Finders\FctActivaFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/FctFinder.php`
 
 #### `Intranet\Finders\FctFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$elements)
 
 
 ### `app/Finders/Finder.php`
 
 #### `Intranet\Finders\Finder`
 - Metodes:
-  - `__construct`
-  - `existsActivity`
-  - `getDocument`
-  - `getZip`
+  - **`__construct`**($document)
+  - **`existsActivity`**($id)
+  - **`getDocument`**()
+  - **`getZip`**()
 
 
 ### `app/Finders/MailFinders/AlumnosAllFinder.php`
 
 #### `Intranet\Finders\MailFinders\AlumnosAllFinder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Finders/MailFinders/Finder.php`
 
 #### `Intranet\Finders\MailFinders\Finder`
 - Metodes:
-  - `getElements`
+  - **`getElements`**()
 
 
 ### `app/Finders/MailFinders/InstructoresAllFinder.php`
 
 #### `Intranet\Finders\MailFinders\InstructoresAllFinder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Finders/MailFinders/MyA1Finder.php`
 
 #### `Intranet\Finders\MailFinders\MyA1Finder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Finders/MailFinders/MySignaturesFinder.php`
 
 #### `Intranet\Finders\MailFinders\MySignaturesFinder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Finders/MailFinders/SignaturesFinder.php`
 
 #### `Intranet\Finders\MailFinders\SignaturesFinder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
 
 
 ### `app/Finders/ModelInStateFinder.php`
 
 #### `Intranet\Finders\ModelInStateFinder`
 - Metodes:
-  - `exec`
+  - **`exec`**($estado=null)
 
 
 ### `app/Finders/RequestFinder.php`
 
 #### `Intranet\Finders\RequestFinder`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($document)
+
     RequestFinder constructor.
-  - `exec`
-  - `getZip`
-  - `getRequest`
+  - **`exec`**()
+  - **`getZip`**()
+  - **`getRequest`**()
 
 
 ### `app/Finders/SignedFinder.php`
 
 #### `Intranet\Finders\SignedFinder`
 - Metodes:
-  - `exec`
-  - `filter`
+  - **`exec`**()
+  - **`filter`**(&$aluFcts)
 
 
 ### `app/Finders/UniqueFinder.php`
 
 #### `Intranet\Finders\UniqueFinder`
 - Metodes:
-  - `__construct`
-  - `exec`
+  - **`__construct`**($document)
+  - **`exec`**()
 
 
 ### `app/Http/Kernel.php`
@@ -9412,7 +10471,8 @@ Elimina la FCT si es queda sense alumnes.
 Compatibilitat temporal:
 
 - Metodes:
-  - `handle`
+  - **`handle`**(Request $request, Closure $next): Response
+
     /
 
 
@@ -9420,7 +10480,7 @@ Compatibilitat temporal:
 
 #### `Intranet\Http\Middleware\CustomBackMiddleware`
 - Metodes:
-  - `handle`
+  - **`handle`**(Request $request, Closure $next)
 
 
 ### `app/Http/Middleware/EncryptCookies.php`
@@ -9433,7 +10493,8 @@ Compatibilitat temporal:
 
 #### `Intranet\Http\Middleware\LangMiddleware`
 - Metodes:
-  - `handle`
+  - **`handle`**($request, Closure $next): mixed
+
     Handle an incoming request.
 
 
@@ -9443,7 +10504,8 @@ Compatibilitat temporal:
 Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 - Metodes:
-  - `handle`
+  - **`handle`**(Request $request, Closure $next): Response
+
     /
 
 
@@ -9451,16 +10513,18 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Middleware\OwnerMiddleware`
 - Metodes:
-  - `handle`
+  - **`handle`**(Request $request, Closure $next, $model): mixed
+
     Handle an incoming request.
-  - `owner`
+  - **`owner`**($model)
 
 
 ### `app/Http/Middleware/RedirectIfAuthenticated.php`
 
 #### `Intranet\Http\Middleware\RedirectIfAuthenticated`
 - Metodes:
-  - `handle`
+  - **`handle`**($request, Closure $next, $guard = null): mixed
+
     Handle an incoming request.
 
 
@@ -9468,20 +10532,21 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Middleware\RoleMiddleware`
 - Metodes:
-  - `handle`
-  - `normalizeRedirector`
+  - **`handle`**($request, Closure $next, $role)
+  - **`normalizeRedirector`**($response, $request)
 
 
 ### `app/Http/Middleware/SessionTimeout.php`
 
 #### `Intranet\Http\Middleware\SessionTimeout`
 - Metodes:
-  - `__construct`
-  - `apiSessionTokens`
+  - **`__construct`**(Store $session)
+  - **`apiSessionTokens`**(): ApiSessionTokenService
 
 #### `Intranet\Http\Middleware\apiSessionTokenService`
 - Metodes:
-  - `handle`
+  - **`handle`**($request, Closure $next): mixed
+
     Handle an incoming request.
 
 
@@ -9507,8 +10572,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\A1ENResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 
@@ -9516,18 +10582,20 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\A1Resource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($empresa)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
-  - `dataSig`
+  - **`dataSig`**()
 
 
 ### `app/Http/PrintResources/A2ENResource.php`
 
 #### `Intranet\Http\PrintResources\A2ENResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9538,8 +10606,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\A3ENResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9550,8 +10619,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\A5Resource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\firstByTutor`
@@ -9562,8 +10632,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AVIIAResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 
@@ -9571,8 +10642,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AVIIBResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 
@@ -9580,8 +10652,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AVIIIResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9592,8 +10665,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AVIResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9604,8 +10678,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AutorizacionDireccionGrupoResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9616,8 +10691,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AutorizacionDireccionResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9628,9 +10704,10 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\AutorizacionGrupoResource`
 - Metodes:
-  - `__construct`
-  - `setFlatten`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`setFlatten`**($flatten)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9641,8 +10718,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\CertificatInstructorResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 
@@ -9650,8 +10728,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\ConformidadAlumnadoGrupoResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9662,8 +10741,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\ConformidadAlumnadoResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9674,8 +10754,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\ConformidadTutoriaResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9686,8 +10767,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\ExempcioFCTResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9698,8 +10780,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\ExempcioResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9710,8 +10793,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\NotificacioInspeccioResource`
 - Metodes:
-  - `__construct`
-  - `toArray`
+  - **`__construct`**($elements)
+  - **`toArray`**(): array
+
     Transform the resource into an array.
 
 #### `Intranet\Http\PrintResources\largestByTutor`
@@ -9722,15 +10806,19 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\PrintResources\PrintResource`
 - Metodes:
-  - `build`
-  - `__construct`
-  - `getElements`
+  - **`build`**($source, $elements)
+  - **`__construct`**($elements, $file=null, $flatten=true, $stamp=null)
+  - **`getElements`**(): mixed
+
     /
-  - `getFlatten`
+  - **`getFlatten`**(): bool|mixed
+
     /
-  - `getStamp`
+  - **`getStamp`**(): mixed
+
     /
-  - `getFile`
+  - **`getFile`**(): mixed
+
     /
 
 
@@ -9738,7 +10826,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\AlumnoFctControlResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9746,7 +10835,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\AlumnoFctResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9754,7 +10844,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\ArticuloLoteResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9762,7 +10853,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\DualResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9770,7 +10862,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\EmpresaResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9778,7 +10871,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\FaltaConfirmResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9786,7 +10880,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\InventariableResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9794,7 +10889,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\JDepartamentoResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9802,7 +10898,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\LoteResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9810,25 +10907,28 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\MaterialBajaResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
-  - `descripcion`
+  - **`descripcion`**($des, $mod, $mar)
 
 
 ### `app/Http/Resources/MaterialResource.php`
 
 #### `Intranet\Http\Resources\MaterialResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
-  - `descripcion`
+  - **`descripcion`**($des, $mod, $mar)
 
 
 ### `app/Http/Resources/SelectAlumnoFctResource.php`
 
 #### `Intranet\Http\Resources\SelectAlumnoFctResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9836,7 +10936,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SelectAlumnoResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9844,7 +10945,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SelectColaboracionResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9852,7 +10954,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SelectFctResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9860,7 +10963,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SelectSignaturaResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9868,7 +10972,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SignaturaDireccionResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9876,7 +10981,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SignaturaResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9884,7 +10990,8 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 
 #### `Intranet\Http\Resources\SolicitudResource`
 - Metodes:
-  - `toArray`
+  - **`toArray`**($request): array
+
     Transform the resource into an array.
 
 
@@ -9894,35 +11001,47 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
 Trait de suport per a controllers amb fluxos d'autorització per estats.
 
 - Metodes:
-  - `getAutorizacionStateService`
+  - **`getAutorizacionStateService`**(): AutorizacionStateService
+
     Resol i memoitza el servei de transicions d'estat per al model actual.
 
 #### `Intranet\Http\Traits\class`
 - Metodes:
-  - `getAutorizacionPrintService`
+  - **`getAutorizacionPrintService`**(): AutorizacionPrintService
+
     Resol i memoitza el servei d'impressió en lot.
 
 #### `Intranet\Http\Traits\autorizacionPrintService`
 - Metodes:
-  - `cancel`
+  - **`cancel`**($id): \Illuminate\Http\RedirectResponse
+
     Mou un element a estat de cancel·lació (`-1`).
-  - `init`
+  - **`init`**($id): \Illuminate\Http\RedirectResponse
+
     Inicialitza un element a l'estat definit en `$this->init`.
-  - `_print`
+  - **`_print`**($id): \Illuminate\Http\RedirectResponse|null
+
     Aplica la transició `_print` a un element.
-  - `resolve`
+  - **`resolve`**(Request $request, $id, $redirect = true): \Illuminate\Http\RedirectResponse|null
+
     Resol l'element i opcionalment redirigeix a la pestanya d'estat resultant.
-  - `accept`
+  - **`accept`**($id, $redirect = true): \Illuminate\Http\RedirectResponse|null
+
     Incrementa en una unitat l'estat actual de l'element.
-  - `resign`
+  - **`resign`**($id, $redirect = true): \Illuminate\Http\RedirectResponse|null
+
     Decrementa en una unitat l'estat actual de l'element.
-  - `refuse`
+  - **`refuse`**(Request $request, $id, $redirect = true): \Illuminate\Http\RedirectResponse|null
+
     Refusa l'element amb explicació opcional.
-  - `follow`
+  - **`follow`**($inicial, $final): \Illuminate\Http\RedirectResponse
+
     Tria la pestanya de retorn segons `notFollow`.
-  - `imprimir`
+  - **`imprimir`**($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true): mixed
+
     Genera un PDF en lot per als elements en estat inicial i aplica transició.
-  - `guardAutorizacionContract`
+  - **`guardAutorizacionContract`**(bool $requireModel = false): void
+
     Valida que el controller definisca el contracte mínim del trait.
 
 
@@ -9932,9 +11051,11 @@ Trait de suport per a controllers amb fluxos d'autorització per estats.
 Trait per gestionar la vista DropZone i la neteja d'adjunts associats.
 
 - Metodes:
-  - `deleteAttached`
+  - **`deleteAttached`**($id)
+
     Elimina tots els adjunts vinculats al path `{model}/{id}`.
-  - `link`
+  - **`link`**($id): \Illuminate\Contracts\View\View
+
     Mostra la pantalla d'adjunts DropZone per a un registre.
 
 
@@ -9944,23 +11065,29 @@ Trait per gestionar la vista DropZone i la neteja d'adjunts associats.
 Trait de suport per a funcionalitats d'impressió i calendari en controllers.
 
 - Metodes:
-  - `notify`
+  - **`notify`**($id): \Illuminate\Http\RedirectResponse
+
     Envia notificació de recordatori al professor responsable del registre.
 
 #### `Intranet\Http\Traits\Core\advise`
 - Metodes:
-  - `hazPdf`
+  - **`hazPdf`**($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4', $margin_top= 15): mixed
+
     Fa de façana del servei de PDF per mantindre compatibilitat als controllers.
 
 #### `Intranet\Http\Traits\Core\hazPdf`
 - Metodes:
-  - `ics`
+  - **`ics`**($id, $descripcion='descripcion', $objetivos='objetivos'): \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+
     Genera la resposta iCalendar d'un registre.
-  - `gestor`
+  - **`gestor`**($id): \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Symfony\Component\HttpFoundation\BinaryFileResponse
+
     Mostra o descarrega el document vinculat al registre en el gestor documental.
-  - `guardPrintableContract`
+  - **`guardPrintableContract`**(): void
+
     Valida el contracte mínim requerit pel trait.
-  - `hasField`
+  - **`hasField`**(object $elemento, string $field): bool
+
     Comprova si un camp existeix encara que el valor siga `null`.
 
 
@@ -9970,17 +11097,23 @@ Trait de suport per a funcionalitats d'impressió i calendari en controllers.
 Trait de suport per a controllers tipus panell.
 
 - Metodes:
-  - `index`
+  - **`index`**()
+
     Mostra la llista d'elements del panell.
-  - `search`
+  - **`search`**()
+
     Retorna els elements filtrats segons el seu estat i data.
-  - `setAuthBotonera`
+  - **`setAuthBotonera`**(array $default = ['2' => 'pdf', '1' => 'autorizar'], bool $enlace = true)
+
     Configura la botónera segons els permisos i estats disponibles.
-  - `getActiveTab`
+  - **`getActiveTab`**($default = 0)
+
     Retorna la pestanya activa actual.
-  - `setTabs`
+  - **`setTabs`**($estados, $vista, $sustituye = null, $field = 'estado')
+
     Configura les pestanyes del panell.
-  - `guardPanelContract`
+  - **`guardPanelContract`**(): void
+
     Valida els atributs mínims que necessita el trait.
 
 
@@ -9990,20 +11123,26 @@ Trait de suport per a controllers tipus panell.
 Trait de suport per a operacions bàsiques de tipus SCRUD en controllers.
 
 - Metodes:
-  - `modelClass`
+  - **`modelClass`**(): string
+
     Resol la FQCN del model i la guarda en `$this->class`.
 
 #### `Intranet\Http\Traits\Core\ltrim`
 - Metodes:
-  - `show`
+  - **`show`**($id): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+
     Mostra el detall d'un registre.
-  - `create`
+  - **`create`**($default = []): \Illuminate\Contracts\View\View
+
     Mostra el formulari de creació.
-  - `edit`
+  - **`edit`**($id=null): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+
     Mostra el formulari d'edició.
-  - `createWithDefaultValues`
+  - **`createWithDefaultValues`**($default = []): mixed
+
     Crea una nova instància del model amb valors per defecte.
-  - `chooseView`
+  - **`chooseView`**($view): string
+
     Retorna la vista per a una acció CRUD concreta.
 
 
@@ -10013,31 +11152,44 @@ Trait de suport per a operacions bàsiques de tipus SCRUD en controllers.
 Implementació Eloquent del repositori d'AlumnoFct.
 
 - Metodes:
-  - `all`
+  - **`all`**(): EloquentCollection
+
     {@inheritdoc}
-  - `totesFcts`
+  - **`totesFcts`**(?string $profesor = null): EloquentCollection
+
     {@inheritdoc}
-  - `find`
+  - **`find`**(int|string $id): ?AlumnoFct
+
     {@inheritdoc}
-  - `findOrFail`
+  - **`findOrFail`**(int|string $id): AlumnoFct
+
     {@inheritdoc}
-  - `firstByIdSao`
+  - **`firstByIdSao`**(int|string $idSao): ?AlumnoFct
+
     {@inheritdoc}
-  - `byAlumno`
+  - **`byAlumno`**(string $nia): EloquentCollection
+
     {@inheritdoc}
-  - `byAlumnoWithA56`
+  - **`byAlumnoWithA56`**(string $nia): EloquentCollection
+
     {@inheritdoc}
-  - `byGrupoEsFct`
+  - **`byGrupoEsFct`**(string $grupo): EloquentCollection
+
     {@inheritdoc}
-  - `byGrupoEsDual`
+  - **`byGrupoEsDual`**(string $grupo): EloquentCollection
+
     {@inheritdoc}
-  - `reassignProfesor`
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+
     {@inheritdoc}
-  - `avalDistinctAlumnoIdsByProfesor`
+  - **`avalDistinctAlumnoIdsByProfesor`**(?string $profesor = null): array
+
     {@inheritdoc}
-  - `latestAvalByAlumnoAndProfesor`
+  - **`latestAvalByAlumnoAndProfesor`**(string $idAlumno, ?string $profesor = null): ?AlumnoFct
+
     {@inheritdoc}
-  - `avaluablesNoAval`
+  - **`avaluablesNoAval`**(?string $profesor = null, mixed $grupo = null): EloquentCollection
+
     {@inheritdoc}
 
 
@@ -10047,18 +11199,18 @@ Implementació Eloquent del repositori d'AlumnoFct.
 Implementació Eloquent del repositori de comissions.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `byDay`
-  - `withProfesorByDay`
-  - `pendingAuthorization`
-  - `authorizationApiList`
-  - `authorizeAllPending`
-  - `prePayByProfesor`
-  - `setEstado`
-  - `hasPendingUnpaidByProfesor`
-  - `attachFct`
-  - `detachFct`
+  - **`find`**(int $id): ?Comision
+  - **`findOrFail`**(int $id): Comision
+  - **`byDay`**(string $dia): EloquentCollection
+  - **`withProfesorByDay`**(string $dia): EloquentCollection
+  - **`pendingAuthorization`**(): EloquentCollection
+  - **`authorizationApiList`**(): EloquentCollection
+  - **`authorizeAllPending`**(): int
+  - **`prePayByProfesor`**(string $dni): EloquentCollection
+  - **`setEstado`**(int $id, int $estado): Comision
+  - **`hasPendingUnpaidByProfesor`**(string $dni): bool
+  - **`attachFct`**(int $comisionId, int $fctId, string $horaIni, bool $aviso): void
+  - **`detachFct`**(int $comisionId, int $fctId): void
 
 
 ### `app/Infrastructure/Persistence/Eloquent/Empresa/EloquentEmpresaRepository.php`
@@ -10067,13 +11219,13 @@ Implementació Eloquent del repositori de comissions.
 Implementació Eloquent del repositori d'empreses.
 
 - Metodes:
-  - `listForGrid`
-  - `findForShow`
-  - `colaboracionIdsByCycleAndCenters`
-  - `cyclesByDepartment`
-  - `convenioList`
-  - `socialConcertList`
-  - `erasmusList`
+  - **`listForGrid`**(): EloquentCollection
+  - **`findForShow`**(int $id): Empresa
+  - **`colaboracionIdsByCycleAndCenters`**(int $cycleId, array $centerIds): Collection
+  - **`cyclesByDepartment`**(string $department): EloquentCollection
+  - **`convenioList`**(): EloquentCollection
+  - **`socialConcertList`**(): EloquentCollection
+  - **`erasmusList`**(): EloquentCollection
 
 
 ### `app/Infrastructure/Persistence/Eloquent/Expediente/EloquentExpedienteRepository.php`
@@ -10082,13 +11234,13 @@ Implementació Eloquent del repositori d'empreses.
 Implementació Eloquent del repositori d'expedients.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `createFromRequest`
-  - `updateFromRequest`
-  - `pendingAuthorization`
-  - `readyToPrint`
-  - `allTypes`
+  - **`find`**(int|string $id): ?Expediente
+  - **`findOrFail`**(int|string $id): Expediente
+  - **`createFromRequest`**(Request $request): Expediente
+  - **`updateFromRequest`**(int|string $id, Request $request): Expediente
+  - **`pendingAuthorization`**(): EloquentCollection
+  - **`readyToPrint`**(): EloquentCollection
+  - **`allTypes`**(): EloquentCollection
 
 
 ### `app/Infrastructure/Persistence/Eloquent/FaltaProfesor/EloquentFaltaProfesorRepository.php`
@@ -10097,12 +11249,12 @@ Implementació Eloquent del repositori d'expedients.
 Implementació Eloquent del repositori de fitxatges de professorat.
 
 - Metodes:
-  - `lastTodayByProfesor`
-  - `hasFichadoOnDay`
-  - `createEntry`
-  - `closeExit`
-  - `byDayAndProfesor`
-  - `rangeByProfesor`
+  - **`lastTodayByProfesor`**(string $dni): ?Falta_profesor
+  - **`hasFichadoOnDay`**(string $dia, string $dni): bool
+  - **`createEntry`**(string $dni, string $dia, string $hora): Falta_profesor
+  - **`closeExit`**(Falta_profesor $fichaje, string $hora): Falta_profesor
+  - **`byDayAndProfesor`**(string $dia, string $dni): EloquentCollection
+  - **`rangeByProfesor`**(string $dni, string $desde, string $hasta): EloquentCollection
 
 
 ### `app/Infrastructure/Persistence/Eloquent/Fct/EloquentFctRepository.php`
@@ -10111,19 +11263,19 @@ Implementació Eloquent del repositori de fitxatges de professorat.
 Implementació Eloquent del repositori FCT.
 
 - Metodes:
-  - `find`
-  - `findOrFail`
-  - `firstByColaboracionAsociacionInstructor`
-  - `panelListingByProfesor`
-  - `save`
-  - `create`
-  - `attachAlumno`
-  - `detachAlumno`
-  - `saveColaborador`
-  - `deleteColaborador`
-  - `updateColaboradorHoras`
-  - `setCotutor`
-  - `empresaIdByFct`
+  - **`find`**(int|string $id): ?Fct
+  - **`findOrFail`**(int|string $id): Fct
+  - **`firstByColaboracionAsociacionInstructor`**(int|string $idColaboracion, int|string $asociacion, int|string $idInstructor): ?Fct
+  - **`panelListingByProfesor`**(string $dni): EloquentCollection
+  - **`save`**(Fct $fct): Fct
+  - **`create`**(array $attributes): Fct
+  - **`attachAlumno`**(int|string $idFct, string $idAlumno, array $pivotAttributes): void
+  - **`detachAlumno`**(int|string $idFct, string $idAlumno): void
+  - **`saveColaborador`**(int|string $idFct, Colaborador $colaborador): void
+  - **`deleteColaborador`**(int|string $idFct, string $idInstructor): int
+  - **`updateColaboradorHoras`**(int|string $idFct, string $idInstructor, int|string $horas): int
+  - **`setCotutor`**(int|string $idFct, ?string $cotutor): void
+  - **`empresaIdByFct`**(int|string $idFct): ?int
 
 
 ### `app/Infrastructure/Persistence/Eloquent/Grupo/EloquentGrupoRepository.php`
@@ -10132,27 +11284,30 @@ Implementació Eloquent del repositori FCT.
 Implementació Eloquent del repositori de Grupo.
 
 - Metodes:
-  - `create`
-  - `find`
-  - `all`
-  - `qTutor`
-  - `firstByTutor`
-  - `largestByTutor`
-  - `byCurso`
-  - `byDepartamento`
-  - `tutoresDniList`
-  - `reassignTutor`
-  - `misGrupos`
-  - `misGruposByProfesor`
-  - `withActaPendiente`
-  - `byTutorOrSubstitute`
+  - **`create`**(array $attributes): Grupo
+  - **`find`**(string $codigo): ?Grupo
+  - **`all`**(): EloquentCollection
+  - **`qTutor`**(string $dni): EloquentCollection
+  - **`firstByTutor`**(string $dni): ?Grupo
+  - **`largestByTutor`**(string $dni): ?Grupo
+  - **`byCurso`**(int $curso): EloquentCollection
+  - **`byDepartamento`**(int $departamento): EloquentCollection
+  - **`tutoresDniList`**(): array
+  - **`reassignTutor`**(string $fromDni, string $toDni): int
+  - **`misGrupos`**(): EloquentCollection
+  - **`misGruposByProfesor`**(string $dni): EloquentCollection
+  - **`withActaPendiente`**(): EloquentCollection
+  - **`byTutorOrSubstitute`**(string $dni, ?string $sustituyeA): ?Grupo
+
     Cerca el primer grup associat al tutor o al professor substituït.
-  - `withStudents`
-  - `firstByTutorDual`
-  - `byCodes`
-  - `allWithTutorAndCiclo`
+  - **`withStudents`**(): EloquentCollection
+  - **`firstByTutorDual`**(string $dni): ?Grupo
+  - **`byCodes`**(array $codigos): EloquentCollection
+  - **`allWithTutorAndCiclo`**(): EloquentCollection
+
     Retorna tots els grups amb relacions bàsiques per a llistats de direcció.
-  - `misGruposWithCiclo`
+  - **`misGruposWithCiclo`**(): EloquentCollection
+
     Retorna els grups del professor amb la relació de cicle carregada.
 
 
@@ -10162,30 +11317,30 @@ Implementació Eloquent del repositori de Grupo.
 Implementació Eloquent del repositori d'horaris.
 
 - Metodes:
-  - `semanalByProfesor`
-  - `semanalByGrupo`
-  - `lectivosByDayAndSesion`
-  - `countByProfesorAndDay`
-  - `guardiaAllByDia`
-  - `guardiaAllByProfesorAndDiaAndSesiones`
-  - `guardiaAllByProfesorAndDia`
-  - `guardiaAllByProfesor`
-  - `firstByProfesorDiaSesion`
-  - `byProfesor`
-  - `byProfesorWithRelations`
-  - `lectivasByProfesorAndDayOrdered`
-  - `reassignProfesor`
-  - `deleteByProfesor`
-  - `gruposByProfesor`
-  - `gruposByProfesorDiaAndSesiones`
-  - `profesoresByGruposExcept`
-  - `primeraByProfesorAndDateOrdered`
-  - `firstByModulo`
-  - `byProfesorDiaOrdered`
-  - `distinctModulos`
-  - `create`
-  - `forProgramacionImport`
-  - `firstForDepartamentoAsignacion`
+  - **`semanalByProfesor`**(string $dni): array
+  - **`semanalByGrupo`**(string $grupo): array
+  - **`lectivosByDayAndSesion`**(string $dia, int $sesion): EloquentCollection
+  - **`countByProfesorAndDay`**(string $dni, string $dia): int
+  - **`guardiaAllByDia`**(string $dia): EloquentCollection
+  - **`guardiaAllByProfesorAndDiaAndSesiones`**(string $dni, string $dia, array $sesiones): EloquentCollection
+  - **`guardiaAllByProfesorAndDia`**(string $dni, string $dia): EloquentCollection
+  - **`guardiaAllByProfesor`**(string $dni): EloquentCollection
+  - **`firstByProfesorDiaSesion`**(string $dni, string $dia, int|string $sesion): ?Horario
+  - **`byProfesor`**(string $dni): EloquentCollection
+  - **`byProfesorWithRelations`**(string $dni, array $relations): EloquentCollection
+  - **`lectivasByProfesorAndDayOrdered`**(string $dni, string $dia): EloquentCollection
+  - **`reassignProfesor`**(string $fromDni, string $toDni): int
+  - **`deleteByProfesor`**(string $dni): int
+  - **`gruposByProfesor`**(string $dni): Collection
+  - **`gruposByProfesorDiaAndSesiones`**(string $dni, string $dia, array $sesiones): Collection
+  - **`profesoresByGruposExcept`**(array $grupos, string $emisorDni): Collection
+  - **`primeraByProfesorAndDateOrdered`**(string $dni, string $date): EloquentCollection
+  - **`firstByModulo`**(string $modulo): ?Horario
+  - **`byProfesorDiaOrdered`**(string $dni, string $dia): EloquentCollection
+  - **`distinctModulos`**(): Collection
+  - **`create`**(array $data): Horario
+  - **`forProgramacionImport`**(): EloquentCollection
+  - **`firstForDepartamentoAsignacion`**(string $dni): ?Horario
 
 
 ### `app/Infrastructure/Persistence/Eloquent/Profesor/EloquentProfesorRepository.php`
@@ -10194,194 +11349,216 @@ Implementació Eloquent del repositori d'horaris.
 Implementació Eloquent del repositori de professorat.
 
 - Metodes:
-  - `plantillaOrderedWithDepartamento`
-  - `activosByDepartamentosWithHorario`
-  - `activosOrdered`
-  - `all`
-  - `plantilla`
-  - `plantillaByDepartamento`
-  - `activos`
-  - `byDepartamento`
-  - `byGrupo`
-  - `byGrupoTrabajo`
-  - `byDnis`
-  - `find`
-  - `findOrFail`
-  - `findBySustituyeA`
-  - `findByCodigo`
-  - `findByApiToken`
-  - `findByEmail`
-  - `plantillaOrderedByDepartamento`
-  - `plantillaForResumen`
-  - `allOrderedBySurname`
-  - `clearFechaBaja`
-  - `countByCodigo`
-  - `usedCodigosBetween`
+  - **`plantillaOrderedWithDepartamento`**(): EloquentCollection
+  - **`activosByDepartamentosWithHorario`**(array $departamentosIds, string $dia, int $sesion): EloquentCollection
+  - **`activosOrdered`**(): EloquentCollection
+  - **`all`**(): EloquentCollection
+  - **`plantilla`**(): EloquentCollection
+  - **`plantillaByDepartamento`**(int|string $departamento): EloquentCollection
+  - **`activos`**(): EloquentCollection
+  - **`byDepartamento`**(int|string $departamento): EloquentCollection
+  - **`byGrupo`**(string $grupo): EloquentCollection
+  - **`byGrupoTrabajo`**(string $grupoTrabajo): EloquentCollection
+  - **`byDnis`**(array $dnis): EloquentCollection
+  - **`find`**(string $dni): ?Profesor
+  - **`findOrFail`**(string $dni): Profesor
+  - **`findBySustituyeA`**(string $dni): ?Profesor
+  - **`findByCodigo`**(string $codigo): ?Profesor
+  - **`findByApiToken`**(string $apiToken): ?Profesor
+  - **`findByEmail`**(string $email): ?Profesor
+  - **`plantillaOrderedByDepartamento`**(): EloquentCollection
+  - **`plantillaForResumen`**(): EloquentCollection
+  - **`allOrderedBySurname`**(): EloquentCollection
+  - **`clearFechaBaja`**(): int
+  - **`countByCodigo`**(int|string $codigo): int
+  - **`usedCodigosBetween`**(int $min, int $max): array
+
     /
-  - `create`
-  - `withSustituyeAssigned`
+  - **`create`**(array $data): Profesor
+  - **`withSustituyeAssigned`**(): EloquentCollection
 
 
 ### `app/Livewire/BustiaVioleta/AdminList.php`
 
 #### `Intranet\Livewire\BustiaVioleta\AdminList`
 - Metodes:
-  - `mount`
-  - `updating`
-  - `viewContact`
+  - **`mount`**()
+  - **`updating`**($prop)
+  - **`viewContact`**(int $id)
 
 #### `Intranet\Livewire\BustiaVioleta\find`
 - Metodes:
-  - `closeContact`
-  - `viewMessage`
-  - `closeMessage`
-  - `setEstado`
-  - `togglePublicable`
-  - `delete`
-  - `render`
+  - **`closeContact`**()
+  - **`viewMessage`**(int $id)
+  - **`closeMessage`**()
+  - **`setEstado`**(int $id, string $estado)
+  - **`togglePublicable`**(int $id)
+  - **`delete`**(int $id)
+  - **`render`**()
 
 
 ### `app/Livewire/BustiaVioleta/Form.php`
 
 #### `Intranet\Livewire\BustiaVioleta\Form`
 - Metodes:
-  - `confirmAndSubmit`
-  - `mount`
-  - `updatedTipus`
-  - `reloadCategories`
-  - `rules`
-  - `updatedFinalitat`
-  - `submit`
-  - `render`
+  - **`confirmAndSubmit`**()
+  - **`mount`**()
+  - **`updatedTipus`**($value)
+  - **`reloadCategories`**(): void
+  - **`rules`**()
+  - **`updatedFinalitat`**($value)
+  - **`submit`**()
+  - **`render`**()
 
 
 ### `app/Livewire/CalendariComponent.php`
 
 #### `Intranet\Livewire\CalendariComponent`
 - Metodes:
-  - `dataCompletada`
-  - `mount`
-  - `updatedMes`
-  - `canviarMes`
-  - `carregarDies`
-  - `seleccionarDia`
-  - `guardarCanvis`
-  - `resetSeleccionat`
-  - `cancelarEdicio`
-  - `render`
+  - **`dataCompletada`**(int $dia): string
+  - **`mount`**($any = null, $mes = null)
+  - **`updatedMes`**()
+  - **`canviarMes`**($increment)
+  - **`carregarDies`**()
+  - **`seleccionarDia`**($dia)
+  - **`guardarCanvis`**()
+  - **`resetSeleccionat`**()
+  - **`cancelarEdicio`**()
+  - **`render`**()
 
 
 ### `app/Livewire/Controlguardia.php`
 
 #### `Intranet\Livewire\Controlguardia`
 - Metodes:
-  - `mount`
-  - `weekBefore`
-  - `weekAfter`
-  - `render`
+  - **`mount`**()
+  - **`weekBefore`**()
+  - **`weekAfter`**()
+  - **`render`**()
 
 
 ### `app/Livewire/DocumentoTable.php`
 
 #### `Intranet\Livewire\DocumentoTable`
 - Metodes:
-  - `mount`
-  - `updating`
-  - `render`
-  - `searchableFields`
-  - `sortBy`
-  - `sanitizeSortField`
-  - `sanitizeSortDirection`
-  - `isDireccion`
+  - **`mount`**(): void
+  - **`updating`**($name): void
+  - **`render`**()
+  - **`searchableFields`**(): array
+  - **`sortBy`**(string $field): void
+  - **`sanitizeSortField`**(string $field): string
+  - **`sanitizeSortDirection`**(string $direction): string
+  - **`isDireccion`**(): bool
 
 
 ### `app/Livewire/FctCalendar.php`
 
 #### `Intranet\Livewire\FctCalendar`
 - Metodes:
-  - `mount`
-  - `alumno`
-  - `addTram`
-  - `removeTram`
-  - `createCalendar`
-  - `deleteCalendar`
-  - `loadCalendar`
-  - `updateDay`
-  - `normalizeHours`
-  - `normalizeNullableInt`
-  - `exportCalendarPdf`
-  - `sendCalendarEmails`
+  - **`mount`**($alumno)
+  - **`alumno`**(): Alumno
+  - **`addTram`**()
+  - **`removeTram`**($index)
+  - **`createCalendar`**()
+  - **`deleteCalendar`**()
+  - **`loadCalendar`**()
+  - **`updateDay`**($id, $hours)
+  - **`normalizeHours`**($hours): ?float
+  - **`normalizeNullableInt`**($value): ?int
+  - **`exportCalendarPdf`**()
+  - **`sendCalendarEmails`**(): void
+
     Enviar calendaris per correu des de la vista (botó).
-  - `mapDaysToMonthlyCalendar`
+  - **`mapDaysToMonthlyCalendar`**($days, array $colorMap = []): array
+
     Retorna el calendari agrupat per mes amb any inclòs per evitar desquadres.
-  - `renderPdfContent`
+  - **`renderPdfContent`**(array $monthlyCalendar, float $totalHours, string $titol, ?array $legend = null): string
+
     Genera el contingut PDF per a un calendari concret.
-  - `buildLegend`
-  - `createZipFromDocuments`
-  - `buildDocuments`
+  - **`buildLegend`**($days, $colaboracions): array
+  - **`createZipFromDocuments`**(array $documents): array
+  - **`buildDocuments`**($allDays, $colaboracions, $colabLegend, array $colorMap): array
+
     Genera tots els PDFs (alumne + col·laboracions).
-  - `dispatchCalendarEmails`
+  - **`dispatchCalendarEmails`**(array $documents, $colaboracions): void
+
     Envia cada PDF de forma separada (alumne i una per empresa) amb còpia a l'usuari actual.
-  - `getTutorContact`
-  - `render`
+  - **`getTutorContact`**(): array
+  - **`render`**()
 
 
 ### `app/Livewire/FicharControlDia.php`
 
 #### `Intranet\Livewire\FicharControlDia`
 - Metodes:
-  - `mount`
-  - `updatedFecha`
-  - `diaAnterior`
-  - `diaSeguent`
-  - `render`
-  - `profesores`
+  - **`mount`**(): void
+  - **`updatedFecha`**(): void
+  - **`diaAnterior`**(): void
+  - **`diaSeguent`**(): void
+  - **`render`**()
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Livewire\profesorService`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Livewire\horarioService`
 - Metodes:
-  - `refreshData`
-  - `loadProfesoresForControlDia`
+  - **`refreshData`**(): void
+  - **`loadProfesoresForControlDia`**()
 
 
 ### `app/Livewire/HorariProfessorCanvi.php`
 
 #### `Intranet\Livewire\HorariProfessorCanvi`
+Component Livewire per proposar canvis temporals d'horari del professorat.
+
 - Metodes:
-  - `mount`
-  - `loadPropuestasDisponibles`
-  - `updatedSelectedPropuestaId`
-  - `loadHoras`
-  - `loadHorario`
-  - `loadCambios`
-  - `loadPropuestaById`
-  - `applyPropuestaData`
-  - `applyCambios`
-  - `forceMove`
-  - `cellClicked`
-  - `moveFromTo`
-  - `moveSelectedTo`
-  - `resetCanvis`
-  - `novaProposta`
-  - `esborrarProposta`
-  - `guardarProposta`
-  - `downloadJson`
-  - `getCambiosCountProperty`
-  - `buildCambios`
-  - `latestPropuestaByEstado`
-  - `generatePropuestaId`
-  - `datesOverlapExisting`
-  - `cellHasGuardia`
-  - `itemIsGuardia`
-  - `render`
-  - `profesores`
+  - **`mount`**($dni = null)
+  - **`loadPropuestasDisponibles`**(): void
+  - **`updatedSelectedPropuestaId`**(): void
+  - **`loadHoras`**(): void
+  - **`loadHorario`**(): void
+  - **`loadCambios`**(): void
+  - **`loadPropuestaById`**(string $id): void
+  - **`applyPropuestaData`**(array $data): void
+  - **`applyCambios`**(array $cambios): void
+  - **`forceMove`**(string $from, string $to): void
+  - **`cellClicked`**(string $cell): void
+  - **`moveFromTo`**(string $from, string $to): void
+  - **`moveSelectedTo`**(string $dest): void
+
+    Mou la cel·la seleccionada a la destinació respectant restriccions d'horari.
+  - **`resetCanvis`**(): void
+  - **`novaProposta`**(): void
+  - **`esborrarProposta`**(): void
+  - **`guardarProposta`**(): void
+  - **`downloadJson`**()
+  - **`getCambiosCountProperty`**(): int
+  - **`buildCambios`**(): array
+  - **`latestPropuestaByEstado`**(string $estado): ?array
+  - **`generatePropuestaId`**(): string
+  - **`datesOverlapExisting`**(string $inicio, string $fin, ?string $excludeId = null): bool
+  - **`cellHasGuardia`**(string $cell): bool
+  - **`itemIsGuardia`**(string $itemId): bool
+  - **`isDifferentDay`**(string $from, string $to): bool
+
+    /
+  - **`isGuardiaOcupacion`**(?string $ocupacion, string $titulo): bool
+
+    Determina si una ocupacio s'ha de tractar com a guardia (no movible).
+  - **`isOcupacionGuardiaCode`**(string $ocupacion): bool
+
+    /
+  - **`isReunionDepartament`**(string $titulo): bool
+
+    /
+  - **`render`**()
+  - **`profesores`**(): ProfesorService
 
 #### `Intranet\Livewire\profesorService`
 - Metodes:
-  - `horarios`
+  - **`horarios`**(): HorarioService
 
 #### `Intranet\Livewire\horarioService`
 - Metodes: cap
@@ -10391,9 +11568,11 @@ Implementació Eloquent del repositori de professorat.
 
 #### `Intranet\Mail\AvalAlumne`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($aR, $informe): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10401,9 +11580,11 @@ Implementació Eloquent del repositori de professorat.
 
 #### `Intranet\Mail\AvalFct`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($fct, $quien): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10411,9 +11592,11 @@ Implementació Eloquent del repositori de professorat.
 
 #### `Intranet\Mail\CertificatAlumneFct`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($fct): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10421,11 +11604,13 @@ Implementació Eloquent del repositori de professorat.
 
 #### `Intranet\Mail\CertificatInstructorFct`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($fct, $emitent): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
-  - `certificatColaboradors`
+  - **`certificatColaboradors`**()
 
 #### `Intranet\Mail\hazPdf`
 - Metodes: cap
@@ -10435,9 +11620,9 @@ Implementació Eloquent del repositori de professorat.
 
 #### `Intranet\Mail\Comunicado`
 - Metodes:
-  - `getmodel`
-  - `__construct`
-  - `build`
+  - **`getmodel`**($elemento)
+  - **`__construct`**($remitente, $elemento, $vista, $attach=null)
+  - **`build`**()
 
 
 ### `app/Mail/DocumentRequest.php`
@@ -10446,9 +11631,11 @@ Implementació Eloquent del repositori de professorat.
 Class DocumentRequest
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**($mail, $view, $elemento, $attach=null): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10456,9 +11643,11 @@ Class DocumentRequest
 
 #### `Intranet\Mail\MatriculaAlumne`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($aR, $vista, $convocatoria=null): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10466,9 +11655,11 @@ Class DocumentRequest
 
 #### `Intranet\Mail\ResumenDiario`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($notificaciones): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10476,9 +11667,11 @@ Class DocumentRequest
 
 #### `Intranet\Mail\TitolAlumne`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($fct): void
+
     Create a new message instance.
-  - `build`
+  - **`build`**(): $this
+
     Build the message.
 
 
@@ -10486,7 +11679,8 @@ Class DocumentRequest
 
 #### `Intranet\Notifications\MyResetPassword`
 - Metodes:
-  - `toMail`
+  - **`toMail`**($notifiable): \Illuminate\Notifications\Messages\MailMessage
+
     Get the mail representation of the notification.
 
 
@@ -10494,12 +11688,15 @@ Class DocumentRequest
 
 #### `Intranet\Notifications\mensajePanel`
 - Metodes:
-  - `__construct`
-  - `via`
+  - **`__construct`**($mensaje)
+  - **`via`**($notifiable): array
+
     Get the notification's delivery channels.
-  - `toMail`
+  - **`toMail`**($notifiable): \Illuminate\Notifications\Messages\MailMessage
+
     Get the mail representation of the notification.
-  - `toArray`
+  - **`toArray`**($notifiable): array
+
     Get the array representation of the notification.
 
 
@@ -10509,75 +11706,75 @@ Class DocumentRequest
 Documentacio OpenAPI per a endpoints custom (no REST resource) definits en routes/api.php.
 
 - Metodes:
-  - `alumnofct_grupo_grupo_get`
-  - `convenio_get`
-  - `miIp_get`
-  - `actividad_actividad_getFiles_get`
-  - `server_time_get`
-  - `porta_obrir_get`
-  - `porta_obrir_automatica_post`
-  - `eventPortaSortida_post`
-  - `eventPorta_post`
-  - `presencia_resumen_rango_get`
-  - `grupo_list_id_get`
-  - `alumnofct_grupo_dual_get`
-  - `fct_id_alFct_get`
-  - `fct_id_alFct_post`
-  - `comision_dni_prePay_put`
-  - `autorizar_comision_get`
-  - `notification_id_get`
-  - `profesor_dni_rol_get`
-  - `profesor_rol_rol_get`
-  - `doficha_get`
-  - `ipGuardias_get`
-  - `verficha_get`
-  - `itaca_dia_idProfesor_get`
-  - `itaca_post`
-  - `aula_get`
-  - `faltaProfesor_horas_condicion_get`
-  - `material_cambiarUbicacion_put`
-  - `material_cambiarEstado_put`
-  - `material_cambiarUnidad_put`
-  - `material_cambiarInventario_put`
-  - `material_espacio_espacio_get`
-  - `inventario_get`
-  - `inventario_espai_get`
-  - `guardia_range_get`
-  - `alumnoGrupoModulo_dni_modulo_get`
-  - `horario_idProfesor_guardia_get`
-  - `horariosDia_fecha_get`
-  - `asistencia_cambiar_put`
-  - `reunion_idReunion_alumno_idAlumno_put`
-  - `tiporeunion_id_get`
-  - `modulo_id_get`
-  - `horarioChange_dni_get`
-  - `horarioChange_dni_post`
-  - `centro_fusionar_post`
-  - `colaboracion_instructores_id_get`
-  - `colaboracion_colaboracion_resolve_get`
-  - `colaboracion_colaboracion_refuse_get`
-  - `colaboracion_colaboracion_unauthorize_get`
-  - `colaboracion_colaboracion_switch_get`
-  - `colaboracion_colaboracion_telefonico_post`
-  - `colaboracion_colaboracion_book_post`
-  - `documentacionFCT_documento_get`
-  - `signatura_get`
-  - `signatura_director_get`
-  - `signatura_a1_get`
-  - `matricula_token_get`
-  - `test_matricula_token_get`
-  - `alumno_dni_foto_post`
-  - `alumno_dni_dades_post`
-  - `matricula_send_post`
-  - `lote_id_articulos_get`
-  - `lote_id_articulos_put`
-  - `articuloLote_id_materiales_get`
-  - `attachFile_post`
-  - `getAttached_modelo_id_get`
-  - `getNameAttached_modelo_id_filename_get`
-  - `removeAttached_modelo_id_file_get`
-  - `activity_id_move_fct_get`
-  - `tutoriagrupo_id_get`
+  - **`alumnofct_grupo_grupo_get`**(): void
+  - **`convenio_get`**(): void
+  - **`miIp_get`**(): void
+  - **`actividad_actividad_getFiles_get`**(): void
+  - **`server_time_get`**(): void
+  - **`porta_obrir_get`**(): void
+  - **`porta_obrir_automatica_post`**(): void
+  - **`eventPortaSortida_post`**(): void
+  - **`eventPorta_post`**(): void
+  - **`presencia_resumen_rango_get`**(): void
+  - **`grupo_list_id_get`**(): void
+  - **`alumnofct_grupo_dual_get`**(): void
+  - **`fct_id_alFct_get`**(): void
+  - **`fct_id_alFct_post`**(): void
+  - **`comision_dni_prePay_put`**(): void
+  - **`autorizar_comision_get`**(): void
+  - **`notification_id_get`**(): void
+  - **`profesor_dni_rol_get`**(): void
+  - **`profesor_rol_rol_get`**(): void
+  - **`doficha_get`**(): void
+  - **`ipGuardias_get`**(): void
+  - **`verficha_get`**(): void
+  - **`itaca_dia_idProfesor_get`**(): void
+  - **`itaca_post`**(): void
+  - **`aula_get`**(): void
+  - **`faltaProfesor_horas_condicion_get`**(): void
+  - **`material_cambiarUbicacion_put`**(): void
+  - **`material_cambiarEstado_put`**(): void
+  - **`material_cambiarUnidad_put`**(): void
+  - **`material_cambiarInventario_put`**(): void
+  - **`material_espacio_espacio_get`**(): void
+  - **`inventario_get`**(): void
+  - **`inventario_espai_get`**(): void
+  - **`guardia_range_get`**(): void
+  - **`alumnoGrupoModulo_dni_modulo_get`**(): void
+  - **`horario_idProfesor_guardia_get`**(): void
+  - **`horariosDia_fecha_get`**(): void
+  - **`asistencia_cambiar_put`**(): void
+  - **`reunion_idReunion_alumno_idAlumno_put`**(): void
+  - **`tiporeunion_id_get`**(): void
+  - **`modulo_id_get`**(): void
+  - **`horarioChange_dni_get`**(): void
+  - **`horarioChange_dni_post`**(): void
+  - **`centro_fusionar_post`**(): void
+  - **`colaboracion_instructores_id_get`**(): void
+  - **`colaboracion_colaboracion_resolve_get`**(): void
+  - **`colaboracion_colaboracion_refuse_get`**(): void
+  - **`colaboracion_colaboracion_unauthorize_get`**(): void
+  - **`colaboracion_colaboracion_switch_get`**(): void
+  - **`colaboracion_colaboracion_telefonico_post`**(): void
+  - **`colaboracion_colaboracion_book_post`**(): void
+  - **`documentacionFCT_documento_get`**(): void
+  - **`signatura_get`**(): void
+  - **`signatura_director_get`**(): void
+  - **`signatura_a1_get`**(): void
+  - **`matricula_token_get`**(): void
+  - **`test_matricula_token_get`**(): void
+  - **`alumno_dni_foto_post`**(): void
+  - **`alumno_dni_dades_post`**(): void
+  - **`matricula_send_post`**(): void
+  - **`lote_id_articulos_get`**(): void
+  - **`lote_id_articulos_put`**(): void
+  - **`articuloLote_id_materiales_get`**(): void
+  - **`attachFile_post`**(): void
+  - **`getAttached_modelo_id_get`**(): void
+  - **`getNameAttached_modelo_id_filename_get`**(): void
+  - **`removeAttached_modelo_id_file_get`**(): void
+  - **`activity_id_move_fct_get`**(): void
+  - **`tutoriagrupo_id_get`**(): void
 
 
 ### `app/OpenApi/ApiDomainSchemas.php`
@@ -10594,52 +11791,52 @@ Esquemes de domini reutilitzables per a la documentacio OpenAPI.
 Documentacio OpenAPI de rutes REST definides amb Route::resource.
 
 - Metodes:
-  - `alumnofctResourceEndpoints`
-  - `projecteResourceEndpoints`
-  - `actividadResourceEndpoints`
-  - `programacionResourceEndpoints`
-  - `reunionResourceEndpoints`
-  - `faltaResourceEndpoints`
-  - `documentoResourceEndpoints`
-  - `modulo_cicloResourceEndpoints`
-  - `resultadoResourceEndpoints`
-  - `comisionResourceEndpoints`
-  - `instructorResourceEndpoints`
-  - `ipguardiaResourceEndpoints`
-  - `settingResourceEndpoints`
-  - `ppollResourceEndpoints`
-  - `profesorResourceEndpoints`
-  - `faltaprofesorResourceEndpoints`
-  - `materialResourceEndpoints`
-  - `materialbajaResourceEndpoints`
-  - `espacioResourceEndpoints`
-  - `guardiaResourceEndpoints`
-  - `departamentoResourceEndpoints`
-  - `reservaResourceEndpoints`
-  - `ordenreunionResourceEndpoints`
-  - `colaboracionResourceEndpoints`
-  - `centroResourceEndpoints`
-  - `grupotrabajoResourceEndpoints`
-  - `empresaResourceEndpoints`
-  - `ordentrabajoResourceEndpoints`
-  - `incidenciaResourceEndpoints`
-  - `tipoincidenciaResourceEndpoints`
-  - `expedienteResourceEndpoints`
-  - `solicitudResourceEndpoints`
-  - `tipoexpedienteResourceEndpoints`
-  - `alumnogrupoResourceEndpoints`
-  - `activityResourceEndpoints`
-  - `cursoResourceEndpoints`
-  - `cicloResourceEndpoints`
-  - `taskResourceEndpoints`
-  - `horarioResourceEndpoints`
-  - `horaResourceEndpoints`
-  - `alumnoresultadoResourceEndpoints`
-  - `loteResourceEndpoints`
-  - `articuloloteResourceEndpoints`
-  - `articuloResourceEndpoints`
-  - `cotxeResourceEndpoints`
-  - `tipoactividadResourceEndpoints`
+  - **`alumnofctResourceEndpoints`**(): void
+  - **`projecteResourceEndpoints`**(): void
+  - **`actividadResourceEndpoints`**(): void
+  - **`programacionResourceEndpoints`**(): void
+  - **`reunionResourceEndpoints`**(): void
+  - **`faltaResourceEndpoints`**(): void
+  - **`documentoResourceEndpoints`**(): void
+  - **`modulo_cicloResourceEndpoints`**(): void
+  - **`resultadoResourceEndpoints`**(): void
+  - **`comisionResourceEndpoints`**(): void
+  - **`instructorResourceEndpoints`**(): void
+  - **`ipguardiaResourceEndpoints`**(): void
+  - **`settingResourceEndpoints`**(): void
+  - **`ppollResourceEndpoints`**(): void
+  - **`profesorResourceEndpoints`**(): void
+  - **`faltaprofesorResourceEndpoints`**(): void
+  - **`materialResourceEndpoints`**(): void
+  - **`materialbajaResourceEndpoints`**(): void
+  - **`espacioResourceEndpoints`**(): void
+  - **`guardiaResourceEndpoints`**(): void
+  - **`departamentoResourceEndpoints`**(): void
+  - **`reservaResourceEndpoints`**(): void
+  - **`ordenreunionResourceEndpoints`**(): void
+  - **`colaboracionResourceEndpoints`**(): void
+  - **`centroResourceEndpoints`**(): void
+  - **`grupotrabajoResourceEndpoints`**(): void
+  - **`empresaResourceEndpoints`**(): void
+  - **`ordentrabajoResourceEndpoints`**(): void
+  - **`incidenciaResourceEndpoints`**(): void
+  - **`tipoincidenciaResourceEndpoints`**(): void
+  - **`expedienteResourceEndpoints`**(): void
+  - **`solicitudResourceEndpoints`**(): void
+  - **`tipoexpedienteResourceEndpoints`**(): void
+  - **`alumnogrupoResourceEndpoints`**(): void
+  - **`activityResourceEndpoints`**(): void
+  - **`cursoResourceEndpoints`**(): void
+  - **`cicloResourceEndpoints`**(): void
+  - **`taskResourceEndpoints`**(): void
+  - **`horarioResourceEndpoints`**(): void
+  - **`horaResourceEndpoints`**(): void
+  - **`alumnoresultadoResourceEndpoints`**(): void
+  - **`loteResourceEndpoints`**(): void
+  - **`articuloloteResourceEndpoints`**(): void
+  - **`articuloResourceEndpoints`**(): void
+  - **`cotxeResourceEndpoints`**(): void
+  - **`tipoactividadResourceEndpoints`**(): void
 
 
 ### `app/OpenApi/OpenApiSpec.php`
@@ -10654,19 +11851,20 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\AlumnoFct\AlumnoFctPresenter`
 - Metodes:
-  - `__construct`
-  - `cssClass`
+  - **`__construct`**(private readonly AlumnoFct $alumnoFct)
+  - **`cssClass`**(): string
+
     Retorna la classe CSS de fons segons estat/temporalitat del registre.
-  - `centerName`
-  - `studentShortName`
-  - `studentNameWithMinorIcon`
-  - `remainingPracticeTimeLabel`
-  - `contactName`
-  - `fullName`
-  - `completedHoursLabel`
-  - `instructorName`
-  - `printableId`
-  - `backgroundByDates`
+  - **`centerName`**(int $length = 30): string
+  - **`studentShortName`**(): string
+  - **`studentNameWithMinorIcon`**(): string
+  - **`remainingPracticeTimeLabel`**(): string
+  - **`contactName`**(): string
+  - **`fullName`**(): string
+  - **`completedHoursLabel`**(): string
+  - **`instructorName`**(int $length = 30): string
+  - **`printableId`**(): string
+  - **`backgroundByDates`**(): string
 
 
 ### `app/Presentation/Crud/ActividadCrudSchema.php`
@@ -10697,7 +11895,8 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\ComisionCrudSchema`
 - Metodes:
-  - `requestRules`
+  - **`requestRules`**(bool $isDirector): array
+
     Regles del formulari principal de comissió.
 
 
@@ -10705,7 +11904,8 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\CotxeCrudSchema`
 - Metodes:
-  - `requestRules`
+  - **`requestRules`**(string|int|null $cotxeId, string $dni): array
+
     Regles de validació del formulari de cotxe.
 
 
@@ -10719,11 +11919,14 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\DocumentoCrudSchema`
 - Metodes:
-  - `projectFormFields`
+  - **`projectFormFields`**(): array
+
     Formulari del flux de projecte.
-  - `qualitatFormFields`
+  - **`qualitatFormFields`**(): array
+
     Formulari del flux de qualitat.
-  - `editFormFields`
+  - **`editFormFields`**(bool $hasLink): array
+
     Formulari d'edició segons siga enllaç o fitxer.
 
 
@@ -10731,7 +11934,8 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\EmpresaCrudSchema`
 - Metodes:
-  - `requestRules`
+  - **`requestRules`**(string|int|null $empresaId): array
+
     Regles de validació per al formulari d'empresa.
 
 
@@ -10769,9 +11973,11 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\IncidenciaCrudSchema`
 - Metodes:
-  - `requestRules`
+  - **`requestRules`**(string $imagenRule): array
+
     Regles de request afegint validació de fitxer d'imatge.
-  - `editFormFields`
+  - **`editFormFields`**(): array
+
     Configuració de formulari d'edició.
 
 
@@ -10815,7 +12021,8 @@ Especificacio global OpenAPI per a la API del projecte.
 
 #### `Intranet\Presentation\Crud\TipoIncidenciaCrudSchema`
 - Metodes:
-  - `requestRules`
+  - **`requestRules`**(int|string|null $currentId = null): array
+
     Regles de validacio per a create/update.
 
 
@@ -10837,9 +12044,11 @@ Especificacio global OpenAPI per a la API del projecte.
 Proveidor principal de serveis de l'aplicació.
 
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Bootstrap any application services.
-  - `register`
+  - **`register`**(): void
+
     Register any application services.
 
 #### `Intranet\Providers\config`
@@ -11090,7 +12299,8 @@ Proveidor principal de serveis de l'aplicació.
 
 #### `Intranet\Providers\boot`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Register any authentication / authorization services.
 
 
@@ -11098,7 +12308,8 @@ Proveidor principal de serveis de l'aplicació.
 
 #### `Intranet\Providers\BroadcastServiceProvider`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Bootstrap any application services.
 
 
@@ -11108,7 +12319,8 @@ Proveidor principal de serveis de l'aplicació.
 Registre d'esdeveniments de l'aplicacio.
 
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Register any events for your application.
 
 
@@ -11116,9 +12328,11 @@ Registre d'esdeveniments de l'aplicacio.
 
 #### `Intranet\Providers\HelperServiceProvider`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Bootstrap the application services.
-  - `register`
+  - **`register`**(): void
+
     Register the application services.
 
 
@@ -11126,32 +12340,39 @@ Registre d'esdeveniments de l'aplicacio.
 
 #### `Intranet\Providers\RouteServiceProvider`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Define your route model bindings, pattern filters, etc.
-  - `map`
+  - **`map`**(): void
+
     Define the routes for the application.
-  - `mapWebRoutes`
+  - **`mapWebRoutes`**(): void
+
     Define the "web" routes for the application.
-  - `mapApiRoutes`
+  - **`mapApiRoutes`**(): void
+
     Define the "api" routes for the application.
-  - `profesorRoutes`
+  - **`profesorRoutes`**(): void
+
     Define the "auth" routes for the application.
-  - `adminRoutes`
-  - `todosRoutes`
-  - `consergeRoutes`
-  - `direccionRoutes`
-  - `alumnoRoutes`
-  - `mantenimientoRoutes`
-  - `jefeRoutes`
+  - **`adminRoutes`**()
+  - **`todosRoutes`**()
+  - **`consergeRoutes`**()
+  - **`direccionRoutes`**()
+  - **`alumnoRoutes`**()
+  - **`mantenimientoRoutes`**()
+  - **`jefeRoutes`**()
 
 
 ### `app/Providers/SettingsProvider.php`
 
 #### `Intranet\Providers\SettingsProvider`
 - Metodes:
-  - `register`
+  - **`register`**(): void
+
     Register services.
-  - `boot`
+  - **`boot`**(): void
+
     Bootstrap services.
 
 
@@ -11159,11 +12380,14 @@ Registre d'esdeveniments de l'aplicacio.
 
 #### `Intranet\Providers\TelescopeServiceProvider`
 - Metodes:
-  - `register`
+  - **`register`**(): void
+
     Register any application services.
-  - `hideSensitiveRequestDetails`
+  - **`hideSensitiveRequestDetails`**(): void
+
     Prevent sensitive request details from being logged by Telescope.
-  - `gate`
+  - **`gate`**(): void
+
     Register the Telescope gate.
 
 
@@ -11171,9 +12395,11 @@ Registre d'esdeveniments de l'aplicacio.
 
 #### `Intranet\Providers\ValidationServiceProvider`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
+
     Bootstrap the application services.
-  - `register`
+  - **`register`**(): void
+
     Register the application services.
 
 
@@ -11181,7 +12407,7 @@ Registre d'esdeveniments de l'aplicacio.
 
 #### `Intranet\Providers\ViewComposerServiceProvider`
 - Metodes:
-  - `boot`
+  - **`boot`**(): void
 
 #### `Intranet\Providers\isInside`
 - Metodes: cap
@@ -11193,15 +12419,18 @@ Registre d'esdeveniments de l'aplicacio.
 Entrypoint unificat per a les operacions SAO.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(?DigitalSignatureService $digitalSignatureService = null)
 
 #### `Intranet\Sao\Actions\setFireFoxCapabilities`
 - Metodes:
-  - `setFireFoxCapabilities`
+  - **`setFireFoxCapabilities`**(): mixed
+
     Retorna les capacitats Firefox necessàries per a descàrregues SAO.
-  - `index`
+  - **`index`**(RemoteWebDriver $driver, array $requestData, ?UploadedFile $file = null): mixed
+
     /
-  - `executeLegacyAction`
+  - **`executeLegacyAction`**(string $action, RemoteWebDriver $driver, array $requestData, ?UploadedFile $file = null): mixed
+
     Manté compatibilitat amb accions SAO legacy no migrades.
 
 
@@ -11211,7 +12440,8 @@ Entrypoint unificat per a les operacions SAO.
 Contracte base per a una acció SAO executable amb un driver Selenium.
 
 - Metodes:
-  - `index`
+  - **`index`**(RemoteWebDriver $driver, array $requestData, ?UploadedFile $file = null): mixed
+
     Executa l'acció SAO.
 
 
@@ -11221,8 +12451,9 @@ Contracte base per a una acció SAO executable amb un driver Selenium.
 Gestiona la descàrrega de l'annex A1/A1DUAL.
 
 - Metodes:
-  - `__construct`
-  - `download`
+  - **`__construct`**(?SaoNavigator $navigator = null, ?SaoDownloadManager $downloadManager = null)
+  - **`download`**(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
+
     Descarrega l'annex A1/A1DUAL.
 
 
@@ -11232,8 +12463,9 @@ Gestiona la descàrrega de l'annex A1/A1DUAL.
 Gestiona la descàrrega i signatura dels annexes A2 i A3.
 
 - Metodes:
-  - `__construct`
-  - `download`
+  - **`__construct`**(DigitalSignatureService $digitalSignatureService, ?SaoNavigator $navigator = null, ?SaoDownloadManager $downloadManager = null)
+  - **`download`**(AlumnoFct $fctAl, RemoteWebDriver $driver, ?string $certPath, ?string $certPassword, int $annexeNum): bool
+
     Descarrega i, si cal, firma digitalment l'annex A2/A3.
 
 
@@ -11243,8 +12475,9 @@ Gestiona la descàrrega i signatura dels annexes A2 i A3.
 Gestiona la descàrrega i processat de l'annex A5.
 
 - Metodes:
-  - `__construct`
-  - `download`
+  - **`__construct`**(DigitalSignatureService $digitalSignatureService, ?SaoNavigator $navigator = null, ?SaoDownloadManager $downloadManager = null)
+  - **`download`**(AlumnoFct $fctAl, RemoteWebDriver $driver, ?string $certPath, ?string $certPassword): bool
+
     Descarrega, processa i opcionalment firma l'annex A5.
 
 
@@ -11254,16 +12487,16 @@ Gestiona la descàrrega i processat de l'annex A5.
 Acció SAO per descarregar i enllaçar annexos.
 
 - Metodes:
-  - `__construct`
-  - `execute`
-  - `index`
-  - `processFcts`
-  - `getValidFcts`
-  - `isAnnexDownloaded`
-  - `downloadAnnex`
-  - `saveAnnex`
-  - `deleteSignatures`
-  - `closePopup`
+  - **`__construct`**($digitalSignatureService = null)
+  - **`execute`**($driver, ?callable $queryCallback = null)
+  - **`index`**($driver)
+  - **`processFcts`**()
+  - **`getValidFcts`**()
+  - **`isAnnexDownloaded`**($fct): bool
+  - **`downloadAnnex`**($fct)
+  - **`saveAnnex`**($name, $downloadLink, $fct)
+  - **`deleteSignatures`**($fct)
+  - **`closePopup`**()
 
 
 ### `app/Sao/SaoComparaAction.php`
@@ -11272,10 +12505,10 @@ Acció SAO per descarregar i enllaçar annexos.
 Acció SAO per comparar dades Intranet vs SAO.
 
 - Metodes:
-  - `compara`
-  - `igual`
-  - `index`
-  - `descomposaClau`
+  - **`compara`**(Request $request)
+  - **`igual`**($intranet, $sao)
+  - **`index`**($driver)
+  - **`descomposaClau`**($clau)
 
 
 ### `app/Sao/SaoDocumentsAction.php`
@@ -11284,9 +12517,9 @@ Acció SAO per comparar dades Intranet vs SAO.
 Gestió de documents SAO (A1, A2 i A5).
 
 - Metodes:
-  - `__construct`
-  - `setFireFoxCapabilities`
-  - `index`
+  - **`__construct`**(DigitalSignatureService $digitalSignatureService, ?A1DocumentService $a1DocumentService = null, ?A2DocumentService $a2DocumentService = null, ?A5DocumentService $a5DocumentService = null)
+  - **`setFireFoxCapabilities`**()
+  - **`index`**($driver, $request, $file = null)
 
 #### `Intranet\Sao\send`
 - Metodes: cap
@@ -11298,37 +12531,48 @@ Gestió de documents SAO (A1, A2 i A5).
 Acció SAO per importar dades de FCT des de la plataforma externa.
 
 - Metodes:
-  - `buscaCentro`
-  - `extractFromModal`
-  - `extractFromEdit`
+  - **`buscaCentro`**($dada, $empresa)
+  - **`extractFromModal`**(&$dades, $index, $tr, $driver)
+  - **`extractFromEdit`**($dada, RemoteWebDriver $driver): mixed
+
     /
-  - `deepMerge`
+  - **`deepMerge`**(array $array1, array $array2): array
+
     Funció per fusionar profundament dos arrays
-  - `selectDirectorFct`
-  - `index`
+  - **`selectDirectorFct`**($driver)
+  - **`index`**($driver)
 
 #### `Intranet\Sao\firstByTutor`
 - Metodes:
-  - `importa`
-  - `getCentro`
-  - `getColaboracion`
-  - `getAlumno`
+  - **`importa`**(Request $request)
+  - **`getCentro`**($dades)
+  - **`getColaboracion`**($dada, $idCiclo, $idCentro)
+  - **`getAlumno`**(\Facebook\WebDriver\Remote\RemoteWebElement $tr): string
+
     /
-  - `getEmpresa`
+  - **`getEmpresa`**(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
+
     /
-  - `getIdSao`
+  - **`getIdSao`**(\Facebook\WebDriver\Remote\RemoteWebElement $tr): mixed|string
+
     /
-  - `getPeriode`
+  - **`getPeriode`**(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
+
     /
-  - `altaInstructor`
+  - **`altaInstructor`**(string $instructorDNI, string $instructorName, string $emailCentre, string $telefonoCentre, $ciclo): Instructor
+
     /
-  - `getDni`
+  - **`getDni`**($centro, $dades, $ciclo): mixed
+
     /
-  - `getFct`
+  - **`getFct`**($dni, $idColaboracion, $asociacion, $erasmus): Fct
+
     /
-  - `saveFctAl`
+  - **`saveFctAl`**(Fct $fct, $dades, $flexible=0): AlumnoFct
+
     /
-  - `extractPage`
+  - **`extractPage`**(RemoteWebDriver $driver, array &$dades, $page): array
+
     /
 
 
@@ -11338,14 +12582,14 @@ Acció SAO per importar dades de FCT des de la plataforma externa.
 Acció SAO per sincronitzar dades d'alumnat FCT.
 
 - Metodes:
-  - `__construct`
-  - `execute`
-  - `index`
-  - `processFcts`
-  - `getValidFcts`
-  - `obtenirHoresFct`
-  - `actualitzarFct`
-  - `consultaDiario`
+  - **`__construct`**($digitalSignatureService = null)
+  - **`execute`**($driver, ?callable $queryCallback = null)
+  - **`index`**($driver)
+  - **`processFcts`**()
+  - **`getValidFcts`**()
+  - **`obtenirHoresFct`**($idSao): ?int
+  - **`actualitzarFct`**($fct, $novaHora): void
+  - **`consultaDiario`**()
 
 
 ### `app/Sao/Support/SaoDownloadManager.php`
@@ -11354,11 +12598,14 @@ Acció SAO per sincronitzar dades d'alumnat FCT.
 Operacions comunes de fitxers temporals en processos SAO.
 
 - Metodes:
-  - `tempDirectory`
+  - **`tempDirectory`**(): string
+
     Retorna el directori temporal compartit per SAO.
-  - `waitForFile`
+  - **`waitForFile`**(string $filePath, int $timeoutSeconds): void
+
     Espera a l'existència d'un fitxer dins del timeout indicat.
-  - `unlinkIfExists`
+  - **`unlinkIfExists`**(string $filePath): void
+
     Esborra un fitxer si existeix.
 
 
@@ -11368,7 +12615,8 @@ Operacions comunes de fitxers temporals en processos SAO.
 Utilitats bàsiques de navegació per al flux SAO.
 
 - Metodes:
-  - `backToMain`
+  - **`backToMain`**(RemoteWebDriver $driver, ?int $sleepSeconds = null): void
+
     Torna a la pantalla principal de SAO i aplica una xicoteta espera.
 
 
@@ -11378,9 +12626,11 @@ Utilitats bàsiques de navegació per al flux SAO.
 Gestiona el cicle de vida de Selenium per a accions SAO.
 
 - Metodes:
-  - `run`
+  - **`run`**(string $className, string $dni, string $password, array $requestData, mixed $caps = null, ?UploadedFile $file = null): mixed
+
     Executa una acció SAO amb login previ i tancament garantit de sessió.
-  - `executeAction`
+  - **`executeAction`**(string $className, mixed $driver, array $requestData, ?UploadedFile $file = null): mixed
+
     Resol i executa el mètode `index` de l'acció SAO.
 
 
@@ -11388,10 +12638,10 @@ Gestiona el cicle de vida de Selenium per a accions SAO.
 
 #### `Intranet\Support\Concerns\DatesTranslator`
 - Metodes:
-  - `getCreatedAttribute`
-  - `getUpdatedAttribute`
-  - `getSalidaAttribute`
-  - `getEntradaAttribute`
+  - **`getCreatedAttribute`**($date)
+  - **`getUpdatedAttribute`**($date)
+  - **`getSalidaAttribute`**($date)
+  - **`getEntradaAttribute`**($date)
 
 
 ### `app/Support/Facades/Field.php`
@@ -11400,7 +12650,8 @@ Gestiona el cicle de vida de Selenium per a accions SAO.
 Façana de compatibilitat per a l'API `Field::*`.
 
 - Metodes:
-  - `getFacadeAccessor`
+  - **`getFacadeAccessor`**(): string
+
     /
 
 
@@ -11408,119 +12659,170 @@ Façana de compatibilitat per a l'API `Field::*`.
 
 #### `Intranet\Support\Fct\DocumentoFctConfig`
 - Metodes:
-  - `__construct`
-  - `__get`
-  - `__isset`
-  - `__set`
-  - `getFinder`
-  - `getResource`
+  - **`__construct`**($document)
+  - **`__get`**($key)
+  - **`__isset`**($key)
+  - **`__set`**($key, $value)
+  - **`getFinder`**()
+  - **`getResource`**()
 
 
 ### `app/Support/Helpers/MyHelpers.php`
 
 #### `asset_nocache`
 - Metodes:
-  - `asset_nocache`
+  - **`asset_nocache`**(string $path): string
+
     Genera una URL d'asset amb versió basada en `filemtime` per evitar caché antic.
-  - `profile_photo_url`
+  - **`profile_photo_url`**(?string $foto): string
+
     Retorna la URL de la foto de perfil o un placeholder si no existeix.
-  - `emailConselleria`
+  - **`emailConselleria`**($nombre, $apellido1, $apellido2): string
+
     Genera un correu institucional de Conselleria a partir del nom i cognoms.
-  - `eliminarTildes`
+  - **`eliminarTildes`**($cadena): string
+
     Elimina espais i accents d'una cadena.
-  - `genre`
+  - **`genre`**($persona, $masculi=''): mixed|string
+
     /
-  - `voteValue`
+  - **`voteValue`**($dni, $value): int|float
+
     Ajusta aleatòriament el valor d'una votació per a un DNI concret.
-  - `evaluacion`
+  - **`evaluacion`**(): int
+
     Retorna l'avaluació actual segons les dates configurades en `curso.evaluaciones`.
-  - `curso`
+  - **`curso`**(): string
+
     Retorna el curs acadèmic actual (`YYYY-YYYY+1`).
-  - `cursoAnterior`
+  - **`cursoAnterior`**(): string
+
     Retorna el curs acadèmic anterior.
-  - `fullDireccion`
+  - **`fullDireccion`**(): string
+
     Devuelve la direccion completa
-  - `cargo`
+  - **`cargo`**($cargo): \Intranet\Entities\Profesor|null
+
     Retorna el professor associat a un càrrec configurat.
-  - `signatura`
+  - **`signatura`**($document): string|null
+
     Retorna la forma textual de signatura adequada al document i gènere de qui signa.
-  - `imgSig`
+  - **`imgSig`**($document): string|null
+
     Retorna el codi d'imatge de signatura per a un document.
-  - `userIsNameAllow`
+  - **`userIsNameAllow`**($role): bool
+
     Mira si al usuario actual le esta permitido el nombre de rol
-  - `authUser`
+  - **`authUser`**(): \Illuminate\Contracts\Auth\Authenticatable|null
+
     Retorna l'usuari autenticat de `profesor` o, en defecte, d'`alumno`.
-  - `apiAuthUser`
+  - **`apiAuthUser`**($token=null): \Intranet\Entities\Profesor|null
+
     Resol l'usuari professor per context API.
-  - `isProfesor`
+  - **`isProfesor`**(): bool
+
     Comprova si l'usuari autenticat és professor.
-  - `userIsAllow`
+  - **`userIsAllow`**($role): bool
+
     Mira si al usuario actual le esta permitido el  rol
-  - `roleIsInArray`
+  - **`roleIsInArray`**(array $role, \Illuminate\Contracts\Auth\Authenticatable $usuario): bool
+
     /
-  - `nameRolesUser`
+  - **`nameRolesUser`**($rolUsuario): Array
+
     Devuelve todos los roles de un usuario
-  - `rolesUser`
+  - **`rolesUser`**($rolUsuario): Array
+
     Devuelve todos los roles de un usuario
-  - `esRol`
+  - **`esRol`**($rolUsuario, $rol): bool
+
     Comprova si un rol concret està inclòs dins del rol compost de l'usuari.
-  - `isAdmin`
+  - **`isAdmin`**(): bool
+
     Comprova si l'usuari autenticat té rol d'administració (11).
-  - `usersWithRol`
+  - **`usersWithRol`**($rol): array
+
     Retorna els DNI dels professors actius que compleixen un rol determinat.
-  - `rol`
+  - **`rol`**($roles): integer
+
     Devuelve el rol de un conjunto de roles
-  - `blankTrans`
+  - **`blankTrans`**($mensaje): array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+
     /
-  - `isblankTrans`
+  - **`isblankTrans`**($mensaje): bool
+
     Indica si una clau de traducció no existeix.
-  - `valorReal`
+  - **`valorReal`**($elemento, $string): mixed
+
     Resol una propietat simple o anidada (`foo->bar`) d'un element.
-  - `hazArray`
+  - **`hazArray`**($elementos, $campo1, $campo2=null, $separador = ' '): array
+
     Construeix un array associatiu a partir d'una col·lecció/lista d'elements.
-  - `extrauValor`
+  - **`extrauValor`**($campo1, $elemento, $separador): array
+
     /
-  - `getClase`
+  - **`getClase`**($elemento): string
+
     Retorna el nom curt d'una classe o entitat.
-  - `getClass`
+  - **`getClass`**($str): string
+
     Retorna el nom curt d'una FQCN d'entitat.
-  - `avisa`
+  - **`avisa`**($id, $mensaje, $enlace = '#', $emisor = null): void
+
     Envia notificació interna a alumne/professor.
-  - `primryKey`
+  - **`primryKey`**($elemento): mixed
+
     Retorna el valor de la clau primària de l'element.
-  - `subsRequest`
+  - **`subsRequest`**(Illuminate\Http\Request $request, $fields): Illuminate\Http\Request
+
     Substitueix valors en un Request i retorna una còpia.
-  - `mdFind`
+  - **`mdFind`**($file, $link): string
+
     Retalla un fragment de documentació markdown des d'un enllaç concret.
-  - `existsHelp`
+  - **`existsHelp`**($url): mixed
+
     Retorna si hi ha ajuda associada a una URL de menú.
-  - `inRol`
+  - **`inRol`**($roles): array
+
     Prepara una estructura `['roles' => [...]]` per passar-la a components/polítiques de UI.
-  - `existsTranslate`
+  - **`existsTranslate`**($text): string|null
+
     Retorna la traducció o `null` si no existeix.
-  - `firstWord`
+  - **`firstWord`**($cadena): string
+
     Retorna la primera paraula d'una cadena separada per espais.
-  - `cargaDatosCertificado`
+  - **`cargaDatosCertificado`**($datos, $date=null): mixed
+
     /
-  - `getClientIpAddress`
+  - **`getClientIpAddress`**(): String
+
     Obté l'adreça IP client des de capçaleres comunes o `REMOTE_ADDR`.
-  - `isPrivateAddress`
+  - **`isPrivateAddress`**($ip): bool
+
     Comprova si una IP pertany a rangs privats/predefinits de confiança.
-  - `mbUcfirst`
+  - **`mbUcfirst`**($string): string
+
     Capitalitza el primer caràcter d'una cadena multibyte.
-  - `nomAmbTitol`
+  - **`nomAmbTitol`**($sexe, $nom): string
+
     Afig tractament (`en`, `na`, `n'`) a un nom segons sexe i vocal inicial.
-  - `deleteDir`
+  - **`deleteDir`**($folder): void
+
     Elimina tots els fitxers d'una carpeta i, després, la carpeta.
-  - `provincia`
+  - **`provincia`**($codiPostal): string
+
     Retorna el nom de província a partir del codi postal espanyol.
-  - `replaceCachitos`
+  - **`replaceCachitos`**($view): string
+
     Substitueix tokens `[nom]` per `@include('email.fct.cachitos.nom')` de manera recursiva.
-  - `in_substr`
+  - **`in_substr`**($item, int $long): string
+
     Retalla valors llargs de forma segura, normalitzant tipus comuns (array, bool, dates...).
-  - `array_depth`
+  - **`array_depth`**($array): int
+
     Calcula la profunditat màxima d'un array multidimensional.
-  - `asociacion_fct`
+  - **`asociacion_fct`**($tipus): int|string|null
+
     Retorna la clau associada a un tipus FCT en configuració.
 
 
@@ -11528,42 +12830,60 @@ Façana de compatibilitat per a l'API `Field::*`.
 
 #### `Intranet\UI\Botones\Boton`
 - Metodes:
-  - `translateText`
+  - **`translateText`**()
+
     Resol el text del botó amb traduccions i textos per defecte.
-  - `translateExistingText`
+  - **`translateExistingText`**()
+
     Tradueix un text ja proporcionat si hi ha clau existent.
-  - `__construct`
+  - **`__construct`**($href, $atributos = [], $relative = false, $postUrl = null)
+
     /
-  - `__set`
+  - **`__set`**($name, $value)
+
     Assigna atributs dinàmics.
-  - `__get`
+  - **`__get`**($name)
+
     Llig atributs dinàmics.
-  - `show`
+  - **`show`**($elemento = null): string
+
     Retorna el botó renderitzat perquè el caller el puga imprimir.
-  - `render`
+  - **`render`**($elemento = null)
+
     Retorna el botó renderitzat si l'usuari té permís.
-  - `html`
-  - `split`
+  - **`html`**($key = null)
+  - **`split`**()
+
     Separa model/acció a partir del `href`.
-  - `cleanAttr`
+  - **`cleanAttr`**(?string $value): string
+
     Neteja valors per a atributs HTML (classes, id, etc.).
-  - `isDisabled`
+  - **`isDisabled`**(): bool
+
     Indica si el botó està deshabilitat.
-  - `clase`
+  - **`clase`**(): string
+
     Retorna la classe CSS final del botó.
-  - `id`
+  - **`id`**($key = null): string|null
+
     Retorna l'ID HTML del botó.
-  - `disabledAttr`
+  - **`disabledAttr`**(string $type = 'link'): string
+
     Retorna atributs per a desactivar el botó segons el tipus.
-  - `data`
+  - **`data`**(): string
+
     Retorna els atributs `data-*` en format HTML.
-  - `href`
+  - **`href`**($key = null): string
+
     Construeix l'URL final del botó.
-  - `getPrefix`
+  - **`getPrefix`**(): string
+
     Obté el prefix de ruta segons el mode `relative`.
-  - `getPostfix`
+  - **`getPostfix`**(): string
+
     Obté el sufix de ruta si està definit.
-  - `getAdress`
+  - **`getAdress`**($key, $prefix, $close): string
+
     Construeix l'adreça final a partir de prefix, clau i sufix.
 
 
@@ -11573,7 +12893,8 @@ Façana de compatibilitat per a l'API `Field::*`.
 Botó bàsic amb renderització d'enllaç i icona opcional.
 
 - Metodes:
-  - `html`
+  - **`html`**($key = null)
+
     Genera el HTML del botó bàsic.
 
 
@@ -11589,19 +12910,26 @@ Botó bàsic amb classe de confirmació.
 
 #### `Intranet\UI\Botones\BotonElemento`
 - Metodes:
-  - `show`
+  - **`show`**($elemento = null, $key = null): string
+
     Mostra el botó si compleix les condicions de visibilitat.
-  - `render`
+  - **`render`**($elemento = null)
+
     Retorna el botó renderitzat si compleix les condicions.
-  - `isVisible`
+  - **`isVisible`**($elemento)
+
     Avalua si l'element compleix les condicions de visibilitat.
-  - `extractConditions`
+  - **`extractConditions`**($elemento, $condicio)
+
     Extreu i avalua les condicions configurades.
-  - `avalAndConditions`
+  - **`avalAndConditions`**($conditions)
+
     Avalua condicions amb AND.
-  - `avalOrConditions`
+  - **`avalOrConditions`**($conditions)
+
     Avalua condicions amb OR.
-  - `avalCondition`
+  - **`avalCondition`**($elemento, $op, $valor)
+
     Avalua una condició individual.
 
 
@@ -11611,7 +12939,8 @@ Botó bàsic amb classe de confirmació.
 Botó amb icona (font-awesome).
 
 - Metodes:
-  - `html`
+  - **`html`**($key = null)
+
     Genera el HTML del botó amb icona.
 
 
@@ -11621,9 +12950,11 @@ Botó amb icona (font-awesome).
 Botó amb icona en format imatge/font-awesome.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**($href, $atributos = [], $relative = false, $postUrl = null)
+
     /
-  - `html`
+  - **`html`**($key = null)
+
     Genera el HTML del botó amb imatge.
 
 
@@ -11633,7 +12964,8 @@ Botó amb icona en format imatge/font-awesome.
 Botó per a enviament de formulari (submit).
 
 - Metodes:
-  - `html`
+  - **`html`**($key = null)
+
     Genera el HTML del botó tipus submit.
 
 
@@ -11643,82 +12975,114 @@ Botó per a enviament de formulari (submit).
 Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 - Metodes:
-  - `__construct`
+  - **`__construct`**(string $modelo, ?array $rejilla = null, ?string $vista = null, bool $creaPestana = true, ?array $include = [])
+
     /
-  - `render`
+  - **`render`**($todos, $titulo, $vista, $formulario = null): View|RedirectResponse
+
     Ompli el panell i retorna la vista final.
-  - `setBotonera`
+  - **`setBotonera`**(array $index = [], array $grid = [], array $profile = []): void
+
     Crea una botonera estàndard a partir de noms d'accions.
-  - `setBoton`
+  - **`setBoton`**(string $tipo, Boton $boton): void
+
     Afig un botó al grup indicat.
-  - `setBothBoton`
+  - **`setBothBoton`**(string $href, array $atributos = [], bool $relative = false): void
+
     Afig el mateix botó a `grid` i `profile`.
-  - `setPestana`
+  - **`setPestana`**(string $nombre, bool $activo = false, ?string $vista = null, ?array $filtro = null, ?array $rejilla = null, ?bool $sustituye = null, array $include = []): void
+
     Afig una pestanya o substituïx la primera.
-  - `countPestana`
+  - **`countPestana`**(): int
+
     Retorna el nombre de pestanyes disponibles.
-  - `setTitulo`
+  - **`setTitulo`**(array $titulo): void
+
     /
-  - `desactivaAll`
-  - `getModel`
+  - **`desactivaAll`**(): void
+  - **`getModel`**(): string
+
     Retorna el nom del model associat al panell.
-  - `getPestanas`
+  - **`getPestanas`**(): array
+
     Retorna totes les pestanyes del panell.
-  - `getRejilla`
-  - `setRejilla`
-  - `getBotones`
+  - **`getRejilla`**(): ?array
+  - **`setRejilla`**(?array $grid): void
+  - **`getBotones`**(?string $tipo = null): array
+
     /
-  - `countBotones`
+  - **`countBotones`**(string $tipo): int
+
     Retorna quants botons hi ha en un grup.
-  - `getTitulo`
+  - **`getTitulo`**(string $que = 'index'): string
+
     Resol el títol traduït segons el model i l'acció.
-  - `setElementos`
+  - **`setElementos`**($elementos): void
+
     /
-  - `getElemento`
+  - **`getElemento`**(): mixed
+
     /
-  - `getElementos`
-  - `getPaginator`
+  - **`getElementos`**(Pestana $pestana)
+  - **`getPaginator`**(): ?Paginator
+
     Retorna el paginador si la cerca original era paginada.
-  - `activaPestana`
+  - **`activaPestana`**(string $nombre): void
+
     Activa una pestanya pel nom i desactiva la resta.
-  - `getView`
-  - `__set`
-  - `__get`
+  - **`getView`**(string $nombre, ?string $vista): string
+  - **`__set`**(string $name, $value): void
+  - **`__get`**(string $name): mixed
+
     /
-  - `ensureValidBotonType`
+  - **`ensureValidBotonType`**(string $tipo): void
+
     Valida que el tipus pertany a la botonera coneguda.
-  - `feedPanel`
+  - **`feedPanel`**($todos, array $titulo): Panel
+
     /
-  - `getLastPestanaWithModals`
+  - **`getLastPestanaWithModals`**(): array
 
 
 ### `app/UI/Panels/Pestana.php`
 
 #### `Intranet\UI\Panels\Pestana`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(string $nombre, bool $activa = false, ?string $vista = null, ?array $filtro = [], ?array $rejilla = null, array $include = [])
+
     /
-  - `setVista`
+  - **`setVista`**(?string $vista): void
+
     /
-  - `getVista`
+  - **`getVista`**(): ?string
+
     /
-  - `getNombre`
+  - **`getNombre`**(): string
+
     /
-  - `getActiva`
+  - **`getActiva`**(): string
+
     /
-  - `getInclude`
+  - **`getInclude`**(string $index): array
+
     /
-  - `setInclude`
+  - **`setInclude`**(array $include): void
+
     /
-  - `setActiva`
+  - **`setActiva`**(bool $activa): void
+
     /
-  - `getFiltro`
+  - **`getFiltro`**(): array
+
     /
-  - `getRejilla`
+  - **`getRejilla`**(): ?array
+
     /
-  - `setRejilla`
+  - **`setRejilla`**(?array $grid): void
+
     /
-  - `getLabel`
+  - **`getLabel`**(): string
+
     Retorna l'etiqueta traduïda; si no hi ha traducció, usa el nom original.
 
 
@@ -11726,59 +13090,61 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Activity`
 - Metodes:
-  - `__construct`
-  - `render`
-  - `getClass`
-  - `getAction`
+  - **`__construct`**(ActivityModel $activity)
+  - **`render`**()
+  - **`getClass`**()
+  - **`getAction`**()
 
 
 ### `app/View/Components/Botones.php`
 
 #### `Intranet\View\Components\Botones`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(public mixed $panel, public string $tipo, public mixed $elemento = null, public bool $centrado = true)
+  - **`render`**(): View|Closure|string
 
 
 ### `app/View/Components/Form/DynamicFieldRenderer.php`
 
 #### `Intranet\View\Components\Form\DynamicFieldRenderer`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(string $name, string $type, ?string $label = null, mixed $value = null, array $params = [], mixed $currentFile = null)
+  - **`render`**()
 
 
 ### `app/View/Components/Form/FileInput.php`
 
 #### `Intranet\View\Components\Form\FileInput`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(string $name, string $label, mixed $currentFile = null, array $params = [])
+  - **`render`**()
 
 
 ### `app/View/Components/Form/GenericField.php`
 
 #### `Intranet\View\Components\Form\GenericField`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(string $name, string $type, mixed $value = null, array $params = [])
+  - **`render`**()
 
 
 ### `app/View/Components/Form/TagInput.php`
 
 #### `Intranet\View\Components\Form\TagInput`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(string $name, ?string $value = null)
+  - **`render`**()
 
 
 ### `app/View/Components/Grid/Header.php`
 
 #### `Intranet\View\Components\Grid\Header`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11786,9 +13152,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Grid\Row`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11796,9 +13164,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Grid\Table`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11806,26 +13176,29 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Horari`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**($horario, $config = [])
+  - **`render`**()
 
 
 ### `app/View/Components/Label.php`
 
 #### `Intranet\View\Components\Label`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($id, $cab1, $cab2, $title, $subtitle=null, $inside=null, $view='date')
+
     /
-  - `render`
+  - **`render`**()
 
 
 ### `app/View/Components/Layouts/App.php`
 
 #### `Intranet\View\Components\Layouts\App`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(public $panel=null, public $title = ' ')
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11833,9 +13206,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Footer`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11843,9 +13218,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Leftside`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11853,9 +13230,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Meta`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11863,9 +13242,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Page`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(public string $title = '')
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11873,9 +13254,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Panel`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(public $panel, )
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11883,9 +13266,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Pestanas`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(public $panel, public $elemento)
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11893,9 +13278,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Titlebar`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11903,9 +13290,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Topmenu`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(FitxatgeService $fitxatgeService)
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11913,9 +13302,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Layouts\Topnav`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(FitxatgeService $fitxatgeService)
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11923,35 +13314,39 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\Llist`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($image, $date)
+
     /
-  - `render`
+  - **`render`**()
 
 
 ### `app/View/Components/Modal.php`
 
 #### `Intranet\View\Components\Modal`
 - Metodes:
-  - `__construct`
+  - **`__construct`**(String $name, String $title, String $message, String $action ="#", String $clase='', $cancel='Cancelar', $dismiss=true)
+
     Modal constructor.
-  - `render`
+  - **`render`**()
 
 
 ### `app/View/Components/Note.php`
 
 #### `Intranet\View\Components\Note`
 - Metodes:
-  - `__construct`
+  - **`__construct`**($name, $title, $message, $color, $linkEdit='#', $linkShow='#')
+
     /
-  - `render`
+  - **`render`**()
 
 
 ### `app/View/Components/ReunionItem.php`
 
 #### `Intranet\View\Components\ReunionItem`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**($reunion)
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11959,8 +13354,9 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\UserProfile`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**($usuario)
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11968,8 +13364,9 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\UserTabs`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**($tabs)
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11977,9 +13374,11 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\ui\Errors`
 - Metodes:
-  - `__construct`
+  - **`__construct`**()
+
     Create a new component instance.
-  - `render`
+  - **`render`**(): View|Closure|string
+
     Get the view / contents that represent the component.
 
 
@@ -11987,8 +13386,8 @@ Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
 
 #### `Intranet\View\Components\ui\Tabs`
 - Metodes:
-  - `__construct`
-  - `render`
+  - **`__construct`**(string $id, $panel)
+  - **`render`**()
 
 
 
