@@ -98,6 +98,9 @@
         ],
         "test:full": [
             "@php -d max_execution_time=1000 artisan test --stop-on-failure"
+        ],
+        "docs:app:docblocks": [
+            "@php tools/docblocks/generate-docblocks-index.php"
         ]
     },
     "config": {
