@@ -39,15 +39,32 @@ function borraTabla() {
 	$('#tabla-datos').find('tbody').find('td>span.fichaje').empty();
 }
 
+function apiAuthOptions() {
+	var legacyToken = $.trim($("#_token").text());
+	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var options = {
+		headers: {},
+		data: {}
+	};
+
+	if (bearerToken) {
+		options.headers.Authorization = "Bearer " + bearerToken;
+	} else if (legacyToken) {
+		options.data.api_token = legacyToken;
+	}
+
+	return options;
+}
+
 function loadFichas() {
 	let url="/api/faltaProfesor/dia="+getFecha(fecha);
+	var auth = apiAuthOptions();
 	$.ajax({
 		url: url,
     	type: "GET",
     	dataType: "json",
-    	data: {
-    		api_token: $("#_token").text()
-    	}
+		headers: auth.headers,
+		data: auth.data
 	}).then(function(res){
 	    // Pintamos los datos
 	    let fichadas=[];
@@ -67,13 +84,13 @@ function loadFichas() {
 
 function loadHorario() {
 	let url="/api/horariosDia/"+getFechaEsp(fecha);
+	var auth = apiAuthOptions();
 	$.ajax({
 		url: url,
     	type: "GET",
     	dataType: "json",
-    	data: {
-    		api_token: $("#_token").text()
-    	}
+		headers: auth.headers,
+		data: auth.data
 	}).then(function(res){
 	    // Pintamos los datos
 	    let horarios=[];

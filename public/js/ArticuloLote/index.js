@@ -4,12 +4,26 @@
 var selecionado = null;
 var options = {};
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 
     // FUncionalidades de los botones
     var editar =  `<a href="#" class="edit">
                     <i class="fa fa-pencil" title="Editar"></i>
                 </a>`;
-    var token = $("#_token").text();
 
 
 $(function () {
@@ -23,7 +37,8 @@ $(function () {
             context:this,
             method: "GET",
             url: "/api/espacio",
-            data: {api_token: token},
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data,
             dataType: "json",
         }).then(function (result) {
             $(result.data).each(function (i, item) {
@@ -41,7 +56,8 @@ function cargaMateriales(entorno,idArticulo){
         context: entorno,
         method: "GET",
         url: "/api/articuloLote/" + idArticulo +"/materiales",
-        data: { api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
         dataType: "json",
     }).then(function (result) {
         var html = '<table id="datamateriales" name="material" class="table table-striped"><thead><tr><th>Id</th><th>Numero Serie</th><th>Marca</th><th>Modelo</th><th>Espai</th>';

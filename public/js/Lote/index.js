@@ -6,6 +6,21 @@ const MANTENIMIENTO=7;
 var selecionado = null;
 var options = {};
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 
     // FUncionalidades de los botones
     var autorizado=(!($('#rol').text()%MANTENIMIENTO));
@@ -25,13 +40,21 @@ var options = {};
     var inventariable = `<a href="#" class="inventary">
                     <i class="fa fa-cubes" title="Inventariar"></i>                
                 </a>`;
-    var token = $("#_token").text();
+    var auth = apiAuthOptions();
+    if (auth.headers.Authorization) {
+        $.ajaxSetup({
+            headers: {
+                Authorization: auth.headers.Authorization
+            }
+        });
+    }
     var articulos = cargaArticulos();
     $("#datatable").DataTable( {
         ajax : {
             method: "GET",
             url: '/api/lote',
-            data: { api_token: token},
+            headers: auth.headers,
+            data: auth.data,
         },
         deferRender : true,
         dataSrc : 'data',
@@ -117,7 +140,8 @@ $(function () {
                     context: this,
                     method: "DELETE",
                     url: "/api/lote/" + $(this).parent().siblings().first().text(),
-                    data: { api_token: token},
+                    headers: apiAuthOptions().headers,
+                    data: apiAuthOptions().data,
                     dataType: "json",
                 }).then(function (result) {
                     if (result.success == true ) {
@@ -158,14 +182,14 @@ $(function () {
                 $.ajax({
                     method: "PUT",
                     url: "/api/lote/"+$registre.text(),
-                    data: {
+                    headers: apiAuthOptions().headers,
+                    data: apiAuthOptions({
                         registre: $("#registre").val(),
                         factura: $("#factura").val(),
                         proveedor: $("#proveedor").val(),
                         procedencia: $("#origen").val(),
                         fechaAlta: $("#fechaalta").val(),
-                        api_token: token,
-                    },
+                    }).data,
                 }).then(function (res) {
                     $registre.text($("#registre").val());
                     $proveedor.text($("#proveedor").val());
@@ -192,7 +216,8 @@ $(function () {
                 context:this,
                 method: "GET",
                 url: "/api/lote/" + idLote+"/articulos",
-                data: { api_token: token},
+                headers: apiAuthOptions().headers,
+                data: apiAuthOptions().data,
                 dataType: "json",
             }).then(function (result) {
                 $(result.data).each(function (  i, item) {
@@ -203,8 +228,8 @@ $(function () {
                         context: this,
                         method: "PUT",
                         url: "/api/lote/" + idLote +'/articulos',
-                        data: { api_token: token,
-                            inventariar: true},
+                        headers: apiAuthOptions().headers,
+                        data: apiAuthOptions({inventariar: true}).data,
                         dataType: "json",
                     }).then(function (result) {
                         if (result.success == true ){
@@ -234,7 +259,8 @@ $(function () {
                 context:this,
                 method: "GET",
                 url: "/api/espacio",
-                data: {api_token: token},
+                headers: apiAuthOptions().headers,
+                data: apiAuthOptions().data,
                 dataType: "json",
             }).then(function (result) {
                 $(result.data).each(function (i, item) {
@@ -249,14 +275,15 @@ $(function () {
                 context: this,
                 method: "POST",
                 url: "/api/articuloLote",
-                data: { api_token: token,
+                headers: apiAuthOptions().headers,
+                data: apiAuthOptions({
                     lote_id: $("#idLote").text(),
                     articulo_id: $("#articulo_id").val(),
                     descripcion: $("#descripcion").val(),
                     marca: $("#marca").val(),
                     modelo: $("#modelo").val(),
                     unidades: $("#unidades").val(),
-                },
+                }).data,
                 dataType: "json",
             }).then(function (result) {
                 if (result.success == true ) {
@@ -278,7 +305,8 @@ $(function () {
                     context: this,
                     method: "DELETE",
                     url: "/api/articuloLote/" + $(this).parent().parent().siblings().first().text(),
-                    data: { api_token: token},
+                    headers: apiAuthOptions().headers,
+                    data: apiAuthOptions().data,
                     dataType: "json",
                 }).then(function (result) {
                     if (result.success == true ) {
@@ -301,7 +329,8 @@ function cargaArticulosLote(entorno,idLote,estado){
         context: entorno,
         method: "GET",
         url: "/api/lote/" + idLote+"/articulos",
-        data: { api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
         dataType: "json",
     }).then(function (result) {
         var html = '<table id="dataarticle" name="articuloLote" class="table table-striped"><thead><tr><th>Id</th><th>Article</th><th>Marca</th><th>Mòdel</th><th>Unitats</th>';
@@ -332,7 +361,8 @@ function cargaArticulos() {
     $.ajax({
         method: "GET",
         url: "/api/articulo",
-        data: {api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
         dataType: "json",
     }).then(function (result) {
         articulos = '<select id="articulo_id" name="articulo_id" ><option value="new">Article Nou</option>';
@@ -352,7 +382,8 @@ function cargaMateriales(entorno,idArticulo){
         context: entorno,
         method: "GET",
         url: "/api/articuloLote/" + idArticulo +"/materiales",
-        data: { api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
         dataType: "json",
     }).then(function (result) {
         var html = '<table id="datamateriales" name="material" class="table table-striped"><thead><tr><th>Id</th><th>Numero Serie</th><th>Espai</th>';

@@ -40,9 +40,9 @@
 import axios from 'axios'
 import AppMsg from '../utils/AppMsg.vue';
 import FechaPicker from "../utils/FechaPicker";
+import { getApiToken, withApiAuth } from '../utils/api-auth';
 
-const tokenNode = document.getElementById('_token');
-const token = tokenNode ? tokenNode.innerHTML : '';
+const token = getApiToken();
 const dniNode = document.getElementById('dni');
 const idProfesor = dniNode ? dniNode.innerHTML : '';
 
@@ -71,8 +71,7 @@ export default {
                 return;
             }
 
-            const queryToken = token ? ('?api_token=' + token) : '';
-            axios.get('/api/itaca/' + val + '/' + idProfesor + queryToken)
+            axios.get('/api/itaca/' + val + '/' + idProfesor, withApiAuth())
             .then((response) => {
                 this.horario = response.data.data;
             }, (error) => {
@@ -110,9 +109,10 @@ export default {
             }
 
             let req = {
-                url: '/api/itaca?api_token=' + token,
+                url: '/api/itaca',
                 method: 'POST',
-                data: this.horario
+                data: this.horario,
+                ...withApiAuth()
             };
             axios(req).then(response => {
                 for (let sesion in response.data.data) {

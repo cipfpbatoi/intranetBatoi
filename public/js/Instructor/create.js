@@ -1,13 +1,29 @@
 'use strict';
 
 $(function () {
+    function apiAuthOptions(extraData) {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var data = extraData || {};
+        var headers = {};
+
+        if (bearerToken) {
+            headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
     $('#dni_id').change(function () {
         var dni = $("#dni_id").val();
-        var token = $("#_token").text();
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/instructor/"+dni,
-            data: {api_token: token},
+            headers: auth.headers,
+            data: auth.data,
         })
         .then(function (result) {
             $('#name_id').val(result.data.name);

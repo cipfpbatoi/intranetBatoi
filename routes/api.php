@@ -25,9 +25,11 @@ Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
 Route::post('eventPorta', 'CotxeController@eventEntrada');
 Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
- 
+Route::post('/auth/exchange', 'AuthTokenController@exchange');
+Route::get('/auth/me', 'AuthTokenController@me')->middleware('auth:api,sanctum');
+Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:api,sanctum');
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::get('fct/{id}/alFct', 'FctController@llist');

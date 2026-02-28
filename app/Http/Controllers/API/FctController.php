@@ -33,7 +33,13 @@ class FctController extends ApiResourceController
 
         public function seguimiento($id,Request $request)
         {
-            $user = $this->profesores()->findByApiToken((string) $request->api_token);
+            $user = $request->user('sanctum') ?? $request->user('api');
+            if ($user === null) {
+                $user = $this->profesores()->findByApiToken((string) ($request->query('api_token') ?? $request->input('api_token') ?? ''));
+            }
+            if ($user === null) {
+                return $this->sendError('Unauthorized', 401);
+            }
             $activity = new Activity();
             $activity->model_id = $id;
             $activity->action = 'review';

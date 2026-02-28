@@ -1,17 +1,31 @@
 'use strict';
 
 var id;
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 $(function () {
-    var token = $("#_token").text();
     var id = $("#fct_id").text();
-    $('input.fa-user').on("click", function(){
+    $('input.fa-user').on("click", function(event){
         if (!confirm("Vas a canviar cotutoria d'esta FCT.\n" +
             "Aquell al que has assignat podrà contactar amb este centre de treball encara que no tinga alumnes assignats.\n" +
             "El cotutor actual deixarà de vore esta fct sinó te cap alumne assignat")) {
             event.preventDefault();
         }
     });
-    $('a.fa-unlink').on("click", function(){
+    $('a.fa-unlink').on("click", function(event){
         if (!confirm("Vas a deslligar la FCT del SAO. L'hauràs de tornar a importar. Estas segur?")) {
             event.preventDefault();
         }
@@ -22,9 +36,8 @@ $(function () {
         $.ajax({
             url: '/api/fct/' + id + '/alFct',
             method: 'GET',
-            data: {
-                api_token: token,
-            },
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data,
             success: function(response) {
                 let fctAl = response.data;  // Suposant que la resposta té una propietat 'alumnes'
                 let select = $("#alumnoFct");
@@ -43,20 +56,21 @@ $(function () {
             }
         });
     });
-    $("#formDialogo_alumno").on("submit", function(){
+    $("#formDialogo_alumno").on("submit", function(event){
         event.preventDefault();
         let alumnoFctSelect = this.alumnoFct;
         let alumnoFctId = alumnoFctSelect.value;
         let alumnoFctName = $(alumnoFctSelect).find("option:selected").text();
 
+        let auth = apiAuthOptions({
+            explicacion: this.explicacion.value
+        });
 
         $.ajax({
             method: "POST",
             url: "/api/fct/" + this.alumnoFct.value + "/alFct",
-            data: {
-                api_token: token,
-                explicacion: this.explicacion.value
-            }
+            headers: auth.headers,
+            data: auth.data
         }).then(function (result) {
             let contacte = result.data;
 

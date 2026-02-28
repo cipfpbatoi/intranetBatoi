@@ -1,11 +1,27 @@
 $(function () {
+    function apiAuthOptions(extraData) {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var data = extraData || {};
+        var headers = {};
+
+        if (bearerToken) {
+            headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
     $('#espacio_id').change(function () {
         var espacio = $("#espacio_id").val();
-        var token = $("#_token").text();
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/material/espacio/" + espacio,
-            data: {api_token: token},
+            headers: auth.headers,
+            data: auth.data,
         })
             .then(function (result) {
                 $("#material_id").empty().append("<option value=0>Escoge un material</option>")
@@ -22,11 +38,12 @@ $(function () {
     });
     $('#tipo_id').change(function () {
         var tipo = $("#tipo_id").val();
-        var token = $("#_token").text();
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/tipoincidencia/" + tipo,
-            data: {api_token: token},
+            headers: auth.headers,
+            data: auth.data,
         }).then(function (result) {
             if (result.data.tipus == 2) {
                 $('#espacio_id').prop('disabled', true);
@@ -38,5 +55,4 @@ $(function () {
         });
     });
 });
-
 

@@ -1,13 +1,27 @@
 $(function () {
+    function apiAuthOptions(extraData) {
+        var legacyToken = $.trim($("#_token").text());
+        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+        var data = extraData || {};
+        var headers = {};
+
+        if (bearerToken) {
+            headers.Authorization = "Bearer " + bearerToken;
+        } else if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
 
     function pedir_datos(desde, hasta, profesor) {
-        var token = $("#_token").text();
-        var objeto = {desde: desde, hasta: hasta, profesor: profesor,api_token:token};
+        var auth = apiAuthOptions({desde: desde, hasta: hasta, profesor: profesor});
         $.ajax({
             method: "GET",
             url: "api/verficha",
             dataType: "json",
-            data: objeto
+            headers: auth.headers,
+            data: auth.data
         }).then(function (result) {
             chart.setData(result.message);
         })
@@ -50,5 +64,4 @@ $(function () {
             });
 
 });
-
 

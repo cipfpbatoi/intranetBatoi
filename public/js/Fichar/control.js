@@ -42,17 +42,34 @@ function borraTabla() {
 	$('#tabla-datos').find('tbody').find('td').empty();
 }
 
+function apiAuthOptions() {
+	var legacyToken = $.trim($("#_token").text());
+	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var options = {
+		headers: {},
+		data: {}
+	};
+
+	if (bearerToken) {
+		options.headers.Authorization = "Bearer " + bearerToken;
+	} else if (legacyToken) {
+		options.data.api_token = legacyToken;
+	}
+
+	return options;
+}
+
 function loadFichas() {
 	let fechaFin=new Date(fecha);
 	fechaFin.setDate(fecha.getDate()+4);
 	let url="/api/faltaProfesor/horas/dia]"+getFecha(fecha)+"&dia["+getFecha(fechaFin);
+	var auth = apiAuthOptions();
 	$.ajax({
 		url: url,
     	type: "GET",
     	dataType: "json",
-    	data: {
-    		api_token: $("#_token").text()
-    	}
+		headers: auth.headers,
+		data: auth.data
 	}).then(function(res){
 	    // Pintamos los datos
 	    for (var profe in res.message) {

@@ -14,9 +14,9 @@
         <div class="profile clearfix">
             <div id="dni" class="hidden">{{ $user->dni }}</div>
             <div id="rol" class="hidden">{{ $user->rol }}</div>
-            @isset($user->api_token)
+            @if (isset($user->api_token))
                 <div id="_token" class="hidden">{{ $user->api_token }}</div>
-            @endisset
+            @endif
 
             <div class="profile_pic">
                 <img src="{{ asset('/storage/fotos/' . $user->foto) }}" alt="FotoUsuari" class="img-circle profile_img">

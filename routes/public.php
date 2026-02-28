@@ -49,3 +49,7 @@ Route::get(
 );
 Route::get('lang/{lang}', ['as' => 'lang.choose', 'uses' => 'AdministracionController@lang']);
 Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);
+
+if (!app()->environment('production')) {
+    Route::get('/docs/app-docblocks', ['as' => 'docs.app-docblocks', 'uses' => 'Docs\\DocblockDocsController@index']);
+}

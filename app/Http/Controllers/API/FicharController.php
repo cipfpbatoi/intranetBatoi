@@ -2,10 +2,14 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Entities\Profesor;
 use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Services\HR\FitxatgeService;
 
+/**
+ * Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
+ */
 class FicharController extends ApiResourceController
 {
 
@@ -22,11 +26,29 @@ class FicharController extends ApiResourceController
     }
 
 
+    /**
+     * Registra entrada/eixida de fitxatge.
+     *
+     * Compatibilitat:
+     * - Preferent: usuari autenticat amb `auth:api` (Bearer token).
+     * - Legacy: validació per parella `dni + api_token`.
+     */
     public function fichar(Request $request, FitxatgeService $fitxatgeService)
     {
-        $profesor = $this->profesores()->find((string) $request->dni);
+        /** @var Profesor|null $apiUser */
+        $apiUser = auth()->user();
+        $dni = (string) $request->input('dni', $apiUser?->dni ?? '');
+        $profesor = $this->profesores()->find($dni);
 
-        if (!$profesor || $request->api_token !== $profesor->api_token) {
+        if (!$profesor) {
+            return $this->sendResponse(['updated' => false], 'Profesor no identificat');
+        }
+
+        if ($apiUser !== null) {
+            if ((string) $apiUser->dni !== (string) $profesor->dni) {
+                return $this->sendResponse(['updated' => false], 'Accés no autoritzat per a eixe DNI');
+            }
+        } elseif ((string) $request->input('api_token', '') !== (string) $profesor->api_token) {
             return $this->sendResponse(['updated' => false], 'Profesor no identificat');
         }
 

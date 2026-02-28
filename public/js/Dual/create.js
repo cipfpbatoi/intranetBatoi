@@ -1,13 +1,29 @@
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 $(function () {
 
     $('#idColaboracion_id').change(function () {
         var idColaboracion = $("#idColaboracion_id").val();
-        var token = $("#_token").text();
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/instructores/" + idColaboracion,
             dataType: 'json',
-            data: {api_token: token}
+            headers: auth.headers,
+            data: auth.data
         })
             .then(function (result) {
                 var newOptions = result.data;
@@ -27,13 +43,14 @@ $(function () {
 function postModal() {
     var idColaboracion = $("#idColaboracion_id").val();
     var idInstructor = $("#idInstructor_id").val();
-    var token = $("#_token").text();
     if (idColaboracion) {
+        var auth = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/api/colaboracion/instructores/" + idColaboracion,
             dataType: 'json',
-            data: {api_token: token}
+            headers: auth.headers,
+            data: auth.data
         })
             .then(function (result) {
                 var newOptions = result.data;

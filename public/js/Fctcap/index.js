@@ -1,14 +1,30 @@
 'use strict';
 
-var token = $("#_token").text();
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 var grupo = $("#_grupo").text();
 var avise = ' <a href="/profesor/mensaje" class="mensaje"><i class="fa fa-bell"></i></a> ';
 
+var authDatatable = apiAuthOptions();
 $("#dataFct").DataTable( {
     ajax : {
         method: "GET",
         url: '/api/alumnofct/'+grupo+'/grupo',
-        data: { api_token: token},
+        headers: authDatatable.headers,
+        data: authDatatable.data,
     },
     deferRender : true,
     dataSrc : 'data',
@@ -69,14 +85,15 @@ $(function () {
         var pg0301 = $(this).prop("checked");
         var a56 = document.activeElement.classList.contains('a56');
         if (a56){
+            var authA56 = apiAuthOptions({
+                id: idFct,
+                a56: pg0301,
+            });
             $.ajax({
                 method: "PUT",
                 url: "/api/alumnofct/"+idFct,
-                data: {
-                    id: idFct,
-                    a56:  pg0301,
-                    api_token: token,
-                },
+                headers: authA56.headers,
+                data: authA56.data,
             }).then(function (res) {
                 console.log(res)
             }, function (res) {
@@ -89,14 +106,15 @@ $(function () {
                 console.log(res)
             });
         } else {
+            var authPg = apiAuthOptions({
+                id: idFct,
+                pg0301: pg0301,
+            });
             $.ajax({
                 method: "PUT",
                 url: "/api/alumnofct/"+idFct,
-                data: {
-                    id: idFct,
-                    pg0301:  pg0301,
-                    api_token: token,
-                },
+                headers: authPg.headers,
+                data: authPg.data,
             }).then(function (res) {
                 console.log(res)
             }, function (res) {

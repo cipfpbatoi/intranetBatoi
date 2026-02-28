@@ -13,10 +13,15 @@ $(function() {
 	$("#formDialogo").on("submit", function(){
 		$(this).attr("action","/direccion/comision/"+id+"/refuse");
 	});
-	$(".paid").click(function() {
+	$(".paid").on("click", function(event) {
 		// Comprovem si alguna casella de selecció amb la classe 'user' està seleccionada
 		event.preventDefault();
-		var token = $("#_token").text();
+		var legacyToken = $.trim($("#_token").text());
+		var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+		var headers = {};
+		if (bearerToken) {
+			headers.Authorization = "Bearer " + bearerToken;
+		}
 
 		var selectedCheckboxes = $(".user:checked");
 
@@ -26,14 +31,17 @@ $(function() {
 
 			selectedCheckboxes.each(function(i,checkbox) {
 				var url = "/api/comision/"+checkbox.name+"/prePay";
+				var requestData = {};
+				if (!bearerToken && legacyToken) {
+					requestData.api_token = legacyToken;
+				}
 				$.ajax({
 					url: url, // Ajusta la URL de la teva API
 					type: "PUT",
-					data: {
-						api_token: token,
-					},
+					data: requestData,
+					headers: headers,
 					success: function(data) {
-						console.log("Petició PUT per " + name + " enviada amb èxit.");
+						console.log("Petició PUT per " + checkbox.name + " enviada amb èxit.");
 						// Incrementem el comptador de peticions completades
 						completedRequests++;
 
@@ -48,7 +56,7 @@ $(function() {
 						$(location).attr('href', '/direccion/comision/paid');
 					},
 					error: function() {
-						console.error("Hi ha hagut un error en l'enviament de la petició PUT per " + name + ".");
+						console.error("Hi ha hagut un error en l'enviament de la petició PUT per " + checkbox.name + ".");
 						// Incrementem el comptador de peticions completades
 						completedRequests++;
 

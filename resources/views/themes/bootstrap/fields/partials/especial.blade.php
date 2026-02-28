@@ -1,6 +1,7 @@
 @php
-if (strpos($input->__toString(),'value')){
-    $cadena = substr($input->__toString(),strpos($input->__toString(),'value')+7,strlen($input->__toString()));
+$inputHtml = is_object($input) && method_exists($input, '__toString') ? $input->__toString() : (string) $input;
+if (strpos($inputHtml,'value')){
+    $cadena = substr($inputHtml,strpos($inputHtml,'value')+7,strlen($inputHtml));
     $value = substr($cadena,0,strpos($cadena,'"'));
 }
 else $value = '';

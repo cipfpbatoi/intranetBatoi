@@ -1,7 +1,22 @@
 'use strict'
 var modelo = $("#datatable").attr('name').toLowerCase();
 var formModal = $('.modal form');
-var token = $("#_token").text();
+
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 $(function () {
     $('#create').on('hidden.bs.modal', function () {
         var id=$(this).find('#id').val();
@@ -77,7 +92,8 @@ jQuery("#datatable").on("click",".fa-edit" ,function (e) {
         method: "GET",
         url: "/api/" + modelo + "/" + id + "/edit",
         dataType: 'json',
-        data: {api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
     }).then(function (res) {
         formModal.attr('action', jQuery(location).attr('href').replace(/#/,"")+"/"+id+"/edit");
         formModal.find('#metodo').val('PUT').end().find('#id').val(id);
@@ -116,7 +132,8 @@ jQuery("#datatable").on("click",".fa-eye" ,function (e) {
         method: "GET",
         url: "/api/" + modelo + "/" + id ,
         dataType: 'json',
-        data: {api_token: token},
+        headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
     }).then(function (res) {
         var html = '<ul class="to_do">';
         for (var propiedad in res.data) {

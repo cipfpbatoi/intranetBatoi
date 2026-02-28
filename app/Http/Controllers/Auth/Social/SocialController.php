@@ -8,11 +8,13 @@ use Intranet\Entities\Alumno;
 use Auth;
 use Socialite;
 use Intranet\Http\Controllers\Controller;
+use Intranet\Services\Auth\ApiSessionTokenService;
 
 
 class SocialController extends Controller
 {
     private ?ProfesorService $profesorService = null;
+    private ?ApiSessionTokenService $apiSessionTokenService = null;
 
     public function __construct()
     {
@@ -26,6 +28,15 @@ class SocialController extends Controller
         }
 
         return $this->profesorService;
+    }
+
+    private function apiSessionTokens(): ApiSessionTokenService
+    {
+        if ($this->apiSessionTokenService === null) {
+            $this->apiSessionTokenService = app(ApiSessionTokenService::class);
+        }
+
+        return $this->apiSessionTokenService;
     }
 
     public function getSocialAuth($token=null)
@@ -59,6 +70,7 @@ class SocialController extends Controller
 
     private function successloginProfesor($user){
         Auth::login($user);
+        $this->apiSessionTokens()->issueForProfesor($user, 'web-social-login');
         session(['lang' => AuthUser()->idioma]);
         return redirect()->route('home.profesor');
     }

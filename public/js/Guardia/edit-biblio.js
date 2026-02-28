@@ -13,14 +13,28 @@ var diaSelec="";
 var horaActual="";
 var dias_semana=["D", "L", "M", "X", "J", "V", "S"];
 
+function apiAuthOptions(extraData) {
+	var legacyToken = $.trim($("#_token").text());
+	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var data = extraData || {};
+	var headers = {};
+
+	if (bearerToken) {
+		headers.Authorization = "Bearer " + bearerToken;
+	} else if (legacyToken) {
+		data.api_token = legacyToken;
+	}
+
+	return { headers: headers, data: data };
+}
+
 $(function() {
     $.ajax ({
     	url: "/api/ipGuardias",
     	type: "GET",
     	dataType: "json",
-        data: {
-    		api_token: $("#_token").text()
-    	}
+		headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data
         }).then(function(res){
             ipGuardia = res.data;
         });    
@@ -54,7 +68,8 @@ $(function() {
 //url: "api/horario/idProfesor=021666373M&ocupacion=3249454&dia_semana="+dias_semana[ahora.getDay()],
     	type: "GET",
     	dataType: "json",
-        data: {api_token: $("#_token").text()},
+		headers: apiAuthOptions().headers,
+        data: apiAuthOptions().data,
 	}).then(function(res){
 	    // las guardias llegan como objetos no como array
 //	    guardiasSemana=res.data;
@@ -123,7 +138,7 @@ function getOptionSesion() {
 }
 
 function cambiaHora() {
-    var token = $("#_token").text();
+	var auth = apiAuthOptions();
 	// Borramos el formulario
 	$("#hecha").prop("checked","");
 	$("#obs").val("");
@@ -148,7 +163,8 @@ function cambiaHora() {
 //url: "api/guardia/idProfesor=021666373M&dia="+diaHoy+"&hora="+$('#hora option:selected').val(),
 	    	type: "GET",
 	    	dataType: "json",
-                data: {api_token: token},
+            headers: auth.headers,
+            data: auth.data,
 		}).then(function(res){
 			idGuardia=0;
 			for (let i in res.data) {
@@ -179,8 +195,11 @@ function modDatos(ev) {
 		dia: dateEspToISO($('#dia').val()), 
 		hora: $("#hora").val(), 
 		observaciones: $("#obs").val(), 
-		obs_personal: $("#obs_per").val(),
-		api_token : $("#_token").text()
+		obs_personal: $("#obs_per").val()
+	}
+	var auth = apiAuthOptions();
+	if (!auth.headers.Authorization && auth.data.api_token) {
+		datosJson.api_token = auth.data.api_token;
 	}
 //	if (!$("#hecha").attr("disabled"))
 	datosJson.realizada=($("#hecha").prop("checked")?1:0);
@@ -188,15 +207,16 @@ function modDatos(ev) {
 	if (idGuardia) {
 		// Se modifica
 		var tipo="PUT";
-		var url='/api/guardia/'+idGuardia+'?api_token='+$("#_token").text();
+		var url='/api/guardia/'+idGuardia;
 	} else {
 		// Se crea
 		var tipo="POST";
-		var url='/api/guardia?api_token='+$("#_token").text();
+		var url='/api/guardia';
 	}
     $.ajax({
 		method: tipo,
 		data: datosJson,
+		headers: auth.headers,
 		url: url, 
 		dataType: "json"})
     .then(function(res) {
@@ -305,4 +325,3 @@ function getIPs(callback){
         });
     }, 1000);
 }
-

@@ -20,7 +20,7 @@
                 @if (!isset(authUser()->nia))
                     <li class="">
                         
-                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">
+                            <a href="{{ route('fichar.ficha') }}">
                                 @if ($insideAuth ?? false)
                                     <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                                 @else

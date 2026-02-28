@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use Intranet\Services\Auth\ApiSessionTokenService;
+use Intranet\Entities\Profesor;
 
 class LoginController extends Controller
 {
@@ -25,6 +27,7 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
     private ?ProfesorService $profesorService = null;
+    private ?ApiSessionTokenService $apiSessionTokenService = null;
 
     protected $redirectTo = '/home';
 
@@ -40,6 +43,25 @@ class LoginController extends Controller
         }
 
         return $this->profesorService;
+    }
+
+    private function apiSessionTokens(): ApiSessionTokenService
+    {
+        if ($this->apiSessionTokenService === null) {
+            $this->apiSessionTokenService = app(ApiSessionTokenService::class);
+        }
+
+        return $this->apiSessionTokenService;
+    }
+
+    /**
+     * Hook del trait AuthenticatesUsers després de login satisfactori.
+     */
+    protected function authenticated(Request $request, $user): void
+    {
+        if ($user instanceof Profesor) {
+            $this->apiSessionTokens()->issueForProfesor($user, 'web-login');
+        }
     }
 
     protected function credentials(Request $request)
@@ -70,6 +92,8 @@ class LoginController extends Controller
 
     public function logout()
     {
+        $this->apiSessionTokens()->revokeCurrentFromSession();
+
         if (isPrivateAddress(getClientIpAddress())) {
             Auth::guard('profesor')->logout();
             Session()->flush();
@@ -130,6 +154,7 @@ class LoginController extends Controller
             $profesor->changePassword = date('Y-m-d');
             $profesor->save();
             Auth::login($profesor);
+            $this->apiSessionTokens()->issueForProfesor($profesor, 'web-first-login');
             session(['lang' => $profesor->idioma]);
             return redirect()->route('home.profesor');
         }

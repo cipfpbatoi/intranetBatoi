@@ -95,7 +95,10 @@ class MaterialController extends ApiResourceController
     public function putUbicacion(Request $request)
     {
         $material = Material::findOrFail($request->id);
-        $user = apiAuthUser($request->api_token);
+        $user = $this->resolveApiUser($request);
+        if (!$user) {
+            return $this->sendError('Unauthorized', 401);
+        }
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
         try {
@@ -132,7 +135,10 @@ class MaterialController extends ApiResourceController
     public function putEstado(Request $request)
     {
         $material = Material::findOrFail($request->id);
-        $user = apiAuthUser($request->api_token);
+        $user = $this->resolveApiUser($request);
+        if (!$user) {
+            return $this->sendError('Unauthorized', 401);
+        }
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
         try {
@@ -177,7 +183,7 @@ class MaterialController extends ApiResourceController
 
     private function resolveApiUser(Request $request)
     {
-        $guardUser = $request->user('api');
+        $guardUser = $request->user('sanctum') ?? $request->user('api');
         if ($guardUser) {
             return $guardUser;
         }

@@ -28,9 +28,7 @@
 import axios from 'axios'
 import ControlGuardiaItem from './ControlGuardiaItem.vue';
 import ControlNav from '../utils/ControlNav.vue';
-
-const tokenNode = document.getElementById('_token');
-const token = tokenNode ? tokenNode.innerHTML : '';
+import { withApiAuth } from '../utils/api-auth';
 
 export default {
   components: {
@@ -62,12 +60,7 @@ export default {
         desde: this.sumaFecha(1),
         hasta: this.sumaFecha(5),
       };
-      if (token) {
-        params.api_token = token;
-      }
-      axios.get('/api/guardia/range', {
-        params
-      })
+      axios.get('/api/guardia/range', withApiAuth({ params }))
       .then(resp=>{
         // Organizamos los datos en un objeto de horas->días->profes
         for (let i in resp.data.data) {

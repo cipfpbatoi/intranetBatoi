@@ -242,11 +242,20 @@ class ApiResourceController extends Controller
 
     public function ApiUser(Request $request)
     {
+        $authUser = $request->user('sanctum') ?? $request->user('api');
+        if ($authUser !== null) {
+            return $authUser;
+        }
+
         if ($this->profesorService === null) {
             $this->profesorService = app(ProfesorService::class);
         }
 
-        return $this->profesorService->findByApiToken((string) $request->api_token);
+        $token = (string) ($request->query('api_token') ?? $request->input('api_token') ?? '');
+
+        return $token !== ''
+            ? $this->profesorService->findByApiToken($token)
+            : null;
     }
 
     /**

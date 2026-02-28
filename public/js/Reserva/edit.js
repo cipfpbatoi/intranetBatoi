@@ -8,8 +8,22 @@ const maxDiasReserva=30;
 const minDiasReserva=3;
 const esDireccion=2;
 
+function apiAuthOptions(extraData) {
+	var legacyToken = $.trim($("#_token").text());
+	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var data = extraData || {};
+	var headers = {};
+
+	if (bearerToken) {
+		headers.Authorization = "Bearer " + bearerToken;
+	} else if (legacyToken) {
+		data.api_token = legacyToken;
+	}
+
+	return { headers: headers, data: data };
+}
+
 $(function() {
-    var token = $("#_token").text();
     var errores = [];
 
 	$(".errores").empty();
@@ -119,7 +133,8 @@ $(function() {
 	    	url: "api/reserva/idEspacio="+$("#recurso").val()+"&dia="+fecha,
 	    	type: "GET",
 	    	dataType: "json",
-            data: {api_token: token},
+			headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data,
 		}).then(function(res){
 			for (i in res.data) {
 				var observaciones = res.data[i].observaciones?'('+res.data[i].observaciones+')':' ';
@@ -250,13 +265,13 @@ function modDatos(accion) {
 
 	if (accion=="reserva") {
 		var tipo="POST";
-		var url="api/reserva?api_token="+$("#_token").text();
+		var url="api/reserva";
 		var datos={
 				idEspacio: $("#recurso").val(), 
 				idProfesor: $('#idProfesor').val(),
-				observaciones: $('#observaciones').val(),
-				api_token: $("#_token").text()
+				observaciones: $('#observaciones').val()
 			};
+		var auth = apiAuthOptions(datos);
 		if ($("#dia_fin").val()) {
 			var fechaFin=$("#dia_fin").val();
 			var fechaFinDate=new Date(fechaFin);
@@ -272,9 +287,8 @@ function modDatos(accion) {
 		}
 	} else {
 		var tipo="DELETE";
-		var datos={
-				api_token: $("#_token").text()
-			};
+		var datos={};
+		var auth = apiAuthOptions(datos);
 	    for (var i=Number($("#desde").val()); i<=Number($("#hasta").val()); i++) {
 	    	if ($('#hora-'+i).find('span.idReserva').text()) {
 	    		peticiones.push({fecha: fecha, hora: $('#hora-'+i).find('span.idReserva').text()});
@@ -293,10 +307,15 @@ function modDatos(accion) {
 		   	url: url,
 		   	type: tipo,
 		   	dataType: "json",
+			headers: auth.headers,
 		   	data: datos
 		}).then(function(res){
 			console.log(res);
-			if (res.success) { respuestas.push('ok'); } else {respuestas.push(err);}
+			if (res.success) {
+				respuestas.push('ok');
+			} else {
+				respuestas.push('error');
+			}
 		}).fail(function(err) {
 			console.error(err);
 			respuestas.push(err);

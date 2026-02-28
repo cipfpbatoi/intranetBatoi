@@ -5,6 +5,21 @@ const ESTADOS=['Desconocido', 'Ok', 'Reparándose', 'Baja'];
 const MANTENIMIENTO=7;
 const mesesCaduca=6;
 
+function apiAuthOptions(extraData) {
+    var legacyToken = $.trim($("#_token").text());
+    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var data = extraData || {};
+    var headers = {};
+
+    if (bearerToken) {
+        headers.Authorization = "Bearer " + bearerToken;
+    } else if (legacyToken) {
+        data.api_token = legacyToken;
+    }
+
+    return { headers: headers, data: data };
+}
+
 
     // FUncionalidades de los botones
     var autorizado=(!($('#rol').text()%MANTENIMIENTO));
@@ -42,12 +57,13 @@ const mesesCaduca=6;
                 </a>`
     }
     var checkbox = "<div class='icheckbox_flat-green'><input type='checkbox' class='flat'></div>";
-    var token = $("#_token").text();
+    var authDatatable = apiAuthOptions();
     $("#datamaterial").DataTable( {
         ajax : {
             method: "GET",
             url: '/api/material',
-            data: { api_token: token},
+            headers: authDatatable.headers,
+            data: authDatatable.data,
         },
         deferRender : true,
         dataSrc : 'data',
@@ -97,7 +113,8 @@ $(function () {
         $.ajax({
             method: "GET",
             url: "/api/material/" + idMaterial,
-            data: { api_token: token},
+            headers: apiAuthOptions().headers,
+            data: apiAuthOptions().data,
             dataType: "json",
         }).then(function (result) {
             let dlgControls=[
@@ -162,16 +179,17 @@ $(function () {
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
             $(".modal-footer").find("button[type=submit]").show().one("click", function() {
+                var authUnidades = apiAuthOptions({
+                    id: idMaterial,
+                    unidades: $("#unidades").val(),
+                    unidades_antes: unidades,
+                    explicacion: $("#explicacion").val(),
+                });
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarUnidad",
-                    data: {
-                        id: idMaterial, 
-                        unidades: $("#unidades").val(), 
-                        unidades_antes: unidades, 
-                        explicacion: $("#explicacion").val(),
-                        api_token: token,
-                    },
+                    headers: authUnidades.headers,
+                    data: authUnidades.data,
                 }).then(function (res) {
                     $inputUnidades.text($("#unidades").val());
                     console.log(res)
@@ -198,16 +216,17 @@ $(function () {
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
             $(".modal-footer").find("button[type=submit]").show().one("click", function() {
+                var authUbicacion = apiAuthOptions({
+                    id: idMaterial,
+                    ubicacion: $("#espacios").val(),
+                    ubicacion_antes: espacioTabla,
+                    explicacion: $("#explicacion").val(),
+                });
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarUbicacion",
-                    data: {
-                        id: idMaterial, 
-                        ubicacion: $("#espacios").val(), 
-                        ubicacion_antes: espacioTabla, 
-                        explicacion: $("#explicacion").val(),
-                        api_token: token,
-                    },
+                    headers: authUbicacion.headers,
+                    data: authUbicacion.data,
                 }).then(function (res) {
                     $inputEspacioTabla.text($("#espacios").val());
                     console.log(res)
@@ -219,7 +238,8 @@ $(function () {
             $.ajax({
                 method: "GET",
                 url: "/api/espacio",
-                data: {api_token: token},
+                headers: apiAuthOptions().headers,
+                data: apiAuthOptions().data,
                 dataType: "json",
             }).then(function (result) {
                 $(result.data).each(function (i, item) {
@@ -245,16 +265,17 @@ $(function () {
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
             $(".modal-footer").find("button[type=submit]").show().one("click", function() {
+                var authEstado = apiAuthOptions({
+                    id: idMaterial,
+                    estado: $("#estado").val(),
+                    estado_antes: estadoMaterial,
+                    explicacion: $("#explicacion").val(),
+                });
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarEstado",
-                    data: {
-                        id: idMaterial, 
-                        estado: $("#estado").val(), 
-                        estado_antes: estadoMaterial, 
-                        explicacion: $("#explicacion").val(),
-                        api_token: token,
-                    },
+                    headers: authEstado.headers,
+                    data: authEstado.data,
                 }).then(function (res) {
                     $inputEstadoMaterial.text($("#estado").val());
                     console.log(res)
@@ -272,14 +293,15 @@ $(function () {
         $('#datamaterial').on('change', 'input.editor-active', function (event) {
             var idMaterial = $(this).parent().siblings().first().text();
             var inventariado = $(this).prop("checked");
+                var authInventario = apiAuthOptions({
+                    id: idMaterial,
+                    inventario: inventariado,
+                });
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarInventario",
-                    data: {
-                        id: idMaterial, 
-                        inventario:  inventariado, 
-                        api_token: token,
-                    },
+                    headers: authInventario.headers,
+                    data: authInventario.data,
             }).then(function (res) {
                     console.log(res)
                 }, function (res) {
