@@ -18,7 +18,7 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

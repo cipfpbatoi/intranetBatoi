@@ -9,7 +9,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Services\Mail\MyMail;
 use Illuminate\Http\Request;
 use Intranet\Http\Requests\MyMailStoreRequest;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

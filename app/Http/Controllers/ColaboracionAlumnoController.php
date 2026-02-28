@@ -7,7 +7,7 @@ use Intranet\Http\Controllers\Core\IntranetController;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Traits\Core\Panel;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

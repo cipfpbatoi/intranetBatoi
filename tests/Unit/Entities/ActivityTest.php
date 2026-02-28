@@ -4,7 +4,6 @@ namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Activity;
-use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
 class ActivityTest extends TestCase
@@ -23,7 +22,7 @@ class ActivityTest extends TestCase
 
     public function test_record_emplena_model_i_mostra_alerta_quan_hi_ha_model(): void
     {
-        Alert::shouldReceive('success')->once();
+        session()->forget('app_alerts');
 
         $model = new ActivityRecordDummyModel();
         $model->id = 99;
@@ -34,6 +33,11 @@ class ActivityTest extends TestCase
         $this->assertSame(ActivityRecordDummyModel::class, $result->model_class);
         $this->assertSame(99, $result->model_id);
         $this->assertSame('Canvi', $result->comentari);
+        $this->assertTrue(
+            collect(session('app_alerts', []))->contains(
+                static fn (array $alert): bool => ($alert['type'] ?? null) === 'success'
+            )
+        );
     }
 }
 

@@ -18,7 +18,7 @@ use Intranet\Entities\TipoExpediente;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Signature\DigitalSignatureService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class PanelExpedienteController

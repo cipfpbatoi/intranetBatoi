@@ -6,7 +6,7 @@ use Intranet\Application\Notification\NotificationInboxService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Intranet\UI\Botones\BotonImg;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class NotificationController

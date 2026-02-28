@@ -19,9 +19,9 @@ use Intranet\Entities\Fct;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\Document\PdfFormService;
 use Illuminate\Support\Carbon;
-use mikehaertl\pdftk\Pdf;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -358,9 +358,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xii.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_XII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXII($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_XII.pdf', $this->makeArrayPdfAnexoXII($fct, $data), $file);
         }
         return $file;
     }
@@ -370,9 +368,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_iv.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_IV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoIV($fct, $data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_IV.pdf', $this->makeArrayPdfAnexoIV($fct, $data), $file);
         }
         return $file;
     }
@@ -425,9 +421,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/conveni.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/Conveni.pdf');
-            $pdf->fillform($this->makeArrayPdfConveni($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/Conveni.pdf', $this->makeArrayPdfConveni($fct, $data), $file);
         }
         return $file;
     }
@@ -542,9 +536,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xiiI.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_XIII.pdf', $this->makeArrayPdfAnexoXIII($fct, $data), $file);
         }
         return $file;
     }
@@ -552,9 +544,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/justificants.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_XIII.pdf', $this->makeArrayPdfAnexoXIII($fct, $data), $file);
         }
         return $file;
     }
@@ -627,9 +617,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/doc1".'.pdf');
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/DOC_1.pdf');
-            $pdf->fillform($this->makeArrayPdfDOC1($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/DOC_1.pdf', $this->makeArrayPdfDOC1($fct, $data), $file);
         }
         return $file;
     }
@@ -715,9 +703,7 @@ class DualController extends ModalController
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_vii".$num.".pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_VII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoVII($fct,$data))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_VII.pdf', $this->makeArrayPdfAnexoVII($fct, $data), $file);
         }
         return $file;
     }
@@ -773,9 +759,7 @@ class DualController extends ModalController
     public function printAnexeVI()
     {
         try {
-            $pdf = new Pdf('fdf/ANEXO_VI.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoVI())
-                ->send('dualVI'.AuthUser()->dni.'.pdf');
+            app(PdfFormService::class)->fillAndSend('fdf/ANEXO_VI.pdf', $this->makeArrayPdfAnexoVI(), 'dualVI' . AuthUser()->dni . '.pdf');
         } catch (IntranetException $e){
             Alert::warning($e->getMessage());
             return back();
@@ -930,9 +914,7 @@ class DualController extends ModalController
     public function printAnexeXIV()
     {
         try {
-            $pdf = new Pdf('fdf/ANEXO_XIV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXIV())
-                ->send('dualXIV'.AuthUser()->dni.'.pdf');
+            app(PdfFormService::class)->fillAndSend('fdf/ANEXO_XIV.pdf', $this->makeArrayPdfAnexoXIV(), 'dualXIV' . AuthUser()->dni . '.pdf');
         } catch (IntranetException $e) {
             Alert::warning($e->getMessage());
             return back();

@@ -28,7 +28,7 @@ use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
 use Illuminate\Support\Carbon;
 use Response;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use function dispatch;
 
 /**

@@ -7,7 +7,7 @@ use Intranet\Http\Controllers\Core\IntranetController;
 use Illuminate\Http\Request;
 use Intranet\Http\Requests\AuthPerfilUpdateRequest;
 use Intranet\Services\Media\ImageService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 abstract class PerfilController extends IntranetController

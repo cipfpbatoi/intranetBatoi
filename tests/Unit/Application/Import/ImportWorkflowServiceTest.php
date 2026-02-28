@@ -9,7 +9,6 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Profesor\ProfesorService;
 use Mockery;
-use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
 class ImportWorkflowServiceTest extends TestCase
@@ -62,9 +61,7 @@ class ImportWorkflowServiceTest extends TestCase
         $in = false;
         $post = false;
 
-        Alert::shouldReceive('danger')
-            ->once()
-            ->withArgs(static fn (string $msg): bool => str_contains($msg, 'No hay registros de profesores en el xml'));
+        session()->forget('app_alerts');
 
         $service = $this->buildService();
         $service->executeXmlImportWithHooks(
@@ -85,6 +82,7 @@ class ImportWorkflowServiceTest extends TestCase
         $this->assertFalse($pre);
         $this->assertFalse($in);
         $this->assertFalse($post);
+        $this->assertSessionAlert('danger', static fn (string $msg): bool => str_contains($msg, 'No hay registros de profesores en el xml'));
     }
 
     public function test_assign_tutores_aplica_regles_de_rol_i_guarda_canvis(): void
@@ -107,7 +105,7 @@ class ImportWorkflowServiceTest extends TestCase
         $grupoService = Mockery::mock(GrupoService::class);
         $grupoService->shouldReceive('tutoresDniList')->once()->andReturn(['TUT001']);
 
-        Alert::shouldReceive('info')->once()->with('Tutors assignats');
+        session()->forget('app_alerts');
 
         $service = new ImportWorkflowService($profesorService, $grupoService);
         $service->assignTutores();
@@ -119,6 +117,7 @@ class ImportWorkflowServiceTest extends TestCase
         $this->assertSame(1, $profesorTutor->saved);
         $this->assertSame(1, $profesorSubstitut->saved);
         $this->assertSame(1, $profesorNoTutor->saved);
+        $this->assertSessionAlert('info', static fn (string $msg): bool => $msg === 'Tutors assignats');
     }
 
     private function buildService(): ImportWorkflowService
@@ -161,5 +160,16 @@ class ImportWorkflowServiceTest extends TestCase
                 $this->saved++;
             }
         };
+    }
+
+    private function assertSessionAlert(string $type, callable $messageMatcher): void
+    {
+        $alerts = session('app_alerts', []);
+
+        $this->assertTrue(
+            collect($alerts)->contains(static fn (array $alert): bool => ($alert['type'] ?? null) === $type
+                && $messageMatcher((string) ($alert['message'] ?? ''))),
+            "No s'ha trobat alerta {$type} esperada en sessió."
+        );
     }
 }

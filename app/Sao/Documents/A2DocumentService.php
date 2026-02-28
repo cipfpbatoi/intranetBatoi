@@ -9,7 +9,7 @@ use Intranet\Entities\Signatura as Firma;
 use Intranet\Sao\Support\SaoDownloadManager;
 use Intranet\Sao\Support\SaoNavigator;
 use Intranet\Services\Signature\DigitalSignatureService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Gestiona la descàrrega i signatura dels annexes A2 i A3.

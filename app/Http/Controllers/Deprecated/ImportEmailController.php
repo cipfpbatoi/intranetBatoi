@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
 use Intranet\Http\Controllers\Controller;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * @deprecated Controlador legacy d'importació d'emails. Mantingut per compatibilitat.

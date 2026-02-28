@@ -23,7 +23,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Mail\Comunicado;
 use Intranet\Services\UI\FormBuilder;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class ProfesorController extends PerfilController

@@ -3,8 +3,8 @@
 namespace Intranet\Services\Media;
 
 use Illuminate\Http\UploadedFile;
-use Styde\Html\Facades\Alert;
-use Styde\Html\Str;
+use Illuminate\Support\Str;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ImageService
 {

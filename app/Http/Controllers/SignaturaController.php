@@ -15,7 +15,7 @@ use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\AttachedFileService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 

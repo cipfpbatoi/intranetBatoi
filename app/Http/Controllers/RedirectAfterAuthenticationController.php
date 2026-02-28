@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Requests\PasswordRequest;
 use Intranet\Sao\Actions\SAOAction;
 use Intranet\Sao\Support\SaoRunner;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Throwable;
 
 /**

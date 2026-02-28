@@ -7,7 +7,6 @@ use Intranet\Exceptions\IntranetException;
 use Intranet\Services\School\ItacaService;
 use Mockery;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
 class ItacaServiceTest extends TestCase
@@ -34,7 +33,7 @@ class ItacaServiceTest extends TestCase
         $selenium->shouldReceive('getDriver')->andReturn(Mockery::mock(RemoteWebDriver::class));
         $selenium->shouldReceive('fill')->andThrow(new \Exception('boom'));
 
-        Alert::shouldReceive('danger')->once();
+        session()->forget('app_alerts');
 
         $service = new ItacaService('00000000A', 'pass', $selenium, false);
 
@@ -45,6 +44,11 @@ class ItacaServiceTest extends TestCase
         $falta->setRelation('Profesor', (object) ['shortName' => 'Profe Prova']);
 
         $this->assertFalse($service->processFalta($falta));
+        $this->assertTrue(
+            collect(session('app_alerts', []))->contains(
+                static fn (array $alert): bool => ($alert['type'] ?? null) === 'danger'
+            )
+        );
     }
 
     public function test_close_crida_quit()

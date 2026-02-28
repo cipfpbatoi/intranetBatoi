@@ -11,8 +11,8 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
+use Intranet\Services\Document\PdfFormService;
 use Illuminate\Support\Carbon;
-use mikehaertl\pdftk\Pdf;
 use Response;
 
 /**
@@ -142,8 +142,7 @@ class ColaboracionController extends ModalController
     {
         $file = storage_path("tmp/dual$colaboracion->id/ANEXO_IV.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_IV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoIV($colaboracion))->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_IV.pdf', $this->makeArrayPdfAnexoIV($colaboracion), $file);
         }
         return $file;
     }
@@ -152,9 +151,7 @@ class ColaboracionController extends ModalController
     {
         $file = storage_path("tmp/dual$colaboracion->id/Conveni.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/Conveni.pdf');
-            $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/Conveni.pdf', $this->makeArrayPdfConveni($colaboracion), $file);
         }
 
         return $file;

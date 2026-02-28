@@ -6,8 +6,7 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
-use Styde\Html\Facades\Alert;
-use mikehaertl\pdftk\Pdf as PdfTk;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -273,15 +272,12 @@ class DocumentService
         }
 
         // Si només hi ha un PDF, el retorna directament
-        $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-        $tmpDir = dirname(storage_path($tmpFile));
-        if (!is_dir($tmpDir)) {
-            mkdir($tmpDir, 0775, true);
-        }
-        if (!$pdf->saveAs(storage_path($tmpFile))) {
-            Log::error('Error concatenant PDFs en sèrie', ['error' => $pdf->getError()]);
-            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
+        try {
+            app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
+        } catch (\Throwable $e) {
+            Log::error('Error concatenant PDFs en sèrie', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
@@ -310,13 +306,11 @@ class DocumentService
             return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
         }
 
-        $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-
-        // Opcionalment, comprovar $pdf->saveAs() i l’error de pdftk
-        if (!$pdf->saveAs(storage_path($tmpFile))) {
-            // $pdf->getError() retorna info de pdftk si falla
-            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
+        try {
+            app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);

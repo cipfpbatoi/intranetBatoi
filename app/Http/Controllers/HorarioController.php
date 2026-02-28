@@ -9,7 +9,7 @@ use Intranet\Http\Requests\HorarioUpdateRequest;
 use Intranet\Presentation\Crud\HorarioCrudSchema;
 
 use Illuminate\Http\Request;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\Notifications\NotificationService;

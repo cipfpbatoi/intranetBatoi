@@ -31,7 +31,6 @@ class Kernel extends HttpKernel
         'web' => [
             \Intranet\Http\Middleware\SessionTimeout::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Styde\Html\Alert\Middleware::class,
             \Intranet\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,

@@ -18,7 +18,7 @@ use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ExpedienteWorkflowService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

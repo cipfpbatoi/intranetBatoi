@@ -25,7 +25,7 @@ use Intranet\Services\Calendar\GoogleCalendarService;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ActividadParticipantsService;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Controlador d'activitats extraescolars i complementàries.

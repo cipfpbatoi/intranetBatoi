@@ -6,7 +6,7 @@ namespace Intranet\Application\Activity;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Activity;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Servei d'aplicació per al registre d'activitat d'usuari.

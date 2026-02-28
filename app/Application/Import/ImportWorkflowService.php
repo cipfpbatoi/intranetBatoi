@@ -9,7 +9,7 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use RuntimeException;
 use SplFileInfo;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Servei d'orquestració del flux d'importació.

@@ -7,7 +7,7 @@ namespace Intranet\Application\Import\Concerns;
 use Illuminate\Support\Str;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 trait SharedImportFieldTransformers
 {

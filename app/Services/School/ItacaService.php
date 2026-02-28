@@ -12,7 +12,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Automation\SeleniumService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ItacaService
 {

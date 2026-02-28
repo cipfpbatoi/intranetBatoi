@@ -6,7 +6,7 @@ namespace Intranet\Services\School;
 
 use Illuminate\Http\UploadedFile;
 use Intranet\Entities\Task;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class TaskFileService
 {

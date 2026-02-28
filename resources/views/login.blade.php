@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Pantalla Login</title>
-        {{ Html::style('/css/app.css')}}
-        {{ Html::style('/css/socials.css')}} 
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/socials.css') }}">
     </head>
     <body class="login">
         <a class="hiddenanchor" id="signup"></a>
@@ -43,5 +43,4 @@
         </div>
     </body>
 </html>
-
 

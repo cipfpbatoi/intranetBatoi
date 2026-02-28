@@ -6,7 +6,7 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
 use Intranet\Http\Requests\CicloDualRequest;
 use Intranet\Services\UI\FormBuilder;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class CicloController

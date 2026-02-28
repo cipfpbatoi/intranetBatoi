@@ -17,7 +17,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class PanelColaboracionController

@@ -17,7 +17,7 @@ use Intranet\Application\Import\TeacherImportExecutionService;
 use Intranet\Entities\ImportRun;
 use Intranet\Http\Requests\TeacherImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class TeacherImportController extends Seeder
 {

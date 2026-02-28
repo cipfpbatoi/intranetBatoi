@@ -14,7 +14,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

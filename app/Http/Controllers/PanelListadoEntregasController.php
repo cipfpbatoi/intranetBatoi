@@ -25,7 +25,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\School\ModuloGrupoService;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 class PanelListadoEntregasController extends BaseController

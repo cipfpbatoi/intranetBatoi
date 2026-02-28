@@ -9,7 +9,7 @@ use Intranet\Exceptions\IntranetException;
 use Intranet\Jobs\UploadFiles;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class UploadAnexes extends Command
 {

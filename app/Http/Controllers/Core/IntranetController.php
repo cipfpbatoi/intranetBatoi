@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Document\DocumentPathService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Controlador base per a recursos intranet amb CRUD estàndard.

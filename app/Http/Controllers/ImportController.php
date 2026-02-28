@@ -17,7 +17,7 @@ use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Entities\ImportRun;
 use Intranet\Http\Requests\ImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ImportController extends Seeder
 {

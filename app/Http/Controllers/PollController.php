@@ -11,7 +11,7 @@ use Intranet\Exports\PollResultsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class   PollController extends IntranetController
 {

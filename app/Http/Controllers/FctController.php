@@ -18,7 +18,7 @@ use Intranet\Http\Requests\FctUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\UI\FormBuilder;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**

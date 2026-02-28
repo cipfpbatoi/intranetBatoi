@@ -6,7 +6,7 @@ use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Hora;
 use Intranet\Jobs\SendEmail;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use function hora, nameDay;

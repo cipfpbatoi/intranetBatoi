@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Menu;
 
+use Illuminate\Support\HtmlString;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Menu;
-use Styde\Html\Facades\Menu as StydeMenu;
 
 /**
  * Servei d'aplicació per construir i cachejar menús de navegació.
@@ -27,7 +28,7 @@ class MenuService
      * Si no hi ha usuari autenticat, retorna menú buit.
      *
      * @param string $nom Nom funcional del menú (p. ex. `general`, `topmenu`).
-     * @param bool $array Si és `true`, retorna array; si és `false`, objecte renderitzable StydeMenu.
+     * @param bool $array Si és `true`, retorna array; si és `false`, HTML renderitzat.
      * @param object|null $user Usuari explícit per tests o contextos no HTTP.
      * @return mixed
      */
@@ -35,7 +36,7 @@ class MenuService
     {
         $user = $user ?? authUser();
         if (!$user) {
-            return $array ? [] : StydeMenu::make([]);
+            return $array ? [] : new HtmlString('');
         }
 
         $cacheKey = $this->cacheKey($nom, (string) $user->dni);
@@ -48,7 +49,7 @@ class MenuService
             return $menu;
         }
 
-        return StydeMenu::make($menu);
+        return $this->renderMenu($menu);
     }
 
     /**
@@ -270,6 +271,91 @@ class MenuService
     private function isAdminUser(object $user): bool
     {
         return isset($user->rol) && esRol((int) $user->rol, 11);
+    }
+
+    /**
+     * Renderitza l'arbre de menú amb el markup legacy del tema bootstrap.
+     *
+     * @param array<string, mixed> $menu
+     * @return HtmlString
+     */
+    private function renderMenu(array $menu): HtmlString
+    {
+        $html = '';
+
+        foreach ($menu as $title => $item) {
+            $itemId = 'menu_' . md5((string) $title);
+            $url = e((string) ($item['url'] ?? '#'));
+            $iconClass = trim((string) ($item['class'] ?? ''));
+            $titleText = e($this->translateMenuTitle((string) $title));
+            $hasSubmenu = !empty($item['submenu']) && is_array($item['submenu']);
+
+            $html .= '<li id="' . e($itemId) . '">';
+            $html .= '<a href="' . $url . '">';
+            $html .= '<i' . ($iconClass !== '' ? ' class="fa ' . e($iconClass) . '"' : '') . '></i>';
+            $html .= $titleText;
+
+            if ($hasSubmenu) {
+                $html .= '<span class="fa fa-chevron-down"></span>';
+            }
+
+            $html .= '</a>';
+
+            if ($hasSubmenu) {
+                $html .= '<ul class="nav child_menu">';
+
+                foreach ($item['submenu'] as $subTitle => $subItem) {
+                    $subUrl = '';
+                    $target = '';
+                    if (isset($subItem['full-url'])) {
+                        $subUrl = (string) $subItem['full-url'];
+                        $target = ' target="_blank"';
+                    } else {
+                        $subUrl = (string) ($subItem['url'] ?? '#');
+                    }
+
+                    $subText = e($this->translateMenuTitle((string) $subTitle));
+                    $html .= '<li><a href="' . e($subUrl) . '"' . $target . '>' . $subText . '</a></li>';
+                }
+
+                $html .= '</ul>';
+            }
+
+            $html .= '</li>';
+        }
+
+        return new HtmlString($html);
+    }
+
+    /**
+     * Resol la traducció d'un ítem de menú amb fallback compatible amb legacy.
+     *
+     * En l'implementació antiga, si no existia `messages.menu.<key>`, el títol
+     * acabava en format Title Case (`Fichar`, `Documents`, ...), que sí encaixa
+     * amb moltes claus del fitxer de traduccions.
+     *
+     * @param string $key
+     * @return string
+     */
+    private function translateMenuTitle(string $key): string
+    {
+        $rawKey = trim($key);
+        if ($rawKey === '') {
+            return '';
+        }
+
+        $direct = trans('messages.menu.' . $rawKey);
+        if ($direct !== 'messages.menu.' . $rawKey) {
+            return (string) $direct;
+        }
+
+        $titleKey = Str::title($rawKey);
+        $title = trans('messages.menu.' . $titleKey);
+        if ($title !== 'messages.menu.' . $titleKey) {
+            return (string) $title;
+        }
+
+        return $titleKey;
     }
 
     /**

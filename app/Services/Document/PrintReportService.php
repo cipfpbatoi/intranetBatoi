@@ -5,7 +5,7 @@ namespace Intranet\Services\Document;
 use Intranet\Services\Document\PdfService;
 use Intranet\Finders\Finder;
 use Illuminate\Support\Carbon;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class PrintReportService
 {

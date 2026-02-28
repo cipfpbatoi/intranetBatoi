@@ -3,7 +3,7 @@
 namespace Intranet\Services\UI;
 
 use Illuminate\Support\Facades\Log;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class AlertLogger
 {

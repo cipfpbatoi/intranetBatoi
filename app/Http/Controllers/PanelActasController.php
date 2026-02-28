@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\TitolAlumne;
 use Intranet\Services\Notifications\AdviseService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class PanelActasController
