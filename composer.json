@@ -12,6 +12,7 @@
         "ext-gd": "*",
         "barryvdh/laravel-dompdf": "^3.0",
         "barryvdh/laravel-snappy": "^1.0.0",
+        "darkaonline/l5-swagger": "^9.0",
         "doctrine/dbal": "^3",
         "eluceo/ical": "^0.13.0",
         "fedeisas/laravel-mail-css-inliner": "^5.0",

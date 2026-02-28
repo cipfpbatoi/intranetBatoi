@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Profesor;
+use OpenApi\Attributes as OA;
 
 /**
  * Gestió de tokens d'accés API en fase de coexistència legacy + Sanctum.
@@ -27,6 +28,49 @@ class AuthTokenController extends ApiResourceController
     /**
      * Intercanvia `api_token` legacy per un token Sanctum.
      */
+    #[OA\Post(
+        path: '/auth/exchange',
+        operationId: 'authExchange',
+        summary: 'Intercanvi de token legacy a token Sanctum',
+        tags: ['Auth (Public)'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['api_token'],
+                properties: [
+                    new OA\Property(property: 'api_token', type: 'string', example: 'legacy-token-xyz'),
+                    new OA\Property(property: 'device_name', type: 'string', example: 'mobile-app'),
+                    new OA\Property(property: 'dni', type: 'string', example: '12345678A'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Token intercanviat correctament',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+                                new OA\Property(property: 'access_token', type: 'string', example: '1|abc123...'),
+                                new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', nullable: true),
+                                new OA\Property(property: 'dni', type: 'string', example: '12345678A'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'No autoritzat',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiError')
+            ),
+        ]
+    )]
     public function exchange(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -66,6 +110,40 @@ class AuthTokenController extends ApiResourceController
     /**
      * Retorna usuari API autenticat (compat: `auth:api` o `auth:sanctum`).
      */
+    #[OA\Get(
+        path: '/auth/me',
+        operationId: 'authMe',
+        summary: 'Retorna l usuari autenticat',
+        tags: ['Auth'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Usuari autenticat',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'dni', type: 'string', example: '12345678A'),
+                                new OA\Property(property: 'nombre', type: 'string', example: 'Maria'),
+                                new OA\Property(property: 'apellido1', type: 'string', example: 'Garcia'),
+                                new OA\Property(property: 'apellido2', type: 'string', nullable: true, example: 'Perez'),
+                                new OA\Property(property: 'rol', type: 'string', example: 'professor'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'No autoritzat',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiError')
+            ),
+        ]
+    )]
     public function me(Request $request): JsonResponse
     {
         /** @var Profesor|null $user */
@@ -89,6 +167,36 @@ class AuthTokenController extends ApiResourceController
     /**
      * Revoca el token actual quan la petició entra amb Sanctum.
      */
+    #[OA\Post(
+        path: '/auth/logout',
+        operationId: 'authLogout',
+        summary: 'Revoca el token actual',
+        tags: ['Auth'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Token revocat',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'revoked', type: 'boolean', example: true),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'No autoritzat',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiError')
+            ),
+        ]
+    )]
     public function logout(Request $request): JsonResponse
     {
         /** @var Profesor|null $user */
