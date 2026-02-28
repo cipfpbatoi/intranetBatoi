@@ -61,6 +61,30 @@ Route::get('/docs/app-docblocks', function () {
 
     $markdown = File::get($path);
     $content = Str::markdown($markdown);
+    $sections = [];
+    $sectionIndex = 0;
+
+    $content = preg_replace_callback(
+        '/<h2>(.*?)<\/h2>/i',
+        function (array $matches) use (&$sections, &$sectionIndex): string {
+            $title = trim(strip_tags($matches[1]));
+            $id = 'section-'.(++$sectionIndex).'-'.Str::slug($title);
+            $sections[] = [
+                'id' => $id,
+                'title' => $title,
+            ];
+
+            return '<h2 id="'.e($id).'">'.$matches[1].'</h2>';
+        },
+        $content
+    ) ?? $content;
+
+    $tocItems = '';
+    foreach ($sections as $section) {
+        $tocItems .= '<li><a href="#'.e($section['id']).'">'.e($section['title']).'</a></li>';
+    }
+
+    $toc = '<nav class="toc" aria-label="Index de seccions"><h2>Index</h2><ul>'.$tocItems.'</ul></nav>';
 
     return response(
         "<!DOCTYPE html>
@@ -116,6 +140,46 @@ Route::get('/docs/app-docblocks', function () {
             margin: 24px auto;
             padding: 0 16px;
         }
+        .layout {
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+        .toc-panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            padding: 14px;
+            position: sticky;
+            top: 16px;
+        }
+        .toc { font-size: 14px; }
+        .toc h2 {
+            margin: 0 0 10px 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #14532d;
+            font-size: 16px;
+        }
+        .toc ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .toc li + li { margin-top: 6px; }
+        .toc a {
+            display: block;
+            text-decoration: none;
+            color: #14532d;
+            background: #f5fdee;
+            border: 1px solid #d1efb8;
+            border-radius: 6px;
+            padding: 6px 8px;
+        }
+        .toc a:hover { background: #ebfad9; }
         .panel {
             background: var(--surface);
             border: 1px solid var(--line);
@@ -204,6 +268,14 @@ Route::get('/docs/app-docblocks', function () {
             border-color: var(--class-code-border);
             color: #166534;
         }
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .toc-panel {
+                position: static;
+            }
+        }
     </style>
 </head>
 <body>
@@ -212,7 +284,10 @@ Route::get('/docs/app-docblocks', function () {
         <a href=\"/docs\">Obrir Swagger</a>
     </header>
     <main class=\"wrapper\">
-        <section class=\"panel\">{$content}</section>
+        <div class=\"layout\">
+            <aside class=\"toc-panel\">{$toc}</aside>
+            <section class=\"panel\">{$content}</section>
+        </div>
     </main>
 </body>
 </html>",
