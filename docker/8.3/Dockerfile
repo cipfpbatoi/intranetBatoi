@@ -42,7 +42,7 @@ RUN apt-get update \
     && apt-get install -y yarn \
     && apt-get install -y mysql-client \
     && apt-get -y autoremove \
-    && apt-get install -y openjdk-21-jre-headless \
+    && apt-get install -y openjdk-21-jre-headless pdftk-java \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
