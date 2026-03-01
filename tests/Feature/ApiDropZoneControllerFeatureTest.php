@@ -36,6 +36,7 @@ class ApiDropZoneControllerFeatureTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('personal_access_tokens');
         Schema::connection('sqlite')->dropIfExists('adjuntos');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
@@ -124,6 +125,20 @@ class ApiDropZoneControllerFeatureTest extends TestCase
                 $table->unsignedBigInteger('size')->default(0);
                 $table->string('extension', 10);
                 $table->string('route');
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('personal_access_tokens')) {
+            Schema::connection('sqlite')->create('personal_access_tokens', function (Blueprint $table): void {
+                $table->id();
+                $table->string('tokenable_type');
+                $table->string('tokenable_id');
+                $table->string('name');
+                $table->string('token', 64)->unique();
+                $table->text('abilities')->nullable();
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamp('expires_at')->nullable();
                 $table->timestamps();
             });
         }

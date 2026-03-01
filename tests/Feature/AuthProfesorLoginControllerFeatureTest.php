@@ -45,6 +45,7 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('personal_access_tokens');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -52,6 +53,39 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
         }
 
         parent::tearDown();
+    }
+
+    public function test_plogin_permet_mostrar_api_token_en_meta_despres_de_login(): void
+    {
+        $this->insertProfesor([
+            'dni' => '44556677F',
+            'codigo' => 2006,
+            'email' => 'prof6@test.local',
+            'password' => Hash::make('secret-pass'),
+            'changePassword' => '2026-01-01',
+            'idioma' => 'ca',
+            'api_token' => 'legacy-token-meta-2006',
+        ]);
+
+        $response = $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.postlogin'), [
+                'codigo' => '2006',
+                'password' => 'secret-pass',
+            ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/home');
+        $this->assertAuthenticated('profesor');
+
+        $bearerToken = session('api_access_token');
+        $this->assertIsString($bearerToken);
+        $this->assertNotSame('', $bearerToken);
+
+        $metaResponse = $this->blade('<x-layouts.meta />');
+        $metaResponse->assertSee('name="user-token"', false);
+        $metaResponse->assertSee('content="legacy-token-meta-2006"', false);
+        $metaResponse->assertSee('name="user-bearer-token"', false);
+        $metaResponse->assertSee('content="'.$bearerToken.'"', false);
     }
 
     public function test_plogin_mostra_first_login_quan_canvi_password_no_establit_i_dni_coincidix(): void
@@ -230,12 +264,25 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
             $table->string('apellido2')->nullable();
             $table->string('email')->nullable();
             $table->string('password')->nullable();
+            $table->string('api_token', 80)->nullable();
             $table->string('idioma')->nullable();
             $table->string('changePassword')->nullable();
             $table->unsignedInteger('rol')->default(3);
             $table->date('fecha_baja')->nullable();
             $table->boolean('activo')->default(true);
             $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('personal_access_tokens', function (Blueprint $table): void {
+            $table->id();
+            $table->string('tokenable_type');
+            $table->string('tokenable_id');
+            $table->string('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }

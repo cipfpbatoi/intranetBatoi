@@ -36,6 +36,7 @@ class ApiColaboracionControllerFeatureTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('personal_access_tokens');
         Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('fcts');
         Schema::connection('sqlite')->dropIfExists('colaboraciones');
@@ -75,9 +76,6 @@ class ApiColaboracionControllerFeatureTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        $user = Profesor::on('sqlite')->findOrFail('PA02');
-        $this->actingAs($user, 'api');
 
         $response = $this->getJson('/api/colaboracion/20/switch?api_token=token-target');
 
@@ -201,6 +199,20 @@ class ApiColaboracionControllerFeatureTest extends TestCase
                 $table->timestamps();
             });
         }
+
+        if (!Schema::connection('sqlite')->hasTable('personal_access_tokens')) {
+            Schema::connection('sqlite')->create('personal_access_tokens', function (Blueprint $table): void {
+                $table->id();
+                $table->string('tokenable_type');
+                $table->string('tokenable_id');
+                $table->string('name');
+                $table->string('token', 64)->unique();
+                $table->text('abilities')->nullable();
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     private function insertProfesor(string $dni, string $apiToken): void
@@ -218,4 +230,3 @@ class ApiColaboracionControllerFeatureTest extends TestCase
         ]);
     }
 }
-
