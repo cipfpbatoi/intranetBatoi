@@ -52,4 +52,5 @@ Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 
 
 if (!app()->environment('production')) {
     Route::get('/docs/app-docblocks', ['as' => 'docs.app-docblocks', 'uses' => 'Docs\\DocblockDocsController@index']);
+    Route::get('/docs/bbdd-esquema', ['as' => 'docs.bbdd-esquema', 'uses' => 'Docs\\DocblockDocsController@schema']);
 }

@@ -18,10 +18,38 @@ class DocblockDocsController extends Controller
      */
     public function index()
     {
-        $path = base_path('docs/app-docblocks-index.md');
+        return $this->renderMarkdownDocument(
+            'docs/app-docblocks-index.md',
+            'No s\'ha trobat el fitxer de documentacio de doc-blocks.'
+        );
+    }
+
+    /**
+     * Mostra l'esquema de la BBDD en format HTML.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function schema()
+    {
+        return $this->renderMarkdownDocument(
+            'docs/bbdd-esquema.md',
+            'No s\'ha trobat el fitxer d\'esquema de la BBDD.'
+        );
+    }
+
+    /**
+     * Renderitza un fitxer markdown en la vista comuna de documentacio.
+     *
+     * @param string $relativePath
+     * @param string $notFoundMessage
+     * @return \Illuminate\Http\Response
+     */
+    private function renderMarkdownDocument(string $relativePath, string $notFoundMessage)
+    {
+        $path = base_path($relativePath);
 
         if (!File::exists($path)) {
-            abort(404, 'No s\'ha trobat el fitxer de documentacio de doc-blocks.');
+            abort(404, $notFoundMessage);
         }
 
         $markdown = File::get($path);

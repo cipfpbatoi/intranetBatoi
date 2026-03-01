@@ -45,6 +45,11 @@
             padding: 6px 10px;
             font-size: 13px;
         }
+        .topbar-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .wrapper {
             max-width: 1100px;
             margin: 24px auto;
@@ -191,7 +196,10 @@
 <body>
     <header class="topbar">
         <strong>Intranet API Docs</strong>
-        <a href="/api/documentation">Obrir Swagger</a>
+        <div class="topbar-links">
+            <a href="/api/documentation">Obrir Swagger</a>
+            <a href="{{ route('docs.bbdd-esquema') }}">Esquema BBDD</a>
+        </div>
     </header>
     <main class="wrapper">
         <div class="layout">
