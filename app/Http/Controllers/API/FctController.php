@@ -4,24 +4,12 @@ namespace Intranet\Http\Controllers\API;
 
 
 use Illuminate\Http\Request;
-use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 
 class FctController extends ApiResourceController
 {
-        private ?ProfesorService $profesorService = null;
-
-        private function profesores(): ProfesorService
-        {
-            if ($this->profesorService === null) {
-                $this->profesorService = app(ProfesorService::class);
-            }
-
-            return $this->profesorService;
-        }
-
         public function llist($id)
         {
 
@@ -34,9 +22,6 @@ class FctController extends ApiResourceController
         public function seguimiento($id,Request $request)
         {
             $user = $request->user('sanctum') ?? $request->user('api');
-            if ($user === null) {
-                $user = $this->profesores()->findByApiToken((string) ($request->query('api_token') ?? $request->input('api_token') ?? ''));
-            }
             if ($user === null) {
                 return $this->sendError('Unauthorized', 401);
             }

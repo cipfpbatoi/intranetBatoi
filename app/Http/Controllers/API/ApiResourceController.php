@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +16,6 @@ class ApiResourceController extends Controller
     protected $class;
     protected $resource;
     protected $guard='api';
-    private ?ProfesorService $profesorService = null;
 
     public function __construct()
     {
@@ -242,20 +240,7 @@ class ApiResourceController extends Controller
 
     public function ApiUser(Request $request)
     {
-        $authUser = $request->user('sanctum') ?? $request->user('api');
-        if ($authUser !== null) {
-            return $authUser;
-        }
-
-        if ($this->profesorService === null) {
-            $this->profesorService = app(ProfesorService::class);
-        }
-
-        $token = (string) ($request->query('api_token') ?? $request->input('api_token') ?? '');
-
-        return $token !== ''
-            ? $this->profesorService->findByApiToken($token)
-            : null;
+        return $request->user('sanctum') ?? $request->user('api');
     }
 
     /**

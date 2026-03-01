@@ -7,7 +7,8 @@ function apiAuthOptions(extraData) {
 
     if (bearerToken) {
         headers.Authorization = "Bearer " + bearerToken;
-    } else if (legacyToken) {
+    }
+    if (legacyToken) {
         data.api_token = legacyToken;
     }
 

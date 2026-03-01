@@ -300,6 +300,8 @@ Route::get(
 );
 Route::post('/fct/{id}/cotutor', ['as'=>'fct.cotutor', 'uses'=>'FctController@cotutor']);
 Route::post('/fct/{id}/modificaHoras', ['as'=>'fct.modificarHoras', 'uses'=>'FctController@modificaHoras']);
+Route::get('/fct/{id}/alFct', ['as' => 'fct.alfct.list', 'uses' => 'API\\FctController@llist']);
+Route::post('/fct/{id}/alFct', ['as' => 'fct.alfct.seguimiento', 'uses' => 'API\\FctController@seguimiento']);
 Route::get('/fct/{id}/delete', ['as' => 'fct.destroy', 'uses' => 'FctController@destroy']);
 Route::get('/fct/{id}/show', ['as' => 'fct.show', 'uses' => 'FctController@show']);
 Route::put('/fct/{id}/edit', ['as' => 'fct.update', 'uses' => 'FctController@update']);
@@ -308,6 +310,12 @@ Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store'
 Route::post('/fct/pass', ['as' => 'fct.pass', 'uses' => 'FctController@store']);
 Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@certificat']);
 Route::get('/fct/{id}/colaboradorPdf', ['as' => 'fct.colaborador', 'uses' => 'FctController@certificatColaboradores']);
+Route::get('/activity/{id}', ['as' => 'activity.web.show', 'uses' => 'API\\ActivityController@show']);
+Route::put('/activity/{id}', ['as' => 'activity.web.update', 'uses' => 'API\\ActivityController@update']);
+Route::delete('/activity/{id}', ['as' => 'activity.web.destroy', 'uses' => 'API\\ActivityController@destroy']);
+Route::get('/activity/{id}/move/{fct}', ['as' => 'activity.web.move', 'uses' => 'API\\ActivityController@move']);
+Route::post('/colaboracion/{id}/telefonico', ['as' => 'colaboracion.web.telefonico', 'uses' => 'API\\ColaboracionController@telefon']);
+Route::get('/colaboracion/instructores/{id}', ['as' => 'colaboracion.web.instructores', 'uses' => 'API\\ColaboracionController@instructores']);
 
 
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);

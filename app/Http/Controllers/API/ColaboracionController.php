@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Fct;
@@ -14,16 +13,6 @@ class ColaboracionController extends ApiResourceController
 {
 
     protected $model = 'Colaboracion';
-    private ?ProfesorService $profesorService = null;
-
-    private function profesores(): ProfesorService
-    {
-        if ($this->profesorService === null) {
-            $this->profesorService = app(ProfesorService::class);
-        }
-
-        return $this->profesorService;
-    }
 
     public function instructores($id)
     {
@@ -67,14 +56,9 @@ class ColaboracionController extends ApiResourceController
             return $this->sendFail(['success' => false, 'message' => 'Colaboració no trobada.'], 404);
         }
 
-        $legacyToken = (string) $request->query('api_token', '');
-        if ($legacyToken !== '') {
-            $profesor = $this->profesores()->findByApiToken($legacyToken);
-        } else {
-            $profesor = $request->user('sanctum') ?? $request->user('api');
-        }
+        $profesor = $request->user('sanctum') ?? $request->user('api');
         if ($profesor === null) {
-            return $this->sendFail(['success' => false, 'message' => 'Professor no trobat.'], 404);
+            return $this->sendError('Unauthorized', 401);
         }
 
         $colaboracion->tutor = $profesor->dni;

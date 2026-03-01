@@ -10,7 +10,8 @@ $(function () {
 
         if (bearerToken) {
             options.headers.Authorization = "Bearer " + bearerToken;
-        } else if (legacyToken) {
+        }
+    if (legacyToken) {
             options.data.api_token = legacyToken;
         }
 

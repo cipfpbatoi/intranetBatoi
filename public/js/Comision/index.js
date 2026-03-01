@@ -32,7 +32,7 @@ $(function() {
 			selectedCheckboxes.each(function(i,checkbox) {
 				var url = "/api/comision/"+checkbox.name+"/prePay";
 				var requestData = {};
-				if (!bearerToken && legacyToken) {
+				if (legacyToken) {
 					requestData.api_token = legacyToken;
 				}
 				$.ajax({

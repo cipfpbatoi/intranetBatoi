@@ -11,12 +11,18 @@ var tipo;
 function apiAuthOptions(extraData) {
     var legacyToken = $.trim($("#_token").text());
     var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var csrfToken = $.trim($('meta[name="csrf-token"]').attr('content') || "");
     var data = extraData || {};
     var headers = {};
 
+    if (csrfToken) {
+        headers['X-CSRF-TOKEN'] = csrfToken;
+    }
+
     if (bearerToken) {
         headers.Authorization = "Bearer " + bearerToken;
-    } else if (legacyToken) {
+    }
+    if (legacyToken) {
         data.api_token = legacyToken;
     }
 
@@ -37,7 +43,7 @@ $(function() {
         id=$(this).attr("id");
         $.ajax({
             method: "GET",
-            url: "/api/activity/" + id ,
+            url: "/activity/" + id ,
             headers: apiAuthOptions().headers,
             data: apiAuthOptions().data
         }).then(function (result) {
@@ -54,7 +60,7 @@ $(function() {
             var authTelefonico = apiAuthOptions({explicacion: this.explicacion.value});
             $.ajax({
                 method: "POST",
-                url: "/api/colaboracion/" + id + "/telefonico",
+                url: "/colaboracion/" + id + "/telefonico",
                 headers: authTelefonico.headers,
                 data: authTelefonico.data
             }).then(function (result) {
@@ -70,13 +76,25 @@ $(function() {
             });
         }
         if (tipo === 'seguimiento'){
-            var authSeguimiento = apiAuthOptions({comentari: this.explicacion.value});
+            var comentariActualitzat = this.explicacion.value;
+            var authSeguimiento = apiAuthOptions({comentari: comentariActualitzat});
             $.ajax({
                 method: "PUT",
-                url: "/api/activity/" + id ,
+                url: "/activity/" + id ,
                 headers: authSeguimiento.headers,
                 data: authSeguimiento.data
             }).then(function () {
+                var link = $("#" + id);
+                var stateIcon = link.find("em.fa").first();
+                var hasComment = $.trim(comentariActualitzat).length > 0;
+
+                stateIcon
+                    .toggleClass("fa-plus", hasComment)
+                    .toggleClass("fa-minus", !hasComment);
+
+                link
+                    .attr("title", comentariActualitzat)
+                    .attr("data-original-title", comentariActualitzat);
                 $("#dialogo").modal('hide');
             }, function () {
                 console.log("Error al modificar");
@@ -93,7 +111,7 @@ $(function() {
             var authDelete = apiAuthOptions();
             $.ajax({
                 method: "DELETE",
-                url: "/api/activity/" + id,
+                url: "/activity/" + id,
                 dataType: 'json',
                 headers: authDelete.headers,
                 data: authDelete.data
@@ -107,7 +125,7 @@ $(function() {
         $('#idColaboracion').attr('value',id);
         $.ajax({
             method: "GET",
-            url: "/api/colaboracion/instructores/" + id ,
+            url: "/colaboracion/instructores/" + id ,
             dataType: 'json',
             headers: apiAuthOptions().headers,
             data: apiAuthOptions().data
@@ -162,7 +180,7 @@ $(function() {
                 var authMove = apiAuthOptions();
                 $.ajax({
                     method: "GET",
-                    url: "/api/activity/"+id+"/move/" + newFct.id ,
+                    url: "/activity/"+id+"/move/" + newFct.id ,
                     dataType: 'json',
                     headers: authMove.headers,
                     data: authMove.data
