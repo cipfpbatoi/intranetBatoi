@@ -25,12 +25,19 @@ final class TutoriaGrupoCrudSchema
      *
      * @var array<string, array<string, mixed>>
      */
-    public const INPUT_TYPES = [
+    public const FORM_FIELDS = [
         'idTutoria' => ['disabled' => 'disabled'],
         'idGrupo' => ['disabled' => 'disabled'],
         'observaciones' => ['type' => 'textarea'],
         'fecha' => ['type' => 'date'],
     ];
+
+    /**
+     * Alias legacy per compatibilitat amb codi antic.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public const INPUT_TYPES = self::FORM_FIELDS;
 
     /**
      * Regles de validacio.
@@ -44,4 +51,3 @@ final class TutoriaGrupoCrudSchema
         'observaciones' => 'required',
     ];
 }
-
