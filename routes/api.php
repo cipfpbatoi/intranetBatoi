@@ -140,10 +140,10 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
 
     Route::resource('cotxe', 'CotxeController', ['except' => [ 'create']]);
     Route::resource('tipoactividad', 'TipoActividadController', ['except' => [ 'create']]);
-    Route::post('attachFile', 'DropZoneController@attachFile');
-    Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
-    Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
-    Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
+    Route::post('attachFile', 'DropZoneController@attachFile')->middleware('auth:sanctum');
+    Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached')->middleware('auth:sanctum');
+    Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached')->middleware('auth:sanctum');
+    Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached')->middleware('auth:sanctum');
 
     Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
     Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');

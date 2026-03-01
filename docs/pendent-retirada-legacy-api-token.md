@@ -34,11 +34,11 @@ En curs, amb inventari tècnic inicial completat.
 1. **Middleware de coexistència (global API)**  
    `app/Http/Middleware/ApiTokenToBearer.php`  
    `app/Http/Middleware/LegacyApiTokenDeprecation.php`
-2. **Rutes protegides en mode mixt**  
-   `routes/api.php` usa `auth:api,sanctum` en:
-   - `/api/auth/me`
-   - `/api/auth/logout`
-   - grup principal `/api/*`
+2. **Rutes protegides en mode mixt / migració parcial**  
+   `routes/api.php` queda així:
+   - `/api/auth/me` -> `auth:sanctum` (migrat 2026-03-01)
+   - `/api/auth/logout` -> `auth:sanctum` (migrat 2026-03-01)
+   - grup principal `/api/*` encara en `auth:api,sanctum` (pendent de particionar)
 3. **Controladors amb fallback o validació legacy explícita**
    - `app/Http/Controllers/API/MaterialController.php` (`resolveApiUser()`)
    - `app/Http/Controllers/API/FicharController.php` (`dni + api_token`)
@@ -127,6 +127,18 @@ Important:
    - no s'han observat errors nous 401/500 associats al canvi.
 4. Nota:
    - validació limitada a entorn no producció; encara pot quedar trànsit legacy no exercitat.
+
+#### 7-bis) Avanç Fase B (2026-03-01, nit)
+
+1. Endpoints d'autenticació migrats a Sanctum pur:
+   - `/api/auth/me`
+   - `/api/auth/logout`
+2. Prova de migració estricta en col·laboració/adjunts:
+   - `dropzone` s'ha mantingut en `auth:sanctum` pur (`/api/attachFile`, `/api/getAttached/*`, `/api/getNameAttached/*`, `/api/removeAttached/*`),
+   - `colaboracion` s'ha revertit temporalment a mode mixt (`auth:api,sanctum`) per regressió funcional detectada en `misColaboraciones`.
+3. Tests actualitzats a Bearer/Sanctum (sense query `api_token`) en els mòduls afectats.
+4. Nota:
+   - com que no és producció, la cobertura de telemetria continua sent parcial.
 
 ## Fase C. Tall progressiu backend
 
