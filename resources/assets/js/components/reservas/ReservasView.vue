@@ -38,7 +38,6 @@
 import axios from 'axios'
 import { withApiAuth } from '../utils/api-auth';
 const ruta='/api/reserva';
-const rutaLegacy='/api/reserva/';
 
 const rolDirecc=2;
 const rolNode = document.getElementById('rol');
@@ -88,17 +87,8 @@ const maxDiasReserva=30;
               const resp = await axios.get(ruta, withApiAuth({ params }));
               this.reservas = resp.data.data;
             } catch (errorModern) {
-              try {
-                const respLegacy = await axios.get(
-                  rutaLegacy + 'idEspacio=' + this.espacio + '&dia=' + this.fechaIni,
-                  withApiAuth()
-                );
-                this.reservas = respLegacy.data.data;
-              } catch (errorLegacy) {
-                console.error(errorModern);
-                console.error(errorLegacy);
-                this.reservas = [];
-              }
+              console.error(errorModern);
+              this.reservas = [];
             }
           },
           idTd(codigo) {

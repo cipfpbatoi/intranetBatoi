@@ -1,14 +1,10 @@
 function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
     var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
     var data = extraData || {};
     var headers = {};
 
     if (bearerToken) {
         headers.Authorization = "Bearer " + bearerToken;
-    }
-    if (legacyToken) {
-        data.api_token = legacyToken;
     }
 
     return { headers: headers, data: data };
@@ -39,8 +35,6 @@ Dropzone.options.myDropzone = {
 
         if (auth.headers.Authorization) {
             this.options.headers.Authorization = auth.headers.Authorization;
-        } else if (auth.data.api_token) {
-            this.options.params = $.extend({}, this.options.params, { api_token: auth.data.api_token });
         }
 
         this.on("complete", function(file) {

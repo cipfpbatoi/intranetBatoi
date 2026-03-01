@@ -85,9 +85,9 @@ class ApiAuthCoexistenceTest extends DuskTestCase
     }
 
     /**
-     * Verifica el mode legacy: /api/auth/me continua funcionant amb query `api_token`.
+     * Verifica que /api/auth/me rebutja query `api_token` sense Bearer.
      */
-    public function test_auth_me_accepts_legacy_api_token_query_param(): void
+    public function test_auth_me_rejects_legacy_api_token_query_param_without_bearer(): void
     {
         $profesor = $this->legacyProfesorOrSkip();
         if ($profesor === null) {
@@ -102,9 +102,7 @@ class ApiAuthCoexistenceTest extends DuskTestCase
                 '/api/auth/me?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(200, $me['status'] ?? null);
-            $this->assertTrue((bool) ($me['json']['success'] ?? false));
-            $this->assertSame((string) $profesor->dni, (string) ($me['json']['data']['dni'] ?? ''));
+            $this->assertSame(401, $me['status'] ?? null);
         });
     }
 
@@ -202,4 +200,3 @@ JS;
         return $result;
     }
 }
-

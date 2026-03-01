@@ -8,9 +8,6 @@
 
 <meta name="user-dni" content="{{ $user->dni }}">
 <meta name="user-rol" content="{{ $user->rol }}">
-@if (isset($user->api_token))
-    <meta name="user-token" content="{{ $user->api_token }}">
-@endif
 @php $apiSessionToken = session('api_access_token'); @endphp
 @if (is_string($apiSessionToken) && $apiSessionToken !== '')
     <meta name="user-bearer-token" content="{{ $apiSessionToken }}">
