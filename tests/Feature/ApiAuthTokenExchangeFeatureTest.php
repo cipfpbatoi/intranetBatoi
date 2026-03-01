@@ -102,6 +102,15 @@ class ApiAuthTokenExchangeFeatureTest extends TestCase
         $response->assertJsonPath('data.dni', 'PAX010');
     }
 
+    public function test_auth_me_rebutja_api_token_legacy_directe_sense_bearer(): void
+    {
+        $this->insertProfesor('PAX011', 'legacy-token-011');
+
+        $response = $this->getJson('/api/auth/me?api_token=legacy-token-011');
+
+        $response->assertStatus(401);
+    }
+
     public function test_auth_logout_revoca_token_actual(): void
     {
         $this->insertProfesor('PAX020', 'legacy-token-020');
