@@ -217,6 +217,7 @@
     @lang("messages.menu.Empresa"): {{$elemento->nombre}}
 @endsection
 @section('scripts')
+    {{ Html::script('/js/common/api-auth.js') }}
     {{ Html::script('/js/Empresa/detalle.js') }}
     {{ Html::script('/js/Empresa/delete.js') }}
 @endsection

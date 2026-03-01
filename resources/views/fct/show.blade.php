@@ -136,6 +136,7 @@
     @push('scripts')
     {{ Html::script("/js/datepicker.js") }}
     @include('intranet.partials.modal.contactoAl')
+    {{ Html::script("/js/common/api-auth.js") }}
     {{ Html::script("/js/Fct/show.js") }}
     @endpush
 </x-layouts.app>

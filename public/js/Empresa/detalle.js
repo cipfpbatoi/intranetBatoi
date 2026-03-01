@@ -1,20 +1,5 @@
 'use strict';
 
-function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-    var data = extraData || {};
-    var headers = {};
-
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
-    } else if (legacyToken) {
-        data.api_token = legacyToken;
-    }
-
-    return { headers: headers, data: data };
-}
-
 $(function () {
     $(".addCol").click(function (){
         let idCentro = $(this).attr('href');

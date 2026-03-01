@@ -31,5 +31,6 @@
                 @endif
         </div>
 </x-modal>
+{{ Html::script("/js/common/api-auth.js") }}
 {{ Html::script("/js/extended.js") }}
 {{ Html::script("/js/taulaCheck.js") }}

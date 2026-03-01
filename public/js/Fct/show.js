@@ -1,20 +1,6 @@
 'use strict';
 
 var id;
-function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-    var data = extraData || {};
-    var headers = {};
-
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
-    } else if (legacyToken) {
-        data.api_token = legacyToken;
-    }
-
-    return { headers: headers, data: data };
-}
 
 $(function () {
     var id = $("#fct_id").text();
@@ -34,7 +20,7 @@ $(function () {
         event.preventDefault();
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo_alumno").attr("href","");
         $.ajax({
-            url: '/api/fct/' + id + '/alFct',
+            url: '/fct/' + id + '/alFct',
             method: 'GET',
             headers: apiAuthOptions().headers,
             data: apiAuthOptions().data,
@@ -68,7 +54,7 @@ $(function () {
 
         $.ajax({
             method: "POST",
-            url: "/api/fct/" + this.alumnoFct.value + "/alFct",
+            url: "/fct/" + this.alumnoFct.value + "/alFct",
             headers: auth.headers,
             data: auth.data
         }).then(function (result) {
