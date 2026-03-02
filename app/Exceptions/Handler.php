@@ -16,6 +16,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use function config;
 
+/**
+ * Gestor centralitzat d'excepcions de l'aplicació.
+ */
 class Handler extends ExceptionHandler
 {
     protected $dontReport = [
@@ -29,14 +32,28 @@ class Handler extends ExceptionHandler
 
     protected $dontFlash = ['password','password_confirmation'];
 
+    /**
+     * Renderitza la resposta HTTP per a una excepció.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function render($request, Throwable $exception)
     {
         // Envia avís només si el missatge és “informatiu” i no és SRF
         $msg = (string) $exception->getMessage();
         $isValidation = $exception instanceof ValidationException;
+        $isAuthorization = $exception instanceof AuthorizationException;
+        $statusCode = ($exception instanceof HttpExceptionInterface)
+            ? $exception->getStatusCode()
+            : null;
+        $isForbidden = $statusCode === 403;
 
         if (
             !$isValidation &&
+            !$isAuthorization &&
+            !$isForbidden &&
             $msg !== 'The given data was invalid.' &&
             $msg !== 'Unauthenticated.' &&
             $msg !== '' &&
