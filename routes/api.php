@@ -31,7 +31,7 @@ Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:sanc
 Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
-    Route::get('grupo/list/{id}', 'GrupoController@list');
+    Route::get('grupo/list/{id}', 'GrupoController@list')->middleware('auth:sanctum');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');
@@ -91,7 +91,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('solicitud', 'SolicitudController', ['except' => ['create']]);
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => [ 'create']]);
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']]);
-    Route::resource('activity', 'ActivityController', ['except' => [ 'create']]);
+    Route::resource('activity', 'ActivityController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
     Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
     Route::resource('task', 'TaskController', ['except' => [ 'create']]);
@@ -145,7 +145,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached')->middleware('auth:sanctum');
     Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached')->middleware('auth:sanctum');
 
-    Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
+    Route::get('activity/{id}/move/{fct}', 'ActivityController@move')->middleware('auth:sanctum');
     Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');
 
 

@@ -577,6 +577,59 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
+     * Activity/move (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_activity_move_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/activity/999999/move/200',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Activity/move (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_activity_move_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/activity/999999/move/200?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
      * Expediente (mode mixt) accepta Bearer i arriba al controlador.
      */
     public function test_expediente_show_amb_bearer_retorna_404_i_no_401(): void
