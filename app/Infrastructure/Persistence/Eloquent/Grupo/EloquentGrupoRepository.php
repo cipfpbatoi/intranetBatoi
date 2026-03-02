@@ -56,6 +56,17 @@ class EloquentGrupoRepository implements GrupoRepositoryInterface
         return Grupo::query()->Curso($curso)->get();
     }
 
+    /**
+     * @param array<int, int> $cursos
+     * @return EloquentCollection<int, Grupo>
+     */
+    public function byCursos(array $cursos): EloquentCollection
+    {
+        return Grupo::query()
+            ->whereIn('curso', $cursos)
+            ->get();
+    }
+
     public function byDepartamento(int $departamento): EloquentCollection
     {
         return Grupo::query()->Departamento($departamento)->get();

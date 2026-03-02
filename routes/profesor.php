@@ -328,6 +328,7 @@ Route::get('/fct/{document}/insercio', ['as' => 'fct.insercio', 'uses' => 'Panel
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 Route::get('/fct/estadisticas',['as' => 'fct.stat', 'uses' => 'PanelFctAvalController@estadistiques']);
+Route::get('/fct/estadisticas/xlsx',['as' => 'fct.stat.xlsx', 'uses' => 'PanelFctAvalController@estadistiquesXlsx']);
 /*
 */
 Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
