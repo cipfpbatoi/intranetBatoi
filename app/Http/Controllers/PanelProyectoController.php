@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Services\UI\AppAlert as Alert;
 
 
+/**
+ * Panell de projectes documentals per a professorat i alumnat.
+ */
 class PanelProyectoController extends BaseController
 {
     
@@ -26,14 +29,14 @@ class PanelProyectoController extends BaseController
      */
     public function index()
     {
-        Gate::authorize('viewAny', Documento::class);
+        $this->authorizeProyectoAccess();
         return parent::index();
     }
     
     
     protected function iniPestanas($parametres = null)
     {
-        Gate::authorize('viewAny', Documento::class);
+        $this->authorizeProyectoAccess();
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $ciclos = Ciclo::select('ciclo')
                  ->where('departamento', $dep)
@@ -48,7 +51,7 @@ class PanelProyectoController extends BaseController
     
     public function search()
     {
-        Gate::authorize('viewAny', Documento::class);
+        $this->authorizeProyectoAccess();
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $ciclos = hazArray(Ciclo::select('ciclo')
             ->where('departamento', $dep)
@@ -64,6 +67,35 @@ class PanelProyectoController extends BaseController
     protected function iniBotones()
     {
         $this->panel->setBothBoton('documento.show');
+    }
+
+    /**
+     * Autoritza l'accés al panell de projectes per a alumnat o professorat.
+     *
+     * @return void
+     */
+    private function authorizeProyectoAccess(): void
+    {
+        if ($this->isAlumnoUser()) {
+            return;
+        }
+
+        Gate::authorize('viewAny', Documento::class);
+    }
+
+    /**
+     * Comprova si l'usuari autenticat és alumne.
+     *
+     * @return bool
+     */
+    private function isAlumnoUser(): bool
+    {
+        $user = authUser();
+        if (!is_object($user) || !isset($user->rol)) {
+            return false;
+        }
+
+        return esRol((int) $user->rol, (int) config('roles.rol.alumno'));
     }
     
 }

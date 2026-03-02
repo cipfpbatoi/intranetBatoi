@@ -36,7 +36,7 @@ class DocumentoPolicy
      */
     public function view($user, Documento $documento): bool
     {
-        return $this->hasIdentity($user);
+        return $this->hasIdentity($user) || $this->canViewAsAlumno($user, $documento);
     }
 
     /**
@@ -65,5 +65,35 @@ class DocumentoPolicy
     private function hasIdentity($user): bool
     {
         return is_object($user) && isset($user->dni) && (string) $user->dni !== '';
+    }
+
+    /**
+     * Permet a l'alumnat veure projectes documentals.
+     *
+     * @param mixed $user
+     */
+    private function canViewAsAlumno($user, Documento $documento): bool
+    {
+        return $this->isAlumno($user) && $this->isProyecto($documento);
+    }
+
+    /**
+     * @param mixed $user
+     */
+    private function isAlumno($user): bool
+    {
+        if (!is_object($user) || !isset($user->rol)) {
+            return false;
+        }
+
+        return esRol((int) $user->rol, (int) config('roles.rol.alumno'));
+    }
+
+    /**
+     * Indica si el document és un projecte.
+     */
+    private function isProyecto(Documento $documento): bool
+    {
+        return (string) $documento->tipoDocumento === 'Proyecto';
     }
 }
