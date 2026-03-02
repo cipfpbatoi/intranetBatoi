@@ -152,9 +152,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * En reserva (mode mixt), legacy api_token encara s'accepta temporalment.
+     * En reserva (strict Sanctum), legacy api_token sense Bearer es rebutja.
      */
-    public function test_reserva_show_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_reserva_show_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -169,8 +169,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/reserva/999999?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertNotSame(401, $response['status'] ?? null);
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
