@@ -28,25 +28,25 @@ Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
 Route::post('/auth/exchange', 'AuthTokenController@exchange');
 Route::get('/auth/me', 'AuthTokenController@me')->middleware('auth:sanctum');
 Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:sanctum');
+Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');
-    Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
-    Route::resource('falta', 'FaltaController', ['except' => [ 'create']]);
+    Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('documento', 'DocumentoController', ['except' => [ 'create']]);
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
     Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
-    Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
-    Route::put('/comision/{dni}/prePay', 'ComisionController@prePay');
+    Route::resource('comision', 'ComisionController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::put('/comision/{dni}/prePay', 'ComisionController@prePay')->middleware('auth:sanctum');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
     Route::resource('ipguardia', 'IpGuardiaController', ['except' => [ 'create']]);
     Route::resource('setting', 'SettingController', ['except' => [ 'create']]);
-    Route::get('autorizar/comision', 'ComisionController@autorizar');
+    Route::get('autorizar/comision', 'ComisionController@autorizar')->middleware('auth:sanctum');
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
 
@@ -69,7 +69,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::put('/material/cambiarUnidad/', 'MaterialController@putUnidades');
     Route::put('/material/cambiarInventario', 'MaterialController@putInventario');
     Route::get('/material/espacio/{espacio}', 'MaterialController@getMaterial');
-    Route::resource('material', 'MaterialController', ['except' => [ 'create']]);
+    Route::resource('material', 'MaterialController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::get('inventario', 'MaterialController@inventario');
     Route::get('inventario/{espai}', 'MaterialController@espai');
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
@@ -80,14 +80,14 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']]);
     Route::resource('reserva', 'ReservaController', ['except' => [ 'create']]);
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
-    Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
+    Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
     Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
     Route::resource('Empresa', 'EmpresaController', ['except' => [ 'create']]);
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => [ 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => [ 'create']]);
     Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => [ 'create']]);
-    Route::resource('expediente', 'ExpedienteController', ['except' => [ 'create']]);
+    Route::resource('expediente', 'ExpedienteController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('solicitud', 'SolicitudController', ['except' => ['create']]);
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => [ 'create']]);
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']]);
@@ -112,12 +112,12 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
    
     Route::post('/centro/fusionar', 'CentroController@fusionar');
     Route::get('colaboracion/instructores/{id}', 'ColaboracionController@instructores');
-    Route::get('/colaboracion/{colaboracion}/resolve', 'ColaboracionController@resolve');
-    Route::get('/colaboracion/{colaboracion}/refuse', 'ColaboracionController@refuse');
-    Route::get('/colaboracion/{colaboracion}/unauthorize', 'ColaboracionController@unauthorize');
-    Route::get('/colaboracion/{colaboracion}/switch', 'ColaboracionController@switch');
-    Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
-    Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book');
+    Route::get('/colaboracion/{colaboracion}/resolve', 'ColaboracionController@resolve')->middleware('auth:sanctum');
+    Route::get('/colaboracion/{colaboracion}/refuse', 'ColaboracionController@refuse')->middleware('auth:sanctum');
+    Route::get('/colaboracion/{colaboracion}/unauthorize', 'ColaboracionController@unauthorize')->middleware('auth:sanctum');
+    Route::get('/colaboracion/{colaboracion}/switch', 'ColaboracionController@switch')->middleware('auth:sanctum');
+    Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon')->middleware('auth:sanctum');
+    Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book')->middleware('auth:sanctum');
 
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec');
     Route::get('/signatura', 'DocumentacionFCTController@signatura');

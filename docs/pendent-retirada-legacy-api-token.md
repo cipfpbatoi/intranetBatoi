@@ -38,6 +38,12 @@ En curs, amb inventari tècnic inicial completat.
    `routes/api.php` queda així:
    - `/api/auth/me` -> `auth:sanctum` (migrat 2026-03-01)
    - `/api/auth/logout` -> `auth:sanctum` (migrat 2026-03-01)
+   - `/api/actividad/*` -> `auth:sanctum` (migrat 2026-03-02)
+   - `/api/material/*` -> `auth:sanctum` (migrat 2026-03-02)
+   - `/api/falta/*` -> `auth:sanctum` (migrat 2026-03-02)
+   - `/api/expediente/*` -> `auth:sanctum` (migrat 2026-03-02)
+   - `/api/comision/*` + `autorizar/prePay` -> `auth:sanctum` (migrat 2026-03-02)
+   - `/api/colaboracion/*` + `resolve/refuse/unauthorize/switch/telefonico/book` -> `auth:sanctum` (migrat 2026-03-02)
    - grup principal `/api/*` encara en `auth:api,sanctum` (pendent de particionar)
 3. **Controladors amb fallback o validació legacy explícita**
    - `app/Http/Controllers/API/MaterialController.php` (`resolveApiUser()`)
@@ -110,7 +116,7 @@ Important:
 2. Migrar Dropzone intern a Bearer pur:
    - `resources/views/dropzone/partials/value.blade.php`
 3. Revisar crides de frontend detectades en logs:
-   - `attachFile`, `getAttached`, `removeAttached`, `colaboracion/switch`, `actividad/*/edit`
+   - `attachFile`, `getAttached`, `removeAttached`, `actividad/*/edit`
 4. Mantindre temporalment com a excepció controlada:
    - `/api/auth/exchange`
    - fluxos crítics de `ReservaController@unsecure` i `FicharController`
@@ -134,8 +140,8 @@ Important:
    - `/api/auth/me`
    - `/api/auth/logout`
 2. Prova de migració estricta en col·laboració/adjunts:
-   - `dropzone` s'ha mantingut en `auth:sanctum` pur (`/api/attachFile`, `/api/getAttached/*`, `/api/getNameAttached/*`, `/api/removeAttached/*`),
-   - `colaboracion` s'ha revertit temporalment a mode mixt (`auth:api,sanctum`) per regressió funcional detectada en `misColaboraciones`.
+   - `dropzone` en `auth:sanctum` pur (`/api/attachFile`, `/api/getAttached/*`, `/api/getNameAttached/*`, `/api/removeAttached/*`),
+   - `colaboracion` en `auth:sanctum` pur (`/api/colaboracion/*` i accions específiques).
 3. Tests actualitzats a Bearer/Sanctum (sense query `api_token`) en els mòduls afectats.
 4. Nota:
    - com que no és producció, la cobertura de telemetria continua sent parcial.

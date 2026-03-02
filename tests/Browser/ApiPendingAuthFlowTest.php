@@ -99,6 +99,28 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
+     * En colaboracion/switch (strict Sanctum), legacy api_token sense Bearer es rebutja.
+     */
+    public function test_colaboracion_switch_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/colaboracion/999999/switch?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
      * En reserva (mode mixt), Bearer ha d'autenticar i arribar al controlador.
      */
     public function test_reserva_show_amb_bearer_retorna_404_i_no_401(): void
@@ -153,9 +175,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * En actividad/edit (mode mixt), legacy api_token encara arriba al controlador.
+     * En actividad/edit (ara strict Sanctum), legacy api_token sense Bearer es rebutja.
      */
-    public function test_actividad_edit_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_actividad_edit_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -170,13 +192,12 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/actividad/999999/edit?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertFalse((bool) ($response['json']['success'] ?? true));
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
     /**
-     * En actividad/edit (mode mixt), Bearer també ha d'arribar al controlador.
+     * En actividad/edit (strict Sanctum), Bearer ha d'arribar al controlador.
      */
     public function test_actividad_edit_amb_bearer_retorna_404_i_no_401(): void
     {
@@ -207,7 +228,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * Material (mode mixt) ha d'acceptar Bearer.
+     * Material (ara strict Sanctum) ha d'acceptar Bearer.
      */
     public function test_material_show_amb_bearer_retorna_404_i_no_401(): void
     {
@@ -238,9 +259,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * Material (mode mixt) continua acceptant legacy api_token temporalment.
+     * Material (strict Sanctum) rebutja legacy api_token sense Bearer.
      */
-    public function test_material_show_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_material_show_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -255,8 +276,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/material/999999?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertFalse((bool) ($response['json']['success'] ?? true));
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
@@ -430,9 +450,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * Falta (mode mixt) encara accepta api_token legacy temporalment.
+     * Falta (strict Sanctum) rebutja api_token legacy sense Bearer.
      */
-    public function test_falta_show_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_falta_show_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -447,8 +467,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/falta/999999?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertNotSame(401, $response['status'] ?? null);
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
@@ -484,9 +503,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * Expediente (mode mixt) encara accepta api_token legacy temporalment.
+     * Expediente (strict Sanctum) rebutja api_token legacy sense Bearer.
      */
-    public function test_expediente_show_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_expediente_show_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -501,8 +520,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/expediente/999999?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertNotSame(401, $response['status'] ?? null);
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
@@ -538,9 +556,9 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
-     * Comision/edit (mode mixt) encara accepta api_token legacy temporalment.
+     * Comision/edit (strict Sanctum) rebutja api_token legacy sense Bearer.
      */
-    public function test_comision_edit_accepta_legacy_api_token_en_mode_mixt(): void
+    public function test_comision_edit_rebutja_legacy_api_token_sense_bearer(): void
     {
         $profesor = $this->profesorWithLegacyTokenOrSkip();
         if ($profesor === null) {
@@ -555,8 +573,7 @@ class ApiPendingAuthFlowTest extends DuskTestCase
                 '/api/comision/999999/edit?api_token='.rawurlencode((string) $profesor->api_token)
             );
 
-            $this->assertSame(404, $response['status'] ?? null);
-            $this->assertNotSame(401, $response['status'] ?? null);
+            $this->assertSame(401, $response['status'] ?? null);
         });
     }
 
