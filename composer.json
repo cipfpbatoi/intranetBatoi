@@ -99,6 +99,10 @@
         "test:full": [
             "@php -d max_execution_time=1000 artisan test --stop-on-failure"
         ],
+        "test:auth-migration": [
+            "@php artisan test --testsuite=Feature --filter=\"ApiAuthTokenExchangeFeatureTest|ApiColaboracionControllerFeatureTest|ApiDropZoneControllerFeatureTest|AuthProfesorLoginControllerFeatureTest\"",
+            "@php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
+        ],
         "docs:app:docblocks": [
             "@php tools/docblocks/generate-docblocks-index.php"
         ]

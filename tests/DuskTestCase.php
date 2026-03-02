@@ -7,6 +7,8 @@ use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\URL;
+use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 
 /**
@@ -15,6 +17,24 @@ use Laravel\Dusk\TestCase as BaseTestCase;
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
+
+    /**
+     * Força URL base i esquema per evitar redirects HTTPS no vàlids en Dusk.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $baseUrl = (string) (env('DUSK_APP_URL') ?: env('APP_URL') ?: 'http://localhost');
+        $baseUrl = rtrim($baseUrl, '/');
+        $scheme = parse_url($baseUrl, PHP_URL_SCHEME) ?: 'http';
+
+        config(['app.url' => $baseUrl]);
+        config(['dusk.domain' => null]);
+        Browser::$baseUrl = $baseUrl;
+        URL::forceRootUrl($baseUrl);
+        URL::forceScheme($scheme);
+    }
 
     /**
      * Crea el driver remot de navegador (Selenium Grid).
@@ -46,6 +66,7 @@ abstract class DuskTestCase extends BaseTestCase
 
             $capabilities = DesiredCapabilities::firefox();
             $capabilities->setCapability(FirefoxOptions::CAPABILITY, $options);
+            $capabilities->setCapability('acceptInsecureCerts', true);
 
             return $capabilities;
         }
@@ -55,10 +76,12 @@ abstract class DuskTestCase extends BaseTestCase
                 '--disable-dev-shm-usage',
                 '--no-sandbox',
                 '--window-size=1920,1080',
+                '--ignore-certificate-errors',
             ]);
 
             $capabilities = DesiredCapabilities::chrome();
             $capabilities->setCapability(ChromeOptions::CAPABILITY, $options);
+            $capabilities->setCapability('acceptInsecureCerts', true);
 
             return $capabilities;
         }

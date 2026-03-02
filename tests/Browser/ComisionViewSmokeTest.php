@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use Intranet\Entities\Profesor;
+use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
@@ -21,8 +22,14 @@ class ComisionViewSmokeTest extends DuskTestCase
             return;
         }
 
-        $this->browse(function (Browser $browser) use ($profesor) {
-            $browser->loginAs($profesor, 'profesor')
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $browser->visit('/profesor/login')
+                ->type('codigo', $login['identifier'])
+                ->type('password', $login['password'])
+                ->press('Entra')
+                ->pause(1500)
                 ->visit('/home')
                 ->pause(1200)
                 ->assertDontSee('Pantalla Login');
@@ -51,5 +58,36 @@ class ComisionViewSmokeTest extends DuskTestCase
         }
 
         return $profesor;
+    }
+
+    /**
+     * Prepara credencials estables per a login via formulari web en Dusk.
+     *
+     * @return array{identifier:string,password:string}
+     */
+    private function prepareProfesorForUiLogin(Profesor $profesor): array
+    {
+        $plainPassword = 'DuskPass_2026';
+        $identifier = trim((string) ($profesor->email ?? ''));
+
+        if ($identifier === '') {
+            $identifier = 'dusk.'.strtolower((string) $profesor->dni).'@test.local';
+            $profesor->email = $identifier;
+        }
+
+        $profesor->password = bcrypt($plainPassword);
+        $profesor->changePassword = (string) ($profesor->changePassword ?: now()->toDateString());
+        $profesor->activo = 1;
+
+        if (!is_string($profesor->remember_token) || $profesor->remember_token === '') {
+            $profesor->remember_token = Str::random(20);
+        }
+
+        $profesor->save();
+
+        return [
+            'identifier' => $identifier,
+            'password' => $plainPassword,
+        ];
     }
 }
