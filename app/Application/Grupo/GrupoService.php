@@ -67,6 +67,15 @@ class GrupoService
     }
 
     /**
+     * @param array<int, int> $cursos
+     * @return EloquentCollection<int, Grupo>
+     */
+    public function byCursos(array $cursos): EloquentCollection
+    {
+        return $this->grupoRepository->byCursos($cursos);
+    }
+
+    /**
      * @return EloquentCollection<int, Grupo>
      */
     public function byDepartamento(int $departamento): EloquentCollection

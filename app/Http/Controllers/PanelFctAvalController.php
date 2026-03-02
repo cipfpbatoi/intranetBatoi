@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Application\Profesor\ProfesorService;
@@ -21,8 +22,13 @@ use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
-use Intranet\Services\UI\AppAlert as Alert;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Styde\Html\Facades\Alert;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 /**
@@ -523,12 +529,131 @@ class PanelFctAvalController extends IntranetController
         return back();
     }
 
+    /**
+     * Mostra les estadístiques FCT separant primer i segon curs.
+     */
     public function estadistiques()
     {
         Gate::authorize('viewStats', Fct::class);
-        $grupos = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
-        $ciclos = $this->avals()->estadistiques($grupos);
-        return view('fct.estadisticas', compact('ciclos', 'grupos'));
+        $grupos1 = $this->grupos()->byCurso(1)->sortBy('idCiclo')->values();
+        $grupos2 = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
+        $ciclos1 = $this->avals()->estadistiques($grupos1);
+        $ciclos2 = $this->avals()->estadistiques($grupos2);
+
+        return view('fct.estadisticas', compact('ciclos1', 'ciclos2', 'grupos1', 'grupos2'));
+    }
+
+    /**
+     * Exporta les estadístiques FCT a un fitxer Excel.
+     *
+     * @return BinaryFileResponse
+     */
+    public function estadistiquesXlsx(): BinaryFileResponse
+    {
+        Gate::authorize('viewStats', Fct::class);
+
+        $grupos1 = $this->grupos()->byCurso(1)->sortBy('idCiclo')->values();
+        $grupos2 = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
+        $ciclos1 = $this->avals()->estadistiques($grupos1);
+        $ciclos2 = $this->avals()->estadistiques($grupos2);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet1 = $spreadsheet->getActiveSheet();
+        $this->fillStatsSheet($sheet1, '1r', $grupos1, $ciclos1);
+
+        $sheet2 = $spreadsheet->createSheet();
+        $this->fillStatsSheet($sheet2, '2n', $grupos2, $ciclos2);
+
+        $tmpDir = storage_path('tmp');
+        if (!is_dir($tmpDir) && !mkdir($tmpDir, 0755, true)) {
+            throw new \RuntimeException('No s\'ha pogut crear el directori temporal');
+        }
+
+        $fileName = 'estadistiques_fct_' . date('Ymd_His') . '.xlsx';
+        $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+        (new Xlsx($spreadsheet))->save($filePath);
+
+        return response()->download(
+            $filePath,
+            $fileName,
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        )->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Ompli una fulla d'Excel amb les estadístiques d'un curs.
+     *
+     * @param Worksheet $sheet
+     * @param string $title
+     * @param Collection<int, \Intranet\Entities\Grupo> $grupos
+     * @param array<int, array<string, int>> $ciclos
+     */
+    private function fillStatsSheet(Worksheet $sheet, string $title, Collection $grupos, array $ciclos): void
+    {
+        $sheet->setTitle($title);
+
+        $headers = [
+            'Grup / Cicle',
+            'Matriculats',
+            'Fcts',
+            'Exempts',
+            'Projecte',
+            'Inserció',
+            'Acta',
+            'Qualitat',
+        ];
+
+        foreach ($headers as $index => $header) {
+            $sheet->setCellValueByColumnAndRow($index + 1, 1, $header);
+        }
+
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        $row = 2;
+        foreach ($grupos as $grupo) {
+            $sheet->setCellValueByColumnAndRow(1, $row, $grupo->nombre);
+            $sheet->setCellValueByColumnAndRow(2, $row, $grupo->matriculados);
+            $sheet->setCellValueByColumnAndRow(3, $row, $grupo->resFct);
+            $sheet->setCellValueByColumnAndRow(4, $row, $grupo->exentos);
+            $sheet->setCellValueByColumnAndRow(5, $row, $grupo->respro);
+            $sheet->setCellValueByColumnAndRow(6, $row, $grupo->resempresa);
+            $sheet->setCellValueByColumnAndRow(7, $row, $grupo->acta);
+            $sheet->setCellValueByColumnAndRow(8, $row, $grupo->calidad);
+            $row++;
+        }
+
+        if (count($ciclos) > 0) {
+            $row++;
+        }
+
+        foreach ($ciclos as $key => $resCiclo) {
+            $cicloNombre = Ciclo::find((int) $key)?->ciclo ?? (string) $key;
+            $sheet->setCellValueByColumnAndRow(1, $row, $cicloNombre);
+            $sheet->setCellValueByColumnAndRow(2, $row, $resCiclo['matriculados'] ?? 0);
+            $sheet->setCellValueByColumnAndRow(
+                3,
+                $row,
+                ($resCiclo['resfct'] ?? 0) . ' de ' . ($resCiclo['avalfct'] ?? 0)
+            );
+            $sheet->setCellValueByColumnAndRow(4, $row, $resCiclo['exentos'] ?? 0);
+            $sheet->setCellValueByColumnAndRow(
+                5,
+                $row,
+                ($resCiclo['respro'] ?? 0) . ' de ' . ($resCiclo['avalpro'] ?? 0)
+            );
+            $sheet->setCellValueByColumnAndRow(
+                6,
+                $row,
+                ($resCiclo['resempresa'] ?? 0) . ' de ' . ($resCiclo['resfct'] ?? 0)
+            );
+            $sheet->setCellValueByColumnAndRow(7, $row, '');
+            $sheet->setCellValueByColumnAndRow(8, $row, '');
+            $row++;
+        }
+
+        foreach (range('A', 'H') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
     }
 
 }

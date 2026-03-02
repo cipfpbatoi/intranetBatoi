@@ -41,6 +41,12 @@ interface GrupoRepositoryInterface
     public function byCurso(int $curso): EloquentCollection;
 
     /**
+     * @param array<int, int> $cursos
+     * @return EloquentCollection<int, Grupo>
+     */
+    public function byCursos(array $cursos): EloquentCollection;
+
+    /**
      * @return EloquentCollection<int, Grupo>
      */
     public function byDepartamento(int $departamento): EloquentCollection;
