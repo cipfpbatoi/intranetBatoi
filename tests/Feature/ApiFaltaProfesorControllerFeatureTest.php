@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de FaltaProfesor amb autenticació Sanctum.
+ */
 class ApiFaltaProfesorControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -50,7 +54,7 @@ class ApiFaltaProfesorControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PFP01');
         $user = Profesor::on('sqlite')->findOrFail('PFP01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('faltas_profesores')->insert([
             [
@@ -90,7 +94,7 @@ class ApiFaltaProfesorControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PFP02');
         $user = Profesor::on('sqlite')->findOrFail('PFP02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('faltas_profesores')->insert([
             [
@@ -123,7 +127,7 @@ class ApiFaltaProfesorControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PFP12');
         $user = Profesor::on('sqlite')->findOrFail('PFP12');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('faltas_profesores')->insert([
             [

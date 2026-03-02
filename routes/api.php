@@ -61,8 +61,8 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('/aula', 'ReservaController@unsecure');
 
 
-    Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
-    Route::get('faltaProfesor/horas/{condicion}', 'FaltaProfesorController@horas');
+    Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::get('faltaProfesor/horas/{condicion}', 'FaltaProfesorController@horas')->middleware('auth:sanctum');
 
     Route::put('/material/cambiarUbicacion/', 'MaterialController@putUbicacion');
     Route::put('/material/cambiarEstado/', 'MaterialController@putEstado');
@@ -75,8 +75,8 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
-    Route::get('guardia/range', 'GuardiaController@range');
-    Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']]);
+    Route::get('guardia/range', 'GuardiaController@range')->middleware('auth:sanctum');
+    Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']]);
     Route::resource('reserva', 'ReservaController', ['except' => [ 'create']]);
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
