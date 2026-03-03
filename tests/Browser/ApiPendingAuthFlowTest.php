@@ -2222,6 +2222,72 @@ class ApiPendingAuthFlowTest extends DuskTestCase
     }
 
     /**
+     * Endpoints migrats en bloc: amb Bearer no han de retornar 401.
+     */
+    public function test_bulk_endpoints_migrats_amb_bearer_no_retornen_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+        $targets = $this->bulkMigratedEndpointTargets();
+
+        $this->browse(function (Browser $browser) use ($login, $targets) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            foreach ($targets as $url) {
+                $response = $this->fetchJson(
+                    $browser,
+                    $url,
+                    'GET',
+                    null,
+                    ['Authorization' => 'Bearer '.$token]
+                );
+
+                $this->assertNotSame(
+                    401,
+                    $response['status'] ?? null,
+                    'Endpoint migrat ha retornat 401 amb Bearer: '.$url
+                );
+            }
+        });
+    }
+
+    /**
+     * Endpoints migrats en bloc: amb només api_token legacy han de retornar 401.
+     */
+    public function test_bulk_endpoints_migrats_rebutgen_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $targets = $this->bulkMigratedEndpointTargets();
+
+        $this->browse(function (Browser $browser) use ($profesor, $targets) {
+            $browser->visit('/');
+
+            foreach ($targets as $url) {
+                $separator = str_contains($url, '?') ? '&' : '?';
+                $urlWithLegacy = $url.$separator.'api_token='.rawurlencode((string) $profesor->api_token);
+
+                $response = $this->fetchJson($browser, $urlWithLegacy);
+                $this->assertSame(
+                    401,
+                    $response['status'] ?? null,
+                    'Endpoint migrat ha acceptat api_token legacy: '.$url
+                );
+            }
+        });
+    }
+
+    /**
      * Selecciona professor actiu per a login UI i consum API amb Bearer.
      */
     private function profesorForBrowserAuthOrSkip(): ?Profesor
@@ -2387,5 +2453,29 @@ JS;
         }
 
         return $result;
+    }
+
+    /**
+     * Llista d'endpoints de control ràpid per validar migració global a Sanctum.
+     *
+     * @return array<int, string>
+     */
+    private function bulkMigratedEndpointTargets(): array
+    {
+        return [
+            '/api/instructor/999999',
+            '/api/ipguardia/999999',
+            '/api/setting/999999',
+            '/api/ppoll/999999',
+            '/api/material/espacio/NO-EXIST',
+            '/api/inventario/NO-EXIST',
+            '/api/alumnoresultado/999999',
+            '/api/lote/NO-EXIST/articulos',
+            '/api/articulo/999999',
+            '/api/articuloLote/999999',
+            '/api/cotxe/999999',
+            '/api/tipoactividad/999999',
+            '/api/tutoriagrupo/999999',
+        ];
     }
 }
