@@ -2,10 +2,12 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
 
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 
@@ -14,6 +16,19 @@ class MaterialController extends ApiResourceController
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     protected $model = 'Material';
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Material
+     */
+    private function findMaterialOrFail($id): Material
+    {
+        try {
+            return Material::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+        }
+    }
 
     function getMaterial($espacio)
     {
@@ -68,9 +83,14 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse($data, 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return void
+     */
     public function put(Request $request)
     {
-        $material = Material::findOrFail($request->id);
+        $material = $this->findMaterialOrFail($request->id);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -79,10 +99,15 @@ class MaterialController extends ApiResourceController
         $material->anterior = $anterior;
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putUnidades(Request $request)
     {
 
-        $material = Material::findOrFail($request->id);
+        $material = $this->findMaterialOrFail($request->id);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -92,9 +117,14 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => json_encode($request)], 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putUbicacion(Request $request)
     {
-        $material = Material::findOrFail($request->id);
+        $material = $this->findMaterialOrFail($request->id);
         $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
@@ -129,9 +159,14 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => $missatge], 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putEstado(Request $request)
     {
-        $material = Material::findOrFail($request->id);
+        $material = $this->findMaterialOrFail($request->id);
         $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
@@ -193,11 +228,16 @@ class MaterialController extends ApiResourceController
         return apiAuthUser($token);
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putInventario(Request $request)
     {
         $fecha = new Date();
 
-        $material = Material::findOrFail($request->id);
+        $material = $this->findMaterialOrFail($request->id);
         if ($request->inventario == 'true') {
             $material->fechaultimoinventario = $fecha->format('Y-m-d');
         } else {

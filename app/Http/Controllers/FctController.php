@@ -7,10 +7,12 @@ use Intranet\Application\Fct\FctService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Presentation\Crud\FctCrudSchema;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Http\Requests\FctStoreRequest;
@@ -88,10 +90,28 @@ class FctController extends IntranetController
         return $this->fctCertificateService;
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Fct
+     */
+    private function findFctOrFail($id): Fct
+    {
+        try {
+            return $this->fcts()->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('FCT no trobada', ['fct_id' => $id]);
+        }
+    }
 
+    /**
+     * @param int|string|null $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit($id=null)
     {
-        $fct = $this->fcts()->findOrFail($id);
+        $fct = $this->findFctOrFail($id);
         $this->authorize('update', $fct);
         $formulario = new FormBuilder($fct, ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
@@ -101,20 +121,26 @@ class FctController extends IntranetController
     /**
      * @param Request $request
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->fcts()->findOrFail($id));
+        $this->authorize('update', $this->findFctOrFail($id));
         $this->validate($request, (new FctUpdateRequest())->rules());
         $this->fcts()->setInstructor($id, (string) $request->idInstructor);
         return $this->redirect();
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function certificat($id)
     {
-        $fct = $this->fcts()->findOrFail($id);
+        $fct = $this->findFctOrFail($id);
         $this->authorize('update', $fct);
         /*if ($fct->asociacion == 4){
             $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
@@ -130,13 +156,22 @@ class FctController extends IntranetController
         }*/
 
         return response()->file(FDFPrepareService::exec(
-            new CertificatInstructorResource($this->fcts()->findOrFail($id))));
+            new CertificatInstructorResource($this->findFctOrFail($id))));
 
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public static function certificatColaboradores($id)
     {
-        $fct = app(FctService::class)->findOrFail($id);
+        try {
+            $fct = app(FctService::class)->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('FCT no trobada', ['fct_id' => $id]);
+        }
         return app(FctCertificateService::class)->streamColaboradorCertificate($fct);
     }
 
@@ -173,13 +208,14 @@ class FctController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         Session::put('pestana', 1);
-        $fct = $this->fcts()->findOrFail($id);
+        $fct = $this->findFctOrFail($id);
         $this->authorize('update', $fct);
         $instructores = $fct->Colaboradores->pluck('dni');
 
@@ -191,11 +227,12 @@ class FctController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $fct = $this->fcts()->findOrFail($id);
+        $fct = $this->findFctOrFail($id);
         $this->authorize('delete', $fct);
         if (Session::get('pestana')) {
             $empresa = $this->fcts()->empresaIdByFct($id);
@@ -210,11 +247,12 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param Request $request
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouAlumno($idFct, Request $request)
     {
-        $this->authorize('update', $this->fcts()->findOrFail($idFct));
+        $this->authorize('update', $this->findFctOrFail($idFct));
         $this->fcts()->attachAlumnoSimple($idFct, $request);
         
         return back();
@@ -223,6 +261,7 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param Request $request
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouFctAlumno(Request $request)
@@ -239,11 +278,12 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param Request $request
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouInstructor($idFct, ColaboradorRequest $request)
     {
-        $this->authorize('update', $this->fcts()->findOrFail($idFct));
+        $this->authorize('update', $this->findFctOrFail($idFct));
         $colaborador = new Colaborador([
             'idInstructor'=>$request->idInstructor,
             'name'=>$request->name,
@@ -257,11 +297,12 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param $idInstructor
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteInstructor($idFct, $idInstructor)
     {
-       $this->authorize('update', $this->fcts()->findOrFail($idFct));
+       $this->authorize('update', $this->findFctOrFail($idFct));
        $this->fcts()->deleteColaborador($idFct, $idInstructor);
        Session::put('pestana', 5);
        return back();
@@ -270,11 +311,12 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param $idAlumno
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function alumnoDelete($idFct, $idAlumno)
     {
-       $this->authorize('update', $this->fcts()->findOrFail($idFct));
+       $this->authorize('update', $this->findFctOrFail($idFct));
        $this->fcts()->detachAlumno($idFct, $idAlumno);
        return back();
     }
@@ -282,18 +324,25 @@ class FctController extends IntranetController
     /**
      * @param $idFct
      * @param Request $request
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function modificaHoras($idFct, Request $request)
     {
-        $this->authorize('update', $this->fcts()->findOrFail($idFct));
+        $this->authorize('update', $this->findFctOrFail($idFct));
         $this->fcts()->updateColaboradorHoras($idFct, $request->except('_token'));
         return back();
     }
 
+    /**
+     * @param Request $request
+     * @param int|string $idFct
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function cotutor(Request $request, $idFct)
     {
-        $this->authorize('update', $this->fcts()->findOrFail($idFct));
+        $this->authorize('update', $this->findFctOrFail($idFct));
         $this->fcts()->setCotutor($idFct, $request->cotutor ?? null);
 
         return back();

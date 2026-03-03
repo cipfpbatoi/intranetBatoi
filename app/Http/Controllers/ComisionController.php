@@ -6,6 +6,7 @@ use Intranet\Application\Comision\ComisionService;
 use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\ComisionCrudSchema;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Support\Fct\DocumentoFctConfig;
@@ -13,6 +14,7 @@ use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -61,7 +63,26 @@ class ComisionController extends ModalController
         return $this->comisionService;
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Comision
+     */
+    private function findComisionOrFail($id): Comision
+    {
+        try {
+            return $this->comisionService()->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Comissió no trobada', ['comision_id' => $id]);
+        }
+    }
 
+
+    /**
+     * @param ComisionRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function store(ComisionRequest $request)
     {
         $this->authorize('create', Comision::class);
@@ -70,7 +91,7 @@ class ComisionController extends ModalController
         ]);
 
         $id = $this->persist($request);
-        $comision = $this->comisionService()->findOrFail((int) $id);
+        $comision = $this->findComisionOrFail($id);
 
         if ($comision->fct) {
             return $this->detalle($comision->id);
@@ -79,16 +100,27 @@ class ComisionController extends ModalController
         return $this->confirm($comision->id);
     }
 
+    /**
+     * @param ComisionRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ComisionRequest $request, $id)
     {
-        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
+        $this->authorize('update', $this->findComisionOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function confirm($id)
     {
-        $comision = $this->comisionService()->findOrFail((int) $id);
+        $comision = $this->findComisionOrFail($id);
         $this->authorize('update', $comision);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
@@ -195,12 +227,14 @@ class ComisionController extends ModalController
 
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     protected function init($id)
     {
-        $comision = $this->comisionService()->find((int) $id);
-        if (!$comision) {
-            return $this->redirect();
-        }
+        $comision = $this->findComisionOrFail($id);
         $this->authorize('update', $comision);
         $this->enviarCorreos($comision);
         $stSrv = new StateService($comision);
@@ -225,20 +259,22 @@ class ComisionController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      */
     public function paid($id)
     {
-        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
+        $this->authorize('update', $this->findComisionOrFail($id));
         $this->setEstado($id, 5);
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function unpaid($id)
     {
-        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
+        $this->authorize('update', $this->findComisionOrFail($id));
         $this->setEstado($id, 4);
         return back();
     }
@@ -253,18 +289,29 @@ class ComisionController extends ModalController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\View
+     */
     public function detalle($id)
     {
-        $comision = $this->comisionService()->findOrFail((int) $id);
+        $comision = $this->findComisionOrFail($id);
         $this->authorize('view', $comision);
         $allFcts = $this->buildFctOptions();
 
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 
+    /**
+     * @param Request $request
+     * @param int|string $comisionId
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createFct(Request $request, $comisionId)
     {
-        $this->authorize('manageFct', $this->comisionService()->findOrFail((int) $comisionId));
+        $this->authorize('manageFct', $this->findComisionOrFail($comisionId));
         $this->comisionService()->attachFct(
             (int) $comisionId,
             (int) $request->idFct,
@@ -274,9 +321,15 @@ class ComisionController extends ModalController
         return $this->detalle($comisionId);
     }
 
+    /**
+     * @param int|string $comisionId
+     * @param int|string $fctId
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteFct($comisionId, $fctId)
     {
-        $this->authorize('manageFct', $this->comisionService()->findOrFail((int) $comisionId));
+        $this->authorize('manageFct', $this->findComisionOrFail($comisionId));
         $this->comisionService()->detachFct((int) $comisionId, (int) $fctId);
         return $this->detalle($comisionId);
     }

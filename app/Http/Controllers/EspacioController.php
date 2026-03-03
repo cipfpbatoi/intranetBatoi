@@ -4,9 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\EspacioRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 
@@ -38,6 +40,20 @@ class EspacioController extends ModalController
         'reservable' => ['type' => 'checkbox'],
     ];
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Espacio
+     */
+    private function findEspacioOrFail($id): Espacio
+    {
+        try {
+            return Espacio::findOrFail((string) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Espai no trobat', ['espacio_id' => $id]);
+        }
+    }
+
     public function search()
     {
         if (esRol(authUser()->rol, config(self::DIRECCION))) {
@@ -54,9 +70,15 @@ class EspacioController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param EspacioRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(EspacioRequest $request, $id)
     {
-        $this->authorize('update', Espacio::findOrFail((string) $id));
+        $this->authorize('update', $this->findEspacioOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -65,10 +87,11 @@ class EspacioController extends ModalController
      * Elimina un espai amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Espacio::findOrFail((string) $id));
+        $this->authorize('delete', $this->findEspacioOrFail($id));
         return parent::destroy($id);
     }
 
@@ -100,9 +123,15 @@ class EspacioController extends ModalController
 
     }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function barcode($id, $posicion=1)
     {
-        $espacio = Espacio::findOrFail($id);
+        $espacio = $this->findEspacioOrFail($id);
         $this->authorize('printBarcode', $espacio);
         return $this->hazPdf(
             'pdf.inventario.lote',

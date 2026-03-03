@@ -5,11 +5,13 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Instructor\InstructorWorkflowService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Instructor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\InstructorCrudSchema;
 use Jenssegers\Date\Date;
@@ -55,6 +57,34 @@ class InstructorController extends IntranetController
         }
 
         return $this->instructorWorkflowService;
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Instructor
+     */
+    private function findInstructorOrFail($id): Instructor
+    {
+        try {
+            return Instructor::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Instructor no trobat', ['instructor_id' => $id]);
+        }
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Centro
+     */
+    private function findCentroOrFail($id): Centro
+    {
+        try {
+            return Centro::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Centre no trobat', ['centro_id' => $id]);
+        }
     }
 
     /**
@@ -176,12 +206,13 @@ class InstructorController extends IntranetController
     /**
      * @param $id
      * @param $idCentro
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function copy($id, $idCentro)
     {
-        $instructor = Instructor::findOrFail($id);
-        $centro = Centro::findOrFail($idCentro);
+        $instructor = $this->findInstructorOrFail($id);
+        $centro = $this->findCentroOrFail($idCentro);
         $posibles = hazArray($centro->Empresa->centros, 'id', ['nombre', 'direccion'], '-');
 
         return view('instructor.copy', compact('instructor', 'posibles', 'centro'));
@@ -207,11 +238,12 @@ class InstructorController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
    public function pdf($id)
     {
-        $instructor = Instructor::findOrFail($id);
+        $instructor = $this->findInstructorOrFail($id);
 
         if ($instructor->surnames == '') {
             Alert::danger("Completa les dades de l'instructor");

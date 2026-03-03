@@ -8,6 +8,7 @@ use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 
 use DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Http\Requests\AlumnoFctUpdateRequest;
 use Intranet\Http\Requests\FctConvalidacionStoreRequest;
@@ -35,6 +36,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
@@ -67,6 +69,20 @@ class FctAlumnoController extends ModalController
         }
 
         return $this->alumnoFctService;
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Intranet\Entities\AlumnoFct
+     */
+    private function findAlumnoFctOrFail($id)
+    {
+        try {
+            return $this->alumnoFcts()->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('FCT d\'alumne no trobada', ['alumno_fct_id' => $id]);
+        }
     }
 
 
@@ -283,10 +299,14 @@ class FctAlumnoController extends ModalController
         return view('intranet.create', compact('formulario', 'modelo'));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function unlink($id)
     {
-        $elemento = $this->alumnoFcts()->find((int) $id);
-        abort_unless($elemento !== null, 404);
+        $elemento = $this->findAlumnoFctOrFail($id);
         $elemento->idSao = null;
         $elemento->save();
         return redirect()->back();
@@ -328,15 +348,25 @@ class FctAlumnoController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function show($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         return redirect()->route('fct.show', ['id' => $fct->idFct]);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse|null
+     */
     public function pdf($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         if ($fct->asociacion === 1 || $fct->asociacion > 3) {
             return self::preparePdf($id)->stream();
         }
@@ -349,29 +379,50 @@ class FctAlumnoController extends ModalController
 
     }
 
+    /**
+     * @param int|string $id
+     * @param int|string $num
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function Signatura($id, $num)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         return response()->file($fct->routeFile($num));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function Valoratiu($id)
     {
-        return response()->file(FDFPrepareService::exec(new A5Resource($this->alumnoFcts()->findOrFail((int) $id))));
+        return response()->file(FDFPrepareService::exec(new A5Resource($this->findAlumnoFctOrFail($id))));
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AVI($id)
     {
-        return response()->file(FDFPrepareService::exec(new AVIResource($this->alumnoFcts()->findOrFail((int) $id))));
+        return response()->file(FDFPrepareService::exec(new AVIResource($this->findAlumnoFctOrFail($id))));
     }
 
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AEng($id)
     {
 
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         $nameFile = storage_path("tmp/AN_EN{$fct->Alumno->shorName}.zip");
         if (file_exists($nameFile)) {
             unlink($nameFile);
@@ -386,9 +437,14 @@ class FctAlumnoController extends ModalController
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function auth($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         $folder = storage_path("tmp/auth$id/");
         $zipFile = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
@@ -417,14 +473,28 @@ class FctAlumnoController extends ModalController
         return response()->download($zipFile);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AutDual($id)
     {
-        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->alumnoFcts()->findOrFail((int) $id))));
+        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->findAlumnoFctOrFail($id))));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public static function preparePdf($id)
     {
-        $fct = app(AlumnoFctService::class)->findOrFail((int) $id);
+        try {
+            $fct = app(AlumnoFctService::class)->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('FCT d\'alumne no trobada', ['alumno_fct_id' => $id]);
+        }
         $secretario = cargo('secretario');
         $director = cargo('director');
         $dades = [
@@ -459,17 +529,27 @@ class FctAlumnoController extends ModalController
      * }
      */
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function pg0301($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         $fct->pg0301 = $fct->pg0301 ? 0 : 1;
         $fct->save();
         return redirect()->route('fctcap.acta', ['grupo' => $fct->Grup]);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function email($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         $alumno = $fct->Alumno;
         Mail::to($alumno->email)
             ->bcc(authUser()->email)
@@ -486,8 +566,13 @@ class FctAlumnoController extends ModalController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function importa($id){
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $fct = $this->findAlumnoFctOrFail($id);
         $dni = $fct->Alumno->dni;
         $annexos = Adjunto::where('route', 'like', "dual/$dni")->get();
         if ($annexos->isEmpty()){

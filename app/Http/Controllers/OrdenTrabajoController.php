@@ -3,9 +3,11 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\OrdenTrabajoRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\StateService;
 
@@ -48,6 +50,20 @@ class OrdenTrabajoController extends ModalController
     }
 
     /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return mixed
+     */
+    private function findOrdenOrFail($id)
+    {
+        try {
+            return $this->class::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Ordre de treball no trobada', ['orden_trabajo_id' => $id]);
+        }
+    }
+
+    /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -71,6 +87,7 @@ class OrdenTrabajoController extends ModalController
     /**
      * @param $id
      * @param string $orientacion
+     * @throws NotFoundDomainException
      * @return mixed
      */
 
@@ -78,7 +95,7 @@ class OrdenTrabajoController extends ModalController
 
     public function imprime($id, $orientacion = 'portrait')
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findOrdenOrFail($id);
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         $informe = 'pdf.' . strtolower($this->model);
         $pdf = self::hazPdf($informe, $incidencias,$elemento, $orientacion);
@@ -91,10 +108,11 @@ class OrdenTrabajoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function resolve($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findOrdenOrFail($id);
         $elemento->estado = 2;
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         foreach ($incidencias as $incidencia){
@@ -107,10 +125,11 @@ class OrdenTrabajoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function open($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findOrdenOrFail($id);
         $elemento->estado = 0;
         $elemento->save();
         return back();

@@ -6,6 +6,7 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use Illuminate\Support\Facades\Mail;
 use Intranet\UI\Botones\BotonImg;
@@ -14,6 +15,7 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Projecte;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
@@ -47,6 +49,20 @@ class PanelProjecteController extends ModalController
         'hora_defensa' => ['type' => 'time'],
      ];
     protected $parametresVista = ['modal' => ['defensa']];
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Projecte
+     */
+    private function findProjecteOrFail($id): Projecte
+    {
+        try {
+            return Projecte::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id]);
+        }
+    }
 
     private function profesores(): ProfesorService
     {
@@ -97,9 +113,15 @@ class PanelProjecteController extends ModalController
         return back();
     }
 
+    /**
+     * @param ProyectoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(ProyectoRequest $request, $id)
     {
-        $projecte = Projecte::findOrFail((int) $id);
+        $projecte = $this->findProjecteOrFail($id);
         $this->authorize('update', $projecte);
         $this->persist($request, (int) $id);
         return back();
@@ -109,10 +131,11 @@ class PanelProjecteController extends ModalController
      * Valida una proposta de projecte.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function check($id)
     {
-        $projecte = Projecte::findOrFail((int) $id);
+        $projecte = $this->findProjecteOrFail($id);
         $this->authorize('check', $projecte);
         $projecte->estat = 2;
         $projecte->save();
@@ -123,10 +146,11 @@ class PanelProjecteController extends ModalController
      * Elimina una proposta de projecte.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $elemento = Projecte::findOrFail((int) $id);
+        $elemento = $this->findProjecteOrFail($id);
         $this->authorize('delete', $elemento);
         if ($elemento) {
             $elemento->delete();

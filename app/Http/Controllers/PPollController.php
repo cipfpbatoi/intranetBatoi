@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\PPollRequest;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
@@ -20,7 +21,11 @@ use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Hash;
 use Intranet\Entities\Poll\PPoll;
+use Intranet\Exceptions\NotFoundDomainException;
 
+/**
+ * Controlador de plantilles de polls.
+ */
 class PPollController extends ModalController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
@@ -28,6 +33,20 @@ class PPollController extends ModalController
     protected $model = 'PPoll';
     protected $gridFields = [ 'id','title','what'];
     
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return PPoll
+     */
+    private function findPPollOrFail($id): PPoll
+    {
+        try {
+            return PPoll::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Plantilla de poll no trobada', ['ppoll_id' => $id]);
+        }
+    }
+
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("ppoll.create",inRol('qualitat')));
@@ -36,9 +55,14 @@ class PPollController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('ppoll.show',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = PPoll::findOrFail($id);
+        $elemento = $this->findPPollOrFail($id);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('poll.masterslave', compact('elemento','modelo'));
@@ -53,7 +77,7 @@ class PPollController extends ModalController
 
     public function update(PPollRequest $request, $id)
     {
-        $this->authorize('update', PPoll::findOrFail((int) $id));
+        $this->authorize('update', $this->findPPollOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -62,10 +86,11 @@ class PPollController extends ModalController
      * Elimina una plantilla de poll amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', PPoll::findOrFail((int) $id));
+        $this->authorize('delete', $this->findPPollOrFail($id));
         return parent::destroy($id);
     }
 }

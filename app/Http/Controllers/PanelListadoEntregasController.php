@@ -6,6 +6,7 @@ use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +21,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
@@ -27,7 +29,9 @@ use Intranet\Services\School\ModuloGrupoService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
-
+/**
+ * Panell de llistat d'entregues de departament.
+ */
 class PanelListadoEntregasController extends BaseController
 {
     use Imprimir;
@@ -36,6 +40,20 @@ class PanelListadoEntregasController extends BaseController
     protected $model = 'Modulo_grupo';
     protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Reunion
+     */
+    private function findReunionOrFail($id): Reunion
+    {
+        try {
+            return Reunion::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Reunió no trobada', ['reunion_id' => $id]);
+        }
+    }
 
     /**
      * Mostra el llistat d'entregues amb autorització prèvia.
@@ -224,10 +242,16 @@ class PanelListadoEntregasController extends BaseController
         return back();
     }
     
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     protected function pdf($id)
     {
         Gate::authorize('manageDepartmentReport', Reunion::class);
-        return response()->file(storage_path('app/' . Reunion::findOrFail($id)->fichero));
+        $reunion = $this->findReunionOrFail($id);
+        return response()->file(storage_path('app/' . $reunion->fichero));
     }
     
     public static function existeInforme()

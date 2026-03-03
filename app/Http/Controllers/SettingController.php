@@ -4,9 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Setting;
+use Intranet\Exceptions\NotFoundDomainException;
 use Styde\Html\Facades\Alert;
 
 
@@ -24,6 +26,20 @@ class SettingController extends ModalController
 
 
     protected $gridFields = [ 'id','collection' ,'key','value'];
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Setting
+     */
+    private function findSettingOrFail($id): Setting
+    {
+        try {
+            return Setting::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Configuració no trobada', ['setting_id' => $id]);
+        }
+    }
 
     protected function search()
     {
@@ -45,7 +61,7 @@ class SettingController extends ModalController
 
     public function update(SettingRequest $request, $id)
     {
-        $this->authorize('update', Setting::findOrFail($id));
+        $this->authorize('update', $this->findSettingOrFail($id));
         $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
@@ -55,10 +71,11 @@ class SettingController extends ModalController
      * Elimina un setting existent.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Setting::findOrFail($id));
+        $this->authorize('delete', $this->findSettingOrFail($id));
         return parent::destroy($id);
     }
 
