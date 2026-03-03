@@ -62,6 +62,21 @@ class ComisionController extends ModalController
         return $this->comisionService;
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Comision
+     */
+    private function findComisionOrFail($id): Comision
+    {
+        return $this->findModelOrFail(
+            Comision::class,
+            $id,
+            'Comissió no trobada',
+            ['comision_id' => $id]
+        );
+    }
+
 
     /**
      * @param ComisionRequest $request
