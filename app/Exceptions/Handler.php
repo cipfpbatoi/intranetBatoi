@@ -174,6 +174,7 @@ class Handler extends ExceptionHandler
 
     /**
      * Registra totes les excepcions en un canal dedicat.
+     * Compacta el log per a autenticació i errors NotFound de domini.
      *
      * @param \Throwable $exception
      * @return void
@@ -226,18 +227,27 @@ class Handler extends ExceptionHandler
             ? $exception->getStatusCode()
             : null;
         $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
-        if ($exception instanceof AuthenticationException) {
+        $isUnauthenticated = $exception instanceof AuthenticationException;
+        $isNotFoundDomain = $exception instanceof NotFoundDomainException;
+
+        if ($isUnauthenticated) {
             $level = 'info';
         }
 
         $context = [
             'exception' => get_class($exception),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
             'code' => $exception->getCode(),
             'status' => $statusCode,
-            'trace' => $exception->getTraceAsString(),
         ];
+
+        if (!$isUnauthenticated) {
+            $context['file'] = $exception->getFile();
+            $context['line'] = $exception->getLine();
+        }
+
+        if (!$isUnauthenticated && !$isNotFoundDomain) {
+            $context['trace'] = $exception->getTraceAsString();
+        }
 
         if ($exception instanceof IntranetException) {
             $context['context'] = $exception->getContext();
