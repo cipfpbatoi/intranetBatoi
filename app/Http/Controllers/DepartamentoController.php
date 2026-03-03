@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Departamento;
@@ -36,20 +35,6 @@ class DepartamentoController extends ModalController
         'idProfesor' => ['type' => 'select']
     ];
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Departamento
-     */
-    private function findDepartamentoOrFail($id): Departamento
-    {
-        try {
-            return Departamento::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Departament no trobat', ['departamento_id' => $id]);
-        }
-    }
-
     protected function iniBotones()
     {
         $this->panel->setBoton(
@@ -75,7 +60,13 @@ class DepartamentoController extends ModalController
      */
     public function update(DepartamentoRequest $request, $id)
     {
-        $this->authorize('update', $this->findDepartamentoOrFail($id));
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('update', $departamento);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -88,7 +79,13 @@ class DepartamentoController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findDepartamentoOrFail($id));
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('delete', $departamento);
         return parent::destroy($id);
     }
 

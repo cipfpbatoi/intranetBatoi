@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
@@ -31,20 +30,6 @@ class CentroController extends ModalController
      * @var string
      */
     protected $model = 'Centro';
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Centro
-     */
-    private function findCentroOrFail($id): Centro
-    {
-        try {
-            return Centro::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Centre no trobat', ['centro_id' => $id]);
-        }
-    }
 
     /**
      * @param Request $request
@@ -83,7 +68,7 @@ class CentroController extends ModalController
      */
     public function destroy($id)
     {
-        $centro = $this->findCentroOrFail($id);
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresa = $centro->idEmpresa;
 
         if (isAdmin()) {
@@ -113,7 +98,7 @@ class CentroController extends ModalController
      */
     public function empresaCreateCentro(EmpresaCentroRequest $request, $id)
     {
-        $centro = $this->findCentroOrFail($id);
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresaAnt = $centro->Empresa;
         if ($empresaAnt->concierto == $request->concierto) {
             $empresaAnt->concierto = null;

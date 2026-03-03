@@ -79,6 +79,13 @@ abstract class ModalController extends Controller
      */
     protected $formFields = null;
 
+    /**
+     * Acció de redirecció preferida després d'operacions CRUD.
+     *
+     * @var string|null
+     */
+    protected $redirect = null;
+
     /*
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte
@@ -324,6 +331,10 @@ abstract class ModalController extends Controller
         if (Session::get('redirect')) {
             return redirect()->action(Session::get('redirect'));
         } //variable session
+
+        if ($this->redirect) {
+            return redirect()->action($this->redirect);
+        }
 
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }

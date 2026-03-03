@@ -6,7 +6,6 @@ use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -40,20 +39,6 @@ class PanelListadoEntregasController extends BaseController
     protected $model = 'Modulo_grupo';
     protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Reunion
-     */
-    private function findReunionOrFail($id): Reunion
-    {
-        try {
-            return Reunion::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Reunió no trobada', ['reunion_id' => $id]);
-        }
-    }
 
     /**
      * Mostra el llistat d'entregues amb autorització prèvia.
@@ -250,7 +235,7 @@ class PanelListadoEntregasController extends BaseController
     protected function pdf($id)
     {
         Gate::authorize('manageDepartmentReport', Reunion::class);
-        $reunion = $this->findReunionOrFail($id);
+        $reunion = $this->findModelOrFail(Reunion::class, $id, 'Reunió no trobada', ['reunion_id' => $id]);
         return response()->file(storage_path('app/' . $reunion->fichero));
     }
     

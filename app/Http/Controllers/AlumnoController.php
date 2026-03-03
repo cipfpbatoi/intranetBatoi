@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Profesor\ProfesorService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Http\Requests\AlumnoUpdateRequest;
 use Intranet\Services\Document\PdfService;
@@ -30,20 +29,6 @@ class AlumnoController extends PerfilController
      * @var array
      */
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Alumno
-     */
-    private function findAlumnoOrFail($id): Alumno
-    {
-        try {
-            return Alumno::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Alumne no trobat', ['alumno_id' => $id]);
-        }
-    }
 
     /**
      * @param Request $request
@@ -76,7 +61,7 @@ class AlumnoController extends PerfilController
      */
     public function checkFol($id)
     {
-        $alumne = $this->findAlumnoOrFail($id);
+        $alumne = $this->findModelOrFail(Alumno::class, $id, 'Alumne no trobat', ['alumno_id' => $id]);
         $alumne->fol = ($alumne->fol==0)?1:0;
         $alumne->save();
         return back();

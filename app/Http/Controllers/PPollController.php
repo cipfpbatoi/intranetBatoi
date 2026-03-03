@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\PPollRequest;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
@@ -33,20 +32,6 @@ class PPollController extends ModalController
     protected $model = 'PPoll';
     protected $gridFields = [ 'id','title','what'];
     
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return PPoll
-     */
-    private function findPPollOrFail($id): PPoll
-    {
-        try {
-            return PPoll::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Plantilla de poll no trobada', ['ppoll_id' => $id]);
-        }
-    }
-
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("ppoll.create",inRol('qualitat')));
@@ -62,7 +47,7 @@ class PPollController extends ModalController
      */
     public function show($id)
     {
-        $elemento = $this->findPPollOrFail($id);
+        $elemento = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('poll.masterslave', compact('elemento','modelo'));
@@ -77,7 +62,8 @@ class PPollController extends ModalController
 
     public function update(PPollRequest $request, $id)
     {
-        $this->authorize('update', $this->findPPollOrFail($id));
+        $ppoll = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
+        $this->authorize('update', $ppoll);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -90,7 +76,8 @@ class PPollController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findPPollOrFail($id));
+        $ppoll = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
+        $this->authorize('delete', $ppoll);
         return parent::destroy($id);
     }
 }

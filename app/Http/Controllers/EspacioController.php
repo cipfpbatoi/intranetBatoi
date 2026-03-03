@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
@@ -40,20 +39,6 @@ class EspacioController extends ModalController
         'reservable' => ['type' => 'checkbox'],
     ];
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Espacio
-     */
-    private function findEspacioOrFail($id): Espacio
-    {
-        try {
-            return Espacio::findOrFail((string) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Espai no trobat', ['espacio_id' => $id]);
-        }
-    }
-
     public function search()
     {
         if (esRol(authUser()->rol, config(self::DIRECCION))) {
@@ -78,7 +63,8 @@ class EspacioController extends ModalController
      */
     public function update(EspacioRequest $request, $id)
     {
-        $this->authorize('update', $this->findEspacioOrFail($id));
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('update', $espacio);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -91,7 +77,8 @@ class EspacioController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findEspacioOrFail($id));
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('delete', $espacio);
         return parent::destroy($id);
     }
 
@@ -131,7 +118,7 @@ class EspacioController extends ModalController
      */
     public function barcode($id, $posicion=1)
     {
-        $espacio = $this->findEspacioOrFail($id);
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
         $this->authorize('printBarcode', $espacio);
         return $this->hazPdf(
             'pdf.inventario.lote',

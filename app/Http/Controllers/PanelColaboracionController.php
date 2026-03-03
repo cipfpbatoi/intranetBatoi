@@ -7,7 +7,6 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Requests\ColaboracionRequest;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -68,20 +67,6 @@ class PanelColaboracionController extends IntranetController
         }
 
         return $this->colaboracionService;
-    }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Colaboracion
-     */
-    private function findColaboracionOrFail($id): Colaboracion
-    {
-        try {
-            return Colaboracion::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Col·laboració no trobada', ['colaboracion_id' => $id]);
-        }
     }
 
 
@@ -241,7 +226,13 @@ class PanelColaboracionController extends IntranetController
 
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findColaboracionOrFail($id));
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
+        $this->authorize('update', $colaboracion);
         $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;

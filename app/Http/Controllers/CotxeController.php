@@ -4,12 +4,14 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Cotxe;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CotxeRequest;
 use Intranet\Presentation\Crud\CotxeCrudSchema;
 
+/**
+ * Controlador de gestió de cotxes.
+ */
 class CotxeController extends ModalController
 {
     /**
@@ -21,21 +23,6 @@ class CotxeController extends ModalController
      * @var string
      */
     protected $model = 'Cotxe';
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Cotxe
-     */
-    private function findCotxeOrFail($id): Cotxe
-    {
-        try {
-            return Cotxe::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Cotxe no trobat', ['cotxe_id' => $id]);
-        }
-    }
-
 
     public function store(CotxeRequest $request)
     {
@@ -53,7 +40,8 @@ class CotxeController extends ModalController
      */
     public function update(CotxeRequest $request, $id)
     {
-        $this->authorize('update', $this->findCotxeOrFail($id));
+        $cotxe = $this->findModelOrFail(Cotxe::class, $id, 'Cotxe no trobat', ['cotxe_id' => $id]);
+        $this->authorize('update', $cotxe);
         $request->merge(['idProfesor' => authUser()->dni]);
         $this->persist($request, $id);
         return $this->redirect();
@@ -67,7 +55,8 @@ class CotxeController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findCotxeOrFail($id));
+        $cotxe = $this->findModelOrFail(Cotxe::class, $id, 'Cotxe no trobat', ['cotxe_id' => $id]);
+        $this->authorize('delete', $cotxe);
         return parent::destroy($id);
     }
     protected function iniBotones()

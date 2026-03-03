@@ -6,11 +6,15 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Intranet\Http\Controllers\Concerns\FindsModel;
 use Intranet\UI\Panels\Panel;
 
+/**
+ * Controlador base amb utilitats compartides.
+ */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, FindsModel;
 
     protected $namespace = 'Intranet\Entities\\'; //string on es troben els models de dades
     protected $model;       // model de dades utilitzat
@@ -29,4 +33,5 @@ class Controller extends BaseController
         }
         $this->class = $this->namespace . $this->model;
     }
+
 }

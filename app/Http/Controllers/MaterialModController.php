@@ -3,7 +3,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Intranet\UI\Botones\BotonImg;
@@ -41,35 +40,6 @@ class MaterialModController extends ModalController
     /**
      * @var array
      */
-
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return MaterialBaja
-     */
-    private function findRegistroOrFail($id): MaterialBaja
-    {
-        try {
-            return MaterialBaja::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Registre de baixa no trobat', ['material_baja_id' => $id]);
-        }
-    }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Material
-     */
-    private function findMaterialOrFail($id): Material
-    {
-        try {
-            return Material::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
-        }
-    }
 
 
     public function search()
@@ -110,7 +80,12 @@ class MaterialModController extends ModalController
      */
     public function refuse($id)
     {
-        $registro = $this->findRegistroOrFail($id);
+        $registro = $this->findModelOrFail(
+            MaterialBaja::class,
+            $id,
+            'Registre de baixa no trobat',
+            ['material_baja_id' => $id]
+        );
         if ($registro->tipo == 0) {
             $aviso = 'El material '.$registro->Material->descripcion." NO ha estat donat de Baixa : ";
         } else {
@@ -130,8 +105,18 @@ class MaterialModController extends ModalController
     public function resolve($id)
     {
         return DB::transaction(function () use ($id) {
-            $registro = $this->findRegistroOrFail($id);
-            $material = $this->findMaterialOrFail($registro->idMaterial);
+            $registro = $this->findModelOrFail(
+                MaterialBaja::class,
+                $id,
+                'Registre de baixa no trobat',
+                ['material_baja_id' => $id]
+            );
+            $material = $this->findModelOrFail(
+                Material::class,
+                $registro->idMaterial,
+                'Material no trobat',
+                ['material_id' => $registro->idMaterial]
+            );
 
             if ((int)$registro->tipo === 0) {
                 // Baixa

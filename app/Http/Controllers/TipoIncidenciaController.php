@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoIncidencia;
@@ -30,20 +29,6 @@ class TipoIncidenciaController extends ModalController
      * @var string
      */
     protected $model = 'TipoIncidencia';
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return TipoIncidencia
-     */
-    private function findTipoOrFail($id): TipoIncidencia
-    {
-        try {
-            return TipoIncidencia::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Tipus d\'incidència no trobat', ['tipo_incidencia_id' => $id]);
-        }
-    }
 
     /**
      *
@@ -78,7 +63,13 @@ class TipoIncidenciaController extends ModalController
      */
     public function update(TipoIncidenciaRequest $request, $id)
     {
-        $this->authorize('update', $this->findTipoOrFail($id));
+        $tipoIncidencia = $this->findModelOrFail(
+            TipoIncidencia::class,
+            $id,
+            "Tipus d'incidència no trobat",
+            ['tipo_incidencia_id' => $id]
+        );
+        $this->authorize('update', $tipoIncidencia);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -91,7 +82,13 @@ class TipoIncidenciaController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findTipoOrFail($id));
+        $tipoIncidencia = $this->findModelOrFail(
+            TipoIncidencia::class,
+            $id,
+            "Tipus d'incidència no trobat",
+            ['tipo_incidencia_id' => $id]
+        );
+        $this->authorize('delete', $tipoIncidencia);
         return parent::destroy($id);
     }
 

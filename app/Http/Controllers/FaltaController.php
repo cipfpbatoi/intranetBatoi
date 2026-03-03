@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Falta;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\ModalController;
@@ -97,7 +96,7 @@ class FaltaController extends ModalController
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $this->validate($request, (new FaltaRequest())->rules());
         $this->faltas()->update($id, $request);
         return $this->redirect();
@@ -116,7 +115,7 @@ class FaltaController extends ModalController
      */
     public function init($id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $this->faltas()->init($id);
         return $this->redirect();
     }
@@ -129,23 +128,9 @@ class FaltaController extends ModalController
      */
     public function alta($id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $elemento = $this->faltas()->alta($id);
         return back()->with('pestana', $elemento->estado);
-    }
-
-    /**
-     * Recupera la falta per aplicar autorització explícita.
-     *
-     * @throws NotFoundDomainException
-     */
-    private function findFaltaOrFail(int $id): Falta
-    {
-        try {
-            return Falta::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Falta no trobada', ['falta_id' => $id]);
-        }
     }
 
     /**
@@ -157,7 +142,7 @@ class FaltaController extends ModalController
      */
     public function show($id)
     {
-        $elemento = $this->findFaltaOrFail((int) $id);
+        $elemento = $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
