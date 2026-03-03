@@ -41,6 +41,20 @@ class IncidenciaController extends ModalController
     protected $descriptionField = 'descripcion';
     protected $formFields = IncidenciaCrudSchema::FORM_FIELDS;
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Incidencia
+     */
+    private function findIncidenciaOrFail($id): Incidencia
+    {
+        return $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
+    }
 
     protected function search()
     {

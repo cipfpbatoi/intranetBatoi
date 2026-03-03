@@ -35,6 +35,21 @@ class GrupoTrabajoController extends ModalController
      */
     protected $gridFields = ['literal',  'objetivos'];
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return GrupoTrabajo
+     */
+    private function findGrupoTrabajoOrFail($id): GrupoTrabajo
+    {
+        return $this->findModelOrFail(
+            GrupoTrabajo::class,
+            $id,
+            'Grup de treball no trobat',
+            ['grupo_trabajo_id' => $id]
+        );
+    }
+
     public function store(GrupoTrabajoRequest $request)
     {
         $this->authorize('create', GrupoTrabajo::class);
