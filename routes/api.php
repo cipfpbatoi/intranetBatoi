@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
   |
  */
 
-Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']]);
+Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']])->middleware('auth:sanctum');
 Route::resource('projecte', 'ProjecteController', ['except' => [ 'create']]);
-Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice');
+Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice')->middleware('auth:sanctum');
 Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
@@ -32,7 +32,7 @@ Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->
 
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list')->middleware('auth:sanctum');
-    Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
+    Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:sanctum');
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
