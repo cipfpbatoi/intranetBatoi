@@ -30,7 +30,7 @@ Route::get('/auth/me', 'AuthTokenController@me')->middleware('auth:sanctum');
 Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:sanctum');
 Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
-Route::group(['middleware' => 'auth:api,sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list')->middleware('auth:sanctum');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:sanctum');
     Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:sanctum');
@@ -53,12 +53,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol')->middleware('auth:sanctum');
     Route::get('profesor/rol/{rol}', 'ProfesorController@getRol')->middleware('auth:sanctum');
-    Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardias', 'IpGuardiaController@arrayIps')->middleware('auth:sanctum');
-    Route::get('verficha', 'FicharController@entrefechas');
-    Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
-    Route::post('itaca', 'FaltaItacaController@guarda');
-    Route::get('/aula', 'ReservaController@unsecure');
 
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
@@ -150,6 +145,14 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
 
 
    
+});
+
+Route::group(['middleware' => 'auth:api,sanctum'], function () {
+    Route::get('doficha', 'FicharController@fichar');
+    Route::get('verficha', 'FicharController@entrefechas');
+    Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
+    Route::post('itaca', 'FaltaItacaController@guarda');
+    Route::get('/aula', 'ReservaController@unsecure');
 });
 
 Route::fallback(function () {

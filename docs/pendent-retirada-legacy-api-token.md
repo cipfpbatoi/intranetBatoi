@@ -82,7 +82,12 @@ En curs, amb inventari tècnic inicial completat.
    - `/api/material/cambiar*`, `/api/material/espacio/*`, `/api/inventario*` -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/alumnoresultado/*`, `/api/matricula/*`, `/api/alumno/*/(foto|dades)` -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/lote/*`, `/api/articulo*`, `/api/cotxe/*`, `/api/tipoactividad/*`, `/api/tutoriagrupo/*` -> `auth:sanctum` (migrat 2026-03-03)
-   - grup principal `/api/*` encara en `auth:api,sanctum` (pendent de particionar)
+   - grup principal `/api/*` ja en `auth:sanctum` (migrat 2026-03-03)
+   - excepcions temporals en mode mixt `auth:api,sanctum`:
+     - `/api/doficha`
+     - `/api/verficha`
+     - `/api/itaca/*`
+     - `/api/aula`
 3. **Controladors amb fallback o validació legacy explícita**
    - `app/Http/Controllers/API/MaterialController.php` (`resolveApiUser()`)
    - `app/Http/Controllers/API/FicharController.php` (`dni + api_token`)
