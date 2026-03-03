@@ -3,16 +3,18 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Inventario;
 use Intranet\Entities\Material;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\UI\FormBuilder;
 
 /**
- * Class MaterialController
+ * Class InventarioController
  * @package Intranet\Http\Controllers
  */
 class InventarioController extends IntranetController
@@ -62,9 +64,18 @@ class InventarioController extends IntranetController
     }
 
 
+    /**
+     * @param int|string|null $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\Response|\Illuminate\View\View
+     */
     public function edit($id = null)
     {
-        $material = Inventario::findOrFail($id);
+        try {
+            $material = Inventario::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material d\'inventari no trobat', ['inventario_id' => $id]);
+        }
         if (isProfesor()) {
             if ($material->espacio === 'INVENT') {
                 $formulario = new FormBuilder($material, [

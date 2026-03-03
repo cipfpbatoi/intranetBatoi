@@ -4,8 +4,10 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\OptionStoreRequest;
 use Intranet\Entities\Poll\Option;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class OptionController
@@ -42,12 +44,17 @@ class OptionController extends ModalController
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $option = Option::findOrFail((int) $id);
+        try {
+            $option = Option::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Opció no trobada', ['option_id' => $id]);
+        }
         $this->authorize('delete', $option);
         $poll = $option->ppoll_id;
         parent::destroy($id);

@@ -6,7 +6,9 @@ use Intranet\Application\Menu\MenuService;
 use Intranet\Entities\Menu;
 use Intranet\Http\Controllers\Core\IntranetController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class MenuController
@@ -38,6 +40,20 @@ class MenuController extends IntranetController
     ];
 
     /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Menu
+     */
+    private function findMenuOrFail($id): Menu
+    {
+        try {
+            return Menu::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Menú no trobat', ['menu_id' => $id]);
+        }
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Collection|Menu[]|mixed
      */
     protected function search()
@@ -52,34 +68,37 @@ class MenuController extends IntranetController
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function copy($id)
     {
-        $this->authorize('update', Menu::findOrFail((int) $id));
+        $this->authorize('update', $this->findMenuOrFail($id));
         $copia = $this->menus()->copy($id);
         return redirect()->route('menu.edit', ['menu' => $copia->id]);
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function up($id)
     {
-        $this->authorize('update', Menu::findOrFail((int) $id));
+        $this->authorize('update', $this->findMenuOrFail($id));
         $this->menus()->moveUp($id);
         return redirect()->route('menu.index');
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function down($id)
     {
-        $this->authorize('update', Menu::findOrFail((int) $id));
+        $this->authorize('update', $this->findMenuOrFail($id));
         $this->menus()->moveDown($id);
         return redirect()->route('menu.index');
     }
@@ -97,25 +116,36 @@ class MenuController extends IntranetController
      * Actualitza un menú amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', Menu::findOrFail((int) $id));
+        $this->authorize('update', $this->findMenuOrFail($id));
         return parent::update($request, $id);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function active($id)
     {
-        $this->authorize('update', Menu::findOrFail((int) $id));
+        $this->authorize('update', $this->findMenuOrFail($id));
         $response = parent::active($id);
         $this->menus()->clearCache();
 
         return $response;
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id)
     {
-        $this->authorize('delete', Menu::findOrFail((int) $id));
+        $this->authorize('delete', $this->findMenuOrFail($id));
         $response = parent::destroy($id);
         $this->menus()->clearCache();
 

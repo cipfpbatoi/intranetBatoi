@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonBasico;
@@ -11,6 +12,7 @@ use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\LoteRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 
@@ -33,6 +35,20 @@ class LoteController extends ModalController
     protected $vista = 'lote.index';
 
     protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Lote
+     */
+    private function findLoteOrFail($id): Lote
+    {
+        try {
+            return Lote::findOrFail((string) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Lot no trobat', ['lote_id' => $id]);
+        }
+    }
 
     protected function search()
     {
@@ -57,9 +73,15 @@ class LoteController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param LoteRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(LoteRequest $request, $id)
     {
-        $this->authorize('update', Lote::findOrFail((string) $id));
+        $this->authorize('update', $this->findLoteOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -68,10 +90,11 @@ class LoteController extends ModalController
      * Elimina un lot amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Lote::findOrFail((string) $id));
+        $this->authorize('delete', $this->findLoteOrFail($id));
         return parent::destroy($id);
     }
 
@@ -80,22 +103,42 @@ class LoteController extends ModalController
         $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => [config('roles.rol.direccion'), config('roles.rol.administrador')]]));
     }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     protected function print($id,$posicion=1){
-        $lote = Lote::findOrFail((string) $id);
+        $lote = $this->findLoteOrFail($id);
         $this->authorize('update', $lote);
         return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 
+    /**
+     * @param int|string $lote
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     protected function capture($lote){
-        $this->authorize('update', Lote::findOrFail((string) $lote));
+        $this->authorize('update', $this->findLoteOrFail($lote));
         $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
         return view('lote.inventario',compact('lote','materiales'));
     }
 
+    /**
+     * @param int|string $lote
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return void
+     */
     protected function postCapture($lote,Request $request){
-       $this->authorize('update', Lote::findOrFail((string) $lote));
+       $this->authorize('update', $this->findLoteOrFail($lote));
        foreach ($request->except('_token') as $key => $value){
            $material = Material::find($key);
+           if (!$material) {
+               throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
+           }
            if (!$value) {
                $value = $material->descripcion;
            }
