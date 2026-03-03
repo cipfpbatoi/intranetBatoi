@@ -64,6 +64,10 @@ En curs, amb inventari tècnic inicial completat.
    - `/api/departamento/*` -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/centro/*` -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/grupotrabajo/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/Empresa/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/ordentrabajo/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/incidencia/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/tipoincidencia/*` -> `auth:sanctum` (migrat 2026-03-03)
    - grup principal `/api/*` encara en `auth:api,sanctum` (pendent de particionar)
 3. **Controladors amb fallback o validació legacy explícita**
    - `app/Http/Controllers/API/MaterialController.php` (`resolveApiUser()`)
