@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Poll\PollWorkflowService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -13,7 +14,10 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 
-class   PollController extends IntranetController
+/**
+ * Controlador d'enquestes per a consultes i resultats.
+ */
+class PollController extends IntranetController
 {
     private ?GrupoService $grupoService = null;
     private ?PollWorkflowService $pollWorkflowService = null;
@@ -61,12 +65,17 @@ class   PollController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('poll.show', ['img' =>'fa-eye']));
     }
 
+    /**
+     * Prepara una enquesta per a l'usuari actual.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     protected function preparaEnquesta($id)
     {
         $data = $this->polls()->prepareSurvey($id, AuthUser());
         if (!$data) {
-            Alert::danger("Enquesta no trobada");
-            return back();
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
 
         $poll = $data['poll'];
@@ -80,11 +89,17 @@ class   PollController extends IntranetController
         return redirect('home');
     }
 
+    /**
+     * Desa una enquesta contestada.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function guardaEnquesta(Request $request, $id)
     {
         if (!$this->polls()->saveSurvey($request, $id, AuthUser())) {
-            Alert::danger("Enquesta no trobada");
-            return back();
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
 
         Alert::info('Enquesta emplenada amb exit');
@@ -93,12 +108,17 @@ class   PollController extends IntranetController
 
 
 
+    /**
+     * Mostra els vots de l'usuari per a una enquesta.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function lookAtMyVotes($id)
     {
         $data = $this->polls()->myVotes($id);
         if (!$data) {
-            Alert::danger("Enquesta no trobada");
-            return back();
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
 
         if (!$data['myVotes']) {
@@ -129,12 +149,17 @@ class   PollController extends IntranetController
 
 
 
+    /**
+     * Exporta els resultats d'una enquesta.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     */
     public function lookAtAllVotes($id)
     {
         $data = $this->polls()->allVotes($id, $this->grupos());
         if (!$data) {
-            Alert::danger("Enquesta no trobada");
-            return back();
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
 
         $poll = $data['poll'];
