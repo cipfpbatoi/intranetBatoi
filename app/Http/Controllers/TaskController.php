@@ -5,9 +5,11 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Task;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\TaskCrudSchema;
 use Intranet\Services\School\TaskValidationService;
 
@@ -33,6 +35,20 @@ class TaskController extends ModalController
     protected $gridFields = TaskCrudSchema::GRID_FIELDS;
 
     protected $formFields = TaskCrudSchema::FORM_FIELDS;
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Task
+     */
+    private function findTaskOrFail($id): Task
+    {
+        try {
+            return Task::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Tasca no trobada', ['task_id' => $id]);
+        }
+    }
 
     public function __construct(?TaskValidationService $taskValidationService = null)
     {
@@ -68,14 +84,19 @@ class TaskController extends ModalController
 
     public function update(TaskRequest $request, $id)
     {
-        $this->authorize('update', Task::findOrFail($id));
+        $this->authorize('update', $this->findTaskOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function check($id)
     {
-        $this->tarea = Task::findOrFail($id);
+        $this->tarea = $this->findTaskOrFail($id);
         $this->authorize('check', $this->tarea);
         $taskTeacher = $this->tarea->myDetails;
         if ($taskTeacher) {

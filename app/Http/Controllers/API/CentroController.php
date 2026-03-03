@@ -2,23 +2,45 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\Controller;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use DB;
 
+/**
+ * Controlador API per a operacions amb centres.
+ */
 class CentroController extends ApiResourceController
 {
 
     protected $model = 'Centro';
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Centro
+     */
+    private function findCentroOrFail($id): Centro
+    {
+        try {
+            return Centro::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Centre no trobat', ['centro_id' => $id]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fusionar(Request $request)
     {
-
         if (isset($request->fusion) && count($request->fusion) > 1) {
             DB::transaction(function () use ($request) {
-                $centroQ = Centro::findOrFail($request->fusion[0]);
+                $centroQ = $this->findCentroOrFail($request->fusion[0]);
                 foreach ($request->fusion as $codiCentre) {
                     if ($codiCentre != $centroQ->id) {
                         $this->fusion($codiCentre, $centroQ);
@@ -55,11 +77,12 @@ class CentroController extends ApiResourceController
     /**
      * @param $codiCentre
      * @param $centroQ
+     * @throws NotFoundDomainException
      * @return mixed
      */
     private function fusionCenter($codiCentre, &$centroQ)
     {
-        $centro = Centro::findOrFail($codiCentre);
+        $centro = $this->findCentroOrFail($codiCentre);
         if ($centroQ->nombre == '') {
             $centroQ->nombre = $centro->nombre;
         }

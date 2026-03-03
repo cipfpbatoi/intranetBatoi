@@ -7,6 +7,7 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Requests\ColaboracionRequest;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -15,6 +16,7 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 use Intranet\Services\UI\AppAlert as Alert;
@@ -66,6 +68,20 @@ class PanelColaboracionController extends IntranetController
         }
 
         return $this->colaboracionService;
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Colaboracion
+     */
+    private function findColaboracionOrFail($id): Colaboracion
+    {
+        try {
+            return Colaboracion::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Col·laboració no trobada', ['colaboracion_id' => $id]);
+        }
     }
 
 
@@ -219,12 +235,13 @@ class PanelColaboracionController extends IntranetController
     /**
      * @param  Request  $request
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
 
     public function update(Request $request, $id)
     {
-        $this->authorize('update', Colaboracion::findOrFail((int) $id));
+        $this->authorize('update', $this->findColaboracionOrFail($id));
         $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;

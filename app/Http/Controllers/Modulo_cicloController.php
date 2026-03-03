@@ -4,10 +4,12 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\ModuloCicloRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class Modulo_cicloController
@@ -29,6 +31,20 @@ class Modulo_cicloController extends ModalController
      * @var array
      */
     protected $gridFields = ['id', 'Xmodulo','Xciclo','curso','enlace','Xdepartamento'];
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Modulo_ciclo
+     */
+    private function findModuloCicloOrFail($id): Modulo_ciclo
+    {
+        try {
+            return Modulo_ciclo::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]);
+        }
+    }
     /**
      *
      */
@@ -46,9 +62,15 @@ class Modulo_cicloController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param ModuloCicloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ModuloCicloRequest $request, $id)
     {
-        $this->authorize('update', Modulo_ciclo::findOrFail((int) $id));
+        $this->authorize('update', $this->findModuloCicloOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -57,10 +79,11 @@ class Modulo_cicloController extends ModalController
      * Elimina un enllaç mòdul-cicle amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Modulo_ciclo::findOrFail((int) $id));
+        $this->authorize('delete', $this->findModuloCicloOrFail($id));
         return parent::destroy($id);
     }
 

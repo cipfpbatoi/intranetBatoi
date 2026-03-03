@@ -4,10 +4,12 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
 use Illuminate\Support\Facades\Session;
@@ -30,6 +32,19 @@ class CentroController extends ModalController
      */
     protected $model = 'Centro';
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Centro
+     */
+    private function findCentroOrFail($id): Centro
+    {
+        try {
+            return Centro::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Centre no trobat', ['centro_id' => $id]);
+        }
+    }
 
     /**
      * @param Request $request
@@ -63,11 +78,12 @@ class CentroController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = $this->findCentroOrFail($id);
         $empresa = $centro->idEmpresa;
 
         if (isAdmin()) {
@@ -89,9 +105,15 @@ class CentroController extends ModalController
         return $this->showEmpresa($empresa);
     }
 
+    /**
+     * @param EmpresaCentroRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function empresaCreateCentro(EmpresaCentroRequest $request, $id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = $this->findCentroOrFail($id);
         $empresaAnt = $centro->Empresa;
         if ($empresaAnt->concierto == $request->concierto) {
             $empresaAnt->concierto = null;

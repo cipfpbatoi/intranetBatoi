@@ -3,13 +3,15 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Ciclo;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CicloDualRequest;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\UI\AppAlert as Alert;
 
 /**
- * Class CicloController
+ * Class CicloDualController
  * @package Intranet\Http\Controllers
  */
 class CicloDualController extends Controller
@@ -32,6 +34,20 @@ class CicloDualController extends Controller
         return $this->grupoService;
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Ciclo
+     */
+    private function findCicloOrFail($id): Ciclo
+    {
+        try {
+            return Ciclo::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Cicle no trobat', ['ciclo_id' => $id]);
+        }
+    }
+
     public function edit(){
         $user = AuthUser()->dni;
         $ciclo = $this->grupos()->firstByTutorDual(AuthUser()->dni)?->ciclo;
@@ -50,9 +66,14 @@ class CicloDualController extends Controller
         }
     }
 
+    /**
+     * @param CicloDualRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(CicloDualRequest $request)
     {
-        $ciclo = Ciclo::findOrFail($request->id);
+        $ciclo = $this->findCicloOrFail($request->id);
         $ciclo->acronim = $request->acronim;
         $ciclo->llocTreball = $request->llocTreball;
         $ciclo->dataSignaturaDual = $request->dataSignaturaDual;

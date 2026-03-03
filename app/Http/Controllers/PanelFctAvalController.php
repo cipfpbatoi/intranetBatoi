@@ -10,6 +10,7 @@ use Intranet\Presentation\Crud\AlumnoFctAvalCrudSchema;
 
 
 use DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
@@ -19,6 +20,7 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
@@ -96,6 +98,34 @@ class PanelFctAvalController extends IntranetController
         }
 
         return $this->alumnoFctAvalService;
+    }
+
+    /**
+     * @param string $id
+     * @throws NotFoundDomainException
+     * @return \Intranet\Entities\Profesor
+     */
+    private function findProfesorOrFail(string $id)
+    {
+        try {
+            return app(ProfesorService::class)->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Professor no trobat', ['profesor_id' => $id]);
+        }
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Intranet\Entities\AlumnoFct
+     */
+    private function findAlumnoFctOrFail($id)
+    {
+        try {
+            return $this->alumnoFcts()->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException("FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
+        }
     }
 
     /**
@@ -445,9 +475,14 @@ class PanelFctAvalController extends IntranetController
         }
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\View
+     */
     public function linkQuality($id)
     {
-        $registre = app(ProfesorService::class)->findOrFail((string) $id);
+        $registre = $this->findProfesorOrFail((string) $id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
         $ara = new \DateTime();
@@ -469,12 +504,17 @@ class PanelFctAvalController extends IntranetController
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function send($id)
     {
         Gate::authorize('sendA56', Fct::class);
         $document = array();
 
-        $fct = $this->alumnoFcts()->findOrFail((int) $id); //cerque el que toca
+        $fct = $this->findAlumnoFctOrFail($id); //cerque el que toca
         $document['title'] = 10;
         $document['dni'] = $fct->Alumno->dni;
         $document['alumne'] = trim($fct->Alumno->shortName);

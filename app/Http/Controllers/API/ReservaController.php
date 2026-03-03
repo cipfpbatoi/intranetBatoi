@@ -5,6 +5,8 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Reserva;
+use Intranet\Exceptions\NotFoundDomainException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -41,13 +43,18 @@ class   ReservaController extends ApiResourceController
         return $this->profesorService;
     }
     
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $cadena = (string) $id;
         $isLegacy = $this->isLegacyFilterExpression($cadena);
         $data = $isLegacy
             ? $this->queryLegacy($cadena)
-            : collect([Reserva::findOrFail($cadena)]);
+            : $this->singleReservaAsCollection($cadena);
 
         foreach ($data as $uno) {
             if (isset($uno->Profesor->nombre)) {
@@ -64,6 +71,20 @@ class   ReservaController extends ApiResourceController
         }
 
         return $response;
+    }
+
+    /**
+     * @param string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Support\Collection
+     */
+    private function singleReservaAsCollection(string $id)
+    {
+        try {
+            return collect([Reserva::findOrFail($id)]);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Reserva no trobada', ['reserva_id' => $id]);
+        }
     }
 
 

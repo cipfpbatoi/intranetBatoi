@@ -3,7 +3,9 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Falta;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\FaltaRequest;
 use Illuminate\Http\Request;
@@ -90,6 +92,7 @@ class FaltaController extends ModalController
     /**
      * @param Request $request
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
@@ -108,6 +111,7 @@ class FaltaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function init($id)
@@ -120,6 +124,7 @@ class FaltaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function alta($id)
@@ -131,16 +136,23 @@ class FaltaController extends ModalController
 
     /**
      * Recupera la falta per aplicar autorització explícita.
+     *
+     * @throws NotFoundDomainException
      */
     private function findFaltaOrFail(int $id): Falta
     {
-        return Falta::findOrFail($id);
+        try {
+            return Falta::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Falta no trobada', ['falta_id' => $id]);
+        }
     }
 
     /**
      * Mostra el detall d'una falta.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View
      */
     public function show($id)

@@ -3,7 +3,9 @@
 namespace Intranet\Http\Controllers\API;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Activity;
+use Intranet\Exceptions\NotFoundDomainException;
 
 class ActivityController extends ApiResourceController
 {
@@ -11,9 +13,19 @@ class ActivityController extends ApiResourceController
     protected $model = 'Activity';
     
 
+    /**
+     * @param int|string $id
+     * @param int|string $fct
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function move($id, $fct)
     {
-        $activity = Activity::findOrFail($id);
+        try {
+            $activity = Activity::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Activitat no trobada', ['activity_id' => $id]);
+        }
         if ($activity->model_id == $fct) {
             return $this->sendFail("Tria una altra FCT");
         } else {
