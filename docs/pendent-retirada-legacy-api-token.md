@@ -189,6 +189,27 @@ Important:
 4. Nota:
    - com que no és producció, la cobertura de telemetria continua sent parcial.
 
+#### 8) Validació manual final (2026-03-03)
+
+1. `misColaboraciones`:
+   - `book` crea el `+` dinàmic sense recàrrega,
+   - clic en `+` obri modal i mostra comentari correctament.
+2. `dropzone`:
+   - llistar, pujar i eliminar adjunts funciona en flux normal,
+   - eliminar sense permisos retorna error funcional (sense 500).
+3. `fct`:
+   - flux `telefonico` funcional sense recàrrega,
+   - edició i eliminació de comentaris operatives després de crear contacte.
+4. `reserva`:
+   - validació manual completada sense regressions funcionals observades.
+5. autenticació API (manual `curl`):
+   - `/api/auth/me` amb només `api_token` -> `401`,
+   - `/api/auth/me` amb `Bearer` -> `200`,
+   - `/api/reserva/{id}` amb `Bearer` -> passa autenticació (`404` si id inexistent, no `401`).
+6. estat:
+   - validació manual en verd en entorn no producció,
+   - pendent confirmar telemetria en producció abans de retirada definitiva de compatibilitat legacy.
+
 ## Fase C. Tall progressiu backend
 
 1. Rutes:
