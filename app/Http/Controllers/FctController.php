@@ -91,6 +91,21 @@ class FctController extends IntranetController
     }
 
     /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Fct
+     */
+    private function findFctOrFail($id): Fct
+    {
+        return $this->findModelOrFail(
+            Fct::class,
+            $id,
+            'FCT no trobada',
+            ['fct_id' => $id]
+        );
+    }
+
+    /**
      * @param int|string|null $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
