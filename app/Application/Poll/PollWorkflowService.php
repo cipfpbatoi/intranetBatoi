@@ -106,8 +106,9 @@ class PollWorkflowService
         ];
 
         foreach ($votes['all'] as $optionId => $optionVote) {
+            $avg = $optionVote->avg('value');
             $stats['all'][$optionId] = [
-                'avg' => round($optionVote->avg('value'), 1),
+                'avg' => $avg !== null ? round((float) $avg, 1) : null,
                 'count' => $optionVote->groupBy('user_id')->count(),
             ];
         }
@@ -115,8 +116,9 @@ class PollWorkflowService
         foreach (['grup', 'cicle', 'departament'] as $bucket) {
             foreach ($votes[$bucket] as $nameGroup => $groupVotes) {
                 foreach ($groupVotes as $optionId => $optionVote) {
+                    $avg = $optionVote->avg('value');
                     $stats[$bucket][$nameGroup][$optionId] = [
-                        'avg' => round($optionVote->avg('value'), 1),
+                        'avg' => $avg !== null ? round((float) $avg, 1) : null,
                         'count' => $optionVote->groupBy('user_id')->count(),
                     ];
                 }
