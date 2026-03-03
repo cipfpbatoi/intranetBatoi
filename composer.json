@@ -104,10 +104,12 @@
             "@php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
         ],
         "dusk:local": [
-            "APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local"
+            "Composer\\Config::disableProcessTimeout",
+            "XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local"
         ],
         "dusk:auth": [
-            "APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
+            "Composer\\Config::disableProcessTimeout",
+            "XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
         ],
         "docs:app:docblocks": [
             "@php tools/docblocks/generate-docblocks-index.php"
