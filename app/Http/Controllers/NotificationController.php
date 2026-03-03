@@ -3,10 +3,10 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Notification\NotificationInboxService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class NotificationController
@@ -100,8 +100,7 @@ class NotificationController extends IntranetController
         $modelo = $this->model;
         $elemento = $this->inbox()->findForShow($id);
         if (!$elemento) {
-            Alert::danger('Notificació no trobada');
-            return back();
+            throw new NotFoundDomainException('Notificació no trobada', ['notification_id' => $id]);
         }
 
         return view($this->chooseView('show'), compact('elemento', 'modelo'));
