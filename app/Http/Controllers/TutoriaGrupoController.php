@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\TutoriaGrupo;
 use Intranet\Entities\Tutoria;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\TutoriaGrupoStoreRequest;
 use Intranet\Http\Requests\TutoriaGrupoUpdateRequest;
 use Intranet\Presentation\Crud\TutoriaGrupoCrudSchema;
@@ -39,7 +40,7 @@ class TutoriaGrupoController extends ModalController
         try {
             $record = TutoriaGrupo::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            return back()->with('warning', "No s'ha trobat {$this->model} #{$id}");
+            throw new NotFoundDomainException("No s'ha trobat {$this->model} #{$id}", ['id' => $id]);
         }
         $this->authorize('view', $record);
 

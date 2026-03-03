@@ -6,8 +6,8 @@ use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Panel;
-use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -60,11 +60,9 @@ class ColaboracionAlumnoController extends IntranetController
                 $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
             }
             return $colaboracions->sortBy('tutor')->sortBy('localidad');
-        } else {
-            Alert::danger('No hem trobat el teu tutor');
-            return collect();
         }
 
+        throw new NotFoundDomainException('No hem trobat el teu tutor', ['alumno' => AuthUser()->nia ?? null]);
     }
 
 

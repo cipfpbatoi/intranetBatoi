@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\Controller;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\DocumentPathService;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\UI\Panels\Panel;
-use Styde\Html\Facades\Alert;
 
 /**
  * Controlador base per a recursos amb UX modal.
@@ -238,7 +238,10 @@ abstract class ModalController extends Controller
         $elemento = $modelClass::find($id);
 
         if (!$elemento) {
-            return redirect()->back()->with('error', 'Element no trobat');
+            throw new NotFoundDomainException('Element no trobat', [
+                'model' => $this->model,
+                'id' => $id,
+            ]);
         }
 
         if ($elemento->fichero && method_exists($this, 'borrarFichero')) {
@@ -271,8 +274,11 @@ abstract class ModalController extends Controller
             return $response;
         }
 
-        Alert::danger(trans("messages.generic.nodocument"));
-        return back();
+        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+            'model' => $this->model,
+            'id' => $id,
+            'path' => $path,
+        ]);
     }
 
 
