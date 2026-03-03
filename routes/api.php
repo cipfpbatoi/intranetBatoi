@@ -104,7 +104,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno');
 
-    Route::get('/tiporeunion/{id}', 'TipoReunionController@show');
+    Route::get('/tiporeunion/{id}', 'TipoReunionController@show')->middleware('auth:sanctum');
     Route::get('/modulo/{id}', 'ModuloController@show');
     
     Route::get('horarioChange/{dni}', 'HorarioController@getChange');

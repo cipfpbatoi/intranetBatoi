@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de TipoReunion amb autenticació Sanctum.
+ */
 class ApiTipoReunionControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -49,7 +53,7 @@ class ApiTipoReunionControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PTR01');
         $user = Profesor::on('sqlite')->findOrFail('PTR01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response = $this->getJson('/api/tiporeunion/0');
 
@@ -95,4 +99,3 @@ class ApiTipoReunionControllerFeatureTest extends TestCase
         ]);
     }
 }
-

@@ -5,6 +5,7 @@ namespace Tests\Browser;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
+use Throwable;
 use Tests\DuskTestCase;
 
 /**
@@ -25,14 +26,7 @@ class ComisionViewSmokeTest extends DuskTestCase
         $login = $this->prepareProfesorForUiLogin($profesor);
 
         $this->browse(function (Browser $browser) use ($login) {
-            $browser->visit('/profesor/login')
-                ->type('codigo', $login['identifier'])
-                ->type('password', $login['password'])
-                ->press('Entra')
-                ->pause(1500)
-                ->visit('/home')
-                ->pause(1200)
-                ->assertDontSee('Pantalla Login');
+            $this->loginViaUiWithRetry($browser, $login['identifier'], $login['password']);
 
             $browser->script("window.location.href = '/comision';");
             $browser->pause(2000);
@@ -40,6 +34,40 @@ class ComisionViewSmokeTest extends DuskTestCase
             $path = $browser->driver->executeScript('return window.location.pathname;');
             $this->assertSame('/comision', $path);
         });
+    }
+
+    /**
+     * Login robust amb reintents per a errors transitòris de Selenium/xarxa.
+     */
+    private function loginViaUiWithRetry(Browser $browser, string $identifier, string $password): void
+    {
+        $lastError = null;
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            try {
+                $browser->visit('/profesor/login')
+                    ->waitFor('input[name="codigo"]', 10)
+                    ->type('codigo', $identifier)
+                    ->type('password', $password)
+                    ->press('Entra')
+                    ->pause(1400)
+                    ->visit('/home')
+                    ->waitUsing(10, 200, function () use ($browser): bool {
+                        $path = (string) ($browser->driver->executeScript('return window.location.pathname;') ?? '');
+                        return $path === '/home';
+                    });
+
+                return;
+            } catch (Throwable $exception) {
+                $lastError = $exception;
+                $browser->pause(1200);
+            }
+        }
+
+        if ($lastError instanceof Throwable) {
+            throw $lastError;
+        }
+
+        $this->fail('No s\'ha pogut completar el login UI en els reintents previstos.');
     }
 
     /**

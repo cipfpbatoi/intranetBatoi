@@ -40,14 +40,41 @@ class ColaboracionBookInteractionTest extends DuskTestCase
                 ->assertPathIs('/misColaboraciones')
                 ->assertPresent('.book');
 
+            $browser->script(<<<'JS'
+window.__duskAjaxBook = [];
+if (typeof window.jQuery !== 'undefined') {
+  window.jQuery(document).off('ajaxComplete.__duskBook');
+  window.jQuery(document).on('ajaxComplete.__duskBook', function (_evt, xhr, settings) {
+    if (!settings || typeof settings.url !== 'string') return;
+    if (settings.url.indexOf('/api/colaboracion/') === -1 || settings.url.indexOf('/book') === -1) return;
+    window.__duskAjaxBook.push({
+      url: settings.url,
+      status: xhr ? xhr.status : null,
+      response: xhr ? String(xhr.responseText || '').slice(0, 300) : ''
+    });
+  });
+}
+JS
+            );
+
             $clicked = $browser->script(<<<'JS'
-const books = Array.from(document.querySelectorAll('.book'));
-const target = books[0] || null;
+const allBooks = Array.from(document.querySelectorAll('.book'));
+const visibleBooks = allBooks.filter((btn) => {
+  if (!btn) return false;
+  if (btn.offsetParent === null) return false;
+  const style = window.getComputedStyle(btn);
+  return style.display !== 'none' && style.visibility !== 'hidden';
+});
+const target = visibleBooks[0] || allBooks[0] || null;
 if (!target) {
   return false;
 }
 target.scrollIntoView({behavior: 'instant', block: 'center'});
-target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+if (typeof window.jQuery !== 'undefined') {
+  window.jQuery(target).trigger('click');
+} else {
+  target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+}
 return true;
 JS
             )[0] ?? false;
@@ -59,9 +86,19 @@ JS
                 ->press('#dialogo button[type="submit"]')
                 ->pause(1400);
 
+            $browser->waitUsing(10, 200, function () use ($browser, $profesor, $comment): bool {
+                return is_numeric($this->bookActivityIdByCommentForProfesor($profesor->dni, $comment));
+            }, 'No s\'ha persistit l\'activitat "book" en el temps esperat.');
+
             $createdActivityId = $this->bookActivityIdByCommentForProfesor($profesor->dni, $comment);
             if (!is_numeric($createdActivityId)) {
-                $this->fail('No s\'ha guardat cap activitat "book" amb el comentari enviat (possible error backend o validació).');
+                $ajaxBook = $browser->script(
+                    "return window.__duskAjaxBook ? JSON.stringify(window.__duskAjaxBook) : '[]';"
+                )[0] ?? '[]';
+                $this->fail(
+                    'No s\'ha guardat cap activitat "book" amb el comentari enviat. '.
+                    'Traça AJAX book: '.(string) $ajaxBook
+                );
             }
 
             $selector = ".listActivity a.small[id='".$createdActivityId."']";
