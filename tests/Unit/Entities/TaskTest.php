@@ -31,7 +31,7 @@ class TaskTest extends TestCase
             'vencimiento' => date('Y-m-d', strtotime('+1 day')),
             'informativa' => 1,
         ]);
-        $this->assertSame('informacion.jpeg', $futureInfo->image);
+        $this->assertSame('informacion.png', $futureInfo->image);
 
         $futureTask = new Task([
             'vencimiento' => date('Y-m-d', strtotime('+1 day')),
@@ -47,4 +47,3 @@ class TaskTest extends TestCase
         $this->assertNull($task->myDetails);
     }
 }
-
