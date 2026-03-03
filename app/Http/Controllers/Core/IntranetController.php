@@ -6,9 +6,9 @@ namespace Intranet\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Document\DocumentPathService;
-use Styde\Html\Facades\Alert;
 
 /**
  * Controlador base per a recursos intranet amb CRUD estàndard.
@@ -62,7 +62,10 @@ abstract class IntranetController extends BaseController
         $elemento = $class::find($id);
 
         if (!$elemento) {
-            return redirect()->back()->with('error', 'Element no trobat');
+            throw new NotFoundDomainException('Element no trobat', [
+                'model' => $this->model,
+                'id' => $id,
+            ]);
         }
 
         if ($elemento->fichero) {
@@ -208,8 +211,11 @@ abstract class IntranetController extends BaseController
             return $response;
         }
 
-        Alert::danger(trans("messages.generic.nodocument"));
-        return back();
+        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+            'model' => $this->model,
+            'id' => $id,
+            'path' => $path,
+        ]);
     }
 
     /**
@@ -222,9 +228,14 @@ abstract class IntranetController extends BaseController
     {
         $class = $this->modelClass();
         $documento = $class::findOrFail($id)->idDocumento;
-        return $documento
-            ? redirect("/documento/$documento/show")
-            : back()->with('error', trans("messages.generic.nodocument"));
+        if ($documento) {
+            return redirect("/documento/$documento/show");
+        }
+
+        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+            'model' => $this->model,
+            'id' => $id,
+        ]);
     }
 
     /**

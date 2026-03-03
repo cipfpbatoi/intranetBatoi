@@ -17,6 +17,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Styde\Html\Facades\Alert;
 
@@ -109,7 +110,10 @@ class PanelSignaturaController extends BaseController
                     if ($signatura) {
                         $fileToSign = $signatura->routeFile;
                         if (!file_exists($fileToSign)) {
-                            throw new IntranetException("No s'ha trobat el PDF a signar: $fileToSign");
+                            throw new NotFoundDomainException(
+                                "No s'ha trobat el PDF a signar: $fileToSign",
+                                ['file' => $fileToSign]
+                            );
                         }
                         if (file_exists($file)) {
                             $x = config("signatures.files.{$signatura->tipus}.director.x");
@@ -146,10 +150,12 @@ class PanelSignaturaController extends BaseController
                     'intranetUser' => authUser()->fullName,
                 ]);
                 Alert::warning($exception->getMessage());
-                app(NotificationService::class)->send(
-                    config('avisos.errores'),
-                    $exception->getMessage()." : ".authUser()->fullName
-                );
+                if ($exception->shouldNotify()) {
+                    app(NotificationService::class)->send(
+                        config('avisos.errores'),
+                        $exception->getMessage()." : ".authUser()->fullName
+                    );
+                }
                 if (isset($file)) {
                     unlink($file);
                 }
