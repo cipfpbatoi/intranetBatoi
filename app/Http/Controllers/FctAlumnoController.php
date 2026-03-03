@@ -72,8 +72,6 @@ class FctAlumnoController extends ModalController
 
         return $this->alumnoFctService;
     }
-    }
-
 
     public function search()
     {
