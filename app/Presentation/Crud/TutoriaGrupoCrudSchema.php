@@ -21,7 +21,7 @@ final class TutoriaGrupoCrudSchema
     ];
 
     /**
-     * Tipus de camp legacy del model.
+     * Configuració de formulari del CRUD.
      *
      * @var array<string, array<string, mixed>>
      */
@@ -33,7 +33,7 @@ final class TutoriaGrupoCrudSchema
     ];
 
     /**
-     * Alias legacy per compatibilitat amb codi antic.
+     * Tipus de camp legacy del model.
      *
      * @var array<string, array<string, mixed>>
      */

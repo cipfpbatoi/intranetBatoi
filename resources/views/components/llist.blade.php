@@ -1,5 +1,5 @@
 <li>
-    <img src="img/{{$image}}" class="avatar" alt="avatar" />
+    <img src="{{ asset('img/'.$image) }}" class="avatar" alt="avatar" />
     <div class="message_date" title="venciment">
         @if (!is_numeric(strtotime($date)))
             <h4 class="date text-info">{{ $date }}</h4>
@@ -16,4 +16,3 @@
         </h4>
     </div>
 </li>
-
