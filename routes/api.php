@@ -50,9 +50,9 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
 
-    Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']]);
-    Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
-    Route::get('profesor/rol/{rol}', 'ProfesorController@getRol');
+    Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::get('profesor/{dni}/rol', 'ProfesorController@rol')->middleware('auth:sanctum');
+    Route::get('profesor/rol/{rol}', 'ProfesorController@getRol')->middleware('auth:sanctum');
     Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardias', 'IpGuardiaController@arrayIps');
     Route::get('verficha', 'FicharController@entrefechas');
@@ -92,7 +92,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => [ 'create']]);
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('activity', 'ActivityController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
+    Route::resource('curso', 'CursoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
     Route::resource('task', 'TaskController', ['except' => [ 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo')->middleware('auth:sanctum');

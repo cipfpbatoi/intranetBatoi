@@ -55,6 +55,8 @@ En curs, amb inventari tècnic inicial completat.
    - `/api/alumnofct/*` + `alumnofct/*/grupo` + `alumnofct/*/dual` -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/fct/*/alFct` (GET/POST) -> `auth:sanctum` (migrat 2026-03-03)
    - `/api/materialbaja/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/profesor/*` + `profesor/*/rol` + `profesor/rol/*` -> `auth:sanctum` (migrat 2026-03-03)
+   - `/api/curso/*` -> `auth:sanctum` (migrat 2026-03-03)
    - grup principal `/api/*` encara en `auth:api,sanctum` (pendent de particionar)
 3. **Controladors amb fallback o validació legacy explícita**
    - `app/Http/Controllers/API/MaterialController.php` (`resolveApiUser()`)
