@@ -54,7 +54,13 @@ Dropzone.options.myDropzone = {
             success: function(data){
                 $.each(data.data, function (key, mockFile) {
                     myDropzone.emit("addedfile", mockFile);
-                    myDropzone.createThumbnailFromUrl(mockFile,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+mockFile.name);
+                    if (!mockFile.referencesTo) {
+                        var previewName = mockFile.file ? mockFile.file : mockFile.name;
+                        myDropzone.createThumbnailFromUrl(
+                            mockFile,
+                            '/storage/adjuntos/' + modelo + '/' + expediente + '/' + previewName
+                        );
+                    }
                     myDropzone.emit("success", mockFile);
                     myDropzone.files.push(mockFile);
                     myDropzone.emit("complete", mockFile);
@@ -71,6 +77,11 @@ Dropzone.options.myDropzone = {
                 a.setAttribute('style','float:right');
                 if (file.referencesTo) {
                     a.setAttribute('href',file.referencesTo);
+                    a.addEventListener('click', function () {
+                        if (file.referencesTo.indexOf('foremp.edu.gva.es') !== -1) {
+                            alert("Si no s'obri el document, inicia sessió en el SAO en una altra pestanya i torna-ho a provar.");
+                        }
+                    });
                 } else {
                     if (file.file) {
                         a.setAttribute('href', '/storage/adjuntos/' + modelo + '/' + expediente + '/' + file.file);
