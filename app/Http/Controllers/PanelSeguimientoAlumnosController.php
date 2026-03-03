@@ -5,19 +5,34 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Requests\AlumnoResultadoStoreRequest;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Resultado;
+use Intranet\Exceptions\NotFoundDomainException;
 
+/**
+ * Class PanelSeguimientoAlumnosController
+ * @package Intranet\Http\Controllers
+ */
 class PanelSeguimientoAlumnosController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoResultado';
     protected $redirect = 'PanelSeguimientoAlumnosController@indice';
 
+    /**
+     * @param int|string $search
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     public function indice($search)
     {
-        $resultado = Resultado::findOrFail((int) $search);
+        try {
+            $resultado = Resultado::findOrFail((int) $search);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $search]);
+        }
         $this->authorize('view', $resultado);
         $elemento = $resultado->moduloGrupo;
         $resultados = AlumnoResultado::where('idModuloGrupo',$resultado->idModuloGrupo)->get();
@@ -32,18 +47,40 @@ class PanelSeguimientoAlumnosController extends IntranetController
      * store (Request) return redirect
      * guarda els valors del formulari
      */
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->validate($request, (new AlumnoResultadoStoreRequest())->rules());
-        $resultado = Resultado::where('idModuloGrupo', $request->idModuloGrupo)->firstOrFail();
+        try {
+            $resultado = Resultado::where('idModuloGrupo', $request->idModuloGrupo)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $request->idModuloGrupo]);
+        }
         $this->authorize('update', $resultado);
         $this->realStore($request);
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id){
-        $alumnoResultado = AlumnoResultado::findOrFail((int) $id);
-        $resultado = Resultado::where('idModuloGrupo', $alumnoResultado->idModuloGrupo)->firstOrFail();
+        try {
+            $alumnoResultado = AlumnoResultado::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat d\'alumne no trobat', ['alumno_resultado_id' => $id]);
+        }
+        try {
+            $resultado = Resultado::where('idModuloGrupo', $alumnoResultado->idModuloGrupo)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $alumnoResultado->idModuloGrupo]);
+        }
         $this->authorize('update', $resultado);
         $this->search = (int) $resultado->id;
         parent::destroy($id);

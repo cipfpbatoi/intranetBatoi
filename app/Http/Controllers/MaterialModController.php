@@ -3,15 +3,17 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MaterialController
+ * Class MaterialModController
  * @package Intranet\Http\Controllers
  */
 class MaterialModController extends ModalController
@@ -40,6 +42,34 @@ class MaterialModController extends ModalController
      * @var array
      */
 
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return MaterialBaja
+     */
+    private function findRegistroOrFail($id): MaterialBaja
+    {
+        try {
+            return MaterialBaja::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Registre de baixa no trobat', ['material_baja_id' => $id]);
+        }
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Material
+     */
+    private function findMaterialOrFail($id): Material
+    {
+        try {
+            return Material::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+        }
+    }
 
 
     public function search()
@@ -73,9 +103,14 @@ class MaterialModController extends ModalController
         );
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function refuse($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
+        $registro = $this->findRegistroOrFail($id);
         if ($registro->tipo == 0) {
             $aviso = 'El material '.$registro->Material->descripcion." NO ha estat donat de Baixa : ";
         } else {
@@ -87,11 +122,16 @@ class MaterialModController extends ModalController
         return redirect()->back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function resolve($id)
     {
         return DB::transaction(function () use ($id) {
-            $registro = MaterialBaja::findOrFail($id);
-            $material = Material::findOrFail($registro->idMaterial);
+            $registro = $this->findRegistroOrFail($id);
+            $material = $this->findMaterialOrFail($registro->idMaterial);
 
             if ((int)$registro->tipo === 0) {
                 // Baixa

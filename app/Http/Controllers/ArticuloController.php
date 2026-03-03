@@ -3,12 +3,14 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Requests\ArticuloRequest;
 use Intranet\Entities\Articulo;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MaterialController
+ * Class ArticuloController
  * @package Intranet\Http\Controllers
  */
 class ArticuloController extends ModalController
@@ -30,12 +32,17 @@ class ArticuloController extends ModalController
 
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function detalle($id)
     {
-        $article = Articulo::findOrFail($id);
+        try {
+            $article = Articulo::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+        }
         $this->authorize('view', $article);
         return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
     }
@@ -47,9 +54,19 @@ class ArticuloController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param ArticuloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ArticuloRequest $request, $id)
     {
-        $this->authorize('update', Articulo::findOrFail((int) $id));
+        try {
+            $this->authorize('update', Articulo::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+        }
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -58,10 +75,15 @@ class ArticuloController extends ModalController
      * Elimina un article amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Articulo::findOrFail((int) $id));
+        try {
+            $this->authorize('delete', Articulo::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+        }
         return parent::destroy($id);
     }
 

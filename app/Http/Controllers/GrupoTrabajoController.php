@@ -5,9 +5,11 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\GrupoTrabajoRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Requests\GTProfesorRequest;
@@ -34,6 +36,19 @@ class GrupoTrabajoController extends ModalController
      */
     protected $gridFields = ['literal',  'objetivos'];
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return GrupoTrabajo
+     */
+    private function findGrupoTrabajoOrFail($id): GrupoTrabajo
+    {
+        try {
+            return GrupoTrabajo::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Grup de treball no trobat', ['grupo_trabajo_id' => $id]);
+        }
+    }
 
     public function store(GrupoTrabajoRequest $request)
     {
@@ -41,9 +56,16 @@ class GrupoTrabajoController extends ModalController
         $this->persist($request);
         return $this->redirect();
     }
+
+    /**
+     * @param GrupoTrabajoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(GrupoTrabajoRequest $request, $id)
     {
-        $this->authorize('update', GrupoTrabajo::findOrFail((int) $id));
+        $this->authorize('update', $this->findGrupoTrabajoOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -58,17 +80,18 @@ class GrupoTrabajoController extends ModalController
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function detalle($id)
     {
-        $this->authorize('viewMembers', GrupoTrabajo::findOrFail((int) $id));
+        $Gt = $this->findGrupoTrabajoOrFail($id);
+        $this->authorize('viewMembers', $Gt);
         foreach (app(ProfesorService::class)->allOrderedBySurname() as $profesor) {
             $tProfesores[$profesor->dni] = $profesor->nameFull;
         }
 
-        $Gt = GrupoTrabajo::find($id);
         $sProfesores = $Gt->profesores()
             ->orderBy('apellido1')
             ->orderBy('apellido2')
@@ -80,24 +103,26 @@ class GrupoTrabajoController extends ModalController
 
     /**
      * @param Request $request
-     * @param $gt_id
+     * @param int|string $gtId
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function altaProfesor(GTProfesorRequest $request, $gtId)
     {
-        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $gtId));
+        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($gtId));
         Miembro::create($request->all());
         return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
 
     /**
-     * @param $gt_id
-     * @param $profesor_id
+     * @param int|string $gtId
+     * @param int|string $profesorId
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function borrarProfesor($gtId, $profesorId)
     {
-        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $gtId));
+        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($gtId));
         Miembro::where('idGrupoTrabajo', '=', $gtId)
             ->where('idProfesor', '=', $profesorId)
             ->where('coordinador', 0)
@@ -107,13 +132,14 @@ class GrupoTrabajoController extends ModalController
     }
 
     /**
-     * @param $grupo_id
-     * @param $profesor_id
+     * @param int|string $grupoId
+     * @param int|string $profesorId
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function coordinador($grupoId, $profesorId)
     {
-        $this->authorize('manageMembers', GrupoTrabajo::findOrFail((int) $grupoId));
+        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($grupoId));
         if ($this->removeCoord($grupoId)) {
             $this->addCoord($grupoId, $profesorId);
         }
@@ -171,10 +197,11 @@ class GrupoTrabajoController extends ModalController
      * Elimina un grup de treball amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', GrupoTrabajo::findOrFail((int) $id));
+        $this->authorize('delete', $this->findGrupoTrabajoOrFail($id));
         return parent::destroy($id);
     }
 

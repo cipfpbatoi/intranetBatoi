@@ -4,10 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\SolicitudRequest;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Notifications\ConfirmAndSend;
@@ -15,7 +16,7 @@ use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
 /**
- * Class ExpedienteController
+ * Class SolicitudController
  * @package Intranet\Http\Controllers
  */
 class SolicitudController extends ModalController
@@ -33,6 +34,19 @@ class SolicitudController extends ModalController
     protected $model = 'Solicitud';
     protected $profile = false;
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Solicitud
+     */
+    private function findSolicitudOrFail($id): Solicitud
+    {
+        try {
+            return Solicitud::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Sol·licitud no trobada', ['solicitud_id' => $id]);
+        }
+    }
 
 
     public function store(SolicitudRequest $request)
@@ -43,16 +57,26 @@ class SolicitudController extends ModalController
         return $this->confirm($id);
     }
 
-
+    /**
+     * @param SolicitudRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(SolicitudRequest $request, $id)
     {
-        $this->authorize('update', Solicitud::findOrFail((int) $id));
+        $this->authorize('update', $this->findSolicitudOrFail($id));
         $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function confirm($id){
-        $solicitud = Solicitud::findOrFail($id);
+        $solicitud = $this->findSolicitudOrFail($id);
         $this->authorize('view', $solicitud);
         if ($solicitud->estado == 0 && $solicitud->idOrientador) {
             return ConfirmAndSend::render($this->model, $id,'Enviar a '.$solicitud->Orientador->FullName);
@@ -78,12 +102,13 @@ class SolicitudController extends ModalController
     //inicializat a init (normalment 1)
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function init($id)
     {
-        $expediente = Solicitud::findOrFail((int) $id);
+        $expediente = $this->findSolicitudOrFail($id);
         $this->authorize('update', $expediente);
         $expediente->estado = 1;
         $expediente->save();
@@ -104,9 +129,14 @@ class SolicitudController extends ModalController
     * busca en model de dades i el mostra amb vista show
     */
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = Solicitud::findOrFail($id);
+        $elemento = $this->findSolicitudOrFail($id);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('solicitud.show', compact('elemento', 'modelo'));
@@ -116,10 +146,11 @@ class SolicitudController extends ModalController
      * Elimina una sol·licitud amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Solicitud::findOrFail((int) $id));
+        $this->authorize('delete', $this->findSolicitudOrFail($id));
         return parent::destroy($id);
     }
 
