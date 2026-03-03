@@ -5,9 +5,11 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -67,8 +69,16 @@ class ResultadoController extends ModalController
         return $this->grupoService;
     }
 
+    /**
+     * @param int|string $idModulo
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     private function rellenaPropuestasMejora($idModulo){
-        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
+        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first();
+        if (!$programacion) {
+            throw new NotFoundDomainException('Programació no trobada', ['modulo_ciclo_id' => $idModulo]);
+        }
         return redirect()->route('programacion.seguimiento', ['programacion' => $programacion]);
     }
 
@@ -87,9 +97,19 @@ class ResultadoController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param ResultadoUpdateRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ResultadoUpdateRequest $request, $id)
     {
-        $this->authorize('update', Resultado::findOrFail((int) $id));
+        try {
+            $this->authorize('update', Resultado::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id]);
+        }
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -98,10 +118,15 @@ class ResultadoController extends ModalController
      * Elimina un resultat amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Resultado::findOrFail((int) $id));
+        try {
+            $this->authorize('delete', Resultado::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id]);
+        }
         return parent::destroy($id);
     }
 

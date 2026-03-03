@@ -5,15 +5,17 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Projecte;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
- * Class EspacioController
+ * Class ProjecteController
  * @package Intranet\Http\Controllers
  */
 class ProjecteController extends ModalController
@@ -59,9 +61,18 @@ class ProjecteController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function email($id)
     {
-        $projecte = Projecte::findOrFail($id);
+        try {
+            $projecte = Projecte::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id]);
+        }
         $projecte->estat = 1;
         $projecte->save();
         $tutor = $projecte->Grupo->Tutor;
@@ -69,9 +80,18 @@ class ProjecteController extends ModalController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function pdf($id)
     {
-        $elemento = Projecte::findOrFail($id);
+        try {
+            $elemento = Projecte::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id]);
+        }
         $informe = 'pdf.propostaProjecte';
         $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();
