@@ -210,13 +210,13 @@ class Handler extends ExceptionHandler
                 $context['referer'] = (string) $request->header('Referer', '');
 
                 $user = authUser();
-                if ($user) {
-                    $context['user'] = [
+                $context['user'] = $user
+                    ? [
                         'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
                         'rol' => $user->rol ?? null,
                         'email' => $user->email ?? null,
-                    ];
-                }
+                    ]
+                    : ['guest' => true];
             }
 
             Log::channel('exceptions')->info($exception->getMessage() ?: 'Validation error', $context);
@@ -263,13 +263,13 @@ class Handler extends ExceptionHandler
             $context['referer'] = (string) $request->header('Referer', '');
 
             $user = authUser();
-            if ($user) {
-                $context['user'] = [
+            $context['user'] = $user
+                ? [
                     'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
                     'rol' => $user->rol ?? null,
                     'email' => $user->email ?? null,
-                ];
-            }
+                ]
+                : ['guest' => true];
         }
 
         Log::channel('exceptions')->log($level, (string) $exception->getMessage(), $context);
@@ -286,6 +286,14 @@ class Handler extends ExceptionHandler
     {
         $status = $exception->getStatus();
         $message = $exception->getUserMessage();
+
+        if ($exception instanceof NotFoundDomainException) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 404);
+            }
+
+            return response()->view('errors.404', [], 404);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => $message], $status);
