@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Intranet\Services\Notifications\NotificationService;
 use Styde\Html\Facades\Alert;
@@ -33,6 +34,19 @@ class Handler extends ExceptionHandler
     protected $dontFlash = ['password','password_confirmation'];
 
     /**
+     * Reporta una excepció i registra-la en el log d'excepcions.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function report(Throwable $exception): void
+    {
+        $this->logException($exception);
+
+        parent::report($exception);
+    }
+
+    /**
      * Renderitza la resposta HTTP per a una excepció.
      *
      * @param \Illuminate\Http\Request $request
@@ -50,18 +64,13 @@ class Handler extends ExceptionHandler
             : null;
         $isForbidden = $statusCode === 403;
 
-        if (
-            !$isValidation &&
-            !$isAuthorization &&
-            !$isForbidden &&
-            $msg !== 'The given data was invalid.' &&
-            $msg !== 'Unauthenticated.' &&
-            $msg !== '' &&
-            strpos($msg, 'SRF') === false &&   // <-- correcció important
-            !app()->environment('testing')
-        ) {
+        if ($this->shouldNotify($exception, $msg, $isValidation, $isAuthorization, $isForbidden)) {
             // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
             app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
+        }
+
+        if ($exception instanceof IntranetException) {
+            return $this->renderIntranetException($request, $exception);
         }
 
         // Missatge visual per a errors de BD (en respostes HTML)
@@ -118,5 +127,113 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Determina si una excepció ha d'enviar avís al responsable.
+     *
+     * @param \Throwable $exception
+     * @param string $msg
+     * @param bool $isValidation
+     * @param bool $isAuthorization
+     * @param bool $isForbidden
+     * @return bool
+     */
+    private function shouldNotify(
+        Throwable $exception,
+        string $msg,
+        bool $isValidation,
+        bool $isAuthorization,
+        bool $isForbidden
+    ): bool {
+        if ($exception instanceof IntranetException && !$exception->shouldNotify()) {
+            return false;
+        }
+
+        if (
+            $isValidation ||
+            $isAuthorization ||
+            $isForbidden ||
+            $msg === 'The given data was invalid.' ||
+            $msg === 'Unauthenticated.' ||
+            $msg === '' ||
+            strpos($msg, 'SRF') !== false ||
+            app()->environment('testing')
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Registra totes les excepcions en un canal dedicat.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    private function logException(Throwable $exception): void
+    {
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        $statusCode = ($exception instanceof HttpExceptionInterface)
+            ? $exception->getStatusCode()
+            : null;
+        $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
+
+        $context = [
+            'exception' => get_class($exception),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'code' => $exception->getCode(),
+            'status' => $statusCode,
+            'trace' => $exception->getTraceAsString(),
+        ];
+
+        if ($exception instanceof IntranetException) {
+            $context['context'] = $exception->getContext();
+        }
+
+        if (!app()->runningInConsole()) {
+            $request = request();
+            $context['url'] = $request->fullUrl();
+            $context['method'] = $request->method();
+            $context['ip'] = $request->ip();
+            $context['route'] = optional($request->route())->getName();
+
+            $user = authUser();
+            if ($user) {
+                $context['user'] = [
+                    'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
+                    'rol' => $user->rol ?? null,
+                    'email' => $user->email ?? null,
+                ];
+            }
+        }
+
+        Log::channel('exceptions')->log($level, (string) $exception->getMessage(), $context);
+    }
+
+    /**
+     * Renderitza una excepció de domini amb resposta coherent.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param IntranetException $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function renderIntranetException($request, IntranetException $exception)
+    {
+        $status = $exception->getStatus();
+        $message = $exception->getUserMessage();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+
+        Alert::danger($message);
+        $back = url()->previous() ?: route('home');
+        return redirect($back)->setStatusCode($status);
     }
 }

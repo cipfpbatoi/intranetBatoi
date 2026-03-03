@@ -94,6 +94,12 @@ return [
             'path' => storage_path('logs/parking.log'),
             'level' => 'debug',
         ],
+        'exceptions' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/exceptions.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
     ],
 
 ];
