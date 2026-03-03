@@ -105,6 +105,7 @@ class ExpedienteController extends ModalController
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Intranet\Exceptions\NotFoundDomainException
      */
     protected function init($id)
     {
@@ -124,6 +125,7 @@ class ExpedienteController extends ModalController
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Intranet\Exceptions\NotFoundDomainException
      */
     protected function pasaOrientacion($id)
     {
@@ -135,6 +137,12 @@ class ExpedienteController extends ModalController
         return back();
     }
 
+    /**
+     * @param $id
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Intranet\Exceptions\NotFoundDomainException
+     */
     protected function assigna($id,Request $request){
         $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->assignCompanion($id, $request->idAcompanyant)) {

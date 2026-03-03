@@ -13,6 +13,7 @@ use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\OrdenReunionStoreRequest;
@@ -216,6 +217,14 @@ class ReunionController extends ModalController
     }
 
 
+    /**
+     * Elimina un ordre de reunió.
+     *
+     * @param int|string $reunion_id
+     * @param int|string $orden_id
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws NotFoundDomainException
+     */
     public function borrarOrden($reunion_id, $orden_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
@@ -224,8 +233,10 @@ class ReunionController extends ModalController
         $orden = OrdenReunion::find($orden_id);
 
         if (!$orden) {
-            Alert::danger("No s'ha trobat l'ordre de reunió #{$orden_id}.");
-            return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
+            throw new NotFoundDomainException(
+                "No s'ha trobat l'ordre de reunió #{$orden_id}.",
+                ['reunion_id' => $reunion_id, 'orden_id' => $orden_id]
+            );
         }
 
         try {
@@ -344,12 +355,18 @@ class ReunionController extends ModalController
 
     }
 
+    /**
+     * Mostra o genera el PDF d'una reunió.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     * @throws NotFoundDomainException
+     */
     public function pdf($id)
     {
         $elemento = Reunion::find($id);
         if (!$elemento) {
-            Alert::danger("No s'ha trobat la reunió #$id");
-            return back();
+            throw new NotFoundDomainException("No s'ha trobat la reunió #$id", ['reunion_id' => $id]);
         }
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {

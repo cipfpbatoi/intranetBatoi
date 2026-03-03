@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Signatura;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\AttachedFileService;
 use Styde\Html\Facades\Alert;
@@ -200,17 +201,26 @@ class SignaturaController extends ModalController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     * @throws NotFoundDomainException
+     */
     protected function pdf($id)
     {
         $sig = Signatura::findOrFail((int) $id);
         $this->authorize('view', $sig);
         if (!$sig || empty($sig->routeFile)) {
-            Alert::danger("No s'ha trobat el fitxer sol·licitat");
-            return back();
+            throw new NotFoundDomainException(
+                "No s'ha trobat el fitxer sol·licitat",
+                ['signatura_id' => $id]
+            );
         }
         if (!file_exists($sig->routeFile)) {
-            Alert::danger("L'arxiu no està disponible al servidor");
-            return back();
+            throw new NotFoundDomainException(
+                "L'arxiu no està disponible al servidor",
+                ['signatura_id' => $id, 'route' => $sig->routeFile]
+            );
         }
 
         return response()->file($sig->routeFile);

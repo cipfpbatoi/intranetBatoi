@@ -5,10 +5,10 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\TipoDocumentoService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
 
 
 /**
@@ -40,6 +40,7 @@ class PanelActaController extends BaseController
     /**
      * @param null $grupo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
      */
     public function index($grupo=null)
     {
@@ -49,8 +50,7 @@ class PanelActaController extends BaseController
         if ($this->iniPestanas($grupo)){
             return $this->grid($this->search($grupo),$this->modal);
         }
-        Alert::danger('No hi ha actes disponibles');
-        return redirect()->route('home');
+        throw new NotFoundDomainException('No hi ha actes disponibles', ['grupo' => $grupo]);
      }
 
 

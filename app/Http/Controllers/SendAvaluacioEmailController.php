@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Seeder;
 use Intranet\Mail\MatriculaAlumne;
+use Intranet\Exceptions\NotFoundDomainException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
 use Intranet\Http\Requests\SendAvaluacioEmailStoreRequest;
@@ -51,15 +52,19 @@ class SendAvaluacioEmailController extends Seeder
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function getToken(Request $request)
     {
         $aR = AlumnoReunion::where('token', $request->token)->first();
-        if (!$aR){
-            Alert::danger('No hi ha cap alumne amb eixe token');
-            return back();
-        } else {
-            return view('seeder.sendAvaluacio', compact('aR'));
+        if (!$aR) {
+            throw new NotFoundDomainException('No hi ha cap alumne amb eixe token', ['token' => $request->token]);
         }
+
+        return view('seeder.sendAvaluacio', compact('aR'));
     }
 
     private function obtenToken($aR)
