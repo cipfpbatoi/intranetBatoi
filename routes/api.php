@@ -36,7 +36,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:sanctum');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento')->middleware('auth:sanctum');
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
-    Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
+    Route::resource('reunion', 'ReunionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('documento', 'DocumentoController', ['except' => [ 'create']]);
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
@@ -79,7 +79,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('reserva', 'ReservaController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
+    Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('centro', 'CentroController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']])->middleware('auth:sanctum');
@@ -102,10 +102,10 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('horariosDia/{fecha}', 'HorarioController@HorariosDia')->middleware('auth:sanctum');
     Route::resource('hora', 'HoraController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
-    Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno');
+    Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno')->middleware('auth:sanctum');
 
     Route::get('/tiporeunion/{id}', 'TipoReunionController@show')->middleware('auth:sanctum');
-    Route::get('/modulo/{id}', 'ModuloController@show');
+    Route::get('/modulo/{id}', 'ModuloController@show')->middleware('auth:sanctum');
     
     Route::get('horarioChange/{dni}', 'HorarioController@getChange')->middleware('auth:sanctum');
     Route::post('horarioChange/{dni}', 'HorarioController@Change')->middleware('auth:sanctum');
