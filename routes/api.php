@@ -47,7 +47,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('ipguardia', 'IpGuardiaController', ['except' => [ 'create']]);
     Route::resource('setting', 'SettingController', ['except' => [ 'create']]);
     Route::get('autorizar/comision', 'ComisionController@autorizar')->middleware('auth:sanctum');
-    Route::get('notification/{id}', 'NotificationController@leer');
+    Route::get('notification/{id}', 'NotificationController@leer')->middleware('auth:sanctum');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
 
     Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
@@ -74,7 +74,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('inventario/{espai}', 'MaterialController@espai');
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
-    Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
+    Route::resource('espacio', 'EspacioController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::get('guardia/range', 'GuardiaController@range')->middleware('auth:sanctum');
     Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']])->middleware('auth:sanctum');
@@ -100,7 +100,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('horario', 'HorarioController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::get('horario/{idProfesor}/guardia', 'HorarioController@Guardia')->middleware('auth:sanctum');
     Route::get('horariosDia/{fecha}', 'HorarioController@HorariosDia')->middleware('auth:sanctum');
-    Route::resource('hora', 'HoraController', ['except' => [ 'create']]);
+    Route::resource('hora', 'HoraController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno');
 
