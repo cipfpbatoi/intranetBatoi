@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature d'Horario amb autenticació Sanctum.
+ */
 class ApiHorarioControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -61,7 +65,7 @@ class ApiHorarioControllerFeatureTest extends TestCase
         $this->insertProfesor('PALTRE', sustituyeA: ' ');
 
         $user = Profesor::on('sqlite')->findOrFail('PSUB01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('horarios')->insert([
             [
@@ -118,7 +122,7 @@ class ApiHorarioControllerFeatureTest extends TestCase
         $this->insertProfesor('PALT02', sustituyeA: ' ');
 
         $user = Profesor::on('sqlite')->findOrFail('PSUB02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('horarios')->insert([
             [
@@ -175,7 +179,7 @@ class ApiHorarioControllerFeatureTest extends TestCase
 
         $this->insertProfesor('PCHG01', sustituyeA: ' ');
         $user = Profesor::on('sqlite')->findOrFail('PCHG01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $payload = '{"estat":"pendent","canvis":[{"de":"1-L","a":"2-M"}]}';
 

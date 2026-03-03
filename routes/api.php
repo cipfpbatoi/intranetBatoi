@@ -97,9 +97,9 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('task', 'TaskController', ['except' => [ 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo')->middleware('auth:sanctum');
     
-    Route::resource('horario', 'HorarioController', ['except' => [ 'create']]);
-    Route::get('horario/{idProfesor}/guardia', 'HorarioController@Guardia');
-    Route::get('horariosDia/{fecha}', 'HorarioController@HorariosDia');
+    Route::resource('horario', 'HorarioController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::get('horario/{idProfesor}/guardia', 'HorarioController@Guardia')->middleware('auth:sanctum');
+    Route::get('horariosDia/{fecha}', 'HorarioController@HorariosDia')->middleware('auth:sanctum');
     Route::resource('hora', 'HoraController', ['except' => [ 'create']]);
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno');
@@ -107,8 +107,8 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('/tiporeunion/{id}', 'TipoReunionController@show')->middleware('auth:sanctum');
     Route::get('/modulo/{id}', 'ModuloController@show');
     
-    Route::get('horarioChange/{dni}', 'HorarioController@getChange');
-    Route::post('horarioChange/{dni}', 'HorarioController@Change');
+    Route::get('horarioChange/{dni}', 'HorarioController@getChange')->middleware('auth:sanctum');
+    Route::post('horarioChange/{dni}', 'HorarioController@Change')->middleware('auth:sanctum');
    
     Route::post('/centro/fusionar', 'CentroController@fusionar');
     Route::get('colaboracion/instructores/{id}', 'ColaboracionController@instructores');
