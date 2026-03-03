@@ -89,7 +89,7 @@ class Task extends Model
     {
         $vencimiento = $this->getRawOriginal('vencimiento') ?: ($this->attributes['vencimiento'] ?? null);
         if (empty($vencimiento)) {
-            return $this->informativa ? 'informacion.jpeg' : 'task.png';
+            return $this->informativa ? 'informacion.png' : 'task.png';
         }
 
         $vencimientoDate = (new Date($vencimiento))->format('Y-m-d');
@@ -97,7 +97,7 @@ class Task extends Model
             return 'warning.png';
         }
 
-        return $this->informativa ? 'informacion.jpeg' : 'task.png';
+        return $this->informativa ? 'informacion.png' : 'task.png';
     }
 
     public function getDestinoAttribute()
