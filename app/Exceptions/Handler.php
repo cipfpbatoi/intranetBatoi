@@ -63,8 +63,11 @@ class Handler extends ExceptionHandler
             ? $exception->getStatusCode()
             : null;
         $isForbidden = $statusCode === 403;
+        $isNotFound = $exception instanceof ModelNotFoundException
+            || $exception instanceof NotFoundHttpException
+            || $statusCode === 404;
 
-        if ($this->shouldNotify($exception, $msg, $isValidation, $isAuthorization, $isForbidden)) {
+        if ($this->shouldNotify($exception, $msg, $isValidation, $isAuthorization, $isForbidden, $isNotFound)) {
             // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
             app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
         }
@@ -137,6 +140,7 @@ class Handler extends ExceptionHandler
      * @param bool $isValidation
      * @param bool $isAuthorization
      * @param bool $isForbidden
+     * @param bool $isNotFound
      * @return bool
      */
     private function shouldNotify(
@@ -144,7 +148,8 @@ class Handler extends ExceptionHandler
         string $msg,
         bool $isValidation,
         bool $isAuthorization,
-        bool $isForbidden
+        bool $isForbidden,
+        bool $isNotFound
     ): bool {
         if ($exception instanceof IntranetException && !$exception->shouldNotify()) {
             return false;
@@ -154,6 +159,7 @@ class Handler extends ExceptionHandler
             $isValidation ||
             $isAuthorization ||
             $isForbidden ||
+            $isNotFound ||
             $msg === 'The given data was invalid.' ||
             $msg === 'Unauthenticated.' ||
             $msg === '' ||
@@ -175,6 +181,44 @@ class Handler extends ExceptionHandler
     private function logException(Throwable $exception): void
     {
         if (app()->environment('testing')) {
+            return;
+        }
+
+        if ($exception instanceof ValidationException) {
+            $context = [
+                'exception' => get_class($exception),
+                'code' => $exception->getCode(),
+                'status' => 422,
+            ];
+
+            $errors = $exception->errors();
+            $firstField = $errors ? array_key_first($errors) : null;
+            $context['validation'] = [
+                'field' => $firstField,
+                'first_error' => $firstField ? ($errors[$firstField][0] ?? null) : null,
+                'field_count' => count($errors),
+            ];
+
+            if (!app()->runningInConsole()) {
+                $request = request();
+                $context['url'] = $request->fullUrl();
+                $context['method'] = $request->method();
+                $context['ip'] = $request->ip();
+                $context['route'] = optional($request->route())->getName();
+                $context['user_agent'] = (string) $request->header('User-Agent', '');
+                $context['referer'] = (string) $request->header('Referer', '');
+
+                $user = authUser();
+                if ($user) {
+                    $context['user'] = [
+                        'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
+                        'rol' => $user->rol ?? null,
+                        'email' => $user->email ?? null,
+                    ];
+                }
+            }
+
+            Log::channel('exceptions')->info($exception->getMessage() ?: 'Validation error', $context);
             return;
         }
 

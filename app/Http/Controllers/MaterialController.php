@@ -3,10 +3,12 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\TipoIncidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\MaterialCrudSchema;
 
 /**
@@ -64,11 +66,16 @@ class MaterialController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function copy($id)
     {
-        $elemento = Material::findOrFail($id);
+        try {
+            $elemento = Material::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+        }
         $copia = new Material;
         $copia->fill($elemento->toArray());
         $copia->save();
@@ -77,12 +84,22 @@ class MaterialController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function incidencia($id)
     {
-        $elemento = Material::findOrFail($id);
-        $tipo = TipoIncidencia::where('tipus',1)->firstOrFail();
+        try {
+            $elemento = Material::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+        }
+
+        try {
+            $tipo = TipoIncidencia::where('tipus', 1)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Tipus d\'incidència no trobat', ['tipus' => 1]);
+        }
         $incidencia = new Incidencia(['tipo'=> $tipo->id,
             'material' => $id,
             'estado' => 0,
