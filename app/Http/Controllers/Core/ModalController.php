@@ -79,13 +79,6 @@ abstract class ModalController extends Controller
      */
     protected $formFields = null;
 
-    /**
-     * Acció de redirecció preferida després d'operacions CRUD.
-     *
-     * @var string|null
-     */
-    protected $redirect = null;
-
     /*
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte
