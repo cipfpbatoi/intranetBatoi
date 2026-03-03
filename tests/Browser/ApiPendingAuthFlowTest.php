@@ -1,0 +1,2481 @@
+<?php
+
+namespace Tests\Browser;
+
+use Intranet\Entities\Profesor;
+use Illuminate\Support\Str;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
+
+/**
+ * Proves Dusk de fluxos d'autenticació pendents en migració legacy -> Bearer.
+ */
+class ApiPendingAuthFlowTest extends DuskTestCase
+{
+    /**
+     * Dropzone ha d'acceptar Bearer de sessió web (meta token) en getAttached.
+     */
+    public function test_dropzone_get_attached_accepta_bearer_despres_login_web(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login, $profesor) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/getAttached/profesor/'.rawurlencode((string) $profesor->dni),
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertTrue((bool) ($response['json']['success'] ?? false));
+            $this->assertIsArray($response['json']['data'] ?? null);
+        });
+    }
+
+    /**
+     * Dropzone ja no ha d'acceptar només query api_token (sense Bearer).
+     */
+    public function test_dropzone_get_attached_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/getAttached/profesor/'.rawurlencode((string) $profesor->dni)
+                .'?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * En endpoints mixtos, Bearer ha de passar autenticació i arribar al controlador.
+     */
+    public function test_colaboracion_switch_amb_bearer_arriba_a_controlador_i_retorna_404(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/colaboracion/999999/switch',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertFalse((bool) ($response['json']['success'] ?? true));
+        });
+    }
+
+    /**
+     * En colaboracion/switch (strict Sanctum), legacy api_token sense Bearer es rebutja.
+     */
+    public function test_colaboracion_switch_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/colaboracion/999999/switch?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * En reserva (mode mixt), Bearer ha d'autenticar i arribar al controlador.
+     */
+    public function test_reserva_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/reserva/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * En reserva (strict Sanctum), legacy api_token sense Bearer es rebutja.
+     */
+    public function test_reserva_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/reserva/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * En actividad/edit (ara strict Sanctum), legacy api_token sense Bearer es rebutja.
+     */
+    public function test_actividad_edit_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/actividad/999999/edit?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * En actividad/edit (strict Sanctum), Bearer ha d'arribar al controlador.
+     */
+    public function test_actividad_edit_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/actividad/999999/edit',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertFalse((bool) ($response['json']['success'] ?? true));
+        });
+    }
+
+    /**
+     * Material (ara strict Sanctum) ha d'acceptar Bearer.
+     */
+    public function test_material_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/material/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertFalse((bool) ($response['json']['success'] ?? true));
+        });
+    }
+
+    /**
+     * Material (strict Sanctum) rebutja legacy api_token sense Bearer.
+     */
+    public function test_material_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/material/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Dropzone remove ja no ha d'acceptar query api_token sense Bearer.
+     */
+    public function test_dropzone_remove_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/removeAttached/profesor/'.rawurlencode((string) $profesor->dni).'/fitxer-test'
+                .'?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Dropzone remove amb Bearer ha d'arribar al controlador (no 401).
+     */
+    public function test_dropzone_remove_amb_bearer_no_retorna_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login, $profesor) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/removeAttached/profesor/'.rawurlencode((string) $profesor->dni).'/fitxer-inexistent',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * auth/me (strict Sanctum) ha d'acceptar Bearer de sessió web.
+     */
+    public function test_auth_me_amb_bearer_despres_login_web_retorna_200(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login, $profesor) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/auth/me',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertTrue((bool) ($response['json']['success'] ?? false));
+            $this->assertSame((string) $profesor->dni, (string) ($response['json']['data']['dni'] ?? ''));
+        });
+    }
+
+    /**
+     * auth/me (strict Sanctum) ha de rebutjar query api_token sense Bearer.
+     */
+    public function test_auth_me_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/auth/me?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * auth/logout (strict Sanctum) ha de revocar amb Bearer vàlid.
+     */
+    public function test_auth_logout_amb_bearer_retorna_200(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/auth/logout',
+                'POST',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertTrue((bool) ($response['json']['success'] ?? false));
+        });
+    }
+
+    /**
+     * Falta (mode mixt) accepta Bearer i arriba al controlador.
+     */
+    public function test_falta_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/falta/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Falta (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_falta_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/falta/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * FaltaProfesor (strict Sanctum) accepta Bearer i arriba al controlador.
+     */
+    public function test_falta_profesor_index_amb_bearer_retorna_200_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/faltaProfesor?dia=2026-03-02',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * FaltaProfesor (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_falta_profesor_index_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/faltaProfesor?dia=2026-03-02&api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Guardia/range (strict Sanctum) amb Bearer arriba al controlador i valida paràmetres.
+     */
+    public function test_guardia_range_amb_bearer_retorna_422_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/guardia/range?desde=2026-03-02',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(422, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Guardia/range (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_guardia_range_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/guardia/range?desde=2026-03-02&api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Activity/move (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_activity_move_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/activity/999999/move/200',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Activity/move (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_activity_move_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/activity/999999/move/200?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * TipoReunion (strict Sanctum) accepta Bearer i retorna dades.
+     */
+    public function test_tiporeunion_show_amb_bearer_retorna_200(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tiporeunion/0',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertTrue((bool) ($response['json']['success'] ?? false));
+        });
+    }
+
+    /**
+     * TipoReunion (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_tiporeunion_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tiporeunion/0?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * AlumnoGrupo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_alumnogrupo_show_amb_bearer_retorna_200_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/alumnogrupo/ZZZZ9999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * AlumnoGrupo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_alumnogrupo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/alumnogrupo/ZZZZ9999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Horario (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_horario_index_amb_bearer_retorna_200_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/horario?idProfesor=ZZZZ9999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Horario (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_horario_index_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/horario?idProfesor=ZZZZ9999&api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * AlumnoFct (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_alumnofct_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/alumnofct/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * AlumnoFct (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_alumnofct_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/alumnofct/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Fct seguiment (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_fct_seguimiento_amb_bearer_retorna_200_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/fct/999999/alFct',
+                'POST',
+                ['explicacion' => 'seguiment browser'],
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(200, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+            $this->assertTrue((bool) ($response['json']['success'] ?? false));
+        });
+    }
+
+    /**
+     * Fct seguiment (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_fct_seguimiento_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/fct/999999/alFct?api_token='.rawurlencode((string) $profesor->api_token),
+                'POST',
+                ['explicacion' => 'legacy no permés']
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * MaterialBaja (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_materialbaja_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/materialbaja/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * MaterialBaja (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_materialbaja_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/materialbaja/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Profesor (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_profesor_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/profesor/NO_EXISTIX',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Profesor (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_profesor_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/profesor/NO_EXISTIX?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Ciclo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_ciclo_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ciclo/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Ciclo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_ciclo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ciclo/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Task (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_task_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/task/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Task (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_task_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/task/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Solicitud (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_solicitud_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/solicitud/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Solicitud (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_solicitud_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/solicitud/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * TipoExpediente (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_tipo_expediente_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tipoExpediente/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * TipoExpediente (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_tipo_expediente_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tipoExpediente/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Departamento (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_departamento_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/departamento/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Departamento (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_departamento_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/departamento/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Centro (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_centro_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/centro/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Centro (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_centro_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/centro/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * GrupoTrabajo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_grupotrabajo_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/grupotrabajo/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * GrupoTrabajo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_grupotrabajo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/grupotrabajo/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Empresa (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_empresa_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/Empresa/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Empresa (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_empresa_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/Empresa/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * OrdenTrabajo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_ordentrabajo_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ordentrabajo/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * OrdenTrabajo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_ordentrabajo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ordentrabajo/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Incidencia (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_incidencia_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/incidencia/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Incidencia (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_incidencia_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/incidencia/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * TipoIncidencia (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_tipoincidencia_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tipoincidencia/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * TipoIncidencia (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_tipoincidencia_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/tipoincidencia/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Espacio (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_espacio_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/espacio/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Espacio (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_espacio_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/espacio/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Hora (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_hora_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/hora/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Hora (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_hora_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/hora/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Notification leer (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_notification_leer_amb_bearer_no_retorna_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/notification/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Notification leer (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_notification_leer_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/notification/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Modulo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_modulo_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/modulo/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Modulo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_modulo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/modulo/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Reunion (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_reunion_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/reunion/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Reunion (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_reunion_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/reunion/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * OrdenReunion (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_ordenreunion_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ordenreunion/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * OrdenReunion (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_ordenreunion_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/ordenreunion/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Programacion (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_programacion_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/programacion/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Programacion (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_programacion_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/programacion/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Documento (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_documento_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/documento/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Documento (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_documento_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/documento/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * ModuloCiclo (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_modulo_ciclo_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/modulo_ciclo/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * ModuloCiclo (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_modulo_ciclo_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/modulo_ciclo/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Resultado (strict Sanctum) amb Bearer arriba al controlador.
+     */
+    public function test_resultado_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/resultado/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Resultado (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_resultado_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/resultado/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Expediente (mode mixt) accepta Bearer i arriba al controlador.
+     */
+    public function test_expediente_show_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/expediente/999999',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Expediente (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_expediente_show_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/expediente/999999?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Comision/edit (mode mixt) accepta Bearer i arriba al controlador.
+     */
+    public function test_comision_edit_amb_bearer_retorna_404_i_no_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/comision/999999/edit',
+                'GET',
+                null,
+                ['Authorization' => 'Bearer '.$token]
+            );
+
+            $this->assertSame(404, $response['status'] ?? null);
+            $this->assertNotSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Comision/edit (strict Sanctum) rebutja api_token legacy sense Bearer.
+     */
+    public function test_comision_edit_rebutja_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $this->browse(function (Browser $browser) use ($profesor) {
+            $browser->visit('/');
+
+            $response = $this->fetchJson(
+                $browser,
+                '/api/comision/999999/edit?api_token='.rawurlencode((string) $profesor->api_token)
+            );
+
+            $this->assertSame(401, $response['status'] ?? null);
+        });
+    }
+
+    /**
+     * Endpoints migrats en bloc: amb Bearer no han de retornar 401.
+     */
+    public function test_bulk_endpoints_migrats_amb_bearer_no_retornen_401(): void
+    {
+        $profesor = $this->profesorForBrowserAuthOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+        $targets = $this->bulkMigratedEndpointTargets();
+
+        $this->browse(function (Browser $browser) use ($login, $targets) {
+            $this->loginViaUi($browser, $login['identifier'], $login['password']);
+
+            $token = $this->currentMetaBearer($browser);
+            $this->assertNotSame('', $token, 'No s\'ha trobat user-bearer-token en meta després de login.');
+
+            foreach ($targets as $url) {
+                $response = $this->fetchJson(
+                    $browser,
+                    $url,
+                    'GET',
+                    null,
+                    ['Authorization' => 'Bearer '.$token]
+                );
+
+                $this->assertNotSame(
+                    401,
+                    $response['status'] ?? null,
+                    'Endpoint migrat ha retornat 401 amb Bearer: '.$url
+                );
+            }
+        });
+    }
+
+    /**
+     * Endpoints migrats en bloc: amb només api_token legacy han de retornar 401.
+     */
+    public function test_bulk_endpoints_migrats_rebutgen_legacy_api_token_sense_bearer(): void
+    {
+        $profesor = $this->profesorWithLegacyTokenOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $targets = $this->bulkMigratedEndpointTargets();
+
+        $this->browse(function (Browser $browser) use ($profesor, $targets) {
+            $browser->visit('/');
+
+            foreach ($targets as $url) {
+                $separator = str_contains($url, '?') ? '&' : '?';
+                $urlWithLegacy = $url.$separator.'api_token='.rawurlencode((string) $profesor->api_token);
+
+                $response = $this->fetchJson($browser, $urlWithLegacy);
+                $this->assertSame(
+                    401,
+                    $response['status'] ?? null,
+                    'Endpoint migrat ha acceptat api_token legacy: '.$url
+                );
+            }
+        });
+    }
+
+    /**
+     * Selecciona professor actiu per a login UI i consum API amb Bearer.
+     */
+    private function profesorForBrowserAuthOrSkip(): ?Profesor
+    {
+        $profesor = Profesor::query()
+            ->where('activo', 1)
+            ->where('rol', '>', 0)
+            ->first();
+
+        if ($profesor === null) {
+            $this->markTestSkipped('No hi ha professor actiu per executar proves browser d\'autenticació.');
+            return null;
+        }
+
+        return $profesor;
+    }
+
+    /**
+     * Selecciona professor amb api_token legacy per validar rebutjos sense Bearer.
+     */
+    private function profesorWithLegacyTokenOrSkip(): ?Profesor
+    {
+        $profesor = Profesor::query()
+            ->whereNotNull('api_token')
+            ->where('api_token', '!=', '')
+            ->first();
+
+        if ($profesor === null) {
+            $this->markTestSkipped('No hi ha professor amb api_token per provar rebutig legacy.');
+            return null;
+        }
+
+        return $profesor;
+    }
+
+    /**
+     * Fa login web per formulari professor.
+     */
+    private function loginViaUi(Browser $browser, string $identifier, string $password): void
+    {
+        $browser->visit('/profesor/login')
+            ->type('codigo', $identifier)
+            ->type('password', $password)
+            ->press('Entra')
+            ->pause(1400)
+            ->assertDontSee('Login Profesor')
+            ->visit('/home')
+            ->pause(800);
+    }
+
+    /**
+     * Retorna el bearer token actual injectat en meta pel layout.
+     */
+    private function currentMetaBearer(Browser $browser): string
+    {
+        $value = $browser->script(
+            "return document.querySelector('meta[name=\"user-bearer-token\"]')?.getAttribute('content') || '';"
+        )[0] ?? '';
+
+        return is_string($value) ? trim($value) : '';
+    }
+
+    /**
+     * Prepara credencials estables per a login via formulari web en Dusk.
+     *
+     * @return array{identifier:string,password:string}
+     */
+    private function prepareProfesorForUiLogin(Profesor $profesor): array
+    {
+        $plainPassword = 'DuskPass_2026';
+        $identifier = trim((string) ($profesor->email ?? ''));
+
+        if ($identifier === '') {
+            $identifier = 'dusk.'.strtolower((string) $profesor->dni).'@test.local';
+            $profesor->email = $identifier;
+        }
+
+        $profesor->password = bcrypt($plainPassword);
+        $profesor->changePassword = (string) ($profesor->changePassword ?: now()->toDateString());
+        $profesor->activo = 1;
+
+        if (!is_string($profesor->remember_token) || $profesor->remember_token === '') {
+            $profesor->remember_token = Str::random(20);
+        }
+
+        $profesor->save();
+
+        return [
+            'identifier' => $identifier,
+            'password' => $plainPassword,
+        ];
+    }
+
+    /**
+     * Executa fetch des del navegador i retorna status + JSON.
+     *
+     * @param array<string, mixed>|null $body
+     * @param array<string, string> $headers
+     * @return array<string, mixed>
+     */
+    private function fetchJson(
+        Browser $browser,
+        string $url,
+        string $method = 'GET',
+        ?array $body = null,
+        array $headers = []
+    ): array {
+        $methodJson = json_encode($method);
+        $urlJson = json_encode($url);
+        $bodyJson = json_encode($body);
+        $headersJson = json_encode(array_merge([
+            'Accept' => 'application/json',
+        ], $headers));
+
+        $script = <<<JS
+const done = arguments[0];
+const method = {$methodJson};
+const url = {$urlJson};
+const payload = {$bodyJson};
+const headers = {$headersJson};
+
+const options = { method, headers, redirect: 'manual' };
+if (payload !== null) {
+  options.body = JSON.stringify(payload);
+  if (!options.headers['Content-Type']) {
+    options.headers['Content-Type'] = 'application/json';
+  }
+}
+
+fetch(url, options)
+  .then(async (response) => {
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (e) {
+      text = '';
+    }
+
+    let json = null;
+    if (text) {
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        json = null;
+      }
+    }
+
+    done({
+      status: response.status,
+      redirected: response.redirected,
+      type: response.type,
+      url: response.url,
+      text: text,
+      json: json
+    });
+  })
+  .catch((error) => done({ error: String(error) }));
+JS;
+
+        $result = $browser->driver->executeAsyncScript($script);
+        if (!is_array($result)) {
+            return ['error' => 'Resposta fetch no vàlida'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Llista d'endpoints de control ràpid per validar migració global a Sanctum.
+     *
+     * @return array<int, string>
+     */
+    private function bulkMigratedEndpointTargets(): array
+    {
+        return [
+            '/api/instructor/999999',
+            '/api/ipguardia/999999',
+            '/api/setting/999999',
+            '/api/ppoll/999999',
+            '/api/material/espacio/NO-EXIST',
+            '/api/inventario/NO-EXIST',
+            '/api/alumnoresultado/999999',
+            '/api/lote/NO-EXIST/articulos',
+            '/api/articulo/999999',
+            '/api/articuloLote/999999',
+            '/api/cotxe/999999',
+            '/api/tipoactividad/999999',
+            '/api/tutoriagrupo/999999',
+        ];
+    }
+}

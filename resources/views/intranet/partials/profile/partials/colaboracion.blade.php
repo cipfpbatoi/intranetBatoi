@@ -35,10 +35,12 @@
                     </ul>
                 @endisset
             </div>
-             @foreach ($contactos as $contacto)
-                <x-activity :activity="$contacto" />
-                <br/>
-            @endforeach
+            <div class="col-md-3 col-xs-12 listActivity">
+                @foreach ($contactos as $contacto)
+                    <x-activity :activity="$contacto" />
+                    <br/>
+                @endforeach
+            </div>
             @if(($elemento->relacionadas ?? collect())->isNotEmpty())
                 <ul class="list-unstyled" style="margin-top:.5rem">
                     <li><span class="label label-default">Altres cicles (mateix centre/departament)</span></li>

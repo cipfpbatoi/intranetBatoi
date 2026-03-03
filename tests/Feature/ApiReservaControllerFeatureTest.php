@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de Reserva amb autenticació Sanctum.
+ */
 class ApiReservaControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -50,7 +54,7 @@ class ApiReservaControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PRS01', 'Laura', 'Garcia', 'Perez');
         $user = Profesor::on('sqlite')->findOrFail('PRS01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('reservas')->insert([
             [
@@ -84,7 +88,7 @@ class ApiReservaControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PRS11', 'Anna', 'Marti', 'Soler');
         $user = Profesor::on('sqlite')->findOrFail('PRS11');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('reservas')->insert([
             [

@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de Guardia amb autenticació Sanctum.
+ */
 class ApiGuardiaControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -50,7 +54,7 @@ class ApiGuardiaControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PGU01');
         $user = Profesor::on('sqlite')->findOrFail('PGU01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('guardias')->insert([
             [
@@ -96,7 +100,7 @@ class ApiGuardiaControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PGU02');
         $user = Profesor::on('sqlite')->findOrFail('PGU02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response = $this->getJson('/api/guardia/range?desde=2026-02-10');
 

@@ -12,9 +12,9 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Proves feature d'AlumnoFct amb autenticació Sanctum.
+ * Proves feature de FctController amb autenticació Sanctum.
  */
-class ApiAlumnoFctControllerFeatureTest extends TestCase
+class ApiFctControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
 
@@ -22,7 +22,7 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
-        $this->sqlitePath = storage_path('api_alumnofct_controller_feature_testing.sqlite');
+        $this->sqlitePath = storage_path('api_fct_controller_feature_testing.sqlite');
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
         }
@@ -40,7 +40,7 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
 
     protected function tearDown(): void
     {
-        Schema::connection('sqlite')->dropIfExists('alumno_fcts');
+        Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -50,33 +50,34 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_update_canvia_pg0301_i_a56(): void
+    public function test_seguimiento_retorna_401_si_no_autenticat(): void
     {
-        $this->insertProfesor('PAF01');
-        $user = Profesor::on('sqlite')->findOrFail('PAF01');
+        $response = $this->postJson('/api/fct/999/alFct', ['explicacion' => 'test']);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_seguimiento_amb_sanctum_crea_activity_review(): void
+    {
+        $this->insertProfesor('PFCT01');
+        $user = Profesor::on('sqlite')->findOrFail('PFCT01');
         Sanctum::actingAs($user);
 
-        DB::table('alumno_fcts')->insert([
-            'id' => 101,
-            'idFct' => 1,
-            'idAlumno' => '10802710',
-            'idProfesor' => 'PAF01',
-            'horas' => 380,
-            'pg0301' => 0,
-            'a56' => 0,
-        ]);
-
-        $response = $this->putJson('/api/alumnofct/101', [
-            'pg0301' => 'true',
-            'a56' => 'true',
-        ]);
+        $response = $this->postJson('/api/fct/123/alFct', ['explicacion' => 'Seguiment des de test']);
 
         $response->assertOk();
         $response->assertJsonPath('success', true);
-        $response->assertJsonPath('data.updated', true);
+        $response->assertJsonPath('data.action', 'review');
+        $response->assertJsonPath('data.model_id', '123');
+        $response->assertJsonPath('data.author_id', 'PFCT01');
+        $response->assertJsonPath('data.comentari', 'Seguiment des de test');
 
-        $this->assertSame(1, (int) DB::table('alumno_fcts')->where('id', 101)->value('pg0301'));
-        $this->assertSame(1, (int) DB::table('alumno_fcts')->where('id', 101)->value('a56'));
+        $this->assertDatabaseHas('activities', [
+            'action' => 'review',
+            'model_id' => 123,
+            'author_id' => 'PFCT01',
+            'comentari' => 'Seguiment des de test',
+        ]);
     }
 
     private function createSchema(): void
@@ -97,15 +98,16 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
             });
         }
 
-        if (!Schema::connection('sqlite')->hasTable('alumno_fcts')) {
-            Schema::connection('sqlite')->create('alumno_fcts', function (Blueprint $table): void {
+        if (!Schema::connection('sqlite')->hasTable('activities')) {
+            Schema::connection('sqlite')->create('activities', function (Blueprint $table): void {
                 $table->increments('id');
-                $table->unsignedInteger('idFct')->nullable();
-                $table->string('idAlumno', 20)->nullable();
-                $table->string('idProfesor', 10)->nullable();
-                $table->unsignedInteger('horas')->default(0);
-                $table->unsignedTinyInteger('pg0301')->default(0);
-                $table->unsignedTinyInteger('a56')->default(0);
+                $table->string('action')->nullable();
+                $table->string('model_class')->nullable();
+                $table->unsignedInteger('model_id')->nullable();
+                $table->string('author_id', 10)->nullable();
+                $table->text('comentari')->nullable();
+                $table->string('document')->nullable();
+                $table->timestamps();
             });
         }
     }
