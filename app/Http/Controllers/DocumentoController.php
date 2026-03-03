@@ -7,6 +7,7 @@ use Intranet\Application\Documento\DocumentoFormService;
 use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Requests\DocumentoStoreRequest;
 use Illuminate\Http\Request;
@@ -153,6 +154,11 @@ class DocumentoController extends IntranetController
 
     }
 
+    /**
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function qualitatUpload($id)
     {
         $this->authorize('create', Documento::class);
@@ -161,8 +167,7 @@ class DocumentoController extends IntranetController
         $documents = Adjunto::where('route', "profesor/$id")->get();
         $grupo = $this->grupos()->firstByTutor((string) $id);
         if (!$grupo) {
-            Alert::danger('No hi ha grup de tutoria assignat');
-            return back();
+            throw new NotFoundDomainException('No hi ha grup de tutoria assignat', ['profesor_id' => $id]);
         }
         $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
             'curso' => Curso(),
@@ -217,13 +222,19 @@ class DocumentoController extends IntranetController
     }
 
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function qualitat()
     {
         $this->authorize('create', Documento::class);
         $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
         if (!$grupo) {
-            Alert::danger('No hi ha grup de tutoria assignat');
-            return back();
+            throw new NotFoundDomainException(
+                'No hi ha grup de tutoria assignat',
+                ['profesor_id' => AuthUser()->dni]
+            );
         }
         $elemento = (new CreateOrUpdateDocumentAction())->build([
             ...$this->forms()->qualitatDefaults($grupo, AuthUser()->FullName),

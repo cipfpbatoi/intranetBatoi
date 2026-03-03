@@ -221,6 +221,7 @@ class GrupoController extends IntranetController
     /**
      * @param $grupo
      * @return mixed
+     * @throws \Intranet\Exceptions\NotFoundDomainException
      */
     public function certificados($grupo)
     {

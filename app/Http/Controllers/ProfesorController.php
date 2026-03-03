@@ -21,11 +21,14 @@ use Intranet\Http\Requests\ProfesorUpdateRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Mail\Comunicado;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\UI\FormBuilder;
 use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Controlador de gestió de professorat.
+ */
 class ProfesorController extends PerfilController
 {
     /*     * *********************************************
@@ -345,12 +348,18 @@ use Autorizacion,
     //-------------------------------
     // canvi de professor en calent -
     //-------------------------------
+    /**
+     * Canvia la sessió activa al professor indicat.
+     *
+     * @param int|string $idProfesor
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws NotFoundDomainException
+     */
     protected function change($idProfesor)
     {
         $profesor = $this->profesores()->find((string) $idProfesor);
         if (!$profesor) {
-            Alert::danger('Professor no trobat');
-            return back();
+            throw new NotFoundDomainException('Professor no trobat', ['profesor_id' => $idProfesor]);
         }
 
         Session::put('userChange', AuthUser()->dni);
