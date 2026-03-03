@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Instructor\InstructorWorkflowService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
@@ -57,34 +56,6 @@ class InstructorController extends IntranetController
         }
 
         return $this->instructorWorkflowService;
-    }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Instructor
-     */
-    private function findInstructorOrFail($id): Instructor
-    {
-        try {
-            return Instructor::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Instructor no trobat', ['instructor_id' => $id]);
-        }
-    }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Centro
-     */
-    private function findCentroOrFail($id): Centro
-    {
-        try {
-            return Centro::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Centre no trobat', ['centro_id' => $id]);
-        }
     }
 
     /**
@@ -211,8 +182,13 @@ class InstructorController extends IntranetController
      */
     public function copy($id, $idCentro)
     {
-        $instructor = $this->findInstructorOrFail($id);
-        $centro = $this->findCentroOrFail($idCentro);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
+        $centro = $this->findModelOrFail(Centro::class, $idCentro, 'Centre no trobat', ['centro_id' => $idCentro]);
         $posibles = hazArray($centro->Empresa->centros, 'id', ['nombre', 'direccion'], '-');
 
         return view('instructor.copy', compact('instructor', 'posibles', 'centro'));
@@ -243,7 +219,12 @@ class InstructorController extends IntranetController
      */
    public function pdf($id)
     {
-        $instructor = $this->findInstructorOrFail($id);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
 
         if ($instructor->surnames == '') {
             Alert::danger("Completa les dades de l'instructor");

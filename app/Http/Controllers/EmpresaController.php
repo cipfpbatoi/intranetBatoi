@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Empresa;
@@ -55,20 +54,6 @@ class EmpresaController extends IntranetController
         }
 
         return $this->empresaService;
-    }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Empresa
-     */
-    private function findEmpresaOrFail($id): Empresa
-    {
-        try {
-            return Empresa::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Empresa no trobada', ['empresa_id' => $id]);
-        }
     }
 
     protected function search()
@@ -131,8 +116,15 @@ class EmpresaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findEmpresaOrFail($id));
-        $elemento = $this->findEmpresaOrFail($this->empreses()->saveFromRequest($request, $id));
+        $empresa = $this->findModelOrFail(Empresa::class, $id, 'Empresa no trobada', ['empresa_id' => $id]);
+        $this->authorize('update', $empresa);
+        $elementoId = $this->empreses()->saveFromRequest($request, $id);
+        $elemento = $this->findModelOrFail(
+            Empresa::class,
+            $elementoId,
+            'Empresa no trobada',
+            ['empresa_id' => $elementoId]
+        );
         $this->empreses()->fillMissingCenterData($elemento);
         return redirect()->route('empresa.detalle', ['empresa' => $elemento->id]);
     }
@@ -149,7 +141,7 @@ class EmpresaController extends IntranetController
      */
     public function document($id)
     {
-        $elemento = $this->findEmpresaOrFail($id);
+        $elemento = $this->findModelOrFail(Empresa::class, $id, 'Empresa no trobada', ['empresa_id' => $id]);
         if ($elemento->fichero) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }

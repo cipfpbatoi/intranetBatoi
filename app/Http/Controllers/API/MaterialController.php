@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
@@ -11,24 +10,13 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 
+/**
+ * Controlador API de materials.
+ */
 class MaterialController extends ApiResourceController
 {
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     protected $model = 'Material';
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Material
-     */
-    private function findMaterialOrFail($id): Material
-    {
-        try {
-            return Material::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
-        }
-    }
 
     function getMaterial($espacio)
     {
@@ -90,7 +78,7 @@ class MaterialController extends ApiResourceController
      */
     public function put(Request $request)
     {
-        $material = $this->findMaterialOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -107,7 +95,7 @@ class MaterialController extends ApiResourceController
     public function putUnidades(Request $request)
     {
 
-        $material = $this->findMaterialOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -124,7 +112,7 @@ class MaterialController extends ApiResourceController
      */
     public function putUbicacion(Request $request)
     {
-        $material = $this->findMaterialOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
@@ -166,7 +154,7 @@ class MaterialController extends ApiResourceController
      */
     public function putEstado(Request $request)
     {
-        $material = $this->findMaterialOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
@@ -237,7 +225,7 @@ class MaterialController extends ApiResourceController
     {
         $fecha = new Date();
 
-        $material = $this->findMaterialOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         if ($request->inventario == 'true') {
             $material->fechaultimoinventario = $fecha->format('Y-m-d');
         } else {

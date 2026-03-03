@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Lote;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -30,20 +29,6 @@ class PanelLoteController extends ModalController
 
 
     protected $gridFields = [ 'registre', 'proveedor','factura','estat','fechaAlta'];
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Lote
-     */
-    private function findLoteOrFail($id): Lote
-    {
-        try {
-            return Lote::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Lot no trobat', ['lote_id' => $id]);
-        }
-    }
 
     protected function search()
     {
@@ -72,7 +57,7 @@ class PanelLoteController extends ModalController
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     protected function barcode($id,$posicion=1){
-        $lote = $this->findLoteOrFail($id);
+        $lote = $this->findModelOrFail(Lote::class, $id, 'Lot no trobat', ['lote_id' => $id]);
         return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 

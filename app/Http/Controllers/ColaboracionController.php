@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Ciclo;
@@ -42,20 +41,6 @@ class ColaboracionController extends ModalController
     protected $titulo = [];
     protected $profile = false;
     protected $formFields = ColaboracionCrudSchema::FORM_FIELDS;
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Colaboracion
-     */
-    private function findColaboracionOrFail($id): Colaboracion
-    {
-        try {
-            return Colaboracion::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Col·laboració no trobada', ['colaboracion_id' => $id]);
-        }
-    }
 
     /**
      *
@@ -117,7 +102,12 @@ class ColaboracionController extends ModalController
     public function update(ColaboracionRequest $request, $id)
     {
         $this->persist($request, $id);
-        $colaboracion = $this->findColaboracionOrFail($id);
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
@@ -152,7 +142,12 @@ class ColaboracionController extends ModalController
 
     public function show($id)
     {
-        $elemento = $this->findColaboracionOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
         return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
     }
 

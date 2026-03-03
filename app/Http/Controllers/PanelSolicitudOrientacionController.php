@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Solicitud;
@@ -39,20 +38,6 @@ class PanelSolicitudOrientacionController extends ModalController
     protected $parametresVista = ['modal' => ['resolve']];
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Solicitud
-     */
-    private function findSolicitudOrFail($id): Solicitud
-    {
-        try {
-            return Solicitud::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Sol·licitud no trobada', ['solicitud_id' => $id]);
-        }
-    }
-
-    /**
      *
      */
     protected function iniBotones()
@@ -77,7 +62,12 @@ class PanelSolicitudOrientacionController extends ModalController
      */
     public function active($id)
     {
-        $elemento = $this->findSolicitudOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('activate', $elemento);
         if ($elemento->estado == 1) {
             $elemento->estado = 2;
@@ -101,7 +91,12 @@ class PanelSolicitudOrientacionController extends ModalController
      */
     public function resolve(Request $request, $id)
     {
-        $elemento = $this->findSolicitudOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('resolve', $elemento);
         if ($elemento->estado == 2) {
             $elemento->estado = 3;

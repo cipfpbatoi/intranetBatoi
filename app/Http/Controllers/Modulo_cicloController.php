@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Http\Requests\ModuloCicloRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
@@ -33,19 +32,6 @@ class Modulo_cicloController extends ModalController
     protected $gridFields = ['id', 'Xmodulo','Xciclo','curso','enlace','Xdepartamento'];
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Modulo_ciclo
-     */
-    private function findModuloCicloOrFail($id): Modulo_ciclo
-    {
-        try {
-            return Modulo_ciclo::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]);
-        }
-    }
-    /**
      *
      */
     protected function iniBotones()
@@ -70,7 +56,7 @@ class Modulo_cicloController extends ModalController
      */
     public function update(ModuloCicloRequest $request, $id)
     {
-        $this->authorize('update', $this->findModuloCicloOrFail($id));
+        $this->authorize('update', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -83,7 +69,7 @@ class Modulo_cicloController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findModuloCicloOrFail($id));
+        $this->authorize('delete', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
         return parent::destroy($id);
     }
 

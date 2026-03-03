@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers\Auth\Profesor;
 
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -40,20 +39,6 @@ class PerfilController extends Perfil
         return $this->profesorService;
     }
 
-    /**
-     * @param string $id
-     * @throws NotFoundDomainException
-     * @return Profesor
-     */
-    private function findProfesorOrFail(string $id): Profesor
-    {
-        try {
-            return $this->profesores()->findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Professor no trobat', ['profesor_id' => $id]);
-        }
-    }
-
     public function editar()
     {
          return parent::edit(AuthUser()->dni);
@@ -74,7 +59,11 @@ class PerfilController extends Perfil
      */
     public function updateFiles(PerfilFilesRequest $request)
     {
-        $profesor = $this->findProfesorOrFail((string) Auth::user('profesor')->dni);
+        $profesor = $this->wrapNotFound(
+            fn () => $this->profesores()->findOrFail((string) Auth::user('profesor')->dni),
+            'Professor no trobat',
+            ['profesor_id' => Auth::user('profesor')->dni]
+        );
 
         // Processa cada fitxer o acció en mètodes separats
         $this->updatePhoto($request, $profesor);

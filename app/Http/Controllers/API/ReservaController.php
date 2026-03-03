@@ -6,11 +6,13 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Reserva;
 use Intranet\Exceptions\NotFoundDomainException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class   ReservaController extends ApiResourceController
+/**
+ * Controlador API de reserves.
+ */
+class ReservaController extends ApiResourceController
 {
 
     protected $model = 'Reserva';
@@ -80,11 +82,9 @@ class   ReservaController extends ApiResourceController
      */
     private function singleReservaAsCollection(string $id)
     {
-        try {
-            return collect([Reserva::findOrFail($id)]);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Reserva no trobada', ['reserva_id' => $id]);
-        }
+        return collect([
+            $this->findModelOrFail(Reserva::class, $id, 'Reserva no trobada', ['reserva_id' => $id]),
+        ]);
     }
 
 

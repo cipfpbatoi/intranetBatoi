@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -13,6 +12,9 @@ use Intranet\Http\Resources\AlumnoFctResource;
 
 /**
  * Controlador API per a gestionar les FCT d'alumnes.
+ */
+/**
+ * Controlador API per a FCT d'alumnat.
  */
 class AlumnoFctController extends ApiResourceController
 {
@@ -45,20 +47,6 @@ class AlumnoFctController extends ApiResourceController
         return $this->alumnoFctService;
     }
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return AlumnoFct
-     */
-    private function findAlumnoFctOrFail($id): AlumnoFct
-    {
-        try {
-            return $this->alumnoFcts()->findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException("FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
-        }
-    }
-
     public function indice($grupo)
     {
         $grup = $this->grupos()->find((string) $grupo);
@@ -85,7 +73,11 @@ class AlumnoFctController extends ApiResourceController
      */
     public function update(Request $request, $id)
     {
-        $registro = $this->findAlumnoFctOrFail($id);
+        $registro = $this->wrapNotFound(
+            fn () => $this->alumnoFcts()->findOrFail((int) $id),
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
         if (isset($request->pg0301)) {
             $registro->pg0301 = $request->pg0301==='true'?1:0;
         }
@@ -103,7 +95,11 @@ class AlumnoFctController extends ApiResourceController
      */
     public function show($id)
     {
-        $registro = $this->findAlumnoFctOrFail($id);
+        $registro = $this->wrapNotFound(
+            fn () => $this->alumnoFcts()->findOrFail((int) $id),
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');
     }
 

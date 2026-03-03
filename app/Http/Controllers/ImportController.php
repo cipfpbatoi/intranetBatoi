@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +16,7 @@ use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Entities\ImportRun;
 use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Controllers\Concerns\FindsModel;
 use Intranet\Http\Requests\ImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
@@ -27,6 +27,7 @@ use Styde\Html\Facades\Alert;
 class ImportController extends Seeder
 {
     use SharedImportFieldTransformers;
+    use FindsModel;
 
     private ?ImportService $importService = null;
     private ?ImportWorkflowService $importWorkflowService = null;
@@ -38,20 +39,6 @@ class ImportController extends Seeder
      * @var array<int, array<string, mixed>>
      */
     private array $camposBdXml = [];
-
-    /**
-     * @param int $id
-     * @throws NotFoundDomainException
-     * @return ImportRun
-     */
-    private function findImportRunOrFail(int $id): ImportRun
-    {
-        try {
-            return ImportRun::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Importació no trobada', ['import_run_id' => $id]);
-        }
-    }
 
     public function create()
     {
@@ -143,7 +130,12 @@ class ImportController extends Seeder
     public function status(int $importRunId)
     {
         $this->authorizeImportManagement();
-        $run = $this->findImportRunOrFail($importRunId);
+        $run = $this->findModelOrFail(
+            ImportRun::class,
+            $importRunId,
+            'Importació no trobada',
+            ['import_run_id' => $importRunId]
+        );
 
         return response()->json([
             'id' => $run->id,

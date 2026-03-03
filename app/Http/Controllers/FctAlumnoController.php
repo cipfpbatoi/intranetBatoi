@@ -40,7 +40,9 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
-
+/**
+ * Controlador de FCT per a alumnat.
+ */
 class FctAlumnoController extends ModalController
 {
     use Imprimir,DropZone;
@@ -70,19 +72,6 @@ class FctAlumnoController extends ModalController
 
         return $this->alumnoFctService;
     }
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return \Intranet\Entities\AlumnoFct
-     */
-    private function findAlumnoFctOrFail($id)
-    {
-        try {
-            return $this->alumnoFcts()->findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('FCT d\'alumne no trobada', ['alumno_fct_id' => $id]);
-        }
     }
 
 
@@ -306,7 +295,7 @@ class FctAlumnoController extends ModalController
      */
     public function unlink($id)
     {
-        $elemento = $this->findAlumnoFctOrFail($id);
+        $elemento = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $elemento->idSao = null;
         $elemento->save();
         return redirect()->back();
@@ -355,7 +344,7 @@ class FctAlumnoController extends ModalController
      */
     public function show($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         return redirect()->route('fct.show', ['id' => $fct->idFct]);
     }
 
@@ -366,7 +355,7 @@ class FctAlumnoController extends ModalController
      */
     public function pdf($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         if ($fct->asociacion === 1 || $fct->asociacion > 3) {
             return self::preparePdf($id)->stream();
         }
@@ -387,7 +376,7 @@ class FctAlumnoController extends ModalController
      */
     public function Signatura($id, $num)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         return response()->file($fct->routeFile($num));
     }
 
@@ -398,7 +387,7 @@ class FctAlumnoController extends ModalController
      */
     public function Valoratiu($id)
     {
-        return response()->file(FDFPrepareService::exec(new A5Resource($this->findAlumnoFctOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new A5Resource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
 
@@ -409,7 +398,7 @@ class FctAlumnoController extends ModalController
      */
     public function AVI($id)
     {
-        return response()->file(FDFPrepareService::exec(new AVIResource($this->findAlumnoFctOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new AVIResource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
 
@@ -422,7 +411,7 @@ class FctAlumnoController extends ModalController
     public function AEng($id)
     {
 
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $nameFile = storage_path("tmp/AN_EN{$fct->Alumno->shorName}.zip");
         if (file_exists($nameFile)) {
             unlink($nameFile);
@@ -444,7 +433,7 @@ class FctAlumnoController extends ModalController
      */
     public function auth($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $folder = storage_path("tmp/auth$id/");
         $zipFile = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
@@ -480,7 +469,7 @@ class FctAlumnoController extends ModalController
      */
     public function AutDual($id)
     {
-        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->findAlumnoFctOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
     /**
@@ -536,7 +525,7 @@ class FctAlumnoController extends ModalController
      */
     public function pg0301($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $fct->pg0301 = $fct->pg0301 ? 0 : 1;
         $fct->save();
         return redirect()->route('fctcap.acta', ['grupo' => $fct->Grup]);
@@ -549,7 +538,7 @@ class FctAlumnoController extends ModalController
      */
     public function email($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $alumno = $fct->Alumno;
         Mail::to($alumno->email)
             ->bcc(authUser()->email)
@@ -572,7 +561,7 @@ class FctAlumnoController extends ModalController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function importa($id){
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $dni = $fct->Alumno->dni;
         $annexos = Adjunto::where('route', 'like', "dual/$dni")->get();
         if ($annexos->isEmpty()){

@@ -91,27 +91,17 @@ class FctController extends IntranetController
     }
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Fct
-     */
-    private function findFctOrFail($id): Fct
-    {
-        try {
-            return $this->fcts()->findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('FCT no trobada', ['fct_id' => $id]);
-        }
-    }
-
-    /**
      * @param int|string|null $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id=null)
     {
-        $fct = $this->findFctOrFail($id);
+        $fct = $this->wrapNotFound(
+            fn () => $this->fcts()->findOrFail((int) $id),
+            'FCT no trobada',
+            ['fct_id' => $id]
+        );
         $this->authorize('update', $fct);
         $formulario = new FormBuilder($fct, ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
@@ -126,7 +116,12 @@ class FctController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findFctOrFail($id));
+        $fct = $this->wrapNotFound(
+            fn () => $this->fcts()->findOrFail((int) $id),
+            'FCT no trobada',
+            ['fct_id' => $id]
+        );
+        $this->authorize('update', $fct);
         $this->validate($request, (new FctUpdateRequest())->rules());
         $this->fcts()->setInstructor($id, (string) $request->idInstructor);
         return $this->redirect();
@@ -140,7 +135,11 @@ class FctController extends IntranetController
      */
     public function certificat($id)
     {
-        $fct = $this->findFctOrFail($id);
+        $fct = $this->wrapNotFound(
+            fn () => $this->fcts()->findOrFail((int) $id),
+            'FCT no trobada',
+            ['fct_id' => $id]
+        );
         $this->authorize('update', $fct);
         /*if ($fct->asociacion == 4){
             $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
@@ -155,8 +154,7 @@ class FctController extends IntranetController
             return response()->download($nameFile);
         }*/
 
-        return response()->file(FDFPrepareService::exec(
-            new CertificatInstructorResource($this->findFctOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new CertificatInstructorResource($fct)));
 
     }
 

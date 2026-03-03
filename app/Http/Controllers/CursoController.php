@@ -6,7 +6,6 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\CursoCrudSchema;
 
 use DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\Curso;
@@ -38,20 +37,6 @@ class CursoController extends ModalController
     protected $gridFields = CursoCrudSchema::GRID_FIELDS;
     protected $formFields = CursoCrudSchema::FORM_FIELDS;
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Curso
-     */
-    private function findCursoOrFail($id): Curso
-    {
-        try {
-            return Curso::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Curs no trobat', ['curso_id' => $id]);
-        }
-    }
-
     public function store(CursoRequest $request)
     {
         $this->authorize('create', Curso::class);
@@ -67,7 +52,8 @@ class CursoController extends ModalController
      */
     public function update(CursoRequest $request, $id)
     {
-        $this->authorize('update', $this->findCursoOrFail($id));
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $curso);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -122,7 +108,8 @@ class CursoController extends ModalController
      */
     public function saveFile($id)
     {
-        $this->authorize('update', $this->findCursoOrFail($id));
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $curso);
         $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
             $gestor = new GestorService($elemento);
@@ -147,7 +134,7 @@ class CursoController extends ModalController
      */
     private function makeReport($id)
     {
-        $curso = $this->findCursoOrFail($id);
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         if ($curso->fichero == ''){
             $nomComplet = 'gestor/' . Curso() . '/' . $this->model. '/' .'Curso_' . $curso->id . '.pdf';
             $curso->fichero = $nomComplet;
@@ -162,7 +149,7 @@ class CursoController extends ModalController
 
     public function document($id)
     {
-        $elemento = $this->findCursoOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         if ($elemento->link) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }
@@ -177,7 +164,7 @@ class CursoController extends ModalController
      */
     public function pdf($id)
     {
-        $elemento = $this->findCursoOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         $informe = 'pdf.' . strtolower($this->model);
         $pdf = self::hazPdf($informe, $elemento, null, 'portrait');
         return $pdf->stream();
@@ -190,7 +177,7 @@ class CursoController extends ModalController
      */
     public function email($id)
     {
-        $curso = $this->findCursoOrFail($id);
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         $this->authorize('update', $curso);
         $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
         foreach ($curso->Asistentes as $alumno){
@@ -218,7 +205,7 @@ class CursoController extends ModalController
      */
     public function active($id)
     {
-        $elemento = $this->findCursoOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         $this->authorize('update', $elemento);
         if ($elemento->activo) {
             $elemento->activo = false;
@@ -237,7 +224,8 @@ class CursoController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findCursoOrFail($id));
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('delete', $curso);
         return parent::destroy($id);
     }
     

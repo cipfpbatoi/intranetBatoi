@@ -2,13 +2,15 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\Reunion;
 use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Controlador API per a l'assistència a reunions.
+ */
+/**
+ * Controlador API per a assistència.
  */
 class AsistenciaController extends ApiResourceController
 {
@@ -22,11 +24,7 @@ class AsistenciaController extends ApiResourceController
      */
     public function cambiar(Request $request)
     {
-        try {
-            $reunion = Reunion::findOrFail($request->idReunion);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Reunió no trobada', ['reunion_id' => $request->idReunion]);
-        }
+        $reunion = $this->findModelOrFail(Reunion::class, $request->idReunion, 'Reunió no trobada', ['reunion_id' => $request->idReunion]);
         $reunion->profesores()->updateExistingPivot($request->idProfesor, ['asiste' => $request->asiste]);
         return $this->sendResponse(['updated' => true], $reunion);
     }

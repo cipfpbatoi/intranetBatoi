@@ -3,7 +3,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
@@ -53,26 +52,18 @@ class IncidenciaController extends ModalController
     }
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Incidencia
-     */
-    private function findIncidenciaOrFail($id): Incidencia
-    {
-        try {
-            return Incidencia::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Incidència no trobada', ['incidencia_id' => $id]);
-        }
-    }
-    /**
      * @param $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function generarOrden($id)
     {
-        $incidencia = $this->findIncidenciaOrFail($id);
+        $incidencia = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->authorize('update', $incidencia);
 
         $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
@@ -118,7 +109,12 @@ class IncidenciaController extends ModalController
      */
     public function removeOrden($id)
     {
-        $incidencia = $this->findIncidenciaOrFail($id);
+        $incidencia = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->authorize('update', $incidencia);
         $incidencia->orden = null;
         $incidencia->save();
@@ -133,7 +129,12 @@ class IncidenciaController extends ModalController
      */
     public function edit($id=null)
     {
-        $elemento = $this->findIncidenciaOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->authorize('update', $elemento);
 
         $formulario = new FormBuilder($elemento, IncidenciaCrudSchema::editFormFields());
@@ -152,7 +153,12 @@ class IncidenciaController extends ModalController
         $this->authorize('create', Incidencia::class);
         $request->merge(['idProfesor' => $this->currentProfesorDni()]);
         $id = $this->persist($request);
-        $incidencia = $this->findIncidenciaOrFail($id);
+        $incidencia = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->storeImagen($incidencia, $request);
         Incidencia::putEstado($incidencia->id, $this->init);
         return $this->redirect();
@@ -171,12 +177,22 @@ class IncidenciaController extends ModalController
      */
     public function update(IncidenciaRequest $request, $id)
     {
-        $elemento =  $this->findIncidenciaOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->authorize('update', $elemento);
 
         $tipo = $elemento->tipo;
         $this->persist($request, $id);
-        $elemento = $this->findIncidenciaOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
         $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;

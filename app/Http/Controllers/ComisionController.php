@@ -6,7 +6,6 @@ use Intranet\Application\Comision\ComisionService;
 use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\ComisionCrudSchema;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Support\Fct\DocumentoFctConfig;
@@ -63,20 +62,6 @@ class ComisionController extends ModalController
         return $this->comisionService;
     }
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Comision
-     */
-    private function findComisionOrFail($id): Comision
-    {
-        try {
-            return $this->comisionService()->findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Comissió no trobada', ['comision_id' => $id]);
-        }
-    }
-
 
     /**
      * @param ComisionRequest $request
@@ -91,7 +76,11 @@ class ComisionController extends ModalController
         ]);
 
         $id = $this->persist($request);
-        $comision = $this->findComisionOrFail($id);
+        $comision = $this->wrapNotFound(
+            fn () => $this->comisionService()->findOrFail((int) $id),
+            'Comissió no trobada',
+            ['comision_id' => $id]
+        );
 
         if ($comision->fct) {
             return $this->detalle($comision->id);
@@ -108,7 +97,12 @@ class ComisionController extends ModalController
      */
     public function update(ComisionRequest $request, $id)
     {
-        $this->authorize('update', $this->findComisionOrFail($id));
+        $comision = $this->wrapNotFound(
+            fn () => $this->comisionService()->findOrFail((int) $id),
+            'Comissió no trobada',
+            ['comision_id' => $id]
+        );
+        $this->authorize('update', $comision);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -120,7 +114,11 @@ class ComisionController extends ModalController
      */
     public function confirm($id)
     {
-        $comision = $this->findComisionOrFail($id);
+        $comision = $this->wrapNotFound(
+            fn () => $this->comisionService()->findOrFail((int) $id),
+            'Comissió no trobada',
+            ['comision_id' => $id]
+        );
         $this->authorize('update', $comision);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');

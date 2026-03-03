@@ -7,7 +7,6 @@ use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
@@ -98,20 +97,6 @@ class DualController extends ModalController
     }
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return AlumnoFct
-     */
-    private function findAlumnoFctOrFail($id): AlumnoFct
-    {
-        try {
-            return AlumnoFct::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException("FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
-        }
-    }
-
-    /**
      *
      */
     protected function iniBotones()
@@ -152,7 +137,12 @@ class DualController extends ModalController
      */
     public function show($id)
     {
-        $fct = $this->findAlumnoFctOrFail($id);
+        $fct = $this->findModelOrFail(
+            AlumnoFct::class,
+            $id,
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
         return redirect("/fct/$fct->idFct/show");
     }
 
@@ -166,7 +156,12 @@ class DualController extends ModalController
     public function update(DualRequest $request, $id)
     {
         DB::transaction(function() use ($request, $id) {
-            $alumno = $this->findAlumnoFctOrFail($id);
+            $alumno = $this->findModelOrFail(
+                AlumnoFct::class,
+                $id,
+                "FCT d'alumne no trobada",
+                ['alumno_fct_id' => $id]
+            );
             $elemento = $alumno->Dual;
 
             $alumno->desde = FechaInglesa($request['desde']);
@@ -208,7 +203,12 @@ class DualController extends ModalController
      */
     public function destroy($id)
     {
-        $elemento = $this->findAlumnoFctOrFail($id);
+        $elemento = $this->findModelOrFail(
+            AlumnoFct::class,
+            $id,
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
         $elemento->delete();
         return $this->redirect();
     }
@@ -221,7 +221,12 @@ class DualController extends ModalController
     public function informe($fct, $informe='anexe_vii',$stream=true,$data=null)
     {
         $id = is_object($fct)?$fct->id:$fct;
-        $fct = is_object($fct)?$fct:$this->findAlumnoFctOrFail($id);
+        $fct = is_object($fct) ? $fct : $this->findModelOrFail(
+            AlumnoFct::class,
+            $id,
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
         $informe = 'dual.'.$informe;
         $secretario = cargo('secretario');
         $director = cargo('director');

@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Task;
@@ -35,20 +34,6 @@ class TaskController extends ModalController
     protected $gridFields = TaskCrudSchema::GRID_FIELDS;
 
     protected $formFields = TaskCrudSchema::FORM_FIELDS;
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Task
-     */
-    private function findTaskOrFail($id): Task
-    {
-        try {
-            return Task::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Tasca no trobada', ['task_id' => $id]);
-        }
-    }
 
     public function __construct(?TaskValidationService $taskValidationService = null)
     {
@@ -84,7 +69,8 @@ class TaskController extends ModalController
 
     public function update(TaskRequest $request, $id)
     {
-        $this->authorize('update', $this->findTaskOrFail($id));
+        $task = $this->findModelOrFail(Task::class, $id, 'Tasca no trobada', ['task_id' => $id]);
+        $this->authorize('update', $task);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -96,7 +82,7 @@ class TaskController extends ModalController
      */
     public function check($id)
     {
-        $this->tarea = $this->findTaskOrFail($id);
+        $this->tarea = $this->findModelOrFail(Task::class, $id, 'Tasca no trobada', ['task_id' => $id]);
         $this->authorize('check', $this->tarea);
         $taskTeacher = $this->tarea->myDetails;
         if ($taskTeacher) {
