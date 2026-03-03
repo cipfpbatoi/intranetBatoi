@@ -35,12 +35,12 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:sanctum');
     Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:sanctum');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento')->middleware('auth:sanctum');
-    Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
+    Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('documento', 'DocumentoController', ['except' => [ 'create']]);
-    Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
-    Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
+    Route::resource('documento', 'DocumentoController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::put('/comision/{dni}/prePay', 'ComisionController@prePay')->middleware('auth:sanctum');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
