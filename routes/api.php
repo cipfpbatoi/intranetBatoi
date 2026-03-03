@@ -33,8 +33,8 @@ Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list')->middleware('auth:sanctum');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:sanctum');
-    Route::get('fct/{id}/alFct', 'FctController@llist');
-    Route::post('fct/{id}/alFct', 'FctController@seguimiento');
+    Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:sanctum');
+    Route::post('fct/{id}/alFct', 'FctController@seguimiento')->middleware('auth:sanctum');
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
     Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:sanctum');
@@ -72,7 +72,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('material', 'MaterialController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::get('inventario', 'MaterialController@inventario');
     Route::get('inventario/{espai}', 'MaterialController@espai');
-    Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
+    Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
     Route::get('guardia/range', 'GuardiaController@range')->middleware('auth:sanctum');
