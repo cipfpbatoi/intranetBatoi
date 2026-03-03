@@ -10,6 +10,7 @@ use Intranet\Presentation\Crud\GrupoCrudSchema;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -225,8 +226,7 @@ class GrupoController extends IntranetController
     {
         $grupoModel = $this->grupos()->find((string) $grupo);
         if (!$grupoModel) {
-            Alert::danger('Grup no trobat');
-            return back();
+            throw new NotFoundDomainException('Grup no trobat', ['grupo' => $grupo]);
         }
 
         try {

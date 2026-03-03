@@ -15,6 +15,7 @@ use Intranet\Presentation\Crud\ExpedienteCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\DropZone;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ExpedienteWorkflowService;
@@ -109,7 +110,7 @@ class ExpedienteController extends ModalController
     {
         $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->init($id)) {
-            return back()->with('error', 'Expedient no trobat.');
+            throw new NotFoundDomainException('Expedient no trobat.', ['expediente_id' => $id]);
         }
 
         return back();
@@ -128,7 +129,7 @@ class ExpedienteController extends ModalController
     {
         $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->passToOrientation($id)) {
-            return back()->with('error', 'Expedient no trobat.');
+            throw new NotFoundDomainException('Expedient no trobat.', ['expediente_id' => $id]);
         }
 
         return back();
@@ -137,7 +138,7 @@ class ExpedienteController extends ModalController
     protected function assigna($id,Request $request){
         $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->assignCompanion($id, $request->idAcompanyant)) {
-            return back()->with('error', 'Expedient no trobat.');
+            throw new NotFoundDomainException('Expedient no trobat.', ['expediente_id' => $id]);
         }
 
         return back();
