@@ -21,16 +21,23 @@ final class TutoriaGrupoCrudSchema
     ];
 
     /**
-     * Tipus de camp legacy del model.
+     * Configuració de formulari del CRUD.
      *
      * @var array<string, array<string, mixed>>
      */
-    public const INPUT_TYPES = [
+    public const FORM_FIELDS = [
         'idTutoria' => ['disabled' => 'disabled'],
         'idGrupo' => ['disabled' => 'disabled'],
         'observaciones' => ['type' => 'textarea'],
         'fecha' => ['type' => 'date'],
     ];
+
+    /**
+     * Tipus de camp legacy del model.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public const INPUT_TYPES = self::FORM_FIELDS;
 
     /**
      * Regles de validacio.
@@ -44,4 +51,3 @@ final class TutoriaGrupoCrudSchema
         'observaciones' => 'required',
     ];
 }
-

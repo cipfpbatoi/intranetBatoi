@@ -1,7 +1,5 @@
 @extends('layouts.intranet')
 @section('css')
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
 <title>@lang("models.Falta.imprime")</title>
 @endsection
 @section('content')
@@ -32,8 +30,5 @@
 @lang("models.Falta.imprime")
 @endsection
 @section('scripts')
-{{ Html::script('/assets/moment.js') }}
-{{ Html::script('/assets/datetimepicker/js/bootstrap-datetimepicker.min.js') }}
 {{ Html::script("/js/datepicker.js") }}
 @endsection
-
