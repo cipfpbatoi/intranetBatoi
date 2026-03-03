@@ -77,12 +77,12 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
     Route::get('guardia/range', 'GuardiaController@range')->middleware('auth:sanctum');
     Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']]);
+    Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('reserva', 'ReservaController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
-    Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
+    Route::resource('centro', 'CentroController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('Empresa', 'EmpresaController', ['except' => [ 'create']]);
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => [ 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => [ 'create']]);
