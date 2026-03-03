@@ -90,12 +90,12 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('expediente', 'ExpedienteController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('solicitud', 'SolicitudController', ['except' => ['create']]);
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => [ 'create']]);
-    Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']]);
+    Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('activity', 'ActivityController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
     Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
     Route::resource('task', 'TaskController', ['except' => [ 'create']]);
-    Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo');
+    Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo')->middleware('auth:sanctum');
     
     Route::resource('horario', 'HorarioController', ['except' => [ 'create']]);
     Route::get('horario/{idProfesor}/guardia', 'HorarioController@Guardia');

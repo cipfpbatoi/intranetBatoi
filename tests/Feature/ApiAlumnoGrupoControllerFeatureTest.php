@@ -11,9 +11,13 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Mockery;
 use Tests\TestCase;
 
+/**
+ * Proves feature d'AlumnoGrupo amb autenticació Sanctum.
+ */
 class ApiAlumnoGrupoControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -56,7 +60,7 @@ class ApiAlumnoGrupoControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PAG01');
         $user = Profesor::on('sqlite')->findOrFail('PAG01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('alumnos')->insert([
             ['nia' => '20000001', 'nombre' => 'Joan', 'apellido1' => 'Zulu', 'apellido2' => 'A'],
