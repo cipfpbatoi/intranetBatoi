@@ -93,7 +93,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('activity', 'ActivityController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('curso', 'CursoController', ['except' => [ 'create']])->middleware('auth:sanctum');
-    Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
+    Route::resource('ciclo', 'CicloController', ['except' => [ 'create']])->middleware('auth:sanctum');
     Route::resource('task', 'TaskController', ['except' => [ 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo')->middleware('auth:sanctum');
     
