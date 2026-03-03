@@ -13,9 +13,13 @@ use Intranet\Entities\Activity;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Services\HR\PresenciaResumenService;
+use Laravel\Sanctum\Sanctum;
 use Mockery;
 use Tests\TestCase;
 
+/**
+ * Proves feature de modernització batch 1 amb autenticació Sanctum.
+ */
 class ApiBatch1ModernizationFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -57,7 +61,7 @@ class ApiBatch1ModernizationFeatureTest extends TestCase
     {
         $this->insertProfesor('PAPI01');
         $user = Profesor::on('sqlite')->findOrFail('PAPI01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         Activity::on('sqlite')->create([
             'action' => 'phone',
@@ -86,7 +90,7 @@ class ApiBatch1ModernizationFeatureTest extends TestCase
     {
         $this->insertProfesor('PAPI11');
         $user = Profesor::on('sqlite')->findOrFail('PAPI11');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         Activity::on('sqlite')->create([
             'action' => 'phone',
@@ -122,7 +126,7 @@ class ApiBatch1ModernizationFeatureTest extends TestCase
     {
         $this->insertProfesor('PAPI02');
         $user = Profesor::on('sqlite')->findOrFail('PAPI02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $mockGroup = new Grupo();
         $mockGroup->setRelation('Alumnos', collect([

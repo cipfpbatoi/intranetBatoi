@@ -9,16 +9,12 @@ const minDiasReserva=3;
 const esDireccion=2;
 
 function apiAuthOptions(extraData) {
-	var legacyToken = $.trim($("#_token").text());
 	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
 	var data = extraData || {};
 	var headers = {};
 
 	if (bearerToken) {
 		headers.Authorization = "Bearer " + bearerToken;
-	}
-    if (legacyToken) {
-		data.api_token = legacyToken;
 	}
 
 	return { headers: headers, data: data };
@@ -131,11 +127,14 @@ $(function() {
 
 		// pedimos las reservas del recurso para el día seleccionado
 		$.ajax ({
-	    	url: "api/reserva/idEspacio="+$("#recurso").val()+"&dia="+fecha,
+	    	url: "api/reserva",
 	    	type: "GET",
 	    	dataType: "json",
 			headers: apiAuthOptions().headers,
-            data: apiAuthOptions().data,
+            data: $.extend({}, apiAuthOptions().data, {
+                idEspacio: $("#recurso").val(),
+                dia: fecha
+            }),
 		}).then(function(res){
 			for (i in res.data) {
 				var observaciones = res.data[i].observaciones?'('+res.data[i].observaciones+')':' ';

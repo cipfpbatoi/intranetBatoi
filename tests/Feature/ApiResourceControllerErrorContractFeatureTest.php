@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves del contracte d'errors d'ApiResourceController amb autenticació Sanctum.
+ */
 class ApiResourceControllerErrorContractFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -49,7 +53,7 @@ class ApiResourceControllerErrorContractFeatureTest extends TestCase
     {
         $this->insertProfesor('PRC01');
         $user = Profesor::on('sqlite')->findOrFail('PRC01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response = $this->getJson('/api/profesor/NO_EXISTIX');
 
@@ -61,7 +65,7 @@ class ApiResourceControllerErrorContractFeatureTest extends TestCase
     {
         $this->insertProfesor('PRC02');
         $user = Profesor::on('sqlite')->findOrFail('PRC02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         // Forcem error intern: "dni" és PK obligatòria i no és fillable,
         // així que el create() del controlador base acabarà en excepció SQL.
@@ -78,7 +82,7 @@ class ApiResourceControllerErrorContractFeatureTest extends TestCase
     {
         $this->insertProfesor('PRC03');
         $user = Profesor::on('sqlite')->findOrFail('PRC03');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         // Forcem error intern sobre un model amb taula inexistent en este test (cursos).
         $response = $this->putJson('/api/curso/1', [

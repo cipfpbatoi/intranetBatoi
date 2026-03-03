@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de Colaboracion amb autenticació Sanctum.
+ */
 class ApiColaboracionControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -53,7 +57,7 @@ class ApiColaboracionControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PA01', 'token-a');
         $user = Profesor::on('sqlite')->findOrFail('PA01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response = $this->getJson('/api/colaboracion/9999/resolve');
 
@@ -61,10 +65,14 @@ class ApiColaboracionControllerFeatureTest extends TestCase
         $response->assertJsonPath('success', false);
     }
 
-    public function test_switch_assigna_tutor_amb_api_token(): void
+    /**
+     * Verifica que el canvi de tutor en switch requerix Bearer/Sanctum.
+     */
+    public function test_switch_assigna_tutor_amb_bearer_sanctum(): void
     {
-        $this->insertProfesor('PA02', 'token-auth');
         $this->insertProfesor('PT02', 'token-target');
+        $user = Profesor::on('sqlite')->findOrFail('PT02');
+        Sanctum::actingAs($user);
 
         DB::table('colaboraciones')->insert([
             'id' => 20,
@@ -77,7 +85,7 @@ class ApiColaboracionControllerFeatureTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $response = $this->getJson('/api/colaboracion/20/switch?api_token=token-target');
+        $response = $this->getJson('/api/colaboracion/20/switch');
 
         $response->assertOk();
         $response->assertJsonPath('success', true);
@@ -100,7 +108,7 @@ class ApiColaboracionControllerFeatureTest extends TestCase
         ]);
 
         $user = Profesor::on('sqlite')->findOrFail('PA03');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response1 = $this->postJson('/api/colaboracion/30/book', ['explicacion' => 'Primer contacte']);
         $response1->assertOk();
@@ -130,7 +138,7 @@ class ApiColaboracionControllerFeatureTest extends TestCase
         ]);
 
         $user = Profesor::on('sqlite')->findOrFail('PA04');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         $response1 = $this->postJson('/api/colaboracion/40/telefonico', ['explicacion' => 'Telefonada 1']);
         $response1->assertOk();

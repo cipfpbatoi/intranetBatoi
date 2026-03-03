@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ApiComisionControllerFeatureTest extends TestCase
@@ -58,7 +59,7 @@ class ApiComisionControllerFeatureTest extends TestCase
         $this->insertProfesor('PC01', 'Nom', 'Cognom1', 'Cognom2');
 
         $usuario = Profesor::on('sqlite')->findOrFail('PC01');
-        $this->actingAs($usuario, 'api');
+        Sanctum::actingAs($usuario);
 
         DB::table('comisiones')->insert([
             [
@@ -117,7 +118,7 @@ class ApiComisionControllerFeatureTest extends TestCase
         $this->insertProfesor('PC02', 'Usuari', 'Test', 'Api');
 
         $usuario = Profesor::on('sqlite')->findOrFail('PC02');
-        $this->actingAs($usuario, 'api');
+        Sanctum::actingAs($usuario);
 
         DB::table('comisiones')->insert([
             [
