@@ -182,6 +182,9 @@ class Handler extends ExceptionHandler
             ? $exception->getStatusCode()
             : null;
         $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
+        if ($exception instanceof AuthenticationException) {
+            $level = 'info';
+        }
 
         $context = [
             'exception' => get_class($exception),
@@ -202,6 +205,8 @@ class Handler extends ExceptionHandler
             $context['method'] = $request->method();
             $context['ip'] = $request->ip();
             $context['route'] = optional($request->route())->getName();
+            $context['user_agent'] = (string) $request->header('User-Agent', '');
+            $context['referer'] = (string) $request->header('Referer', '');
 
             $user = authUser();
             if ($user) {
