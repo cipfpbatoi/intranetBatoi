@@ -7,12 +7,19 @@ namespace Intranet\Infrastructure\Persistence\Eloquent\AlumnoFct;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\AlumnoFct\AlumnoFctRepositoryInterface;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Fct;
 
 /**
  * Implementació Eloquent del repositori d'AlumnoFct.
  */
 class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
 {
+    /**
+     * Tipus d'associació avaluables per a FCT i formació en empresa (LOE/LFP).
+     *
+     * @var array<int, int>
+     */
+    private const AVAL_ASSOCIATIONS = [1, 2, 4, 5];
     /**
      * {@inheritdoc}
      */
@@ -118,7 +125,7 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
     {
         return AlumnoFct::query()
             ->misFcts($profesor)
-            ->esAval()
+            ->whereIn('idFct', Fct::select('id')->whereIn('asociacion', self::AVAL_ASSOCIATIONS)->pluck('id'))
             ->distinct()
             ->pluck('idAlumno')
             ->map(static fn ($id): string => (string) $id)
@@ -133,7 +140,7 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
     {
         return AlumnoFct::query()
             ->misFcts($profesor)
-            ->esAval()
+            ->whereIn('idFct', Fct::select('id')->whereIn('asociacion', self::AVAL_ASSOCIATIONS)->pluck('id'))
             ->where('idAlumno', $idAlumno)
             ->orderByDesc('idSao')
             ->first();
