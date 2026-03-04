@@ -268,6 +268,10 @@ class PanelFctAvalController extends IntranetController
 
         $asociacionesAval = [1, 2, 4, 5];
         $asociacionesNoExempt = [1, 4, 5];
+        $labelRenuncia = trans('messages.buttons.renuncia');
+        $labelExpulsat = trans('messages.buttons.expulsat');
+        $titleRenuncia = "Marcar com a $labelRenuncia";
+        $titleExpulsat = "Marcar com a $labelExpulsat";
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -291,6 +295,38 @@ class PanelFctAvalController extends IntranetController
                         'calProyecto', '<', '5',
                         'calificacion', '!=', '0',
                         'actas', '==', 0, 'asociacion', '<>', 2
+                    ]
+                ]
+            ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.renuncia',
+                [
+                    'img' => 'fa-sign-out',
+                    'text' => $labelRenuncia,
+                    'title' => $titleRenuncia,
+                    'aria-label' => $labelRenuncia,
+                    'where' => [
+                        'normativa', '==', 'LFP',
+                        'actas', '==', 0,
+                        'calificacion', '!=', '3'
+                    ]
+                ]
+            ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.expulsat',
+                [
+                    'img' => 'fa-ban',
+                    'text' => $labelExpulsat,
+                    'title' => $titleExpulsat,
+                    'aria-label' => $labelExpulsat,
+                    'where' => [
+                        'normativa', '==', 'LFP',
+                        'actas', '==', 0,
+                        'calificacion', '!=', '4'
                     ]
                 ]
             ));
@@ -362,6 +398,34 @@ class PanelFctAvalController extends IntranetController
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $grupo = $this->resolveGrupoForFct($fct);
         $this->avals()->noApte((int) $id, (bool) ($grupo?->proyecto));
+
+        return back();
+    }
+
+    /**
+     * Marca una FCT com a renúncia.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function renuncia($id)
+    {
+        Gate::authorize('manageAval', Fct::class);
+        $this->avals()->renuncia((int) $id);
+
+        return back();
+    }
+
+    /**
+     * Marca una FCT com a expulsat/expulsada.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function expulsat($id)
+    {
+        Gate::authorize('manageAval', Fct::class);
+        $this->avals()->expulsat((int) $id);
 
         return back();
     }

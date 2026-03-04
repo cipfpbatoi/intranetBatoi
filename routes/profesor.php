@@ -313,6 +313,8 @@ Route::get('/fct/{id}/colaboradorPdf', ['as' => 'fct.colaborador', 'uses' => 'Fc
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);
+Route::get('/fct/{document}/renuncia', ['as' => 'fct.renuncia', 'uses' => 'PanelFctAvalController@renuncia']);
+Route::get('/fct/{document}/expulsat', ['as' => 'fct.expulsat', 'uses' => 'PanelFctAvalController@expulsat']);
 Route::get('/fct/{document}/noAval', ['as' => 'fct.noAval', 'uses' => 'PanelFctAvalController@noAval']);
 Route::get('/fct/{document}/noProyecto', ['as' => 'fct.noProyecto', 'uses' => 'PanelFctAvalController@noProyecto']);
 Route::get('/fct/{document}/nullProyecto', ['as' => 'fct.nullProyecto', 'uses' => 'PanelFctAvalController@nullProyecto']);

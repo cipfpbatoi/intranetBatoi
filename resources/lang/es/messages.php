@@ -103,6 +103,8 @@ return array(
         'itaca' => 'Itaca',
         'unauthorize' => 'Desautorizar',
         'refuse' => 'Rechazar',
+        'renuncia' => 'Renuncia',
+        'expulsat' => 'Expulsado',
         'pendiente' => 'Pendientes Contestación',
         'resta' => 'No asignadas',
         'colabora' => 'Colaboran',

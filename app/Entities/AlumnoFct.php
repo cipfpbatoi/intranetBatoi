@@ -9,7 +9,9 @@ use Jenssegers\Date\Date;
 use Intranet\Events\FctAlDeleted;
 use Intranet\Presentation\AlumnoFct\AlumnoFctPresenter;
 
-
+/**
+ * Model d'alumnat en FCT.
+ */
 class AlumnoFct extends Model
 {
 
@@ -246,6 +248,8 @@ class AlumnoFct extends Model
             0 => 'No Apte',
             1 => 'Apte',
             2 => 'Convalidat/Exempt',
+            3 => 'Renúncia',
+            4 => 'Expulsat',
             default => 'No Avaluat',
         };
     }
