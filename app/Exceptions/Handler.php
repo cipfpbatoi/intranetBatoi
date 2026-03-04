@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Intranet\Services\Notifications\NotificationService;
@@ -227,12 +228,19 @@ class Handler extends ExceptionHandler
         $statusCode = ($exception instanceof HttpExceptionInterface)
             ? $exception->getStatusCode()
             : null;
+        if ($exception instanceof TokenMismatchException) {
+            $statusCode = 419;
+        }
         $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
         $isUnauthenticated = $exception instanceof AuthenticationException;
         $isNotFoundDomain = $exception instanceof NotFoundDomainException;
+        $isTokenMismatch = $exception instanceof TokenMismatchException;
 
         if ($isUnauthenticated) {
             $level = 'info';
+        }
+        if ($isTokenMismatch) {
+            $level = 'warning';
         }
 
         $context = [
