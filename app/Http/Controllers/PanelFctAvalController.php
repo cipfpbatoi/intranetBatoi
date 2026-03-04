@@ -13,10 +13,12 @@ use DB;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Grupo;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -40,6 +42,12 @@ class PanelFctAvalController extends IntranetController
 {
     use DropZone;
 
+    /**
+     * Cache de registres per evitar consultes duplicades en pestanyes i botons.
+     *
+     * @var Collection<int, AlumnoFct>|null
+     */
+    private ?Collection $cachedElementos = null;
     private ?AlumnoFctAvalService $alumnoFctAvalService = null;
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;
@@ -100,23 +108,166 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * @return \Illuminate\Support\Collection|mixed
+     * Recupera les FCT avaluables (LOE i LFP) del tutor i afegix metadades per a la UI.
+     *
+     * @return Collection<int, AlumnoFct>
      */
     public function search()
     {
-        return $this->avals()->latestByProfesor(AuthUser()->dni);
-        
+        return $this->elementos();
+    }
+
+    /**
+     * Retorna els elements amb metadades, reutilitzant el cache local.
+     *
+     * @return Collection<int, AlumnoFct>
+     */
+    private function elementos(): Collection
+    {
+        if ($this->cachedElementos !== null) {
+            return $this->cachedElementos;
+        }
+
+        $elementos = $this->avals()->latestByProfesor(AuthUser()->dni);
+
+        $this->cachedElementos = $elementos->map(function (AlumnoFct $fct): AlumnoFct {
+            $grupo = $this->resolveGrupoForFct($fct);
+            $normativa = $this->resolveNormativa($fct, $grupo);
+            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? 0);
+            $requiresProject = false;
+            if ($normativa === 'LOE') {
+                $requiresProject = $grupo
+                    ? (bool) $grupo->proyecto
+                    : ($cicloTipo === 2);
+            }
+            $fct->setAttribute('normativa', $normativa);
+            $fct->setAttribute('proyecto_requerido', $requiresProject ? 1 : 0);
+            $fct->setAttribute('grupo_codigo', $grupo?->codigo);
+            $fct->setAttribute('grupo_nombre', $grupo?->nombre);
+
+            return $fct;
+        });
+
+        return $this->cachedElementos;
+    }
+
+    /**
+     * Inicialitza pestanyes separant LOE i LFP.
+     *
+     * @param mixed $parametres
+     * @return void
+     */
+    protected function iniPestanas($parametres = null)
+    {
+        $elementos = $this->elementos();
+        $hasLfp = $elementos->where('normativa', 'LFP')->isNotEmpty();
+        $hasLoe = $elementos->where('normativa', 'LOE')->isNotEmpty();
+
+        $available = [];
+        if ($hasLfp) {
+            $available[] = [
+                'name' => 'LFP',
+                'grid' => AlumnoFctAvalCrudSchema::GRID_FIELDS_LFP,
+                'filter' => ['normativa', 'LFP'],
+            ];
+        }
+        if ($hasLoe) {
+            $available[] = [
+                'name' => 'LOE',
+                'grid' => AlumnoFctAvalCrudSchema::GRID_FIELDS,
+                'filter' => ['normativa', 'LOE'],
+            ];
+        }
+
+        $requested = strtoupper((string) request('pestana'));
+        $active = in_array($requested, array_column($available, 'name'), true)
+            ? $requested
+            : ($available[0]['name'] ?? 'Resum');
+
+        $first = true;
+        foreach ($available as $tab) {
+            $this->panel->setPestana(
+                $tab['name'],
+                $active === $tab['name'],
+                'grid.standard',
+                $tab['filter'],
+                $tab['grid'],
+                $first
+            );
+            $first = false;
+        }
+
+        if (empty($available)) {
+            $this->panel->setPestana('Resum', true, 'profile.resumenfct', null, null, true);
+            return;
+        }
+
+        $this->panel->setPestana('Resum', false, 'profile.resumenfct');
+    }
+
+    /**
+     * Resol el grup de l'alumne vinculat al cicle de la FCT.
+     *
+     * @param AlumnoFct $fct
+     * @return Grupo|null
+     */
+    private function resolveGrupoForFct(AlumnoFct $fct): ?Grupo
+    {
+        $cicloId = $fct->Fct?->Colaboracion?->idCiclo;
+        if (!$cicloId) {
+            return null;
+        }
+
+        $grupos = $fct->Alumno?->Grupo;
+        if (!$grupos) {
+            return null;
+        }
+
+        return $grupos->firstWhere('idCiclo', $cicloId);
+    }
+
+    /**
+     * Determina la normativa (LOE/LFP) per a la pestanya.
+     *
+     * Es prioritza el que figure al nom del grup entre parèntesi.
+     *
+     * @param AlumnoFct $fct
+     * @param Grupo|null $grupo
+     * @return string
+     */
+    private function resolveNormativa(AlumnoFct $fct, ?Grupo $grupo): string
+    {
+        if ($grupo && is_string($grupo->nombre)) {
+            if (preg_match('/\\((LOE|LFP)\\)/i', $grupo->nombre, $matches)) {
+                return strtoupper($matches[1]);
+            }
+        }
+
+        $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
+        if (is_string($normativa) && trim($normativa) !== '') {
+            return strtoupper($normativa);
+        }
+
+        if ($grupo && str_contains((string) $grupo->codigo, 'LFP')) {
+            return 'LFP';
+        }
+
+        return 'LOE';
     }
 
 
     /**
+     * Inicialitza la botonera per avaluacions FCT (LOE i LFP).
      *
+     * @return void
      */
     protected function iniBotones()
     {
         Session::put('redirect', 'PanelFctAvalController@index');
-        $this->panel->setPestana('Resum', false, 'profile.resumenfct');
         $this->setActaB();
+
+        $asociacionesAval = [1, 2, 4, 5];
+        $asociacionesNoExempt = [1, 4, 5];
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -152,7 +303,9 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', null,
-                        'actas', '==', 0, 'asociacion', '<', 3
+                        'actas', '==', 0,
+                        'asociacion', 'in', $asociacionesAval,
+                        'normativa', '==', 'LOE'
                     ]
                 ]
             ));
@@ -165,7 +318,9 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
-                        'actas', '>', 0, 'asociacion', '<>', 2
+                        'actas', '>', 0,
+                        'asociacion', 'in', $asociacionesNoExempt,
+                        'normativa', '==', 'LOE'
                     ]
                 ]
             ));
@@ -173,12 +328,12 @@ class PanelFctAvalController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg('fct.insercio', ['img' => 'fa-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
-            'where' => ['insercion', '==', '0','asociacion','<',3,'calificacion', '==', '1']]
+            'where' => ['insercion', '==', '0','asociacion','in', $asociacionesAval,'calificacion', '==', '1']]
             ));
         $this->panel->setBoton(
             'grid',
             new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
-            'where' => ['insercion', '==', '1','asociacion','<',3,'calificacion', '==', '1']]
+            'where' => ['insercion', '==', '1','asociacion','in', $asociacionesAval,'calificacion', '==', '1']]
             ));
     }
 
@@ -196,13 +351,16 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * @param $id
+     * Marca una FCT com a no apta, tenint en compte si el projecte és requerit.
+     *
+     * @param int|string $id
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function noApte($id)
     {
         Gate::authorize('manageAval', Fct::class);
-        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        $grupo = $this->resolveGrupoForFct($fct);
         $this->avals()->noApte((int) $id, (bool) ($grupo?->proyecto));
 
         return back();
@@ -268,14 +426,19 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
+     * Demana acta d'avaluació per als grups LOE amb projecte.
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function demanarActa()
     {
         Gate::authorize('requestActa', Fct::class);
-        $grupos = $this->grupos()->qTutor(AuthUser()->dni);
+        $grupos = $this->grupos()
+            ->qTutor(AuthUser()->dni)
+            ->filter(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto)
+            ->values();
         if ($grupos->isEmpty()) {
-            Alert::message('No tens grups assignats', 'warning');
+            Alert::message('No tens grups amb projecte assignats', 'warning');
             return back();
         }
 
@@ -298,152 +461,172 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
+     * Configura el botó d'acta per a grups LOE amb projecte.
      *
+     * @return void
      */
     private function setActaB(): void
     {
-        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
-        if ($grupo && !$grupo->acta_pendiente  ) {
-            if ($grupo->curso == 2) {
-                $this->panel->setBoton(
-                    'index',
-                    new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
-                    ));
-            }
-        } else {
-            Alert::message("L'acta pendent esta en procés", 'info');
+        if ($this->elementos()->where('normativa', 'LOE')->isEmpty()) {
+            return;
         }
+
+        $grupos = $this->grupos()->qTutor(AuthUser()->dni);
+        $grupoConProyecto = $grupos->first(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto);
+
+        if (!$grupoConProyecto) {
+            return;
+        }
+
+        $pendiente = $grupos->first(static fn (Grupo $grupo): bool => (bool) ($grupo->proyecto && $grupo->acta_pendiente));
+        if ($pendiente) {
+            Alert::message("L'acta pendent esta en procés", 'info');
+            return;
+        }
+
+        $this->panel->setBoton(
+            'index',
+            new BotonConfirmacion(
+                'fct.acta',
+                ['class' => 'btn-info fct-acta-btn', 'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
     }
 
     /**
+     * Configura botons de projecte per a FCT que el requerixen.
      *
+     * @return void
      */
     private function setProjectB(): void
     {
-        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
-        if ($grupo && $grupo->proyecto) {
-            // Aprovats
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.proyecto',
-                    [
-                        'img' => 'fa-file', 'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '<', '1',
-                            'actas', '<', 2,
-                            'calificacion', '==', '1'
-                        ]
+        // Aprovats
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.proyecto',
+                [
+                    'img' => 'fa-file',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'proyecto_requerido', '==', 1,
+                        'calProyecto', '<', '1',
+                        'actas', '<', 2,
+                        'calificacion', '==', '1'
                     ]
-                )
-            );
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.noProyecto',
-                    [
-                        'img' => 'fa-toggle-off',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '<', '0',
-                            'actas', '<', 2,
-                            'calificacion', '==', '1'
-                        ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.noProyecto',
+                [
+                    'img' => 'fa-toggle-off',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'proyecto_requerido', '==', 1,
+                        'calProyecto', '<', '1',
+                        'actas', '<', 2,
+                        'calificacion', '==', '1'
                     ]
-                )
-            );
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.nullProyecto',
-                    [
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.nullProyecto',
+                [
+                    'img' => 'fa-minus-circle',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'proyecto_requerido', '==', 1,
+                        'calProyecto', '>=', '0',
+                        'actas', '<', 2,
+                        'calificacion', '==', '1',
+                        'asociacion', '<>', '2'
+                    ]
+                ]
+            )
+        );
+        // Convalidats
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.proyecto',
+                [
+                    'img' => 'fa-file',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'calProyecto', '<', '1',
+                        'actas', '<', 2,
+                        'asociacion', '==', '2'
+                    ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.noProyecto',
+                [
+                    'img' => 'fa-toggle-off',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'calProyecto', '<', '1',
+                        'actas', '<', 2,
+                        'asociacion', '==', '2'
+                    ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.nullProyecto',
+                [
+                    'img' => 'fa-minus-circle',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'proyecto_requerido', '==', 1,
+                        'calProyecto', '>=', '0',
+                        'actas', '<', 2,
+                        'asociacion', '==', '2'
+                    ]
+                ]
+            )
+        );
 
-                       'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '>=', '0',
-                            'actas', '<', 2,
-                            'calificacion', '==', '1',
-                            'asociacion', '<>', '2'
-                        ]
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.nuevoProyecto',
+                [
+                    'img' => 'fa-toggle-on',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'calProyecto', '<', '5',
+                        'calProyecto', '>=', 0,
+                        'actas', '==', 2
                     ]
-                )
-            );
-            // Convalidats
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.proyecto',
-                    [
-                        'img' => 'fa-file',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '<', '1',
-                            'actas', '<', 2,
-                            'asociacion', '==', '2'
-                        ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.modificaNota',
+                [
+                    'img' => 'fa-edit',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'where' => [
+                        'calProyecto', '>', 0,
+                        'actas', '<', 2
                     ]
-                )
-            );
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.noProyecto',
-                    [
-                        'img' => 'fa-toggle-off',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '<', '0',
-                            'actas', '<', 2,
-                            'asociacion', '==', '2'
-                        ]
-                    ]
-                )
-            );
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.nullProyecto',
-                    [
-                        'img' => 'fa-minus-circle',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '>=', '0',
-                            'actas', '<', 2,
-                            'asociacion', '==', '2'
-                        ]
-                    ]
-                )
-            );
-
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.nuevoProyecto',
-                    [
-                        'img' => 'fa-toggle-on',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '<', '5',
-                            'calProyecto', '>=', 0,
-                            'actas', '==', 2
-                        ]
-                    ]
-                ));
-            $this->panel->setBoton(
-                'grid',
-                new BotonImg(
-                    'fct.modificaNota',
-                    [
-                        'img' => 'fa-edit',
-                        'roles' => config(self::ROLES_ROL_TUTOR),
-                        'where' => [
-                            'calProyecto', '>', 0,
-                            'actas', '<', 2
-                        ]
-                    ]
-                )
-            );
-        }
+                ]
+            )
+        );
     }
 
     /**
