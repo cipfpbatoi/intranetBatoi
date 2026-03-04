@@ -175,6 +175,7 @@ class Handler extends ExceptionHandler
     /**
      * Registra totes les excepcions en un canal dedicat.
      * Compacta el log per a autenticació i errors NotFound de domini.
+     * Evita traça en avisos per reduir soroll en producció.
      *
      * @param \Throwable $exception
      * @return void
@@ -245,7 +246,11 @@ class Handler extends ExceptionHandler
             $context['line'] = $exception->getLine();
         }
 
-        if (!$isUnauthenticated && !$isNotFoundDomain) {
+        $includeTrace = !$isUnauthenticated
+            && !$isNotFoundDomain
+            && ($level === 'error' || config('app.debug'));
+
+        if ($includeTrace) {
             $context['trace'] = $exception->getTraceAsString();
         }
 
