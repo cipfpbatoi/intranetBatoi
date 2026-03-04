@@ -7,5 +7,5 @@
 @include('extraescolares.partials.value')
 @endsection
 @section('scripts')
-    {{ Html::script('/js/Actividad/img.bo.js') }}
+    {{ Html::script('/js/Actividad/img.js') }}
 @endsection
