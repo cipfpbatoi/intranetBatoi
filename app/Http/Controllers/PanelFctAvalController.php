@@ -352,6 +352,19 @@ class PanelFctAvalController extends IntranetController
                 [
                     'img' => 'fa-recycle',
                     'where' => [
+                        'calificacion', '!=', null,
+                        'actas', '==', 0,
+                        'normativa', '==', 'LFP'
+                    ]
+                ]
+            ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.noAval',
+                [
+                    'img' => 'fa-recycle',
+                    'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
                         'actas', '>', 0,
