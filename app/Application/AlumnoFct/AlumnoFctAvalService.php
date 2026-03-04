@@ -8,6 +8,9 @@ use DB;
 use Illuminate\Support\Collection;
 use Intranet\Entities\Documento;
 
+/**
+ * Servei d'aplicació per a l'avaluació de FCT.
+ */
 class AlumnoFctAvalService
 {
     public function __construct(private readonly AlumnoFctService $alumnoFctService)
@@ -89,6 +92,28 @@ class AlumnoFctAvalService
     {
         $fct = $this->alumnoFctService->findOrFail($id);
         $fct->insercion = $fct->insercion ? 0 : 1;
+        $fct->save();
+    }
+
+    /**
+     * Marca una FCT com a renúncia (sense projecte).
+     */
+    public function renuncia(int|string $id): void
+    {
+        $fct = $this->alumnoFctService->findOrFail($id);
+        $fct->calificacion = 3;
+        $fct->calProyecto = null;
+        $fct->save();
+    }
+
+    /**
+     * Marca una FCT com a expulsat/expulsada (sense projecte).
+     */
+    public function expulsat(int|string $id): void
+    {
+        $fct = $this->alumnoFctService->findOrFail($id);
+        $fct->calificacion = 4;
+        $fct->calProyecto = null;
         $fct->save();
     }
 
