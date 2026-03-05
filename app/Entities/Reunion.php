@@ -260,6 +260,33 @@ class Reunion extends Model
         return (bool) ($this->GrupoClase->isSemi ?? false);
     }
 
+    /**
+     * Determina la normativa (LOE/LFP) del grup associat a la reunió.
+     */
+    public function getNormativaAttribute(): string
+    {
+        $grupo = $this->GrupoClase;
+        if (!$grupo) {
+            return '';
+        }
+
+        $nombre = (string) ($grupo->nombre ?? '');
+        if ($nombre !== '') {
+            if (preg_match('/\\((LOE|LFP)\\)/i', $nombre, $matches)) {
+                return strtoupper($matches[1]);
+            }
+            if (stripos($nombre, 'LFP') !== false) {
+                return 'LFP';
+            }
+            if (stripos($nombre, 'LOE') !== false) {
+                return 'LOE';
+            }
+        }
+
+        $normativa = $grupo->Ciclo?->normativa ?? '';
+        return is_string($normativa) ? strtoupper($normativa) : '';
+    }
+
     public function scopeNext($query)
     {
         $fecHoy = time();

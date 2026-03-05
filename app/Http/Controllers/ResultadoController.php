@@ -46,11 +46,23 @@ class ResultadoController extends ModalController
     protected $modal = true;
 
     /**
-     *
+     * Configura els botons del panell de resultats.
      */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
+        $this->panel->setBoton(
+            'grid',
+            new \Intranet\UI\Botones\BotonImg(
+                'alumnoresultado.alumno',
+                [
+                    'img' => 'fa-users',
+                    'title' => "Seguiment d'alumnat",
+                    'aria-label' => "Seguiment d'alumnat",
+                    'where' => ['evaluacion', '==', 3],
+                ]
+            )
+        );
 
     }
 

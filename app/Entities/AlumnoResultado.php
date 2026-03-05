@@ -4,6 +4,16 @@ namespace Intranet\Entities;
 
 use \Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model de notes i valoracions per alumne i mòdul.
+ *
+ * @property int $id
+ * @property string $idAlumno
+ * @property int $idModuloGrupo
+ * @property int $nota
+ * @property int $valoraciones
+ * @property string|null $observaciones
+ */
 class AlumnoResultado extends Model
 {
 
@@ -15,17 +25,20 @@ class AlumnoResultado extends Model
     protected $fillable = [
         'idAlumno',
         'idModuloGrupo',
+        'nota',
         'valoraciones',
         'observaciones'
     ];
     protected $rules = [
         'idAlumno' => 'required',
         'idModuloGrupo' => 'required',
+        'nota' => 'nullable|integer|min:0|max:13',
         'observaciones' => 'max:200',
       ];
     protected $inputTypes = [
         'idModuloGrupo' => ['type' => 'hidden'],
         'idAlumno' => ['type' => 'select'],
+        'nota' => ['type' => 'select'],
         'valoraciones' => ['type' => 'select'],
     ];
     protected $attributes = [
