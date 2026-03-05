@@ -108,7 +108,7 @@ class AuthTokenController extends ApiResourceController
     }
 
     /**
-     * Retorna usuari API autenticat (compat: `auth:api` o `auth:sanctum`).
+     * Retorna usuari API autenticat amb Sanctum (Bearer).
      */
     #[OA\Get(
         path: '/auth/me',

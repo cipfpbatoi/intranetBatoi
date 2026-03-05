@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Ciclo;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CicloRequest;
 
 /**
@@ -26,7 +27,6 @@ class CicloController extends ModalController
      */
     protected $gridFields = [ 'id','ciclo','literal','Xdepartamento','Xtipo'];
 
-
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config(self::ADMINISTRADOR)]));
@@ -42,9 +42,16 @@ class CicloController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param CicloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(CicloRequest $request, $id)
     {
-        $this->authorize('update', Ciclo::findOrFail((int) $id));
+        $ciclo = $this->findModelOrFail(Ciclo::class, $id, 'Cicle no trobat', ['ciclo_id' => $id]);
+        $this->authorize('update', $ciclo);
         $this->persist($request, $id);
         if ($file = $request->file('competencies')) {
             $file->storeAs(
@@ -59,10 +66,12 @@ class CicloController extends ModalController
      * Elimina un cicle amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Ciclo::findOrFail((int) $id));
+        $ciclo = $this->findModelOrFail(Ciclo::class, $id, 'Cicle no trobat', ['ciclo_id' => $id]);
+        $this->authorize('delete', $ciclo);
         return parent::destroy($id);
     }
 

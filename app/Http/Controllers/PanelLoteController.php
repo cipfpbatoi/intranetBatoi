@@ -6,10 +6,11 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Lote;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 
 /**
- * Class LoteController
+ * Class PanelLoteController
  * @package Intranet\Http\Controllers
  */
 class PanelLoteController extends ModalController
@@ -49,8 +50,15 @@ class PanelLoteController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('lote.barcode',['class'=>'QR','img'=>'fa-barcode','where'=>['estado','==',3]]));
      }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     protected function barcode($id,$posicion=1){
-        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, $posicion, 'portrait',[210,297],5)->stream();
+        $lote = $this->findModelOrFail(Lote::class, $id, 'Lot no trobat', ['lote_id' => $id]);
+        return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 
 }

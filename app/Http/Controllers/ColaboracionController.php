@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
@@ -95,12 +96,18 @@ class ColaboracionController extends ModalController
      *
      * @param ColaboracionRequest $request
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ColaboracionRequest $request, $id)
     {
         $this->persist($request, $id);
-        $colaboracion = Colaboracion::findOrFail($id);
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
@@ -129,12 +136,18 @@ class ColaboracionController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
 
     public function show($id)
     {
-        $elemento = Colaboracion::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
         return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
     }
 

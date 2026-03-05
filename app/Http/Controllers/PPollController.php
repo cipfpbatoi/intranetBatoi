@@ -20,7 +20,11 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Hash;
 use Intranet\Entities\Poll\PPoll;
+use Intranet\Exceptions\NotFoundDomainException;
 
+/**
+ * Controlador de plantilles de polls.
+ */
 class PPollController extends ModalController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
@@ -36,9 +40,14 @@ class PPollController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('ppoll.show',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = PPoll::findOrFail($id);
+        $elemento = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('poll.masterslave', compact('elemento','modelo'));
@@ -53,7 +62,8 @@ class PPollController extends ModalController
 
     public function update(PPollRequest $request, $id)
     {
-        $this->authorize('update', PPoll::findOrFail((int) $id));
+        $ppoll = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
+        $this->authorize('update', $ppoll);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -62,10 +72,12 @@ class PPollController extends ModalController
      * Elimina una plantilla de poll amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', PPoll::findOrFail((int) $id));
+        $ppoll = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
+        $this->authorize('delete', $ppoll);
         return parent::destroy($id);
     }
 }

@@ -7,10 +7,11 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\IpGuardiaRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\IpGuardia;
+use Intranet\Exceptions\NotFoundDomainException;
 
 
 /**
- * Class LoteController
+ * Class IpGuardiaController
  * @package Intranet\Http\Controllers
  */
 class IpGuardiaController extends ModalController
@@ -52,7 +53,13 @@ class IpGuardiaController extends ModalController
 
     public function update(IpGuardiaRequest $request, $id)
     {
-        $this->authorize('update', IpGuardia::findOrFail((int) $id));
+        $ipGuardia = $this->findModelOrFail(
+            IpGuardia::class,
+            $id,
+            'IP de guàrdia no trobada',
+            ['ip_guardia_id' => $id]
+        );
+        $this->authorize('update', $ipGuardia);
         $this->persist($request, $id);
         return back();
     }
@@ -61,10 +68,17 @@ class IpGuardiaController extends ModalController
      * Elimina una IP de guàrdia amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', IpGuardia::findOrFail((int) $id));
+        $ipGuardia = $this->findModelOrFail(
+            IpGuardia::class,
+            $id,
+            'IP de guàrdia no trobada',
+            ['ip_guardia_id' => $id]
+        );
+        $this->authorize('delete', $ipGuardia);
         return parent::destroy($id);
     }
 

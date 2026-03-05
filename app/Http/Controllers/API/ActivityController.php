@@ -4,16 +4,26 @@ namespace Intranet\Http\Controllers\API;
 
 
 use Intranet\Entities\Activity;
+use Intranet\Exceptions\NotFoundDomainException;
 
+/**
+ * Controlador API d'activitats.
+ */
 class ActivityController extends ApiResourceController
 {
 
     protected $model = 'Activity';
     
 
+    /**
+     * @param int|string $id
+     * @param int|string $fct
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function move($id, $fct)
     {
-        $activity = Activity::findOrFail($id);
+        $activity = $this->findModelOrFail(Activity::class, $id, 'Activitat no trobada', ['activity_id' => $id]);
         if ($activity->model_id == $fct) {
             return $this->sendFail("Tria una altra FCT");
         } else {

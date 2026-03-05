@@ -6,6 +6,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\OrdenTrabajoRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\StateService;
 
@@ -71,6 +72,7 @@ class OrdenTrabajoController extends ModalController
     /**
      * @param $id
      * @param string $orientacion
+     * @throws NotFoundDomainException
      * @return mixed
      */
 
@@ -78,7 +80,12 @@ class OrdenTrabajoController extends ModalController
 
     public function imprime($id, $orientacion = 'portrait')
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         $informe = 'pdf.' . strtolower($this->model);
         $pdf = self::hazPdf($informe, $incidencias,$elemento, $orientacion);
@@ -91,10 +98,16 @@ class OrdenTrabajoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function resolve($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $elemento->estado = 2;
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         foreach ($incidencias as $incidencia){
@@ -107,10 +120,16 @@ class OrdenTrabajoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function open($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $elemento->estado = 0;
         $elemento->save();
         return back();

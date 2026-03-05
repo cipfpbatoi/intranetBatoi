@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Modulo_ciclo;
@@ -31,19 +30,6 @@ class ProgramacionController extends IntranetController
     protected $modal = false;
     protected $items = 6;
     private ?HorarioService $horarioService = null;
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     */
-    private function findProgramacionOrFail($id): Programacion
-    {
-        try {
-            return Programacion::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Programació no trobada', ['programacio_id' => $id], $e);
-        }
-    }
 
     private function horarios(): HorarioService
     {
@@ -71,7 +57,7 @@ class ProgramacionController extends IntranetController
      */
     protected function init($id)
     {
-        $prg = $this->findProgramacionOrFail($id);
+        $prg = $this->findModelOrFail(Programacion::class, $id, 'Programació no trobada', ['programacio_id' => $id]);
         $staSrv = new StateService($prg);
         $staSrv->putEstado($this->init);
         $prg->Profesor = AuthUser()->dni;
@@ -86,7 +72,12 @@ class ProgramacionController extends IntranetController
      */
     protected function seguimiento($id)
     {
-        $elemento = $this->findProgramacionOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         return view('programacion.seguimiento', compact('elemento'));
     }
 
@@ -118,11 +109,12 @@ class ProgramacionController extends IntranetController
      */
     protected function advise($id)
     {
-        try {
-            $elemento = Modulo_ciclo::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Mòdul del cicle no trobat', ['modulo_ciclo_id' => $id], $e);
-        }
+        $elemento = $this->findModelOrFail(
+            Modulo_ciclo::class,
+            $id,
+            'Mòdul del cicle no trobat',
+            ['modulo_ciclo_id' => $id]
+        );
         if (isset($elemento->Modulo->codigo)){
             $horario = $this->horarios()->firstByModulo((string) $elemento->Modulo->codigo);
             if ($horario) {
@@ -142,7 +134,12 @@ class ProgramacionController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     protected function updateSeguimiento(Request $request, $id){
-        $elemento = $this->findProgramacionOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         $elemento->criterios = $request->criterios;
         $elemento->metodologia = $request->metodologia;
         $elemento->propuestas = $request->propuestas;
@@ -158,7 +155,12 @@ class ProgramacionController extends IntranetController
      */
     protected function link($id)
     {
-        $elemento = $this->findProgramacionOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         return redirect()->away($elemento->fichero);
     }
     

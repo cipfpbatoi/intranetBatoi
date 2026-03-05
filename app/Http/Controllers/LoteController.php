@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonBasico;
@@ -35,20 +34,6 @@ class LoteController extends ModalController
     protected $vista = 'lote.index';
 
     protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
-
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Lote
-     */
-    private function findLoteOrFail($id): Lote
-    {
-        try {
-            return Lote::findOrFail((string) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Lot no trobat', ['lote_id' => $id], $e);
-        }
-    }
 
     protected function search()
     {
@@ -81,7 +66,7 @@ class LoteController extends ModalController
      */
     public function update(LoteRequest $request, $id)
     {
-        $this->authorize('update', $this->findLoteOrFail($id));
+        $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -94,7 +79,7 @@ class LoteController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findLoteOrFail($id));
+        $this->authorize('delete', $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]));
         return parent::destroy($id);
     }
 
@@ -110,7 +95,7 @@ class LoteController extends ModalController
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     protected function print($id,$posicion=1){
-        $lote = $this->findLoteOrFail($id);
+        $lote = $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]);
         $this->authorize('update', $lote);
         return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
@@ -121,7 +106,7 @@ class LoteController extends ModalController
      * @return \Illuminate\View\View
      */
     protected function capture($lote){
-        $this->authorize('update', $this->findLoteOrFail($lote));
+        $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
         $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
         return view('lote.inventario',compact('lote','materiales'));
     }
@@ -133,7 +118,7 @@ class LoteController extends ModalController
      * @return void
      */
     protected function postCapture($lote,Request $request){
-       $this->authorize('update', $this->findLoteOrFail($lote));
+       $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
        foreach ($request->except('_token') as $key => $value){
            $material = Material::find($key);
            if (!$material) {

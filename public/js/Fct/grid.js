@@ -3,10 +3,35 @@
 var id;
 var col;
 var list;
-var texto;
 var day;
 var month;
 var tipo;
+
+function bindDraggableLink(link) {
+    if (!link) {
+        return;
+    }
+    link.setAttribute('draggable', 'draggable');
+    link.addEventListener('dragstart', function (event) {
+        event.dataTransfer.setData('text/plain', event.target.id);
+    });
+}
+
+function appendActivityLink(listTarget, activityId, iconClass, comment) {
+    day = new Date();
+    month = day.getMonth() + 1;
+    var hasComment = $.trim(comment || '').length > 0;
+    var stateIcon = hasComment ? 'plus' : 'minus';
+    var safeComment = $('<div>').text(comment || '').html();
+
+    var html = "<small><a href='#' class='small dragable' id='" + activityId +
+        "' draggable='draggable' data-toggle='modal' data-target='#dialogo' title='" + safeComment + "'>" +
+        "<em class='fa fa-" + stateIcon + "'></em> " + day.getDate() + "/" + month +
+        " <em class='fa fa-" + iconClass + "'></em></a></small><br/>";
+
+    listTarget.append(html);
+    bindDraggableLink(document.getElementById(String(activityId)));
+}
 
 function apiAuthOptions(extraData) {
     var legacyToken = $.trim($("#_token").text());
@@ -30,45 +55,74 @@ function apiAuthOptions(extraData) {
 }
 
 $(function() {
-    $(".telefonico").on("click",function(event){
+    $(document).on("click", ".telefonico", function (event) {
         event.preventDefault();
-        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         id=$(this).parents(".profile_view").find(".fct").attr("id");
         list = $(this).parents(".profile_view").find(".listActivity");
         tipo = 'telefonico';
+        $("#dialogo").find("#explicacion").val('');
+        $("#dialogo").modal('show');
+
+        var todayPhone = list.find("a.small").filter(function () {
+            return $(this).find("em.fa-phone").length > 0;
+        }).last();
+
+        if (todayPhone.length) {
+            var authTodayPhone = apiAuthOptions();
+            $.ajax({
+                method: "GET",
+                url: "/activity/" + todayPhone.attr("id"),
+                headers: authTodayPhone.headers,
+                data: authTodayPhone.data
+            }).then(function (result) {
+                $("#dialogo").find("#explicacion").val((result.data && result.data.comentari) || "");
+            }, function () {
+                console.log("No s'ha pogut carregar el comentari telefonic existent.");
+            });
+        }
     });
 
-    $(".small").on("click",function(event){
+    $(document).on("click", ".listActivity a.small", function (event) {
         event.preventDefault();
         id=$(this).attr("id");
+        tipo = 'seguimiento';
+        $("#dialogo").find("#explicacion").val('');
+        $("#dialogo").modal('show');
+        var authShow = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/activity/" + id ,
-            headers: apiAuthOptions().headers,
-            data: apiAuthOptions().data
+            headers: authShow.headers,
+            data: authShow.data
         }).then(function (result) {
             $("#dialogo").find("#explicacion").val(result.data.comentari);
         }, function () {
             console.log("Error al buscar");
         });
-        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-        tipo = 'seguimiento';
     });
     $("#formDialogo").on("submit", function(event){
         event.preventDefault();
         if (tipo === 'telefonico') {
-            var authTelefonico = apiAuthOptions({explicacion: this.explicacion.value});
+            var comentariTelefonic = this.explicacion.value;
+            var authTelefonico = apiAuthOptions({explicacion: comentariTelefonic});
             $.ajax({
                 method: "POST",
                 url: "/colaboracion/" + id + "/telefonico",
                 headers: authTelefonico.headers,
                 data: authTelefonico.data
             }).then(function (result) {
-                texto = list.html();
-                day = new Date;
-                month = day.getMonth() + 1;
-                texto = list.html() + "<small><a href='#' class='small dragable' id='"+result.data.id+"' draggable='draggable' data-toggle='modal' data-target='#dialogo'><em class='fa fa-plus'></em> " + day.getDate() + "/" + month + " <em class='fa fa-phone'></em></a></small><br/>";
-                list.html(texto);
+                var targetId = String(result.data.id);
+                var existing = list.find("a.small#" + targetId);
+                if (existing.length) {
+                    var hasComment = $.trim(comentariTelefonic).length > 0;
+                    existing.find("em.fa").first()
+                        .toggleClass("fa-plus", hasComment)
+                        .toggleClass("fa-minus", !hasComment);
+                    existing.attr("title", comentariTelefonic)
+                        .attr("data-original-title", comentariTelefonic);
+                } else {
+                    appendActivityLink(list, result.data.id, 'phone', comentariTelefonic);
+                }
                 $("#dialogo").modal('hide');
             }, function () {
                 console.log("Només es pot un per dia");
@@ -103,10 +157,10 @@ $(function() {
         }
     });
 
-    $('.fa-minus').on("click", function(event){
+    $(document).on("click", ".listActivity a.small .fa-minus", function (event) {
         event.preventDefault();
         event.stopPropagation();
-        var id=$(this).parents(".small").attr("id");
+        var id=$(this).closest("a.small").attr("id");
         if (confirm('Vas a esborrar esta evidencia')) {
             var authDelete = apiAuthOptions();
             $.ajax({
@@ -115,20 +169,29 @@ $(function() {
                 dataType: 'json',
                 headers: authDelete.headers,
                 data: authDelete.data
-            }).then(() => this.parentElement.remove());
+            }).then(() => {
+                var small = $(this).closest('small');
+                small.next('br').remove();
+                small.remove();
+            });
         }
     });
-    $('.fa-plus').on("click", function(){
+
+    $(document).on("click", ".profile_view .bottom .fa-plus", function () {
+        if ($(this).closest(".listActivity").length) {
+            return;
+        }
         var id=$(this).parents(".profile_view").attr("id");
         var instructor = $("#idInstructor");
         $('#formAddAlumno').attr('action', '/fct/fctalumnoCreate');
         $('#idColaboracion').attr('value',id);
+        var authInstructores = apiAuthOptions();
         $.ajax({
             method: "GET",
             url: "/colaboracion/instructores/" + id ,
             dataType: 'json',
-            headers: apiAuthOptions().headers,
-            data: apiAuthOptions().data
+            headers: authInstructores.headers,
+            data: authInstructores.data
         }).then(function (result) {
                       instructor.empty(); // remove old options
                         $.each(result.data, function (key, value) {
@@ -158,13 +221,8 @@ $(function() {
         locale: 'es',
         format: 'DD-MM-YYYY',
     });
-    Array.from(document.querySelectorAll('.dragable')).forEach((item)=>{
-        item.setAttribute('draggable','draggable');
-        item.addEventListener('dragstart',(event)=>{
-            //event.preventDefault();
-            event.dataTransfer.setData('text/plain',event.target.id);
-        });
-
+    Array.from(document.querySelectorAll('.dragable')).forEach((item) => {
+        bindDraggableLink(item);
     });
     Array.from(document.querySelectorAll('.fct')).forEach((item)=>{
         item.addEventListener('dragover',(event)=>{

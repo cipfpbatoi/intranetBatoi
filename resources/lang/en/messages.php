@@ -94,6 +94,8 @@ return array(
         'justify' => 'Justify',
         'unauthorize' => 'Disallowed',
         'refuse' => 'Refuse',
+        'renuncia' => 'Withdrawn',
+        'expulsat' => 'Expelled',
         'pendiente' => 'Pending',
         'autorizada' => 'Approved',
         'impresa' => 'Printed',

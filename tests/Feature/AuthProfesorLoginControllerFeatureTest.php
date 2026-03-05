@@ -82,8 +82,8 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
         $this->assertNotSame('', $bearerToken);
 
         $metaResponse = $this->blade('<x-layouts.meta />');
-        $metaResponse->assertSee('name="user-token"', false);
-        $metaResponse->assertSee('content="legacy-token-meta-2006"', false);
+        $metaResponse->assertDontSee('name="user-token"', false);
+        $metaResponse->assertDontSee('content="legacy-token-meta-2006"', false);
         $metaResponse->assertSee('name="user-bearer-token"', false);
         $metaResponse->assertSee('content="'.$bearerToken.'"', false);
     }

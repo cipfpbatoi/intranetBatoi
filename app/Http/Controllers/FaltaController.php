@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\FaltaRequest;
 use Illuminate\Http\Request;
@@ -90,11 +91,12 @@ class FaltaController extends ModalController
     /**
      * @param Request $request
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $this->validate($request, (new FaltaRequest())->rules());
         $this->faltas()->update($id, $request);
         return $this->redirect();
@@ -108,11 +110,12 @@ class FaltaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function init($id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $this->faltas()->init($id);
         return $this->redirect();
     }
@@ -120,32 +123,26 @@ class FaltaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function alta($id)
     {
-        $this->authorize('update', $this->findFaltaOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
         $elemento = $this->faltas()->alta($id);
         return back()->with('pestana', $elemento->estado);
-    }
-
-    /**
-     * Recupera la falta per aplicar autorització explícita.
-     */
-    private function findFaltaOrFail(int $id): Falta
-    {
-        return Falta::findOrFail($id);
     }
 
     /**
      * Mostra el detall d'una falta.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
-        $elemento = $this->findFaltaOrFail((int) $id);
+        $elemento = $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));

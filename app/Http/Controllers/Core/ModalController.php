@@ -325,6 +325,10 @@ abstract class ModalController extends Controller
             return redirect()->action(Session::get('redirect'));
         } //variable session
 
+        if ($this->redirect) {
+            return redirect()->action($this->redirect);
+        }
+
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
 

@@ -9,11 +9,12 @@ use Intranet\Http\Requests\TipoActividadRequest;
 use Intranet\Http\Requests\TipoActividadUpdateRequest;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoActividad;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\TipoActividadCrudSchema;
 
 
 /**
- * Class LoteController
+ * Class TipoActividadController
  * @package Intranet\Http\Controllers
  */
 class TipoActividadController extends ModalController
@@ -30,7 +31,6 @@ class TipoActividadController extends ModalController
 
     protected $gridFields = TipoActividadCrudSchema::GRID_FIELDS;
 
-
     public function store(TipoActividadRequest $request)
     {
         $this->authorize('create', TipoActividad::class);
@@ -45,7 +45,13 @@ class TipoActividadController extends ModalController
 
     public function update(TipoActividadUpdateRequest $request, $id)
     {
-        $this->authorize('update', TipoActividad::findOrFail((int) $id));
+        $tipoActividad = $this->findModelOrFail(
+            TipoActividad::class,
+            $id,
+            "Tipus d'activitat no trobat",
+            ['tipo_actividad_id' => $id]
+        );
+        $this->authorize('update', $tipoActividad);
         $request->merge(['departamento_id' => authUser()->departamento]);
         $this->persist($request, $id);
         return $this->redirect();
@@ -55,10 +61,17 @@ class TipoActividadController extends ModalController
      * Elimina un tipus d'activitat amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', TipoActividad::findOrFail((int) $id));
+        $tipoActividad = $this->findModelOrFail(
+            TipoActividad::class,
+            $id,
+            "Tipus d'activitat no trobat",
+            ['tipo_actividad_id' => $id]
+        );
+        $this->authorize('delete', $tipoActividad);
         return parent::destroy($id);
     }
 

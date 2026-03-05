@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
@@ -34,21 +33,6 @@ class SolicitudController extends ModalController
     protected $model = 'Solicitud';
     protected $profile = false;
 
-    /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Solicitud
-     */
-    private function findSolicitudOrFail($id): Solicitud
-    {
-        try {
-            return Solicitud::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Sol·licitud no trobada', ['solicitud_id' => $id], $e);
-        }
-    }
-
-
     public function store(SolicitudRequest $request)
     {
         $this->authorize('create', Solicitud::class);
@@ -65,7 +49,13 @@ class SolicitudController extends ModalController
      */
     public function update(SolicitudRequest $request, $id)
     {
-        $this->authorize('update', $this->findSolicitudOrFail($id));
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('update', $solicitud);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -76,7 +66,12 @@ class SolicitudController extends ModalController
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function confirm($id){
-        $solicitud = $this->findSolicitudOrFail($id);
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('view', $solicitud);
         if ($solicitud->estado == 0 && $solicitud->idOrientador) {
             return ConfirmAndSend::render($this->model, $id,'Enviar a '.$solicitud->Orientador->FullName);
@@ -108,7 +103,12 @@ class SolicitudController extends ModalController
      */
     protected function init($id)
     {
-        $expediente = $this->findSolicitudOrFail($id);
+        $expediente = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('update', $expediente);
         $expediente->estado = 1;
         $expediente->save();
@@ -136,7 +136,12 @@ class SolicitudController extends ModalController
      */
     public function show($id)
     {
-        $elemento = $this->findSolicitudOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('solicitud.show', compact('elemento', 'modelo'));
@@ -150,7 +155,13 @@ class SolicitudController extends ModalController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findSolicitudOrFail($id));
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('delete', $solicitud);
         return parent::destroy($id);
     }
 

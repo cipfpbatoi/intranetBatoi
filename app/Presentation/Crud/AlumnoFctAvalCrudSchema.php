@@ -20,6 +20,15 @@ final class AlumnoFctAvalCrudSchema
     ];
 
     /**
+     * @var array<int, string>
+     */
+    public const GRID_FIELDS_LFP = [
+        'Nombre',
+        'Qualificacio',
+        'hasta',
+    ];
+
+    /**
      * @var array<string, array<string, mixed>>
      */
     public const FORM_FIELDS = [
@@ -30,4 +39,3 @@ final class AlumnoFctAvalCrudSchema
         'calProyecto' => ['type' => 'text'],
     ];
 }
-

@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Intranet\Services\Notifications\NotificationService;
@@ -174,6 +175,8 @@ class Handler extends ExceptionHandler
 
     /**
      * Registra totes les excepcions en un canal dedicat.
+     * Compacta el log per a autenticació i errors NotFound de domini.
+     * Evita traça en avisos per reduir soroll en producció.
      *
      * @param \Throwable $exception
      * @return void
@@ -209,13 +212,13 @@ class Handler extends ExceptionHandler
                 $context['referer'] = (string) $request->header('Referer', '');
 
                 $user = authUser();
-                if ($user) {
-                    $context['user'] = [
+                $context['user'] = $user
+                    ? [
                         'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
                         'rol' => $user->rol ?? null,
                         'email' => $user->email ?? null,
-                    ];
-                }
+                    ]
+                    : ['guest' => true];
             }
 
             Log::channel('exceptions')->info($exception->getMessage() ?: 'Validation error', $context);
@@ -225,19 +228,39 @@ class Handler extends ExceptionHandler
         $statusCode = ($exception instanceof HttpExceptionInterface)
             ? $exception->getStatusCode()
             : null;
+        if ($exception instanceof TokenMismatchException) {
+            $statusCode = 419;
+        }
         $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
-        if ($exception instanceof AuthenticationException) {
+        $isUnauthenticated = $exception instanceof AuthenticationException;
+        $isNotFoundDomain = $exception instanceof NotFoundDomainException;
+        $isTokenMismatch = $exception instanceof TokenMismatchException;
+
+        if ($isUnauthenticated) {
             $level = 'info';
+        }
+        if ($isTokenMismatch) {
+            $level = 'warning';
         }
 
         $context = [
             'exception' => get_class($exception),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
             'code' => $exception->getCode(),
             'status' => $statusCode,
-            'trace' => $exception->getTraceAsString(),
         ];
+
+        if (!$isUnauthenticated) {
+            $context['file'] = $exception->getFile();
+            $context['line'] = $exception->getLine();
+        }
+
+        $includeTrace = !$isUnauthenticated
+            && !$isNotFoundDomain
+            && ($level === 'error' || config('app.debug'));
+
+        if ($includeTrace) {
+            $context['trace'] = $exception->getTraceAsString();
+        }
 
         if ($exception instanceof IntranetException) {
             $context['context'] = $exception->getContext();
@@ -253,13 +276,13 @@ class Handler extends ExceptionHandler
             $context['referer'] = (string) $request->header('Referer', '');
 
             $user = authUser();
-            if ($user) {
-                $context['user'] = [
+            $context['user'] = $user
+                ? [
                     'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
                     'rol' => $user->rol ?? null,
                     'email' => $user->email ?? null,
-                ];
-            }
+                ]
+                : ['guest' => true];
         }
 
         Log::channel('exceptions')->log($level, (string) $exception->getMessage(), $context);
@@ -276,6 +299,14 @@ class Handler extends ExceptionHandler
     {
         $status = $exception->getStatus();
         $message = $exception->getUserMessage();
+
+        if ($exception instanceof NotFoundDomainException) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 404);
+            }
+
+            return response()->view('errors.404', [], 404);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => $message], $status);

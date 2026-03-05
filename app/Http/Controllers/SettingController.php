@@ -8,6 +8,7 @@ use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Setting;
 use Intranet\Services\UI\AppAlert as Alert;
+use Intranet\Exceptions\NotFoundDomainException;
 
 
 /**
@@ -45,7 +46,8 @@ class SettingController extends ModalController
 
     public function update(SettingRequest $request, $id)
     {
-        $this->authorize('update', Setting::findOrFail($id));
+        $setting = $this->findModelOrFail(Setting::class, $id, 'Configuració no trobada', ['setting_id' => $id]);
+        $this->authorize('update', $setting);
         $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
@@ -55,10 +57,12 @@ class SettingController extends ModalController
      * Elimina un setting existent.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Setting::findOrFail($id));
+        $setting = $this->findModelOrFail(Setting::class, $id, 'Configuració no trobada', ['setting_id' => $id]);
+        $this->authorize('delete', $setting);
         return parent::destroy($id);
     }
 

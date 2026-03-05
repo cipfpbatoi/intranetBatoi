@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Instructor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\InstructorCrudSchema;
 use Illuminate\Support\Carbon;
@@ -176,12 +177,18 @@ class InstructorController extends IntranetController
     /**
      * @param $id
      * @param $idCentro
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function copy($id, $idCentro)
     {
-        $instructor = Instructor::findOrFail($id);
-        $centro = Centro::findOrFail($idCentro);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
+        $centro = $this->findModelOrFail(Centro::class, $idCentro, 'Centre no trobat', ['centro_id' => $idCentro]);
         $posibles = hazArray($centro->Empresa->centros, 'id', ['nombre', 'direccion'], '-');
 
         return view('instructor.copy', compact('instructor', 'posibles', 'centro'));
@@ -207,11 +214,17 @@ class InstructorController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
    public function pdf($id)
     {
-        $instructor = Instructor::findOrFail($id);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
 
         if ($instructor->surnames == '') {
             Alert::danger("Completa les dades de l'instructor");

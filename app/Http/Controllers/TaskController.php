@@ -8,6 +8,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Task;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\TaskCrudSchema;
 use Intranet\Services\School\TaskValidationService;
 
@@ -68,14 +69,20 @@ class TaskController extends ModalController
 
     public function update(TaskRequest $request, $id)
     {
-        $this->authorize('update', Task::findOrFail($id));
+        $task = $this->findModelOrFail(Task::class, $id, 'Tasca no trobada', ['task_id' => $id]);
+        $this->authorize('update', $task);
         $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function check($id)
     {
-        $this->tarea = Task::findOrFail($id);
+        $this->tarea = $this->findModelOrFail(Task::class, $id, 'Tasca no trobada', ['task_id' => $id]);
         $this->authorize('check', $this->tarea);
         $taskTeacher = $this->tarea->myDetails;
         if ($taskTeacher) {

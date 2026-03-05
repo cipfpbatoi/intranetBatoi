@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
@@ -43,11 +42,12 @@ class GrupoTrabajoController extends ModalController
      */
     private function findGrupoTrabajoOrFail($id): GrupoTrabajo
     {
-        try {
-            return GrupoTrabajo::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Grup de treball no trobat', ['grupo_trabajo_id' => $id], $e);
-        }
+        return $this->findModelOrFail(
+            GrupoTrabajo::class,
+            $id,
+            'Grup de treball no trobat',
+            ['grupo_trabajo_id' => $id]
+        );
     }
 
     public function store(GrupoTrabajoRequest $request)
@@ -65,7 +65,8 @@ class GrupoTrabajoController extends ModalController
      */
     public function update(GrupoTrabajoRequest $request, $id)
     {
-        $this->authorize('update', $this->findGrupoTrabajoOrFail($id));
+        $grupoTrabajo = $this->findGrupoTrabajoOrFail($id);
+        $this->authorize('update', $grupoTrabajo);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -109,7 +110,8 @@ class GrupoTrabajoController extends ModalController
      */
     public function altaProfesor(GTProfesorRequest $request, $gtId)
     {
-        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($gtId));
+        $grupoTrabajo = $this->findGrupoTrabajoOrFail($gtId);
+        $this->authorize('manageMembers', $grupoTrabajo);
         Miembro::create($request->all());
         return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
@@ -122,7 +124,8 @@ class GrupoTrabajoController extends ModalController
      */
     public function borrarProfesor($gtId, $profesorId)
     {
-        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($gtId));
+        $grupoTrabajo = $this->findGrupoTrabajoOrFail($gtId);
+        $this->authorize('manageMembers', $grupoTrabajo);
         Miembro::where('idGrupoTrabajo', '=', $gtId)
             ->where('idProfesor', '=', $profesorId)
             ->where('coordinador', 0)
@@ -139,7 +142,8 @@ class GrupoTrabajoController extends ModalController
      */
     public function coordinador($grupoId, $profesorId)
     {
-        $this->authorize('manageMembers', $this->findGrupoTrabajoOrFail($grupoId));
+        $grupoTrabajo = $this->findGrupoTrabajoOrFail($grupoId);
+        $this->authorize('manageMembers', $grupoTrabajo);
         if ($this->removeCoord($grupoId)) {
             $this->addCoord($grupoId, $profesorId);
         }

@@ -8,6 +8,7 @@ use Intranet\Http\Requests\AlumnoUpdateRequest;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\UI\Botones\BotonIcon;
 use Illuminate\Support\Carbon;
@@ -53,9 +54,14 @@ class AlumnoController extends PerfilController
         return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Carbon::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function checkFol($id)
     {
-        $alumne = Alumno::findOrFail($id);
+        $alumne = $this->findModelOrFail(Alumno::class, $id, 'Alumne no trobat', ['alumno_id' => $id]);
         $alumne->fol = ($alumne->fol==0)?1:0;
         $alumne->save();
         return back();

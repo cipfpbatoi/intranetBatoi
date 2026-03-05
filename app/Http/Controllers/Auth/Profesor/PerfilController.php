@@ -11,6 +11,7 @@ use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Profesor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\PerfilFilesRequest;
 use Intranet\Http\Requests\ProfesorPerfilUpdateRequest;
 use Intranet\Services\Signature\DigitalSignatureService;
@@ -19,7 +20,9 @@ use Intranet\Services\Media\ImageService;
 use Intranet\Services\PhotoCarnet;
 use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Perfil del professor.
+ */
 class PerfilController extends Perfil
 {
 
@@ -49,9 +52,18 @@ class PerfilController extends Perfil
         return view('perfil.files', compact('profesor'));
     }
 
+    /**
+     * @param PerfilFilesRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updateFiles(PerfilFilesRequest $request)
     {
-        $profesor = $this->profesores()->findOrFail((string) Auth::user('profesor')->dni);
+        $profesor = $this->wrapNotFound(
+            fn () => $this->profesores()->findOrFail((string) Auth::user('profesor')->dni),
+            'Professor no trobat',
+            ['profesor_id' => Auth::user('profesor')->dni]
+        );
 
         // Processa cada fitxer o acció en mètodes separats
         $this->updatePhoto($request, $profesor);

@@ -122,7 +122,7 @@ $(function() {
         list = $(this).parents(".profile_view").find(".listActivity");
         tipo = 'book';
     });
-    $(".small").on("click",function(event){
+    $(document).on("click", ".small", function(event){
         event.preventDefault();
         id=$(this).attr("id");
         $.ajax({

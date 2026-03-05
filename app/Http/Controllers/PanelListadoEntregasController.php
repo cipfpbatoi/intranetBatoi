@@ -20,6 +20,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
@@ -27,7 +28,9 @@ use Intranet\Services\School\ModuloGrupoService;
 use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Panell de llistat d'entregues de departament.
+ */
 class PanelListadoEntregasController extends BaseController
 {
     use Imprimir;
@@ -224,10 +227,16 @@ class PanelListadoEntregasController extends BaseController
         return back();
     }
     
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     protected function pdf($id)
     {
         Gate::authorize('manageDepartmentReport', Reunion::class);
-        return response()->file(storage_path('app/' . Reunion::findOrFail($id)->fichero));
+        $reunion = $this->findModelOrFail(Reunion::class, $id, 'Reunió no trobada', ['reunion_id' => $id]);
+        return response()->file(storage_path('app/' . $reunion->fichero));
     }
     
     public static function existeInforme()

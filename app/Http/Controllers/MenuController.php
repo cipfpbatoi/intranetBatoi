@@ -6,13 +6,11 @@ use Intranet\Application\Menu\MenuService;
 use Intranet\Entities\Menu;
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MenuController
- * @package Intranet\Http\Controllers
+ * Controlador de manteniment de menús.
  */
 class MenuController extends IntranetController
 {
@@ -40,20 +38,6 @@ class MenuController extends IntranetController
     ];
 
     /**
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return Menu
-     */
-    private function findMenuOrFail($id): Menu
-    {
-        try {
-            return Menu::findOrFail((int) $id);
-        } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Menú no trobat', ['menu_id' => $id], $e);
-        }
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Collection|Menu[]|mixed
      */
     protected function search()
@@ -74,7 +58,8 @@ class MenuController extends IntranetController
      */
     public function copy($id)
     {
-        $this->authorize('update', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
         $copia = $this->menus()->copy($id);
         return redirect()->route('menu.edit', ['menu' => $copia->id]);
     }
@@ -86,7 +71,8 @@ class MenuController extends IntranetController
      */
     public function up($id)
     {
-        $this->authorize('update', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
         $this->menus()->moveUp($id);
         return redirect()->route('menu.index');
     }
@@ -98,7 +84,8 @@ class MenuController extends IntranetController
      */
     public function down($id)
     {
-        $this->authorize('update', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
         $this->menus()->moveDown($id);
         return redirect()->route('menu.index');
     }
@@ -120,7 +107,8 @@ class MenuController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
         return parent::update($request, $id);
     }
 
@@ -131,7 +119,8 @@ class MenuController extends IntranetController
      */
     public function active($id)
     {
-        $this->authorize('update', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
         $response = parent::active($id);
         $this->menus()->clearCache();
 
@@ -145,7 +134,8 @@ class MenuController extends IntranetController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', $this->findMenuOrFail($id));
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('delete', $menu);
         $response = parent::destroy($id);
         $this->menus()->clearCache();
 

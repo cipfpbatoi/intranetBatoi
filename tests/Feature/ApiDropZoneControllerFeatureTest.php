@@ -8,8 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * Proves feature de DropZone amb autenticació Sanctum.
+ */
 class ApiDropZoneControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -51,7 +55,7 @@ class ApiDropZoneControllerFeatureTest extends TestCase
     {
         $this->insertProfesor('PDZ01', 'token-dz-01');
         $user = Profesor::on('sqlite')->findOrFail('PDZ01');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('adjuntos')->insert([
             'name' => 'A56 signat',
@@ -64,7 +68,7 @@ class ApiDropZoneControllerFeatureTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $response = $this->getJson('/api/getAttached/alumnofctaval/2434?api_token=token-dz-01');
+        $response = $this->getJson('/api/getAttached/alumnofctaval/2434');
 
         $response->assertOk();
         $response->assertJsonPath('success', true);
@@ -78,7 +82,7 @@ class ApiDropZoneControllerFeatureTest extends TestCase
         $this->insertProfesor('PDZ02', 'token-dz-02');
         $this->insertProfesor('PDZ03', 'token-dz-03');
         $user = Profesor::on('sqlite')->findOrFail('PDZ02');
-        $this->actingAs($user, 'api');
+        Sanctum::actingAs($user);
 
         DB::table('adjuntos')->insert([
             'name' => 'A56 extern',
@@ -91,7 +95,7 @@ class ApiDropZoneControllerFeatureTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $response = $this->getJson('/api/removeAttached/alumnofctaval/2434/A56%20extern?api_token=token-dz-02');
+        $response = $this->getJson('/api/removeAttached/alumnofctaval/2434/A56%20extern');
 
         $response->assertStatus(400);
         $response->assertSeeText("Sense permisos, no ets el propietari");

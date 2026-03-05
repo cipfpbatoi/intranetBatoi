@@ -15,13 +15,19 @@ use Intranet\Application\Import\ImportService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Entities\ImportRun;
+use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Controllers\Concerns\FindsModel;
 use Intranet\Http\Requests\ImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Intranet\Services\UI\AppAlert as Alert;
 
+/**
+ * Controlador d'importacions.
+ */
 class ImportController extends Seeder
 {
     use SharedImportFieldTransformers;
+    use FindsModel;
 
     private ?ImportService $importService = null;
     private ?ImportWorkflowService $importWorkflowService = null;
@@ -116,10 +122,20 @@ class ImportController extends Seeder
         return view('seeder.history', ['runs' => $runs]);
     }
 
+    /**
+     * @param int $importRunId
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function status(int $importRunId)
     {
         $this->authorizeImportManagement();
-        $run = ImportRun::findOrFail($importRunId);
+        $run = $this->findModelOrFail(
+            ImportRun::class,
+            $importRunId,
+            'Importació no trobada',
+            ['import_run_id' => $importRunId]
+        );
 
         return response()->json([
             'id' => $run->id,

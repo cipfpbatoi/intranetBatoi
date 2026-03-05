@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -40,6 +41,20 @@ class IncidenciaController extends ModalController
     protected $descriptionField = 'descripcion';
     protected $formFields = IncidenciaCrudSchema::FORM_FIELDS;
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Incidencia
+     */
+    private function findIncidenciaOrFail($id): Incidencia
+    {
+        return $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
+    }
 
     protected function search()
     {
@@ -49,13 +64,15 @@ class IncidenciaController extends ModalController
             ->where('idProfesor', '=', $this->currentProfesorDni())
             ->get();
     }
+
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function generarOrden($id)
     {
-        $incidencia = Incidencia::findOrFail($id);
+        $incidencia = $this->findIncidenciaOrFail($id);
         $this->authorize('update', $incidencia);
 
         $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
@@ -96,11 +113,12 @@ class IncidenciaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function removeOrden($id)
     {
-        $incidencia = Incidencia::findOrFail($id);
+        $incidencia = $this->findIncidenciaOrFail($id);
         $this->authorize('update', $incidencia);
         $incidencia->orden = null;
         $incidencia->save();
@@ -110,11 +128,12 @@ class IncidenciaController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id=null)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->authorize('update', $elemento);
 
         $formulario = new FormBuilder($elemento, IncidenciaCrudSchema::editFormFields());
@@ -123,12 +142,17 @@ class IncidenciaController extends ModalController
     }
 
 
+    /**
+     * @param IncidenciaRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(IncidenciaRequest $request)
     {
         $this->authorize('create', Incidencia::class);
         $request->merge(['idProfesor' => $this->currentProfesorDni()]);
         $id = $this->persist($request);
-        $incidencia = Incidencia::findOrFail($id);
+        $incidencia = $this->findIncidenciaOrFail($id);
         $this->storeImagen($incidencia, $request);
         Incidencia::putEstado($incidencia->id, $this->init);
         return $this->redirect();
@@ -139,14 +163,20 @@ class IncidenciaController extends ModalController
      *  update (Request,$id) return redirect
      * guarda els valors del formulari
      */
+    /**
+     * @param IncidenciaRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(IncidenciaRequest $request, $id)
     {
-        $elemento =  Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->authorize('update', $elemento);
 
         $tipo = $elemento->tipo;
         $this->persist($request, $id);
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
@@ -217,20 +247,26 @@ class IncidenciaController extends ModalController
     /*
      * show($id) retorna vista de detall
      */
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
     }
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notify($id)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->authorize('update', $elemento);
 
         if ($elemento->responsable) {
@@ -257,7 +293,7 @@ class IncidenciaController extends ModalController
 
     public function destroy($id)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->authorize('delete', $elemento);
 
         if (!empty($elemento->imagen)) {

@@ -8,12 +8,16 @@ use Intranet\Http\Controllers\Core\IntranetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Empresa;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\UI\AppAlert as Alert;
 
+/**
+ * Controlador d'empreses.
+ */
 class EmpresaController extends IntranetController
 {
     private const ROLES_ROL_TUTOR = 'roles.rol.tutor';
@@ -104,10 +108,23 @@ class EmpresaController extends IntranetController
         return redirect()->route('empresa.detalle', ['empresa' => $id]);
     }
     
+    /**
+     * @param Request $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', Empresa::findOrFail((int) $id));
-        $elemento = Empresa::findOrFail($this->empreses()->saveFromRequest($request, $id));
+        $empresa = $this->findModelOrFail(Empresa::class, $id, 'Empresa no trobada', ['empresa_id' => $id]);
+        $this->authorize('update', $empresa);
+        $elementoId = $this->empreses()->saveFromRequest($request, $id);
+        $elemento = $this->findModelOrFail(
+            Empresa::class,
+            $elementoId,
+            'Empresa no trobada',
+            ['empresa_id' => $elementoId]
+        );
         $this->empreses()->fillMissingCenterData($elemento);
         return redirect()->route('empresa.detalle', ['empresa' => $elemento->id]);
     }
@@ -117,9 +134,14 @@ class EmpresaController extends IntranetController
      * torna el fitxer de un model
      */
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
     public function document($id)
     {
-        $elemento = Empresa::findOrFail($id);
+        $elemento = $this->findModelOrFail(Empresa::class, $id, 'Empresa no trobada', ['empresa_id' => $id]);
         if ($elemento->fichero) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }

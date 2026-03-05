@@ -6,14 +6,17 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
 
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
-use Illuminate\Support\Carbon;
+use Jenssegers\Date\Date;
 
+/**
+ * Controlador API de materials.
+ */
 class MaterialController extends ApiResourceController
 {
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     protected $model = 'Material';
-
 
     function getMaterial($espacio)
     {
@@ -68,9 +71,14 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse($data, 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return void
+     */
     public function put(Request $request)
     {
-        $material = Material::findOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -79,10 +87,15 @@ class MaterialController extends ApiResourceController
         $material->anterior = $anterior;
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putUnidades(Request $request)
     {
 
-        $material = Material::findOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         $anterior = $material->unidades;
         $material->unidades = $request->unidades;
         $material->save();
@@ -92,13 +105,15 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => json_encode($request)], 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putUbicacion(Request $request)
     {
-        $material = Material::findOrFail($request->id);
-        $user = $this->resolveApiUser($request);
-        if (!$user) {
-            return $this->sendError('Unauthorized', 401);
-        }
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
+        $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
         try {
@@ -132,13 +147,15 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => $missatge], 'OK');
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putEstado(Request $request)
     {
-        $material = Material::findOrFail($request->id);
-        $user = $this->resolveApiUser($request);
-        if (!$user) {
-            return $this->sendError('Unauthorized', 401);
-        }
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
+        $user = apiAuthUser($request->api_token);
         $esadmin = esRol($user->rol, 2);
         $missatge = '';
         try {
@@ -183,7 +200,7 @@ class MaterialController extends ApiResourceController
 
     private function resolveApiUser(Request $request)
     {
-        $guardUser = $request->user('sanctum') ?? $request->user('api');
+        $guardUser = $request->user('api');
         if ($guardUser) {
             return $guardUser;
         }
@@ -199,11 +216,16 @@ class MaterialController extends ApiResourceController
         return apiAuthUser($token);
     }
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putInventario(Request $request)
     {
-        $fecha = new Carbon();
+        $fecha = new Date();
 
-        $material = Material::findOrFail($request->id);
+        $material = $this->findModelOrFail(Material::class, $request->id, 'Material no trobat', ['material_id' => $request->id]);
         if ($request->inventario == 'true') {
             $material->fechaultimoinventario = $fecha->format('Y-m-d');
         } else {

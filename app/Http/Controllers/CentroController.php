@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
 use Illuminate\Support\Facades\Session;
@@ -29,7 +30,6 @@ class CentroController extends ModalController
      * @var string
      */
     protected $model = 'Centro';
-
 
     /**
      * @param Request $request
@@ -63,11 +63,12 @@ class CentroController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresa = $centro->idEmpresa;
 
         if (isAdmin()) {
@@ -89,9 +90,15 @@ class CentroController extends ModalController
         return $this->showEmpresa($empresa);
     }
 
+    /**
+     * @param EmpresaCentroRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function empresaCreateCentro(EmpresaCentroRequest $request, $id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresaAnt = $centro->Empresa;
         if ($empresaAnt->concierto == $request->concierto) {
             $empresaAnt->concierto = null;

@@ -8,6 +8,7 @@ use Intranet\Http\Requests\ModuloCicloRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class Modulo_cicloController
@@ -29,6 +30,7 @@ class Modulo_cicloController extends ModalController
      * @var array
      */
     protected $gridFields = ['id', 'Xmodulo','Xciclo','curso','enlace','Xdepartamento'];
+
     /**
      *
      */
@@ -46,9 +48,15 @@ class Modulo_cicloController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param ModuloCicloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ModuloCicloRequest $request, $id)
     {
-        $this->authorize('update', Modulo_ciclo::findOrFail((int) $id));
+        $this->authorize('update', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -57,10 +65,11 @@ class Modulo_cicloController extends ModalController
      * Elimina un enllaç mòdul-cicle amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Modulo_ciclo::findOrFail((int) $id));
+        $this->authorize('delete', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
         return parent::destroy($id);
     }
 

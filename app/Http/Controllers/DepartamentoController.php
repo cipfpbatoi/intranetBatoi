@@ -7,10 +7,11 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Departamento;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\DepartamentoRequest;
 
 /**
- * Class CicloController
+ * Class DepartamentoController
  * @package Intranet\Http\Controllers
  */
 class DepartamentoController extends ModalController
@@ -34,7 +35,6 @@ class DepartamentoController extends ModalController
         'idProfesor' => ['type' => 'select']
     ];
 
-
     protected function iniBotones()
     {
         $this->panel->setBoton(
@@ -52,9 +52,21 @@ class DepartamentoController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param DepartamentoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(DepartamentoRequest $request, $id)
     {
-        $this->authorize('update', Departamento::findOrFail((int) $id));
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('update', $departamento);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -63,10 +75,17 @@ class DepartamentoController extends ModalController
      * Elimina un departament amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Departamento::findOrFail((int) $id));
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('delete', $departamento);
         return parent::destroy($id);
     }
 

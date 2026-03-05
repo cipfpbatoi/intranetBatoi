@@ -13,7 +13,7 @@
            style="width:100%" data-page-length="25">
 
         <thead>
-            <x-grid.header :panel="$panel" />
+            <x-grid.header :panel="$panel" :pestana="$pestana" />
         </thead>
 
         @if($mostrarBody)
@@ -36,7 +36,7 @@
         @endif
 
         <tfoot>
-            <x-grid.header :panel="$panel" />
+            <x-grid.header :panel="$panel" :pestana="$pestana" />
         </tfoot>
     </table>
 </div>

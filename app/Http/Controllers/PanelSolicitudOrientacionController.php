@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Solicitud;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
@@ -57,10 +58,16 @@ class PanelSolicitudOrientacionController extends ModalController
      * Activa una sol·licitud d'orientació pendent.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function active($id)
     {
-        $elemento = Solicitud::findOrFail((int) $id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('activate', $elemento);
         if ($elemento->estado == 1) {
             $elemento->estado = 2;
@@ -80,10 +87,16 @@ class PanelSolicitudOrientacionController extends ModalController
      *
      * @param Request $request
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function resolve(Request $request, $id)
     {
-        $elemento = Solicitud::findOrFail((int) $id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
         $this->authorize('resolve', $elemento);
         if ($elemento->estado == 2) {
             $elemento->estado = 3;

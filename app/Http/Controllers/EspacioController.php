@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\EspacioRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 
@@ -54,9 +55,16 @@ class EspacioController extends ModalController
         return $this->redirect();
     }
 
+    /**
+     * @param EspacioRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(EspacioRequest $request, $id)
     {
-        $this->authorize('update', Espacio::findOrFail((string) $id));
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('update', $espacio);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -65,10 +73,12 @@ class EspacioController extends ModalController
      * Elimina un espai amb autorització explícita.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Espacio::findOrFail((string) $id));
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('delete', $espacio);
         return parent::destroy($id);
     }
 
@@ -100,9 +110,15 @@ class EspacioController extends ModalController
 
     }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function barcode($id, $posicion=1)
     {
-        $espacio = Espacio::findOrFail($id);
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
         $this->authorize('printBarcode', $espacio);
         return $this->hazPdf(
             'pdf.inventario.lote',
