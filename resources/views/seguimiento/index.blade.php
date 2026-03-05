@@ -2,11 +2,16 @@
      <div class="panel">
         <div class="panel-body">
             <table class="table table-striped table-condensed" name='alumnoresultado'>
-                <tr><th style="width: 20%">@lang("validation.attributes.Alumno")</th><th style="width: 25%">@lang("validation.attributes.valoraciones")</th><th style="width: 45%">@lang("validation.attributes.observaciones")</th><th style="width: 10%">@lang("validation.attributes.operaciones")</th></tr>
+                <tr>
+                    <th style="width: 20%">@lang("validation.attributes.Alumno")</th>
+                    <th style="width: 15%">@lang("validation.attributes.nota")</th>
+                    <th style="width: 55%">@lang("validation.attributes.observaciones")</th>
+                    <th style="width: 10%">@lang("validation.attributes.operaciones")</th>
+                </tr>
                 @foreach ($resultados as $orden)
                     <tr class="lineaGrupo" id='{{ $orden->id }}'>
                         <td><span class='none' name='nombre'>{!! $orden->nombre !!}</span></td>
-                        <td><span class='select' name='valoraciones'>{!! $orden->valoracion !!}</span></td>
+                        <td><span class='select' name='nota'>{{ config('auxiliares.notas')[$orden->nota] ?? '' }}</span></td>
                         <td><span class='textarea' name='observaciones'>{{ $orden->observaciones }}</td>
                         <td><span class='botones'>
                         <a href="#" class="editGrupo">{!! Html::image('img/edit.png',trans("messages.buttons.edit"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.edit"))) !!}</a>
@@ -28,9 +33,9 @@
                             </select>
                         </td>
                         <td>
-                            <select name="valoraciones" class="form-control">
-                                @foreach (config('auxiliares.valoraciones') as $key => $valoraciones)
-                                    <option value="{{$key}}">{{$valoraciones}}</option>
+                            <select name="nota" class="form-control">
+                                @foreach (config('auxiliares.notas') as $key => $nota)
+                                    <option value="{{$key}}">{{$nota}}</option>
                                 @endforeach
                             </select>
                         </td>
@@ -46,6 +51,11 @@
     </div>
      <a href="{{ route('resultado.index') }}" class="btn btn-success">@lang("messages.buttons.atras") </a>
 @push('scripts')
+    <script>
+        window.seguimientoOptions = {
+            nota: @json(config('auxiliares.notas'))
+        };
+    </script>
     <script src="/js/tabledit.js"></script>
     <script src="/js/Seguimiento/index.js"></script>
 @endpush

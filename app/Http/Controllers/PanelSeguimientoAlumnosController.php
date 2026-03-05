@@ -7,9 +7,12 @@ use Intranet\Http\Requests\AlumnoResultadoStoreRequest;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Resultado;
 use Intranet\Exceptions\NotFoundDomainException;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class PanelSeguimientoAlumnosController
@@ -35,8 +38,15 @@ class PanelSeguimientoAlumnosController extends IntranetController
         }
         $this->authorize('view', $resultado);
         $elemento = $resultado->moduloGrupo;
-        $resultados = AlumnoResultado::where('idModuloGrupo',$resultado->idModuloGrupo)->get();
-        $alumnes = $this->createWithDefaultValues(['idModuloGrupo'=>$resultado->idModuloGrupo])->getidAlumnoOptions();
+         
+        $renunciaIds = $this->renunciaAlumnoIds($resultado);
+        $resultados = AlumnoResultado::where('idModuloGrupo', $resultado->idModuloGrupo)
+            ->whereIn('idAlumno', $renunciaIds->all())
+            ->get();
+        $alumnes = $this->createWithDefaultValues(['idModuloGrupo' => $resultado->idModuloGrupo])->getidAlumnoOptions();
+        if ($alumnes !== []) {
+            $alumnes = array_intersect_key($alumnes, array_flip($renunciaIds->all()));
+        }
         return view('seguimiento.index', compact('elemento',  'alumnes', 'resultados'));
     }
 
@@ -61,6 +71,11 @@ class PanelSeguimientoAlumnosController extends IntranetController
             throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $request->idModuloGrupo]);
         }
         $this->authorize('update', $resultado);
+        $renunciaIds = $this->renunciaAlumnoIds($resultado);
+        if (!$renunciaIds->contains((string) $request->idAlumno)) {
+            Alert::warning("Només es poden afegir notes per alumnat amb renúncia en FCT.");
+            return back();
+        }
         $this->realStore($request);
         return back();
     }
@@ -85,5 +100,24 @@ class PanelSeguimientoAlumnosController extends IntranetController
         $this->search = (int) $resultado->id;
         parent::destroy($id);
         return back();
+    }
+
+    /**
+     * Retorna llistat d'alumnes amb renúncia en FCT per al grup del mòdul.
+     *
+     * @return Collection<int, string>
+     */
+    private function renunciaAlumnoIds(Resultado $resultado): Collection
+    {
+        $grupo = $resultado->moduloGrupo?->Grupo;
+        if (!$grupo) {
+            return collect();
+        }
+         
+
+        return AlumnoFct::query()
+            ->Grupo($grupo)
+            ->where('calificacion', 3)
+            ->pluck('idAlumno');
     }
 }

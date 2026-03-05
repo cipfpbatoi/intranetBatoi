@@ -86,7 +86,11 @@ function editRow() {
 				$span.after('<span class="editando"><select id="'+$span.attr('name')+'" class="form-control" name="'
 					+$span.attr('name')+'"></select></span>');
 				$.each(options[$span.attr('name')],(index,value) => {
-					if (index == $span.text())
+					var isSelected = index == $span.text();
+					if (!isSelected && value == $span.text()) {
+						isSelected = true;
+					}
+					if (isSelected)
 						$("#"+$span.attr('name')).append("<option value='"+index+"' selected>"+value+"</option>")
 					else
 						$("#"+$span.attr('name')).append("<option value='"+index+"'>"+value+"</option>")

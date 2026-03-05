@@ -9,8 +9,11 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
+use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Reunion;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -368,6 +371,14 @@ class ReunionController extends ModalController
         if (!$elemento) {
             throw new NotFoundDomainException("No s'ha trobat la reunió #$id", ['reunion_id' => $id]);
         }
+        if (!$elemento->archivada) {
+            try {
+                $this->ensureLfpRenunciaNotas($elemento);
+            } catch (IntranetException $e) {
+                Alert::warning($e->getMessage());
+                return back();
+            }
+        }
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
@@ -393,6 +404,91 @@ class ReunionController extends ModalController
                 }
             }
         }
+
+        $this->ensureLfpRenunciaNotas($reunion);
+    }
+
+    /**
+     * Comprova que l'acta final LFP tinga totes les notes de mòdul per a renúncies.
+     *
+     * @throws IntranetException
+     */
+    private function ensureLfpRenunciaNotas(Reunion $reunion): void
+    {
+        $faltants = $this->missingNotasRenuncia($reunion);
+        if ($faltants === []) {
+            return;
+        }
+
+        $detall = array_map(
+            static fn (array $item): string => $item['alumno'] . ': ' . implode(', ', $item['modulos']),
+            $faltants
+        );
+
+        throw new IntranetException(
+            "Falten notes de mòdul per a alumnat amb renúncia: " . implode('; ', $detall)
+        );
+    }
+
+    /**
+     * Retorna llistat d'alumnat amb renúncia que no té totes les notes de mòdul.
+     *
+     * @return array<int, array{alumno: string, modulos: array<int, string>}>
+     */
+    private function missingNotasRenuncia(Reunion $reunion): array
+    {
+        if (!$reunion->avaluacioFinal || $reunion->normativa !== 'LFP') {
+            return [];
+        }
+
+        $grupo = $reunion->grupoClase;
+        if (!$grupo || (int) $grupo->curso !== 2) {
+            return [];
+        }
+
+        $renuncies = AlumnoFct::query()
+            ->esAval()
+            ->Grupo($grupo)
+            ->where('calificacion', 3)
+            ->get();
+        if ($renuncies->isEmpty()) {
+            return [];
+        }
+
+        $modulos = Modulo_grupo::query()
+            ->where('idGrupo', $grupo->codigo)
+            ->get();
+        if ($modulos->isEmpty()) {
+            return [];
+        }
+
+        $resultats = AlumnoResultado::query()
+            ->whereIn('idAlumno', $renuncies->pluck('idAlumno'))
+            ->whereIn('idModuloGrupo', $modulos->pluck('id'))
+            ->get()
+            ->groupBy('idAlumno');
+
+        $faltants = [];
+        foreach ($renuncies as $fct) {
+            $resultatsAlumne = $resultats->get($fct->idAlumno, collect())->keyBy('idModuloGrupo');
+            $modulosPendents = [];
+            foreach ($modulos as $modulo) {
+                $nota = (int) ($resultatsAlumne->get($modulo->id)?->nota ?? 0);
+                if ($nota <= 0) {
+                    $modulosPendents[] = (string) ($modulo->Xmodulo ?? $modulo->id);
+                }
+            }
+
+            if ($modulosPendents !== []) {
+                $nombre = $fct->Alumno?->nameFull ?? $fct->Nombre;
+                $faltants[] = [
+                    'alumno' => (string) $nombre,
+                    'modulos' => $modulosPendents,
+                ];
+            }
+        }
+
+        return $faltants;
     }
 
     public function saveFile($id)
