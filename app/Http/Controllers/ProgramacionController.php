@@ -41,7 +41,7 @@ class ProgramacionController extends IntranetController
         try {
             return Programacion::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Programació no trobada', ['programacio_id' => $id]);
+            throw new NotFoundDomainException('Programació no trobada', ['programacio_id' => $id], $e);
         }
     }
 
@@ -121,7 +121,7 @@ class ProgramacionController extends IntranetController
         try {
             $elemento = Modulo_ciclo::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Mòdul del cicle no trobat', ['modulo_ciclo_id' => $id]);
+            throw new NotFoundDomainException('Mòdul del cicle no trobat', ['modulo_ciclo_id' => $id], $e);
         }
         if (isset($elemento->Modulo->codigo)){
             $horario = $this->horarios()->firstByModulo((string) $elemento->Modulo->codigo);

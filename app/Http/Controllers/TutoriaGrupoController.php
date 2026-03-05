@@ -40,7 +40,7 @@ class TutoriaGrupoController extends ModalController
         try {
             $record = TutoriaGrupo::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException("No s'ha trobat {$this->model} #{$id}", ['id' => $id]);
+            throw new NotFoundDomainException("No s'ha trobat {$this->model} #{$id}", ['id' => $id], $e);
         }
         $this->authorize('view', $record);
 

@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\ProfesorController;
 use Tests\TestCase;
 
@@ -47,16 +48,17 @@ class ProfesorControllerTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_change_torna_back_si_professor_no_existix(): void
+    /**
+     * Verifica que el canvi d'usuari llance excepció de domini 404 quan el professor no existeix.
+     */
+    public function test_change_llanca_not_found_si_professor_no_existix(): void
     {
         $this->bindRequestWithReferer('/admin/profesor');
         $controller = new DummyProfesorController();
 
-        $response = $this->callProtectedMethod($controller, 'change', ['NO_EXISTIX']);
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame(url('/admin/profesor'), $response->getTargetUrl());
-        $this->assertFalse(session()->has('userChange'));
+        $this->expectException(NotFoundDomainException::class);
+        $this->expectExceptionMessage('Professor no trobat');
+        $this->callProtectedMethod($controller, 'change', ['NO_EXISTIX']);
     }
 
     public function test_back_change_torna_home_i_neteja_sessio_si_no_hi_ha_usuari_original(): void

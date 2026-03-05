@@ -53,7 +53,7 @@ class OptionController extends ModalController
         try {
             $option = Option::findOrFail((int) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Opció no trobada', ['option_id' => $id]);
+            throw new NotFoundDomainException('Opció no trobada', ['option_id' => $id], $e);
         }
         $this->authorize('delete', $option);
         $poll = $option->ppoll_id;

@@ -31,7 +31,7 @@ class PanelSeguimientoAlumnosController extends IntranetController
         try {
             $resultado = Resultado::findOrFail((int) $search);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $search]);
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $search], $e);
         }
         $this->authorize('view', $resultado);
         $elemento = $resultado->moduloGrupo;
@@ -58,7 +58,7 @@ class PanelSeguimientoAlumnosController extends IntranetController
         try {
             $resultado = Resultado::where('idModuloGrupo', $request->idModuloGrupo)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $request->idModuloGrupo]);
+            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $request->idModuloGrupo], $e);
         }
         $this->authorize('update', $resultado);
         $this->realStore($request);
@@ -74,12 +74,12 @@ class PanelSeguimientoAlumnosController extends IntranetController
         try {
             $alumnoResultado = AlumnoResultado::findOrFail((int) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat d\'alumne no trobat', ['alumno_resultado_id' => $id]);
+            throw new NotFoundDomainException('Resultat d\'alumne no trobat', ['alumno_resultado_id' => $id], $e);
         }
         try {
             $resultado = Resultado::where('idModuloGrupo', $alumnoResultado->idModuloGrupo)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $alumnoResultado->idModuloGrupo]);
+            throw new NotFoundDomainException('Resultat no trobat', ['modulo_grupo_id' => $alumnoResultado->idModuloGrupo], $e);
         }
         $this->authorize('update', $resultado);
         $this->search = (int) $resultado->id;

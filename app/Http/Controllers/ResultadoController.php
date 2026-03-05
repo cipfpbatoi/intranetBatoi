@@ -108,7 +108,7 @@ class ResultadoController extends ModalController
         try {
             $this->authorize('update', Resultado::findOrFail((int) $id));
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id]);
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id], $e);
         }
         $this->persist($request, $id);
         return $this->redirect();
@@ -125,7 +125,7 @@ class ResultadoController extends ModalController
         try {
             $this->authorize('delete', Resultado::findOrFail((int) $id));
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id]);
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id], $e);
         }
         return parent::destroy($id);
     }

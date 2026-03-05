@@ -281,8 +281,15 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => $message], $status);
         }
 
+        $errorView = 'errors.'.$status;
+        if (view()->exists($errorView)) {
+            return response()->view($errorView, [
+                'exception' => $exception,
+                'response' => $message,
+            ], $status);
+        }
+
         Alert::danger($message);
-        $back = url()->previous() ?: route('home');
-        return redirect($back)->setStatusCode($status);
+        return redirect(url()->previous() ?: route('home'));
     }
 }

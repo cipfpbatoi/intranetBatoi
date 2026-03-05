@@ -44,7 +44,7 @@ class SolicitudController extends ModalController
         try {
             return Solicitud::findOrFail((int) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Sol·licitud no trobada', ['solicitud_id' => $id]);
+            throw new NotFoundDomainException('Sol·licitud no trobada', ['solicitud_id' => $id], $e);
         }
     }
 

@@ -53,7 +53,7 @@ class MaterialModController extends ModalController
         try {
             return MaterialBaja::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Registre de baixa no trobat', ['material_baja_id' => $id]);
+            throw new NotFoundDomainException('Registre de baixa no trobat', ['material_baja_id' => $id], $e);
         }
     }
 
@@ -67,7 +67,7 @@ class MaterialModController extends ModalController
         try {
             return Material::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id], $e);
         }
     }
 

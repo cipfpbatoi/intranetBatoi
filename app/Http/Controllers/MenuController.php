@@ -49,7 +49,7 @@ class MenuController extends IntranetController
         try {
             return Menu::findOrFail((int) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Menú no trobat', ['menu_id' => $id]);
+            throw new NotFoundDomainException('Menú no trobat', ['menu_id' => $id], $e);
         }
     }
 

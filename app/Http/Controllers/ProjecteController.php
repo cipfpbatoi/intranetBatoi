@@ -71,7 +71,7 @@ class ProjecteController extends ModalController
         try {
             $projecte = Projecte::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id]);
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id], $e);
         }
         $projecte->estat = 1;
         $projecte->save();
@@ -90,7 +90,7 @@ class ProjecteController extends ModalController
         try {
             $elemento = Projecte::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id]);
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id], $e);
         }
         $informe = 'pdf.propostaProjecte';
         $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);

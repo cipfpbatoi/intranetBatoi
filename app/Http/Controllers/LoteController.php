@@ -46,7 +46,7 @@ class LoteController extends ModalController
         try {
             return Lote::findOrFail((string) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Lot no trobat', ['lote_id' => $id]);
+            throw new NotFoundDomainException('Lot no trobat', ['lote_id' => $id], $e);
         }
     }
 

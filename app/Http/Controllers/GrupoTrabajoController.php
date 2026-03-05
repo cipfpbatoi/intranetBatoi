@@ -46,7 +46,7 @@ class GrupoTrabajoController extends ModalController
         try {
             return GrupoTrabajo::findOrFail((int) $id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Grup de treball no trobat', ['grupo_trabajo_id' => $id]);
+            throw new NotFoundDomainException('Grup de treball no trobat', ['grupo_trabajo_id' => $id], $e);
         }
     }
 

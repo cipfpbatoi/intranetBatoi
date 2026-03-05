@@ -41,7 +41,7 @@ class ArticuloController extends ModalController
         try {
             $article = Articulo::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
         }
         $this->authorize('view', $article);
         return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
@@ -65,7 +65,7 @@ class ArticuloController extends ModalController
         try {
             $this->authorize('update', Articulo::findOrFail((int) $id));
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
         }
         $this->persist($request, $id);
         return $this->redirect();
@@ -82,7 +82,7 @@ class ArticuloController extends ModalController
         try {
             $this->authorize('delete', Articulo::findOrFail((int) $id));
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id]);
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
         }
         return parent::destroy($id);
     }

@@ -74,7 +74,7 @@ class MaterialController extends IntranetController
         try {
             $elemento = Material::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id], $e);
         }
         $copia = new Material;
         $copia->fill($elemento->toArray());
@@ -92,13 +92,13 @@ class MaterialController extends IntranetController
         try {
             $elemento = Material::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id]);
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id], $e);
         }
 
         try {
             $tipo = TipoIncidencia::where('tipus', 1)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Tipus d\'incidència no trobat', ['tipus' => 1]);
+            throw new NotFoundDomainException('Tipus d\'incidència no trobat', ['tipus' => 1], $e);
         }
         $incidencia = new Incidencia(['tipo'=> $tipo->id,
             'material' => $id,

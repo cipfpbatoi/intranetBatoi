@@ -74,7 +74,7 @@ class InventarioController extends IntranetController
         try {
             $material = Inventario::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            throw new NotFoundDomainException('Material d\'inventari no trobat', ['inventario_id' => $id]);
+            throw new NotFoundDomainException('Material d\'inventari no trobat', ['inventario_id' => $id], $e);
         }
         if (isProfesor()) {
             if ($material->espacio === 'INVENT') {
