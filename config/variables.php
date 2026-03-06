@@ -12,7 +12,6 @@ return [
     'ipDomotica' => env('DOMOTICA_DEVICE_ENDPOINT', 'http://172.16.10.74/api/devices/{dispositivo}/action'),
     'domotica' => [
         'host' => env('DOMOTICA_HOST', 'http://172.16.10.74'),
-        'deviceId' => (int) env('DOMOTICA_CAR_DEVICE_ID', 0),
         'user' => env('USER_DOMOTICA', 'api'),
         'pass' => env('PASS_DOMOTICA', ''),
         'openSceneId' => (int) env('DOMOTICA_OPEN_SCENE_ID', 111),

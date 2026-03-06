@@ -72,10 +72,10 @@ class CotxeAccessServiceTest extends TestCase
     public function test_obrir_i_porta_envia_les_ordres_al_dispositiu()
     {
         config([
-            'variables.domotica.host' => 'http://porta.test',
-            'variables.domotica.deviceId' => 'device-1',
-            'variables.domotica.user' => 'usuari',
-            'variables.domotica.pass' => 'clau',
+            'parking.porta_url' => 'http://porta.test',
+            'parking.porta_device_id' => 'device-1',
+            'parking.porta_user' => 'usuari',
+            'parking.porta_pass' => 'clau',
         ]);
 
         Http::fake([

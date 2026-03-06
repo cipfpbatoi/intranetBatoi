@@ -61,15 +61,10 @@ class CotxeAccessService
     public function obrirIPorta(): bool
     {
         $log = Log::channel('parking');
-        $url = rtrim((string) config('variables.domotica.host', 'http://172.16.10.74'), '/');
-        $id = config('variables.domotica.deviceId');
-        $user = (string) config('variables.domotica.user', 'api');
-        $pass = (string) config('variables.domotica.pass', '');
-
-        if ($id === null || $id === '') {
-            $log->warning('Parking no configurat: falta variables.domotica.deviceId');
-            return false;
-        }
+        $url = config('parking.porta_url');
+        $id = config('parking.porta_device_id');
+        $user = config('parking.porta_user');
+        $pass = config('parking.porta_pass');
 
         try {
 
