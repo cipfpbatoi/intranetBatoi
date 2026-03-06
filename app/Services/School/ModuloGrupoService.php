@@ -19,9 +19,19 @@ class ModuloGrupoService
     public function hasSeguimiento(Modulo_grupo $moduloGrupo): bool
     {
         $trimestreAvaluacio = max(1, evaluacion() - 1);
-        $tipoCiclo = (int) ($moduloGrupo->ModuloCiclo->Ciclo->tipo ?? 1);
-        $curso = (string) ($moduloGrupo->ModuloCiclo->curso ?? 1);
-        $trimestre = config("curso.trimestres.$tipoCiclo.$trimestreAvaluacio.$curso", $trimestreAvaluacio);
+        $tipoCiclo = (int) ($moduloGrupo->ModuloCiclo?->Ciclo?->tipo ?? 1);
+        $tipoCiclo = $tipoCiclo > 0 ? $tipoCiclo : 1;
+
+        $curso = (string) ($moduloGrupo->ModuloCiclo?->curso ?? 1);
+        $curso = trim(preg_replace('/\D+/', '', $curso));
+        $curso = $curso === '' ? '1' : $curso;
+
+        $trimestre = (int) config("curso.trimestres.$tipoCiclo.$trimestreAvaluacio.$curso", null);
+        if ($trimestre < 1 || $trimestre > 3) {
+            $trimestre = (int) config("curso.trimestres.1.$trimestreAvaluacio.$curso", $trimestreAvaluacio);
+        }
+
+        $trimestre = max(1, min(3, $trimestre));
         $quants = $moduloGrupo->resultados->where('evaluacion', $trimestre)->count();
 
         if ($quants) {
