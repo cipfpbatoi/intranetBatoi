@@ -10,12 +10,18 @@ use Intranet\Entities\Profesor;
 
 class ModuloGrupoService
 {
+    /**
+     * Indica si el mòdul del grup té el seguiment registrat per al trimestre pendent.
+     *
+     * @param Modulo_grupo $moduloGrupo
+     * @return bool
+     */
     public function hasSeguimiento(Modulo_grupo $moduloGrupo): bool
     {
-        $tr = evaluacion() - 1 ?? 1;
-        $tipoCiclo = $moduloGrupo->ModuloCiclo->Ciclo->tipo ?? 1;
-        $curso = $moduloGrupo->ModuloCiclo->curso ?? 1;
-        $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
+        $trimestreAvaluacio = max(1, evaluacion() - 1);
+        $tipoCiclo = (int) ($moduloGrupo->ModuloCiclo->Ciclo->tipo ?? 1);
+        $curso = (string) ($moduloGrupo->ModuloCiclo->curso ?? 1);
+        $trimestre = config("curso.trimestres.$tipoCiclo.$trimestreAvaluacio.$curso", $trimestreAvaluacio);
         $quants = $moduloGrupo->resultados->where('evaluacion', $trimestre)->count();
 
         if ($quants) {
