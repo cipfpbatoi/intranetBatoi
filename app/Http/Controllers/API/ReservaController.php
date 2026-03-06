@@ -106,13 +106,8 @@ class ReservaController extends ApiResourceController
             }
 
             try {
-                // LLEGIR estat actual i decidir acció
-                $data = $this->getJson($espacio->dispositivo);
-                $secured = $this->checkSecuredStatus($data); // true = tancada/asegurada
-                $action = $secured ? 'unsecure' : 'secure';
-
-                if ($this->action($action, $espacio)) {
-                    return $this->sendResponse('Modificat estat Porta');
+                if ($this->runOpenScene()) {
+                    return $this->sendResponse('S\'ha enviat la senyal d\'obertura de porta');
                 }
                 return $this->sendError("No s'ha pogut modificar la porta");
             } catch (\Throwable $e) {
@@ -120,60 +115,44 @@ class ReservaController extends ApiResourceController
             }
         }
 
-        // Si no hi ha reserva en l'hora actual, intenta almenys tancar la porta de la reserva d'avui
+        // Si no hi ha reserva activa, no fem tancar, només retornem error per seguretat.
         $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
             ->where('dia', Hoy())
             ->first();
 
-        if ($reserva && $espacio = Espacio::find($reserva->idEspacio)) {
+        if (!$reserva) {
+            return $this->sendError('No tens cap reserva per ara', 401);
+        }
+
+        if ($espacio = Espacio::find($reserva->idEspacio)) {
             if (!$espacio->dispositivo) {
                 return $this->sendError('Eixe espai no te obertura', 401);
             }
-            if ($this->action('secure', $espacio)) {
-                return $this->sendResponse('Porta Tancada');
-            }
-            return $this->sendError("No s'ha pogut tancar la porta");
+            return $this->sendError("La reserva no està activa en aquest moment; utilitza-la a l'hora programada", 401);
         }
 
         return $this->sendError('No tens cap reserva per ara', 401);
     }
 
-
-    private function getJson($dispositivo)
+    /**
+     * Executa la escena de Fibaro que envia la senyal per obrir la porta.
+     *
+     * @return bool
+     */
+    private function runOpenScene(): bool
     {
-        $user = config('variables.domotica.user');
-        $pass = config('variables.domotica.pass');
-        $link = 'http://172.16.10.74/api/devices/'.$dispositivo;
+        $user = (string) config('variables.domotica.user');
+        $pass = (string) config('variables.domotica.pass');
+        $sceneId = (int) config('variables.domotica.openSceneId', 111);
+        $host = rtrim((string) config('variables.domotica.host', 'http://172.16.10.74'), '/');
+        $link = $host.'/api/scenes/'.$sceneId.'/execute';
 
-        // Llança excepció si no és 2xx, així no tractem HTML/JSON d’error com si fora vàlid
-        $response = Http::withBasicAuth($user, $pass)
-            ->acceptJson()
-            ->get($link)
-            ->throw();
-
-        return $response->json(); // array|mixed
-    }
-
-    private function action($action, $espacio): bool
-    {
-        $user = config('variables.domotica.user');
-        $pass =  config('variables.domotica.pass');
-        $link = str_replace(
-            '{dispositivo}',
-            $espacio->dispositivo,
-            config('variables.ipDomotica')
-            )."/".$action;
         $response = Http::withBasicAuth($user, $pass)
             ->accept('application/json')
-            ->post($link, ['args'=>[]]);
-        return $response->successful()?true:false;
-    }
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post($link, []);
 
-    private function checkSecuredStatus($data): bool
-    {
-        // Seguretat per si no venen les claus
-        $secured = $data['properties']['secured'] ?? null;
-        return (is_numeric($secured) ? ((int)$secured) > 0 : (bool)$secured);
+        return $response->successful();
     }
 
     private function isLegacyFilterExpression(string $cadena): bool
