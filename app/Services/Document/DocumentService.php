@@ -228,8 +228,13 @@ class DocumentService
                 );
 
                 return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
-            } catch (\Exception $e) {
-                Alert::info($e->getMessage());
+            } catch (\Throwable $e) {
+                report($e);
+                Log::error('Error signant document.', [
+                    'route' => $this->document->route ?? null,
+                    'error' => $e->getMessage(),
+                ]);
+                Alert::danger($e->getMessage());
             }
         }
 
@@ -276,7 +281,12 @@ class DocumentService
         try {
             app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
         } catch (\Throwable $e) {
-            Log::error('Error concatenant PDFs en sèrie', ['error' => $e->getMessage()]);
+            report($e);
+            Log::error('Error concatenant PDFs en sèrie', [
+                'error' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'pdfCount' => count($pdfs),
+            ]);
             return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
@@ -310,6 +320,12 @@ class DocumentService
         try {
             app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
         } catch (\Throwable $e) {
+            report($e);
+            Log::error('Error concatenant PDFs per concatenació simple', [
+                'error' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'pdfCount' => count($pdfs),
+            ]);
             return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
@@ -335,9 +351,15 @@ class DocumentService
         try {
             $zipPath = ZipService::exec($pdfs, $filename);
         } catch (\InvalidArgumentException $e) {
+            report($e);
             return response()->json(['error' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
-            Log::error('Error generant ZIP', ['message' => $e->getMessage()]);
+            report($e);
+            Log::error('Error generant ZIP', [
+                'message' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'count' => is_array($pdfs) ? count($pdfs) : null,
+            ]);
             return response()->json(['error' => 'No s\'ha pogut generar el ZIP'], 500);
         }
 

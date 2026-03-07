@@ -39,7 +39,18 @@ class SecretariaService
             throw new IntranetException(
                 "No he pogut carregar el fitxer ".$document['name']." de la fct de l'alumne".
                 $document['alumne'].' situat al fitxer: '.$route.' al servidor de matrícules: '.
-                'Petició: '.$link.' Error: '.$e->getMessage()
+                'Petició: '.$link.' Error: '.$e->getMessage(),
+                500,
+                "No he pogut carregar el fitxer al servidor de matrícules.",
+                true,
+                [
+                    'document' => $document['name'] ?? null,
+                    'dni' => $document['dni'] ?? null,
+                    'alumne' => $document['alumne'] ?? null,
+                    'peticio' => $link,
+                    'ruta' => $route,
+                ],
+                $e
             );
         }
         throw new IntranetException(

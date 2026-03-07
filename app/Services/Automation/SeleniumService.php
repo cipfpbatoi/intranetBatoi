@@ -42,7 +42,7 @@ class SeleniumService
             }
             $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities,10000,200000);
         } catch (\Exception $e) {
-            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
+            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium: '.$e->getMessage(), 0, $e);
         }
         return $driver;
     }
@@ -109,7 +109,9 @@ class SeleniumService
             $driver->quit();
             throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
         }  catch ( NoSuchElementException $e) {
-            // cap error, continua
+            \Illuminate\Support\Facades\Log::debug('No s\'ha detectat error de password a l\'ITACA; continuem normalment.', [
+                'dni' => $dni,
+            ]);
         }
         return $driver;
     }
@@ -154,7 +156,7 @@ class SeleniumService
             $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
         } catch (\Exception $e) {
             $this->driver->quit();
-            throw new IntranetException($e->getMessage());
+            throw new IntranetException($e->getMessage(), 500, $e->getMessage(), true, [], $e);
         }
     }
 
@@ -178,7 +180,10 @@ class SeleniumService
                     try {
                         $element->click();
                         usleep(500000); // Pausa breve para permitir que la ventana se cierre
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
+                        Log::info('No s\'ha pogut tancar una finestra emergent de Selenium.', [
+                            'exception' => $e->getMessage(),
+                        ]);
                         // Si no puede cerrarse, la añade a pendientes
                         $remainingWindows[] = $element;
                     }
@@ -196,8 +201,10 @@ class SeleniumService
                     break;
                 }
             }
-        } catch (\Exception $e) {
-            // No pasa nada si ocurre una excepción
+        } catch (\Throwable $e) {
+            Log::warning('Error en tancar finestres emergents de SAO.', [
+                'exception' => $e->getMessage(),
+            ]);
         }
     }
 

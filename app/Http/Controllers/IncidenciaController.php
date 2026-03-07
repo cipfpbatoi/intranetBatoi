@@ -13,6 +13,7 @@ use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\IncidenciaCrudSchema;
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
 use Intranet\Services\UI\AppAlert as Alert;
@@ -219,6 +220,12 @@ class IncidenciaController extends ModalController
                     fclose($stream);
                 }
             } catch (\RuntimeException $e) {
+                report($e);
+                Log::warning('Error processant la imatge de la incidència.', [
+                    'incidencia_id' => $incidencia->id,
+                    'file' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage(),
+                ]);
                 Alert::danger($e->getMessage());
                 return;
             } finally {

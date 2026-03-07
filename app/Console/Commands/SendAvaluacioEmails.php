@@ -2,11 +2,12 @@
 
 namespace Intranet\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\MatriculaAlumne;
-use Swift_RfcComplianceException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class SendAvaluacioEmails extends Command
@@ -64,6 +65,12 @@ class SendAvaluacioEmails extends Command
             $mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
             avisa('021652470V', $mensaje.":".$e->getMessage()  , '#', 'Servidor de correu');
             avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
+            report($e);
+            Log::error('Error enviant matrícula de matrícula', [
+                'alumno_id' => $aR->idAlumno ?? null,
+                'dni' => $aR->Alumno->dni ?? null,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
     /**
@@ -73,8 +80,17 @@ class SendAvaluacioEmails extends Command
      */
     public function handle()
     {
-        foreach (AlumnoReunion::with('Reunion')->where('sent', 0)->get() as $aR) {
-            $this->sendMatricula($aR);
+        try {
+            foreach (AlumnoReunion::with('Reunion')->where('sent', 0)->get() as $aR) {
+                $this->sendMatricula($aR);
+            }
+            return Command::SUCCESS;
+        } catch (Exception $e) {
+            report($e);
+            Log::error('Error enviant correus d\'avaluació', [
+                'error' => $e->getMessage(),
+            ]);
+            return Command::FAILURE;
         }
     }
 

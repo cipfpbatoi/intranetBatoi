@@ -3,6 +3,7 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\IntranetException;
@@ -40,8 +41,12 @@ class UploadAnexes extends Command
         try {
             $sService = new SecretariaService();
         } catch (\Exception $e) {
-            echo 'No hi ha connexió amb el servidor de matrícules';
-            exit();
+            report($e);
+            Log::error('No hi ha connexió amb el servidor de matrícules', [
+                'error' => $e->getMessage(),
+            ]);
+            $this->error('No hi ha connexió amb el servidor de matrícules');
+            return Command::FAILURE;
         }
         $correctos = 0;
         $incorrectos = 0;
@@ -58,12 +63,18 @@ class UploadAnexes extends Command
                     }
                     $correctos++;
                 } catch (IntranetException $e) {
+                    report($e);
+                    Log::warning('Error pujant annex a matrìcules', [
+                        'dni' => $fct->Alumno->dni ?? null,
+                        'error' => $e->getMessage(),
+                    ]);
                     $incorrectos++;
                     echo $fct->Alumno->shortName.' '.$e->getMessage().PHP_EOL;
                 }
             }
         }
-        echo 'Correctos: '.$correctos.' Incorrectos: '.$incorrectos.PHP_EOL;
+        $this->info('Correctos: '.$correctos.' Incorrectos: '.$incorrectos);
+        return Command::SUCCESS;
     }
 
 

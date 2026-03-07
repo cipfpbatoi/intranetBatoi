@@ -215,7 +215,13 @@ class GeneralImportExecutionService
         $this->plantilla = (int) $arrayDatos['plantilla'];
         try {
             $this->horarioService->create($arrayDatos);
-        } catch (\Illuminate\Database\QueryException) {
+        } catch (\Illuminate\Database\QueryException $e) {
+            report($e);
+            \Illuminate\Support\Facades\Log::warning('Error importació horari general, reintentar sense aula.', [
+                'template' => $arrayDatos['plantilla'] ?? null,
+                'id_professor' => $arrayDatos['idProfesor'] ?? null,
+                'exception' => $e->getMessage(),
+            ]);
             unset($arrayDatos['aula']);
             $this->horarioService->create($arrayDatos);
         }

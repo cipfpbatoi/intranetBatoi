@@ -12,6 +12,7 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\UI\AppAlert as Alert;
 
 /**
@@ -80,6 +81,12 @@ class CentroController extends ModalController
                 try {
                     parent::destroy($id);
                 } catch (QueryException $exception){
+                    report($exception);
+                    Log::warning('No es pot esborrar el centre per restriccions de claus.', [
+                        'centro_id' => $id,
+                        'empresa_id' => $empresa,
+                        'error' => $exception->getMessage(),
+                    ]);
                     Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixe centre d'anys anteriors.");
                 }
             } else {

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -142,19 +143,31 @@ class SaoComparaAction
                                 WebDriverBy::cssSelector("input.campoAlumno[name='cp'")
                             )->getAttribute('value')
                         );
-                    }
+                }
                 } catch (NoSuchElementException $e) {
+                    report($e);
+                    Log::warning('Element no trobat en comparació SAO.', [
+                        'id_fct_al' => $fctAl->id ?? null,
+                        'error' => $e->getMessage(),
+                    ]);
                     Alert::warning('Element no trobat');
                 }
 
             }
         } catch (Exception $e) {
+            report($e);
+            Log::error('Error en la comparació de dades SAO.', [
+                'error' => $e->getMessage(),
+            ]);
             Alert::danger($e);
         } finally {
             try {
                 $driver->quit();
             } catch (\Throwable $quitException) {
-                // Evitem trencar la resposta per errors de tancament.
+                report($quitException);
+                Log::warning('No s\'ha pogut tancar el driver de SAO en comparació.', [
+                    'error' => $quitException->getMessage(),
+                ]);
             }
         }
         if (count($dades)) {

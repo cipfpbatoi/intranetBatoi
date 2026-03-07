@@ -23,7 +23,11 @@ class ItacaService
         if ($selenium) {
             $this->ss = $selenium;
             if ($validateDriver && !$this->ss->getDriver()) {
-                throw new IntranetException("Error al iniciar la sessió a ITACA");
+                throw new IntranetException(
+                    "Error al iniciar la sessió a ITACA",
+                    500,
+                    "Error al iniciar la sessió a ITACA"
+                );
             }
             return;
         }
@@ -31,10 +35,21 @@ class ItacaService
         try {
             $this->ss = new SeleniumService($dni, $password);
             if (!$this->ss->getDriver()) {
-                throw new IntranetException("Error al iniciar la sessió a ITACA");
+                throw new IntranetException(
+                    "Error al iniciar la sessió a ITACA",
+                    500,
+                    "Error al iniciar la sessió a ITACA"
+                );
             }
         } catch (\Throwable $e) {
-            throw new IntranetException("Error al iniciar la sessió a ITACA");
+            throw new IntranetException(
+                "Error al iniciar la sessió a ITACA",
+                500,
+                "Error al iniciar la sessió a ITACA",
+                true,
+                [],
+                $e
+            );
         }
     }
 
@@ -112,7 +127,10 @@ class ItacaService
                     try {
                         $element->click();
                         usleep(500000);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
+                        \Log::info('No s\'ha pogut tancar una finestra emergent.', [
+                            'exception' => $e->getMessage(),
+                        ]);
                         $remainingWindows[] = $element;
                     }
                 }
@@ -120,6 +138,10 @@ class ItacaService
                 $remainingWindows = [];
                 if (++$retryCount > 10) break;
             }
-        } catch (\Exception $e) {}
+        } catch (\Throwable $e) {
+            \Log::warning('Error en tancar les finestres emergents de SAO.', [
+                'exception' => $e->getMessage(),
+            ]);
+        }
     }
 }

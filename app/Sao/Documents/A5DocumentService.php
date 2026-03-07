@@ -11,6 +11,7 @@ use Intranet\Sao\Support\SaoNavigator;
 use Intranet\Services\Signature\DigitalSignatureService;
 use setasign\Fpdi\Fpdi;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Gestiona la descàrrega i processat de l'annex A5.
@@ -99,6 +100,12 @@ class A5DocumentService
             }
             $pdf->Output($tmp1File, 'F');
         } catch (\Throwable $exception) {
+            report($exception);
+            Log::error('Error en l\'annex A5.', [
+                'id_sao' => $fctAl->idSao ?? null,
+                'annex' => $annexe,
+                'error' => $exception->getMessage(),
+            ]);
             Alert::danger($exception->getMessage() . ' en Annex 5 de ' . $fctAl->Alumno->FullName);
             $error = true;
         } finally {

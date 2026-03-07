@@ -19,6 +19,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -318,7 +319,10 @@ class SaoImportaAction
                 sleep(1);
                 self::extractPage($driver, $dades,2);
             } catch (Exception $e) {
-                // No hi ha més pàgines.
+                report($e);
+                Log::warning('Error processant paginació de la importació SAO.', [
+                    'error' => $e->getMessage(),
+                ]);
             }
 
 
@@ -340,6 +344,11 @@ class SaoImportaAction
                             }
                         }
                     } catch (Exception $e) {
+                        report($e);
+                        Log::error('Error processant registre d\'importació SAO.', [
+                            'id_sao' => $dades[$index]['idSao'] ?? null,
+                            'error' => $e->getMessage(),
+                        ]);
                         Alert::info($e->getMessage());
                     }
                 }
@@ -348,7 +357,10 @@ class SaoImportaAction
             try {
                 $driver->quit();
             } catch (\Throwable $quitException) {
-                // Evitem trencar el flux si la sessió ja estava tancada.
+                report($quitException);
+                Log::warning('No s\'ha pogut tancar el driver de SAO en importació.', [
+                    'error' => $quitException->getMessage(),
+                ]);
             }
         }
         session(compact('dades'));
@@ -646,6 +658,11 @@ class SaoImportaAction
                     self::extractFromModal($dades, $key, $tr, $driver);
                 } catch (Exception $e) {
                     unset($dades[$key]);
+                    report($e);
+                    Log::warning('Error extraient fila de la vista SAO de importació.', [
+                        'row_index' => $key,
+                        'error' => $e->getMessage(),
+                    ]);
                     Alert::info($e->getMessage());
                 }
             }

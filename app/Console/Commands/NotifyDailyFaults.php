@@ -11,6 +11,8 @@ use Intranet\Entities\Falta;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Guardia;
 use Illuminate\Support\Carbon;
+use Throwable;
+use Illuminate\Support\Facades\Log;
 
 
 class NotifyDailyFaults extends Command
@@ -47,9 +49,13 @@ class NotifyDailyFaults extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
-        if (config('variables.controlDiario')) {
+        try {
+            if (!config('variables.controlDiario')) {
+                return self::SUCCESS;
+            }
+
             $guardias = hazArray(
                 Guardia::where('dia', hoy())->where('realizada', -1)->get(),
                 'idProfesor',
@@ -57,11 +63,20 @@ class NotifyDailyFaults extends Command
             );
             $profesores = $this->noHanFichado(hoy());
             foreach ($profesores as $profesor) {
-                avisa($profesor, 'No has fitxat hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($profesor, 'No has fitxat hui dia ' . hoy('d-m-Y'), '#', 'Sistema');
             }
             foreach ($guardias as $guardia) {
-                avisa($guardia, 'No has fixtat la guàrdia  hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($guardia, 'No has fixtat la guàrdia  hui dia ' . hoy('d-m-Y'), '#', 'Sistema');
             }
+
+            return self::SUCCESS;
+        } catch (Throwable $e) {
+            report($e);
+            Log::error('Error notificació d\'ausències diàries.', [
+                'exception' => $e->getMessage(),
+            ]);
+
+            return self::FAILURE;
         }
     }
 

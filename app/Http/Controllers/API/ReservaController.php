@@ -8,6 +8,7 @@ use Intranet\Entities\Reserva;
 use Intranet\Exceptions\NotFoundDomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Controlador API de reserves.
@@ -120,6 +121,13 @@ class ReservaController extends ApiResourceController
                 }
                 return $this->sendError("No s'ha pogut modificar la porta");
             } catch (\Throwable $e) {
+                report($e);
+                Log::error('Error consultant o accionant la porta de la reserva.', [
+                    'professor_dni' => $profesor->dni,
+                    'id_reserva' => $reserva->id ?? null,
+                    'dispositivo' => $espacio->dispositivo ?? null,
+                    'error' => $e->getMessage(),
+                ]);
                 return $this->sendError("Error consultant el dispositiu: ".$e->getMessage(), 500);
             }
         }

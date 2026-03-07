@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Intranet\Entities\ImportRun;
 use Intranet\Http\Controllers\ImportController;
 use Intranet\Http\Controllers\TeacherImportController;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class RunImportJob implements ShouldQueue
@@ -73,6 +74,13 @@ class RunImportJob implements ShouldQueue
             $importRun->message = 'Importació completada';
             $importRun->save();
         } catch (Throwable $e) {
+            report($e);
+            Log::error('Error executant job d\'importació.', [
+                'import_run_id' => $importRun->id,
+                'type' => $importRun->type,
+                'exception' => $e->getMessage(),
+            ]);
+
             $importRun->status = 'failed';
             $importRun->failed_at = now();
             $importRun->message = 'Importació fallida';

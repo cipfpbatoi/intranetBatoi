@@ -242,9 +242,15 @@ class GrupoController extends IntranetController
                     )->save($tmpPath);
                 }
             );
-        } catch (\Exception) {
-            echo 'No hi ha connexió amb el servidor de matrícules';
-            exit();
+        } catch (\Exception $e) {
+            report($e);
+            \Illuminate\Support\Facades\Log::error('Error en l\'enviament de certificats de grup.', [
+                'grupo' => $grupo,
+                'exception' => $e->getMessage(),
+            ]);
+
+            Alert::danger('No hi ha connexió amb el servidor de matrícules');
+            return back();
         }
 
         foreach ($result['errors'] as $error) {

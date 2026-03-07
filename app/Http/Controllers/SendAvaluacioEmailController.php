@@ -105,6 +105,12 @@ class SendAvaluacioEmailController extends Seeder
             }
         }
         catch (\Exception $e){
+            report($e);
+            \Illuminate\Support\Facades\Log::error('Error enviant correu de matrícula/avaluació.', [
+                'student_id' => $aR->Alumno->dni ?? null,
+                'reunion_id' => $aR->reunion ?? null,
+                'error' => $e->getMessage(),
+            ]);
             avisa($aR->Reunion->idProfesor,
                 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
                 '#','Servidor de correu');

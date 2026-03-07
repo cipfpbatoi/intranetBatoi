@@ -9,6 +9,7 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Signature\DigitalSignatureService;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Acció SAO per sincronitzar dades d'alumnat FCT.
@@ -37,9 +38,20 @@ class SaoSyncAction
         try {
             $this->processFcts();
         } catch (Exception $e) {
+            report($e);
+            Log::error('Error general en la sincronització SAO.', [
+                'error' => $e->getMessage(),
+            ]);
             AlertLogger::error("Error general en la sincronització: " . $e->getMessage());
         } finally {
-            $this->driver->quit();
+            try {
+                $this->driver->quit();
+            } catch (\Throwable $quitException) {
+                report($quitException);
+                Log::warning('No s\'ha pogut tancar el driver de SAO en sincronització.', [
+                    'error' => $quitException->getMessage(),
+                ]);
+            }
         }
         return back();
     }
@@ -61,6 +73,12 @@ class SaoSyncAction
                     $alumnesActualitzats[] = $fct->Alumno->shortName;
                 }
             } catch (Exception $e) {
+                report($e);
+                Log::error('Error sincronitzant FCT de SAO.', [
+                    'fct_id' => $fct->id ?? null,
+                    'id_sao' => $fct->idSao ?? null,
+                    'error' => $e->getMessage(),
+                ]);
                 AlertLogger::error("Error en la FCT de {$fct->Alumno->shortName}: " . $e->getMessage());
             }
         }
@@ -93,7 +111,7 @@ class SaoSyncAction
 
             return (int) $horas;
         } catch (Exception $e) {
-            throw new Exception("Error obtenint hores per ID SAO $idSao: " . $e->getMessage());
+            throw new Exception("Error obtenint hores per ID SAO $idSao: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -106,6 +124,11 @@ class SaoSyncAction
             $fct->horas_diarias = (float) $diarias;
             $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
         } catch (Exception $e) {
+            report($e);
+            Log::warning("Informació incompleta de diari per FCT ID {$fct->id}", [
+                'id_sao' => $fct->idSao ?? null,
+                'error' => $e->getMessage(),
+            ]);
             AlertLogger::info('Informació incompleta per a ' . $fct->Alumno->shortName);
         }
 

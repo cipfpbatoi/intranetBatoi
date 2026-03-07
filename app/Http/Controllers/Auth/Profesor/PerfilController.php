@@ -110,6 +110,11 @@ class PerfilController extends Perfil
 
             Alert::info($oldPhoto ? 'Modificació de la foto feta amb èxit' : 'Foto nova guardada amb èxit');
         } catch (\RuntimeException $e) {
+            report($e);
+            Log::error('Error actualitzant la foto del professor.', [
+                'professor_id' => $profesor->dni ?? null,
+                'error' => $e->getMessage(),
+            ]);
             Alert::info($e->getMessage());
         }
     }

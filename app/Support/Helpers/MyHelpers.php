@@ -984,12 +984,12 @@ function in_substr($item, int $long)
                 ), 0, 5),
                 // útil per a saber quina vista
                 'trace'  => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8))
-                                ->pluck('file')
-                                ->filter()
-                                ->implode(' | '),
+                    ->pluck('file')
+                    ->filter()
+                    ->implode(' | '),
             ]);
         } catch (\Throwable $e) {
-            // si falla el log, no trenquem res
+            error_log('[in_substr] No s\'ha pogut escriure log: ' . $e->getMessage());
         }
 
         $item = implode(', ', array_map('strval', $item));

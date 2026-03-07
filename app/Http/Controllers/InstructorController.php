@@ -14,6 +14,7 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Presentation\Crud\InstructorCrudSchema;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\UI\AppAlert as Alert;
 
 
@@ -122,9 +123,21 @@ class InstructorController extends IntranetController
             parent::update($request, $id);
         } catch (\Illuminate\Database\QueryException $e) {
             if (($e->errorInfo[1] ?? null) === 1062) {
+                report($e);
+                Log::warning('Intent de dni duplicat en alta/actualització d\'instructor.', [
+                    'dni' => $request->dni,
+                    'centro_id' => $centro,
+                    'error' => $e->getMessage(),
+                ]);
                 Alert::danger("Ja existeix un instructor amb aquest DNI.");
                 return back()->withInput();
             }
+            report($e);
+            Log::error('Error de base de dades en actualitzar instructor.', [
+                'instructor_id' => $id,
+                'centro_id' => $centro,
+                'error' => $e->getMessage(),
+            ]);
             throw $e;
         }
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
