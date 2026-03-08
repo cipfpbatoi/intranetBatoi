@@ -21,7 +21,7 @@
 - [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
 - [x] MIG-18 Corregir regressions finals (fix de JS legacy en layout + grandària d'icones)
 - [x] MIG-19 Preparar PR final a Laravel12 (plantilla en `docs/mig-19-pr-final.md`)
-- [ ] MIG-20 Full de ruta per actualitzar DataTables a versions recents (en validació final)
+- [x] MIG-20 Full de ruta per actualitzar DataTables a versions recents
 
 ## 1) Estat actual (foto real del codi)
 
@@ -203,7 +203,7 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 ### Implicació tècnica
 - Les taules no estan suportades per una dependència explícita i versionada de DataTables.
 - Abans de parlar de "pujar versió", primer cal incorporar DataTables com a dependència formal del projecte.
-- Dependències i integració npm ja incorporades; queda pendent smoke test funcional per tancar MIG-20.
+- Dependències i integració npm ja incorporades; smoke test funcional validat.
 
 ### Passos següents recomanats
 1. Afegir dependències npm explícites de DataTables core + extensions necessàries.
