@@ -1,18 +1,39 @@
 # Estudi realista: Gentelella, Tailwind i eliminació de `Form::` / `Field::`
 
+## 0) Checklist d'execució MIG (actualitzat 2026-03-08)
+
+- [x] MIG-01 Inventari de dependències Gentelella
+- [x] MIG-02 Mapatge de fitxers de build i layouts
+- [x] MIG-03 Mapatge de plugins crítics
+- [x] MIG-04 Definir stack frontend modular
+- [x] MIG-05 Refactor `webpack.mix.js`
+- [x] MIG-06 Ajustar layouts principals
+- [x] MIG-07 Revisar fonts, icons i recursos
+- [x] MIG-08 Adaptar vista login/auth
+- [x] MIG-09 Revisar topnav/sidebar
+- [x] MIG-10 Revisar components de formulari
+- [x] MIG-11 Revisar taules i grids
+- [x] MIG-12 Revisar calendaris i datepickers
+- [x] MIG-13 Validar `custom.js` i inicialitzacions legacy
+- [x] MIG-14 Retirar dependència Gentelella del build
+- [x] MIG-15 Neteja d'assets no utilitzats
+- [x] MIG-16 Actualitzar docs i checklist
+- [ ] MIG-17 Proves visuals smoke tests
+- [ ] MIG-18 Corregir regressions finals
+- [ ] MIG-19 Preparar PR final a Laravel12
+
 ## 1) Estat actual (foto real del codi)
 
 ### Frontend/layout
 - El layout principal (`resources/views/layouts/intranet.blade.php`) carrega:
-  - `mix('css/gentelella.css')`
-  - `mix('js/gentelella.js')`
+  - `mix('css/components/app.css')`
+  - `mix('js/components/app.js')`
   - `mix('js/ppIntranet.js')`
 - Hi ha acoblament directe a classes de Gentelella (`nav-md`, `main_container`, `left_col`, `right_col`, `x_panel`, `x_title`, `nav_menu`, etc.) en almenys **40 referències** en vistes.
-- Build actual amb Laravel Mix (`webpack.mix.js`) concatena molts plugins legacy (jQuery + bootstrap plugin ecosystem).
+- El build actual ja no genera `gentelella.css/js`; compila únicament `components/app` i `ppIntranet`.
 
 ### Versions i stack
 - `package.json` actual:
-  - `gentelella: ^1.4.0`
   - `bootstrap: ^4.0.0`
   - `vue: ^2.5.7`
   - `laravel-mix: ^6.0.13`
@@ -114,6 +135,10 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 - Adaptar JS de sidebar/topnav (`resources/assets/js/custom.js`) a la nova estructura.
 - Revisar plugins: DataTables, daterangepicker, wizard, dropzone, etc.
 - Benefici: menys xoc visual inicial.
+- Estat actual:
+  - Dependència `gentelella` retirada de `package.json`.
+  - Assets `public/css/gentelella.css` i `public/js/gentelella.js` eliminats.
+  - Mantindre esta opció només tindria sentit si es reintroduïx explícitament la plantilla.
 
 ## Si triem Tailwind (objectiu final)
 - Preparar design tokens i components base (layout, cards, forms, tables, alerts).
@@ -150,4 +175,3 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 - Repositori oficial: https://github.com/ColorlibHQ/gentelella
 - Releases: https://github.com/ColorlibHQ/gentelella/releases
 - Web oficial: https://gentelella.com/
-
