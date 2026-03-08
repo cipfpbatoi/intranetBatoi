@@ -2,7 +2,7 @@
 <html>
 <head>
     <x-layouts.meta />
-    <link rel="stylesheet" href="{{ mix('css/gentelella.css') }}">
+    <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
     <title>@yield('titulo')</title>
     @stack('styles')
     @yield('css')
@@ -22,7 +22,7 @@
         </div>
     </div>
 @endif
-<script src="{{ mix('js/gentelella.js') }}"></script>
+<script src="{{ mix('js/components/app.js') }}"></script>
 <script src="{{ mix('js/ppIntranet.js') }}"></script>
 @yield('scripts')
 @stack('scripts')
