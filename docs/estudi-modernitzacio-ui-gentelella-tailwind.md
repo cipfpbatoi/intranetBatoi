@@ -18,7 +18,7 @@
 - [x] MIG-14 Retirar dependència Gentelella del build
 - [x] MIG-15 Neteja d'assets no utilitzats
 - [x] MIG-16 Actualitzar docs i checklist
-- [ ] MIG-17 Proves visuals smoke tests
+- [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
 - [ ] MIG-18 Corregir regressions finals
 - [ ] MIG-19 Preparar PR final a Laravel12
 
