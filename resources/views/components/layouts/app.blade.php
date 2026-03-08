@@ -3,7 +3,12 @@
 <head>
     <x-layouts.meta />
 
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
+    <style>
+        .iconopequeno { width: 25px; height: 25px; }
+        .iconomediano { width: 30px; height: 30px; }
+    </style>
     <title>{{ $title }}</title>
     @stack('styles')
     @yield('css')
@@ -35,6 +40,7 @@
 
 
 {{-- JS --}}
+<script src="{{ asset('js/app.js') }}"></script>
 <script src="{{ mix('js/components/app.js') }}"></script>
 <script src="{{ mix('js/ppIntranet.js') }}"></script>
 @yield('scripts')
