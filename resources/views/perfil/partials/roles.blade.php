@@ -1,5 +1,23 @@
+@php
+    $selectedRoles = rolesUser($formulario->getElemento()->rol);
+    $allRoles = config('roles.lor', []);
+@endphp
+
 @if (authUser()->rol % 17 === 0)
     <input type="hidden" name="DA" value="0">
-    {!! Field::checkbox ('DA',1, $formulario->getElemento()->DA  ) !!}
+    <label>
+        <input type="checkbox" name="DA" value="1" {{ $formulario->getElemento()->DA ? 'checked' : '' }}>
+        DA
+    </label>
 @endif
-{!! Field::checkboxes('rol',config('roles.lor'),rolesUser($formulario->getElemento()->rol),['inline','roles'=>['2','11']]) !!}
+
+@foreach ($allRoles as $roleId => $roleName)
+    <label class="checkbox-inline">
+        <input
+            type="checkbox"
+            name="rol[]"
+            value="{{ $roleId }}"
+            {{ in_array((int) $roleId, $selectedRoles) ? 'checked' : '' }}>
+        {{ $roleName }}
+    </label>
+@endforeach
