@@ -21,6 +21,7 @@
 - [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
 - [x] MIG-18 Corregir regressions finals (fix de JS legacy en layout + grandària d'icones)
 - [x] MIG-19 Preparar PR final a Laravel12 (plantilla en `docs/mig-19-pr-final.md`)
+- [ ] MIG-20 Full de ruta per actualitzar DataTables a versions recents (en validació final)
 
 ## 1) Estat actual (foto real del codi)
 
@@ -175,3 +176,37 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 - Repositori oficial: https://github.com/ColorlibHQ/gentelella
 - Releases: https://github.com/ColorlibHQ/gentelella/releases
 - Web oficial: https://gentelella.com/
+
+## 9) MIG-20 (proposta): actualització de DataTables
+
+### Estat actual detectat
+- Hi ha inicialitzacions mixtes `dataTable()` i `DataTable()` en `resources/assets/js/custom.js`.
+- Existix codi legacy `fnDraw()` que no és l'API recomanada per DataTables modern.
+- El projecte continua depenent de jQuery i plugins clàssics al voltant de les taules.
+
+### Objectiu MIG-20
+- Estandarditzar codi propi a API moderna (`DataTable()` + `draw()`).
+- Mantindre compatibilitat funcional durant la transició.
+- Deixar el terreny preparat per pujar DataTables i extensions en un lot controlat.
+
+### Pas 1 (ja aplicat en codi)
+- Substituïda la redibuixada legacy `fnDraw()` per `DataTable().draw(false)` amb guardes.
+- Homogeneïtzades inicialitzacions bàsiques cap a `DataTable()`.
+
+### Inventari real (2026-03-08)
+- `package.json` no declara `datatables.net` ni extensions (`buttons`, `responsive`, `keytable`, `scroller`, `fixedHeader`).
+- No s'han detectat fitxers `datatables*.js/css` en `public/` ni inclusions directes en layouts Blade.
+- El comportament actual es basa en:
+  - codi d'inicialització en `resources/assets/js/custom.js`,
+  - i fallback null-object en `resources/assets/js/ppIntranet.js` quan DataTables no està disponible.
+
+### Implicació tècnica
+- Les taules no estan suportades per una dependència explícita i versionada de DataTables.
+- Abans de parlar de "pujar versió", primer cal incorporar DataTables com a dependència formal del projecte.
+- Dependències i integració npm ja incorporades; queda pendent smoke test funcional per tancar MIG-20.
+
+### Passos següents recomanats
+1. Afegir dependències npm explícites de DataTables core + extensions necessàries.
+2. Integrar imports JS/CSS en el pipeline actual (`resources/assets/js` / Mix).
+3. Fer smoke test específic de taules crítiques (ordenació, cerca, exportació, responsive, checkboxes).
+4. Tancar MIG-20 quan DataTables estiga versionat per npm i sense ús d'API antiga.

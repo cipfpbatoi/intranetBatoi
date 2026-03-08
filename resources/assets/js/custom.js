@@ -49,6 +49,27 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
 
+function getDataTableApi($table) {
+    if (!$table || !$table.length || !$.fn.dataTable || !$.fn.dataTable.isDataTable($table[0])) {
+        return null;
+    }
+
+    if (typeof $table.DataTable === 'function') {
+        return $table.DataTable();
+    }
+
+    return null;
+}
+
+function redrawAllDataTables() {
+    $('.dataTable').each(function() {
+        var api = getDataTableApi($(this));
+        if (api && typeof api.draw === 'function') {
+            api.draw(false);
+        }
+    });
+}
+
 	
 	
 // Sidebar
@@ -115,7 +136,7 @@ $MENU_TOGGLE.on('click', function() {
 
 	setContentHeight();
 
-	$('.dataTable').each ( function () { $(this).dataTable().fnDraw(); });
+	redrawAllDataTables();
 });
 
 	// check active menu
@@ -2679,7 +2700,7 @@ if (typeof NProgress != 'undefined') {
 				  };
 				}();
 
-				$('#datatable').dataTable();
+				$('#datatable').DataTable();
 
 				$('#datatable-keytable').DataTable({
 				  keys: true
@@ -2701,7 +2722,7 @@ if (typeof NProgress != 'undefined') {
 
 				var $datatable = $('#datatable-checkbox');
 
-				$datatable.dataTable({
+				$datatable.DataTable({
 				  'order': [[ 1, 'asc' ]],
 				  'columnDefs': [
 					{ orderable: false, targets: [0] }
