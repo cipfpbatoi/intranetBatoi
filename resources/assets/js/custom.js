@@ -150,6 +150,50 @@ $MENU_TOGGLE.on('click', function() {
 };
 // /Sidebar
 
+function init_legacy_popover_hover_bridge() {
+    if (
+        !$.fn.popover ||
+        !$.fn.popover.Constructor ||
+        !$.fn.popover.Constructor.prototype
+    ) {
+        return;
+    }
+
+    var PopoverConstructor = $.fn.popover.Constructor;
+    if (!PopoverConstructor.__intranetLeavePatched) {
+        var originalLeave = PopoverConstructor.prototype.leave;
+        PopoverConstructor.prototype.leave = function(obj) {
+            var self = obj instanceof this.constructor ?
+                obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
+            var container, timeout;
+
+            originalLeave.call(this, obj);
+
+            if (obj.currentTarget) {
+                container = $(obj.currentTarget).siblings('.popover');
+                timeout = self.timeout;
+                container.one('mouseenter', function() {
+                    clearTimeout(timeout);
+                    container.one('mouseleave', function() {
+                        PopoverConstructor.prototype.leave.call(self, self);
+                    });
+                });
+            }
+        };
+
+        PopoverConstructor.__intranetLeavePatched = true;
+    }
+
+    $('body').popover({
+        selector: '[data-popover]',
+        trigger: 'click hover',
+        delay: {
+            show: 50,
+            hide: 400
+        }
+    });
+}
+
 	var randNum = function() {
 	  return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
 	};
@@ -195,14 +239,14 @@ $(document).ready(function() {
 // /Tooltip
 
 // Progressbar
-if ($(".progress .progress-bar")[0]) {
+if ($(".progress .progress-bar")[0] && $.fn.progressbar) {
     $('.progress .progress-bar').progressbar();
 }
 // /Progressbar
 
 // Switchery
 $(document).ready(function() {
-    if ($(".js-switch")[0]) {
+    if ($(".js-switch")[0] && typeof Switchery !== 'undefined') {
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
         elems.forEach(function (html) {
             var switchery = new Switchery(html, {
@@ -216,7 +260,7 @@ $(document).ready(function() {
 
 // iCheck
 $(document).ready(function() {
-    if ($("input.flat")[0]) {
+    if ($("input.flat")[0] && $.fn.iCheck) {
         $(document).ready(function () {
             $('input.flat').iCheck({
                 checkboxClass: 'icheckbox_flat-green',
@@ -261,10 +305,10 @@ $('.bulk_action input#check-all').on('ifUnchecked', function () {
 });
 
 function countChecked() {
-    if (checkState === 'all') {
+    if (checkState === 'all' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('check');
     }
-    if (checkState === 'none') {
+    if (checkState === 'none' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('uncheck');
     }
 
@@ -286,7 +330,7 @@ function countChecked() {
 $(document).ready(function() {
     $(".expand").on("click", function () {
         $(this).next().slideToggle(200);
-        $expand = $(this).find(">:first-child");
+        var $expand = $(this).find(">:first-child");
 
         if ($expand.text() == "+") {
             $expand.text("-");
@@ -307,38 +351,7 @@ if (typeof NProgress != 'undefined') {
     });
 }
 
-	
-	  //hover and retain popover when on popover content
-        var originalLeave = $.fn.popover.Constructor.prototype.leave;
-        $.fn.popover.Constructor.prototype.leave = function(obj) {
-          var self = obj instanceof this.constructor ?
-            obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-          var container, timeout;
-
-          originalLeave.call(this, obj);
-
-          if (obj.currentTarget) {
-            container = $(obj.currentTarget).siblings('.popover');
-            timeout = self.timeout;
-            container.one('mouseenter', function() {
-              //We entered the actual popover – call off the dogs
-              clearTimeout(timeout);
-              //Let's monitor popover content instead
-              container.one('mouseleave', function() {
-                $.fn.popover.Constructor.prototype.leave.call(self, self);
-              });
-            });
-          }
-        };
-
-        $('body').popover({
-          selector: '[data-popover]',
-          trigger: 'click hover',
-          delay: {
-            show: 50,
-            hide: 400
-          }
-        });
+        init_legacy_popover_hover_bridge();
 
 
 	function gd(year, month, day) {
@@ -2093,37 +2106,7 @@ if (typeof NProgress != 'undefined') {
 				  chart.update(Math.random() * 200 - 100);
 				});
 
-				//hover and retain popover when on popover content
-				var originalLeave = $.fn.popover.Constructor.prototype.leave;
-				$.fn.popover.Constructor.prototype.leave = function(obj) {
-				  var self = obj instanceof this.constructor ?
-					obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-				  var container, timeout;
-
-				  originalLeave.call(this, obj);
-
-				  if (obj.currentTarget) {
-					container = $(obj.currentTarget).siblings('.popover');
-					timeout = self.timeout;
-					container.one('mouseenter', function() {
-					  //We entered the actual popover – call off the dogs
-					  clearTimeout(timeout);
-					  //Let's monitor popover content instead
-					  container.one('mouseleave', function() {
-						$.fn.popover.Constructor.prototype.leave.call(self, self);
-					  });
-					});
-				  }
-				};
-
-				$('body').popover({
-				  selector: '[data-popover]',
-				  trigger: 'click hover',
-				  delay: {
-					show: 50,
-					hide: 400
-				  }
-				});
+					init_legacy_popover_hover_bridge();
 				
 			};
 	   
