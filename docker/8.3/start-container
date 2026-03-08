@@ -36,6 +36,16 @@ mkdir -p /var/www/html/storage/framework/{sessions,views,cache/data} \
 chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache || true
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
+# Instal·la dependències PHP i assets frontend si cal
+cd /var/www/html
+if [ ! -d "vendor" ]; then
+  gosu sail composer install --no-interaction --prefer-dist --optimize-autoloader
+fi
+if [ ! -d "node_modules" ]; then
+  gosu sail npm install
+  gosu sail npm run production
+fi
+
 # Executem el comando o supervisord
 if [ $# -gt 0 ]; then
   exec gosu sail "$@"
