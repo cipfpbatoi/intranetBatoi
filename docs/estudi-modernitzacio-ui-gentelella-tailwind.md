@@ -20,7 +20,7 @@
 - [x] MIG-16 Actualitzar docs i checklist
 - [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
 - [x] MIG-18 Corregir regressions finals (fix de JS legacy en layout + grandària d'icones)
-- [ ] MIG-19 Preparar PR final a Laravel12
+- [x] MIG-19 Preparar PR final a Laravel12 (plantilla en `docs/mig-19-pr-final.md`)
 
 ## 1) Estat actual (foto real del codi)
 
