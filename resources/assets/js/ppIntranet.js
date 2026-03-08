@@ -10,6 +10,50 @@ import jQuery from 'jquery';
 const $ = window.jQuery || jQuery;
 window.$ = window.jQuery = $;
 
+const createNoopDataTableRows = () => ({
+	map: () => ({
+		count: () => 0,
+		toArray: () => [],
+	}),
+});
+
+const createNoopDataTableApi = () => {
+	const api = {
+		order: () => api,
+		draw: () => api,
+		on: () => api,
+		search: () => api,
+		clear: () => api,
+		destroy: () => api,
+		buttons: () => api,
+		ajax: () => ({
+			url: () => ({
+				load: () => api,
+			}),
+		}),
+		columns: () => ({
+			adjust: () => api,
+		}),
+		table: () => ({
+			node: () => null,
+		}),
+		rows: () => ({
+			data: () => createNoopDataTableRows(),
+		}),
+	};
+
+	return api;
+};
+
+if (!$.fn.dataTable) {
+	console.warn('DataTables no disponible: s\'utilitzen mètodes null object per evitar errors JS.');
+	$.fn.dataTable = {
+		isDataTable: () => false,
+		moment: () => {},
+	};
+	$.fn.DataTable = () => createNoopDataTableApi();
+}
+
 $(function() {
 	$(document).on('click', '[data-confirm]', function(event) {
 		const message = $(this).data('confirm') || 'Segur que vols continuar?';
