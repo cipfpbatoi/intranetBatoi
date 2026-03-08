@@ -64,7 +64,7 @@ $(function() {
 })
 
 document.addEventListener('DOMContentLoaded', function () {
-	const fullBtn = document.querySelector('.glyphicon-fullscreen')?.parentElement;
+	const fullBtn = document.querySelector('.fa-expand, .glyphicon-fullscreen')?.parentElement;
 	if (fullBtn) {
 		fullBtn.addEventListener('click', function () {
 			if (!document.fullscreenElement) {
