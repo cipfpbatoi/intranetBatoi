@@ -8,7 +8,7 @@
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
     </head>
     <body class="login">
         <div class="login_wrapper">
@@ -73,6 +73,6 @@
                 </section>
             </div>
         </div>
-        <script src="{{ asset('js/app.js') }}"></script>
+        <script src="{{ mix('js/components/app.js') }}"></script>
     </body>
 </html>

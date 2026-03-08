@@ -9,7 +9,7 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
         <!-- Bootstrap -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
 
     </head>
     <body class="login">
@@ -60,7 +60,6 @@
                 </section>
             </div>
         </div>          
-        <script src="{{ asset('assets/gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ mix('js/components/app.js') }}"></script>
     </body>
 </html>
