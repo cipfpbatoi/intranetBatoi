@@ -1575,47 +1575,92 @@ if (typeof NProgress != 'undefined') {
 			
 		};
 	   
-	   
+		   
 	   /* DATERANGEPICKER */
-	   
-		function init_daterangepicker() {
 
-			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker');
-		
-			var cb = function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
-			  $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-			};
+		function getPageLocale() {
+			var pageLocale = ($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase();
+			var localePrefix = pageLocale.split('-')[0];
 
-			var optionSet1 = {
-			  startDate: moment().subtract(29, 'days'),
-			  endDate: moment(),
-			  minDate: '01/01/2012',
-			  maxDate: '12/31/2015',
-			  dateLimit: {
-				days: 60
-			  },
-			  showDropdowns: true,
-			  showWeekNumbers: true,
-			  timePicker: false,
-			  timePickerIncrement: 1,
-			  timePicker12Hour: true,
-			  ranges: {
-				'Today': [moment(), moment()],
-				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-			  },
-			  opens: 'left',
-			  buttonClasses: ['btn btn-default'],
-			  applyClass: 'btn-small btn-primary',
-			  cancelClass: 'btn-small',
-			  format: 'MM/DD/YYYY',
-			  separator: ' to ',
-			  locale: {
+			if (localePrefix === 'ca' || localePrefix === 'es' || localePrefix === 'en') {
+				return localePrefix;
+			}
+
+			return 'es';
+		}
+
+		function getMomentLocale() {
+			var locale = getPageLocale();
+			var localeForMoment = locale === 'en' ? 'en' : 'es';
+
+			if (typeof moment !== 'undefined') {
+				moment.locale(localeForMoment);
+			}
+
+			return locale;
+		}
+
+		function getDateRangePresetLabels(locale) {
+			if (locale === 'en') {
+				return {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+			if (locale === 'ca') {
+				return {
+					'Avui': [moment(), moment()],
+					'Ahir': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últims 7 dies': [moment().subtract(6, 'days'), moment()],
+					'Últims 30 dies': [moment().subtract(29, 'days'), moment()],
+					'Aquest mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+				return {
+					'Hoy': [moment(), moment()],
+					'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+					'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+					'Este mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+		function getDateRangeLocaleConfig(locale) {
+			if (locale === 'ca') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Netejar',
+					fromLabel: 'Des de',
+					toLabel: 'Fins a',
+					customRangeLabel: 'Personalitzat',
+					daysOfWeek: ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'],
+					monthNames: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+					firstDay: 1
+				};
+			}
+
+			if (locale === 'es') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Limpiar',
+					fromLabel: 'Desde',
+					toLabel: 'Hasta',
+					customRangeLabel: 'Personalizado',
+					daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sà'],
+					monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+					firstDay: 1
+				};
+			}
+
+			return {
 				applyLabel: 'Submit',
 				cancelLabel: 'Clear',
 				fromLabel: 'From',
@@ -1624,43 +1669,97 @@ if (typeof NProgress != 'undefined') {
 				daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
 				monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 				firstDay: 1
-			  }
+			};
+		}
+
+		function getDateRangeDefaultFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+		}
+
+		function getDateRangeDisplayFormat(locale) {
+			return locale === 'en' ? 'MMMM D, YYYY' : 'D MMMM YYYY';
+		}
+
+		function getDateTimeRangeFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+		}
+
+		function init_daterangepicker() {
+
+			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+			console.log('init_daterangepicker');
+
+			var locale = getPageLocale();
+			var dateRangeFormat = getDateRangeDefaultFormat(locale);
+			var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+			getMomentLocale();
+
+			var cb = function(start, end, label) {
+				console.log(start.toISOString(), end.toISOString(), label);
+				$('#reportrange span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
+			};
+
+			var optionSet1 = {
+				startDate: moment().subtract(29, 'days'),
+				endDate: moment(),
+				minDate: locale === 'en' ? '01/01/2012' : '01/01/2012',
+				maxDate: locale === 'en' ? '12/31/2015' : '12/31/2015',
+				dateLimit: {
+					days: 60
+				},
+				showDropdowns: true,
+				showWeekNumbers: true,
+				timePicker: false,
+				timePickerIncrement: 1,
+				timePicker12Hour: true,
+				ranges: getDateRangePresetLabels(locale),
+				opens: 'left',
+				buttonClasses: ['btn btn-default'],
+				applyClass: 'btn-small btn-primary',
+				cancelClass: 'btn-small',
+				format: dateRangeFormat,
+				separator: ' to ',
+				locale: getDateRangeLocaleConfig(locale)
 			};
 			
-			$('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+			$('#reportrange span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 			$('#reportrange').daterangepicker(optionSet1, cb);
 			$('#reportrange').on('show.daterangepicker', function() {
-			  console.log("show event fired");
+				console.log("show event fired");
 			});
 			$('#reportrange').on('hide.daterangepicker', function() {
-			  console.log("hide event fired");
+				console.log("hide event fired");
 			});
 			$('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-			  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 			});
 			$('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
-			  console.log("cancel event fired");
+				console.log("cancel event fired");
 			});
 			$('#options1').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
 			});
 			$('#options2').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
 			});
 			$('#destroy').click(function() {
-			  $('#reportrange').data('daterangepicker').remove();
+				$('#reportrange').data('daterangepicker').remove();
 			});
-   
+
 		}
-   	   
+	   
 	   function init_daterangepicker_right() {
-	      
+
 				if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
 				console.log('init_daterangepicker_right');
-		  
+				var locale = getPageLocale();
+				var dateRangeFormat = getDateRangeDefaultFormat(locale);
+				var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+				getMomentLocale();
+
 				var cb = function(start, end, label) {
 				  console.log(start.toISOString(), end.toISOString(), label);
-				  $('#reportrange_right span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+				  $('#reportrange_right span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
 				};
 
 				var optionSet1 = {
@@ -1676,33 +1775,17 @@ if (typeof NProgress != 'undefined') {
 				  timePicker: false,
 				  timePickerIncrement: 1,
 				  timePicker12Hour: true,
-				  ranges: {
-					'Today': [moment(), moment()],
-					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-				  },
+				  ranges: getDateRangePresetLabels(locale),
 				  opens: 'right',
 				  buttonClasses: ['btn btn-default'],
 				  applyClass: 'btn-small btn-primary',
 				  cancelClass: 'btn-small',
-				  format: 'MM/DD/YYYY',
+				  format: dateRangeFormat,
 				  separator: ' to ',
-				  locale: {
-					applyLabel: 'Submit',
-					cancelLabel: 'Clear',
-					fromLabel: 'From',
-					toLabel: 'To',
-					customRangeLabel: 'Custom',
-					daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-					monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-					firstDay: 1
-				  }
+				  locale: getDateRangeLocaleConfig(locale)
 				};
 
-				$('#reportrange_right span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+				$('#reportrange_right span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 
 				$('#reportrange_right').daterangepicker(optionSet1, cb);
 
@@ -1713,7 +1796,7 @@ if (typeof NProgress != 'undefined') {
 				  console.log("hide event fired");
 				});
 				$('#reportrange_right').on('apply.daterangepicker', function(ev, picker) {
-				  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				  console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 				});
 				$('#reportrange_right').on('cancel.daterangepicker', function(ev, picker) {
 				  console.log("cancel event fired");
@@ -1740,25 +1823,37 @@ if (typeof NProgress != 'undefined') {
 		   
 			$('#single_cal1').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_1"
+			  singleClasses: "picker_1",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal2').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_2"
+			  singleClasses: "picker_2",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal3').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_3"
+			  singleClasses: "picker_3",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal4').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_4"
+			  singleClasses: "picker_4",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
@@ -1780,7 +1875,7 @@ if (typeof NProgress != 'undefined') {
 			  timePicker: true,
 			  timePickerIncrement: 30,
 			  locale: {
-				format: 'MM/DD/YYYY h:mm A'
+				format: getDateTimeRangeFormat(getPageLocale())
 			  }
 			});
 	
@@ -1813,8 +1908,13 @@ if (typeof NProgress != 'undefined') {
 		if( typeof (validator) === 'undefined'){ return; }
 		console.log('init_validator'); 
 	  
-	  // initialize the validator function
-      validator.message.date = 'not a real date';
+      // initialize the validator function
+      var locale = getPageLocale();
+      validator.message.date = {
+        ca: 'La data no és vàlida',
+        es: 'La fecha no es válida',
+        en: 'Not a real date'
+      }[locale] || 'Not a real date';
 
       // validate a field on "blur" event, a 'select' on 'change' event & a '.reuired' classed multifield on 'keyup':
       $('form')
