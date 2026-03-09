@@ -41,7 +41,7 @@ cd /var/www/html
 
 gosu sail composer install --no-interaction --prefer-dist --optimize-autoloader
 gosu sail npm install
-# gosu sail npm run production
+gosu sail npm run production
 
 # Executem el comando o supervisord
 if [ $# -gt 0 ]; then
