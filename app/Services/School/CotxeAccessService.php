@@ -84,7 +84,7 @@ class CotxeAccessService
                 ]);
                 return false;
             }
-            $log->info('S'ha enviat la senyal d''obertura de porta');
+            $log->info("S'ha enviat la senyal d'obertura de porta");
             return $response->successful();
         } catch (\Throwable $e) {
             $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
