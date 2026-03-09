@@ -72,24 +72,25 @@ class CotxeAccessServiceTest extends TestCase
     public function test_obrir_i_porta_envia_les_ordres_al_dispositiu()
     {
         config([
-            'variables.domotica.host' => 'http://domotica.test',
-            'variables.domotica.user' => 'usuari',
-            'variables.domotica.pass' => 'clau',
-            'variables.domotica.openSceneId' => 111,
+            'parking.porta_url' => 'http://porta.test',
+            'parking.porta_device_id' => 'device-1',
+            'parking.porta_user' => 'usuari',
+            'parking.porta_pass' => 'clau',
         ]);
 
         Http::fake([
-            'http://domotica.test/api/scenes/111/execute' => Http::response('OK', 200),
+            'http://porta.test/api/callAction*' => Http::response('OK', 200),
         ]);
 
         $service = new CotxeAccessService();
 
         $this->assertTrue($service->obrirIPorta());
 
-        Http::assertSentCount(1);
+        Http::assertSentCount(2);
         Http::assertSent(function ($request) {
-            return $request->url() === 'http://domotica.test/api/scenes/111/execute'
-                && $request->method() === 'POST';
+            return str_starts_with($request->url(), 'http://porta.test/api/callAction')
+                && $request['deviceID'] === 'device-1'
+                && in_array($request['name'], ['turnOn', 'turnOff'], true);
         });
     }
 }
