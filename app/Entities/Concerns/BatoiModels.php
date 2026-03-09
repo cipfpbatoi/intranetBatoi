@@ -231,13 +231,91 @@ trait BatoiModels
         $type = $this->inputTypes[$key]['type'] ?? null;
 
         return match ($type) {
-            'date' => blank($value) ? null : Carbon::parse($value)->format('Y-m-d'),
-            'datetime' => blank($value) ? null : Carbon::parse($value)->format('Y-m-d H:i'),
+            'date' => blank($value) ? null : $this->normalizeDateInput($value)->format('Y-m-d'),
+            'datetime' => blank($value) ? null : $this->normalizeDateTimeInput($value)->format('Y-m-d H:i'),
             'select' => $value == '' ? null : $value,
             'file' => request()->hasFile($key) ? $this->fillFile(request()->file($key)) : $this->$key,
             'checkbox' => $value==null ? 0 : 1,
             default => $value,
         };
+    }
+
+    /**
+     * Normalitza un valor de data evitant ambigüitats entre dia/mes.
+     *
+     * Admet els formats habituals del projecte:
+     * - `DD/MM/YYYY` (ca/es)
+     * - `MM/DD/YYYY` (en)
+     * - `YYYY-MM-DD` (inputs HTML5 i APIs)
+     *
+     * @param mixed $value
+     * @return Carbon
+     */
+    private function normalizeDateInput($value): Carbon
+    {
+        $isEnglishLocale = str_starts_with(strtolower((string) app()->getLocale()), 'en');
+        $formats = $isEnglishLocale
+            ? ['m/d/Y', 'd/m/Y', 'Y-m-d', 'd-m-Y', 'm-d-Y']
+            : ['d/m/Y', 'm/d/Y', 'Y-m-d', 'd-m-Y', 'm-d-Y'];
+
+        return $this->parseCarbonWithFormats((string) $value, $formats);
+    }
+
+    /**
+     * Normalitza un valor de data/hora evitant ambigüitats entre dia/mes.
+     *
+     * Admet formats del datepicker (`DD/MM/YYYY HH:mm`, `MM/DD/YYYY h:mm A`)
+     * i formats ISO (`YYYY-MM-DD HH:mm[:ss]`).
+     *
+     * @param mixed $value
+     * @return Carbon
+     */
+    private function normalizeDateTimeInput($value): Carbon
+    {
+        $isEnglishLocale = str_starts_with(strtolower((string) app()->getLocale()), 'en');
+        $formats = $isEnglishLocale
+            ? [
+                'm/d/Y H:i',
+                'm/d/Y g:i A',
+                'd/m/Y H:i',
+                'Y-m-d H:i:s',
+                'Y-m-d H:i',
+                'Y-m-d\TH:i',
+            ]
+            : [
+                'd/m/Y H:i',
+                'd/m/Y G:i',
+                'm/d/Y H:i',
+                'Y-m-d H:i:s',
+                'Y-m-d H:i',
+                'Y-m-d\TH:i',
+            ];
+
+        return $this->parseCarbonWithFormats((string) $value, $formats);
+    }
+
+    /**
+     * Intenta parsejar amb formats explícits i, com a últim recurs, amb Carbon::parse.
+     *
+     * @param string $value
+     * @param array<int, string> $formats
+     * @return Carbon
+     */
+    private function parseCarbonWithFormats(string $value, array $formats): Carbon
+    {
+        $value = trim($value);
+
+        foreach ($formats as $format) {
+            $date = \DateTime::createFromFormat($format, $value);
+            $errors = \DateTime::getLastErrors();
+            $hasErrors = is_array($errors) && (($errors['warning_count'] ?? 0) > 0 || ($errors['error_count'] ?? 0) > 0);
+
+            if ($date !== false && !$hasErrors) {
+                return Carbon::instance($date);
+            }
+        }
+
+        return Carbon::parse($value);
     }
     /**
      * Valida i guarda un fitxer annex retornant la ruta final.
