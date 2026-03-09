@@ -61,7 +61,6 @@ mix.scripts([
     `${vendors}ion.rangeSlider/js/ion.rangeSlider.min.js`,
     `${vendors}dropzone/dist/min/dropzone.min.js`,
     'resources/assets/js/custom.js',
-    'resources/assets/js/init.js'
 ], 'public/js/gentelella.js');
 
 mix.js('resources/assets/js/ppIntranet.js', 'public/js/ppIntranet.js');
