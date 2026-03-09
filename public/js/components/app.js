@@ -2217,10 +2217,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_api_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/api-auth */ "./resources/assets/js/components/utils/api-auth.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'ControlResumenRangoView',
   props: {
@@ -2241,7 +2252,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       hasta: friday,
       dni: '',
       hideOk: false,
-      rows: []
+      rows: [],
+      msg: '',
+      loading: false
     };
   },
   computed: {
@@ -2252,7 +2265,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       if (isNaN(a) || isNaN(b)) return out;
       var d = new Date(a);
       while (d <= b) {
-        out.push(d.toISOString().slice(0, 10));
+        out.push(this.formatIsoLocal(d));
         d.setDate(d.getDate() + 1);
       }
       return out;
@@ -2275,6 +2288,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
   },
   methods: {
     currentWeek: function currentWeek() {
+      var _this2 = this;
       var today = new Date();
       var day = today.getDay() || 7; // dl=1..dg=7
       var monday = new Date(today);
@@ -2282,7 +2296,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       var friday = new Date(monday);
       friday.setDate(monday.getDate() + 4);
       var fmt = function fmt(d) {
-        return d.toISOString().slice(0, 10);
+        return _this2.formatIsoLocal(d);
       };
       return {
         monday: fmt(monday),
@@ -2290,44 +2304,81 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       };
     },
     fetchData: function fetchData() {
-      var _this2 = this;
+      var _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-        var url, res;
+        var _resp$data, resp, _error$response, _error$response2, status, detail, _t;
         return _regenerator().w(function (_context) {
-          while (1) switch (_context.n) {
+          while (1) switch (_context.p = _context.n) {
             case 0:
-              url = new URL('/api/presencia/resumen-rango', window.location.origin);
-              url.searchParams.set('desde', _this2.desde);
-              url.searchParams.set('hasta', _this2.hasta);
-              if (_this2.dni) url.searchParams.set('dni', _this2.dni);
-              _context.n = 1;
-              return fetch(url.toString(), {
-                credentials: 'same-origin'
-              });
-            case 1:
-              res = _context.v;
+              _this3.loading = true;
+              _this3.msg = '';
+              _context.p = 1;
               _context.n = 2;
-              return res.json();
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/presencia/resumen-rango', (0,_utils_api_auth__WEBPACK_IMPORTED_MODULE_1__.withApiAuth)({
+                timeout: 20000,
+                params: _objectSpread({
+                  desde: _this3.desde,
+                  hasta: _this3.hasta
+                }, _this3.dni ? {
+                  dni: _this3.dni
+                } : {})
+              }));
             case 2:
-              _this2.rows = _context.v;
+              resp = _context.v;
+              if (!Array.isArray(resp.data)) {
+                _context.n = 3;
+                break;
+              }
+              _this3.rows = resp.data;
+              return _context.a(2);
             case 3:
+              if (!(resp !== null && resp !== void 0 && (_resp$data = resp.data) !== null && _resp$data !== void 0 && _resp$data.success && Array.isArray(resp.data.data))) {
+                _context.n = 4;
+                break;
+              }
+              _this3.rows = resp.data.data;
+              return _context.a(2);
+            case 4:
+              _this3.rows = [];
+              _this3.msg = 'Resposta de servidor no vàlida.';
+              _context.n = 6;
+              break;
+            case 5:
+              _context.p = 5;
+              _t = _context.v;
+              _this3.rows = [];
+              status = _t === null || _t === void 0 || (_error$response = _t.response) === null || _error$response === void 0 ? void 0 : _error$response.status;
+              detail = (_t === null || _t === void 0 || (_error$response2 = _t.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || (_t === null || _t === void 0 ? void 0 : _t.message) || 'Error desconegut';
+              _this3.msg = "Error carregant dades".concat(status ? " (".concat(status, ")") : '', ": ").concat(detail);
+            case 6:
+              _context.p = 6;
+              _this3.loading = false;
+              return _context.f(6);
+            case 7:
               return _context.a(2);
           }
-        }, _callee);
+        }, _callee, null, [[1, 5, 6, 7]]);
       }))();
     },
     changeWeek: function changeWeek(delta) {
+      var _this4 = this;
       var base = this.startOfWeek(new Date(this.desde));
       base.setDate(base.getDate() + delta * 7);
       var monday = base;
       var friday = new Date(monday);
       friday.setDate(monday.getDate() + 4); // saltem dissabte/diumenge
       var fmt = function fmt(d) {
-        return d.toISOString().slice(0, 10);
+        return _this4.formatIsoLocal(d);
       };
       this.desde = fmt(monday);
       this.hasta = fmt(friday);
       this.fetchData();
+    },
+    formatIsoLocal: function formatIsoLocal(date) {
+      var y = date.getFullYear();
+      var m = String(date.getMonth() + 1).padStart(2, '0');
+      var d = String(date.getDate()).padStart(2, '0');
+      return "".concat(y, "-").concat(m, "-").concat(d);
     },
     startOfWeek: function startOfWeek(date) {
       var d = new Date(date);
@@ -2336,14 +2387,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       return d;
     },
     isRowFullyOk: function isRowFullyOk(row) {
-      var _this3 = this;
+      var _this5 = this;
       if (!row.days) return false;
       var days = this.daysList;
       if (!days.length) return false;
       return days.every(function (d) {
         var info = row.days[d];
         if (!info) return false;
-        return _this3.cellInfo(info)["class"] === 'bg-g';
+        return _this5.cellInfo(info)["class"] === 'bg-g';
       });
     },
     nomProf: function nomProf(p) {
@@ -3409,7 +3460,17 @@ var render = function render() {
     on: {
       click: _vm.fetchData
     }
-  }, [_vm._v("Actualitza")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("Actualitza")])]), _vm._v(" "), _vm.loading ? _c("p", {
+    staticClass: "muted",
+    staticStyle: {
+      margin: "6px 0 0"
+    }
+  }, [_vm._v("Carregant dades...")]) : _vm._e(), _vm._v(" "), _vm.msg ? _c("p", {
+    staticStyle: {
+      margin: "6px 0 0",
+      color: "#b91c1c"
+    }
+  }, [_vm._v(_vm._s(_vm.msg))]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "table-wrap",
     staticStyle: {
       overflow: "auto",
