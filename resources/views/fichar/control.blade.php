@@ -1,4 +1,4 @@
-<x-layouts.app title="Control setmanal fitxages">
+<x-layouts.app title="Control setmanal fitxages" :skipLegacyJs="true">
 
 <div id="app">
     <control-semana-view 
@@ -6,8 +6,4 @@
     ></control-semana-view>
 </div>
 
-@push('scripts')
-    {{ Html::script('/js/components/app.js') }}
-<!--      {{ Html::script('/js/Fichar/control.js') }} -->
-@endpush
 </x-layouts.app>

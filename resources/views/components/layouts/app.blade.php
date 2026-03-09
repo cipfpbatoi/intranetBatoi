@@ -42,7 +42,9 @@
 {{-- JS --}}
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{ mix('js/components/app.js') }}"></script>
+@unless(!empty($skipLegacyJs))
 <script src="{{ mix('js/ppIntranet.js') }}"></script>
+@endunless
 @yield('scripts')
 @stack('scripts')
 </body>
