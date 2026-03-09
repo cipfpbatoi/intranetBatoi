@@ -24,3 +24,9 @@ package-lock.json
 /storage/framework/sessions
 /bootstrap/cache
 /storage/logs
+/public/js/components/app.js
+/public/js/components/app.js.LICENSE.txt
+/public/js/ppIntranet.js
+/public/js/ppIntranet.js.LICENSE.txt
+/public/mix-manifest.json
+
