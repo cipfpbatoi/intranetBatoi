@@ -87,7 +87,7 @@ class CotxeAccessService
                 return false;
             }
             $log->info("S'ha enviat la senyal d'obertura de porta");
-            return $response->successful();
+            return $onResponse->successful();
             sleep(0.5);
 
             // Intentem apagar encara que l'obertura haja fallat
