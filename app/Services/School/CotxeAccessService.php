@@ -54,60 +54,38 @@ class CotxeAccessService
     }
 
     /**
-     * Envia les ordres d'obrir i tancar la porta al dispositiu IoT.
+     * Envia la senyal per obrir la porta de l'aparcament mitjançant la escena domòtica.
      *
      * @return bool True si la sol·licitud d'obertura ha sigut satisfactòria.
      */
     public function obrirIPorta(): bool
     {
         $log = Log::channel('parking');
-        $url = config('parking.porta_url');
-        $id = config('parking.porta_device_id');
-        $user = config('parking.porta_user');
-        $pass = config('parking.porta_pass');
+        $user = config('variables.domotica.user');
+        $pass = config('variables.domotica.pass');
+        $sceneId = (int) config('variables.domotica.openSceneId', 111);
+        $url = rtrim((string) config('variables.domotica.host', 'http://172.16.10.74'), '/').'/api/scenes/'.$sceneId.'/execute';
 
         try {
 
-            $onResponse = Http::withBasicAuth($user, $pass)
-                ->get("$url/api/callAction", [
-                    'deviceID' => $id,
-                    'name' => 'turnOn',
-                ]);
+            $response = Http::withBasicAuth($user, $pass)
+                ->accept('application/json')
+                ->withHeaders(['Content-Type' => 'application/json'])
+                ->post($url, []);
 
-            if (!$onResponse->successful()) {
-                $log->error('Error obrint la porta (turnOn)', [
-                    'status' => $onResponse->status(),
-                    'reason' => $onResponse->reason(),
+            if (!$response->successful()) {
+                $log->error('Error obrint la porta (scene)', [
+                    'status' => $response->status(),
+                    'reason' => $response->reason(),
                     'user'  => $user,
                     'pass'  => $pass,
-                    'body' => substr($onResponse->body(), 0, 500),
+                    'body' => substr($response->body(), 0, 500),
                     'url' => $url,
-                    'deviceID' => $id,
                 ]);
                 return false;
             }
-
-            sleep(0.5);
-
-            // Intentem apagar encara que l'obertura haja fallat
-            $offResponse = Http::withBasicAuth($user, $pass)
-                ->get("$url/api/callAction", [
-                    'deviceID' => $id,
-                    'name' => 'turnOff',
-                ]);
-
-            if (!$offResponse->successful()) {
-                $log->warning('Error tancant la porta (turnOff)', [
-                    'status' => $offResponse->status(),
-                    'reason' => $offResponse->reason(),
-                    'body' => substr($offResponse->body(), 0, 500),
-                    'url' => $url,
-                    'deviceID' => $id,
-                ]);
-            }
-            $log->info('Sennayls enviades correctament per obrir/tancar la porta');
-
-            return $onResponse->successful();
+            $log->info('S'ha enviat la senyal d''obertura de porta');
+            return $response->successful();
         } catch (\Throwable $e) {
             $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
             return false;
