@@ -29,7 +29,6 @@ mix.styles([
     `${vendors}nprogress/nprogress.css`,
     `${vendors}dropzone/dist/min/dropzone.min.css`,
     `${gentelella}build/css/custom.min.css`,
-    'resources/assets/css/mycustom.css',
     'resources/assets/css/estilo.css'
 ], 'public/css/gentelella.css');
 
