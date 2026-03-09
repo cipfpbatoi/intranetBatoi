@@ -9,7 +9,7 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
         <!-- Bootstrap -->
-        <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     </head>
     <body class="login">
