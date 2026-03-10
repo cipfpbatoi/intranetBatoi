@@ -81,6 +81,17 @@ class TutoriaGrupoController extends ModalController
         return TutoriaGrupo::where('idTutoria','=',$this->search)->get();
     }
 
+    /**
+     * Mostra els registres de tutoria per l'identificador de tutoria.
+     *
+     * @param int|string $search
+     * @return mixed
+     */
+    public function indice($search)
+    {
+        return parent::indice($search);
+    }
+
     public function iniBotones()
     {
         $this->panel->setBotonera([], ['show']);
