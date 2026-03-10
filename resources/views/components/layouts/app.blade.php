@@ -13,7 +13,12 @@
     @stack('styles')
     @yield('css')
 </head>
-<body class="nav-md">
+<body
+    class="nav-md"
+    data-app-env="{{ app()->environment() }}"
+    data-js-debug="{{ app()->isLocal() ? '1' : '0' }}"
+    data-legacy-features="@yield('legacy_features')"
+>
 
     <div class="container body">
         <div class="main_container">
