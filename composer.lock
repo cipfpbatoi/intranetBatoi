@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf70f59531805f41e66274eff8b3209f",
+    "content-hash": "0d0bb56cc4fc5cb9cf851099553848b8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4734,7 +4734,7 @@
         },
         {
             "name": "nunomaduro/termwind",
-            "version": "v2.4.0",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/termwind.git",
@@ -4761,6 +4761,7 @@
                 "symfony/var-dumper": "^7.3.5 || ^8.0.4",
                 "thecodingmachine/phpstan-strict-rules": "^1.0.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -4801,7 +4802,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nunomaduro/termwind/issues",
-                "source": "https://github.com/nunomaduro/termwind/tree/v2.4.0"
+                "source": "https://github.com/nunomaduro/termwind/tree/2.x"
             },
             "funding": [
                 {
@@ -12327,7 +12328,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nunomaduro/collision": 10
+        "nunomaduro/collision": 10,
+        "nunomaduro/termwind": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
