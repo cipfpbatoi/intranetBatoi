@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class ApiResourceController extends Controller
@@ -51,6 +52,12 @@ class ApiResourceController extends Controller
 
             // Mantinc el teu format tradicional
             return $this->sendResponse(['created' => true, 'id' => $created->id], 'OK');
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Throwable $e) {
             report($e);
             return $this->sendError('Internal server error', 500);
@@ -72,6 +79,12 @@ class ApiResourceController extends Controller
             $registro->save();
 
             return $this->sendResponse(['updated' => true], 'OK');
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (Throwable $e) {
             report($e);
             return $this->sendError('Internal server error', 500);
