@@ -54,38 +54,50 @@ class CotxeAccessService
     }
 
     /**
-     * Envia la senyal per obrir la porta de l'aparcament mitjançant la escena domòtica.
+     * Envia la petició per obrir la porta del pàrquing mitjançant la escena domòtica.
      *
-     * @return bool True si la sol·licitud d'obertura ha sigut satisfactòria.
+     * @return bool True si la petició d'obertura ha sigut satisfactòria.
      */
     public function obrirIPorta(): bool
     {
         $log = Log::channel('parking');
-        $user = config('variables.domotica.user');
-        $pass = config('variables.domotica.pass');
-        $sceneId = (int) config('variables.domotica.openSceneId', 111);
-        $url = rtrim((string) config('variables.domotica.host', 'http://172.16.10.74'), '/').'/api/scenes/'.$sceneId.'/execute';
+        $url = config('parking.porta_url');
+        if (empty($url)) {
+            $url = config('variables.domotica.host', 'http://172.16.10.74');
+        }
+
+        $scene = config('parking.porta_scene_id', config('parking.scene', 111));
+        if (empty($scene)) {
+            $scene = config('variables.domotica.openSceneId', 111);
+        }
+
+        $user = config('parking.porta_user', config('variables.domotica.user', 'api'));
+        $pass = config('parking.porta_pass', config('variables.domotica.pass', 'Api*HC3*Batoi26'));
+
+        $endpoint = rtrim((string) $url, '/').'/api/scenes/'.$scene.'/execute';
 
         try {
-
             $response = Http::withBasicAuth($user, $pass)
-                ->accept('application/json')
                 ->withHeaders(['Content-Type' => 'application/json'])
-                ->post($url, []);
+                ->post($endpoint, new \stdClass());
 
             if (!$response->successful()) {
-                $log->error('Error obrint la porta (scene)', [
+                $log->error('Error obrint la porta mitjançant escena', [
                     'status' => $response->status(),
                     'reason' => $response->reason(),
-                    'user'  => $user,
-                    'pass'  => $pass,
-                    'body' => substr($response->body(), 0, 500),
-                    'url' => $url,
+                    'user' => $user,
+                    'body' => substr((string) $response->body(), 0, 500),
+                    'url' => $endpoint,
                 ]);
                 return false;
             }
-            $log->info("S'ha enviat la senyal d'obertura de porta");
-            return $response->successful();
+
+            $log->info("S'ha enviat la petició d'obertura de la porta", [
+                'status' => $response->status(),
+                'url' => $endpoint,
+            ]);
+
+            return true;
         } catch (\Throwable $e) {
             $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
             return false;
