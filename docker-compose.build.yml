@@ -7,3 +7,12 @@ services:
       args:
         WWWUSER: "${WWWUSER:-${UID:-1000}}"
         WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
+  
+  laravel.prod:
+    image: arturocandela/intranet:${IMAGE_TAG_PROD:-laravel12-prod}
+    build:
+      context: ./docker/8.3/
+      dockerfile: Dockerfile.prod
+      args:
+        WWWUSER: "${WWWUSER:-${UID:-1000}}"
+        WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
