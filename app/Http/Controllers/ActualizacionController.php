@@ -101,7 +101,16 @@ class ActualizacionController extends Controller
         File::ensureDirectoryExists($home);
         File::ensureDirectoryExists("$home/.ssh");
 
-        return ['HOME' => $home];
+        $knownHosts = rtrim($home, '/').'/.ssh/known_hosts';
+        $sshCommand = sprintf(
+            'ssh -o UserKnownHostsFile=%s -o StrictHostKeyChecking=accept-new -o BatchMode=yes',
+            escapeshellarg($knownHosts)
+        );
+
+        return [
+            'HOME' => $home,
+            'GIT_SSH_COMMAND' => $sshCommand,
+        ];
     }
 
     /**
