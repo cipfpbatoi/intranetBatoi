@@ -36,7 +36,7 @@
 
                                 <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                                     <input type="email" class="form-control" name="email"  placeholder="Email">
-                                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                    <span class="fa fa-envelope form-control-feedback"></span>
                                     @if ($errors->has('email'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('email') }}</strong>
@@ -60,7 +60,6 @@
                 </section>
             </div>
         </div>          
-        <script src="{{ asset('assets/gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ mix('js/components/app.js') }}"></script>
     </body>
 </html>

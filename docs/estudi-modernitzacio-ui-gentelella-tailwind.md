@@ -1,18 +1,40 @@
 # Estudi realista: Gentelella, Tailwind i eliminació de `Form::` / `Field::`
 
+## 0) Checklist d'execució MIG (actualitzat 2026-03-08)
+
+- [x] MIG-01 Inventari de dependències Gentelella
+- [x] MIG-02 Mapatge de fitxers de build i layouts
+- [x] MIG-03 Mapatge de plugins crítics
+- [x] MIG-04 Definir stack frontend modular
+- [x] MIG-05 Refactor `webpack.mix.js`
+- [x] MIG-06 Ajustar layouts principals
+- [x] MIG-07 Revisar fonts, icons i recursos
+- [x] MIG-08 Adaptar vista login/auth
+- [x] MIG-09 Revisar topnav/sidebar
+- [x] MIG-10 Revisar components de formulari
+- [x] MIG-11 Revisar taules i grids
+- [x] MIG-12 Revisar calendaris i datepickers
+- [x] MIG-13 Validar `custom.js` i inicialitzacions legacy
+- [x] MIG-14 Retirar dependència Gentelella del build
+- [x] MIG-15 Neteja d'assets no utilitzats
+- [x] MIG-16 Actualitzar docs i checklist
+- [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
+- [x] MIG-18 Corregir regressions finals (fix de JS legacy en layout + grandària d'icones)
+- [x] MIG-19 Preparar PR final a Laravel12 (plantilla en `docs/mig-19-pr-final.md`)
+- [x] MIG-20 Full de ruta per actualitzar DataTables a versions recents
+
 ## 1) Estat actual (foto real del codi)
 
 ### Frontend/layout
 - El layout principal (`resources/views/layouts/intranet.blade.php`) carrega:
-  - `mix('css/gentelella.css')`
-  - `mix('js/gentelella.js')`
+  - `mix('css/components/app.css')`
+  - `mix('js/components/app.js')`
   - `mix('js/ppIntranet.js')`
 - Hi ha acoblament directe a classes de Gentelella (`nav-md`, `main_container`, `left_col`, `right_col`, `x_panel`, `x_title`, `nav_menu`, etc.) en almenys **40 referències** en vistes.
-- Build actual amb Laravel Mix (`webpack.mix.js`) concatena molts plugins legacy (jQuery + bootstrap plugin ecosystem).
+- El build actual ja no genera `gentelella.css/js`; compila únicament `components/app` i `ppIntranet`.
 
 ### Versions i stack
 - `package.json` actual:
-  - `gentelella: ^1.4.0`
   - `bootstrap: ^4.0.0`
   - `vue: ^2.5.7`
   - `laravel-mix: ^6.0.13`
@@ -114,6 +136,10 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 - Adaptar JS de sidebar/topnav (`resources/assets/js/custom.js`) a la nova estructura.
 - Revisar plugins: DataTables, daterangepicker, wizard, dropzone, etc.
 - Benefici: menys xoc visual inicial.
+- Estat actual:
+  - Dependència `gentelella` retirada de `package.json`.
+  - Assets `public/css/gentelella.css` i `public/js/gentelella.js` eliminats.
+  - Mantindre esta opció només tindria sentit si es reintroduïx explícitament la plantilla.
 
 ## Si triem Tailwind (objectiu final)
 - Preparar design tokens i components base (layout, cards, forms, tables, alerts).
@@ -151,3 +177,36 @@ Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol
 - Releases: https://github.com/ColorlibHQ/gentelella/releases
 - Web oficial: https://gentelella.com/
 
+## 9) MIG-20 (proposta): actualització de DataTables
+
+### Estat actual detectat
+- Hi ha inicialitzacions mixtes `dataTable()` i `DataTable()` en `resources/assets/js/custom.js`.
+- Existix codi legacy `fnDraw()` que no és l'API recomanada per DataTables modern.
+- El projecte continua depenent de jQuery i plugins clàssics al voltant de les taules.
+
+### Objectiu MIG-20
+- Estandarditzar codi propi a API moderna (`DataTable()` + `draw()`).
+- Mantindre compatibilitat funcional durant la transició.
+- Deixar el terreny preparat per pujar DataTables i extensions en un lot controlat.
+
+### Pas 1 (ja aplicat en codi)
+- Substituïda la redibuixada legacy `fnDraw()` per `DataTable().draw(false)` amb guardes.
+- Homogeneïtzades inicialitzacions bàsiques cap a `DataTable()`.
+
+### Inventari real (2026-03-08)
+- `package.json` no declara `datatables.net` ni extensions (`buttons`, `responsive`, `keytable`, `scroller`, `fixedHeader`).
+- No s'han detectat fitxers `datatables*.js/css` en `public/` ni inclusions directes en layouts Blade.
+- El comportament actual es basa en:
+  - codi d'inicialització en `resources/assets/js/custom.js`,
+  - i fallback null-object en `resources/assets/js/ppIntranet.js` quan DataTables no està disponible.
+
+### Implicació tècnica
+- Les taules no estan suportades per una dependència explícita i versionada de DataTables.
+- Abans de parlar de "pujar versió", primer cal incorporar DataTables com a dependència formal del projecte.
+- Dependències i integració npm ja incorporades; smoke test funcional validat.
+
+### Passos següents recomanats
+1. Afegir dependències npm explícites de DataTables core + extensions necessàries.
+2. Integrar imports JS/CSS en el pipeline actual (`resources/assets/js` / Mix).
+3. Fer smoke test específic de taules crítiques (ordenació, cerca, exportació, responsive, checkboxes).
+4. Tancar MIG-20 quan DataTables estiga versionat per npm i sense ús d'API antiga.

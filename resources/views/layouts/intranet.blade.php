@@ -2,7 +2,12 @@
 <html>
 <head>
     <x-layouts.meta />
-    <link rel="stylesheet" href="{{ mix('css/gentelella.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
+    <style>
+        .iconopequeno { width: 25px; height: 25px; }
+        .iconomediano { width: 30px; height: 30px; }
+    </style>
     <title>@yield('titulo')</title>
     @stack('styles')
     @yield('css')
@@ -22,8 +27,11 @@
         </div>
     </div>
 @endif
-<script src="{{ mix('js/gentelella.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ mix('js/components/app.js') }}"></script>
+@unless(View::hasSection('skip_legacy_js'))
 <script src="{{ mix('js/ppIntranet.js') }}"></script>
+@endunless
 @yield('scripts')
 @stack('scripts')
 </body>
