@@ -74,7 +74,7 @@ RUN dpkg -i /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 RUN chmod +x /usr/local/bin/start-container
 
 RUN gosu sail composer install --no-interaction --prefer-dist --optimize-autoloader
-RUN gosu sail npm install
+RUN gosu sail npm ci
 RUN gosu sail npm run production
 
 EXPOSE 8000
