@@ -102,7 +102,7 @@ class ActualizacionController extends Controller
         File::ensureDirectoryExists("$home/.ssh");
         $knownHosts = rtrim($home, '/').'/.ssh/known_hosts';
         $sshCommand = sprintf(
-            'ssh -o UserKnownHostsFile=%s -o StrictHostKeyChecking=accept-new -o BatchMode=yes',
+            'ssh -o UserKnownHostsFile=%s -o StrictHostKeyChecking=no -o BatchMode=yes',
             escapeshellarg($knownHosts)
         );
 
