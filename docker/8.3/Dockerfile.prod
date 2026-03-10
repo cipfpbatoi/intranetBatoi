@@ -4,7 +4,7 @@ LABEL maintainer="Arturo Candela"
 
 ARG WWWGROUP=1000
 ARG WWWUSER=1000
-ARG NODE_VERSION=18
+ARG NODE_VERSION=20
 ARG POSTGRES_VERSION=14
 
 WORKDIR /var/www/html
@@ -44,7 +44,14 @@ RUN apt-get update \
     && apt-get -y autoremove \
     && apt-get install -y openjdk-21-jre-headless pdftk-java \
     && apt-get clean \
+    && apt-get install -y git \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN git clone --depth 1 --branch Laravel12 --single-branch https://github.com/cipfpbatoi/intranetBatoi.git .
+RUN rm -rf .git
+RUN apt-get remove -y git \
+    && apt-get clean
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.3
 
@@ -65,6 +72,10 @@ RUN apt-get update && apt-get install -y libxrender1 libjpeg-dev xfonts-75dpi xf
 RUN dpkg -i /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 
 RUN chmod +x /usr/local/bin/start-container
+
+RUN gosu sail composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN gosu sail npm install
+RUN gosu sail npm run production
 
 EXPOSE 8000
 
