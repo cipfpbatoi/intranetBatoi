@@ -29,6 +29,8 @@
       </label>
       <button @click="fetchData" class="btn">Actualitza</button>
     </div>
+    <p v-if="loading" class="muted" style="margin:6px 0 0">Carregant dades...</p>
+    <p v-if="msg" style="margin:6px 0 0;color:#b91c1c">{{ msg }}</p>
 
     <!-- Taula resum -->
     <div class="table-wrap" style="overflow:auto;border:1px solid #e5e7eb;border-radius:8px">
@@ -76,6 +78,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { withApiAuth } from '../utils/api-auth'
+
 export default {
   name: 'ControlResumenRangoView',
   props: {
@@ -92,7 +97,9 @@ export default {
       hasta: friday,
       dni: '',
       hideOk: false,
-      rows: []
+      rows: [],
+      msg: '',
+      loading: false,
     }
   },
   computed: {
@@ -103,7 +110,7 @@ export default {
       if (isNaN(a) || isNaN(b)) return out
       const d = new Date(a)
       while (d <= b) {
-        out.push(d.toISOString().slice(0,10))
+        out.push(this.formatIsoLocal(d))
         d.setDate(d.getDate() + 1)
       }
       return out
@@ -127,17 +134,47 @@ export default {
       monday.setDate(today.getDate() - (day - 1))
       const friday = new Date(monday)
       friday.setDate(monday.getDate() + 4)
-      const fmt = d => d.toISOString().slice(0,10)
+      const fmt = d => this.formatIsoLocal(d)
       return { monday: fmt(monday), friday: fmt(friday) }
     },
 
     async fetchData() {
-      const url = new URL('/api/presencia/resumen-rango', window.location.origin)
-      url.searchParams.set('desde', this.desde)
-      url.searchParams.set('hasta', this.hasta)
-      if (this.dni) url.searchParams.set('dni', this.dni)
-      const res = await fetch(url.toString(), { credentials: 'same-origin' })
-      this.rows = await res.json()
+      this.loading = true
+      this.msg = ''
+      try {
+        const resp = await axios.get(
+          '/api/presencia/resumen-rango',
+          withApiAuth({
+            timeout: 20000,
+            params: {
+              desde: this.desde,
+              hasta: this.hasta,
+              ...(this.dni ? { dni: this.dni } : {}),
+            },
+          })
+        )
+
+        if (Array.isArray(resp.data)) {
+          this.rows = resp.data
+          return
+        }
+
+        // Compatibilitat per a respostes embolcallades tipus { success, data }
+        if (resp?.data?.success && Array.isArray(resp.data.data)) {
+          this.rows = resp.data.data
+          return
+        }
+
+        this.rows = []
+        this.msg = 'Resposta de servidor no vàlida.'
+      } catch (error) {
+        this.rows = []
+        const status = error?.response?.status
+        const detail = error?.response?.data?.message || error?.message || 'Error desconegut'
+        this.msg = `Error carregant dades${status ? ` (${status})` : ''}: ${detail}`
+      } finally {
+        this.loading = false
+      }
     },
 
     changeWeek(delta) {
@@ -146,10 +183,17 @@ export default {
       const monday = base
       const friday = new Date(monday)
       friday.setDate(monday.getDate() + 4) // saltem dissabte/diumenge
-      const fmt = d => d.toISOString().slice(0,10)
+      const fmt = d => this.formatIsoLocal(d)
       this.desde = fmt(monday)
       this.hasta = fmt(friday)
       this.fetchData()
+    },
+
+    formatIsoLocal(date) {
+      const y = date.getFullYear()
+      const m = String(date.getMonth() + 1).padStart(2, '0')
+      const d = String(date.getDate()).padStart(2, '0')
+      return `${y}-${m}-${d}`
     },
 
     startOfWeek(date) {
@@ -299,92 +343,3 @@ export default {
 .bg-p { background:#e9d5ff;color:#6b21a8 }
 .bg-s { background:#e5e7eb;color:#374151 }
 </style>
-cellInfo(day) {
-  const status = day.status || ''
-
-  // Colors base
-  const COLORS = {
-    OK: 'bg-g',
-    PARTIAL: 'bg-a',
-    ABSENT: 'bg-r',
-    JUSTIFIED: 'bg-y',
-    ACTIVITY: 'bg-b',
-    COMMISSION: 'bg-p',
-    OFF: 'bg-s',
-    NO_SALIDA: 'bg-r'
-  }
-
-  // ----- CASOS ESPECIALS (NO % global) -----
-  if (status === 'NO_SALIDA') {
-    let label = 'No out'
-    if (day.first_entry) {
-      const hm = day.first_entry.slice(0,5)
-      label = `${label} (${hm})`
-    }
-    return { label, class: COLORS.NO_SALIDA }
-  }
-
-  if (status === 'ABSENT') {
-    return { label: 'Abs', class: COLORS.ABSENT }
-  }
-
-  if (status === 'JUSTIFIED') {
-    return { label: 'Just', class: COLORS.JUSTIFIED }
-  }
-
-  if (status === 'ACTIVITY') {
-    return { label: 'Act', class: COLORS.ACTIVITY }
-  }
-
-  if (status === 'COMMISSION') {
-    return { label: 'Com', class: COLORS.COMMISSION }
-  }
-
-  if (status === 'OFF') {
-    return { label: 'Off', class: COLORS.OFF }
-  }
-
-  // ----- CÀLCUL GLOBAL (per a OK i PARTIAL) -----
-
-  const plannedDoc = day.planned_docencia_minutes || 0
-  const plannedAlt = day.planned_altres_minutes || 0
-  const coveredDoc = day.covered_docencia_minutes || 0
-  const coveredAlt = day.covered_altres_minutes || 0
-
-  const plannedTotal = plannedDoc + plannedAlt
-  const coveredTotal = coveredDoc + coveredAlt
-
-  if (!plannedTotal) {
-    return { label: '—', class: COLORS.OFF }
-  }
-
-  const percent = Math.round((coveredTotal * 100) / plannedTotal)
-
-  // ---------- NOVA NORMATIVA ----------
-  // % > 110 -> mostrar % i colorejar segons si l’excés ve de lectives o no
-  if (percent > 110) {
-    // excés → sempre mostrar %
-    return { label: `${percent}%`, class: COLORS.OK }
-  }
-
-  // OK si percentatge entre 90% i 110%
-  if (percent >= 90 && percent <= 110) {
-    return { label: `${percent}%`, class: COLORS.OK }
-  }
-
-  // Percentatge BAIX (<90%) -> PARTIAL
-  // Nova lògica de ROIG/AMBRE
-  const missingDoc = coveredDoc < plannedDoc
-  const missingAlt = coveredAlt < plannedAlt
-
-  if (missingDoc) {
-    return { label: `${percent}%`, class: COLORS.ABSENT } // roig
-  }
-
-  if (missingAlt) {
-    return { label: `${percent}%`, class: COLORS.PARTIAL } // ambre
-  }
-
-  // fallback
-  return { label: `${percent}%`, class: COLORS.PARTIAL }
-}

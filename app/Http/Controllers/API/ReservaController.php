@@ -133,8 +133,6 @@ class ReservaController extends ApiResourceController
         }
 
         // Si no hi ha reserva activa, no fem tancar, només retornem error per seguretat.
-        $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
-        // Si no hi ha reserva activa, no fem tancar, només retornem error per seguretat.
         $reserva = Reserva::where('idProfesor', $profesor->dni)
             ->where('dia', Hoy())
             ->first();

@@ -7,3 +7,4 @@ services:
       args:
         WWWUSER: "${WWWUSER:-${UID:-1000}}"
         WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
+        NODE_VERSION: "${NODE_VERSION:-20}"

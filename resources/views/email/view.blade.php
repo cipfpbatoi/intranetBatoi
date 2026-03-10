@@ -1,39 +1,39 @@
 @extends('layouts.intranet')
 @section('content')
-    
-    {!! Form::open(['url' =>  route($action) ,'enctype'=> 'multipart/form-data' ]) !!}
-    
-        {!! Form::hidden('route', $route) !!}
-        {!! Form::hidden('register', $register) !!}
-        {!! Form::hidden('class', $class) !!}
-        {!! Form::hidden('editable', $editable) !!}
+
+    <form method="post" action="{{ route($action) }}" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="route" value="{{ $route }}">
+        <input type="hidden" name="register" value="{{ $register }}">
+        <input type="hidden" name="class" value="{{ $class }}">
+        <input type="hidden" name="editable" value="{{ $editable }}">
         <div class="form-group">
-            {!! Form::label('from', 'De') !!}
-            {!! Form::text('from', $from, ['class' => 'form-control']) !!}
+            <label for="from">De</label>
+            <input name="from" class="form-control" value="{{ $from }}">
         </div>
         <div class="form-group">
-            {!! Form::label('fromPerson', 'Nom') !!}
-            {!! Form::text('fromPerson', $fromPerson, ['class' => 'form-control']) !!}
+            <label for="fromPerson">Nom</label>
+            <input name="fromPerson" class="form-control" value="{{ $fromPerson }}">
         </div>
         <div class="form-group">
-            {!! Form::label('to', 'Per a') !!}
-            {!! Form::textarea('to', $to, ['class' => 'resizable_textarea form-control']) !!}
+            <label for="to">Per a</label>
+            <textarea name="to" class="resizable_textarea form-control">{{ $to }}</textarea>
         </div>
         <div class="form-group">
-            {!! Form::label('toPeople', 'Adreçat a') !!}
-            {!! Form::text('toPeople', $toPeople, ['class' => 'form-control']) !!}
+            <label for="toPeople">Adreçat a</label>
+            <input name="toPeople" class="form-control" value="{{ $toPeople }}">
         </div>
         <div class="form-group">
-            {!! Form::label('subject', 'Assumpte') !!}
-            {!! Form::text('subject', $subject, ['class' => 'form-control']) !!}
+            <label for="subject">Assumpte</label>
+            <input name="subject" class="form-control" value="{{ $subject }}">
         </div>
         <div class="form-group">
             @if (!$editable)
-                {!! Form::label('contenido', 'Exemple') !!}
-                {!! Form::textarea('contenido',$template, ['id'=>'contenido','class' => 'form-control','style'=>'display:none']) !!}
+                <label for="contenido">Exemple</label>
+                <textarea id="contenido" class="form-control" style="display:none" name="contenido">{{ $template }}</textarea>
             @else
-                {!! Form::label('contenido', 'Contingut') !!}
-                {!! Form::textarea('contenido',$contenido, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
+                <label for="content">Contingut</label>
+                <textarea id="content" class="form-control" style="display:none" name="contenido">{{ $contenido }}</textarea>
             @endif
         </div>
     <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
@@ -104,11 +104,11 @@
     </div>
     <div id="area" class="editor-wrapper">{!! $contenido !!} </div>
     <div class="form-group">
-            {!! Form::label('file', 'Adjunt') !!}
-            {!! Form::file('file[]', ['multiple'=>true]) !!}
+            <label for="file">Adjunt</label>
+            <input type="file" name="file[]" multiple>
     </div>
-    {!! Form::submit('Submit', ['class' => 'btn btn-info']) !!}
-    {!! Form::close() !!}
+    <button type="submit" class="btn btn-info">Submit</button>
+    </form>
 @endsection
 @section('titulo')
     Enviar correu

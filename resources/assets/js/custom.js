@@ -49,6 +49,27 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
 
+function getDataTableApi($table) {
+    if (!$table || !$table.length || !$.fn.dataTable || !$.fn.dataTable.isDataTable($table[0])) {
+        return null;
+    }
+
+    if (typeof $table.DataTable === 'function') {
+        return $table.DataTable();
+    }
+
+    return null;
+}
+
+function redrawAllDataTables() {
+    $('.dataTable').each(function() {
+        var api = getDataTableApi($(this));
+        if (api && typeof api.draw === 'function') {
+            api.draw(false);
+        }
+    });
+}
+
 	
 	
 // Sidebar
@@ -115,7 +136,7 @@ $MENU_TOGGLE.on('click', function() {
 
 	setContentHeight();
 
-	$('.dataTable').each ( function () { $(this).dataTable().fnDraw(); });
+	redrawAllDataTables();
 });
 
 	// check active menu
@@ -149,6 +170,50 @@ $MENU_TOGGLE.on('click', function() {
 	}
 };
 // /Sidebar
+
+function init_legacy_popover_hover_bridge() {
+    if (
+        !$.fn.popover ||
+        !$.fn.popover.Constructor ||
+        !$.fn.popover.Constructor.prototype
+    ) {
+        return;
+    }
+
+    var PopoverConstructor = $.fn.popover.Constructor;
+    if (!PopoverConstructor.__intranetLeavePatched) {
+        var originalLeave = PopoverConstructor.prototype.leave;
+        PopoverConstructor.prototype.leave = function(obj) {
+            var self = obj instanceof this.constructor ?
+                obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
+            var container, timeout;
+
+            originalLeave.call(this, obj);
+
+            if (obj.currentTarget) {
+                container = $(obj.currentTarget).siblings('.popover');
+                timeout = self.timeout;
+                container.one('mouseenter', function() {
+                    clearTimeout(timeout);
+                    container.one('mouseleave', function() {
+                        PopoverConstructor.prototype.leave.call(self, self);
+                    });
+                });
+            }
+        };
+
+        PopoverConstructor.__intranetLeavePatched = true;
+    }
+
+    $('body').popover({
+        selector: '[data-popover]',
+        trigger: 'click hover',
+        delay: {
+            show: 50,
+            hide: 400
+        }
+    });
+}
 
 	var randNum = function() {
 	  return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
@@ -195,14 +260,14 @@ $(document).ready(function() {
 // /Tooltip
 
 // Progressbar
-if ($(".progress .progress-bar")[0]) {
+if ($(".progress .progress-bar")[0] && $.fn.progressbar) {
     $('.progress .progress-bar').progressbar();
 }
 // /Progressbar
 
 // Switchery
 $(document).ready(function() {
-    if ($(".js-switch")[0]) {
+    if ($(".js-switch")[0] && typeof Switchery !== 'undefined') {
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
         elems.forEach(function (html) {
             var switchery = new Switchery(html, {
@@ -216,7 +281,7 @@ $(document).ready(function() {
 
 // iCheck
 $(document).ready(function() {
-    if ($("input.flat")[0]) {
+    if ($("input.flat")[0] && $.fn.iCheck) {
         $(document).ready(function () {
             $('input.flat').iCheck({
                 checkboxClass: 'icheckbox_flat-green',
@@ -261,10 +326,10 @@ $('.bulk_action input#check-all').on('ifUnchecked', function () {
 });
 
 function countChecked() {
-    if (checkState === 'all') {
+    if (checkState === 'all' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('check');
     }
-    if (checkState === 'none') {
+    if (checkState === 'none' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('uncheck');
     }
 
@@ -286,7 +351,7 @@ function countChecked() {
 $(document).ready(function() {
     $(".expand").on("click", function () {
         $(this).next().slideToggle(200);
-        $expand = $(this).find(">:first-child");
+        var $expand = $(this).find(">:first-child");
 
         if ($expand.text() == "+") {
             $expand.text("-");
@@ -307,38 +372,7 @@ if (typeof NProgress != 'undefined') {
     });
 }
 
-	
-	  //hover and retain popover when on popover content
-        var originalLeave = $.fn.popover.Constructor.prototype.leave;
-        $.fn.popover.Constructor.prototype.leave = function(obj) {
-          var self = obj instanceof this.constructor ?
-            obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-          var container, timeout;
-
-          originalLeave.call(this, obj);
-
-          if (obj.currentTarget) {
-            container = $(obj.currentTarget).siblings('.popover');
-            timeout = self.timeout;
-            container.one('mouseenter', function() {
-              //We entered the actual popover – call off the dogs
-              clearTimeout(timeout);
-              //Let's monitor popover content instead
-              container.one('mouseleave', function() {
-                $.fn.popover.Constructor.prototype.leave.call(self, self);
-              });
-            });
-          }
-        };
-
-        $('body').popover({
-          selector: '[data-popover]',
-          trigger: 'click hover',
-          delay: {
-            show: 50,
-            hide: 400
-          }
-        });
+        init_legacy_popover_hover_bridge();
 
 
 	function gd(year, month, day) {
@@ -1575,47 +1609,92 @@ if (typeof NProgress != 'undefined') {
 			
 		};
 	   
-	   
+		   
 	   /* DATERANGEPICKER */
-	   
-		function init_daterangepicker() {
 
-			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker');
-		
-			var cb = function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
-			  $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-			};
+		function getPageLocale() {
+			var pageLocale = ($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase();
+			var localePrefix = pageLocale.split('-')[0];
 
-			var optionSet1 = {
-			  startDate: moment().subtract(29, 'days'),
-			  endDate: moment(),
-			  minDate: '01/01/2012',
-			  maxDate: '12/31/2015',
-			  dateLimit: {
-				days: 60
-			  },
-			  showDropdowns: true,
-			  showWeekNumbers: true,
-			  timePicker: false,
-			  timePickerIncrement: 1,
-			  timePicker12Hour: true,
-			  ranges: {
-				'Today': [moment(), moment()],
-				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-			  },
-			  opens: 'left',
-			  buttonClasses: ['btn btn-default'],
-			  applyClass: 'btn-small btn-primary',
-			  cancelClass: 'btn-small',
-			  format: 'MM/DD/YYYY',
-			  separator: ' to ',
-			  locale: {
+			if (localePrefix === 'ca' || localePrefix === 'es' || localePrefix === 'en') {
+				return localePrefix;
+			}
+
+			return 'es';
+		}
+
+		function getMomentLocale() {
+			var locale = getPageLocale();
+			var localeForMoment = locale === 'en' ? 'en' : 'es';
+
+			if (typeof moment !== 'undefined') {
+				moment.locale(localeForMoment);
+			}
+
+			return locale;
+		}
+
+		function getDateRangePresetLabels(locale) {
+			if (locale === 'en') {
+				return {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+			if (locale === 'ca') {
+				return {
+					'Avui': [moment(), moment()],
+					'Ahir': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últims 7 dies': [moment().subtract(6, 'days'), moment()],
+					'Últims 30 dies': [moment().subtract(29, 'days'), moment()],
+					'Aquest mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+				return {
+					'Hoy': [moment(), moment()],
+					'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+					'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+					'Este mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+		function getDateRangeLocaleConfig(locale) {
+			if (locale === 'ca') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Netejar',
+					fromLabel: 'Des de',
+					toLabel: 'Fins a',
+					customRangeLabel: 'Personalitzat',
+					daysOfWeek: ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'],
+					monthNames: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+					firstDay: 1
+				};
+			}
+
+			if (locale === 'es') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Limpiar',
+					fromLabel: 'Desde',
+					toLabel: 'Hasta',
+					customRangeLabel: 'Personalizado',
+					daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sà'],
+					monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+					firstDay: 1
+				};
+			}
+
+			return {
 				applyLabel: 'Submit',
 				cancelLabel: 'Clear',
 				fromLabel: 'From',
@@ -1624,43 +1703,97 @@ if (typeof NProgress != 'undefined') {
 				daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
 				monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 				firstDay: 1
-			  }
+			};
+		}
+
+		function getDateRangeDefaultFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+		}
+
+		function getDateRangeDisplayFormat(locale) {
+			return locale === 'en' ? 'MMMM D, YYYY' : 'D MMMM YYYY';
+		}
+
+		function getDateTimeRangeFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+		}
+
+		function init_daterangepicker() {
+
+			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+			console.log('init_daterangepicker');
+
+			var locale = getPageLocale();
+			var dateRangeFormat = getDateRangeDefaultFormat(locale);
+			var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+			getMomentLocale();
+
+			var cb = function(start, end, label) {
+				console.log(start.toISOString(), end.toISOString(), label);
+				$('#reportrange span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
+			};
+
+			var optionSet1 = {
+				startDate: moment().subtract(29, 'days'),
+				endDate: moment(),
+				minDate: locale === 'en' ? '01/01/2012' : '01/01/2012',
+				maxDate: locale === 'en' ? '12/31/2015' : '12/31/2015',
+				dateLimit: {
+					days: 60
+				},
+				showDropdowns: true,
+				showWeekNumbers: true,
+				timePicker: false,
+				timePickerIncrement: 1,
+				timePicker12Hour: true,
+				ranges: getDateRangePresetLabels(locale),
+				opens: 'left',
+				buttonClasses: ['btn btn-default'],
+				applyClass: 'btn-small btn-primary',
+				cancelClass: 'btn-small',
+				format: dateRangeFormat,
+				separator: ' to ',
+				locale: getDateRangeLocaleConfig(locale)
 			};
 			
-			$('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+			$('#reportrange span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 			$('#reportrange').daterangepicker(optionSet1, cb);
 			$('#reportrange').on('show.daterangepicker', function() {
-			  console.log("show event fired");
+				console.log("show event fired");
 			});
 			$('#reportrange').on('hide.daterangepicker', function() {
-			  console.log("hide event fired");
+				console.log("hide event fired");
 			});
 			$('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-			  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 			});
 			$('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
-			  console.log("cancel event fired");
+				console.log("cancel event fired");
 			});
 			$('#options1').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
 			});
 			$('#options2').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
 			});
 			$('#destroy').click(function() {
-			  $('#reportrange').data('daterangepicker').remove();
+				$('#reportrange').data('daterangepicker').remove();
 			});
-   
+
 		}
-   	   
+	   
 	   function init_daterangepicker_right() {
-	      
+
 				if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
 				console.log('init_daterangepicker_right');
-		  
+				var locale = getPageLocale();
+				var dateRangeFormat = getDateRangeDefaultFormat(locale);
+				var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+				getMomentLocale();
+
 				var cb = function(start, end, label) {
 				  console.log(start.toISOString(), end.toISOString(), label);
-				  $('#reportrange_right span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+				  $('#reportrange_right span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
 				};
 
 				var optionSet1 = {
@@ -1676,33 +1809,17 @@ if (typeof NProgress != 'undefined') {
 				  timePicker: false,
 				  timePickerIncrement: 1,
 				  timePicker12Hour: true,
-				  ranges: {
-					'Today': [moment(), moment()],
-					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-				  },
+				  ranges: getDateRangePresetLabels(locale),
 				  opens: 'right',
 				  buttonClasses: ['btn btn-default'],
 				  applyClass: 'btn-small btn-primary',
 				  cancelClass: 'btn-small',
-				  format: 'MM/DD/YYYY',
+				  format: dateRangeFormat,
 				  separator: ' to ',
-				  locale: {
-					applyLabel: 'Submit',
-					cancelLabel: 'Clear',
-					fromLabel: 'From',
-					toLabel: 'To',
-					customRangeLabel: 'Custom',
-					daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-					monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-					firstDay: 1
-				  }
+				  locale: getDateRangeLocaleConfig(locale)
 				};
 
-				$('#reportrange_right span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+				$('#reportrange_right span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 
 				$('#reportrange_right').daterangepicker(optionSet1, cb);
 
@@ -1713,7 +1830,7 @@ if (typeof NProgress != 'undefined') {
 				  console.log("hide event fired");
 				});
 				$('#reportrange_right').on('apply.daterangepicker', function(ev, picker) {
-				  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				  console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 				});
 				$('#reportrange_right').on('cancel.daterangepicker', function(ev, picker) {
 				  console.log("cancel event fired");
@@ -1740,25 +1857,37 @@ if (typeof NProgress != 'undefined') {
 		   
 			$('#single_cal1').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_1"
+			  singleClasses: "picker_1",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal2').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_2"
+			  singleClasses: "picker_2",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal3').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_3"
+			  singleClasses: "picker_3",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal4').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_4"
+			  singleClasses: "picker_4",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
 			  console.log(start.toISOString(), end.toISOString(), label);
 			});
@@ -1780,7 +1909,7 @@ if (typeof NProgress != 'undefined') {
 			  timePicker: true,
 			  timePickerIncrement: 30,
 			  locale: {
-				format: 'MM/DD/YYYY h:mm A'
+				format: getDateTimeRangeFormat(getPageLocale())
 			  }
 			});
 	
@@ -1813,8 +1942,13 @@ if (typeof NProgress != 'undefined') {
 		if( typeof (validator) === 'undefined'){ return; }
 		console.log('init_validator'); 
 	  
-	  // initialize the validator function
-      validator.message.date = 'not a real date';
+      // initialize the validator function
+      var locale = getPageLocale();
+      validator.message.date = {
+        ca: 'La data no és vàlida',
+        es: 'La fecha no es válida',
+        en: 'Not a real date'
+      }[locale] || 'Not a real date';
 
       // validate a field on "blur" event, a 'select' on 'change' event & a '.reuired' classed multifield on 'keyup':
       $('form')
@@ -1993,37 +2127,7 @@ if (typeof NProgress != 'undefined') {
 				  chart.update(Math.random() * 200 - 100);
 				});
 
-				//hover and retain popover when on popover content
-				var originalLeave = $.fn.popover.Constructor.prototype.leave;
-				$.fn.popover.Constructor.prototype.leave = function(obj) {
-				  var self = obj instanceof this.constructor ?
-					obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-				  var container, timeout;
-
-				  originalLeave.call(this, obj);
-
-				  if (obj.currentTarget) {
-					container = $(obj.currentTarget).siblings('.popover');
-					timeout = self.timeout;
-					container.one('mouseenter', function() {
-					  //We entered the actual popover – call off the dogs
-					  clearTimeout(timeout);
-					  //Let's monitor popover content instead
-					  container.one('mouseleave', function() {
-						$.fn.popover.Constructor.prototype.leave.call(self, self);
-					  });
-					});
-				  }
-				};
-
-				$('body').popover({
-				  selector: '[data-popover]',
-				  trigger: 'click hover',
-				  delay: {
-					show: 50,
-					hide: 400
-				  }
-				});
+					init_legacy_popover_hover_bridge();
 				
 			};
 	   
@@ -2596,7 +2700,7 @@ if (typeof NProgress != 'undefined') {
 				  };
 				}();
 
-				$('#datatable').dataTable();
+				$('#datatable').DataTable();
 
 				$('#datatable-keytable').DataTable({
 				  keys: true
@@ -2618,7 +2722,7 @@ if (typeof NProgress != 'undefined') {
 
 				var $datatable = $('#datatable-checkbox');
 
-				$datatable.dataTable({
+				$datatable.DataTable({
 				  'order': [[ 1, 'asc' ]],
 				  'columnDefs': [
 					{ orderable: false, targets: [0] }
