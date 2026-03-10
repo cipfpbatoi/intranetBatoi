@@ -13,10 +13,8 @@ npm-debug.log
 yarn-error.log
 .env
 /public/img/pdf
-composer.lock
 /nbproject/private/
 /.DS_Store
-package-lock.json
 .phpunit.result.cache
 .phpunit.cache/
 /storage/framework/cache
@@ -24,3 +22,9 @@ package-lock.json
 /storage/framework/sessions
 /bootstrap/cache
 /storage/logs
+/public/js/components/app.js
+/public/js/components/app.js.LICENSE.txt
+/public/js/ppIntranet.js
+/public/js/ppIntranet.js.LICENSE.txt
+/public/mix-manifest.json
+

@@ -1,6 +1,6 @@
 services:
   laravel.test:
-    image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel11-dev}
+    image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel12-dev}
     build:
       context: ./docker/8.3
       dockerfile: Dockerfile
