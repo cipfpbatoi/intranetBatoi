@@ -329,15 +329,24 @@ class HorarioController extends ModalController
     }
 
     /**
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * Mostra la vista de canvi horari temporal del professorat.
+     *
+     * @param string|null $id Dni del professor (si no arriba, usa l'usuari autenticat)
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function horarioCambiar($id = null){
-        if ($id == null) {
-            $id = AuthUser()->id;
+    public function horarioCambiar($id = null)
+    {
+        $dni = (string) ($id ?? (AuthUser()->dni ?? AuthUser()->id));
+
+        $horario = $this->horarios()->semanalByProfesor($dni);
+        $profesor = $this->profesores()->find($dni);
+
+        if ($profesor === null && AuthUser()) {
+            $profesor = AuthUser();
+            $dni = (string) ($profesor->dni ?? $dni);
         }
-        $horario = $this->horarios()->semanalByProfesor((string) $id);
-        $profesor = $this->profesores()->find((string) $id);
-        return view('horario.profesor-cambiar', compact('horario', 'profesor'));
+
+        return view('horario.profesor-cambiar', compact('horario', 'profesor', 'dni'));
     }
 
     /**

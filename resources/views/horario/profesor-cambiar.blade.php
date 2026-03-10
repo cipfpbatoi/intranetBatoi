@@ -1,5 +1,5 @@
 <x-pages.livewire
-    title="Horari {{ $profesor->fullName }}"
+    title="Horari {{ $profesor->fullName ?? $dni }}"
     component="horari-professor-canvi"
-    :params="['dni' => $profesor->dni]"
+    :params="['dni' => $dni]"
 />

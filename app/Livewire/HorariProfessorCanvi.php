@@ -270,14 +270,52 @@ class HorariProfessorCanvi extends Component
         }
     }
 
+    /**
+     * Aplica els canvis guardats usant l'id de cada element per evitar desquadres
+     * quan hi ha cadenes d'intercanvi entre cel·les ocupades.
+     *
+     * @param array<int, array<string, mixed>> $cambios
+     */
     protected function applyCambios(array $cambios): void
     {
+        $newCellsById = [];
+
         foreach ($cambios as $cambio) {
-            if (!isset($cambio['de'], $cambio['a'])) {
+            $id = isset($cambio['id']) ? (string) $cambio['id'] : '';
+            $to = isset($cambio['a']) ? (string) $cambio['a'] : '';
+
+            if ($id === '' || $to === '' || !isset($this->items[$id])) {
                 continue;
             }
-            $this->forceMove($cambio['de'], $cambio['a']);
+
+            if ($this->isDifferentDay((string) $this->items[$id]['orig'], $to)) {
+                continue;
+            }
+
+            $newCellsById[$id] = $to;
         }
+
+        foreach ($this->items as $id => $item) {
+            $this->items[$id]['cell'] = (string) ($newCellsById[$id] ?? $item['orig']);
+        }
+
+        $newGrid = [];
+        foreach ($this->items as $id => $item) {
+            $cell = (string) $item['cell'];
+
+            if (!isset($newGrid[$cell])) {
+                $newGrid[$cell] = $id;
+                continue;
+            }
+
+            $fallback = (string) $item['orig'];
+            if (!isset($newGrid[$fallback])) {
+                $this->items[$id]['cell'] = $fallback;
+                $newGrid[$fallback] = $id;
+            }
+        }
+
+        $this->grid = $newGrid;
     }
 
     protected function forceMove(string $from, string $to): void
