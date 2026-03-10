@@ -54,16 +54,17 @@ class ActualizacionController extends Controller
             ? $this->gitEnv()
             : null;
 
+        $error = null;
         $process = Process::fromShellCommandline($command, base_path(), $env);
         $process->run();
+        $error = $process->getErrorOutput();
 
         if (! $process->isSuccessful()) {
-            $error = $process->getErrorOutput();
-
             if (str_contains($error, 'Host key verification failed')) {
                 $this->addGithubKnownHost($env['HOME']);
                 $process = Process::fromShellCommandline($command, base_path(), $env);
                 $process->run();
+                $error = $process->getErrorOutput();
             }
 
             // Torna a provar si git es queixa per "dubious ownership"
@@ -71,6 +72,7 @@ class ActualizacionController extends Controller
                 $this->markRepoAsSafe();
                 $process = Process::fromShellCommandline($command, base_path(), $env);
                 $process->run();
+                $error = $process->getErrorOutput();
             }
 
             if (str_contains($error, '.git/FETCH_HEAD') && str_contains($error, 'Permission denied')) {
@@ -83,7 +85,8 @@ class ActualizacionController extends Controller
             }
 
             if (! $process->isSuccessful()) {
-                Alert::warning("$label ha fallat: ".$process->getErrorOutput());
+                $message = $error ?: $process->getErrorOutput();
+                Alert::warning("$label ha fallat: ".$message);
                 return;
             }
         }
