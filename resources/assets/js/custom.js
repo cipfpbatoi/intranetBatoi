@@ -49,6 +49,16 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
 
+var intranetDebugEnabled = $BODY.data('js-debug') === 1 || $BODY.data('js-debug') === '1';
+
+function intranetDebugLog() {
+    if (!intranetDebugEnabled || !window.console || typeof window.console.log !== 'function') {
+        return;
+    }
+
+    window.console.log.apply(window.console, arguments);
+}
+
 function getDataTableApi($table) {
     if (!$table || !$table.length || !$.fn.dataTable || !$.fn.dataTable.isDataTable($table[0])) {
         return null;
@@ -91,7 +101,7 @@ var setContentHeight = function () {
 };
 
   $SIDEBAR_MENU.find('a').on('click', function(ev) {
-	  console.log('clicked - sidebar_menu');
+	  intranetDebugLog('clicked - sidebar_menu');
         var $li = $(this).parent();
 
         if ($li.is('.active')) {
@@ -122,7 +132,7 @@ var setContentHeight = function () {
 
 // toggle small or large menu 
 $MENU_TOGGLE.on('click', function() {
-		console.log('clicked - menu toggle');
+		intranetDebugLog('clicked - menu toggle');
 		
 		if ($BODY.hasClass('nav-md')) {
 			$SIDEBAR_MENU.find('li.active ul').hide();
@@ -384,7 +394,7 @@ if (typeof NProgress != 'undefined') {
 		
 		if( typeof ($.plot) === 'undefined'){ return; }
 		
-		console.log('init_flot_chart');
+		intranetDebugLog('init_flot_chart');
 		
 		
 		
@@ -590,14 +600,14 @@ if (typeof NProgress != 'undefined') {
         
 		
         if ($("#chart_plot_01").length){
-			console.log('Plot1');
+			intranetDebugLog('Plot1');
 			
 			$.plot( $("#chart_plot_01"), [ arr_data1, arr_data2 ],  chart_plot_01_settings );
 		}
 		
 		
 		if ($("#chart_plot_02").length){
-			console.log('Plot2');
+			intranetDebugLog('Plot2');
 			
 			$.plot( $("#chart_plot_02"), 
 			[{ 
@@ -613,7 +623,7 @@ if (typeof NProgress != 'undefined') {
 		}
 		
 		if ($("#chart_plot_03").length){
-			console.log('Plot3');
+			intranetDebugLog('Plot3');
 			
 			
 			$.plot($("#chart_plot_03"), [{
@@ -637,7 +647,7 @@ if (typeof NProgress != 'undefined') {
 	function init_starrr() {
 		
 		if( typeof (starrr) === 'undefined'){ return; }
-		console.log('init_starrr');
+		intranetDebugLog('init_starrr');
 		
 		$(".stars").starrr();
 
@@ -658,11 +668,11 @@ if (typeof NProgress != 'undefined') {
 	
 	function init_JQVmap(){
 
-		//console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
+		//intranetDebugLog('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
 		
 		if(typeof (jQuery.fn.vectorMap) === 'undefined'){ return; }
 		
-		console.log('init_JQVmap');
+		intranetDebugLog('init_JQVmap');
 	     
 			if ($('#world-map-gdp').length ){
 		 
@@ -704,7 +714,7 @@ if (typeof NProgress != 'undefined') {
 	function init_skycons(){
 				
 			if( typeof (Skycons) === 'undefined'){ return; }
-			console.log('init_skycons');
+			intranetDebugLog('init_skycons');
 		
 			var icons = new Skycons({
 				"color": "#73879C"
@@ -728,7 +738,7 @@ if (typeof NProgress != 'undefined') {
 				
 		if( typeof (Chart) === 'undefined'){ return; }
 		
-		console.log('init_chart_doughnut');
+		intranetDebugLog('init_chart_doughnut');
 	 
 		if ($('.canvasDoughnut').length){
 			
@@ -782,9 +792,9 @@ if (typeof NProgress != 'undefined') {
 			
 		if( typeof (Gauge) === 'undefined'){ return; }
 		
-		console.log('init_gauge [' + $('.gauge-chart').length + ']');
+		intranetDebugLog('init_gauge [' + $('.gauge-chart').length + ']');
 		
-		console.log('init_gauge');
+		intranetDebugLog('init_gauge');
 		
 
 		  var chart_gauge_settings = {
@@ -846,7 +856,7 @@ if (typeof NProgress != 'undefined') {
 		function init_sparklines() {
 			
 			if(typeof (jQuery.fn.sparkline) === 'undefined'){ return; }
-			console.log('init_sparklines'); 
+			intranetDebugLog('init_sparklines'); 
 			
 			
 			$(".sparkline_one").sparkline([2, 4, 3, 4, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 6, 3, 5, 4, 5, 4, 5, 4, 3, 4, 5, 6, 7, 5, 4, 3, 5, 6], {
@@ -964,7 +974,7 @@ if (typeof NProgress != 'undefined') {
 		function init_autocomplete() {
 			
 			if( typeof (autocomplete) === 'undefined'){ return; }
-			console.log('init_autocomplete');
+			intranetDebugLog('init_autocomplete');
 			
 			var countries = { AD:"Andorra",A2:"Andorra Test",AE:"United Arab Emirates",AF:"Afghanistan",AG:"Antigua and Barbuda",AI:"Anguilla",AL:"Albania",AM:"Armenia",AN:"Netherlands Antilles",AO:"Angola",AQ:"Antarctica",AR:"Argentina",AS:"American Samoa",AT:"Austria",AU:"Australia",AW:"Aruba",AX:"Åland Islands",AZ:"Azerbaijan",BA:"Bosnia and Herzegovina",BB:"Barbados",BD:"Bangladesh",BE:"Belgium",BF:"Burkina Faso",BG:"Bulgaria",BH:"Bahrain",BI:"Burundi",BJ:"Benin",BL:"Saint Barthélemy",BM:"Bermuda",BN:"Brunei",BO:"Bolivia",BQ:"British Antarctic Territory",BR:"Brazil",BS:"Bahamas",BT:"Bhutan",BV:"Bouvet Island",BW:"Botswana",BY:"Belarus",BZ:"Belize",CA:"Canada",CC:"Cocos [Keeling] Islands",CD:"Congo - Kinshasa",CF:"Central African Republic",CG:"Congo - Brazzaville",CH:"Switzerland",CI:"Côte d’Ivoire",CK:"Cook Islands",CL:"Chile",CM:"Cameroon",CN:"China",CO:"Colombia",CR:"Costa Rica",CS:"Serbia and Montenegro",CT:"Canton and Enderbury Islands",CU:"Cuba",CV:"Cape Verde",CX:"Christmas Island",CY:"Cyprus",CZ:"Czech Republic",DD:"East Germany",DE:"Germany",DJ:"Djibouti",DK:"Denmark",DM:"Dominica",DO:"Dominican Republic",DZ:"Algeria",EC:"Ecuador",EE:"Estonia",EG:"Egypt",EH:"Western Sahara",ER:"Eritrea",ES:"Spain",ET:"Ethiopia",FI:"Finland",FJ:"Fiji",FK:"Falkland Islands",FM:"Micronesia",FO:"Faroe Islands",FQ:"French Southern and Antarctic Territories",FR:"France",FX:"Metropolitan France",GA:"Gabon",GB:"United Kingdom",GD:"Grenada",GE:"Georgia",GF:"French Guiana",GG:"Guernsey",GH:"Ghana",GI:"Gibraltar",GL:"Greenland",GM:"Gambia",GN:"Guinea",GP:"Guadeloupe",GQ:"Equatorial Guinea",GR:"Greece",GS:"South Georgia and the South Sandwich Islands",GT:"Guatemala",GU:"Guam",GW:"Guinea-Bissau",GY:"Guyana",HK:"Hong Kong SAR China",HM:"Heard Island and McDonald Islands",HN:"Honduras",HR:"Croatia",HT:"Haiti",HU:"Hungary",ID:"Indonesia",IE:"Ireland",IL:"Israel",IM:"Isle of Man",IN:"India",IO:"British Indian Ocean Territory",IQ:"Iraq",IR:"Iran",IS:"Iceland",IT:"Italy",JE:"Jersey",JM:"Jamaica",JO:"Jordan",JP:"Japan",JT:"Johnston Island",KE:"Kenya",KG:"Kyrgyzstan",KH:"Cambodia",KI:"Kiribati",KM:"Comoros",KN:"Saint Kitts and Nevis",KP:"North Korea",KR:"South Korea",KW:"Kuwait",KY:"Cayman Islands",KZ:"Kazakhstan",LA:"Laos",LB:"Lebanon",LC:"Saint Lucia",LI:"Liechtenstein",LK:"Sri Lanka",LR:"Liberia",LS:"Lesotho",LT:"Lithuania",LU:"Luxembourg",LV:"Latvia",LY:"Libya",MA:"Morocco",MC:"Monaco",MD:"Moldova",ME:"Montenegro",MF:"Saint Martin",MG:"Madagascar",MH:"Marshall Islands",MI:"Midway Islands",MK:"Macedonia",ML:"Mali",MM:"Myanmar [Burma]",MN:"Mongolia",MO:"Macau SAR China",MP:"Northern Mariana Islands",MQ:"Martinique",MR:"Mauritania",MS:"Montserrat",MT:"Malta",MU:"Mauritius",MV:"Maldives",MW:"Malawi",MX:"Mexico",MY:"Malaysia",MZ:"Mozambique",NA:"Namibia",NC:"New Caledonia",NE:"Niger",NF:"Norfolk Island",NG:"Nigeria",NI:"Nicaragua",NL:"Netherlands",NO:"Norway",NP:"Nepal",NQ:"Dronning Maud Land",NR:"Nauru",NT:"Neutral Zone",NU:"Niue",NZ:"New Zealand",OM:"Oman",PA:"Panama",PC:"Pacific Islands Trust Territory",PE:"Peru",PF:"French Polynesia",PG:"Papua New Guinea",PH:"Philippines",PK:"Pakistan",PL:"Poland",PM:"Saint Pierre and Miquelon",PN:"Pitcairn Islands",PR:"Puerto Rico",PS:"Palestinian Territories",PT:"Portugal",PU:"U.S. Miscellaneous Pacific Islands",PW:"Palau",PY:"Paraguay",PZ:"Panama Canal Zone",QA:"Qatar",RE:"Réunion",RO:"Romania",RS:"Serbia",RU:"Russia",RW:"Rwanda",SA:"Saudi Arabia",SB:"Solomon Islands",SC:"Seychelles",SD:"Sudan",SE:"Sweden",SG:"Singapore",SH:"Saint Helena",SI:"Slovenia",SJ:"Svalbard and Jan Mayen",SK:"Slovakia",SL:"Sierra Leone",SM:"San Marino",SN:"Senegal",SO:"Somalia",SR:"Suriname",ST:"São Tomé and Príncipe",SU:"Union of Soviet Socialist Republics",SV:"El Salvador",SY:"Syria",SZ:"Swaziland",TC:"Turks and Caicos Islands",TD:"Chad",TF:"French Southern Territories",TG:"Togo",TH:"Thailand",TJ:"Tajikistan",TK:"Tokelau",TL:"Timor-Leste",TM:"Turkmenistan",TN:"Tunisia",TO:"Tonga",TR:"Turkey",TT:"Trinidad and Tobago",TV:"Tuvalu",TW:"Taiwan",TZ:"Tanzania",UA:"Ukraine",UG:"Uganda",UM:"U.S. Minor Outlying Islands",US:"United States",UY:"Uruguay",UZ:"Uzbekistan",VA:"Vatican City",VC:"Saint Vincent and the Grenadines",VD:"North Vietnam",VE:"Venezuela",VG:"British Virgin Islands",VI:"U.S. Virgin Islands",VN:"Vietnam",VU:"Vanuatu",WF:"Wallis and Futuna",WK:"Wake Island",WS:"Samoa",YD:"People's Democratic Republic of Yemen",YE:"Yemen",YT:"Mayotte",ZA:"South Africa",ZM:"Zambia",ZW:"Zimbabwe",ZZ:"Unknown or Invalid Region" };
 
@@ -999,7 +1009,7 @@ if (typeof NProgress != 'undefined') {
 		function init_parsley() {
 			
 			if( typeof (parsley) === 'undefined'){ return; }
-			console.log('init_parsley');
+			intranetDebugLog('init_parsley');
 			
 			$/*.listen*/('parsley:field:validate', function() {
 			  validateFront();
@@ -1074,7 +1084,7 @@ if (typeof NProgress != 'undefined') {
 		function init_select2() {
 			 
 			if( typeof (select2) === 'undefined'){ return; }
-			console.log('init_toolbox');
+			intranetDebugLog('init_toolbox');
 			 
 			$(".select2_single").select2({
 			  placeholder: "Select a state",
@@ -1094,7 +1104,7 @@ if (typeof NProgress != 'undefined') {
 		function init_wysiwyg() {
 			
 		if( typeof ($.fn.wysiwyg) === 'undefined'){ return; }
-		console.log('init_wysiwyg');	
+		intranetDebugLog('init_wysiwyg');	
 			
         function init_ToolbarBootstrapBindings() {
           var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
@@ -1142,7 +1152,7 @@ if (typeof NProgress != 'undefined') {
           if (reason === 'unsupported-file-type') {
             msg = "Unsupported format " + detail;
           } else {
-            console.log("error uploading file", reason, detail);
+            intranetDebugLog("error uploading file", reason, detail);
           }
           $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
             '<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
@@ -1169,7 +1179,7 @@ if (typeof NProgress != 'undefined') {
 			
 			
 			if( typeof ($.fn.cropper) === 'undefined'){ return; }
-			console.log('init_cropper');
+			intranetDebugLog('init_cropper');
 			
 			var $image = $('#image');
 			var $download = $('#download');
@@ -1202,25 +1212,25 @@ if (typeof NProgress != 'undefined') {
 			// Cropper
 			$image.on({
 			  'build.cropper': function (e) {
-				console.log(e.type);
+				intranetDebugLog(e.type);
 			  },
 			  'built.cropper': function (e) {
-				console.log(e.type);
+				intranetDebugLog(e.type);
 			  },
 			  'cropstart.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'cropmove.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'cropend.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'crop.cropper': function (e) {
-				console.log(e.type, e.x, e.y, e.width, e.height, e.rotate, e.scaleX, e.scaleY);
+				intranetDebugLog(e.type, e.x, e.y, e.width, e.height, e.rotate, e.scaleX, e.scaleY);
 			  },
 			  'zoom.cropper': function (e) {
-				console.log(e.type, e.ratio);
+				intranetDebugLog(e.type, e.ratio);
 			  }
 			}).cropper(options);
 
@@ -1292,7 +1302,7 @@ if (typeof NProgress != 'undefined') {
 					try {
 					  data.option = JSON.parse($target.val());
 					} catch (e) {
-					  console.log(e.message);
+					  intranetDebugLog(e.message);
 					}
 				  }
 				}
@@ -1323,7 +1333,7 @@ if (typeof NProgress != 'undefined') {
 				  try {
 					$target.val(JSON.stringify(result));
 				  } catch (e) {
-					console.log(e.message);
+					intranetDebugLog(e.message);
 				  }
 				}
 
@@ -1403,18 +1413,18 @@ if (typeof NProgress != 'undefined') {
 		function init_knob() {
 		
 				if( typeof ($.fn.knob) === 'undefined'){ return; }
-				console.log('init_knob');
+				intranetDebugLog('init_knob');
 	
 				$(".knob").knob({
 				  change: function(value) {
-					//console.log("change : " + value);
+					//intranetDebugLog("change : " + value);
 				  },
 				  release: function(value) {
-					//console.log(this.$.attr('value'));
-					console.log("release : " + value);
+					//intranetDebugLog(this.$.attr('value'));
+					intranetDebugLog("release : " + value);
 				  },
 				  cancel: function() {
-					console.log("cancel : ", this);
+					intranetDebugLog("cancel : ", this);
 				  },
 				  /*format : function (value) {
 				   return value + '%';
@@ -1509,7 +1519,7 @@ if (typeof NProgress != 'undefined') {
 		function init_InputMask() {
 			
 			if( typeof ($.fn.inputmask) === 'undefined'){ return; }
-			console.log('init_InputMask');
+			intranetDebugLog('init_InputMask');
 			
 				$(":input").inputmask();
 				
@@ -1520,7 +1530,7 @@ if (typeof NProgress != 'undefined') {
 		function init_ColorPicker() {
 			
 			if( typeof ($.fn.colorpicker) === 'undefined'){ return; }
-			console.log('init_ColorPicker');
+			intranetDebugLog('init_ColorPicker');
 			
 				$('.demo1').colorpicker();
 				$('.demo2').colorpicker();
@@ -1544,7 +1554,7 @@ if (typeof NProgress != 'undefined') {
 		function init_IonRangeSlider() {
 			
 			if( typeof ($.fn.ionRangeSlider) === 'undefined'){ return; }
-			console.log('init_IonRangeSlider');
+			intranetDebugLog('init_IonRangeSlider');
 			
 			$("#range_27").ionRangeSlider({
 			  type: "double",
@@ -1721,7 +1731,7 @@ if (typeof NProgress != 'undefined') {
 		function init_daterangepicker() {
 
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker');
+			intranetDebugLog('init_daterangepicker');
 
 			var locale = getPageLocale();
 			var dateRangeFormat = getDateRangeDefaultFormat(locale);
@@ -1729,7 +1739,7 @@ if (typeof NProgress != 'undefined') {
 			getMomentLocale();
 
 			var cb = function(start, end, label) {
-				console.log(start.toISOString(), end.toISOString(), label);
+				intranetDebugLog(start.toISOString(), end.toISOString(), label);
 				$('#reportrange span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
 			};
 
@@ -1759,16 +1769,16 @@ if (typeof NProgress != 'undefined') {
 			$('#reportrange span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 			$('#reportrange').daterangepicker(optionSet1, cb);
 			$('#reportrange').on('show.daterangepicker', function() {
-				console.log("show event fired");
+				intranetDebugLog("show event fired");
 			});
 			$('#reportrange').on('hide.daterangepicker', function() {
-				console.log("hide event fired");
+				intranetDebugLog("hide event fired");
 			});
 			$('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-				console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
+				intranetDebugLog("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 			});
 			$('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
-				console.log("cancel event fired");
+				intranetDebugLog("cancel event fired");
 			});
 			$('#options1').click(function() {
 				$('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
@@ -1785,14 +1795,14 @@ if (typeof NProgress != 'undefined') {
 	   function init_daterangepicker_right() {
 
 				if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-				console.log('init_daterangepicker_right');
+				intranetDebugLog('init_daterangepicker_right');
 				var locale = getPageLocale();
 				var dateRangeFormat = getDateRangeDefaultFormat(locale);
 				var dateDisplayFormat = getDateRangeDisplayFormat(locale);
 				getMomentLocale();
 
 				var cb = function(start, end, label) {
-				  console.log(start.toISOString(), end.toISOString(), label);
+				  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 				  $('#reportrange_right span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
 				};
 
@@ -1824,16 +1834,16 @@ if (typeof NProgress != 'undefined') {
 				$('#reportrange_right').daterangepicker(optionSet1, cb);
 
 				$('#reportrange_right').on('show.daterangepicker', function() {
-				  console.log("show event fired");
+				  intranetDebugLog("show event fired");
 				});
 				$('#reportrange_right').on('hide.daterangepicker', function() {
-				  console.log("hide event fired");
+				  intranetDebugLog("hide event fired");
 				});
 				$('#reportrange_right').on('apply.daterangepicker', function(ev, picker) {
-				  console.log("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
+				  intranetDebugLog("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 				});
 				$('#reportrange_right').on('cancel.daterangepicker', function(ev, picker) {
-				  console.log("cancel event fired");
+				  intranetDebugLog("cancel event fired");
 				});
 
 				$('#options1').click(function() {
@@ -1853,7 +1863,7 @@ if (typeof NProgress != 'undefined') {
 	    function init_daterangepicker_single_call() {
 	      
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker_single_call');
+			intranetDebugLog('init_daterangepicker_single_call');
 		   
 			$('#single_cal1').daterangepicker({
 			  singleDatePicker: true,
@@ -1862,7 +1872,7 @@ if (typeof NProgress != 'undefined') {
 				format: getDateRangeDefaultFormat(getPageLocale()),
 			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal2').daterangepicker({
 			  singleDatePicker: true,
@@ -1871,7 +1881,7 @@ if (typeof NProgress != 'undefined') {
 				format: getDateRangeDefaultFormat(getPageLocale()),
 			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal3').daterangepicker({
 			  singleDatePicker: true,
@@ -1880,7 +1890,7 @@ if (typeof NProgress != 'undefined') {
 				format: getDateRangeDefaultFormat(getPageLocale()),
 			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal4').daterangepicker({
 			  singleDatePicker: true,
@@ -1889,7 +1899,7 @@ if (typeof NProgress != 'undefined') {
 				format: getDateRangeDefaultFormat(getPageLocale()),
 			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
   
   
@@ -1899,10 +1909,10 @@ if (typeof NProgress != 'undefined') {
 		function init_daterangepicker_reservation() {
 	      
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker_reservation');
+			intranetDebugLog('init_daterangepicker_reservation');
 		 
 			$('#reservation').daterangepicker(null, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 
 			$('#reservation-time').daterangepicker({
@@ -1920,7 +1930,7 @@ if (typeof NProgress != 'undefined') {
 		function init_SmartWizard() {
 			
 			if( typeof ($.fn.smartWizard) === 'undefined'){ return; }
-			console.log('init_SmartWizard');
+			intranetDebugLog('init_SmartWizard');
 			
 			$('#wizard').smartWizard();
 
@@ -1940,7 +1950,7 @@ if (typeof NProgress != 'undefined') {
 	  function init_validator () {
 		 
 		if( typeof (validator) === 'undefined'){ return; }
-		console.log('init_validator'); 
+		intranetDebugLog('init_validator'); 
 	  
       // initialize the validator function
       var locale = getPageLocale();
@@ -2018,7 +2028,7 @@ if (typeof NProgress != 'undefined') {
 		function init_PNotify() {
 			
 			if( typeof (PNotify) === 'undefined'){ return; }
-			console.log('init_PNotify');
+			intranetDebugLog('init_PNotify');
 			
 			new PNotify({
 			  title: "PNotify",
@@ -2049,10 +2059,10 @@ if (typeof NProgress != 'undefined') {
 			
 		function init_CustomNotification() {
 			
-			console.log('run_customtabs');
+			intranetDebugLog('run_customtabs');
 			
 			if( typeof (CustomTabs) === 'undefined'){ return; }
-			console.log('init_CustomTabs');
+			intranetDebugLog('init_CustomTabs');
 			
 			var cnt = 10;
 
@@ -2107,7 +2117,7 @@ if (typeof NProgress != 'undefined') {
 			function init_EasyPieChart() {
 				
 				if( typeof ($.fn.easyPieChart) === 'undefined'){ return; }
-				console.log('init_EasyPieChart');
+				intranetDebugLog('init_EasyPieChart');
 				
 				$('.chart').easyPieChart({
 				  easing: 'easeOutElastic',
@@ -2134,11 +2144,11 @@ if (typeof NProgress != 'undefined') {
 		
 		function init_charts() {
 			
-				console.log('run_charts  typeof [' + typeof (Chart) + ']');
+				intranetDebugLog('run_charts  typeof [' + typeof (Chart) + ']');
 			
 				if( typeof (Chart) === 'undefined'){ return; }
 				
-				console.log('init_charts');
+				intranetDebugLog('init_charts');
 			
 				
 				Chart.defaults.global.legend = {
@@ -2540,7 +2550,7 @@ if (typeof NProgress != 'undefined') {
 		function init_compose() {
 		
 			if( typeof ($.fn.slideToggle) === 'undefined'){ return; }
-			console.log('init_compose');
+			intranetDebugLog('init_compose');
 		
 			$('#compose, .compose-close').click(function(){
 				$('.compose').slideToggle();
@@ -2553,7 +2563,7 @@ if (typeof NProgress != 'undefined') {
 		    function  init_calendar() {
 					
 				if( typeof ($.fn.fullCalendar) === 'undefined'){ return; }
-				console.log('init_calendar');
+				intranetDebugLog('init_calendar');
 					
 				var date = new Date(),
 					d = date.getDate(),
@@ -2655,10 +2665,10 @@ if (typeof NProgress != 'undefined') {
 			
 			function init_DataTables() {
 				
-				console.log('run_datatables');
+				intranetDebugLog('run_datatables');
 				
 				if( typeof ($.fn.DataTable) === 'undefined'){ return; }
-				console.log('init_DataTables');
+				intranetDebugLog('init_DataTables');
 				
 				var handleDataTableButtons = function() {
 				  if ($("#datatable-buttons").length) {
@@ -2743,7 +2753,7 @@ if (typeof NProgress != 'undefined') {
 		function init_morris_charts() {
 			
 			if( typeof (Morris) === 'undefined'){ return; }
-			console.log('init_morris_charts');
+			intranetDebugLog('init_morris_charts');
 			
 			if ($('#graph_bar').length){ 
 			
@@ -2817,7 +2827,7 @@ if (typeof NProgress != 'undefined') {
 				  labels: ['Y', 'Z', 'A'],
 				  resize: true
 				}).on('click', function (i, row) {
-					console.log(i, row);
+					intranetDebugLog(i, row);
 				});
 
 			}
@@ -2903,7 +2913,7 @@ if (typeof NProgress != 'undefined') {
 		function init_echarts() {
 		
 				if( typeof (echarts) === 'undefined'){ return; }
-				console.log('init_echarts');
+				intranetDebugLog('init_echarts');
 			
 		
 				  var theme = {

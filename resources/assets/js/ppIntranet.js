@@ -39,6 +39,34 @@ window.pdfMake = pdfMake;
 require('datatables.net-buttons/js/buttons.html5.js');
 require('datatables.net-buttons/js/buttons.print.js');
 
+const intranetRuntime = window.IntranetRuntime || (window.IntranetRuntime = {});
+intranetRuntime.isProduction = intranetRuntime.isProduction ?? (
+	(document.body && document.body.dataset && document.body.dataset.appEnv === 'production') ||
+	(document.documentElement && document.documentElement.dataset && document.documentElement.dataset.appEnv === 'production')
+);
+
+const intranetWarn = (...args) => {
+	if (!intranetRuntime.isProduction && window.console && typeof window.console.warn === 'function') {
+		window.console.warn(...args);
+	}
+};
+
+const resolveLegacyFeatures = () => {
+	const rawFeatures = (document.body && document.body.dataset && document.body.dataset.legacyFeatures) || '';
+	if (!rawFeatures) {
+		return null;
+	}
+
+	return new Set(
+		rawFeatures
+			.split(',')
+			.map((feature) => feature.trim())
+			.filter(Boolean)
+	);
+};
+
+const hasLegacyFeature = (featureSet, featureName) => !featureSet || featureSet.has(featureName);
+
 const createNoopDataTableRows = () => ({
 	map: () => ({
 		count: () => 0,
@@ -75,7 +103,7 @@ const createNoopDataTableApi = () => {
 };
 
 if (!$.fn.dataTable) {
-	console.warn('DataTables no disponible: s\'utilitzen mètodes null object per evitar errors JS.');
+	intranetWarn('DataTables no disponible: s\'utilitzen mètodes null object per evitar errors JS.');
 	$.fn.dataTable = {
 		isDataTable: () => false,
 		moment: () => {},
@@ -83,68 +111,91 @@ if (!$.fn.dataTable) {
 	$.fn.DataTable = () => createNoopDataTableApi();
 }
 
-$(function() {
-	$(document).on('click', '[data-confirm]', function(event) {
-		const message = $(this).data('confirm') || 'Segur que vols continuar?';
-		if (!confirm(message)) {
-			event.preventDefault();
-			event.stopImmediatePropagation();
-			return false;
+if (window.__INTRANET_PPINTRANET_INITIALIZED__) {
+	intranetWarn('ppIntranet.js ja estava inicialitzat; s\'evita registrar handlers duplicats.');
+} else {
+	window.__INTRANET_PPINTRANET_INITIALIZED__ = true;
+
+	$(function() {
+		const legacyFeatures = resolveLegacyFeatures();
+
+		if (hasLegacyFeature(legacyFeatures, 'confirm')) {
+			$(document).on('click', '[data-confirm]', function(event) {
+				const message = $(this).data('confirm') || 'Segur que vols continuar?';
+				if (!confirm(message)) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					return false;
+				}
+			});
+		}
+
+		if (hasLegacyFeature(legacyFeatures, 'loading-text')) {
+			$(document).on('click', '[data-loading-text]', function() {
+				const $btn = $(this);
+				if ($btn.data('loading')) {
+					return;
+				}
+
+				const loadingText = $btn.data('loading-text');
+				if (!loadingText) {
+					return;
+				}
+
+				$btn.data('loading', true);
+				$btn.data('original-text', $btn.is('input') ? $btn.val() : $btn.text());
+
+				if ($btn.is('input')) {
+					$btn.val(loadingText);
+					$btn.prop('disabled', true);
+				} else {
+					$btn.text(loadingText);
+					$btn.attr('aria-disabled', 'true');
+					$btn.addClass('disabled');
+				}
+			});
+		}
+
+		if (hasLegacyFeature(legacyFeatures, 'paperera') && $('.papelera').length) {
+			$('.papelera').on('click', function(event) {
+				if (!confirm('Vas a borrar el aviso de fecha ' + $(this).next().find('span.time').text().trim() + ':\n' + $(this).next().find('span.message').text().trim())) {
+					event.preventDefault();
+				}
+			});
+		}
+
+		// Mensaje de salida
+		if (hasLegacyFeature(legacyFeatures, 'fitxar') && $('#imgFitxar').length) {
+			$('#imgFitxar').parents('a').on('click', function(event) {
+				if (!confirm('Vas a fitxar que ixes del Centre i es va a tancar la Intranet')) {
+					event.preventDefault();
+				}
+			});
+		}
+
+		if (hasLegacyFeature(legacyFeatures, 'help-popup') && $('#question').length) {
+			$('#question').on('click', function(event) {
+				event.preventDefault();
+				window.open(this.href, 'Ajuda Intranet Batoi', 'width=520,height=600');
+			});
 		}
 	});
 
-	$(document).on('click', '[data-loading-text]', function() {
-		const $btn = $(this);
-		if ($btn.data('loading')) {
+	document.addEventListener('DOMContentLoaded', function() {
+		const legacyFeatures = resolveLegacyFeatures();
+		if (!hasLegacyFeature(legacyFeatures, 'fullscreen')) {
 			return;
 		}
 
-		const loadingText = $btn.data('loading-text');
-		if (!loadingText) {
-			return;
-		}
-
-		$btn.data('loading', true);
-		$btn.data('original-text', $btn.is('input') ? $btn.val() : $btn.text());
-
-		if ($btn.is('input')) {
-			$btn.val(loadingText);
-			$btn.prop('disabled', true);
-		} else {
-			$btn.text(loadingText);
-			$btn.attr('aria-disabled', 'true');
-			$btn.addClass('disabled');
+		const fullBtn = document.querySelector('.fa-expand, .glyphicon-fullscreen')?.parentElement;
+		if (fullBtn) {
+			fullBtn.addEventListener('click', function() {
+				if (!document.fullscreenElement) {
+					document.documentElement.requestFullscreen();
+				} else {
+					document.exitFullscreen();
+				}
+			});
 		}
 	});
-
-	$(".papelera").on('click', function(event) {
-		if (!confirm('Vas a borrar el aviso de fecha '+$(this).next().find('span.time').text().trim()+':\n'+$(this).next().find('span.message').text().trim())) {
-			event.preventDefault();
-                }
-	})
-	// Mensaje de salida
-	$('#imgFitxar').parents('a').on('click', function(event) {
-		if (!confirm('Vas a fitxar que ixes del Centre i es va a tancar la Intranet')) {
-			event.preventDefault();
-		}
-
-	})
-	$("#question").on('click', function(event) {
-		event.preventDefault();
-		window.open(this.href,"Ajuda Intranet Batoi","width=520,height=600");
-	})
-
-})
-
-document.addEventListener('DOMContentLoaded', function () {
-	const fullBtn = document.querySelector('.fa-expand, .glyphicon-fullscreen')?.parentElement;
-	if (fullBtn) {
-		fullBtn.addEventListener('click', function () {
-			if (!document.fullscreenElement) {
-				document.documentElement.requestFullscreen();
-			} else {
-				document.exitFullscreen();
-			}
-		});
-	}
-});
+}
