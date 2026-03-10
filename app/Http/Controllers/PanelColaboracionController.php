@@ -19,6 +19,7 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class PanelColaboracionController
@@ -299,6 +300,11 @@ class PanelColaboracionController extends IntranetController
         try {
             parent::destroy($id);
         } catch (Exception $exception) {
+            report($exception);
+            Log::warning('Error en esborrar col·laboració.', [
+                'colaboracion_id' => $id,
+                'error' => $exception->getMessage(),
+            ]);
             Alert::danger("No es pot esborrar perquè hi ha valoracions
              fetes per a eixa col·laboració d'anys anteriors.");
         }

@@ -69,7 +69,7 @@ class DigitalSignatureService
                 'subject' => is_array($parsed['subject'] ?? null) ? $parsed['subject'] : [],
             ];
         } catch (Throwable $th) {
-            throw new CertException("Password del certificat incorrecte: ".$th->getMessage());
+            throw new CertException("Password del certificat incorrecte: ".$th->getMessage(), 0, $th);
         }
     }
 
@@ -223,7 +223,12 @@ class DigitalSignatureService
                     ]);
 
                     throw new IntranetException(
-                        "No s'ha pogut signar el document: el PDF no és compatible ni després d'adaptar-lo automàticament."
+                        "No s'ha pogut signar el document: el PDF no és compatible ni després d'adaptar-lo automàticament.",
+                        500,
+                        "No s'ha pogut signar el document",
+                        true,
+                        ['pdfPath' => $file],
+                        $e2
                     );
                 }
             }
@@ -235,7 +240,14 @@ class DigitalSignatureService
                 'error'        => $message,
             ]);
 
-            throw new IntranetException("Error al signar el document.: " . $message);
+            throw new IntranetException(
+                "Error al signar el document.: " . $message,
+                500,
+                "No s'ha pogut signar el document",
+                true,
+                ['pdfPath' => $file],
+                $th
+            );
         }
     }
 

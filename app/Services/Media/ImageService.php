@@ -138,7 +138,11 @@ class ImageService
 
                 return $outputPath;
             } catch (\Throwable $e) {
-                // continua a pla B
+                report($e);
+                \Illuminate\Support\Facades\Log::warning('Error al convertir HEIC amb Imagick; es prova pla B.', [
+                    'input' => $inputPath,
+                    'error' => $e->getMessage(),
+                ]);
             }
         } else {
             Alert::info('Imagick no està disponible al servidor.');

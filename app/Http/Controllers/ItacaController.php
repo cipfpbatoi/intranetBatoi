@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 class ItacaController extends Controller
 {
@@ -172,6 +173,12 @@ class ItacaController extends Controller
                 $falta->save();
             }
         } catch (IntranetException $e) {
+            report($e);
+            Log::error('Error enviant faltes extraescolars a Itaca.', [
+                'errors_actualitzades' => $count ?? null,
+                'errors_fallides' => $failures ?? null,
+                'error' => $e->getMessage(),
+            ]);
             Alert::danger($e->getMessage());
         }
 

@@ -3,11 +3,14 @@
           action="{{route('actividad.valoracion.post')}}">
         @csrf
         <div class="container">
-                {!! Field::textarea('desenvolupament',$Actividad->desenvolupament) !!}
-                {!! Field::textarea('valoracio',$Actividad->valoracio) !!}
-                {!! Field::textarea('aspectes',$Actividad->aspectes) !!}
-                {!! Field::textarea('dades',$Actividad->dades) !!}
-                {!! Field::checkbox('recomanada',null,$Actividad->recomanada) !!}
+                <textarea name="desenvolupament">{{ $Actividad->desenvolupament }}</textarea>
+                <textarea name="valoracio">{{ $Actividad->valoracio }}</textarea>
+                <textarea name="aspectes">{{ $Actividad->aspectes }}</textarea>
+                <textarea name="dades">{{ $Actividad->dades }}</textarea>
+                <label>
+                    <input type="checkbox" name="recomanada" value="1" {{ $Actividad->recomanada ? 'checked' : '' }}>
+                    Recomanada
+                </label>
         </div>
         <input type='hidden' id="estado" name='estado' value="4">
         <input type='hidden' id="idActividad" name='idActividad' value="{!!$Actividad->id!!}">

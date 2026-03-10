@@ -231,22 +231,31 @@ $(function() {
             });
 
     });
+    var pageLocale = (($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase()).split('-')[0];
+    var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
+    var dateFormat = pageLocale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+    var dateTimeFormat = pageLocale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+
+    if (typeof moment !== 'undefined' && typeof moment.locale === 'function') {
+        moment.locale(pickerLocale);
+    }
+
     $('input[type=text].datetime').datetimepicker({
         sideBySide: true,
-        locale: 'es',
-        format: 'DD-MM-YYYY LT',
+        locale: pickerLocale,
+        format: dateTimeFormat,
         stepping: 15,
     });
     $('input[type=text].time').datetimepicker({
         sideBySide: true,
-        locale: 'es',
+        locale: pickerLocale,
         format: 'HH:mm',
         stepping: 15,
     });
     $('input[type=text].date').datetimepicker({
         sideBySide: true,
-        locale: 'es',
-        format: 'DD-MM-YYYY',
+        locale: pickerLocale,
+        format: dateFormat,
     });
     Array.from(document.querySelectorAll('.dragable')).forEach((item)=>{
         item.setAttribute('draggable','draggable');

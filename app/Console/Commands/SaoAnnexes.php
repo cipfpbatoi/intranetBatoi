@@ -5,6 +5,7 @@ namespace Intranet\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Sao\SaoAnnexesAction;
 use Intranet\Services\Automation\SeleniumService;
@@ -49,6 +50,9 @@ class SaoAnnexes extends Command
             return Command::SUCCESS;
         } catch (Exception $e) {
             avisa($envia, $e->getMessage(), '#', 'SAO');
+            report($e);
+            Log::channel('sao')->error("Error en sincronització d'annexes SAO: " . $e->getMessage());
+            return Command::FAILURE;
         } finally {
             if (isset($driver)) {
                 $driver->quit();

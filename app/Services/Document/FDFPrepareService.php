@@ -4,6 +4,7 @@ namespace Intranet\Services\Document;
 
 use Intranet\Http\PrintResources\PrintResource;
 use Exception;
+use Intranet\Exceptions\IntranetException;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -50,6 +51,7 @@ class FDFPrepareService
 
             return $nameFile;
         }  catch (Exception $e) {
+            report($e);
             Log::error('Excepció generant PDF', [
                 'message' => $e->getMessage(),
                 'file' => $nameFile,
@@ -72,10 +74,22 @@ class FDFPrepareService
         try {
             app(PdfMergeService::class)->merge($pdfs, $tmpFileName);
         } catch (Exception $e) {
+            report($e);
             Log::error('Error concatenant PDFs amb FPDI', [
                 'file' => $tmpFileName,
                 'message' => $e->getMessage(),
             ]);
+            throw new IntranetException(
+                "No s'ha pogut concatenar els PDFs.",
+                500,
+                "No s'ha pogut generar el PDF adjunt.",
+                true,
+                [
+                    'nameFile' => $nameFile,
+                    'pdfCount' => is_array($pdfs) ? count($pdfs) : null,
+                ],
+                $e
+            );
         }
         return "tmp/$nameFile.pdf";
     }

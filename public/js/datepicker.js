@@ -8,34 +8,30 @@ $(document).ready(function () {
             return;
         }
 
-        /*$.fn.datepicker.dates['ca'] = {
-            days: ["diumenge", "dilluns", "dimarts", "dimecres", "dijous", "divendres", "dissabte"],
-            daysShort: ["dg.",  "dl.", "dt.", "dc.", "dj.", "dv.", "ds."],
-            daysMin: ["dg", "dl", "dt", "dc", "dj", "dv", "ds"],
-            months: ["gener", "febrer", "març", "abril", "maig", "juny", "juliol", "agost", "setembre", "octubre", "novembre", "desembre"],
-            monthsShort: ["gen.", "febr.", "març", "abr.", "maig", "juny", "jul.", "ag.", "set.", "oct.", "nov.", "des."],
-            today: "Avui",
-            monthsTitle: "Mesos",
-            clear: "Esborra",
-            weekStart: 1,
-            format: "dd/mm/yyyy"
-        };*/
-        $('input[type=text].datetime').datetimepicker({
+        var pageLocale = (($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase()).split('-')[0];
+        var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
+        var dateFormat = pageLocale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+        var dateTimeFormat = pageLocale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+
+        if (typeof moment.locale === 'function') {
+            moment.locale(pickerLocale);
+        }
+
+        $('input[type="text"].datetime').datetimepicker({
             sideBySide: true,
-            locale: 'es',
-            format: 'DD-MM-YYYY LT',
+            locale: pickerLocale,
+            format: dateTimeFormat,
             stepping: 15,
         });
-        $('input[type=text].time').datetimepicker({
+        $('input[type="text"].time').datetimepicker({
             sideBySide: true,
-            locale: 'es',
+            locale: pickerLocale,
             format: 'HH:mm',
             stepping: 15,
         });
-        $('input[type=text].date').datetimepicker({
+        $('input[type="text"].date').datetimepicker({
             sideBySide: true,
-            format: 'DD-MM-YYYY',
-            locale:  moment.locale('es'),
+            format: dateFormat,
+            locale: pickerLocale,
         });
-    
 });

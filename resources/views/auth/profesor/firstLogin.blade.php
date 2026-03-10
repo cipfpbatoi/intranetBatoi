@@ -20,12 +20,12 @@
                         <input type="hidden" name="codigo" value="{{ $profesor->codigo }}" />
                         <div class="form-group has-feedback">
                             <input type="text" class="form-control" name="email" value="{{ $profesor->email }}" placeholder="Email">
-                            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                            <span class="fa fa-envelope form-control-feedback"></span>
                         </div>
                         <h6>Ha de tindre al meyns 8 caràcters, una majúscula, una minúscula i un número  </h6>
                         <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
                             <input type="password" class="form-control" placeholder="Password" name="password">
-                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            <span class="fa fa-lock form-control-feedback"></span>
                             @if ($errors->has('password'))
                                 <span class="help-block">
                                     <strong>{{ $errors->first('password') }}</strong>
@@ -34,7 +34,7 @@
                         </div>
                         <div class="form-group has-feedback">
                             <input type="password" class="form-control" placeholder="Password" name="password_confirmation">
-                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            <span class="fa fa-lock form-control-feedback"></span>
                         </div>
                         <div class="col-xs-6">
                             <button type="submit" class="btn btn-primary  btn-block btn-flat">Entra</button>

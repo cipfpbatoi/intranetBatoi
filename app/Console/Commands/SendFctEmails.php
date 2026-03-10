@@ -2,18 +2,15 @@
 
 namespace Intranet\Console\Commands;
 
-use ErrorException;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
 use Intranet\Entities\Fct;
-
-use Swift_RfcComplianceException;
-use Swift_TransportException;
 
 /**
  * Envia correus diaris de FCT a alumnat i instructors.
@@ -43,44 +40,50 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
+        $alumnosPendientes = AlumnoFct::pendienteNotificar()->get();
 
-            $alumnosPendientes = AlumnoFct::pendienteNotificar()->get();
+        foreach ($alumnosPendientes as $alumno) {
+            $fct = $alumno->Fct;
 
-            foreach ($alumnosPendientes as $alumno) {
-                $fct = $alumno->Fct;
-
-                try {
-                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)
-                        ->cc($alumno->Tutor->email)
-                        ->send(new CertificatAlumneFct($alumno));
-                    avisa($alumno->Tutor->dni,
-                        'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
-                        '#', 'Servidor de correu');
-                    $alumno->correoAlumno = 1;
-                    $alumno->save();
-                } catch (Exception  $e) {
-                    $mensaje = "Error : Enviant certificats a l'alumne:  ".$e->getMessage().".".
-                        $alumno->Alumno->fullName.' al email '.
-                        $alumno->Alumno->email;
-                    avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                    if ($alumno->Tutor != null) {
-                        avisa($alumno->Tutor->dni, $mensaje, '#', 'Servidor de correu');
-                    }
-
+            try {
+                Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)
+                    ->cc($alumno->Tutor->email)
+                    ->send(new CertificatAlumneFct($alumno));
+                avisa($alumno->Tutor->dni,
+                    'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
+                    '#', 'Servidor de correu');
+                $alumno->correoAlumno = 1;
+                $alumno->save();
+            } catch (Exception  $e) {
+                $mensaje = "Error : Enviant certificats a l'alumne:  ".$e->getMessage().".".
+                    $alumno->Alumno->fullName.' al email '.
+                    $alumno->Alumno->email;
+                avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                if ($alumno->Tutor != null) {
+                    avisa($alumno->Tutor->dni, $mensaje, '#', 'Servidor de correu');
                 }
-
-                if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
-                    $this->correuInstructor($fct);
-                }
+                report($e);
+                Log::error('Error enviant certificat a l\'alumne', [
+                    'alumno_id' => $alumno->idAlumno,
+                    'dni' => $alumno->Alumno->dni,
+                    'error' => $e->getMessage(),
+                ]);
             }
-            $fcts = Fct::where('correoInstructor', 0)->get();
-            foreach ($fcts as $fct) {
-                $first = $fct->AlFct->first();
-                if ( isset($fct->Instructor->email) && $first->correoAlumno) {
-                    $this->correuInstructor($fct);
-                }
+
+            if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
+                $this->correuInstructor($fct);
             }
         }
+
+        $fcts = Fct::where('correoInstructor', 0)->get();
+        foreach ($fcts as $fct) {
+            $first = $fct->AlFct->first();
+            if (isset($fct->Instructor->email) && $first->correoAlumno) {
+                $this->correuInstructor($fct);
+            }
+        }
+        return Command::SUCCESS;
+    }
 
     /**
      * @param $fct
@@ -131,6 +134,12 @@ class SendFctEmails extends Command
             if ($fct->Encarregat != null) {
                 avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
             }
+            report($e);
+            Log::error('Error enviant certificats al instructor', [
+                'fct_id' => $fct->id ?? null,
+                'instructor_dni' => $fct->Instructor->dni ?? null,
+                'error' => $e->getMessage(),
+            ]);
             return 0;
         }
     }

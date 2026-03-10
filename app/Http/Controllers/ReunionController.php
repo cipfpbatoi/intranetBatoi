@@ -31,6 +31,7 @@ use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Response;
 use Intranet\Services\UI\AppAlert as Alert;
 use function dispatch;
@@ -246,6 +247,12 @@ class ReunionController extends ModalController
             $orden->delete();
             Alert::success("S'ha eliminat correctament l'ordre de reunió #{$orden_id}.");
         } catch (\Exception $e) {
+            report($e);
+            Log::error("Error esborrant ordre de reunió #{$orden_id}.", [
+                'orden_id' => $orden_id,
+                'reunion_id' => $reunion_id,
+                'error' => $e->getMessage(),
+            ]);
             Alert::danger("No s'ha pogut eliminar l'ordre #{$orden_id}.");
         }
 
@@ -522,7 +529,12 @@ class ReunionController extends ModalController
                 $elemento->save();
             });
         } catch (IntranetException $e){
-                Alert::warning($e->getMessage());
+            report($e);
+            Log::warning('Error generant acta de reunió.', [
+                'reunion_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            Alert::warning($e->getMessage());
         }
         return back();
     }

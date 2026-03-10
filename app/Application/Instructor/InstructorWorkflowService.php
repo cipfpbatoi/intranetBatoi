@@ -61,7 +61,13 @@ class InstructorWorkflowService
         if ($instructor->Centros()->count() == 0) {
             try {
                 $deleteInstructor($id);
-            } catch (\Exception) {
+            } catch (\Throwable $exception) {
+                \Log::warning('No s\'ha pogut eliminar l\'instructor perquè quedava orfe.', [
+                    'instructor_id' => $id,
+                    'centro_id' => $centro,
+                    'error' => $exception->getMessage(),
+                ]);
+                throw $exception;
             }
         }
 

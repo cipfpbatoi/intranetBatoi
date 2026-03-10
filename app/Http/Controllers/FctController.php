@@ -10,6 +10,7 @@ use Intranet\Presentation\Crud\FctCrudSchema;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -213,6 +214,13 @@ class FctController extends IntranetController
 
             $this->fcts()->attachAlumnoFromStoreRequest($fct, $request);
         } catch (\Exception $e) {
+            report($e);
+            Log::warning('Error en crear/assignar FCT.', [
+                'id_colaboracion' => $request->idColaboracion ?? null,
+                'id_alumno' => $request->idAlumno ?? null,
+                'asociacio' => $request->asociacion ?? null,
+                'error' => $e->getMessage(),
+            ]);
             Alert::warning("L'alumne {$request['idAlumno']} ja té una Fct oberta amb eixa empresa ");
         }
         

@@ -6,6 +6,7 @@ use Intranet\Http\Requests\PasswordRequest;
 use Intranet\Sao\Actions\SAOAction;
 use Intranet\Sao\Support\SaoRunner;
 use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -38,6 +39,11 @@ class RedirectAfterAuthenticationController extends Controller
                 $request->file('file')
             );
         } catch (Throwable $exception) {
+            report($exception);
+            Log::warning('Error en executar acció després d\'autenticació SAO.', [
+                'dni' => authUser()->dni ?? null,
+                'error' => $exception->getMessage(),
+            ]);
             Alert::info($exception->getMessage());
         }
         return back();

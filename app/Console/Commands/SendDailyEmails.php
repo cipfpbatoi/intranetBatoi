@@ -3,6 +3,7 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Notification;
 use Illuminate\Support\Facades\Mail;
@@ -37,16 +38,24 @@ class SendDailyEmails extends Command
      */
     public function handle()
     {
-        $todos = $this->profesorService->all();
-        foreach ($todos as $profesor) {
-            $notificaciones = Notification::where('notifiable_id', $profesor->dni)
-                    ->whereDate('created_at', hoy())
-                    ->whereNull('read_at')
-                    ->get();
-            // hay que poner email
-            if ($notificaciones->count()) {
-                Mail::to($profesor->email, 'Intranet Batoi')->send(new ResumenDiario($notificaciones));
+        try {
+            $todos = $this->profesorService->all();
+            foreach ($todos as $profesor) {
+                $notificaciones = Notification::where('notifiable_id', $profesor->dni)
+                        ->whereDate('created_at', hoy())
+                        ->whereNull('read_at')
+                        ->get();
+                if ($notificaciones->count()) {
+                    Mail::to($profesor->email, 'Intranet Batoi')->send(new ResumenDiario($notificaciones));
+                }
             }
+            return Command::SUCCESS;
+        } catch (\Throwable $e) {
+            report($e);
+            Log::error('Error generant enviament de correus diaris', [
+                'error' => $e->getMessage(),
+            ]);
+            return Command::FAILURE;
         }
     }
 

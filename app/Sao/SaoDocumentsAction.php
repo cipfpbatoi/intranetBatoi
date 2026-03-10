@@ -105,6 +105,7 @@ class SaoDocumentsAction
                 unlink($nomFitxer);
             }
         } catch (CertException $exception) {
+            report($exception);
             Log::channel('certificate')->alert($exception->getMessage(), [
                 'intranetUser' => authUser()->fullName,
             ]);
@@ -118,6 +119,7 @@ class SaoDocumentsAction
             }
             return back();
         } catch (\Throwable $exception) {
+            report($exception);
             Log::error('Error en procés SAO A2', [
                 'error' => $exception->getMessage(),
                 'user' => authUser()->fullName,

@@ -87,13 +87,25 @@ class AdministracionController extends Controller
     public function allApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
+        $errors = 0;
         foreach (app(ProfesorService::class)->activos() as $profesor) {
              try {
                 Mail::to($profesor->email)->send(new Comunicado(  $remitente, $profesor,'email.apitoken'  ));
             } catch (RfcComplianceException $e) {
+                $errors++;
+                report($e);
+                \Log::warning('No s\'ha pogut enviar email de token API.', [
+                    'professor_email' => $profesor->email,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
-        Alert::info('Correus enviats');
+        if ($errors > 0) {
+            Alert::warning("S'han enviat amb incidència els correus. Fallits: {$errors}");
+        } else {
+            Alert::info('Correus enviats');
+        }
+
         return back();
     }
 

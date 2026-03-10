@@ -97,6 +97,12 @@ class TeacherImportExecutionService
                     $existingRecords[$cacheKey] = $created;
                 }
             } catch (\Illuminate\Database\QueryException $e) {
+                report($e);
+                \Illuminate\Support\Facades\Log::warning('Error importació professor (retry de creació).', [
+                    'table' => $tabla['nombreclase'] ?? null,
+                    'id_profesor' => $idProfesor,
+                    'exception' => $e->getMessage(),
+                ]);
                 Alert::error($e->getMessage());
             }
         }
@@ -115,7 +121,13 @@ class TeacherImportExecutionService
                     $this->plantilla = (int) $arrayDatos['plantilla'];
                     try {
                         $this->horarioService->create($arrayDatos);
-                    } catch (\Illuminate\Database\QueryException) {
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        report($e);
+                        \Illuminate\Support\Facades\Log::warning('Error importació horari, reintentar sense aula.', [
+                            'id_profesor' => $idProfesor,
+                            'template' => $arrayDatos['plantilla'] ?? null,
+                            'exception' => $e->getMessage(),
+                        ]);
                         unset($arrayDatos['aula']);
                         $this->horarioService->create($arrayDatos);
                     }

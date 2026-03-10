@@ -9,6 +9,7 @@ use Intranet\Entities\MaterialBaja;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Controlador API de materials.
@@ -141,6 +142,12 @@ class MaterialController extends ApiResourceController
                 avisa(config('avisos.material'), $aviso, '#', 'SISTEMA');
             }
         } catch (\Exception $e) {
+            report($e);
+            Log::error('Error actualitzant estats o ubicació de material.', [
+                'material_id' => $material->id ?? null,
+                'espai_destinacio' => $request->ubicacion ?? null,
+                'error' => $e->getMessage(),
+            ]);
             return $this->sendError($e->getMessage(), 500);
         }
 
@@ -192,6 +199,11 @@ class MaterialController extends ApiResourceController
                 }
             }
         } catch (\Exception $e) {
+            report($e);
+            Log::error('Error proposant baixa de material.', [
+                'material_id' => $material->id ?? null,
+                'error' => $e->getMessage(),
+            ]);
             return $this->sendError($e->getMessage(), 500);
         }
 

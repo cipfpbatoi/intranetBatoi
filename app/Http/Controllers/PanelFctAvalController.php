@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Gate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Log;
 use Styde\Html\Facades\Alert;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -802,6 +803,11 @@ class PanelFctAvalController extends IntranetController
             }
             Alert::success('Document enviat correctament');
         } catch (IntranetException $e) {
+            report($e);
+            Log::error('Error enviant document A56 a secretaria.', [
+                'dni' => $document['dni'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
             Alert::danger($e->getMessage());
         }
 

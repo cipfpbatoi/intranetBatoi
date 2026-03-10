@@ -48,21 +48,18 @@ class A1DocumentService
         try {
             $driver->get("$generatePdfUrl?doc=$doc&centro=59&ct=$idSao");
         } catch (\Throwable $exception) {
+            report($exception);
+            Log::warning('Error en la generació del PDF per A1.', [
+                'id_sao' => $fctAl->idSao ?? null,
+                'annex' => $annexe,
+                'error' => $exception->getMessage(),
+                'url' => $generatePdfUrl . '?doc=' . $doc . '&centro=59&ct=' . $idSao,
+            ]);
             if (file_exists($tmpFile)) {
                 copy($tmpFile, $saveFile);
                 Firma::saveIfNotExists($annexe, $fctAl->idSao);
                 unlink($tmpFile);
             } else {
-                Log::error(
-                    'Error en la generació del PDF per A1: '
-                    . $exception->getMessage()
-                    . ' '
-                    . $generatePdfUrl
-                    . '?doc='
-                    . $doc
-                    . '&centro=59&ct='
-                    . $idSao
-                );
                 Alert::warning(
                     "No s'ha pogut descarregar el fitxer de la FCT Anexe I "
                     . "$fctAl->idSao de $tmpFile: $doc de "

@@ -1,7 +1,7 @@
 services:
     laravel.test:
         
-        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel11-dev}
+        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel12-dev}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:

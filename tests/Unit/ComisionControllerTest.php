@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Intranet\Exceptions\NotFoundDomainException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -155,7 +155,8 @@ class ComisionControllerTest extends TestCase
 
         $controller = new DummyComisionController();
 
-        $this->expectException(ModelNotFoundException::class);
+        $this->expectException(NotFoundDomainException::class);
+        $this->expectExceptionMessage('Comissió no trobada');
         $controller->createFct(new Request([
             'idFct' => 1010,
             'hora_ini' => '09:00:00',

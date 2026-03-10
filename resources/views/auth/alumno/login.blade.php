@@ -18,7 +18,7 @@
                         {!! csrf_field() !!}
                         <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                             <input type="nia" class="form-control" name="nia" value="{{ old('nia') }}" placeholder="NIA">
-                            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                            <span class="fa fa-envelope form-control-feedback"></span>
                             @if ($errors->has('nia'))
                             <span class="help-block">
                                 <strong>{{ $errors->first('nia') }}</strong>
@@ -28,7 +28,7 @@
 
                         <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
                             <input type="password" class="form-control" placeholder="Password" name="password">
-                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            <span class="fa fa-lock form-control-feedback"></span>
                             @if ($errors->has('password'))
                             <span class="help-block">
                                 <strong>{{ $errors->first('password') }}</strong>

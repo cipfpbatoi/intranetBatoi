@@ -10,6 +10,8 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Guardia;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CreateDailyGuards extends Command
 {
@@ -58,17 +60,21 @@ class CreateDailyGuards extends Command
         return $dni;
     }
 
-    public function handle()
+    public function handle(): int
     {
-        if (config('variables.controlDiario')) {
+        try {
+            if (!config('variables.controlDiario')) {
+                return self::SUCCESS;
+            }
+
             $this->createGuardias();
             $comisiones = $this->comisionService->byDay(hoy());
             foreach ($comisiones as $elemento) {
                 $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
             }
             $actividades = Actividad::Dia(hoy())
-                    ->where('fueraCentro', '=', 1)
-                    ->get();
+                ->where('fueraCentro', '=', 1)
+                ->get();
             foreach ($actividades as $actividad) {
                 foreach ($actividad->profesores as $profesor) {
                     $this->creaGuardia($actividad, 'El professor està en Activitat extraescolar', $profesor->dni);
@@ -78,6 +84,15 @@ class CreateDailyGuards extends Command
             foreach ($faltas as $falta) {
                 $this->creaGuardia($falta, 'El professor ha notificado ausencia');
             }
+
+            return self::SUCCESS;
+        } catch (Throwable $e) {
+            report($e);
+            Log::error('Error creant guardies diàries.', [
+                'exception' => $e->getMessage(),
+            ]);
+
+            return self::FAILURE;
         }
     }
 

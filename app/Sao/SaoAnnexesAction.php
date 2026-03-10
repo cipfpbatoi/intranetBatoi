@@ -9,6 +9,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Document\AttachedFileService;
 use Intranet\Entities\Signatura;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Acció SAO per descarregar i enllaçar annexos.
@@ -36,9 +37,20 @@ class SaoAnnexesAction
         try {
             $this->processFcts();
         } catch (Exception $e) {
+            report($e);
+            Log::error('Error en l\'acció de descàrrega d\'annexos SAO.', [
+                'error' => $e->getMessage(),
+            ]);
             AlertLogger::error($e->getMessage());
         } finally {
-            $this->driver->quit();
+            try {
+                $this->driver->quit();
+            } catch (Throwable $quitException) {
+                report($quitException);
+                Log::warning('No s\'ha pogut tancar el driver de SAO en annexos.', [
+                    'error' => $quitException->getMessage(),
+                ]);
+            }
         }
         return back();
     }
@@ -50,6 +62,12 @@ class SaoAnnexesAction
                 try {
                     $this->downloadAnnex($fct);
                 } catch (Exception $e) {
+                    report($e);
+                    Log::warning('Error descarregant annex d\'una FCT en SAO.', [
+                        'fct_id' => $fct->id ?? null,
+                        'alumne' => $fct->Alumno->fullName ?? null,
+                        'error' => $e->getMessage(),
+                    ]);
                     AlertLogger::error("Error en descarregar annexes de {$fct->Alumno->fullName}: " .$e->getMessage());
                 }
             }

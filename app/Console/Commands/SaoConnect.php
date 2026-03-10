@@ -39,7 +39,12 @@ class SaoConnect extends Command
             return Command::SUCCESS;
         } catch (IntranetException $e) {
             avisa($envia, $e->getMessage(), '#', 'SAO');
-            Log::channel('sao')->error("Error en la connexió a SAO: " . $e->getMessage());
+            report($e);
+            Log::channel('sao')->error("Error en la connexió a SAO: " . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return Command::FAILURE;
         } finally {
             if (isset($driver)) {
                 $driver->quit();

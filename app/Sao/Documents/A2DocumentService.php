@@ -62,6 +62,14 @@ class A2DocumentService
         } catch (\Throwable $exception) {
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory . '*.pdf')]);
+            report($exception);
+            Log::warning('Error en la descàrrega de l\'annex A2/A3.', [
+                'id_sao' => $fctAl->idSao ?? null,
+                'annex' => $annexe,
+                'annexe_num' => $annexeNum,
+                'url' => $ad,
+                'error' => $exception->getMessage(),
+            ]);
             if (file_exists($tmpFile)) {
                 if ($certPath) {
                     $this->digitalSignatureService->signDocument(
