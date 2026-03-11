@@ -5,11 +5,21 @@ const MODEL = 'falta_itaca';
 (function () {
     var currentId = null;
 
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
     function getModalElement(id) {
         return document.getElementById(id);
     }
 
     function showModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
         var modalElement = getModalElement(id);
         if (!modalElement) {
             return;
@@ -26,6 +36,12 @@ const MODEL = 'falta_itaca';
     }
 
     function hideModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.hideModal === 'function') {
+            helpers.hideModal(id);
+            return;
+        }
+
         var modalElement = getModalElement(id);
         if (!modalElement) {
             return;

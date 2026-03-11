@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
     function trim(value) {
         return (value || '').toString().trim();
     }
@@ -85,6 +89,12 @@
     }
 
     function showModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
         var modalElement = document.getElementById(id);
         if (!modalElement) {
             return;

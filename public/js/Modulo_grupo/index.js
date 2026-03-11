@@ -1,11 +1,21 @@
 'use strict';
 
 (function () {
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
     function byId(id) {
         return document.getElementById(id);
     }
 
     function showModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
         var modalElement = byId(id);
         if (!modalElement) {
             return;
