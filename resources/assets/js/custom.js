@@ -107,6 +107,11 @@ var setContentHeight = function () {
 
   $SIDEBAR_MENU.find('a').on('click', function(ev) {
 	  intranetDebugLog('clicked - sidebar_menu');
+        var href = ($(this).attr('href') || '').trim().toLowerCase();
+        if (href === '' || href === '#' || href.indexOf('javascript:') === 0) {
+            ev.preventDefault();
+        }
+
         var $li = $(this).parent();
 
         if ($li.is('.active')) {
