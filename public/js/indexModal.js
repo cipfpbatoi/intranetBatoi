@@ -104,10 +104,6 @@
             window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
             return;
         }
-
-        if (window.jQuery) {
-            window.jQuery(modalElement).modal('show');
-        }
     }
 
     function setInputValue(field, value) {

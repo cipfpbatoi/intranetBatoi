@@ -14,12 +14,21 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
 - `public/js/grid.js`
   - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
+- `public/js/Actividad/grid.js`
+  - Motiu: wrapper DataTables legacy amb dependència jQuery.
+- `public/js/Notification/index.js`
+  - Motiu: ordenació inicial de DataTable via API jQuery.
+- `public/js/Menu/profile.js`
+  - Motiu: interacció amb plugins legacy encara jQuery-based.
+- `public/js/Fctcap/index.js`
+  - Motiu: lògica residual lligada a DataTable/plugin jQuery.
+- `public/js/AlumnoFct/index.js`
+  - Motiu: `tab('show')` de Bootstrap 4 via jQuery.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
-- Patró temporal en fitxers migrats:
-  - Primer `bootstrap.Modal` (BS5).
-  - Fallback a `window.jQuery(...).modal(...)` per pantalles encara BS4/legacy.
-- Aquests fallback no impliquen lògica jQuery de negoci, només compatibilitat de runtime.
+- Patró temporal centralitzat:
+  - Fallback de modal mantingut únicament en `public/js/common/ui-helpers.js`.
+  - Els fitxers funcionals migrats ja no inclouen fallback local a `window.jQuery(...).modal(...)`.
 - Helper compartit introduït:
   - `public/js/common/ui-helpers.js`
   - Carregat des de `resources/views/js/js.blade.php` i `resources/views/js/modaljs.blade.php`.

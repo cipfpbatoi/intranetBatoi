@@ -29,10 +29,6 @@ const MODEL = 'falta_itaca';
             window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
             return;
         }
-
-        if (window.jQuery) {
-            window.jQuery(modalElement).modal('show');
-        }
     }
 
     function hideModal(id) {
@@ -50,10 +46,6 @@ const MODEL = 'falta_itaca';
         if (window.bootstrap && window.bootstrap.Modal) {
             window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
             return;
-        }
-
-        if (window.jQuery) {
-            window.jQuery(modalElement).modal('hide');
         }
     }
 
