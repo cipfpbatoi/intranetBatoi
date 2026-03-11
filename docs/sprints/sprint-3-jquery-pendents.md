@@ -14,8 +14,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
 - `public/js/grid.js`
   - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
-- `public/js/barcode.js`
-  - Motiu: pendent de migració en aquesta fase.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal en fitxers migrats:
