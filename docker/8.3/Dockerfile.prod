@@ -5,6 +5,7 @@ LABEL maintainer="Arturo Candela"
 ARG WWWGROUP=1000
 ARG WWWUSER=1000
 ARG NODE_VERSION=20
+ARG GIT_BRANCH=Laravel12
 
 WORKDIR /var/www/html
 
@@ -48,7 +49,7 @@ RUN mkdir -p /home/sail/.composer \
 
 RUN chown -R sail:sail /var/www/html
 
-RUN gosu sail git clone --depth 1 --branch docker-01-laravel12-prod --single-branch https://github.com/cipfpbatoi/intranetBatoi.git .
+RUN gosu sail git clone --depth 1 --branch ${GIT_BRANCH} --single-branch https://github.com/cipfpbatoi/intranetBatoi.git .
 RUN rm -rf .git
 RUN rm -f .env*
 RUN apt-get remove -y git \
