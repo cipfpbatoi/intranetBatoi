@@ -72,9 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.refuse').forEach(function (button) {
         button.addEventListener('click', function (event) {
             event.preventDefault();
-            if (window.jQuery) {
-                window.jQuery(button).attr('href', '');
-            }
+            button.setAttribute('href', '');
             var profile = button.closest('.profile_view');
             id = profile ? profile.getAttribute('id') : '';
         });

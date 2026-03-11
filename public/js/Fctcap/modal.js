@@ -3,6 +3,10 @@
 (function () {
     var profesor = '';
 
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
     function getLegacyToken() {
         var tokenElement = document.getElementById('_token');
         return tokenElement ? (tokenElement.textContent || '').trim() : '';
@@ -60,6 +64,12 @@
     }
 
     function showModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
         var modalElement = document.getElementById(id);
         if (!modalElement) {
             return;
