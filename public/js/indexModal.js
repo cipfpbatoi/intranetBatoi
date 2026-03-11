@@ -3,7 +3,15 @@ var modelo = $("#datatable").attr('name').toLowerCase();
 var formModal = $('.modal form');
 
 function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
+    var legacyToken = "";
+    $("#_token").each(function () {
+        var $tokenElem = $(this);
+        var candidate = $.trim($tokenElem.text() || $tokenElem.val() || "");
+        if (candidate) {
+            legacyToken = candidate;
+            return false;
+        }
+    });
     var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
     var data = extraData || {};
     var headers = {};
