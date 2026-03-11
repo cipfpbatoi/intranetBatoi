@@ -24,6 +24,10 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Primer `bootstrap.Modal` (BS5).
   - Fallback a `window.jQuery(...).modal(...)` per pantalles encara BS4/legacy.
 - Aquests fallback no impliquen lògica jQuery de negoci, només compatibilitat de runtime.
+- Helper compartit introduït:
+  - `public/js/common/ui-helpers.js`
+  - Carregat des de `resources/views/js/js.blade.php` i `resources/views/js/modaljs.blade.php`.
+  - Ús inicial en `public/js/delete.js` per reduir duplicació.
 
 ## Fitxers marcats com a deprecated
 - `public/js/Comision/comisionShort.js`
