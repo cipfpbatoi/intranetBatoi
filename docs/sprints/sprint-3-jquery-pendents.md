@@ -11,8 +11,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
 - `public/js/grid.js`
   - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
-- `public/js/Menu/profile.js`
-  - Motiu: interacció amb plugins legacy encara jQuery-based.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
@@ -34,6 +32,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Marcat com a legacy/deprecated per evitar nous desenvolupaments sobre eixe camí.
 
 ## Criteri per tancar S3-07
-- Substituir plugins jQuery sense equivalent (`ionRangeSlider`, table edit legacy) o encapsular-los en adaptadors.
+- Substituir/retirar els plugins jQuery residuals (`tabledit`, `grid` legacy) o encapsular-los en adaptadors.
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
 - Reauditar i deixar el recompte de fitxers amb jQuery en mínim residual justificat.
