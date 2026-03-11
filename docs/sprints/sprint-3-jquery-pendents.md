@@ -7,8 +7,7 @@ Branca: `sprint-3-js-migration`
 Deixar constància explícita de quins punts encara depenen de jQuery i per què, després de la migració incremental de Sprint 3.
 
 ## Pendents per dependència tècnica
-- `public/js/tabledit.js`
-  - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
+- No hi ha dependències jQuery residuals en `public/js` (fora de codi vendor/no objectiu de migració).
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
@@ -30,6 +29,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Marcat com a legacy/deprecated per evitar nous desenvolupaments sobre eixe camí.
 
 ## Criteri per tancar S3-07
-- Substituir/retirar el plugin jQuery residual (`tabledit`) o encapsular-lo en un adaptador.
+- Mantindre només compatibilitat centralitzada en `public/js/common/ui-helpers.js` mentre convisquen pantalles BS4/BS5.
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
 - Reauditar i deixar el recompte de fitxers amb jQuery en mínim residual justificat.
