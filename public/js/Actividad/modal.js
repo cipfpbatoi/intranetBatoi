@@ -1,4 +1,5 @@
 'use strict';
+var $ = window.jQuery || window.$;
 $(function () {
     $("#fueraCentro_id").change(function () {
         if (!$('#fueraCentro_id').is(":checked")) {

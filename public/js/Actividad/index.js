@@ -1,4 +1,5 @@
 'use strict';
+var $ = window.jQuery || window.$;
 
 const MODEL="actividad";
 var id;

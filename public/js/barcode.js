@@ -1,3 +1,4 @@
+var $ = window.jQuery || window.$;
 $(function () {
     //  Barcode
     $('#datatable').on('click', 'a.QR', function (event) {

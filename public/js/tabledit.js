@@ -1,3 +1,4 @@
+var $ = window.jQuery || window.$;
 $(function(){
 	$('.editGrupo').on("click",editRow);
 	$('.delGrupo').on("click",function (){

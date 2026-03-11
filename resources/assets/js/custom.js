@@ -1,3 +1,8 @@
+import jQuery from 'jquery';
+
+const $ = window.jQuery || jQuery;
+window.$ = window.jQuery = $;
+
 /**
  * Resize function without multiple trigger
  * 
@@ -30,9 +35,9 @@
     };
 
     // smartresize 
-    jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
+    $.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
 
-})(jQuery,'smartresize');
+})($,'smartresize');
 /**
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -2701,7 +2706,7 @@ if (typeof NProgress != 'undefined') {
 				  }
 				};
 
-				TableManageButtons = function() {
+				var TableManageButtons = function() {
 				  "use strict";
 				  return {
 					init: function() {

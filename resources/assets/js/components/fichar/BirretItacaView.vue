@@ -39,7 +39,7 @@
 <script>
 import axios from 'axios'
 import AppMsg from '../utils/AppMsg.vue';
-import FechaPicker from "../utils/FechaPicker";
+import FechaPicker from "../utils/FechaPicker.vue";
 import { getApiToken, withApiAuth } from '../utils/api-auth';
 
 const token = getApiToken();
