@@ -1,17 +1,37 @@
-$(function() {
-    $("#evaluacion_id").change(function (event) {
-        if ($("#evaluacion_id").val() != 3)
-            $('#field_adquiridosNO_id').hide();
-        else
-            $('#field_adquiridosNO_id').show();
-    });
-});
+'use strict';
 
-function postModal() {
-    var tipo = $("#evaluacion_id").val();
-    if (tipo == 3) {
-        $('#field_adquiridosNO_id').show();
-    } else {
-        $('#field_adquiridosNO_id').hide();
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
     }
-}
+
+    function setFieldVisibility(show) {
+        var field = byId('field_adquiridosNO_id');
+        if (!field) {
+            return;
+        }
+
+        field.style.display = show ? '' : 'none';
+    }
+
+    function isEvaluacionTres() {
+        var evaluacion = byId('evaluacion_id');
+        return !!(evaluacion && String(evaluacion.value) === '3');
+    }
+
+    function updateAdquiridosField() {
+        setFieldVisibility(isEvaluacionTres());
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var evaluacion = byId('evaluacion_id');
+        if (evaluacion) {
+            evaluacion.addEventListener('change', updateAdquiridosField);
+        }
+        updateAdquiridosField();
+    });
+
+    window.postModal = function () {
+        updateAdquiridosField();
+    };
+})();

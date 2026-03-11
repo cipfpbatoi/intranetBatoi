@@ -1,12 +1,41 @@
 'use strict';
-var id;
-$(function() {
-	$("#generar").on("click", function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#aviso").attr("href","");
-		//id=$(this).parents(".profile_view").attr("id");
-	});
-	$("#formAviso").on("submit", function(){
-		$(this).attr("action","/infdepartamento/create");
-	});
-})
+
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
+    }
+
+    function showModal(id) {
+        var modalElement = byId(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var generar = byId('generar');
+        var formAviso = byId('formAviso');
+
+        if (generar) {
+            generar.addEventListener('click', function (event) {
+                event.preventDefault();
+                showModal('aviso');
+            });
+        }
+
+        if (formAviso) {
+            formAviso.addEventListener('submit', function () {
+                formAviso.action = '/infdepartamento/create';
+            });
+        }
+    });
+})();

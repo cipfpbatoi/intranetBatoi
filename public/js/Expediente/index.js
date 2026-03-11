@@ -1,27 +1,72 @@
 'use strict';
 
-const MODEL="expediente";
-var id;
+const MODEL = 'expediente';
 
-$(function() {
-	$(".refuse").on("click", function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-		id=$(this).parents(".profile_view").attr("id");
-	});
-	$("#formDialogo").on("submit", function(){
-		$(this).attr("action",MODEL+"/"+id+"/refuse");
-	});
-	$("#dialogo").focus();
-	$(".user").on("click",function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#select").attr("href","");
-		id=$(this).parents(".profile_view").attr("id");
-		var token = $("#_token").text();
-	});
-	$("#formSelect").on("submit", function(){
-		$(this).attr("action",MODEL+"/"+id+"/assigna");
-	});
+(function () {
+    var currentId = null;
 
-})
+    function showModal(id) {
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
 
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
+        }
+    }
+
+    function getProfileViewId(element) {
+        var profileView = element ? element.closest('.profile_view') : null;
+        return profileView ? profileView.id : null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var refuseButtons = document.querySelectorAll('.refuse');
+        var userButtons = document.querySelectorAll('.user');
+        var formDialogo = document.getElementById('formDialogo');
+        var formSelect = document.getElementById('formSelect');
+        var dialogo = document.getElementById('dialogo');
+
+        for (var i = 0; i < refuseButtons.length; i += 1) {
+            refuseButtons[i].addEventListener('click', function (event) {
+                event.preventDefault();
+                currentId = getProfileViewId(this);
+                showModal('dialogo');
+            });
+        }
+
+        for (var j = 0; j < userButtons.length; j += 1) {
+            userButtons[j].addEventListener('click', function (event) {
+                event.preventDefault();
+                currentId = getProfileViewId(this);
+                showModal('select');
+            });
+        }
+
+        if (formDialogo) {
+            formDialogo.addEventListener('submit', function () {
+                if (currentId) {
+                    formDialogo.action = MODEL + '/' + currentId + '/refuse';
+                }
+            });
+        }
+
+        if (formSelect) {
+            formSelect.addEventListener('submit', function () {
+                if (currentId) {
+                    formSelect.action = MODEL + '/' + currentId + '/assigna';
+                }
+            });
+        }
+
+        if (dialogo) {
+            dialogo.focus();
+        }
+    });
+})();
