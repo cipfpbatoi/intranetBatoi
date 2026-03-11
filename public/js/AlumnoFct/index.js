@@ -79,12 +79,9 @@
             return true;
         }
 
-        if (window.jQuery && window.jQuery(link).tab) {
-            window.jQuery(link).tab('show');
-            return true;
-        }
+        link.click();
+        return true;
 
-        return false;
     }
 
     function initAvalTabs() {

@@ -16,14 +16,10 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
 - `public/js/Actividad/grid.js`
   - Motiu: wrapper DataTables legacy amb dependència jQuery.
-- `public/js/Notification/index.js`
-  - Motiu: ordenació inicial de DataTable via API jQuery.
 - `public/js/Menu/profile.js`
   - Motiu: interacció amb plugins legacy encara jQuery-based.
 - `public/js/Fctcap/index.js`
   - Motiu: lògica residual lligada a DataTable/plugin jQuery.
-- `public/js/AlumnoFct/index.js`
-  - Motiu: `tab('show')` de Bootstrap 4 via jQuery.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:

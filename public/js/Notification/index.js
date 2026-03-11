@@ -59,13 +59,14 @@
     }
 
     function initTableOrder() {
-        var jq = window.jQuery || window.$;
-        if (!jq || !jq.fn || typeof jq.fn.DataTable !== 'function') {
+        if (typeof window.DataTable !== 'function') {
             return;
         }
 
-        var table = jq('#datatable').DataTable();
-        table.order([0, 'dsc']).draw();
+        var table = new window.DataTable('#datatable');
+        if (table && typeof table.order === 'function') {
+            table.order([0, 'dsc']).draw();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
