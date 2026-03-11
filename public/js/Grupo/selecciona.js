@@ -1,6 +1,10 @@
 (function () {
     'use strict';
 
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
     function trim(value) {
         return (value || '').toString().trim();
     }
@@ -12,6 +16,12 @@
     }
 
     function openModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
         var modalElement = document.getElementById(id);
         if (!modalElement) {
             return;
