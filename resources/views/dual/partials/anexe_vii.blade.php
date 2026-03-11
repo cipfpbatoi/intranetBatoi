@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 <div style="position:absolute;left:50%;margin-left:-631px;top:{{$top}}px;width:1283px;height:882px;border-style:outset;overflow:visible">
     <div style="position:absolute;left:0px;top:0px"><img src="{{public_path($imagen)}}" width=1283 height=882></div>
     <div style="position:absolute;left:550.60px;top:11.70px;width: 300px" class="cls_002">
