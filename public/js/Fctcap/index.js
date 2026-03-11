@@ -41,6 +41,27 @@
         return params.toString();
     }
 
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+    }
+
+    function fetchJson(url, auth) {
+        return fetch(withQueryParams(url, auth.data), {
+            method: 'GET',
+            headers: auth.headers,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        });
+    }
+
     function updateAlumnoFct(idFct, payload) {
         var auth = apiAuthOptions(payload);
         var headers = Object.assign({}, auth.headers, {
@@ -88,66 +109,85 @@
         });
     }
 
+    function getTableOptions(data, avise) {
+        return {
+            data: data || [],
+            deferRender: true,
+            columns: [
+                { data: 'id' },
+                { data: 'nombre' },
+                { data: 'centro' },
+                { data: 'desde' },
+                { data: 'hasta' },
+                {
+                    data: null,
+                    render: function (row) {
+                        var ret = ' <a href="/fct/' + row.id + '/link" class="imgButton"><i class="fa fa-paperclip"></i></a> ' + avise;
+                        if (row.a56 === 1) {
+                            ret += ' <a href="/fct/' + row.id + '/sendAnexo" class="imgButton"><i class="fa fa-plane"></i></a> ';
+                        }
+                        return ret;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (row) {
+                        return row.pg0301
+                            ? '<input type="checkbox" checked class="editor-active">'
+                            : '<input type="checkbox" class="editor-active"> ';
+                    }
+                },
+                {
+                    data: null,
+                    render: function (row) {
+                        if (row.a56) {
+                            return row.pg0301
+                                ? ' <input type="checkbox" checked class="editor-active a56">'
+                                : ' <input type="checkbox" disabled checked class="editor-active a56">';
+                        }
+                        return row.pg0301
+                            ? ' <input type="checkbox" class="editor-active a56">'
+                            : ' <input type="checkbox" disabled class="editor-active a56">';
+                    }
+                }
+            ],
+            language: {
+                url: '/json/cattable.json'
+            }
+        };
+    }
+
+    function initDataTable(tableElement, options) {
+        if (!tableElement) {
+            return;
+        }
+
+        if (typeof window.DataTable === 'function') {
+            new window.DataTable(tableElement, options);
+            return;
+        }
+
+        var jq = window.$;
+        if (jq && jq.fn && typeof jq.fn.DataTable === 'function') {
+            jq(tableElement).DataTable(options);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var groupElement = document.getElementById('_grupo');
         var grupo = trim(groupElement ? groupElement.textContent : '');
         var avise = ' <a href="/profesor/mensaje" class="mensaje"><i class="fa fa-bell"></i></a> ';
         var tableElement = document.getElementById('dataFct');
-        var jq = window.jQuery || window.$;
-
-        if (jq && tableElement && jq.fn && typeof jq.fn.DataTable === 'function') {
+        if (grupo && tableElement) {
             var authDatatable = apiAuthOptions();
-            jq(tableElement).DataTable({
-                ajax: {
-                    method: 'GET',
-                    url: '/api/alumnofct/' + grupo + '/grupo',
-                    headers: authDatatable.headers,
-                    data: authDatatable.data
-                },
-                deferRender: true,
-                dataSrc: 'data',
-                columns: [
-                    { data: 'id' },
-                    { data: 'nombre' },
-                    { data: 'centro' },
-                    { data: 'desde' },
-                    { data: 'hasta' },
-                    {
-                        data: null,
-                        render: function (data) {
-                            var ret = ' <a href="/fct/' + data.id + '/link" class="imgButton"><i class="fa fa-paperclip"></i></a> ' + avise;
-                            if (data.a56 === 1) {
-                                ret += ' <a href="/fct/' + data.id + '/sendAnexo" class="imgButton"><i class="fa fa-plane"></i></a> ';
-                            }
-                            return ret;
-                        }
-                    },
-                    {
-                        data: null,
-                        render: function (data) {
-                            return data.pg0301
-                                ? '<input type="checkbox" checked class="editor-active">'
-                                : '<input type="checkbox" class="editor-active"> ';
-                        }
-                    },
-                    {
-                        data: null,
-                        render: function (data) {
-                            if (data.a56) {
-                                return data.pg0301
-                                    ? ' <input type="checkbox" checked class="editor-active a56">'
-                                    : ' <input type="checkbox" disabled checked class="editor-active a56">';
-                            }
-                            return data.pg0301
-                                ? ' <input type="checkbox" class="editor-active a56">'
-                                : ' <input type="checkbox" disabled class="editor-active a56">';
-                        }
-                    }
-                ],
-                language: {
-                    url: '/json/cattable.json'
-                }
-            });
+            fetchJson('/api/alumnofct/' + grupo + '/grupo', authDatatable)
+                .then(function (result) {
+                    var options = getTableOptions((result && result.data) || [], avise);
+                    initDataTable(tableElement, options);
+                })
+                .catch(function (error) {
+                    window.console.log(error);
+                });
         }
 
         if (tableElement) {

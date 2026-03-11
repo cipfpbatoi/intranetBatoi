@@ -18,8 +18,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: wrapper DataTables legacy amb dependència jQuery.
 - `public/js/Menu/profile.js`
   - Motiu: interacció amb plugins legacy encara jQuery-based.
-- `public/js/Fctcap/index.js`
-  - Motiu: lògica residual lligada a DataTable/plugin jQuery.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
@@ -36,7 +34,7 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
 - `public/js/Fctdual/modal.js`
   - Flux legacy mantingut temporalment; prioritat funcional actual en línia FCT/FCTCAP migrada.
 - `public/js/Fctdual/index.js`
-  - Flux legacy mantingut per convivència temporal amb mòdul FCTCAP.
+  - Flux legacy mantingut per convivència temporal amb mòdul FCTCAP (marcat deprecat).
 - Bloc funcional DUAL/FCTDUAL (JS, vistes Blade, CSS i classes PHP específiques)
   - Marcat com a legacy/deprecated per evitar nous desenvolupaments sobre eixe camí.
 
