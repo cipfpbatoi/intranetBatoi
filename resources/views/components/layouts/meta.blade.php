@@ -8,10 +8,21 @@
 @php
     $user = authUser();
     $apiSessionToken = session('api_access_token');
+    $needsNewApiSessionToken = !is_string($apiSessionToken) || $apiSessionToken === '';
+
+    if (!$needsNewApiSessionToken) {
+        try {
+            $storedToken = \Laravel\Sanctum\PersonalAccessToken::findToken($apiSessionToken);
+            $needsNewApiSessionToken = $storedToken === null
+                || ($storedToken->expires_at !== null && $storedToken->expires_at->isPast());
+        } catch (\Throwable $exception) {
+            $needsNewApiSessionToken = true;
+        }
+    }
 
     if (
         $user instanceof \Intranet\Entities\Profesor
-        && (!is_string($apiSessionToken) || $apiSessionToken === '')
+        && $needsNewApiSessionToken
     ) {
         try {
             $apiSessionToken = app(\Intranet\Services\Auth\ApiSessionTokenService::class)
