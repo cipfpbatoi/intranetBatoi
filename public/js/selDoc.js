@@ -1,30 +1,150 @@
+(function () {
+    'use strict';
 
-$(".seleccion").on("click",function(event){
-    event.preventDefault();
-    $(this).attr("data-toggle", "modal").attr("data-target", "#A3A").attr("href", "");
-    var url = $(this).attr("data-url");
-    var route = $(this).attr("id");
-    $('#formA3A').attr("action",route);
-    var auth = apiAuthOptions();
-    $.ajax({
-        method: "GET",
-        url: url,
-        dataType: 'json',
-        headers: auth.headers,
-        data: auth.data
-    })
-        .then(function (result) {
-            pintaTablaSeleccion(result.data,"#tableA3");
-         }, function (result) {
-            console.log("La solicitud no se ha podido completar.");
+    function setModalAttrs(element, targetId) {
+        if (!element) {
+            return;
+        }
+
+        element.setAttribute('data-toggle', 'modal');
+        element.setAttribute('data-target', '#' + targetId);
+        element.setAttribute('data-bs-toggle', 'modal');
+        element.setAttribute('data-bs-target', '#' + targetId);
+        element.setAttribute('href', '');
+    }
+
+    function openModal(id) {
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
+        }
+    }
+
+    function hideModal(id) {
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('hide');
+        }
+    }
+
+    function getApiAuthOptions(extraData) {
+        if (typeof window.apiAuthOptions === 'function') {
+            return window.apiAuthOptions(extraData);
+        }
+
+        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
+        var bearerToken = (bearerMeta ? bearerMeta.getAttribute('content') : '') || '';
+        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        var csrfToken = (csrfMeta ? csrfMeta.getAttribute('content') : '') || '';
+        var data = extraData ? Object.assign({}, extraData) : {};
+        var headers = {};
+
+        if (csrfToken.trim()) {
+            headers['X-CSRF-TOKEN'] = csrfToken.trim();
+        }
+
+        if (bearerToken.trim()) {
+            headers.Authorization = 'Bearer ' + bearerToken.trim();
+        }
+
+        return { headers: headers, data: data };
+    }
+
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+    }
+
+    function fetchJson(url, auth) {
+        return fetch(withQueryParams(url, auth.data), {
+            method: 'GET',
+            headers: auth.headers,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            return response.json();
         });
-});
+    }
 
-$("#A3A .submit").click(function(event) {
-    event.preventDefault();
-    $("#checkall").prop('checked',false);
-    $('#signatura').modal('hide');
-    $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
-    $("#formA3A" ).submit();
-});
+    function handleSeleccionClick(button, event) {
+        event.preventDefault();
+        setModalAttrs(button, 'A3A');
+        openModal('A3A');
 
+        var url = button.getAttribute('data-url') || '';
+        var route = button.getAttribute('id') || '';
+        var form = document.getElementById('formA3A');
+        if (form) {
+            form.setAttribute('action', route);
+        }
+
+        var auth = getApiAuthOptions();
+
+        fetchJson(url, auth)
+            .then(function (result) {
+                if (typeof window.pintaTablaSeleccion === 'function') {
+                    window.pintaTablaSeleccion(result.data, '#tableA3');
+                }
+            })
+            .catch(function () {
+                console.log('La solicitud no se ha podido completar.');
+            });
+    }
+
+    function handleSubmitClick(button, event) {
+        event.preventDefault();
+
+        var checkAll = document.getElementById('checkall');
+        if (checkAll) {
+            checkAll.checked = false;
+        }
+
+        hideModal('signatura');
+        setModalAttrs(button, 'loading');
+        openModal('loading');
+
+        var form = document.getElementById('formA3A');
+        if (form) {
+            form.submit();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.seleccion').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                handleSeleccionClick(button, event);
+            });
+        });
+
+        document.querySelectorAll('#A3A .submit').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                handleSubmitClick(button, event);
+            });
+        });
+    });
+})();
