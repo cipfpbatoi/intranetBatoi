@@ -11,6 +11,8 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
 - `public/js/grid.js`
   - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
+- `public/js/Empresa/index.js`
+  - Motiu: inicialització/DataTable i manipulació de fila encara sobre API jQuery.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:

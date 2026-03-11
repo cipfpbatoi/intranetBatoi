@@ -1,4 +1,9 @@
-(function ($) {
+(function () {
+    const $ = window.jQuery || window.$;
+    if (!$) {
+        return;
+    }
+
     if (!$.fn.dataTable) {
         console.warn('DataTables no està disponible: grid.js no s’inicialitza.');
         return;
@@ -48,4 +53,4 @@
             location.reload(true);
         });
     });
-})(jQuery);
+})();

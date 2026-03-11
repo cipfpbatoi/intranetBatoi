@@ -1,5 +1,9 @@
-(function ($) {
+(function () {
     'use strict';
+    const $ = window.jQuery || window.$;
+    if (!$) {
+        return;
+    }
 
 const PRACTICAS=31;
 const DUAL=37;
@@ -117,4 +121,4 @@ if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
         $(this).attr("href","/"+TABLA.toLowerCase()+"/"+$(this).parent().parent().attr('id')+"/document");
     })
 }
-})(jQuery);
+})();
