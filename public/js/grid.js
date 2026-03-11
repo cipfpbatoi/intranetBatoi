@@ -1,55 +1,53 @@
 (function () {
-    const $ = window.jQuery || window.$;
-    if (!$) {
-        return;
-    }
+    'use strict';
 
-    if (!$.fn.dataTable) {
+    if (typeof window.DataTable !== 'function') {
         console.warn('DataTables no està disponible: grid.js no s’inicialitza.');
         return;
     }
 
-    if ($.fn.dataTable.moment) {
-        $.fn.dataTable.moment('DD-MM-YYYY');
-        $.fn.dataTable.moment('DD-MM-YYYY HH:mm');
-    }
-
-    const table = $('#datatable');
-    if (!table.length) {
+    var table = document.getElementById('datatable');
+    if (!table) {
         return;
     }
-    if ($.fn.dataTable.isDataTable(table)) {
+
+    if (typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(table)) {
         return;
     }
 
     // Evita salts visuals mentre DataTables calcula amplades.
-    table.css('visibility', 'hidden');
+    table.style.visibility = 'hidden';
 
-    const dataTable = table.DataTable({
+    var dataTable = new window.DataTable(table, {
         language: { url: '/json/cattable.json' },
         deferRender: true,
         responsive: true,
         autoWidth: false,
         columnDefs: [
-            { responsivePriority: 1, targets: -1}
+            { responsivePriority: 1, targets: -1 }
         ],
         initComplete: function () {
-            const api = this.api();
-            api.columns.adjust();
-            $(api.table().node()).css('visibility', 'visible');
+            if (dataTable && dataTable.columns && typeof dataTable.columns.adjust === 'function') {
+                dataTable.columns.adjust();
+            }
+            table.style.visibility = 'visible';
         }
     });
 
-    table.on('draw.dt responsive-resize.dt', function () {
+    table.addEventListener('draw.dt', function () {
         dataTable.columns.adjust();
     });
 
-    $(window).on('resize', function () {
+    table.addEventListener('responsive-resize.dt', function () {
         dataTable.columns.adjust();
     });
 
-    $(function(){
-        $('a#pdf').on('click',function(){
+    window.addEventListener('resize', function () {
+        dataTable.columns.adjust();
+    });
+
+    document.querySelectorAll('a#pdf').forEach(function (link) {
+        link.addEventListener('click', function () {
             location.reload(true);
         });
     });

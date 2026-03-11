@@ -9,10 +9,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
 ## Pendents per dependència tècnica
 - `public/js/tabledit.js`
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
-- `public/js/grid.js`
-  - Motiu: inicialització i extensions DataTables legacy en wrapper jQuery.
-- `public/js/Empresa/index.js`
-  - Motiu: inicialització/DataTable i manipulació de fila encara sobre API jQuery.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
@@ -34,6 +30,6 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Marcat com a legacy/deprecated per evitar nous desenvolupaments sobre eixe camí.
 
 ## Criteri per tancar S3-07
-- Substituir/retirar els plugins jQuery residuals (`tabledit`, `grid` legacy) o encapsular-los en adaptadors.
+- Substituir/retirar el plugin jQuery residual (`tabledit`) o encapsular-lo en un adaptador.
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
 - Reauditar i deixar el recompte de fitxers amb jQuery en mínim residual justificat.
