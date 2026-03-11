@@ -9,7 +9,8 @@ const minDiasReserva=3;
 const esDireccion=2;
 
 function apiAuthOptions(extraData) {
-	var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+	var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
+	var bearerToken = ((bearerMeta ? bearerMeta.getAttribute('content') : '') || '').trim();
 	var data = extraData || {};
 	var headers = {};
 
@@ -18,6 +19,53 @@ function apiAuthOptions(extraData) {
 	}
 
 	return { headers: headers, data: data };
+}
+
+function withQueryParams(url, params) {
+	var query = new URLSearchParams(params || {}).toString();
+	if (!query) {
+		return url;
+	}
+	return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+}
+
+function parseJsonSafe(response) {
+	return response.text().then(function(text) {
+		if (!text) {
+			return {};
+		}
+		try {
+			return JSON.parse(text);
+		} catch (e) {
+			return {};
+		}
+	});
+}
+
+function apiRequest(method, url, extraData) {
+	var auth = apiAuthOptions(extraData);
+	var options = {
+		method: method,
+		headers: Object.assign({}, auth.headers),
+		credentials: 'same-origin'
+	};
+
+	if (method === 'GET') {
+		url = withQueryParams(url, auth.data);
+	} else {
+		options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+		options.body = new URLSearchParams(auth.data).toString();
+	}
+
+	return fetch(url, options).then(function(response) {
+		if (!response.ok) {
+			var error = new Error('HTTP ' + response.status);
+			error.status = response.status;
+			error.statusText = response.statusText;
+			throw error;
+		}
+		return parseJsonSafe(response);
+	});
 }
 
 $(function() {
@@ -126,23 +174,17 @@ $(function() {
 		$("#nom_dia_semana").html(nomDias[queFecha.getDay()]);
 
 		// pedimos las reservas del recurso para el día seleccionado
-		$.ajax ({
-	    	url: "api/reserva",
-	    	type: "GET",
-	    	dataType: "json",
-			headers: apiAuthOptions().headers,
-            data: $.extend({}, apiAuthOptions().data, {
-                idEspacio: $("#recurso").val(),
-                dia: fecha
-            }),
+		apiRequest('GET', 'api/reserva', {
+			idEspacio: $("#recurso").val(),
+			dia: fecha
 		}).then(function(res){
-			for (i in res.data) {
-				var observaciones = res.data[i].observaciones?'('+res.data[i].observaciones+')':' ';
-				$("#hora-"+res.data[i].hora).addClass("warning").html(res.data[i].nomProfe+observaciones+'<span class="hidden idProfe">'+res.data[i].idProfesor+'</span>'+'<span class="hidden idReserva">'+res.data[i].id+'</span>');
-			}
+			(res.data || []).forEach(function(item) {
+				var observaciones = item.observaciones ? '(' + item.observaciones + ')' : ' ';
+				$("#hora-"+item.hora).addClass("warning").html(item.nomProfe + observaciones + '<span class="hidden idProfe">' + item.idProfesor + '</span>' + '<span class="hidden idReserva">' + item.id + '</span>');
+			});
 		}, function(error){
-			showMessage(["Error "+error.status+": "+error.statusText, "error"], 'error');
-		})
+			showMessage(["Error "+(error.status || '')+": "+(error.statusText || 'Error')], 'error');
+		});
 	});
 
 	$("#desde").on("change", function () {
@@ -252,7 +294,6 @@ function checkData() {
 function modDatos(accion) {
 	var fecha=$("#dia").val();
 	var fechaDate=new Date(fecha);
-    var respuestas=[];	// donde guardo el nº de hora si es una reserva o la id si es liberar
     var peticiones=[];	// donde guardo las respuestas para saber si ya ha acabado el proceso
 
 	if (accion=="reserva") {
@@ -264,14 +305,11 @@ function modDatos(accion) {
 		return false;
 
 	if (accion=="reserva") {
-		var tipo="POST";
-		var url="api/reserva";
-		var datos={
+		var datosBase={
 				idEspacio: $("#recurso").val(), 
 				idProfesor: $('#idProfesor').val(),
 				observaciones: $('#observaciones').val()
 			};
-		var auth = apiAuthOptions(datos);
 		if ($("#dia_fin").val()) {
 			var fechaFin=$("#dia_fin").val();
 			var fechaFinDate=new Date(fechaFin);
@@ -286,52 +324,50 @@ function modDatos(accion) {
 			fecha=getFechaInt(fechaDate);
 		}
 	} else {
-		var tipo="DELETE";
-		var datos={};
-		var auth = apiAuthOptions(datos);
+		var datosBase={};
 	    for (var i=Number($("#desde").val()); i<=Number($("#hasta").val()); i++) {
 	    	if ($('#hora-'+i).find('span.idReserva').text()) {
 	    		peticiones.push({fecha: fecha, hora: $('#hora-'+i).find('span.idReserva').text()});
 	    	}
 	    }
 	}
-    
-    for (var peticion of peticiones) {
-    	datos.dia=peticion.fecha;
-    	if (accion==='reserva') {
-			datos.hora=peticion.hora;
-    	} else {
-			var url="api/reserva/"+peticion.hora;    		
-    	}
-		$.ajax ({
-		   	url: url,
-		   	type: tipo,
-		   	dataType: "json",
-			headers: auth.headers,
-		   	data: datos
-		}).then(function(res){
-			console.log(res);
-			if (res.success) {
-				respuestas.push('ok');
-			} else {
-				respuestas.push('error');
+
+	if (peticiones.length === 0) {
+		showMessage(["No hi ha hores per a processar"], 'error');
+		return false;
+	}
+
+	var promises = peticiones.map(function(peticion) {
+		if (accion === 'reserva') {
+			var payload = Object.assign({}, datosBase, {
+				dia: peticion.fecha,
+				hora: peticion.hora
+			});
+			return apiRequest('POST', 'api/reserva', payload);
+		}
+
+		return apiRequest('DELETE', 'api/reserva/' + peticion.hora, datosBase);
+	});
+
+	Promise.allSettled(promises).then(function(results) {
+		var hasErrors = results.some(function(result) {
+			if (result.status !== 'fulfilled') {
+				return true;
 			}
-		}).fail(function(err) {
-			console.error(err);
-			respuestas.push(err);
-		}).always(function(res) {
-			if (respuestas.length==peticiones.length) {
-				// Ya han acabado todas
-				if (respuestas.some(resp => resp!='ok')) {
-					// Ha habido algún error
-					showMessage(["Algunas horas no se han podido "+accion+"r"], 'error');
-				} else {
-					showMessage(["El recurso se ha "+accion+"do correctamente"], 'ok');
-				}
-				$("#dia").trigger('change');
+			if (result.value && Object.prototype.hasOwnProperty.call(result.value, 'success')) {
+				return result.value.success !== true;
 			}
+			return false;
 		});
-    }
+
+		if (hasErrors) {
+			showMessage(["Algunas horas no se han podido "+accion+"r"], 'error');
+		} else {
+			showMessage(["El recurso se ha "+accion+"do correctamente"], 'ok');
+		}
+		$("#dia").trigger('change');
+	});
+
     marcar();
 }
 
