@@ -1,14 +1,19 @@
 function apiAuthOptions(extraData) {
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr("content") || "");
-    var csrfToken = $.trim($('meta[name="csrf-token"]').attr("content") || "");
-    var data = extraData || {};
+    var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
+    var bearerToken = (bearerMeta ? bearerMeta.getAttribute('content') : '') || '';
+    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    var csrfToken = (csrfMeta ? csrfMeta.getAttribute('content') : '') || '';
+    var data = extraData ? Object.assign({}, extraData) : {};
     var headers = {};
 
+    bearerToken = bearerToken.trim();
+    csrfToken = csrfToken.trim();
+
     if (csrfToken) {
-        headers["X-CSRF-TOKEN"] = csrfToken;
+        headers['X-CSRF-TOKEN'] = csrfToken;
     }
     if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
+        headers.Authorization = 'Bearer ' + bearerToken;
     }
 
     return { headers: headers, data: data };

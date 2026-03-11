@@ -10,10 +10,6 @@
             return;
         }
 
-        element.setAttribute('data-toggle', 'modal');
-        element.setAttribute('data-target', '#' + targetId);
-        element.setAttribute('data-bs-toggle', 'modal');
-        element.setAttribute('data-bs-target', '#' + targetId);
         element.setAttribute('href', '');
     }
 

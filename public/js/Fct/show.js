@@ -1,91 +1,221 @@
 'use strict';
 
-var id;
+(function () {
+    function trim(value) {
+        return (value || '').toString().trim();
+    }
 
-$(function () {
-    var id = $("#fct_id").text();
-    $('input.fa-user').on("click", function(event){
-        if (!confirm("Vas a canviar cotutoria d'esta FCT.\n" +
-            "Aquell al que has assignat podrà contactar amb este centre de treball encara que no tinga alumnes assignats.\n" +
-            "El cotutor actual deixarà de vore esta fct sinó te cap alumne assignat")) {
-            event.preventDefault();
+    function getApiAuthOptions(extraData) {
+        if (typeof window.apiAuthOptions === 'function') {
+            return window.apiAuthOptions(extraData);
         }
-    });
-    $('a.fa-unlink').on("click", function(event){
-        if (!confirm("Vas a deslligar la FCT del SAO. L'hauràs de tornar a importar. Estas segur?")) {
-            event.preventDefault();
-        }
-    });
-    $(".alumnat").on("click",function(event){
-        event.preventDefault();
-        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo_alumno").attr("href","");
-        $.ajax({
-            url: '/fct/' + id + '/alFct',
-            method: 'GET',
-            headers: apiAuthOptions().headers,
-            data: apiAuthOptions().data,
-            success: function(response) {
-                let fctAl = response.data;  // Suposant que la resposta té una propietat 'alumnes'
-                let select = $("#alumnoFct");
-                select.empty();  // Buida el select abans de carregar els nous alumnes
 
-                fctAl.forEach(function(alumne) {
-                    let option = $("<option></option>").attr("value", alumne.id).text(alumne.nombre);
-                    select.append(option);
+        var tokenElement = document.querySelector('#_token');
+        var legacyToken = trim(tokenElement ? tokenElement.textContent : '');
+        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
+        var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
+        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        var csrfToken = trim(csrfMeta ? csrfMeta.getAttribute('content') : '');
+        var data = extraData ? Object.assign({}, extraData) : {};
+        var headers = {};
+
+        if (csrfToken) {
+            headers['X-CSRF-TOKEN'] = csrfToken;
+        }
+
+        if (bearerToken) {
+            headers.Authorization = 'Bearer ' + bearerToken;
+        }
+
+        if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+    }
+
+    function requestJson(method, url, extraData) {
+        var auth = getApiAuthOptions(extraData);
+        var options = {
+            method: method,
+            headers: Object.assign({}, auth.headers),
+            credentials: 'same-origin'
+        };
+
+        if (method === 'GET') {
+            url = withQueryParams(url, auth.data);
+        } else {
+            options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+            options.body = new URLSearchParams(auth.data).toString();
+        }
+
+        return fetch(url, options).then(function (response) {
+            if (!response.ok) {
+                throw response;
+            }
+
+            return response.json();
+        });
+    }
+
+    function showModal(id) {
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
+        }
+    }
+
+    function hideModal(id) {
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('hide');
+        }
+    }
+
+    function formatDateTime(dateString) {
+        var date = new Date(dateString);
+        return date.getFullYear() + '-' +
+            String(date.getMonth() + 1).padStart(2, '0') + '-' +
+            String(date.getDate()).padStart(2, '0') + ' ' +
+            String(date.getHours()).padStart(2, '0') + ':' +
+            String(date.getMinutes()).padStart(2, '0') + ':' +
+            String(date.getSeconds()).padStart(2, '0');
+    }
+
+    function appendContactListItem(contacte, alumnoFctName) {
+        var ul = document.getElementById('ul_llist');
+        if (!ul) {
+            return;
+        }
+
+        var li = document.createElement('li');
+        var wrapper = document.createElement('div');
+        wrapper.className = 'message_wrapper';
+
+        var h5 = document.createElement('h5');
+        var html =
+            '<em class="fa fa-calendar user-profile-icon"></em> ' + formatDateTime(contacte.created_at) +
+            ' <em class="fa fa-exclamation"></em>' + (contacte.document || '') +
+            ' <em class="fa fa-user user-profile-icon"></em> ' + alumnoFctName;
+
+        if (contacte.comentari) {
+            html += '<br/>' + contacte.comentari;
+        }
+
+        h5.innerHTML = html;
+        wrapper.appendChild(h5);
+        li.appendChild(wrapper);
+        ul.appendChild(li);
+    }
+
+    function loadAlumnat(fctId) {
+        requestJson('GET', '/fct/' + fctId + '/alFct')
+            .then(function (response) {
+                var fctAl = response.data || [];
+                var select = document.getElementById('alumnoFct');
+                if (!select) {
+                    return;
+                }
+
+                select.innerHTML = '';
+
+                fctAl.forEach(function (alumne) {
+                    var option = document.createElement('option');
+                    option.value = alumne.id;
+                    option.textContent = alumne.nombre;
+                    select.appendChild(option);
                 });
 
-                // Un cop els alumnes estan carregats, mostra el modal
-                $("#dialogo_alumno").modal("show");
-            },
-            error: function(error) {
-                console.error("Error en obtenir els alumnes:", error);
-            }
+                showModal('dialogo_alumno');
+            })
+            .catch(function (error) {
+                console.error('Error en obtenir els alumnes:', error);
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var fctIdElement = document.getElementById('fct_id');
+        var fctId = trim(fctIdElement ? fctIdElement.textContent : '');
+
+        document.querySelectorAll('input.fa-user').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                if (!confirm("Vas a canviar cotutoria d'esta FCT.\n" +
+                    "Aquell al que has assignat podrà contactar amb este centre de treball encara que no tinga alumnes assignats.\n" +
+                    "El cotutor actual deixarà de vore esta fct sinó te cap alumne assignat")) {
+                    event.preventDefault();
+                }
+            });
         });
+
+        document.querySelectorAll('a.fa-unlink').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                if (!confirm("Vas a deslligar la FCT del SAO. L'hauràs de tornar a importar. Estas segur?")) {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        document.querySelectorAll('.alumnat').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (!fctId) {
+                    return;
+                }
+                loadAlumnat(fctId);
+            });
+        });
+
+        var formDialogoAlumno = document.getElementById('formDialogo_alumno');
+        if (formDialogoAlumno) {
+            formDialogoAlumno.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                var alumnoFctSelect = formDialogoAlumno.alumnoFct;
+                if (!alumnoFctSelect) {
+                    return;
+                }
+
+                var alumnoFctId = alumnoFctSelect.value;
+                var selectedOption = alumnoFctSelect.options[alumnoFctSelect.selectedIndex];
+                var alumnoFctName = selectedOption ? selectedOption.text : '';
+
+                requestJson('POST', '/fct/' + alumnoFctId + '/alFct', {
+                    explicacion: formDialogoAlumno.explicacion ? formDialogoAlumno.explicacion.value : ''
+                }).then(function (result) {
+                    appendContactListItem(result.data, alumnoFctName);
+                    hideModal('dialogo_alumno');
+                }, function () {
+                    console.log('Només es pot un per dia');
+                    hideModal('dialogo_alumno');
+                });
+            });
+        }
     });
-    $("#formDialogo_alumno").on("submit", function(event){
-        event.preventDefault();
-        let alumnoFctSelect = this.alumnoFct;
-        let alumnoFctId = alumnoFctSelect.value;
-        let alumnoFctName = $(alumnoFctSelect).find("option:selected").text();
-
-        let auth = apiAuthOptions({
-            explicacion: this.explicacion.value
-        });
-
-        $.ajax({
-            method: "POST",
-            url: "/fct/" + this.alumnoFct.value + "/alFct",
-            headers: auth.headers,
-            data: auth.data
-        }).then(function (result) {
-            let contacte = result.data;
-
-            let date = new Date(contacte.created_at);
-            let formattedDate = date.getFullYear() + '-' +
-                String(date.getMonth() + 1).padStart(2, '0') + '-' +
-                String(date.getDate()).padStart(2, '0') + ' ' +
-                String(date.getHours()).padStart(2, '0') + ':' +
-                String(date.getMinutes()).padStart(2, '0') + ':' +
-                String(date.getSeconds()).padStart(2, '0');
-
-            let newListItem = $('<li></li>').append(
-                $('<div></div>').addClass('message_wrapper').append(
-                    $('<h5></h5>').html(
-                        `<em class="fa fa-calendar user-profile-icon"></em> ${formattedDate}
-                    <em class="fa fa-exclamation"></em>${contacte.document}
-                    <em class="fa fa-user user-profile-icon"></em> ${alumnoFctName}
-                    ${contacte.comentari ? `<br/>${contacte.comentari}` : ''}`
-                    )
-                )
-            );
-
-            // Afegeix el nou element a la llista
-            $("#ul_llist").append(newListItem);
-            $("#dialogo_alumno").modal('hide');
-
-        }, function () {
-            console.log("Només es pot un per dia");
-            $("#dialogo_alumno").modal('hide');
-        });
-    });
-});
+})();
