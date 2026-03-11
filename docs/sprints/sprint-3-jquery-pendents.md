@@ -34,6 +34,8 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
   - Sense ús actiu al flux actual de Comissió.
 - `public/js/Fctdual/modal.js`
   - Flux legacy mantingut temporalment; prioritat funcional actual en línia FCT/FCTCAP migrada.
+- `public/js/Fctdual/index.js`
+  - Flux legacy mantingut per convivència temporal amb mòdul FCTCAP.
 
 ## Criteri per tancar S3-07
 - Substituir plugins jQuery sense equivalent (`ionRangeSlider`, table edit legacy) o encapsular-los en adaptadors.
