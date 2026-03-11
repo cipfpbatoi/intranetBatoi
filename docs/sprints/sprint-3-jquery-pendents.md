@@ -7,9 +7,6 @@ Branca: `sprint-3-js-migration`
 Deixar constància explícita de quins punts encara depenen de jQuery i per què, després de la migració incremental de Sprint 3.
 
 ## Pendents per dependència tècnica
-- `public/js/Poll/create.js`
-  - Motiu: depén de `ionRangeSlider` (plugin jQuery).
-  - Estat: codi modernitzat, però es manté jQuery com a bridge del plugin.
 - `public/js/tabledit.js`
   - Motiu: plugin/flux d'edició en taula fortament acoblat a jQuery.
 - `public/js/grid.js`
