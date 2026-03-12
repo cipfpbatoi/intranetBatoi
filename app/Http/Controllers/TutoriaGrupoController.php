@@ -13,6 +13,9 @@ use Intranet\Http\Requests\TutoriaGrupoUpdateRequest;
 use Intranet\Presentation\Crud\TutoriaGrupoCrudSchema;
 use Intranet\Services\UI\FormBuilder;
 
+/**
+ * Gestió de relacions tutoria-grup amb formularis modal.
+ */
 class TutoriaGrupoController extends ModalController
 {
 
@@ -21,6 +24,12 @@ class TutoriaGrupoController extends ModalController
     protected $gridFields = TutoriaGrupoCrudSchema::GRID_FIELDS;
     protected $formFields = TutoriaGrupoCrudSchema::FORM_FIELDS;
     protected $redirect = 'TutoriaController@index';
+    /**
+     * Filtre de tutoria actual per al llistat modal.
+     *
+     * @var int|string|null
+     */
+    protected $search = null;
     
     public function createfrom($tutoria,$grupo)
     {
@@ -89,7 +98,8 @@ class TutoriaGrupoController extends ModalController
      */
     public function indice($search)
     {
-        return parent::indice($search);
+        $this->search = $search;
+        return $this->index();
     }
 
     public function iniBotones()
