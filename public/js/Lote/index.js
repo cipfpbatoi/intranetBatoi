@@ -22,6 +22,52 @@ function apiAuthOptions(extraData) {
     return { headers: headers, data: data };
 }
 
+function withQueryParams(url, params) {
+    var query = new URLSearchParams(params || {}).toString();
+    if (!query) {
+        return url;
+    }
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+}
+
+function toFormBody(data) {
+    var params = new URLSearchParams();
+    Object.keys(data || {}).forEach(function (key) {
+        if (data[key] !== undefined && data[key] !== null) {
+            params.append(key, String(data[key]));
+        }
+    });
+    return params.toString();
+}
+
+function requestJson(method, url, payload) {
+    var auth = apiAuthOptions(payload || {});
+    var options = {
+        method: method,
+        headers: Object.assign({}, auth.headers),
+        credentials: 'same-origin'
+    };
+    var finalUrl = url;
+
+    if (method === 'GET' || method === 'DELETE') {
+        finalUrl = withQueryParams(url, auth.data);
+    } else {
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+        options.body = toFormBody(auth.data);
+    }
+
+    return fetch(finalUrl, options).then(function (response) {
+        if (!response.ok) {
+            return response.text().then(function (text) {
+                var error = new Error('HTTP ' + response.status);
+                error.responseText = text;
+                throw error;
+            });
+        }
+        return response.json();
+    });
+}
+
 
     // FUncionalidades de los botones
     var autorizado=(!($('#rol').text()%MANTENIMIENTO));
@@ -42,13 +88,6 @@ function apiAuthOptions(extraData) {
                     <i class="fa fa-cubes" title="Inventariar"></i>                
                 </a>`;
     var auth = apiAuthOptions();
-    if (auth.headers.Authorization) {
-        $.ajaxSetup({
-            headers: {
-                Authorization: auth.headers.Authorization
-            }
-        });
-    }
     var articulos = cargaArticulos();
     $("#datatable").DataTable( {
         ajax : {
@@ -137,16 +176,10 @@ $(function () {
                 }
             })
             if (confirm('Vas a borrar el elemento:'+info)) {
-                $.ajax({
-                    context: this,
-                    method: "DELETE",
-                    url: "/api/lote/" + $(this).parent().siblings().first().text(),
-                    headers: apiAuthOptions().headers,
-                    data: apiAuthOptions().data,
-                    dataType: "json",
-                }).then(function (result) {
+                var current = this;
+                requestJson("DELETE", "/api/lote/" + $(this).parent().siblings().first().text(), {}).then(function (result) {
                     if (result.success == true ) {
-                        $(this).parent().parent().addClass('danger');
+                        $(current).parent().parent().addClass('danger');
                     }
                 });
             } else {
@@ -180,17 +213,12 @@ $(function () {
             $("#dialogo .modal-body").html(htmlDialog(dlgControls));
             $("#dialogo .modal-footer").find("button[type=button]").text("Cancelar");
             $("#dialogo .modal-footer").find("button[type=submit]").show().one("click", function() {
-                $.ajax({
-                    method: "PUT",
-                    url: "/api/lote/"+$registre.text(),
-                    headers: apiAuthOptions().headers,
-                    data: apiAuthOptions({
-                        registre: $("#registre").val(),
-                        factura: $("#factura").val(),
-                        proveedor: $("#proveedor").val(),
-                        procedencia: $("#origen").val(),
-                        fechaAlta: $("#fechaalta").val(),
-                    }).data,
+                requestJson("PUT", "/api/lote/"+$registre.text(), {
+                    registre: $("#registre").val(),
+                    factura: $("#factura").val(),
+                    proveedor: $("#proveedor").val(),
+                    procedencia: $("#origen").val(),
+                    fechaAlta: $("#fechaalta").val(),
                 }).then(function (res) {
                     $registre.text($("#registre").val());
                     $proveedor.text($("#proveedor").val());
@@ -213,32 +241,21 @@ $(function () {
         $('#datatable').on('click', 'a.inventary', function (event) {
             var idLote = $(this).parent().siblings().first().text();
             var texto = 'Vas a inventariar el lot amb registre '+idLote+', amb els següents articles i avisar al cap de departament.\n';
-            $.ajax({
-                context:this,
-                method: "GET",
-                url: "/api/lote/" + idLote+"/articulos",
-                headers: apiAuthOptions().headers,
-                data: apiAuthOptions().data,
-                dataType: "json",
-            }).then(function (result) {
+            var current = this;
+            requestJson("GET", "/api/lote/" + idLote+"/articulos", {}).then(function (result) {
                 $(result.data).each(function (  i, item) {
                     texto += item.unidades + ' de '+ item.descripcion+'\n';
                 });
                 if (confirm(texto)) {
-                    $.ajax({
-                        context: this,
-                        method: "PUT",
-                        url: "/api/lote/" + idLote +'/articulos',
-                        headers: apiAuthOptions().headers,
-                        data: apiAuthOptions({inventariar: true}).data,
-                        dataType: "json",
-                    }).then(function (result) {
+                    requestJson("PUT", "/api/lote/" + idLote +'/articulos', {inventariar: true}).then(function (result) {
                         if (result.success == true ){
-                            $(this).parent().parent().addClass('danger');
-                            $(this).parent().siblings('.estado').text("INVENTARIANT");
-                            $(this).parent().html(contenido);
+                            $(current).parent().parent().addClass('danger');
+                            $(current).parent().siblings('.estado').text("INVENTARIANT");
+                            $(current).parent().html(contenido);
                         }
-                    }).fail(error=>console.log(error)) ;
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
                 }
             });
         });
@@ -256,41 +273,31 @@ $(function () {
             event.preventDefault();
             $("#dialogo").modal("hide");
             var idArticulo = $(this).parent().parent().siblings().first().text();
-            $.ajax({
-                context:this,
-                method: "GET",
-                url: "/api/espacio",
-                headers: apiAuthOptions().headers,
-                data: apiAuthOptions().data,
-                dataType: "json",
-            }).then(function (result) {
+            var current = this;
+            requestJson("GET", "/api/espacio", {}).then(function (result) {
                 $(result.data).each(function (i, item) {
                     options[item.aula] = item.descripcion ;
                 });
-                cargaMateriales(this,idArticulo);
+                cargaMateriales(current,idArticulo);
             });
         })
         $('#dialogo').on('click', 'a.new', function (event,idLote) {
             event.preventDefault();
-            $.ajax({
-                context: this,
-                method: "POST",
-                url: "/api/articuloLote",
-                headers: apiAuthOptions().headers,
-                data: apiAuthOptions({
-                    lote_id: $("#idLote").text(),
-                    articulo_id: $("#articulo_id").val(),
-                    descripcion: $("#descripcion").val(),
-                    marca: $("#marca").val(),
-                    modelo: $("#modelo").val(),
-                    unidades: $("#unidades").val(),
-                }).data,
-                dataType: "json",
+            var current = this;
+            requestJson("POST", "/api/articuloLote", {
+                lote_id: $("#idLote").text(),
+                articulo_id: $("#articulo_id").val(),
+                descripcion: $("#descripcion").val(),
+                marca: $("#marca").val(),
+                modelo: $("#modelo").val(),
+                unidades: $("#unidades").val(),
             }).then(function (result) {
                 if (result.success == true ) {
-                    cargaArticulosLote(this,$("#idLote").text(),true)
+                    cargaArticulosLote(current,$("#idLote").text(),true)
                 }
-            }).fail(error=>console.log(error)) ;
+            }).catch(function (error) {
+                console.log(error);
+            });
         })
         // Botón DELETE article
         $('#dialogo').on('click', 'a.delete', function (event) {
@@ -302,16 +309,10 @@ $(function () {
                 }
             })
             if (confirm('Vas a borrar el elemento:'+info)) {
-                $.ajax({
-                    context: this,
-                    method: "DELETE",
-                    url: "/api/articuloLote/" + $(this).parent().parent().siblings().first().text(),
-                    headers: apiAuthOptions().headers,
-                    data: apiAuthOptions().data,
-                    dataType: "json",
-                }).then(function (result) {
+                var current = this;
+                requestJson("DELETE", "/api/articuloLote/" + $(this).parent().parent().siblings().first().text(), {}).then(function (result) {
                     if (result.success == true ) {
-                        cargaArticulosLote(this,$("#idLote").text(),true)
+                        cargaArticulosLote(current,$("#idLote").text(),true)
                     }
                 });
             } else {
@@ -326,14 +327,7 @@ $(function () {
 
 function cargaArticulosLote(entorno,idLote,estado){
     $(entorno).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-    $.ajax({
-        context: entorno,
-        method: "GET",
-        url: "/api/lote/" + idLote+"/articulos",
-        headers: apiAuthOptions().headers,
-        data: apiAuthOptions().data,
-        dataType: "json",
-    }).then(function (result) {
+    requestJson("GET", "/api/lote/" + idLote+"/articulos", {}).then(function (result) {
         var html = '<table id="dataarticle" name="articuloLote" class="table table-striped"><thead><tr><th>Id</th><th>Article</th><th>Marca</th><th>Mòdel</th><th>Unitats</th>';
         html += '<th>Operacions</th></tr></thead><tbody>';
         $(result.data).each(function (  i, item) {
@@ -355,17 +349,13 @@ function cargaArticulosLote(entorno,idLote,estado){
         $("#dialogo .modal-body").html(html);
         $("#dialogo .modal-footer").find("button[type=submit]").hide();
         $("#dialogo .modal-footer").find("button[type=button]").text("Cerrar");
+    }).catch(function (error) {
+        console.log(error);
     });
 }
 
 function cargaArticulos() {
-    $.ajax({
-        method: "GET",
-        url: "/api/articulo",
-        headers: apiAuthOptions().headers,
-        data: apiAuthOptions().data,
-        dataType: "json",
-    }).then(function (result) {
+    requestJson("GET", "/api/articulo", {}).then(function (result) {
         articulos = '<select id="articulo_id" name="articulo_id" ><option value="new">Article Nou</option>';
         $(result.data).each(function (i, item) {
             if (i == 0) {
@@ -374,19 +364,14 @@ function cargaArticulos() {
                 articulos += "<option value='" + item.id + "'>" + item.descripcion + "</option>";
             }
         });
+    }).catch(function (error) {
+        console.log(error);
     });
 }
 
 function cargaMateriales(entorno,idArticulo){
     $(entorno).attr("data-toggle","modal").attr("data-target", "#materiales").attr("href","");
-    $.ajax({
-        context: entorno,
-        method: "GET",
-        url: "/api/articuloLote/" + idArticulo +"/materiales",
-        headers: apiAuthOptions().headers,
-        data: apiAuthOptions().data,
-        dataType: "json",
-    }).then(function (result) {
+    requestJson("GET", "/api/articuloLote/" + idArticulo +"/materiales", {}).then(function (result) {
         var html = '<table id="datamateriales" name="material" class="table table-striped"><thead><tr><th>Id</th><th>Numero Serie</th><th>Espai</th>';
         var descripcion = '';
         html += '<th>Operacions</th></tr></thead><tbody>';
@@ -406,6 +391,8 @@ function cargaMateriales(entorno,idArticulo){
             $("#materiales").modal("hide");
         });
         $("#materiales").modal("show");
+    }).catch(function (error) {
+        console.log(error);
     });
 }
 
