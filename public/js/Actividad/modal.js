@@ -1,11 +1,18 @@
 'use strict';
-var $ = window.jQuery || window.$;
-$(function () {
-    $("#fueraCentro_id").change(function () {
-        if (!$('#fueraCentro_id').is(":checked")) {
-            $('#transport_id').prop('checked','');
-            $('#transport_id').prop('disabled',true);
+
+document.addEventListener('DOMContentLoaded', function () {
+    var fueraCentro = document.getElementById('fueraCentro_id');
+    var transport = document.getElementById('transport_id');
+    if (!fueraCentro || !transport) {
+        return;
+    }
+
+    fueraCentro.addEventListener('change', function () {
+        if (!fueraCentro.checked) {
+            transport.checked = false;
+            transport.disabled = true;
+        } else {
+            transport.disabled = false;
         }
-        else $('#transport_id').prop('disabled',false);
     });
 });

@@ -1,110 +1,140 @@
-$(function () {
-    var pageLocale = (($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase()).split('-')[0];
-    var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
-    var dateRangeFormat = pageLocale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
-    var labelSet = {
-        en: {
-            today: 'Today',
-            last7: 'Last 7 Days',
-            last14: 'Last 14 Days',
-            last28: 'Last 28 Days',
-            thisMonth: 'This Month',
-            lastMonth: 'Last Month'
-        },
-        es: {
-            today: 'Hoy',
-            last7: 'Últimos 7 días',
-            last14: 'Últimos 14 días',
-            last28: 'Últimos 28 días',
-            thisMonth: 'Este mes',
-            lastMonth: 'Mes anterior'
-        },
-        ca: {
-            today: 'Avui',
-            last7: 'Últims 7 dies',
-            last14: 'Últims 14 dies',
-            last28: 'Últims 28 dies',
-            thisMonth: 'Aquest mes',
-            lastMonth: 'Mes anterior'
-        },
-    }[pickerLocale] || {
-        today: 'Today',
-        last7: 'Last 7 Days',
-        last14: 'Last 14 Days',
-        last28: 'Last 28 Days',
-        thisMonth: 'This Month',
-        lastMonth: 'Last Month'
-    };
+'use strict';
+
+(function () {
+    function toIsoDate(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    function trim(value) {
+        return (value || '').toString().trim();
+    }
+
+    function getLegacyToken() {
+        var tokenElement = document.getElementById('_token');
+        return tokenElement ? trim(tokenElement.textContent) : '';
+    }
+
+    function getBearerToken() {
+        var meta = document.querySelector('meta[name="user-bearer-token"]');
+        return meta ? trim(meta.getAttribute('content')) : '';
+    }
 
     function apiAuthOptions(extraData) {
-        var legacyToken = $.trim($("#_token").text());
-        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-        var data = extraData || {};
+        var data = extraData ? Object.assign({}, extraData) : {};
         var headers = {};
+        var bearerToken = getBearerToken();
+        var legacyToken = getLegacyToken();
 
         if (bearerToken) {
-            headers.Authorization = "Bearer " + bearerToken;
+            headers.Authorization = 'Bearer ' + bearerToken;
         }
-    if (legacyToken) {
+        if (legacyToken) {
             data.api_token = legacyToken;
         }
 
         return { headers: headers, data: data };
     }
 
-    function pedir_datos(desde, hasta, profesor) {
-        var auth = apiAuthOptions({desde: desde, hasta: hasta, profesor: profesor});
-        $.ajax({
-            method: "GET",
-            url: "api/verficha",
-            dataType: "json",
-            headers: auth.headers,
-            data: auth.data
-        }).then(function (result) {
-            chart.setData(result.message);
-        })
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
     }
-    var chart = new Morris.Bar({
 
-        // ID of the element in which to draw the chart.
-        element: 'fichar_bar',
-        // Chart data records -- each entry in this array corresponds to a point on
-        // the chart.
-        // The name of the data record attribute that contains x-values.
-        xkey: 'fecha',
-        // A list of names of data record attributes that contain y-values.
-        ykeys: ['horas'],
-        // Labels for the ykeys -- will be displayed when you hover over the
-        // chart.
-        labels: ['horas'],
+    function fetchJson(url, auth) {
+        return fetch(withQueryParams(url, auth.data), {
+            method: 'GET',
+            headers: auth.headers,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var localeMeta = document.querySelector('meta[name="app-locale"]');
+        var htmlLang = document.documentElement ? document.documentElement.lang : '';
+        var pageLocale = ((localeMeta ? localeMeta.getAttribute('content') : '') || htmlLang || 'es').toLowerCase().split('-')[0];
+        var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
+
+        var chart = new Morris.Bar({
+            element: 'fichar_bar',
+            xkey: 'fecha',
+            ykeys: ['horas'],
+            labels: ['horas']
+        });
+
+        function pedirDatos(desde, hasta, profesor) {
+            var auth = apiAuthOptions({ desde: desde, hasta: hasta, profesor: profesor });
+            fetchJson('api/verficha', auth)
+                .then(function (result) {
+                    chart.setData(result.message || []);
+                })
+                .catch(function (error) {
+                    window.console.log(error);
+                });
+        }
+
+        var ahora = new Date();
+        var antes = new Date(ahora - (24 * 60 * 60 * 1000) * 14);
+        var dniNode = document.getElementById('dniP');
+        var idProfesor = dniNode ? dniNode.getAttribute('data-dni') : '';
+
+        pedirDatos(antes.toJSON().slice(0, 10), ahora.toJSON().slice(0, 10), idProfesor);
+
+        var datefilterInput = document.querySelector('input[name="datefilter"]');
+        if (!datefilterInput) {
+            return;
+        }
+
+        datefilterInput.style.display = 'none';
+
+        var container = document.createElement('div');
+        container.className = 'profile-datefilter-native';
+        container.style.display = 'flex';
+        container.style.gap = '8px';
+        container.style.alignItems = 'center';
+        container.style.flexWrap = 'wrap';
+
+        var desdeInput = document.createElement('input');
+        desdeInput.type = 'date';
+        desdeInput.className = 'form-control';
+        desdeInput.value = toIsoDate(antes);
+
+        var hastaInput = document.createElement('input');
+        hastaInput.type = 'date';
+        hastaInput.className = 'form-control';
+        hastaInput.value = toIsoDate(ahora);
+
+        var applyButton = document.createElement('button');
+        applyButton.type = 'button';
+        applyButton.className = 'btn btn-primary btn-sm';
+        applyButton.textContent = pickerLocale === 'en' ? 'Apply' : 'Aplicar';
+
+        function applyRange() {
+            var desde = desdeInput.value;
+            var hasta = hastaInput.value;
+            if (!desde || !hasta) {
+                return;
+            }
+            pedirDatos(desde, hasta, idProfesor);
+        }
+
+        applyButton.addEventListener('click', applyRange);
+        desdeInput.addEventListener('change', applyRange);
+        hastaInput.addEventListener('change', applyRange);
+
+        container.appendChild(desdeInput);
+        container.appendChild(hastaInput);
+        container.appendChild(applyButton);
+        datefilterInput.insertAdjacentElement('afterend', container);
     });
-    var ahora = new Date();
-    var antes = new Date(ahora - (24 * 60 * 60 * 1000) * 14);
-    var idProfesor = $('#dniP').data('dni');
-    pedir_datos(antes.toJSON().slice(0, 10), ahora.toJSON().slice(0, 10), idProfesor);
-    $('input[name="datefilter"]').daterangepicker(
-            {
-                locale: {
-                    format: dateRangeFormat,
-                    applyLabel: pickerLocale === 'en' ? 'Apply' : 'Aplicar',
-                    cancelLabel: pickerLocale === 'en' ? 'Clear' : 'Netejar',
-                    fromLabel: pickerLocale === 'en' ? 'From' : 'Des de',
-                    toLabel: pickerLocale === 'en' ? 'To' : 'Fins',
-                    customRangeLabel: pickerLocale === 'en' ? 'Custom' : 'Personalitzat'
-                },
-                startDate: ahora,
-                endDate: antes,
-                ranges: {
-                    [labelSet.today]: [moment().startOf('day'), moment().endOf('day')],
-                    [labelSet.last7]: [moment().subtract(6, 'days'), moment()],
-                    [labelSet.last14]: [moment().subtract(14, 'days'), moment()],
-                    [labelSet.last28]: [moment().subtract(28, 'days'), moment()],
-                    [labelSet.thisMonth]: [moment().startOf('month'), moment().endOf('month')],
-                    [labelSet.lastMonth]: [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                }
-            },
-            function (start, end, label) {
-                pedir_datos(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), idProfesor);
-            });
-
-});
+})();

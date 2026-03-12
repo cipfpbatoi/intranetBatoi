@@ -1,73 +1,104 @@
-function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-    var data = extraData || {};
-    var headers = {};
+/**
+ * @deprecated Flux legacy de DUAL/FCTDUAL.
+ * Mantingut temporalment per compatibilitat.
+ */
+'use strict';
 
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
-    }
-    if (legacyToken) {
-        data.api_token = legacyToken;
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
     }
 
-    return { headers: headers, data: data };
-}
+    function getLegacyToken() {
+        var tokenElement = byId('_token');
+        return tokenElement ? (tokenElement.textContent || '').trim() : '';
+    }
 
-$(function () {
+    function getBearerToken() {
+        var meta = document.querySelector('meta[name="user-bearer-token"]');
+        return meta ? (meta.getAttribute('content') || '').trim() : '';
+    }
 
-    $('#idColaboracion_id').change(function () {
-        var idColaboracion = $("#idColaboracion_id").val();
+    function apiAuthOptions(extraData) {
+        var data = extraData ? Object.assign({}, extraData) : {};
+        var headers = {};
+        var bearerToken = getBearerToken();
+        var legacyToken = getLegacyToken();
+
+        if (bearerToken) {
+            headers.Authorization = 'Bearer ' + bearerToken;
+        }
+        if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+    }
+
+    function fetchJson(url) {
         var auth = apiAuthOptions();
-        $.ajax({
-            method: "GET",
-            url: "/api/colaboracion/instructores/" + idColaboracion,
-            dataType: 'json',
+        return fetch(withQueryParams(url, auth.data), {
+            method: 'GET',
             headers: auth.headers,
-            data: auth.data
-        })
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        });
+    }
+
+    function fillInstructorOptions(colaboracionId, selectedInstructor) {
+        var select = byId('idInstructor_id');
+        if (!select || !colaboracionId) {
+            return;
+        }
+
+        fetchJson('/api/colaboracion/instructores/' + encodeURIComponent(colaboracionId))
             .then(function (result) {
-                var newOptions = result.data;
-                var $el = $("#idInstructor_id");
-                $el.empty(); // remove old options
-                $.each(newOptions, function (key, value) {
-                    $el.append($("<option></option>")
-                        .attr("value", value.dni).text(value.name+' '+value.surnames));
+                var options = (result && result.data) ? result.data : [];
+                select.innerHTML = '';
+
+                options.forEach(function (value) {
+                    var option = document.createElement('option');
+                    option.value = value.dni;
+                    option.textContent = value.name + ' ' + value.surnames;
+                    if (selectedInstructor && String(selectedInstructor) === String(value.dni)) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
                 });
-            }, function (result) {
-                console.log("La solicitud no se ha podido completar.");
+            })
+            .catch(function () {
+                window.console.log('La solicitud no se ha podido completar.');
             });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var colaboracion = byId('idColaboracion_id');
+        if (colaboracion) {
+            colaboracion.addEventListener('change', function () {
+                fillInstructorOptions(colaboracion.value, null);
+            });
+        }
     });
 
-});
+    window.postModal = function () {
+        var colaboracion = byId('idColaboracion_id');
+        var instructor = byId('idInstructor_id');
+        if (!colaboracion || !instructor || !colaboracion.value) {
+            return;
+        }
 
-function postModal() {
-    var idColaboracion = $("#idColaboracion_id").val();
-    var idInstructor = $("#idInstructor_id").val();
-    if (idColaboracion) {
-        var auth = apiAuthOptions();
-        $.ajax({
-            method: "GET",
-            url: "/api/colaboracion/instructores/" + idColaboracion,
-            dataType: 'json',
-            headers: auth.headers,
-            data: auth.data
-        })
-            .then(function (result) {
-                var newOptions = result.data;
-                var $el = $("#idInstructor_id");
-                $el.empty(); // remove old options
-                $.each(newOptions, function (key, value) {
-                    if (idInstructor == value.dni){
-                        $el.append($("<option selected></option>")
-                            .attr("value", value.dni).text(value.name + ' ' + value.surnames));
-                    } else {
-                        $el.append($("<option></option>")
-                            .attr("value", value.dni).text(value.name + ' ' + value.surnames));
-                    }
-                });
-            }, function (result) {
-                console.log("La solicitud no se ha podido completar.");
-            });
-    }
-}
+        fillInstructorOptions(colaboracion.value, instructor.value);
+    };
+})();

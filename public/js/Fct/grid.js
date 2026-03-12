@@ -7,6 +7,16 @@ var day;
 var month;
 var tipo;
 
+function trim(value) {
+    return (value || '').toString().trim();
+}
+
+function escapeHtml(value) {
+    var container = document.createElement('div');
+    container.textContent = value || '';
+    return container.innerHTML;
+}
+
 function bindDraggableLink(link) {
     if (!link) {
         return;
@@ -20,9 +30,9 @@ function bindDraggableLink(link) {
 function appendActivityLink(listTarget, activityId, iconClass, comment) {
     day = new Date();
     month = day.getMonth() + 1;
-    var hasComment = $.trim(comment || '').length > 0;
+    var hasComment = trim(comment).length > 0;
     var stateIcon = hasComment ? 'plus' : 'minus';
-    var safeComment = $('<div>').text(comment || '').html();
+    var safeComment = escapeHtml(comment);
 
     var html = "<small><a href='#' class='small dragable' id='" + activityId +
         "' draggable='draggable' data-toggle='modal' data-target='#dialogo' title='" + safeComment + "'>" +
@@ -34,9 +44,12 @@ function appendActivityLink(listTarget, activityId, iconClass, comment) {
 }
 
 function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-    var csrfToken = $.trim($('meta[name="csrf-token"]').attr('content') || "");
+    var tokenElement = document.querySelector('#_token');
+    var legacyToken = trim(tokenElement ? tokenElement.textContent : '');
+    var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
+    var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
+    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    var csrfToken = trim(csrfMeta ? csrfMeta.getAttribute('content') : '');
     var data = extraData || {};
     var headers = {};
 
@@ -54,6 +67,39 @@ function apiAuthOptions(extraData) {
     return { headers: headers, data: data };
 }
 
+function withQueryParams(url, params) {
+    var query = new URLSearchParams(params || {}).toString();
+    if (!query) {
+        return url;
+    }
+
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+}
+
+function apiRequest(method, url, extraData) {
+    var auth = apiAuthOptions(extraData);
+    var options = {
+        method: method,
+        headers: Object.assign({}, auth.headers),
+        credentials: 'same-origin'
+    };
+
+    if (method === 'GET') {
+        url = withQueryParams(url, auth.data);
+    } else {
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+        options.body = new URLSearchParams(auth.data).toString();
+    }
+
+    return fetch(url, options).then(function (response) {
+        if (!response.ok) {
+            throw response;
+        }
+
+        return response.json();
+    });
+}
+
 $(function() {
     $(document).on("click", ".telefonico", function (event) {
         event.preventDefault();
@@ -68,13 +114,7 @@ $(function() {
         }).last();
 
         if (todayPhone.length) {
-            var authTodayPhone = apiAuthOptions();
-            $.ajax({
-                method: "GET",
-                url: "/activity/" + todayPhone.attr("id"),
-                headers: authTodayPhone.headers,
-                data: authTodayPhone.data
-            }).then(function (result) {
+            apiRequest('GET', "/activity/" + todayPhone.attr("id")).then(function (result) {
                 $("#dialogo").find("#explicacion").val((result.data && result.data.comentari) || "");
             }, function () {
                 console.log("No s'ha pogut carregar el comentari telefonic existent.");
@@ -88,13 +128,7 @@ $(function() {
         tipo = 'seguimiento';
         $("#dialogo").find("#explicacion").val('');
         $("#dialogo").modal('show');
-        var authShow = apiAuthOptions();
-        $.ajax({
-            method: "GET",
-            url: "/activity/" + id ,
-            headers: authShow.headers,
-            data: authShow.data
-        }).then(function (result) {
+        apiRequest('GET', "/activity/" + id).then(function (result) {
             $("#dialogo").find("#explicacion").val(result.data.comentari);
         }, function () {
             console.log("Error al buscar");
@@ -104,17 +138,11 @@ $(function() {
         event.preventDefault();
         if (tipo === 'telefonico') {
             var comentariTelefonic = this.explicacion.value;
-            var authTelefonico = apiAuthOptions({explicacion: comentariTelefonic});
-            $.ajax({
-                method: "POST",
-                url: "/colaboracion/" + id + "/telefonico",
-                headers: authTelefonico.headers,
-                data: authTelefonico.data
-            }).then(function (result) {
+            apiRequest('POST', "/colaboracion/" + id + "/telefonico", {explicacion: comentariTelefonic}).then(function (result) {
                 var targetId = String(result.data.id);
                 var existing = list.find("a.small#" + targetId);
                 if (existing.length) {
-                    var hasComment = $.trim(comentariTelefonic).length > 0;
+                    var hasComment = trim(comentariTelefonic).length > 0;
                     existing.find("em.fa").first()
                         .toggleClass("fa-plus", hasComment)
                         .toggleClass("fa-minus", !hasComment);
@@ -131,16 +159,10 @@ $(function() {
         }
         if (tipo === 'seguimiento'){
             var comentariActualitzat = this.explicacion.value;
-            var authSeguimiento = apiAuthOptions({comentari: comentariActualitzat});
-            $.ajax({
-                method: "PUT",
-                url: "/activity/" + id ,
-                headers: authSeguimiento.headers,
-                data: authSeguimiento.data
-            }).then(function () {
+            apiRequest('PUT', "/activity/" + id, {comentari: comentariActualitzat}).then(function () {
                 var link = $("#" + id);
                 var stateIcon = link.find("em.fa").first();
-                var hasComment = $.trim(comentariActualitzat).length > 0;
+                var hasComment = trim(comentariActualitzat).length > 0;
 
                 stateIcon
                     .toggleClass("fa-plus", hasComment)
@@ -161,16 +183,10 @@ $(function() {
         event.preventDefault();
         event.stopPropagation();
         var id=$(this).closest("a.small").attr("id");
+        var clickedIcon = this;
         if (confirm('Vas a esborrar esta evidencia')) {
-            var authDelete = apiAuthOptions();
-            $.ajax({
-                method: "DELETE",
-                url: "/activity/" + id,
-                dataType: 'json',
-                headers: authDelete.headers,
-                data: authDelete.data
-            }).then(() => {
-                var small = $(this).closest('small');
+            apiRequest('DELETE', "/activity/" + id).then(function () {
+                var small = $(clickedIcon).closest('small');
                 small.next('br').remove();
                 small.remove();
             });
@@ -185,14 +201,7 @@ $(function() {
         var instructor = $("#idInstructor");
         $('#formAddAlumno').attr('action', '/fct/fctalumnoCreate');
         $('#idColaboracion').attr('value',id);
-        var authInstructores = apiAuthOptions();
-        $.ajax({
-            method: "GET",
-            url: "/colaboracion/instructores/" + id ,
-            dataType: 'json',
-            headers: authInstructores.headers,
-            data: authInstructores.data
-        }).then(function (result) {
+        apiRequest('GET', "/colaboracion/instructores/" + id).then(function (result) {
                       instructor.empty(); // remove old options
                         $.each(result.data, function (key, value) {
                             instructor.append($("<option></option>")
@@ -244,21 +253,14 @@ $(function() {
             const node = document.getElementById(id).parentElement;
             const nodeCopy = node.cloneNode(true);
             if (confirm('Vas a copiar esta evidencia a una altra FCT')){
-                var authMove = apiAuthOptions();
-                $.ajax({
-                    method: "GET",
-                    url: "/activity/"+id+"/move/" + newFct.id ,
-                    dataType: 'json',
-                    headers: authMove.headers,
-                    data: authMove.data
-                }).then(function (result) {
+                apiRequest('GET', "/activity/"+id+"/move/" + newFct.id).then(function (result) {
                     nodeCopy.firstElementChild.id = result.data.id;
                     nodeCopy.firstElementChild.firstElementChild.classList.remove('fa-plus');
                     nodeCopy.firstElementChild.firstElementChild.classList.add('fa-minus');
                     newFct.querySelector('.listActivity').appendChild(nodeCopy);
                     location.reload();
                 }, function (result) {
-                    alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
+                    alert("La sol·licitut no s'ha pogut completar: " + (result.statusText || 'Error'));
                 });
             }
         });

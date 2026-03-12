@@ -55,7 +55,11 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/components/app.js') }}"></script>
     @unless(View::hasSection('skip_legacy_js'))
-        <script src="{{ asset('js/ppIntranet.js') }}"></script>
+        @if ($resolvedJsMode === 'legacy')
+            <script src="{{ asset('js/ppIntranet.js') }}"></script>
+        @else
+            @vite('resources/assets/js/ppIntranet.js')
+        @endif
     @endunless
     @if ($resolvedJsMode === 'hybrid')
         @vite('resources/assets/js/app.js')

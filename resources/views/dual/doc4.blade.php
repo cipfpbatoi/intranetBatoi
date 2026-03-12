@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 @extends('layouts.pdf')
 @section('content')
     <div class="container col-lg-12" style="border: #0a0302 thin solid" >

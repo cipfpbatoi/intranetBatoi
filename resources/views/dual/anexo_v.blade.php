@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 @extends('layouts.pdf')
 @section('css')
     {{ Html::style('/css/dual.css') }}

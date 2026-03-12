@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @deprecated Codi legacy de DUAL/FCTDUAL.
+ * Mantingut temporalment per compatibilitat.
+ */
+
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;

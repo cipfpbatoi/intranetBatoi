@@ -1,59 +1,56 @@
 'use strict';
-$(function () {
-    var baja_inicial = $('#baja_id').is(":checked");
-    var tipo_inicial = $('#dia_completo_id').is(":checked");
-    if (baja_inicial == 1) {
-        $('#hora_ini_id').prop('disabled', true);
-        $('#hora_fin_id').prop('disabled', true);
-        $('#hasta_id').prop('disabled', true);
-        $('#dia_completo_id').prop('disabled', true);
-    } else if (tipo_inicial == 1) {
-        $('#hora_ini_id').prop('disabled', true);
-        $('#hora_fin_id').prop('disabled', true);
-    }
-    $("#dia_completo_id").change(function () {
-        var tipo = $('#dia_completo_id').is(":checked");
-        if (tipo == 1) {
-            $('#hora_ini_id').prop('disabled', true);
-            $('#hora_fin_id').prop('disabled', true);
-        } else {
-            $('#hora_ini_id').prop('disabled', false);
-            $('#hora_fin_id').prop('disabled', false);
-        }
-    });
-    $("#baja_id").change(function () {
-        var tipo = $('#baja_id').is(":checked");
-        if (tipo == 1) {
-            $('#hora_ini_id').prop('disabled', true);
-            $('#hora_fin_id').prop('disabled', true);
-            $('#hasta_id').prop('disabled', true);
-            $('#dia_completo_id').prop('disabled', true);
-        } else {
-            $('#hasta_id').prop('disabled', false);
-            $('#dia_completo_id').prop('disabled', false);
-            var dia = $('#dia_completo_id').is(":checked");
-            if (dia == 0) {
-                $('#hora_ini_id').prop('disabled', false);
-                $('#hora_fin_id').prop('disabled', false);
-            }
-        }
-    });
-});
-function postModal() {
-    var tipo = $('#baja_id').is(":checked");
-    if (tipo == 1) {
-            $('#hora_ini_id').prop('disabled', true);
-            $('#hora_fin_id').prop('disabled', true);
-            $('#hasta_id').prop('disabled', true);
-            $('#dia_completo_id').prop('disabled', true);
-        } else {
-            $('#hasta_id').prop('disabled', false);
-            $('#dia_completo_id').prop('disabled', false);
-            var dia = $('#dia_completo_id').is(":checked");
-            if (dia == 0) {
-                $('#hora_ini_id').prop('disabled', false);
-                $('#hora_fin_id').prop('disabled', false);
-            }
-        }
-}
 
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
+    }
+
+    function setDisabled(id, disabled) {
+        var element = byId(id);
+        if (element) {
+            element.disabled = disabled;
+        }
+    }
+
+    function isChecked(id) {
+        var element = byId(id);
+        return !!(element && element.checked);
+    }
+
+    function updateFaltaState() {
+        var baja = isChecked('baja_id');
+        var diaCompleto = isChecked('dia_completo_id');
+
+        if (baja) {
+            setDisabled('hora_ini_id', true);
+            setDisabled('hora_fin_id', true);
+            setDisabled('hasta_id', true);
+            setDisabled('dia_completo_id', true);
+            return;
+        }
+
+        setDisabled('hasta_id', false);
+        setDisabled('dia_completo_id', false);
+        setDisabled('hora_ini_id', diaCompleto);
+        setDisabled('hora_fin_id', diaCompleto);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var diaCompleto = byId('dia_completo_id');
+        var baja = byId('baja_id');
+
+        updateFaltaState();
+
+        if (diaCompleto) {
+            diaCompleto.addEventListener('change', updateFaltaState);
+        }
+
+        if (baja) {
+            baja.addEventListener('change', updateFaltaState);
+        }
+    });
+
+    window.postModal = function () {
+        updateFaltaState();
+    };
+})();

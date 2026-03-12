@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
  <div class="x_content">
     <table id='dataFct' class="table table-striped" data-page-length="25">
