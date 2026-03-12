@@ -38,6 +38,11 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
 cd /var/www/html
 
+# Regenerar cache
+exec gosu sail php artisan config:cache
+exec gosu sail php artisan route:cache
+exec gosu sail php artisan event:cache
+
 # Executem el comando o supervisord
 if [ $# -gt 0 ]; then
   exec gosu sail "$@"
