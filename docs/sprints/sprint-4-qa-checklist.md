@@ -48,13 +48,16 @@ Validar que la retirada addicional de jQuery en Sprint 4 no introdueix regressio
    - Acció: provar resolució/accions en Reunion, Solicitud, Incidencia i FCT PDF.
    - Esperat: modals i submits amb URLs correctes, sense errors JS en consola.
 
+8. Canvi d'horari professorat
+   - Acció: iniciar proposta, moure cel·les via drag&drop, guardar i (direcció) aprovar/aplicar.
+   - Esperat: canvis persistits en API, marcat de moviments coherent i flux d'aprovació estable.
+
 ## Residuals coneguts (acceptats temporalment)
 1. `public/js/common/ui-helpers.js`
    - Fallback jQuery de `.modal(...)` per compatibilitat BS4/BS5.
 2. `public/js/Fct/grid.js`
    - Inicialització `datetimepicker` via plugin jQuery.
 3. Blocs encara pendents de migració en Sprint 4
-   - `public/js/Horario/cambiar.js`
    - `public/js/Guardia/edit.js`
    - `public/js/Guardia/edit-biblio.js`
 
