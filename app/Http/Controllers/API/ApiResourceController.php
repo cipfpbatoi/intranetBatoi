@@ -206,12 +206,12 @@ class ApiResourceController extends Controller
  
     protected function sendResponse($result, $message = null)
     {
-        return response()->json(['success'=>true,'data'=>$result]);
+        return $this->jsonUtf8Response(['success' => true, 'data' => $result]);
     }
 
     protected function sendError($error, $code = 400)
     {
-        return response()->json([
+        return $this->jsonUtf8Response([
             'success' => false,
             'message' => is_string($error) ? $error : 'Request error',
         ], $code);
@@ -232,7 +232,7 @@ class ApiResourceController extends Controller
                 $payload['errors'] = $error['errors'];
             }
 
-            return response()->json($payload, $code);
+            return $this->jsonUtf8Response($payload, $code);
         }
 
         return $this->sendError((string) $error, $code);
@@ -267,6 +267,19 @@ class ApiResourceController extends Controller
         ]);
 
         return $response;
+    }
+
+    /**
+     * Retorna JSON tolerant amb bytes invàlids i charset explícit UTF-8.
+     */
+    protected function jsonUtf8Response(array $payload, int $status = 200): JsonResponse
+    {
+        return response()->json(
+            $payload,
+            $status,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+        );
     }
 
 }

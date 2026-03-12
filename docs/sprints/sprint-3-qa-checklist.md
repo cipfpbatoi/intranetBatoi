@@ -20,19 +20,19 @@ Validar que la migració a JavaScript nadiu no ha introduït regressions funcion
 - Les taules carreguen i responen (ordenació, resize, accions).
 
 ## Checklist Prioritzat
-1. Navegació lateral i submenús
+1. Navegació lateral i submenús (OK)
    - Acció: obrir/tancar submenús repetidament.
    - Esperat: no fa scroll automàtic al top; manté posició vertical.
 
-2. Signatura
+2. Signatura (OK)
    - Acció: obrir modal des de `.sign`, `.a1` i `.signatura`; provar submit.
    - Esperat: modal obri/tanca correctament, dades carregades, sense 401 inesperats.
 
-3. Comissió
+3. Comissió (OK)
    - Acció: crear comissió, posar quilometratge 0 i >0.
    - Esperat: itinerari només s’activa amb quilometratge >0.
 
-4. FCT/FCTCAP
+4. FCT/FCTCAP (OK)
    - Acció: obrir llistat, marcar/desmarcar checkboxes d’estat.
    - Esperat: canvis persistits per API i rollback visual si falla la petició.
 
