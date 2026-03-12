@@ -1,21 +1,48 @@
 'use strict';
-var id;
-$(function() {
-	$(".mensaje").on("click", function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#aviso").attr("href","");
-		id=$(this).parents(".profile_view").attr("id");
-	});
-	$("#formAviso").on("submit", function(){
-		$(this).attr("action","/profesor/"+id+"/mensaje");
-	});
 
-	$(".colectivo").on("click", function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-		id=$(this).parents(".profile_view").attr("id");
-	});
-	$("#formDialogo").on("submit", function(){
-		$(this).attr("action","/profesor/colectivo");
-	});
-})
+(function () {
+    var id = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var formAviso = document.getElementById('formAviso');
+        var formDialogo = document.getElementById('formDialogo');
+
+        document.addEventListener('click', function (event) {
+            var mensaje = event.target.closest('.mensaje');
+            if (mensaje) {
+                event.preventDefault();
+                var profile = mensaje.closest('.profile_view');
+                id = profile ? profile.id : null;
+
+                if (window.intranetUiHelpers) {
+                    window.intranetUiHelpers.showModal('aviso');
+                }
+                return;
+            }
+
+            var colectivo = event.target.closest('.colectivo');
+            if (colectivo) {
+                event.preventDefault();
+                var profileColectivo = colectivo.closest('.profile_view');
+                id = profileColectivo ? profileColectivo.id : null;
+
+                if (window.intranetUiHelpers) {
+                    window.intranetUiHelpers.showModal('dialogo');
+                }
+            }
+        });
+
+        if (formAviso) {
+            formAviso.addEventListener('submit', function () {
+                var currentId = id || '';
+                this.setAttribute('action', '/profesor/' + currentId + '/mensaje');
+            });
+        }
+
+        if (formDialogo) {
+            formDialogo.addEventListener('submit', function () {
+                this.setAttribute('action', '/profesor/colectivo');
+            });
+        }
+    });
+})();
