@@ -3,6 +3,14 @@
 var id;
 var MODEL = 'falta';
 
+function currentModelBasePath() {
+    var path = (window.location && window.location.pathname ? window.location.pathname : '').replace(/\/+$/, '');
+    if (!path) {
+        return '/' + MODEL;
+    }
+    return path;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function (event) {
         var refuseButton = event.target.closest('.refuse');
@@ -46,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var formDialogo = document.getElementById('formDialogo');
     if (formDialogo) {
         formDialogo.addEventListener('submit', function () {
-            this.setAttribute('action', MODEL + '/' + id + '/refuse');
+            this.setAttribute('action', currentModelBasePath() + '/' + id + '/refuse');
         });
     }
 

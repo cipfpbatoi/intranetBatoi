@@ -70,7 +70,10 @@ class PanelEmpresaSCController extends BaseController
     public function search()
     {
         Gate::authorize('viewAny', Empresa::class);
-        return $this->empreses()->socialConcertList();
+        return $this->empreses()->socialConcertList()->map(function (Empresa $empresa) {
+            $empresa->concierto = $empresa->concierto ?: 'Sense concert';
+            return $empresa;
+        });
     }
 
     /**
@@ -88,15 +91,13 @@ class PanelEmpresaSCController extends BaseController
        $this->panel->setBoton(
            'grid',
            new BotonImg(
-               'empresa.detalle',
-               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
+               'empresa.detalle'
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
-               'empresa.delete',
-               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
+               'empresa.delete'
            )
        );
     }

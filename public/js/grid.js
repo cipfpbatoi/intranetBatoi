@@ -1,7 +1,10 @@
 (function () {
     'use strict';
 
-    if (typeof window.DataTable !== 'function') {
+    var hasV2 = typeof window.DataTable === 'function';
+    var hasJqDt = !!(window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function');
+
+    if (!hasV2 && !hasJqDt) {
         console.warn('DataTables no està disponible: grid.js no s’inicialitza.');
         return;
     }
@@ -11,14 +14,17 @@
         return;
     }
 
-    if (typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(table)) {
+    if (hasV2 && typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(table)) {
+        return;
+    }
+    if (hasJqDt && window.jQuery.fn.dataTable && typeof window.jQuery.fn.dataTable.isDataTable === 'function' && window.jQuery.fn.dataTable.isDataTable(table)) {
         return;
     }
 
     // Evita salts visuals mentre DataTables calcula amplades.
     table.style.visibility = 'hidden';
 
-    var dataTable = new window.DataTable(table, {
+    var options = {
         language: { url: '/json/cattable.json' },
         deferRender: true,
         responsive: true,
@@ -32,7 +38,11 @@
             }
             table.style.visibility = 'visible';
         }
-    });
+    };
+
+    var dataTable = hasV2
+        ? new window.DataTable(table, options)
+        : window.jQuery(table).DataTable(options);
 
     table.addEventListener('draw.dt', function () {
         dataTable.columns.adjust();
