@@ -52,13 +52,16 @@ Validar que la retirada addicional de jQuery en Sprint 4 no introdueix regressio
    - Acció: iniciar proposta, moure cel·les via drag&drop, guardar i (direcció) aprovar/aplicar.
    - Esperat: canvis persistits en API, marcat de moviments coherent i flux d'aprovació estable.
 
+9. Guardia (registre)
+   - Acció: seleccionar dia/hora, registrar observacions i guardar.
+   - Esperat: habilitació/inhabilitació coherent dels camps i persistència per API.
+
 ## Residuals coneguts (acceptats temporalment)
 1. `public/js/common/ui-helpers.js`
    - Fallback jQuery de `.modal(...)` per compatibilitat BS4/BS5.
 2. `public/js/Fct/grid.js`
    - Inicialització `datetimepicker` via plugin jQuery.
 3. Blocs encara pendents de migració en Sprint 4
-   - `public/js/Guardia/edit.js`
    - `public/js/Guardia/edit-biblio.js`
 
 ## Estat de tancament
