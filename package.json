@@ -1,8 +1,8 @@
 {
     "private": true,
     "engines": {
-        "node": "20.20.1",
-        "npm": "11.11.0"
+        "node": ">=20.20.1 <21",
+        "npm": ">=11.11.0 <12"
     },
     "scripts": {
         "dev": "npm run development",

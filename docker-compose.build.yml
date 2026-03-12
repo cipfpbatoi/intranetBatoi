@@ -7,6 +7,9 @@ services:
       args:
         WWWUSER: "${WWWUSER:-${UID:-1000}}"
         WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
+        NODE_VERSION: "${NODE_VERSION:-20}"
+        NPM_VERSION: "${NPM_VERSION:-11}"
+
   laravel.prod:
     image: arturocandela/intranet:${IMAGE_TAG_PROD:-laravel12-prod}
     build:
@@ -15,3 +18,5 @@ services:
       args:
         WWWUSER: "${WWWUSER:-${UID:-1000}}"
         WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
+        NODE_VERSION: "${NODE_VERSION:-20}"
+        NPM_VERSION: "${NPM_VERSION:-11}"

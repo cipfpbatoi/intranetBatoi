@@ -5,7 +5,8 @@ LABEL maintainer="Arturo Candela"
 ARG WWWGROUP=1000
 ARG WWWUSER=1000
 ARG NODE_VERSION=20
-ARG GIT_BRANCH=Laravel12
+ARG NPM_VERSION=11
+ARG GIT_BRANCH=docker-01-laravel12-prod
 
 WORKDIR /var/www/html
 
@@ -32,7 +33,7 @@ RUN apt-get update \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g npm \
+    && npm install -g npm@${NPM_VERSION} \
     && apt-get -y clean \
     && apt-get -y autoremove \
     && apt-get install -y openjdk-21-jre-headless pdftk-java \
