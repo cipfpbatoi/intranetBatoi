@@ -32,19 +32,31 @@ Validar que la retirada addicional de jQuery en Sprint 4 no introdueix regressio
    - Acció: alta/edició/baixa i moviments principals.
    - Esperat: peticions correctes i actualització de taules sense regressions.
 
-4. FCT grid
+4. Reserva
+   - Acció: seleccionar recurs, navegar dies, reservar i alliberar rang d'hores.
+   - Esperat: càrrega de franges per dia, validacions correctes i operacions per API sense regressions.
+
+5. FCT grid
    - Acció: obrir comentari telefònic, editar seguiment, borrar evidència, drag&drop.
    - Esperat: modal `#dialogo` funciona, comentaris persisteixen, esborrat i còpia operatius.
 
-5. Faltes
+6. Faltes
    - Acció: rebutjar falta, obrir modal de contrasenya, enviar formulari.
    - Esperat: accions de modal i submit correctes sense jQuery directe al mòdul.
+
+7. Mòduls curts de gestió
+   - Acció: provar resolució/accions en Reunion, Solicitud, Incidencia i FCT PDF.
+   - Esperat: modals i submits amb URLs correctes, sense errors JS en consola.
 
 ## Residuals coneguts (acceptats temporalment)
 1. `public/js/common/ui-helpers.js`
    - Fallback jQuery de `.modal(...)` per compatibilitat BS4/BS5.
 2. `public/js/Fct/grid.js`
    - Inicialització `datetimepicker` via plugin jQuery.
+3. Blocs encara pendents de migració en Sprint 4
+   - `public/js/Horario/cambiar.js`
+   - `public/js/Guardia/edit.js`
+   - `public/js/Guardia/edit-biblio.js`
 
 ## Estat de tancament
 - [ ] QA manual completada i validada.
