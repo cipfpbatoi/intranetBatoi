@@ -138,6 +138,39 @@ class HorariProfessorCanviTest extends TestCase
         $this->assertCount(2, $data['cambios']);
     }
 
+    public function test_carrega_canvis_legacy_sense_id_en_proposta(): void
+    {
+        $this->createHorario($this->dni, 1, 'L', 'M01', 'G1');
+        $this->createHorario($this->dni, 2, 'L', 'M01', 'G1');
+
+        $propostaId = '20260215184521-23f551e0';
+        Storage::disk('local')->put('/horarios/' . $this->dni . '/' . $propostaId . '.json', json_encode([
+            'id' => $propostaId,
+            'dni' => $this->dni,
+            'estado' => 'Pendiente',
+            'obs' => 'Proposta legacy',
+            'fecha_inicio' => '2026-02-15',
+            'fecha_fin' => '2026-02-16',
+            'cambios' => [
+                ['de' => '1-L', 'a' => '2-L'],
+                ['de' => '2-L', 'a' => '1-L'],
+            ],
+            'updated_at' => '2026-02-15 18:45:21',
+        ]));
+
+        $component = Livewire::test(HorariProfessorCanvi::class, ['dni' => $this->dni]);
+        $originalGrid = $component->get('originalGrid');
+        $id1 = $originalGrid['1-L'];
+        $id2 = $originalGrid['2-L'];
+
+        $component->set('selectedPropuestaId', $propostaId)
+            ->assertSet('error', '');
+
+        $items = $component->get('items');
+        $this->assertSame('2-L', $items[$id1]['cell']);
+        $this->assertSame('1-L', $items[$id2]['cell']);
+    }
+
     protected function createSchema(): void
     {
         $schema = Schema::connection('sqlite');

@@ -281,18 +281,39 @@ class HorariProfessorCanvi extends Component
         $newCellsById = [];
 
         foreach ($cambios as $cambio) {
-            $id = isset($cambio['id']) ? (string) $cambio['id'] : '';
             $to = isset($cambio['a']) ? (string) $cambio['a'] : '';
-
-            if ($id === '' || $to === '' || !isset($this->items[$id])) {
+            if ($to === '') {
                 continue;
             }
 
-            if ($this->isDifferentDay((string) $this->items[$id]['orig'], $to)) {
+            $itemId = null;
+            $id = isset($cambio['id']) ? (string) $cambio['id'] : '';
+            if ($id !== '' && isset($this->items[$id])) {
+                $itemId = $id;
+            } else {
+                $fromLegacy = isset($cambio['de']) ? (string) $cambio['de'] : '';
+                $legacyId = $fromLegacy !== '' ? ($this->originalGrid[$fromLegacy] ?? null) : null;
+                if (is_string($legacyId) && isset($this->items[$legacyId])) {
+                    $itemId = $legacyId;
+                }
+            }
+
+            if (!$itemId) {
                 continue;
             }
 
-            $newCellsById[$id] = $to;
+            $from = isset($cambio['de'])
+                ? (string) $cambio['de']
+                : (string) $this->items[$itemId]['orig'];
+            if ($from === '') {
+                $from = (string) $this->items[$itemId]['orig'];
+            }
+
+            if ($this->isDifferentDay($from, $to)) {
+                continue;
+            }
+
+            $newCellsById[$itemId] = $to;
         }
 
         foreach ($this->items as $id => $item) {
