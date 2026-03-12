@@ -1,16 +1,32 @@
 'use strict';
 
-const MODEL = "solicitud";
+const MODEL = 'solicitud';
 var id;
 
-$(function () {
-    $("#datatable").on("click",'.resolve' ,function (event) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        var resolveButton = event.target.closest('#datatable .resolve');
+        if (!resolveButton) {
+            return;
+        }
+
         event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#resolve").attr("href", "");
-        id = $(this).parents(".lineaGrupo").attr("id");
+        resolveButton.setAttribute('data-toggle', 'modal');
+        resolveButton.setAttribute('data-target', '#resolve');
+        resolveButton.setAttribute('href', '');
+        var row = resolveButton.closest('.lineaGrupo') || resolveButton.closest('tr');
+        id = row ? row.id : '';
     });
-    $("#formResolve").on("submit", function () {
-        $(this).attr("action","/solicitud/"+ id + "/resolve");
-    });
-    $("#explicacion").focus();    
+
+    var formResolve = document.getElementById('formResolve');
+    if (formResolve) {
+        formResolve.addEventListener('submit', function () {
+            this.setAttribute('action', '/' + MODEL + '/' + id + '/resolve');
+        });
+    }
+
+    var explicacion = document.getElementById('explicacion');
+    if (explicacion) {
+        explicacion.focus();
+    }
 });
