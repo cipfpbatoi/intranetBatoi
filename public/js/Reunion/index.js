@@ -1,20 +1,26 @@
 'use strict';
-var id;
-$(function() {
-	$("#datatable").on("click", ".fa-unlock", function(event) {
-		id=$(this).parents(".lineaGrupo").attr("id");
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#password").attr("href","");
-	});
-	$("#formPassword").on("submit", function(){
-		$(this).attr("action","/reunion/"+id+"/deleteFile");
-	});
-	$('#datatable').on('draw.dt', function() {
-		$(".fa-unlock").off("click").on("click", function(event) {
-			id = $(this).closest("tr").attr("id");
-			event.preventDefault();
-			$(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
-		});
-	});
 
-})
+var id;
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        var unlockButton = event.target.closest('#datatable .fa-unlock');
+        if (!unlockButton) {
+            return;
+        }
+
+        event.preventDefault();
+        var row = unlockButton.closest('.lineaGrupo') || unlockButton.closest('tr');
+        id = row ? row.id : '';
+        unlockButton.setAttribute('data-toggle', 'modal');
+        unlockButton.setAttribute('data-target', '#password');
+        unlockButton.setAttribute('href', '');
+    });
+
+    var formPassword = document.getElementById('formPassword');
+    if (formPassword) {
+        formPassword.addEventListener('submit', function () {
+            this.setAttribute('action', '/reunion/' + id + '/deleteFile');
+        });
+    }
+});

@@ -13,6 +13,7 @@ use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\UI\AppAlert as Alert;
 
 /**
@@ -58,7 +59,10 @@ class EmpresaController extends IntranetController
 
     protected function search()
     {
-        return $this->empreses()->listForGrid();
+        return $this->empreses()->listForGrid()->map(function (Empresa $empresa) {
+            $empresa->concierto = $empresa->concierto ?: 'Sense concert';
+            return $empresa;
+        });
     }
 
     
@@ -92,6 +96,8 @@ class EmpresaController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('grid', new BotonImg('empresa.detalle'));
+        $this->panel->setBoton('grid', new BotonImg('empresa.delete', ['roles' => config(self::ROLES_ROL_TUTOR)]));
      }
 
     public function store(Request $request)

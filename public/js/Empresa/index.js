@@ -88,28 +88,70 @@
     }
 
     function initDataTable(tableElement, autorizado) {
-        if (!tableElement || typeof window.DataTable !== 'function') {
-            return null;
+        if (!tableElement) {
+            return Promise.resolve(null);
         }
 
-        if (typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(tableElement)) {
-            return null;
+        var hasV2 = typeof window.DataTable === 'function';
+        var hasJqDt = !!(window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function');
+
+        if (!hasV2 && !hasJqDt) {
+            return Promise.resolve(null);
+        }
+
+        if (hasV2 && typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(tableElement)) {
+            return Promise.resolve(null);
+        }
+        if (hasJqDt && window.jQuery.fn.dataTable && typeof window.jQuery.fn.dataTable.isDataTable === 'function' && window.jQuery.fn.dataTable.isDataTable(tableElement)) {
+            return Promise.resolve(null);
         }
 
         tableElement.style.visibility = 'hidden';
-        var authDatatable = apiAuthOptions();
 
-        return fetchJson('/api/convenio', authDatatable).then(function (result) {
-            var rows = result && result.data ? result.data : [];
-            var dataTable = new window.DataTable(tableElement, {
-                language: {
-                    url: '/json/cattable.json'
-                },
+        function withCommonOptions(options) {
+            options.language = { url: '/json/cattable.json' };
+            options.deferRender = true;
+            options.autoWidth = false;
+            options.responsive = true;
+            options.columnDefs = options.columnDefs || [];
+            options.columnDefs.push({
+                responsivePriority: 1,
+                targets: -1
+            });
+            return options;
+        }
+
+        function initWithOptions(options) {
+            var originalInitComplete = options.initComplete;
+            options.initComplete = function () {
+                if (typeof originalInitComplete === 'function') {
+                    originalInitComplete.apply(this, arguments);
+                }
+                if (dataTable && dataTable.columns && typeof dataTable.columns.adjust === 'function') {
+                    dataTable.columns.adjust();
+                }
+                tableElement.style.visibility = 'visible';
+            };
+
+            var dataTable = hasV2
+                ? new window.DataTable(tableElement, options)
+                : window.jQuery(tableElement).DataTable(options);
+
+            tableElement.addEventListener('draw.dt', function () {
+                dataTable.columns.adjust();
+            });
+            tableElement.addEventListener('responsive-resize.dt', function () {
+                dataTable.columns.adjust();
+            });
+            window.addEventListener('resize', function () {
+                dataTable.columns.adjust();
+            });
+        }
+
+        function initWithApiRows(rows) {
+            initWithOptions(withCommonOptions({
                 data: rows,
-                deferRender: true,
-                autoWidth: false,
                 rowId: ID,
-                responsive: true,
                 columns: [
                     { data: 'concierto' },
                     { data: 'nombre' },
@@ -128,33 +170,29 @@
                 },
                 columnDefs: [
                     {
-                        responsivePriority: 1,
                         targets: 8,
                         render: function (data, type, rowData) {
-                            if (!autorizado || !rowData || !rowData.id) {
+                            if (!rowData || !rowData.id) {
                                 return '';
                             }
                             return '<a href="/empresa/' + rowData.id + '/detalle" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>';
                         }
                     }
-                ],
-                initComplete: function () {
-                    if (dataTable && dataTable.columns && typeof dataTable.columns.adjust === 'function') {
-                        dataTable.columns.adjust();
-                    }
-                    tableElement.style.visibility = 'visible';
-                }
-            });
+                ]
+            }));
+        }
 
-            tableElement.addEventListener('draw.dt', function () {
-                dataTable.columns.adjust();
-            });
-            tableElement.addEventListener('responsive-resize.dt', function () {
-                dataTable.columns.adjust();
-            });
-            window.addEventListener('resize', function () {
-                dataTable.columns.adjust();
-            });
+        function initFromDomFallback() {
+            initWithOptions(withCommonOptions({}));
+        }
+
+        var authDatatable = apiAuthOptions();
+
+        return fetchJson('/api/convenio', authDatatable).then(function (result) {
+            var rows = result && result.data ? result.data : [];
+            initWithApiRows(rows);
+        }).catch(function () {
+            initFromDomFallback();
         });
     }
 
@@ -193,8 +231,11 @@
         }
 
         bindTableActions(tableElement);
-        initDataTable(tableElement, getAutorizado()).catch(function (error) {
-            window.console.log(error);
-        });
+        var initPromise = initDataTable(tableElement, getAutorizado());
+        if (initPromise && typeof initPromise.catch === 'function') {
+            initPromise.catch(function (error) {
+                window.console.log(error);
+            });
+        }
     });
 })();
