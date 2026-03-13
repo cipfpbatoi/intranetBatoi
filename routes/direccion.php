@@ -5,6 +5,7 @@ Route::post('/profesor/{profesor}/mensaje', ['as' => 'direccion.mensaje', 'uses'
 
 
 Route::get('/comision', ['as' => 'comision.direccion.index', 'uses' => 'PanelComisionController@index']);
+Route::view('/comision-livewire', 'comision.livewire-panel')->name('comision.direccion.livewire');
 Route::get('/comision/{comision}/authorize', ['as' => 'comision.authorize', 'uses' => 'ComisionController@accept']);
 Route::get('/comision/{comision}/unauthorize', ['as' => 'comision.unauthorize', 'uses' => 'ComisionController@resign']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.dir.show', 'uses' => 'ComisionController@show']);
