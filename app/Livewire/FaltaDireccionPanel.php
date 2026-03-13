@@ -173,7 +173,7 @@ class FaltaDireccionPanel extends Component
             ->orderByDesc('desde');
 
         if ($this->filterProfessor !== '') {
-            $query->where('idProfesor', $this->filterProfessor);
+            $this->applyProfessorFilter($query, $this->filterProfessor);
         }
 
         if ($this->filterEstat !== '') {
@@ -204,11 +204,13 @@ class FaltaDireccionPanel extends Component
             ->with('Profesor')
             ->orderBy('idProfesor')
             ->get()
-            ->mapWithKeys(function (Falta $falta) {
+            ->map(function (Falta $falta) {
                 $dni = (string) $falta->idProfesor;
                 $label = $falta->Profesor->fullName ?? $dni;
-                return [$dni => $label];
+                return trim($label . ' (' . $dni . ')');
             })
+            ->unique()
+            ->values()
             ->toArray();
 
         $this->estatOptions = Falta::query()
@@ -228,6 +230,36 @@ class FaltaDireccionPanel extends Component
     {
         $this->error = '';
         $this->message = '';
+    }
+
+    /**
+     * Aplica filtre textual per professor sobre DNI, nom i cognoms.
+     *
+     * @param mixed $query
+     */
+    private function applyProfessorFilter($query, string $search): void
+    {
+        $terms = collect(preg_split('/\s+/', trim($search)) ?: [])
+            ->map(function (string $term): string {
+                return trim((string) preg_replace('/[^\pL\pN@._-]+/u', '', $term));
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        foreach ($terms as $term) {
+            $query->where(function ($innerQuery) use ($term): void {
+                $like = '%' . $term . '%';
+
+                $innerQuery->where('idProfesor', 'like', $like)
+                    ->orWhereHas('profesor', function ($profesorQuery) use ($like): void {
+                        $profesorQuery->where('dni', 'like', $like)
+                            ->orWhere('nombre', 'like', $like)
+                            ->orWhere('apellido1', 'like', $like)
+                            ->orWhere('apellido2', 'like', $like);
+                    });
+            });
+        }
     }
 
     /**

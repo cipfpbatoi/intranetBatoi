@@ -42,12 +42,19 @@
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-md-4">
             <label for="filterProfessor"><strong>Filtrar per professor</strong></label>
-            <select id="filterProfessor" class="form-control" wire:model.live="filterProfessor">
-                <option value="">Tots</option>
-                @foreach ($professorOptions as $dni => $nom)
-                    <option value="{{ $dni }}">{{ $nom }}</option>
+            <input
+                id="filterProfessor"
+                type="text"
+                class="form-control"
+                list="professorSuggestions"
+                placeholder="Escriu nom, cognoms o DNI"
+                wire:model.live.debounce.300ms="filterProfessor"
+            >
+            <datalist id="professorSuggestions">
+                @foreach ($professorOptions as $professorLabel)
+                    <option value="{{ $professorLabel }}"></option>
                 @endforeach
-            </select>
+            </datalist>
         </div>
         <div class="col-md-4">
             <label for="filterEstat"><strong>Filtrar per estat</strong></label>
@@ -205,6 +212,85 @@
                 }
             }
 
+            function enhanceProfesorSelect() {
+                var select = document.getElementById('idProfesor_id');
+                if (!select || select.dataset.searchEnhanced === '1') {
+                    return;
+                }
+
+                var wrapper = document.createElement('div');
+                wrapper.className = 'col-md-7 col-xs-12';
+                wrapper.style.marginBottom = '8px';
+
+                var searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'form-control';
+                searchInput.id = 'idProfesor_search';
+                searchInput.placeholder = 'Buscar professor per nom, cognoms o DNI';
+                searchInput.autocomplete = 'off';
+
+                select.parentNode.insertBefore(wrapper, select);
+                wrapper.appendChild(searchInput);
+
+                var allOptions = Array.prototype.slice.call(select.options);
+
+                function normalize(text) {
+                    return (text || '')
+                        .toString()
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .trim();
+                }
+
+                function filterOptions() {
+                    var query = normalize(searchInput.value);
+
+                    allOptions.forEach(function (option) {
+                        var haystack = normalize(option.text + ' ' + option.value);
+                        var visible = query === '' || haystack.indexOf(query) !== -1;
+
+                        option.hidden = !visible;
+                        option.disabled = !visible;
+                    });
+                }
+
+                function syncSearchWithSelection() {
+                    var selectedOption = select.options[select.selectedIndex];
+                    if (!selectedOption) {
+                        return;
+                    }
+
+                    searchInput.value = selectedOption.value === '' ? '' : selectedOption.text;
+                    filterOptions();
+                }
+
+                searchInput.addEventListener('input', filterOptions);
+
+                searchInput.addEventListener('keydown', function (event) {
+                    if (event.key !== 'Enter') {
+                        return;
+                    }
+
+                    var firstVisibleOption = allOptions.find(function (option) {
+                        return !option.hidden && !option.disabled && option.value !== '';
+                    });
+
+                    if (!firstVisibleOption) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    select.value = firstVisibleOption.value;
+                    syncSearchWithSelection();
+                });
+
+                select.addEventListener('change', syncSearchWithSelection);
+
+                select.dataset.searchEnhanced = '1';
+                syncSearchWithSelection();
+            }
+
             function prepareCreateForm() {
                 form.setAttribute('action', '/direccion/falta');
                 if (methodInput) {
@@ -213,6 +299,7 @@
                 if (idInput) {
                     idInput.value = '';
                 }
+                enhanceProfesorSelect();
             }
 
             prepareCreateForm();
@@ -266,6 +353,11 @@
                             idInput.value = id;
                         }
 
+                        enhanceProfesorSelect();
+                        var profesorSelect = document.getElementById('idProfesor_id');
+                        if (profesorSelect) {
+                            profesorSelect.dispatchEvent(new Event('change'));
+                        }
                         showCreateModal();
                     })
                     .catch(function (error) {
