@@ -77,6 +77,32 @@ class EloquentComisionRepository implements ComisionRepositoryInterface
         });
     }
 
+    /**
+     * @param array<int, string> $dnis
+     * @return EloquentCollection<int, Comision>
+     */
+    public function prePayByProfesores(array $dnis): EloquentCollection
+    {
+        $dnis = array_values(array_unique(array_filter($dnis)));
+
+        return DB::transaction(function () use ($dnis): EloquentCollection {
+            if ($dnis === []) {
+                return new EloquentCollection();
+            }
+
+            $data = Comision::whereIn('idProfesor', $dnis)
+                ->where('estado', 4)
+                ->get();
+
+            foreach ($data as $item) {
+                $item->estado = 6;
+                $item->save();
+            }
+
+            return $data->fresh();
+        });
+    }
+
     public function setEstado(int $id, int $estado): Comision
     {
         $comision = $this->findOrFail($id);

@@ -3,9 +3,11 @@
 namespace Intranet\Livewire;
 
 use Illuminate\Support\Carbon;
+use Intranet\Application\Comision\ComisionService;
 use Intranet\Entities\Comision;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 /**
  * Pilot Livewire per al panell de comissions de Direcció.
@@ -14,6 +16,10 @@ use Livewire\Component;
  */
 class ComisionDireccionPanel extends Component
 {
+    use WithPagination;
+
+    protected string $paginationTheme = 'bootstrap';
+
     /**
      * @var array<int, array<string, mixed>>
      */
@@ -23,6 +29,12 @@ class ComisionDireccionPanel extends Component
      * @var array<int, string>
      */
     public array $professorOptions = [];
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $pendingPayments = [];
+    public bool $hasAuthorizedToPrint = false;
+    public bool $hasPendingAuthorization = false;
 
     /**
      * @var array<string, string>
@@ -35,10 +47,18 @@ class ComisionDireccionPanel extends Component
     public string $message = '';
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
+    public int $perPage = 10;
+    public bool $paymentsExpanded = false;
+    /**
+     * @var array<int, string>
+     */
+    public array $selectedPayments = [];
     /**
      * @var array<string, mixed>|null
      */
     public ?array $selectedComision = null;
+
+    private ?ComisionService $comisionService = null;
 
     /**
      * Inicialitza el component.
@@ -54,6 +74,7 @@ class ComisionDireccionPanel extends Component
      */
     public function updatedFilterProfessor(): void
     {
+        $this->resetPage();
         $this->reloadComisiones();
     }
 
@@ -62,6 +83,7 @@ class ComisionDireccionPanel extends Component
      */
     public function updatedFilterEstat(): void
     {
+        $this->resetPage();
         $this->reloadComisiones();
     }
 
@@ -178,17 +200,75 @@ class ComisionDireccionPanel extends Component
     }
 
     /**
+     * Marca en bloc professors com a pendents de cobrament i obri l'informe.
+     */
+    public function imprimirPagamentsSeleccionats()
+    {
+        $this->resetFeedback();
+
+        $dnis = array_values(array_unique(array_filter($this->selectedPayments)));
+        if ($dnis === []) {
+            $this->error = 'Selecciona almenys un professor per imprimir pagaments.';
+            return null;
+        }
+
+        $this->comisions()->prePayByProfesores($dnis);
+        $this->dispatch('open-payments-report', url: route('comision.paid'));
+        $this->message = 'S\'ha obert l\'informe de pagaments. El panell es recarregarà automàticament.';
+
+        return null;
+    }
+
+    /**
+     * Alterna la visibilitat del bloc de pagaments pendents.
+     */
+    public function togglePendingPayments(): void
+    {
+        $this->paymentsExpanded = !$this->paymentsExpanded;
+    }
+
+    /**
      * Renderitza la vista del component.
      */
     public function render()
     {
-        return view('livewire.comision-direccion-panel');
+        $paginator = $this->buildFilteredQuery()->paginate($this->perPage);
+        $this->comisiones = collect($paginator->items())
+            ->map(fn (Comision $comision): array => $this->mapComision($comision))
+            ->all();
+
+        return view('livewire.comision-direccion-panel', [
+            'paginator' => $paginator,
+        ]);
     }
 
     /**
      * Recarrega el llistat de comissions.
      */
     private function reloadComisiones(): void
+    {
+        $query = $this->buildFilteredQuery();
+        $all = $query->get();
+
+        $this->loadPendingPayments();
+        $this->hasAuthorizedToPrint = $all->contains(
+            fn (Comision $comision): bool => (int) $comision->estado === 2
+        );
+        $this->hasPendingAuthorization = $all->contains(
+            fn (Comision $comision): bool => (int) $comision->estado === 1
+        );
+        $this->selectedPayments = array_values(array_intersect(
+            $this->selectedPayments,
+            array_column($this->pendingPayments, 'dni')
+        ));
+    }
+
+    /**
+     * Base query compartida amb filtres aplicats.
+     *
+     * @return mixed
+     */
+    private function buildFilteredQuery()
     {
         $query = Comision::query()
             ->with('Profesor')
@@ -203,32 +283,43 @@ class ComisionDireccionPanel extends Component
             $query->where('estado', (int) $this->filterEstat);
         }
 
-        $this->comisiones = $query->get()->map(function (Comision $comision) {
-            return [
-                'id' => (int) $comision->id,
-                'idProfesor' => (string) $comision->idProfesor,
-                'professor' => $comision->Profesor->fullName ?? (string) $comision->idProfesor,
-                'servicio' => (string) $comision->servicio,
-                'desde' => (string) $comision->desde,
-                'hasta' => (string) $comision->hasta,
-                'desdeEdit' => $this->formatForEdit($comision->getRawOriginal('desde')),
-                'hastaEdit' => $this->formatForEdit($comision->getRawOriginal('hasta')),
-                'fct' => (int) $comision->fct,
-                'alojamiento' => (string) $comision->alojamiento,
-                'comida' => (string) $comision->comida,
-                'gastos' => (string) $comision->gastos,
-                'total' => (float) $comision->total,
-                'medioCodigo' => (int) $comision->medio,
-                'medio' => (string) $comision->tipoVehiculo,
-                'kilometraje' => (int) $comision->kilometraje,
-                'marca' => (string) ($comision->marca ?? ''),
-                'matricula' => (string) ($comision->matricula ?? ''),
-                'itinerario' => (string) ($comision->itinerario ?? ''),
-                'estado' => (int) $comision->estado,
-                'situacion' => (string) $comision->situacion,
-                'canEditDelete' => (int) $comision->estado < 5,
-            ];
-        })->all();
+        return $query;
+    }
+
+    /**
+     * Normalitza una comissió per a la vista.
+     *
+     * @return array<string, mixed>
+     */
+    private function mapComision(Comision $comision): array
+    {
+        return [
+            'id' => (int) $comision->id,
+            'idProfesor' => (string) $comision->idProfesor,
+            'professor' => $comision->Profesor->fullName ?? (string) $comision->idProfesor,
+            'servicio' => (string) $comision->servicio,
+            'desde' => (string) $comision->desde,
+            'hasta' => (string) $comision->hasta,
+            'desdeEdit' => $this->formatForEdit($comision->getRawOriginal('desde')),
+            'hastaEdit' => $this->formatForEdit($comision->getRawOriginal('hasta')),
+            'fct' => (int) $comision->fct,
+            'alojamiento' => (string) $comision->alojamiento,
+            'comida' => (string) $comision->comida,
+            'gastos' => (string) $comision->gastos,
+            'total' => (float) $comision->total,
+            'medioCodigo' => (int) $comision->medio,
+            'medio' => (string) $comision->tipoVehiculo,
+            'kilometraje' => (int) $comision->kilometraje,
+            'marca' => (string) ($comision->marca ?? ''),
+            'matricula' => (string) ($comision->matricula ?? ''),
+            'itinerario' => (string) ($comision->itinerario ?? ''),
+            'estado' => (int) $comision->estado,
+            'situacion' => (string) $comision->situacion,
+            'canEdit' => (int) $comision->estado < 3,
+            'canDelete' => (int) $comision->estado < 5,
+            'hasDocument' => !empty($comision->idDocumento),
+            'idDocumento' => $comision->idDocumento ? (int) $comision->idDocumento : null,
+        ];
     }
 
     /**
@@ -308,6 +399,44 @@ class ComisionDireccionPanel extends Component
         return app()->makeWith(AutorizacionStateService::class, [
             'class' => Comision::class,
         ]);
+    }
+
+    /**
+     * Recupera professors amb comissions en estat pendent de pagament.
+     */
+    private function loadPendingPayments(): void
+    {
+        $this->pendingPayments = Comision::query()
+            ->with('Profesor')
+            ->where('estado', 4)
+            ->orderBy('idProfesor')
+            ->get()
+            ->groupBy('idProfesor')
+            ->map(function ($grupo, string $dni): array {
+                /** @var Comision $first */
+                $first = $grupo->first();
+
+                return [
+                    'dni' => $dni,
+                    'professor' => $first->Profesor->fullName ?? $dni,
+                    'total' => (float) $grupo->sum('total'),
+                    'count' => $grupo->count(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Resol el servei d'aplicació de comissions.
+     */
+    private function comisions(): ComisionService
+    {
+        if ($this->comisionService === null) {
+            $this->comisionService = app(ComisionService::class);
+        }
+
+        return $this->comisionService;
     }
 
     /**

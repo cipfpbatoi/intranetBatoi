@@ -62,8 +62,13 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSee('Joan Soler Perez');
 
         $comisiones = $component->get('comisiones');
+        $pendingPayments = $component->get('pendingPayments');
 
         $this->assertCount(4, $comisiones);
+        $this->assertCount(1, $pendingPayments);
+        $this->assertSame('CM200', $pendingPayments[0]['dni']);
+        $this->assertTrue((bool) $comisiones[0]['hasDocument']);
+        $this->assertTrue((bool) $comisiones[1]['hasDocument']);
     }
 
     public function test_filtra_per_professor_i_estat(): void
@@ -130,6 +135,19 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSet('selectedComision.servicio', 'Visita empresa 3');
     }
 
+    public function test_imprimir_pagaments_seleccionats_marca_professor_i_redirigeix(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ComisionDireccionPanel::class);
+
+        $component->set('selectedPayments', ['CM200'])
+            ->call('imprimirPagamentsSeleccionats')
+            ->assertDispatched('open-payments-report', url: route('comision.paid'));
+
+        $this->assertSame(6, (int) DB::connection('sqlite')->table('comisiones')->where('id', 3)->value('estado'));
+        $this->assertSame(5, (int) DB::connection('sqlite')->table('comisiones')->where('id', 4)->value('estado'));
+    }
+
     private function direccionUser(): Profesor
     {
         return Profesor::on('sqlite')->findOrFail('DIR001');
@@ -152,6 +170,7 @@ class ComisionDireccionPanelTest extends TestCase
         Schema::connection('sqlite')->create('comisiones', function (Blueprint $table): void {
             $table->id();
             $table->string('idProfesor', 10)->nullable();
+            $table->unsignedBigInteger('idDocumento')->nullable();
             $table->dateTime('desde')->nullable();
             $table->dateTime('hasta')->nullable();
             $table->unsignedTinyInteger('fct')->default(0);
@@ -222,6 +241,7 @@ class ComisionDireccionPanelTest extends TestCase
             [
                 'id' => 1,
                 'idProfesor' => 'CM100',
+                'idDocumento' => 3001,
                 'desde' => '2026-03-10 09:00:00',
                 'hasta' => '2026-03-10 12:00:00',
                 'servicio' => 'Visita empresa 1',
@@ -237,6 +257,7 @@ class ComisionDireccionPanelTest extends TestCase
             [
                 'id' => 2,
                 'idProfesor' => 'CM100',
+                'idDocumento' => 3002,
                 'desde' => '2026-03-11 09:00:00',
                 'hasta' => '2026-03-11 12:00:00',
                 'servicio' => 'Visita empresa 2',
@@ -261,6 +282,7 @@ class ComisionDireccionPanelTest extends TestCase
                 'alojamiento' => 0,
                 'medio' => 2,
                 'estado' => 4,
+                'idDocumento' => 3003,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -276,6 +298,7 @@ class ComisionDireccionPanelTest extends TestCase
                 'alojamiento' => 0,
                 'medio' => 0,
                 'estado' => 5,
+                'idDocumento' => 3004,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

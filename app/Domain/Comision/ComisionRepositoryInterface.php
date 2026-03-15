@@ -48,6 +48,14 @@ interface ComisionRepositoryInterface
      */
     public function prePayByProfesor(string $dni): EloquentCollection;
 
+    /**
+     * Marca com a preparades per al pagament les comissions de diversos professors.
+     *
+     * @param array<int, string> $dnis
+     * @return EloquentCollection<int, Comision>
+     */
+    public function prePayByProfesores(array $dnis): EloquentCollection;
+
     public function setEstado(int $id, int $estado): Comision;
 
     public function hasPendingUnpaidByProfesor(string $dni): bool;

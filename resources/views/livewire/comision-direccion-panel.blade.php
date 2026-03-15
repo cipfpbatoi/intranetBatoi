@@ -27,16 +27,81 @@
         <div class="alert alert-success">{{ $message }}</div>
     @endif
 
+    @if ($pendingPayments !== [])
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button
+                    type="button"
+                    class="btn btn-link"
+                    wire:click="togglePendingPayments"
+                    aria-expanded="{{ $paymentsExpanded ? 'true' : 'false' }}"
+                    aria-controls="pendingPaymentsPanel"
+                    style="display: block; width: 100%; color: inherit; text-align: left; padding: 0; text-decoration: none;"
+                >
+                    <strong>Pagaments pendents</strong>
+                    <span class="pull-right">{{ count($pendingPayments) }} professor(s)</span>
+                </button>
+            </div>
+            <div id="pendingPaymentsPanel" @class(['panel-collapse', 'collapse', 'in' => $paymentsExpanded])>
+                <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width: 60px;">Cobrar</th>
+                            <th>Professor</th>
+                            <th>Comissions</th>
+                            <th>Import pendent</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($pendingPayments as $payment)
+                            <tr wire:key="payment-{{ $payment['dni'] }}">
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        value="{{ $payment['dni'] }}"
+                                        wire:model.live="selectedPayments"
+                                    >
+                                </td>
+                                <td>{{ $payment['professor'] }}</td>
+                                <td>{{ $payment['count'] }}</td>
+                                <td>{{ number_format($payment['total'], 2, ',', '.') }} €</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    wire:click="imprimirPagamentsSeleccionats"
+                    @disabled($selectedPayments === [])
+                >
+                    Imprimir pagaments seleccionats
+                    @if (count($selectedPayments) > 0)
+                        ({{ count($selectedPayments) }})
+                    @endif
+                </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="mb-3">
-        <a class="btn btn-primary" href="/direccion/comision/pdf" target="_blank" rel="noopener">
-            Imprimir Comissions autoritzades
-        </a>
-        <a class="btn btn-primary" href="/direccion/comision/autorizar">
-            Autoritzar comissions pendents
-        </a>
-        <a class="btn btn-link" href="/direccion/comision/paid" target="_blank" rel="noopener">
-            Imprimir pagaments
-        </a>
+        @if ($hasAuthorizedToPrint)
+            <a class="btn btn-primary" href="/direccion/comision/pdf" target="_blank" rel="noopener">
+                Imprimir Comissions autoritzades
+            </a>
+        @endif
+
+        @if ($hasPendingAuthorization)
+            <a class="btn btn-primary" href="/direccion/comision/autorizar">
+                Autoritzar comissions pendents
+            </a>
+        @endif
+
         <a class="btn btn-default" href="/direccion/comision">Tornar a versió legacy</a>
     </div>
 
@@ -122,7 +187,7 @@
                         </button>
                     @endif
 
-                    @if ($comision['canEditDelete'])
+                    @if ($comision['canEdit'])
                         <button
                             type="button"
                             class="btn btn-warning btn-xs js-edit-comision"
@@ -145,15 +210,6 @@
                             <i class="fa fa-edit" aria-hidden="true"></i>
                         </button>
 
-                        <button
-                            type="button"
-                            class="btn btn-danger btn-xs"
-                            wire:click="esborrar({{ $comision['id'] }})"
-                            onclick="return confirm('Segur que vols esborrar esta comissió?');"
-                            title="Esborrar"
-                        >
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </button>
                     @endif
 
                     <button
@@ -164,6 +220,18 @@
                     >
                         <i class="fa fa-eye" aria-hidden="true"></i>
                     </button>
+
+                    @if ($comision['canDelete'])
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-xs"
+                            wire:click="esborrar({{ $comision['id'] }})"
+                            onclick="return confirm('Segur que vols esborrar esta comissió?');"
+                            title="Esborrar"
+                        >
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    @endif
                 </td>
             </tr>
         @empty
@@ -173,6 +241,12 @@
         @endforelse
         </tbody>
     </table>
+
+    @if (isset($paginator) && $paginator->hasPages())
+        <div class="text-center">
+            {{ $paginator->links() }}
+        </div>
+    @endif
 
     <div id="editComision" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
@@ -216,6 +290,16 @@
                     @endif
                 </div>
                 <div class="modal-footer">
+                    @if ($selectedComision !== null && $selectedComision['hasDocument'])
+                        <a
+                            class="btn btn-secondary"
+                            href="{{ route('comision.direccion.gestor', ['comision' => $selectedComision['id']]) }}"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            Veure document
+                        </a>
+                    @endif
                     <button class="btn btn-default" data-dismiss="modal" type="button">Tancar</button>
                 </div>
             </div>
@@ -336,6 +420,18 @@
             document.addEventListener('livewire:init', function () {
                 Livewire.on('show-comision-modal', function () {
                     showModalById('showComision');
+                });
+
+                Livewire.on('open-payments-report', function (event) {
+                    var url = event && event.url ? event.url : null;
+                    if (!url) {
+                        return;
+                    }
+
+                    window.open(url, '_blank', 'noopener');
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 1200);
                 });
             });
 

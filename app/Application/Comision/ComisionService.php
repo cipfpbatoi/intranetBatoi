@@ -67,6 +67,15 @@ class ComisionService
         return $this->comisionRepository->prePayByProfesor($dni);
     }
 
+    /**
+     * @param array<int, string> $dnis
+     * @return EloquentCollection<int, Comision>
+     */
+    public function prePayByProfesores(array $dnis): EloquentCollection
+    {
+        return $this->comisionRepository->prePayByProfesores($dnis);
+    }
+
     public function hasPendingUnpaidByProfesor(string $dni): bool
     {
         return $this->comisionRepository->hasPendingUnpaidByProfesor($dni);
