@@ -2,6 +2,7 @@
 
 namespace Intranet\Livewire;
 
+use Illuminate\Support\Carbon;
 use Intranet\Entities\Comision;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
@@ -154,6 +155,29 @@ class ComisionDireccionPanel extends Component
     }
 
     /**
+     * Esborra una comissió mentre no conste com a cobrada.
+     */
+    public function esborrar(int $id): void
+    {
+        $this->resetFeedback();
+
+        $comision = Comision::find($id);
+        if (!$comision) {
+            $this->error = 'No s\'ha trobat la comissió.';
+            return;
+        }
+
+        if ((int) $comision->estado >= 5) {
+            $this->error = 'No es poden esborrar comissions cobrades.';
+            return;
+        }
+
+        $comision->delete();
+        $this->message = 'Comissió esborrada correctament.';
+        $this->reloadComisiones();
+    }
+
+    /**
      * Renderitza la vista del component.
      */
     public function render()
@@ -187,7 +211,14 @@ class ComisionDireccionPanel extends Component
                 'servicio' => (string) $comision->servicio,
                 'desde' => (string) $comision->desde,
                 'hasta' => (string) $comision->hasta,
+                'desdeEdit' => $this->formatForEdit($comision->getRawOriginal('desde')),
+                'hastaEdit' => $this->formatForEdit($comision->getRawOriginal('hasta')),
+                'fct' => (int) $comision->fct,
+                'alojamiento' => (string) $comision->alojamiento,
+                'comida' => (string) $comision->comida,
+                'gastos' => (string) $comision->gastos,
                 'total' => (float) $comision->total,
+                'medioCodigo' => (int) $comision->medio,
                 'medio' => (string) $comision->tipoVehiculo,
                 'kilometraje' => (int) $comision->kilometraje,
                 'marca' => (string) ($comision->marca ?? ''),
@@ -195,6 +226,7 @@ class ComisionDireccionPanel extends Component
                 'itinerario' => (string) ($comision->itinerario ?? ''),
                 'estado' => (int) $comision->estado,
                 'situacion' => (string) $comision->situacion,
+                'canEditDelete' => (int) $comision->estado < 5,
             ];
         })->all();
     }
@@ -276,5 +308,17 @@ class ComisionDireccionPanel extends Component
         return app()->makeWith(AutorizacionStateService::class, [
             'class' => Comision::class,
         ]);
+    }
+
+    /**
+     * Dona format compatible amb el datepicker legacy.
+     */
+    private function formatForEdit(?string $value): string
+    {
+        if (!$value) {
+            return '';
+        }
+
+        return Carbon::parse($value)->format('d/m/Y H:i');
     }
 }

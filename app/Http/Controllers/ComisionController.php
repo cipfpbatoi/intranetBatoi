@@ -123,6 +123,28 @@ class ComisionController extends ModalController
     }
 
     /**
+     * Actualitza una comissió des del panell Livewire de Direcció.
+     *
+     * @param ComisionRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateFromDireccion(ComisionRequest $request, $id)
+    {
+        $comision = $this->wrapNotFound(
+            fn () => $this->comisionService()->findOrFail((int) $id),
+            'Comissió no trobada',
+            ['comision_id' => $id]
+        );
+        $this->authorize('update', $comision);
+        $this->persist($request, $id);
+
+        return redirect()->route('comision.direccion.livewire')
+            ->with('success', 'Comissió actualitzada correctament.');
+    }
+
+    /**
      * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector

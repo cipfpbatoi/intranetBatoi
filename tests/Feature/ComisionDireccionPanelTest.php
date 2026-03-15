@@ -57,12 +57,13 @@ class ComisionDireccionPanelTest extends TestCase
 
         $component
             ->assertSee('Pilot funcional')
+            ->assertSee('Imprimir Comissions autoritzades')
             ->assertSee('Maria Garcia Lopez')
             ->assertSee('Joan Soler Perez');
 
         $comisiones = $component->get('comisiones');
 
-        $this->assertCount(3, $comisiones);
+        $this->assertCount(4, $comisiones);
     }
 
     public function test_filtra_per_professor_i_estat(): void
@@ -99,6 +100,23 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSet('message', 'Comissió retornada a pendent.');
 
         $this->assertSame(1, (int) DB::connection('sqlite')->table('comisiones')->where('id', 2)->value('estado'));
+
+        $component->call('esborrar', 3)
+            ->assertSet('error', '')
+            ->assertSet('message', 'Comissió esborrada correctament.');
+
+        $this->assertNull(DB::connection('sqlite')->table('comisiones')->where('id', 3)->first());
+    }
+
+    public function test_no_es_pot_esborrar_una_comissio_cobrada(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ComisionDireccionPanel::class);
+
+        $component->call('esborrar', 4)
+            ->assertSet('error', 'No es poden esborrar comissions cobrades.');
+
+        $this->assertNotNull(DB::connection('sqlite')->table('comisiones')->where('id', 4)->first());
     }
 
     public function test_mostrar_carrega_la_comissio_seleccionada(): void
@@ -243,6 +261,21 @@ class ComisionDireccionPanelTest extends TestCase
                 'alojamiento' => 0,
                 'medio' => 2,
                 'estado' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 4,
+                'idProfesor' => 'CM200',
+                'desde' => '2026-03-13 09:00:00',
+                'hasta' => '2026-03-13 12:00:00',
+                'servicio' => 'Visita empresa 4',
+                'kilometraje' => 15,
+                'gastos' => 0,
+                'comida' => 0,
+                'alojamiento' => 0,
+                'medio' => 0,
+                'estado' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
