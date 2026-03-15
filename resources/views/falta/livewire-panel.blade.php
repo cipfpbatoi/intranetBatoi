@@ -1,5 +1,4 @@
 <x-pages.livewire
-    title="Faltes (Pilot Livewire)"
+    title="Faltes de Direcció"
     component="falta-direccion-panel"
 />
-

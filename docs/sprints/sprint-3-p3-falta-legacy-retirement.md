@@ -2,24 +2,21 @@
 
 ## Estat actual
 
-Convivixen dos camins per al panell de Direcció de faltes:
+El panell principal de Direcció de faltes ja és:
 
-- Legacy: `/direccion/falta`
-- Pilot Livewire: `/direccion/falta-livewire`
+- `/direccion/falta`
 
-El pilot nou ja cobrix el llistat principal i les accions habituals de Direcció, però encara reutilitza parts del flux legacy. Açò implica que **encara no convé retirar el legacy** sense abans desacoblar les dependències que queden.
+I la ruta antiga de prova queda com a redirecció de compatibilitat:
+
+- `/direccion/falta-livewire` -> `/direccion/falta`
+
+El panell nou ja cobrix el llistat principal i les accions habituals de Direcció, però encara reutilitza parts del flux legacy. Açò implica que **encara no convé retirar tot el legacy** sense abans desacoblar les dependències que queden.
 
 ## Peces implicades
 
-### Ruta i entrada legacy
-
 - `routes/direccion.php`
-  - `GET /direccion/falta` -> `PanelFaltaController@index`
-
-### Ruta i entrada nova
-
-- `routes/direccion.php`
-  - `GET /direccion/falta-livewire` -> vista `resources/views/falta/livewire-panel.blade.php`
+  - `GET /direccion/falta` -> vista `resources/views/falta/livewire-panel.blade.php`
+  - `GET /direccion/falta-livewire` -> redirecció de compatibilitat
   - component `app/Livewire/FaltaDireccionPanel.php`
 
 ### Controller legacy encara reutilitzat

@@ -17,7 +17,6 @@
             <i class="fa fa-plus" aria-hidden="true"></i>
             Nova
         </button>
-        <a class="btn btn-default" href="/direccion/falta">Tornar a versió legacy</a>
     </div>
 
     <div class="row" style="margin-bottom: 10px;">

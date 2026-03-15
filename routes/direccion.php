@@ -42,8 +42,8 @@ Route::post('/actividad/{actividad}/refuse', ['as' => 'actividad.refuse', 'uses'
 Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'ActividadController@printAutoritzats']);
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'ActividadController@autorizar']);
 
-Route::get('/falta', ['as' => 'falta.direccion.index', 'uses' => 'PanelFaltaController@index']);
-Route::view('/falta-livewire', 'falta.livewire-panel')->name('falta.direccion.livewire');
+Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');
+Route::redirect('/falta-livewire', '/direccion/falta')->name('falta.direccion.livewire');
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
 Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
 Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'FaltaController@document']);
