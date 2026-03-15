@@ -37,6 +37,10 @@
 </template>
 
 <script>
+/**
+ * @deprecated Component Vue legacy del flux de birrets/ITACA.
+ * Mantingut temporalment mentre es retira este mòdul.
+ */
 import axios from 'axios'
 import AppMsg from '../utils/AppMsg.vue';
 import FechaPicker from "../utils/FechaPicker.vue";

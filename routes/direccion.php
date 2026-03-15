@@ -32,6 +32,7 @@ Route::get('/expediente/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteCo
 
 
 Route::get('/actividad', ['as' => 'actividad.direccion.index', 'uses' => 'PanelActividadController@index']);
+Route::view('/actividad-livewire', 'actividad.livewire-panel')->name('actividad.direccion.livewire');
 Route::get('/actividad/{actividad}/authorize', ['as' => 'actividad.authorize', 'uses' => 'ActividadController@accept']);
 Route::get(
     '/actividad/{actividad}/unauthorize',
@@ -106,6 +107,7 @@ Route::post('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteControl
 Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'MaterialModController@index']);
 Route::get('/signatures', ['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);
 Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'PanelSignaturaController@sign']);
+// @deprecated Flux legacy d'autorització de birrets via ITACA.
 Route::post('/itaca/birret', ['as'=>'itaca.birret', 'uses'=>'ItacaController@birret']);
 Route::post('/itaca/faltes', ['as'=>'itaca.faltes', 'uses'=>'ItacaController@faltes']);
 

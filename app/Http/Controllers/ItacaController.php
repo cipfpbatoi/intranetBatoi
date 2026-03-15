@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Log;
 
 class ItacaController extends Controller
 {
+    /**
+     * Enviament d'activitats extraescolars a ITACA.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function extraescolars(Request $request)
     {
         $activitats = Actividad::where('estado', 4)->get();
@@ -68,6 +74,14 @@ class ItacaController extends Controller
 
     }
 
+    /**
+     * Flux legacy d'autorització de birrets via ITACA.
+     *
+     * @deprecated Mantingut només per compatibilitat mentre es retira el flux legacy de birrets.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function birret(Request $request)
     {
         $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', $request->month)->get();

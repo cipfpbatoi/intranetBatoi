@@ -58,6 +58,7 @@ class PanelFaltaController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
+        // @deprecated Accés legacy al flux d'autorització de birrets via ITACA.
         $this->panel->setBoton(
             'index',
             new BotonBasico(
