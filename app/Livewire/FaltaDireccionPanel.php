@@ -517,7 +517,7 @@ class FaltaDireccionPanel extends Component
             $files['fichero'] = $this->formFichero;
         }
 
-        return Request::create('/direccion/falta-livewire', 'POST', $payload, [], $files);
+        return Request::create('/direccion/falta', 'POST', $payload, [], $files);
     }
 
     /**

@@ -52,21 +52,21 @@ Peces implicades:
 
 ### 2. Document adjunt
 
-El panell nou encara usa el controller per a obrir el document de la falta.
+El panell nou ja usa un bridge específic de Direcció per a obrir el document de la falta.
 
 Peces implicades:
 
 - `routes/direccion.php`
   - `GET /direccion/falta/{falta}/document`
-- `app/Http/Controllers/FaltaController@document`
+- `app/Http/Controllers/Direccion/Falta/DocumentController.php`
 
 ### 3. Show legacy
 
-La ruta de detall clàssica continua existint:
+La ruta de detall continua existint, però ja entra per un bridge específic de Direcció:
 
 - `routes/direccion.php`
   - `GET /direccion/falta/{falta}/show`
-- `app/Http/Controllers/FaltaController::show()`
+- `app/Http/Controllers/Direccion/Falta/ShowController.php`
 
 Ara mateix el pilot nou no necessita redirigir ací per al flux principal, però la ruta continua viva.
 
@@ -103,8 +103,6 @@ No convé eliminar encara:
 
 - `FaltaController::store()`
 - `FaltaController::update()`
-- `FaltaController::document()`
-- `FaltaController::show()`
 
 Motiu:
 
@@ -159,8 +157,7 @@ Objectiu:
 
 Accions:
 
-- revisar `show`
-- revisar `document`
+- revisar si `show` i `document` poden continuar com a bridges separats
 - revisar si Direcció continua necessitant estes rutes o si només són útils per al flux legacy/professorat
 
 ### Fase 4. Retirada visible del legacy

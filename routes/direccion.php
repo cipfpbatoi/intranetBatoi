@@ -45,8 +45,8 @@ Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Ac
 Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');
 Route::redirect('/falta-livewire', '/direccion/falta')->name('falta.direccion.livewire');
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
-Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
-Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'FaltaController@document']);
+Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'Direccion\\Falta\\ShowController']);
+Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'Direccion\\Falta\\DocumentController']);
 Route::get('/falta/{falta}/delete', ['as' => 'falta.direccion.destroy', 'uses' => 'FaltaController@destroy']);
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
 Route::post('/falta', ['as' => 'falta.store', 'uses' => 'FaltaController@store']);
