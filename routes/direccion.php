@@ -12,6 +12,8 @@ Route::get('/comision/{comision}/authorize', ['as' => 'comision.authorize', 'use
 Route::get('/comision/{comision}/unauthorize', ['as' => 'comision.unauthorize', 'uses' => 'ComisionController@resign']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.dir.show', 'uses' => 'ComisionController@show']);
 Route::post('/comision/{comision}/refuse', ['as' => 'comision.refuse', 'uses' => 'ComisionController@refuse']);
+Route::get('/comision-livewire/pdf', ['as' => 'comision.direccion.pdf', 'uses' => 'ComisionDireccionPrintController']);
+Route::get('/comision-livewire/paid', ['as' => 'comision.direccion.paid', 'uses' => 'ComisionDireccionPaymentPrintController']);
 Route::get('/comision/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@printAutoritzats']);
 Route::get('/comision/autorizar', ['as' => 'comision.autorizar', 'uses' => 'ComisionController@autorizar']);
 Route::get('/comision/paid', ['as' => 'comision.paid', 'uses' => 'ComisionController@payment']);

@@ -213,8 +213,52 @@ class ComisionDireccionPanel extends Component
         }
 
         $this->comisions()->prePayByProfesores($dnis);
-        $this->dispatch('open-payments-report', url: route('comision.paid'));
+        $this->dispatch('open-report-and-reload', url: route('comision.direccion.paid'), delay: 1200);
         $this->message = 'S\'ha obert l\'informe de pagaments. El panell es recarregarà automàticament.';
+
+        return null;
+    }
+
+    /**
+     * Autoritza en bloc totes les comissions pendents visibles al flux de Direcció.
+     */
+    public function autoritzarPendents(): void
+    {
+        $this->resetFeedback();
+
+        $updated = $this->comisions()->authorizeAllPending();
+        if ($updated === 0) {
+            $this->error = 'No hi ha comissions pendents per autoritzar.';
+            return;
+        }
+
+        $this->message = $updated === 1
+            ? 'S\'ha autoritzat 1 comissió pendent.'
+            : 'S\'han autoritzat ' . $updated . ' comissions pendents.';
+
+        $this->reloadComisiones();
+    }
+
+    /**
+     * Obri l'informe d'autoritzades i recarrega el panell quan finalitze.
+     *
+     * @return null
+     */
+    public function imprimirAutoritzades()
+    {
+        $this->resetFeedback();
+
+        if (!$this->hasAuthorizedToPrint) {
+            $this->error = 'No hi ha comissions autoritzades per imprimir.';
+            return null;
+        }
+
+        $this->dispatch(
+            'open-report-and-reload',
+            url: route('comision.direccion.pdf'),
+            delay: 1200
+        );
+        $this->message = 'S\'ha obert l\'informe de comissions autoritzades. El panell es recarregarà automàticament.';
 
         return null;
     }

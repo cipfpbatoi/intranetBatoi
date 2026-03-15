@@ -113,6 +113,18 @@ class ComisionDireccionPanelTest extends TestCase
         $this->assertNull(DB::connection('sqlite')->table('comisiones')->where('id', 3)->first());
     }
 
+    public function test_autoritzar_pendents_en_bloc_actualitza_estats_sense_controller_legacy(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ComisionDireccionPanel::class);
+
+        $component->call('autoritzarPendents')
+            ->assertSet('error', '')
+            ->assertSet('message', 'S\'ha autoritzat 1 comissió pendent.');
+
+        $this->assertSame(2, (int) DB::connection('sqlite')->table('comisiones')->where('id', 1)->value('estado'));
+    }
+
     public function test_no_es_pot_esborrar_una_comissio_cobrada(): void
     {
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
@@ -142,10 +154,19 @@ class ComisionDireccionPanelTest extends TestCase
 
         $component->set('selectedPayments', ['CM200'])
             ->call('imprimirPagamentsSeleccionats')
-            ->assertDispatched('open-payments-report', url: route('comision.paid'));
+            ->assertDispatched('open-report-and-reload', url: route('comision.direccion.paid'), delay: 1200);
 
         $this->assertSame(6, (int) DB::connection('sqlite')->table('comisiones')->where('id', 3)->value('estado'));
         $this->assertSame(5, (int) DB::connection('sqlite')->table('comisiones')->where('id', 4)->value('estado'));
+    }
+
+    public function test_imprimir_autoritzades_usa_ruta_propia_del_pilot(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ComisionDireccionPanel::class)
+            ->call('imprimirAutoritzades')
+            ->assertSet('error', '')
+            ->assertDispatched('open-report-and-reload', url: route('comision.direccion.pdf'), delay: 1200);
     }
 
     private function direccionUser(): Profesor

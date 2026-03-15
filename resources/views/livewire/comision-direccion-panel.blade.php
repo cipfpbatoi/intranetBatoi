@@ -91,21 +91,19 @@
 
     <div class="mb-3">
         @if ($hasAuthorizedToPrint)
-            <a
-                class="btn btn-primary js-bulk-reload"
-                href="/direccion/comision/pdf"
-                target="_blank"
-                rel="noopener"
-                data-bulk-action="print"
+            <button
+                type="button"
+                class="btn btn-primary"
+                wire:click="imprimirAutoritzades"
             >
                 Imprimir Comissions autoritzades
-            </a>
+            </button>
         @endif
 
         @if ($hasPendingAuthorization)
-            <a class="btn btn-primary js-bulk-reload" href="/direccion/comision/autorizar" data-bulk-action="authorize">
+            <button type="button" class="btn btn-primary" wire:click="autoritzarPendents">
                 Autoritzar comissions pendents
-            </a>
+            </button>
         @endif
 
         <a class="btn btn-default" href="/direccion/comision">Tornar a versió legacy</a>
@@ -428,8 +426,9 @@
                     showModalById('showComision');
                 });
 
-                Livewire.on('open-payments-report', function (event) {
+                Livewire.on('open-report-and-reload', function (event) {
                     var url = event && event.url ? event.url : null;
+                    var delay = event && event.delay ? event.delay : 1200;
                     if (!url) {
                         return;
                     }
@@ -437,7 +436,7 @@
                     window.open(url, '_blank', 'noopener');
                     window.setTimeout(function () {
                         window.location.reload();
-                    }, 1200);
+                    }, delay);
                 });
             });
 
@@ -485,20 +484,6 @@
                 if (event.target && event.target.id === 'kilometraje_id') {
                     updateItinerarioState();
                 }
-            });
-
-            document.addEventListener('click', function (event) {
-                var button = event.target.closest('.js-bulk-reload');
-                if (!button) {
-                    return;
-                }
-
-                var action = button.dataset.bulkAction || '';
-                var delay = action === 'print' ? 1200 : 500;
-
-                window.setTimeout(function () {
-                    window.location.reload();
-                }, delay);
             });
         })();
     </script>

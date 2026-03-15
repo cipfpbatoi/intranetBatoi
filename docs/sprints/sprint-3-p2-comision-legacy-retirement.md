@@ -50,36 +50,40 @@ El panell nou de `ComisionDireccionPanel` ja cobrix:
 
 ### 1. Bulk autoritzar comissions pendents
 
-En la vista Livewire:
+Ja desacoblat del controller legacy:
 
-- `resources/views/livewire/comision-direccion-panel.blade.php`
-  - botó amb `href="/direccion/comision/autorizar"`
+- `app/Livewire/ComisionDireccionPanel.php::autoritzarPendents()`
+- `app/Application/Comision/ComisionService.php::authorizeAllPending()`
 
-En backend:
+El panell nou ja no usa:
 
-- `routes/direccion.php`
-  - `GET /direccion/comision/autorizar`
+- `GET /direccion/comision/autorizar`
 - `app/Http/Controllers/ComisionController.php::autorizar()`
 
 ### 2. Imprimir comissions autoritzades
 
-En la vista Livewire:
+Ja desacoblat del controller legacy generalista:
 
-- `resources/views/livewire/comision-direccion-panel.blade.php`
-  - botó amb `href="/direccion/comision/pdf"`
+- `app/Livewire/ComisionDireccionPanel.php::imprimirAutoritzades()`
+- `GET /direccion/comision-livewire/pdf`
+- `app/Http/Controllers/ComisionDireccionPrintController.php`
 
-En backend:
+El panell nou ja no usa:
 
-- `routes/direccion.php`
-  - `GET /direccion/comision/pdf`
+- `GET /direccion/comision/pdf`
 - `app/Http/Controllers/ComisionController.php::printAutoritzats()`
 
 ### 3. Imprimir pagaments
 
-Encara que el panell nou selecciona professors i marca `prePay`, la generació final continua passant pel flux legacy:
+Ja desacoblat del controller legacy generalista:
 
-- `routes/direccion.php`
-  - `GET /direccion/comision/paid`
+- `app/Livewire/ComisionDireccionPanel.php::imprimirPagamentsSeleccionats()`
+- `GET /direccion/comision-livewire/paid`
+- `app/Http/Controllers/ComisionDireccionPaymentPrintController.php`
+
+El panell nou ja no usa:
+
+- `GET /direccion/comision/paid`
 - `app/Http/Controllers/ComisionController.php::payment()`
 
 ### 4. Actualització des del modal
@@ -188,7 +192,7 @@ Una peça legacy de `comision` només s'hauria d'eliminar si es complixen les tr
 
 El següent treball amb millor retorn és:
 
-1. desacoblar `autorizar`, `printAutoritzats` i `payment` del controller legacy
+1. revisar si `autorizar()`, `printAutoritzats()` i `payment()` continuen sent necessaris només per a la ruta legacy
 2. deixar `ComisionController` com a bridge mínim
 3. revisar després si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
 
