@@ -17,7 +17,7 @@ final class FaltaCrudSchema
     public const GRID_FIELDS = ['id', 'desde', 'hasta', 'motivo', 'situacion', 'observaciones'];
 
     /**
-     * Camps visibles en el grid de PanelFaltaController.
+     * Camps visibles en el grid legacy del panell de faltes.
      *
      * @var array<int, string>
      */

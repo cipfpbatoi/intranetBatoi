@@ -36,19 +36,20 @@ El panell nou de `FaltaDireccionPanel` ja resol:
 - esborrar faltes no autoritzades
 - crear una falta des de modal
 - editar una falta des de modal
+- guardar directament des del component sense passar per rutes de Direcció de `store/update`
 
 ## Què encara depén del legacy
 
 ### 1. Formulari de crear/editar
 
-El modal del panell nou encara reutilitza el formulari antic basat en `FormBuilder` i l'esquema de CRUD.
+El modal del panell nou ja és un formulari Livewire real. No reutilitza `FormBuilder`.
 
 Peces implicades:
 
 - `resources/views/livewire/falta-direccion-panel.blade.php`
-- `app/Presentation/Crud/FaltaCrudSchema.php`
-- `app/Http/Controllers/FaltaController.php::store()`
-- `app/Http/Controllers/FaltaController.php::update()`
+- `app/Livewire/FaltaDireccionPanel.php`
+- `app/Application/Falta/FaltaService.php`
+- `app/Http/Requests/FaltaRequest.php` com a referència de regles
 
 ### 2. Document adjunt
 
@@ -70,12 +71,12 @@ La ruta de detall continua existint, però ja entra per un bridge específic de 
 
 Ara mateix el pilot nou no necessita redirigir ací per al flux principal, però la ruta continua viva.
 
-### 4. Flux de store/update encara lligat al controller
+### 4. Flux legacy de store/update fora del panell de Direcció
 
-Encara que el panell és Livewire, el guardat no és un formulari Livewire pur. Les operacions continuen entrant per:
+El panell de Direcció ja no entra per rutes pròpies de `store/update`. El que continua viu és el flux legacy/professorat:
 
-- `POST /direccion/falta`
-- `PUT /direccion/falta/{falta}/edit`
+- `POST /profesor/falta/create`
+- `PUT /profesor/falta/{falta}/edit`
 
 Gestionades per:
 
@@ -106,18 +107,15 @@ No convé eliminar encara:
 
 Motiu:
 
-- continuen tenint rutes actives
-- el modal del pilot encara les reutilitza
-- el formulari nou encara no és independent
+- continuen tenint rutes actives fora del panell de Direcció
+- encara donen servei al flux legacy/professorat
 
 ## Peces candidates a bridge
 
 En `FaltaController` hi ha encara responsabilitats de:
 
-- formulari CRUD modal
 - persistència
-- compatibilitat amb Direcció i Professorat
-- show/document de suport
+- compatibilitat amb professorat
 
 En este mòdul el controller ja pot començar a considerar-se un **bridge temporal** per al pilot Livewire, sobretot en:
 
@@ -145,19 +143,17 @@ Objectiu:
 
 Accions:
 
-- portar el formulari a Livewire real
-- reutilitzar validació de `FaltaRequest` o extraure regles compartides
-- evitar `edit-data` com a endpoint auxiliar
+- completat en Direcció
 
 ### Fase 3. Traure del controller les utilitats de suport
 
 Objectiu:
 
-- deixar `FaltaController` només amb les parts que encara siguen necessàries fora del panell nou
+- deixar `FaltaController` només amb les parts que encara siguen necessàries fora del panell nou de Direcció
 
 Accions:
 
-- revisar si `show` i `document` poden continuar com a bridges separats
+- `show` i `document` ja estan desacoblats en bridges de Direcció
 - revisar si Direcció continua necessitant estes rutes o si només són útils per al flux legacy/professorat
 
 ### Fase 4. Retirada visible del legacy
@@ -181,10 +177,11 @@ Una peça legacy de `falta` només s'hauria d'eliminar si es complixen les tres:
 `falta` està un poc més avançat que `comision` en desacoblament de les accions de Direcció, perquè:
 
 - acceptar/rebutjar/alta/esborrar ja no passen pel controller per al flux principal del panell nou
+- crear/editar tampoc passen ja per rutes de Direcció del controller legacy
 
-Però està més lligat al legacy en una altra peça clau:
+Però encara queda un bridge clar:
 
-- el formulari de crear/editar
+- `FaltaController::store()` i `update()` per al flux legacy/professorat
 
 Per tant, en `falta` el primer objectiu no és bulk actions ni PDF, sinó **substituir el formulari legacy**.
 
@@ -192,9 +189,9 @@ Per tant, en `falta` el primer objectiu no és bulk actions ni PDF, sinó **subs
 
 El següent treball amb millor retorn en `falta` és:
 
-1. convertir el modal de crear/editar en formulari Livewire real
-2. ja no dependre de `editData`
-3. revisar després si `show` i `document` continuen sent necessaris per a Direcció
+1. revisar si `PanelFaltaController` continua tenint algun paper real o queda només com a residu de compatibilitat
+2. segmentar millor `FaltaController` entre flux de professorat i flux comú
+3. decidir si `destroy/resolve/refuse/alta` de Direcció també han de traure's a bridges específics
 
 ## Decisió pràctica
 
@@ -203,5 +200,5 @@ No convé llevar el legacy de `falta` ara.
 Sí convé:
 
 - considerar `FaltaController` com a bridge temporal
-- reduir dependència del formulari respecte al CRUD antic
-- retirar després les rutes de suport una vegada el modal siga realment Livewire
+- assumir que Direcció ja no depén del formulari legacy
+- retirar després les rutes/controladors de suport que realment hagen quedat morts
