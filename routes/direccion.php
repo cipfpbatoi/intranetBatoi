@@ -17,6 +17,7 @@ Route::get('/comision/autorizar', ['as' => 'comision.autorizar', 'uses' => 'Comi
 Route::get('/comision/paid', ['as' => 'comision.paid', 'uses' => 'ComisionController@payment']);
 
 Route::get('/expediente', ['as' => 'expediente.direccion.index', 'uses' => 'PanelExpedienteController@index']);
+Route::view('/expediente-livewire', 'expediente.livewire-panel')->name('expediente.direccion.livewire');
 Route::get(
     '/expediente/{expediente}/authorize',
     ['as' => 'expediente.authorize', 'uses' => 'ExpedienteController@accept']
