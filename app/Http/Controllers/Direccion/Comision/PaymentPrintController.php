@@ -1,18 +1,19 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Controllers\Direccion\Comision;
 
 use Intranet\Entities\Comision;
+use Intranet\Http\Controllers\Controller;
 use Intranet\Services\General\AutorizacionPrintService;
 use Intranet\Services\UI\AppAlert as Alert;
 
 /**
- * Impressió específica del panell Livewire de comissions de Direcció.
+ * Impressió específica de pagaments del panell Livewire de comissions de Direcció.
  *
- * Actua com a bridge fi entre el pilot nou i el servei d'impressió en lot,
- * evitant dependre del controller legacy generalista.
+ * Manté el flux funcional del pilot nou sense dependre del controller legacy
+ * generalista de comissions.
  */
-class ComisionDireccionPrintController extends Controller
+class PaymentPrintController extends Controller
 {
     private AutorizacionPrintService $autorizacionPrintService;
 
@@ -23,7 +24,7 @@ class ComisionDireccionPrintController extends Controller
     }
 
     /**
-     * Genera el PDF de comissions autoritzades des del panell Livewire.
+     * Genera el PDF de pagaments preparats (`estado = 6`) i els deixa com a cobrats.
      *
      * @return mixed
      */
@@ -34,7 +35,11 @@ class ComisionDireccionPrintController extends Controller
         $response = $this->autorizacionPrintService->imprimir(
             Comision::class,
             'Comision',
-            'comisionsServei'
+            'payments',
+            6,
+            5,
+            'landscape',
+            false
         );
 
         if ($response) {

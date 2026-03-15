@@ -6,13 +6,13 @@ Route::post('/profesor/{profesor}/mensaje', ['as' => 'direccion.mensaje', 'uses'
 
 Route::view('/comision', 'comision.livewire-panel')->name('comision.direccion.index');
 Route::redirect('/comision-livewire', '/direccion/comision')->name('comision.direccion.livewire');
-Route::get('/comision/{comision}/gestor', ['as' => 'comision.direccion.gestor', 'uses' => 'ComisionDireccionGestorController']);
+Route::get('/comision/{comision}/gestor', ['as' => 'comision.direccion.gestor', 'uses' => 'Direccion\\Comision\\GestorController']);
 Route::get('/comision/{comision}/authorize', ['as' => 'comision.authorize', 'uses' => 'ComisionController@accept']);
 Route::get('/comision/{comision}/unauthorize', ['as' => 'comision.unauthorize', 'uses' => 'ComisionController@resign']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.dir.show', 'uses' => 'ComisionController@show']);
 Route::post('/comision/{comision}/refuse', ['as' => 'comision.refuse', 'uses' => 'ComisionController@refuse']);
-Route::get('/comision-livewire/pdf', ['as' => 'comision.direccion.pdf', 'uses' => 'ComisionDireccionPrintController']);
-Route::get('/comision-livewire/paid', ['as' => 'comision.direccion.paid', 'uses' => 'ComisionDireccionPaymentPrintController']);
+Route::get('/comision-livewire/pdf', ['as' => 'comision.direccion.pdf', 'uses' => 'Direccion\\Comision\\PrintController']);
+Route::get('/comision-livewire/paid', ['as' => 'comision.direccion.paid', 'uses' => 'Direccion\\Comision\\PaymentPrintController']);
 
 Route::get('/expediente', ['as' => 'expediente.direccion.index', 'uses' => 'PanelExpedienteController@index']);
 Route::view('/expediente-livewire', 'expediente.livewire-panel')->name('expediente.direccion.livewire');

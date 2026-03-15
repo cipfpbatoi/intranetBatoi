@@ -1,14 +1,15 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Controllers\Direccion\Comision;
 
 use Intranet\Entities\Comision;
 use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Controllers\Controller;
 
 /**
  * Accés al document associat a una comissió des del panell Livewire de Direcció.
  */
-class ComisionDireccionGestorController extends Controller
+class GestorController extends Controller
 {
     /**
      * Redirigeix al gestor documental si la comissió té document associat.

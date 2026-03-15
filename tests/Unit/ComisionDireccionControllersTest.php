@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Intranet\Exceptions\NotFoundDomainException;
-use Intranet\Http\Controllers\ComisionDireccionGestorController;
-use Intranet\Http\Controllers\ComisionDireccionPaymentPrintController;
-use Intranet\Http\Controllers\ComisionDireccionPrintController;
+use Intranet\Http\Controllers\Direccion\Comision\GestorController;
+use Intranet\Http\Controllers\Direccion\Comision\PaymentPrintController;
+use Intranet\Http\Controllers\Direccion\Comision\PrintController;
 use Intranet\Services\General\AutorizacionPrintService;
 use Mockery;
 use Tests\TestCase;
@@ -70,7 +70,7 @@ class ComisionDireccionControllersTest extends TestCase
             ->with('Intranet\\Entities\\Comision', 'Comision', 'comisionsServei')
             ->andReturn($expected);
 
-        $controller = new ComisionDireccionPrintController($printService);
+        $controller = new PrintController($printService);
 
         $this->assertSame($expected, $controller());
     }
@@ -85,7 +85,7 @@ class ComisionDireccionControllersTest extends TestCase
             ->with('Intranet\\Entities\\Comision', 'Comision', 'payments', 6, 5, 'landscape', false)
             ->andReturn($expected);
 
-        $controller = new ComisionDireccionPaymentPrintController($printService);
+        $controller = new PaymentPrintController($printService);
 
         $this->assertSame($expected, $controller());
     }
@@ -97,7 +97,7 @@ class ComisionDireccionControllersTest extends TestCase
             ->once()
             ->andReturn(null);
 
-        $controller = new ComisionDireccionPrintController($printService);
+        $controller = new PrintController($printService);
 
         $this->assertInstanceOf(RedirectResponse::class, $controller());
     }
@@ -106,7 +106,7 @@ class ComisionDireccionControllersTest extends TestCase
     {
         $comisionId = $this->seedComision('P001', 77);
 
-        $controller = new ComisionDireccionGestorController();
+        $controller = new GestorController();
         $response = $controller($comisionId);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -117,7 +117,7 @@ class ComisionDireccionControllersTest extends TestCase
     {
         $comisionId = $this->seedComision('P001', null);
 
-        $controller = new ComisionDireccionGestorController();
+        $controller = new GestorController();
 
         $this->expectException(NotFoundDomainException::class);
         $controller($comisionId);

@@ -70,7 +70,7 @@ Ja desacoblat del controller legacy generalista:
 
 - `app/Livewire/ComisionDireccionPanel.php::imprimirAutoritzades()`
 - `GET /direccion/comision-livewire/pdf`
-- `app/Http/Controllers/ComisionDireccionPrintController.php`
+- `app/Http/Controllers/Direccion/Comision/PrintController.php`
 
 El panell nou ja no usa:
 
@@ -83,7 +83,7 @@ Ja desacoblat del controller legacy generalista:
 
 - `app/Livewire/ComisionDireccionPanel.php::imprimirPagamentsSeleccionats()`
 - `GET /direccion/comision-livewire/paid`
-- `app/Http/Controllers/ComisionDireccionPaymentPrintController.php`
+- `app/Http/Controllers/Direccion/Comision/PaymentPrintController.php`
 
 El panell nou ja no usa:
 
@@ -104,7 +104,7 @@ El `FormBuilder` ja no participa en l'edició del panell de Direcció.
 Ja desacoblat del controller legacy generalista:
 
 - `GET /direccion/comision/{comision}/gestor`
-- `app/Http/Controllers/ComisionDireccionGestorController.php`
+- `app/Http/Controllers/Direccion/Comision/GestorController.php`
 
 ## Peces legacy que no s'han de tocar encara
 
