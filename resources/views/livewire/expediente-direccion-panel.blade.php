@@ -14,13 +14,19 @@
     <div class="row" style="margin-bottom: 15px;">
         <div class="col-md-12">
             @if ($hasReadyToPrint)
-                <a class="btn btn-primary" href="/direccion/expediente/pdf" target="_blank" rel="noopener">
+                <a
+                    class="btn btn-primary js-bulk-reload"
+                    href="/direccion/expediente/pdf"
+                    target="_blank"
+                    rel="noopener"
+                    data-bulk-action="print"
+                >
                     Imprimir expedients autoritzats ({{ $readyToPrintCount }})
                 </a>
             @endif
 
             @if ($hasPendingAuthorization)
-                <a class="btn btn-primary" href="/direccion/expediente/autorizar">
+                <a class="btn btn-primary js-bulk-reload" href="/direccion/expediente/autorizar" data-bulk-action="authorize">
                     Autoritzar expedients pendents ({{ $pendingAuthorizationCount }})
                 </a>
             @endif
@@ -217,6 +223,20 @@
                 Livewire.on('show-expediente-modal', function () {
                     showModalById('showExpediente');
                 });
+            });
+
+            document.addEventListener('click', function (event) {
+                var button = event.target.closest('.js-bulk-reload');
+                if (!button) {
+                    return;
+                }
+
+                var action = button.dataset.bulkAction || '';
+                var delay = action === 'print' ? 1200 : 500;
+
+                window.setTimeout(function () {
+                    window.location.reload();
+                }, delay);
             });
         })();
     </script>

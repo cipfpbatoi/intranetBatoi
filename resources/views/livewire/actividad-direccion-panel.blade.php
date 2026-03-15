@@ -14,13 +14,19 @@
     <div class="row" style="margin-bottom: 15px;">
         <div class="col-md-12">
             @if ($hasAuthorizedToPrint)
-                <a class="btn btn-primary" href="/direccion/actividad/pdf" target="_blank" rel="noopener">
+                <a
+                    class="btn btn-primary js-bulk-reload"
+                    href="/direccion/actividad/pdf"
+                    target="_blank"
+                    rel="noopener"
+                    data-bulk-action="print"
+                >
                     Imprimir activitats autoritzades ({{ $authorizedToPrintCount }})
                 </a>
             @endif
 
             @if ($hasPendingAuthorization)
-                <a class="btn btn-primary" href="/direccion/actividad/autorizar">
+                <a class="btn btn-primary js-bulk-reload" href="/direccion/actividad/autorizar" data-bulk-action="authorize">
                     Autoritzar activitats pendents ({{ $pendingAuthorizationCount }})
                 </a>
             @endif
@@ -229,6 +235,20 @@
                 Livewire.on('show-actividad-modal', function () {
                     showModalById('showActividad');
                 });
+            });
+
+            document.addEventListener('click', function (event) {
+                var button = event.target.closest('.js-bulk-reload');
+                if (!button) {
+                    return;
+                }
+
+                var action = button.dataset.bulkAction || '';
+                var delay = action === 'print' ? 1200 : 500;
+
+                window.setTimeout(function () {
+                    window.location.reload();
+                }, delay);
             });
         })();
     </script>
