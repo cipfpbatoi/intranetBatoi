@@ -2,9 +2,12 @@
 
 namespace Intranet\Livewire;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Intranet\Application\Comision\ComisionService;
 use Intranet\Entities\Comision;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -34,7 +37,9 @@ class ComisionDireccionPanel extends Component
      */
     public array $pendingPayments = [];
     public bool $hasAuthorizedToPrint = false;
+    public int $authorizedToPrintCount = 0;
     public bool $hasPendingAuthorization = false;
+    public int $pendingAuthorizationCount = 0;
 
     /**
      * @var array<string, string>
@@ -49,6 +54,21 @@ class ComisionDireccionPanel extends Component
     public string $motiuRebutjar = '';
     public int $perPage = 10;
     public bool $paymentsExpanded = false;
+    public ?int $editComisionId = null;
+    public string $editIdProfesor = '';
+    public string $editProfessorName = '';
+    public string $editDesde = '';
+    public string $editHasta = '';
+    public bool $editFct = false;
+    public string $editServicio = '';
+    public string $editAlojamiento = '0';
+    public string $editComida = '0';
+    public string $editGastos = '0';
+    public string $editKilometraje = '0';
+    public string $editMedio = '0';
+    public string $editMarca = '';
+    public string $editMatricula = '';
+    public string $editItinerario = '';
     /**
      * @var array<int, string>
      */
@@ -57,6 +77,10 @@ class ComisionDireccionPanel extends Component
      * @var array<string, mixed>|null
      */
     public ?array $selectedComision = null;
+    /**
+     * @var array<int, string>
+     */
+    public array $medioOptions = [];
 
     private ?ComisionService $comisionService = null;
 
@@ -66,6 +90,7 @@ class ComisionDireccionPanel extends Component
     public function mount(): void
     {
         $this->loadFilterOptions();
+        $this->medioOptions = config('auxiliares.tipoVehiculo');
         $this->reloadComisiones();
     }
 
@@ -174,6 +199,117 @@ class ComisionDireccionPanel extends Component
         if ($this->selectedComision !== null) {
             $this->dispatch('show-comision-modal');
         }
+    }
+
+    /**
+     * Carrega la comissió en el modal d'edició propi del component.
+     */
+    public function editar(int $id): void
+    {
+        $this->resetFeedback();
+
+        $comision = Comision::with('Profesor')->find($id);
+        if (!$comision) {
+            $this->error = 'No s\'ha trobat la comissió.';
+            return;
+        }
+
+        if ((int) $comision->estado >= 3) {
+            $this->error = 'No es poden editar comissions registrades o posteriors.';
+            return;
+        }
+
+        $this->editComisionId = (int) $comision->id;
+        $this->editIdProfesor = (string) $comision->idProfesor;
+        $this->editProfessorName = $comision->Profesor->fullName ?? (string) $comision->idProfesor;
+        $this->editDesde = $this->formatForInput($comision->getRawOriginal('desde'));
+        $this->editHasta = $this->formatForInput($comision->getRawOriginal('hasta'));
+        $this->editFct = (int) $comision->fct === 1;
+        $this->editServicio = (string) $comision->servicio;
+        $this->editAlojamiento = (string) $comision->alojamiento;
+        $this->editComida = (string) $comision->comida;
+        $this->editGastos = (string) $comision->gastos;
+        $this->editKilometraje = (string) $comision->kilometraje;
+        $this->editMedio = (string) $comision->medio;
+        $this->editMarca = (string) ($comision->marca ?? '');
+        $this->editMatricula = (string) ($comision->matricula ?? '');
+        $this->editItinerario = (string) ($comision->itinerario ?? '');
+        $this->dispatch('show-edit-comision-modal');
+    }
+
+    /**
+     * Tanca i neteja el modal d'edició.
+     */
+    public function cancelarEditar(): void
+    {
+        $this->resetEditForm();
+        $this->dispatch('hide-edit-comision-modal');
+    }
+
+    /**
+     * Manté coherència de camps derivats quan canvia FCT.
+     */
+    public function updatedEditFct(bool $value): void
+    {
+        if ($value) {
+            $this->editServicio = 'Visita empreses FCT:';
+            $this->editAlojamiento = '0';
+            $this->editComida = '0';
+        }
+    }
+
+    /**
+     * Desactiva l'itinerari si no hi ha kilometratge.
+     */
+    public function updatedEditKilometraje($value): void
+    {
+        if ((float) str_replace(',', '.', (string) $value) <= 0) {
+            $this->editItinerario = '';
+        }
+    }
+
+    /**
+     * Guarda l'edició de la comissió directament des del component.
+     */
+    public function guardarEdicio(): void
+    {
+        $this->resetFeedback();
+
+        if ($this->editComisionId === null) {
+            $this->error = 'No hi ha cap comissió carregada per editar.';
+            return;
+        }
+
+        $comision = Comision::find($this->editComisionId);
+        if (!$comision) {
+            $this->error = 'No s\'ha trobat la comissió.';
+            return;
+        }
+
+        $this->validateEditForm();
+
+        $request = new Request([
+            'idProfesor' => $this->editIdProfesor,
+            'desde' => $this->editDesde,
+            'hasta' => $this->editHasta,
+            'fct' => $this->editFct ? '1' : null,
+            'servicio' => $this->editServicio,
+            'alojamiento' => $this->editFct ? '0' : $this->editAlojamiento,
+            'comida' => $this->editFct ? '0' : $this->editComida,
+            'gastos' => $this->editGastos,
+            'kilometraje' => $this->editKilometraje,
+            'medio' => $this->editMedio,
+            'marca' => $this->editMarca,
+            'matricula' => $this->editMatricula,
+            'itinerario' => ((float) str_replace(',', '.', $this->editKilometraje) > 0) ? $this->editItinerario : '',
+        ]);
+
+        $comision->fillAll($request);
+
+        $this->message = 'Comissió actualitzada correctament.';
+        $this->resetEditForm();
+        $this->reloadComisiones();
+        $this->dispatch('hide-edit-comision-modal');
     }
 
     /**
@@ -295,9 +431,15 @@ class ComisionDireccionPanel extends Component
         $all = $query->get();
 
         $this->loadPendingPayments();
+        $this->authorizedToPrintCount = $all->filter(
+            fn (Comision $comision): bool => (int) $comision->estado === 2
+        )->count();
         $this->hasAuthorizedToPrint = $all->contains(
             fn (Comision $comision): bool => (int) $comision->estado === 2
         );
+        $this->pendingAuthorizationCount = $all->filter(
+            fn (Comision $comision): bool => (int) $comision->estado === 1
+        )->count();
         $this->hasPendingAuthorization = $all->contains(
             fn (Comision $comision): bool => (int) $comision->estado === 1
         );
@@ -344,8 +486,6 @@ class ComisionDireccionPanel extends Component
             'servicio' => (string) $comision->servicio,
             'desde' => (string) $comision->desde,
             'hasta' => (string) $comision->hasta,
-            'desdeEdit' => $this->formatForEdit($comision->getRawOriginal('desde')),
-            'hastaEdit' => $this->formatForEdit($comision->getRawOriginal('hasta')),
             'fct' => (int) $comision->fct,
             'alojamiento' => (string) $comision->alojamiento,
             'comida' => (string) $comision->comida,
@@ -436,6 +576,33 @@ class ComisionDireccionPanel extends Component
     }
 
     /**
+     * Valida les dades del formulari d'edició.
+     */
+    private function validateEditForm(): void
+    {
+        $rules = ComisionCrudSchema::requestRules(authUser()->dni == config('avisos.director'));
+        $validator = Validator::make([
+            'servicio' => $this->editServicio,
+            'kilometraje' => $this->editKilometraje,
+            'desde' => $this->editDesde,
+            'hasta' => $this->editHasta,
+            'alojamiento' => $this->editFct ? '0' : $this->editAlojamiento,
+            'comida' => $this->editFct ? '0' : $this->editComida,
+            'gastos' => $this->editGastos,
+            'medio' => $this->editMedio,
+            'marca' => $this->editMarca,
+            'matricula' => $this->editMatricula,
+        ], $rules);
+
+        $validated = $validator->validate();
+
+        $this->editKilometraje = (string) $validated['kilometraje'];
+        $this->editGastos = (string) $validated['gastos'];
+        $this->editAlojamiento = (string) $validated['alojamiento'];
+        $this->editComida = (string) $validated['comida'];
+    }
+
+    /**
      * Retorna el servei de transicions d'autorització.
      */
     private function stateService(): AutorizacionStateService
@@ -484,14 +651,37 @@ class ComisionDireccionPanel extends Component
     }
 
     /**
-     * Dona format compatible amb el datepicker legacy.
+     * Dona format per a inputs `datetime-local`.
      */
-    private function formatForEdit(?string $value): string
+    private function formatForInput(?string $value): string
     {
         if (!$value) {
             return '';
         }
 
-        return Carbon::parse($value)->format('d/m/Y H:i');
+        return Carbon::parse($value)->format('Y-m-d\TH:i');
+    }
+
+    /**
+     * Neteja l'estat intern del formulari d'edició.
+     */
+    private function resetEditForm(): void
+    {
+        $this->editComisionId = null;
+        $this->editIdProfesor = '';
+        $this->editProfessorName = '';
+        $this->editDesde = '';
+        $this->editHasta = '';
+        $this->editFct = false;
+        $this->editServicio = '';
+        $this->editAlojamiento = '0';
+        $this->editComida = '0';
+        $this->editGastos = '0';
+        $this->editKilometraje = '0';
+        $this->editMedio = '0';
+        $this->editMarca = '';
+        $this->editMatricula = '';
+        $this->editItinerario = '';
+        $this->resetValidation();
     }
 }

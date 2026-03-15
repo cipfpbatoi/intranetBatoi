@@ -48,6 +48,11 @@ El panell nou de `ComisionDireccionPanel` ja cobrix:
 
 ## Què encara depén del legacy
 
+El panell Livewire de Direcció ja no depén del controller generalista de
+`ComisionController` per a les seues accions principals. El que queda pendent
+de retirada està més relacionat amb la convivència del mòdul legacy complet que
+amb dependències tècniques directes del pilot.
+
 ### 1. Bulk autoritzar comissions pendents
 
 Ja desacoblat del controller legacy:
@@ -88,12 +93,12 @@ El panell nou ja no usa:
 
 ### 4. Actualització des del modal
 
-Ja desacoblat del controller legacy generalista:
+Ja desacoblat del controller legacy i de la ruta d'update del pilot:
 
-- `PUT /direccion/comision/{comision}/edit`
-- `app/Http/Controllers/ComisionDireccionUpdateController.php`
+- `app/Livewire/ComisionDireccionPanel.php::guardarEdicio()`
+- modal propi en `resources/views/livewire/comision-direccion-panel.blade.php`
 
-El que continua sent legacy és el formulari modal (`FormBuilder`), no la ruta ni el controller.
+El `FormBuilder` ja no participa en l'edició del panell de Direcció.
 
 ### 5. Gestor documental
 
@@ -191,9 +196,9 @@ Una peça legacy de `comision` només s'hauria d'eliminar si es complixen les tr
 El següent treball amb millor retorn és:
 
 1. revisar si `autorizar()`, `printAutoritzats()` i `payment()` continuen sent necessaris només per a la ruta legacy
-2. atacar el formulari modal (`FormBuilder`) per llevar el bridge d'edició
-3. deixar `ComisionController` com a bridge mínim
-4. revisar després si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
+2. deixar `ComisionController` com a bridge mínim del camí antic
+3. revisar després si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
+4. decidir quan s'amaga l'enllaç a `/direccion/comision`
 
 ## Decisió pràctica
 

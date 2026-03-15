@@ -1,18 +1,4 @@
 <div>
-    @php
-        $demà = \Illuminate\Support\Carbon::tomorrow()->setTime(8, 0);
-        $formularioComision = new \Intranet\Services\UI\FormBuilder(
-            new \Intranet\Entities\Comision([
-                'idProfesor' => AuthUser()->dni,
-                'desde' => $demà,
-                'hasta' => $demà,
-                'fct' => 0,
-                'servicio' => 'Visita a Empreses: ',
-            ]),
-            \Intranet\Presentation\Crud\ComisionCrudSchema::FORM_FIELDS
-        );
-    @endphp
-
     <h2>Comissions - Pilot Livewire Direcció</h2>
 
     <p class="text-muted">
@@ -79,10 +65,7 @@
                     wire:click="imprimirPagamentsSeleccionats"
                     @disabled($selectedPayments === [])
                 >
-                    Imprimir pagaments seleccionats
-                    @if (count($selectedPayments) > 0)
-                        ({{ count($selectedPayments) }})
-                    @endif
+                    Imprimir pagaments seleccionats ({{ count($selectedPayments) }}/{{ count($pendingPayments) }})
                 </button>
                 </div>
             </div>
@@ -96,13 +79,13 @@
                 class="btn btn-primary"
                 wire:click="imprimirAutoritzades"
             >
-                Imprimir Comissions autoritzades
+                Imprimir Comissions autoritzades ({{ $authorizedToPrintCount }})
             </button>
         @endif
 
         @if ($hasPendingAuthorization)
             <button type="button" class="btn btn-primary" wire:click="autoritzarPendents">
-                Autoritzar comissions pendents
+                Autoritzar comissions pendents ({{ $pendingAuthorizationCount }})
             </button>
         @endif
 
@@ -194,21 +177,8 @@
                     @if ($comision['canEdit'])
                         <button
                             type="button"
-                            class="btn btn-warning btn-xs js-edit-comision"
-                            data-id="{{ $comision['id'] }}"
-                            data-id-profesor="{{ $comision['idProfesor'] }}"
-                            data-desde="{{ $comision['desdeEdit'] }}"
-                            data-hasta="{{ $comision['hastaEdit'] }}"
-                            data-fct="{{ $comision['fct'] }}"
-                            data-servicio="{{ $comision['servicio'] }}"
-                            data-alojamiento="{{ $comision['alojamiento'] }}"
-                            data-comida="{{ $comision['comida'] }}"
-                            data-gastos="{{ $comision['gastos'] }}"
-                            data-kilometraje="{{ $comision['kilometraje'] }}"
-                            data-medio="{{ $comision['medioCodigo'] }}"
-                            data-marca="{{ $comision['marca'] }}"
-                            data-matricula="{{ $comision['matricula'] }}"
-                            data-itinerario="{{ $comision['itinerario'] }}"
+                            class="btn btn-warning btn-xs"
+                            wire:click="editar({{ $comision['id'] }})"
                             title="Editar"
                         >
                             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -252,14 +222,137 @@
         </div>
     @endif
 
-    <div id="editComision" class="modal fade" role="dialog">
+    <div id="editComision" class="modal fade" role="dialog" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
                     <h4 class="modal-title">Editar comissió</h4>
                 </div>
-                {!! $formularioComision->modal() !!}
+                <form wire:submit.prevent="guardarEdicio">
+                    <div class="modal-body">
+                        <input type="hidden" wire:model="editIdProfesor">
+
+                        <div class="form-group">
+                            <label>Professor</label>
+                            <input type="text" class="form-control" value="{{ $editProfessorName }}" readonly>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_desde">Data i hora d'inici</label>
+                                    <input id="edit_desde" type="datetime-local" class="form-control" wire:model.defer="editDesde">
+                                    @error('desde') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_hasta">Data i hora de fi</label>
+                                    <input id="edit_hasta" type="datetime-local" class="form-control" wire:model.defer="editHasta">
+                                    @error('hasta') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" wire:model.live="editFct">
+                                FCT
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit_servicio">Servei</label>
+                            <textarea id="edit_servicio" class="form-control" rows="3" wire:model.defer="editServicio"></textarea>
+                            @error('servicio') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+
+                        @if (!$editFct)
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="edit_alojamiento">Allotjament</label>
+                                        <input id="edit_alojamiento" type="number" step="0.01" min="0" class="form-control" wire:model.defer="editAlojamiento">
+                                        @error('alojamiento') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="edit_comida">Menjar</label>
+                                        <input id="edit_comida" type="number" step="0.01" min="0" class="form-control" wire:model.defer="editComida">
+                                        @error('comida') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="edit_gastos">Altres gastos</label>
+                                        <input id="edit_gastos" type="number" step="0.01" min="0" class="form-control" wire:model.defer="editGastos">
+                                        @error('gastos') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <input type="hidden" wire:model="editAlojamiento">
+                            <input type="hidden" wire:model="editComida">
+                        @endif
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="edit_kilometraje">Kilometratge</label>
+                                    <input id="edit_kilometraje" type="number" min="0" class="form-control" wire:model.live="editKilometraje">
+                                    @error('kilometraje') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="edit_medio">Mitjà de transport</label>
+                                    <select id="edit_medio" class="form-control" wire:model.defer="editMedio">
+                                        @foreach ($medioOptions as $codigo => $label)
+                                            <option value="{{ $codigo }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('medio') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (in_array((int) $editMedio, [0, 1], true))
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_marca">Marca</label>
+                                        <input id="edit_marca" type="text" class="form-control" maxlength="30" wire:model.defer="editMarca">
+                                        @error('marca') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_matricula">Matrícula</label>
+                                        <input id="edit_matricula" type="text" class="form-control" maxlength="10" wire:model.defer="editMatricula">
+                                        @error('matricula') <span class="text-danger">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="form-group">
+                            <label for="edit_itinerario">Itinerari</label>
+                            <textarea
+                                id="edit_itinerario"
+                                class="form-control"
+                                rows="3"
+                                wire:model.defer="editItinerario"
+                                @disabled((float) str_replace(',', '.', $editKilometraje) <= 0)
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" wire:click="cancelarEditar">Cancel·lar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -317,11 +410,6 @@
             }
             window.__comisionLivewireUiInit = true;
 
-            var editModal = document.getElementById('editComision');
-            var editForm = editModal ? editModal.querySelector('form') : null;
-            var editMethod = editForm ? editForm.querySelector('#metodo') : null;
-            var editId = editForm ? editForm.querySelector('#id') : null;
-
             function showModalById(id) {
                 if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
                     window.intranetUiHelpers.showModal(id);
@@ -341,89 +429,36 @@
                 }
             }
 
-            function setFieldValue(id, value) {
-                var field = document.getElementById(id);
-                if (!field) {
+            function hideModalById(id) {
+                if (window.intranetUiHelpers && typeof window.intranetUiHelpers.hideModal === 'function') {
+                    window.intranetUiHelpers.hideModal(id);
                     return;
                 }
 
-                if ((field.type || '').toLowerCase() === 'checkbox') {
-                    field.checked = value === '1' || value === 1 || value === true;
+                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
+                    window.jQuery('#' + id).modal('hide');
                     return;
                 }
 
-                field.value = value == null ? '' : value;
-            }
-
-            function updateItinerarioState() {
-                var kilometraje = document.getElementById('kilometraje_id');
-                var itinerario = document.getElementById('itinerario_id');
-                if (!kilometraje || !itinerario) {
-                    return;
-                }
-
-                var kilometrajeRaw = (kilometraje.value || '').toString().trim().replace(',', '.');
-                var kilometrajeValue = Number(kilometrajeRaw);
-                var hasValidKilometraje = kilometrajeRaw !== '' && !Number.isNaN(kilometrajeValue) && kilometrajeValue > 0;
-
-                if (kilometraje.disabled || !hasValidKilometraje) {
-                    itinerario.value = '';
-                    itinerario.disabled = true;
-                    return;
-                }
-
-                itinerario.disabled = false;
-            }
-
-            function updateFctFields() {
-                var fct = document.getElementById('fct_id');
-                var servicio = document.getElementById('servicio_id');
-                var fieldServicio = document.getElementById('field_servicio_id');
-                var fieldAlojamiento = document.getElementById('field_alojamiento_id');
-                var fieldComida = document.getElementById('field_comida_id');
-                var alojamiento = document.getElementById('alojamiento_id');
-                var comida = document.getElementById('comida_id');
-
-                if (!fct || !servicio) {
-                    updateItinerarioState();
-                    return;
-                }
-
-                if (fct.checked) {
-                    servicio.value = 'Visita empreses FCT:';
-                    if (alojamiento) {
-                        alojamiento.value = 0;
-                    }
-                    if (comida) {
-                        comida.value = 0;
-                    }
-                    if (fieldServicio) {
-                        fieldServicio.className = 'form-group item hidden';
-                    }
-                    if (fieldAlojamiento) {
-                        fieldAlojamiento.className = 'form-group item hidden';
-                    }
-                    if (fieldComida) {
-                        fieldComida.className = 'form-group item hidden';
-                    }
-                } else {
-                    if (fieldServicio) {
-                        fieldServicio.className = 'form-group item';
-                    }
-                    if (fieldAlojamiento) {
-                        fieldAlojamiento.className = 'form-group item';
-                    }
-                    if (fieldComida) {
-                        fieldComida.className = 'form-group item';
+                if (window.bootstrap && window.bootstrap.Modal) {
+                    var modal = document.getElementById(id);
+                    if (modal) {
+                        window.bootstrap.Modal.getOrCreateInstance(modal).hide();
                     }
                 }
-
-                updateItinerarioState();
             }
 
             document.addEventListener('livewire:init', function () {
                 Livewire.on('show-comision-modal', function () {
                     showModalById('showComision');
+                });
+
+                Livewire.on('show-edit-comision-modal', function () {
+                    showModalById('editComision');
+                });
+
+                Livewire.on('hide-edit-comision-modal', function () {
+                    hideModalById('editComision');
                 });
 
                 Livewire.on('open-report-and-reload', function (event) {
@@ -438,52 +473,6 @@
                         window.location.reload();
                     }, delay);
                 });
-            });
-
-            document.addEventListener('click', function (event) {
-                var button = event.target.closest('.js-edit-comision');
-                if (!button || !editForm) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                editForm.setAttribute('action', '/direccion/comision/' + button.dataset.id + '/edit');
-                if (editMethod) {
-                    editMethod.value = 'PUT';
-                }
-                if (editId) {
-                    editId.value = button.dataset.id || '';
-                }
-
-                setFieldValue('idProfesor_id', button.dataset.idProfesor || '');
-                setFieldValue('desde_id', button.dataset.desde || '');
-                setFieldValue('hasta_id', button.dataset.hasta || '');
-                setFieldValue('fct_id', button.dataset.fct || '0');
-                setFieldValue('servicio_id', button.dataset.servicio || '');
-                setFieldValue('alojamiento_id', button.dataset.alojamiento || '0');
-                setFieldValue('comida_id', button.dataset.comida || '0');
-                setFieldValue('gastos_id', button.dataset.gastos || '0');
-                setFieldValue('kilometraje_id', button.dataset.kilometraje || '0');
-                setFieldValue('medio_id', button.dataset.medio || '0');
-                setFieldValue('marca_id', button.dataset.marca || '');
-                setFieldValue('matricula_id', button.dataset.matricula || '');
-                setFieldValue('itinerario_id', button.dataset.itinerario || '');
-
-                updateFctFields();
-                showModalById('editComision');
-            });
-
-            document.addEventListener('change', function (event) {
-                if (event.target && event.target.id === 'fct_id') {
-                    updateFctFields();
-                }
-            });
-
-            document.addEventListener('input', function (event) {
-                if (event.target && event.target.id === 'kilometraje_id') {
-                    updateItinerarioState();
-                }
             });
         })();
     </script>

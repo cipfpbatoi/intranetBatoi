@@ -57,7 +57,9 @@ class ComisionDireccionPanelTest extends TestCase
 
         $component
             ->assertSee('Pilot funcional')
-            ->assertSee('Imprimir Comissions autoritzades')
+            ->assertSee('Imprimir Comissions autoritzades (1)')
+            ->assertSee('Autoritzar comissions pendents (1)')
+            ->assertSee('Imprimir pagaments seleccionats (0/1)')
             ->assertSee('Maria Garcia Lopez')
             ->assertSee('Joan Soler Perez');
 
@@ -145,6 +147,37 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSet('selectedComision.id', 3)
             ->assertSet('selectedComision.professor', 'Joan Soler Perez')
             ->assertSet('selectedComision.servicio', 'Visita empresa 3');
+    }
+
+    public function test_editar_i_guardar_edicio_actualitza_la_comissio_des_del_component(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ComisionDireccionPanel::class);
+
+        $component->call('editar', 1)
+            ->assertSet('editComisionId', 1)
+            ->assertSet('editProfessorName', 'Maria Garcia Lopez');
+
+        $component->set('editDesde', '2026-03-20T09:30')
+            ->set('editHasta', '2026-03-20T11:45')
+            ->set('editServicio', 'Servei editat')
+            ->set('editGastos', '18.50')
+            ->set('editKilometraje', '25')
+            ->set('editMedio', '0')
+            ->set('editMarca', 'Seat')
+            ->set('editMatricula', '1234ABC')
+            ->set('editItinerario', 'Alcoi - València')
+            ->call('guardarEdicio')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Comissió actualitzada correctament.');
+
+        $updated = DB::connection('sqlite')->table('comisiones')->where('id', 1)->first();
+        $this->assertSame('Servei editat', $updated->servicio);
+        $this->assertSame('2026-03-20 09:30', $updated->desde);
+        $this->assertSame('2026-03-20 11:45', $updated->hasta);
+        $this->assertSame('Seat', $updated->marca);
+        $this->assertSame('1234ABC', $updated->matricula);
+        $this->assertSame('Alcoi - València', $updated->itinerario);
     }
 
     public function test_imprimir_pagaments_seleccionats_marca_professor_i_redirigeix(): void
