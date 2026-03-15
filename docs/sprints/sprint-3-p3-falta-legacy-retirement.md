@@ -53,17 +53,7 @@ Peces implicades:
 - `app/Http/Controllers/FaltaController.php::store()`
 - `app/Http/Controllers/FaltaController.php::update()`
 
-### 2. Dades per a editar en modal
-
-El botó d'edició del panell nou continua carregant dades des d'un endpoint de controller.
-
-Peces implicades:
-
-- `routes/direccion.php`
-  - `GET /direccion/falta/{falta}/edit-data`
-- `app/Http/Controllers/FaltaController.php::editData()`
-
-### 3. Document adjunt
+### 2. Document adjunt
 
 El panell nou encara usa el controller per a obrir el document de la falta.
 
@@ -73,7 +63,7 @@ Peces implicades:
   - `GET /direccion/falta/{falta}/document`
 - `app/Http/Controllers/FaltaController@document`
 
-### 4. Show legacy
+### 3. Show legacy
 
 La ruta de detall clàssica continua existint:
 
@@ -83,7 +73,7 @@ La ruta de detall clàssica continua existint:
 
 Ara mateix el pilot nou no necessita redirigir ací per al flux principal, però la ruta continua viva.
 
-### 5. Flux de store/update encara lligat al controller
+### 4. Flux de store/update encara lligat al controller
 
 Encara que el panell és Livewire, el guardat no és un formulari Livewire pur. Les operacions continuen entrant per:
 
@@ -116,7 +106,6 @@ No convé eliminar encara:
 
 - `FaltaController::store()`
 - `FaltaController::update()`
-- `FaltaController::editData()`
 - `FaltaController::document()`
 - `FaltaController::show()`
 
@@ -139,7 +128,6 @@ En este mòdul el controller ja pot començar a considerar-se un **bridge tempor
 
 - `store`
 - `update`
-- `editData`
 
 ## Ordre recomanat de retirada
 
@@ -211,7 +199,7 @@ Per tant, en `falta` el primer objectiu no és bulk actions ni PDF, sinó **subs
 El següent treball amb millor retorn en `falta` és:
 
 1. convertir el modal de crear/editar en formulari Livewire real
-2. deixar de dependre de `editData`
+2. ja no dependre de `editData`
 3. revisar després si `show` i `document` continuen sent necessaris per a Direcció
 
 ## Decisió pràctica

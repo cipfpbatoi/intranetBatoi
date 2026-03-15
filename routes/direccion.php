@@ -48,7 +48,6 @@ Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaC
 Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
 Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'FaltaController@document']);
 Route::get('/falta/{falta}/delete', ['as' => 'falta.direccion.destroy', 'uses' => 'FaltaController@destroy']);
-Route::get('/falta/{falta}/edit-data', ['as' => 'falta.direccion.editData', 'uses' => 'FaltaController@editData']);
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
 Route::post('/falta', ['as' => 'falta.store', 'uses' => 'FaltaController@store']);
 Route::put('/falta/{falta}/edit', ['as' => 'falta.edit', 'uses' => 'FaltaController@update']);

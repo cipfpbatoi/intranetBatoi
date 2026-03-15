@@ -148,30 +148,4 @@ class FaltaController extends ModalController
         return view('intranet.show', compact('elemento', 'modelo'));
     }
 
-    /**
-     * Retorna dades de la falta per a edició en modal (pilot Livewire).
-     *
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function editData($id)
-    {
-        $elemento = $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]);
-        $this->authorize('update', $elemento);
-
-        return response()->json([
-            'data' => [
-                'idProfesor' => (string) $elemento->idProfesor,
-                'desde' => (string) $elemento->desde,
-                'hasta' => (string) $elemento->hasta,
-                'baja' => (int) $elemento->baja,
-                'dia_completo' => (int) $elemento->dia_completo,
-                'hora_ini' => (string) $elemento->hora_ini,
-                'hora_fin' => (string) $elemento->hora_fin,
-                'motivos' => (string) $elemento->motivos,
-                'observaciones' => (string) $elemento->observaciones,
-            ],
-        ]);
-    }
 }

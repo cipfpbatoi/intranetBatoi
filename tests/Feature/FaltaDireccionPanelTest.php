@@ -40,6 +40,7 @@ class FaltaDireccionPanelTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('notifications');
         Schema::connection('sqlite')->dropIfExists('faltas');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
@@ -57,7 +58,7 @@ class FaltaDireccionPanelTest extends TestCase
             : null;
 
         $component
-            ->assertSee('Pilot funcional')
+            ->assertSee('Nova')
             ->assertSee('Maria Garcia Lopez')
             ->assertSee('Joan Soler Perez');
 
@@ -120,6 +121,45 @@ class FaltaDireccionPanelTest extends TestCase
         $this->assertNotNull(DB::connection('sqlite')->table('faltas')->where('id', 3)->first());
     }
 
+    public function test_crea_una_falta_des_del_formulari_livewire(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('crear')
+            ->set('formProfessorSearch', 'Maria Garcia Lopez (PF100)')
+            ->set('formDesde', '2026-03-15')
+            ->set('formHasta', '2026-03-15')
+            ->set('formDiaCompleto', true)
+            ->set('formMotivos', '2')
+            ->set('formObservaciones', 'Nova falta des de Livewire')
+            ->call('guardar')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Falta creada correctament.');
+
+        $this->assertSame(4, DB::connection('sqlite')->table('faltas')->count());
+
+        $falta = DB::connection('sqlite')->table('faltas')->where('observaciones', 'Nova falta des de Livewire')->first();
+        $this->assertNotNull($falta);
+        $this->assertSame('PF100', $falta->idProfesor);
+    }
+
+    public function test_edita_una_falta_sense_endpoint_edit_data(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('editar', 2)
+            ->assertSet('formFaltaId', 2)
+            ->set('formObservaciones', 'Editada des de Livewire')
+            ->call('guardar')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Falta actualitzada correctament.');
+
+        $this->assertSame(
+            'Editada des de Livewire',
+            DB::connection('sqlite')->table('faltas')->where('id', 2)->value('observaciones')
+        );
+    }
+
     private function actingAsDireccion(): bool
     {
         $this->actingAs($this->direccionUser(), 'profesor');
@@ -173,6 +213,15 @@ class FaltaDireccionPanelTest extends TestCase
             $table->string('model_class')->nullable();
             $table->unsignedBigInteger('model_id')->nullable();
             $table->string('author_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('notifications', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

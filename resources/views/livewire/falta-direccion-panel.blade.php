@@ -1,21 +1,4 @@
 <div>
-    @php
-        $formularioFalta = new \Intranet\Services\UI\FormBuilder(
-            new \Intranet\Entities\Falta([
-                'desde' => \Illuminate\Support\Carbon::today(),
-                'hasta' => \Illuminate\Support\Carbon::today(),
-                'idProfesor' => AuthUser()->dni,
-            ]),
-            \Intranet\Presentation\Crud\FaltaCrudSchema::FORM_FIELDS
-        );
-    @endphp
-
-    <h2>Faltes - Pilot Livewire Direcció</h2>
-
-    <p class="text-muted">
-        Pilot funcional en convivència amb el panell legacy (<code>/direccion/falta</code>).
-    </p>
-
     @if ($error !== '')
         <div class="alert alert-danger">{{ $error }}</div>
     @endif
@@ -26,11 +9,9 @@
 
     <div class="mb-3">
         <button
-            id="openCreateFaltaModal"
             type="button"
             class="btn btn-primary"
-            data-toggle="modal"
-            data-target="#createFalta"
+            wire:click="crear"
             title="Crear nova falta"
         >
             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -106,8 +87,8 @@
                     @if (in_array((int) $falta['estado'], [1, 2], true))
                         <button
                             type="button"
-                            class="btn btn-warning btn-xs js-edit-falta"
-                            data-id="{{ $falta['id'] }}"
+                            class="btn btn-warning btn-xs"
+                            wire:click="editar({{ $falta['id'] }})"
                             title="Editar"
                         >
                             <i class="fa fa-edit" aria-hidden="true"></i>
@@ -163,14 +144,105 @@
         </tbody>
     </table>
 
-    <div id="createFalta" class="modal fade" role="dialog">
+    <div id="faltaFormModal" class="modal fade" role="dialog" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                    <h4 class="modal-title">Comunicació d'Absència Professorat</h4>
-                </div>
-                {!! $formularioFalta->modal() !!}
+                <form wire:submit.prevent="guardar">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" wire:click="cancelForm">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                        <h4 class="modal-title">
+                            {{ $isEditing ? "Editar absència del professorat" : "Comunicació d'Absència Professorat" }}
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12" style="margin-bottom: 12px;">
+                                <label for="formProfessorSearch"><strong>Professor *</strong></label>
+                                <input
+                                    id="formProfessorSearch"
+                                    type="text"
+                                    class="form-control"
+                                    list="modalProfessorSuggestions"
+                                    placeholder="Escriu nom, cognoms o DNI"
+                                    wire:model.live.debounce.300ms="formProfessorSearch"
+                                >
+                                <datalist id="modalProfessorSuggestions">
+                                    @foreach ($professorOptions as $professorLabel)
+                                        <option value="{{ $professorLabel }}"></option>
+                                    @endforeach
+                                </datalist>
+                                @error('formIdProfesor') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-6" style="margin-bottom: 12px;">
+                                <label for="formDesde"><strong>Data d'inici *</strong></label>
+                                <input id="formDesde" type="date" class="form-control" wire:model.defer="formDesde">
+                                @error('formDesde') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-6" style="margin-bottom: 12px;">
+                                <label for="formHasta"><strong>Data de fi</strong></label>
+                                <input id="formHasta" type="date" class="form-control" wire:model.defer="formHasta">
+                                @error('formHasta') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-6" style="margin-bottom: 12px;">
+                                <label>
+                                    <input type="checkbox" wire:model.live="formBaja">
+                                    Baixa llarga durada
+                                </label>
+                            </div>
+                            <div class="col-md-6" style="margin-bottom: 12px;">
+                                <label>
+                                    <input type="checkbox" wire:model.live="formDiaCompleto">
+                                    Tot el dia
+                                </label>
+                            </div>
+                            @if (!$formBaja && !$formDiaCompleto)
+                                <div class="col-md-6" style="margin-bottom: 12px;">
+                                    <label for="formHoraIni"><strong>Hora inici *</strong></label>
+                                    <input id="formHoraIni" type="time" class="form-control" wire:model.defer="formHoraIni">
+                                    @error('formHoraIni') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-6" style="margin-bottom: 12px;">
+                                    <label for="formHoraFin"><strong>Hora fi *</strong></label>
+                                    <input id="formHoraFin" type="time" class="form-control" wire:model.defer="formHoraFin">
+                                    @error('formHoraFin') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            @endif
+                            <div class="col-md-12" style="margin-bottom: 12px;">
+                                <label for="formMotivos"><strong>Motiu *</strong></label>
+                                <select id="formMotivos" class="form-control" wire:model.defer="formMotivos">
+                                    <option value="">-Selecciona Motiu de l'absència-</option>
+                                    @foreach (\Intranet\Entities\Falta::getMotivosOptions() as $key => $label)
+                                        <option value="{{ $key }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @error('formMotivos') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-12" style="margin-bottom: 12px;">
+                                <label for="formObservaciones"><strong>Observacions</strong></label>
+                                <input id="formObservaciones" type="text" class="form-control" wire:model.defer="formObservaciones">
+                                @error('formObservaciones') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-12">
+                                <label for="formFichero"><strong>Justificant</strong></label>
+                                <input id="formFichero" type="file" class="form-control" wire:model="formFichero">
+                                @error('formFichero') <span class="text-danger">{{ $message }}</span> @enderror
+                                @if ($existingFichero !== '')
+                                    <p class="text-muted" style="margin-top: 8px;">
+                                        Ja hi ha un document associat. Pots pujar-ne un altre si vols substituir-lo.
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" wire:click="cancelForm">Cancel·lar</button>
+                        <button type="submit" class="btn btn-primary">
+                            {{ $isEditing ? 'Guardar canvis' : 'Guardar' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -182,203 +254,52 @@
             }
             window.__faltaLivewireUiInit = true;
 
-            var createModal = document.getElementById('createFalta');
-            if (!createModal) {
-                return;
-            }
-
-            var form = createModal.querySelector('form');
-            if (!form) {
-                return;
-            }
-
-            var methodInput = form.querySelector('#metodo');
-            var idInput = form.querySelector('#id');
-            var openButton = document.getElementById('openCreateFaltaModal');
-
-            function showCreateModal() {
+            function showModalById(id) {
                 if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
-                    window.intranetUiHelpers.showModal('createFalta');
+                    window.intranetUiHelpers.showModal(id);
                     return;
                 }
 
                 if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
-                    window.jQuery('#createFalta').modal('show');
+                    window.jQuery('#' + id).modal('show');
                     return;
                 }
 
                 if (window.bootstrap && window.bootstrap.Modal) {
-                    window.bootstrap.Modal.getOrCreateInstance(createModal).show();
+                    var modal = document.getElementById(id);
+                    if (modal) {
+                        window.bootstrap.Modal.getOrCreateInstance(modal).show();
+                    }
                 }
             }
 
-            function enhanceProfesorSelect() {
-                var select = document.getElementById('idProfesor_id');
-                if (!select || select.dataset.searchEnhanced === '1') {
+            function hideModalById(id) {
+                if (window.intranetUiHelpers && typeof window.intranetUiHelpers.hideModal === 'function') {
+                    window.intranetUiHelpers.hideModal(id);
                     return;
                 }
 
-                var wrapper = document.createElement('div');
-                wrapper.className = 'col-md-7 col-xs-12';
-                wrapper.style.marginBottom = '8px';
-
-                var searchInput = document.createElement('input');
-                searchInput.type = 'text';
-                searchInput.className = 'form-control';
-                searchInput.id = 'idProfesor_search';
-                searchInput.placeholder = 'Buscar professor per nom, cognoms o DNI';
-                searchInput.autocomplete = 'off';
-
-                select.parentNode.insertBefore(wrapper, select);
-                wrapper.appendChild(searchInput);
-
-                var allOptions = Array.prototype.slice.call(select.options);
-
-                function normalize(text) {
-                    return (text || '')
-                        .toString()
-                        .toLowerCase()
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .trim();
+                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
+                    window.jQuery('#' + id).modal('hide');
+                    return;
                 }
 
-                function filterOptions() {
-                    var query = normalize(searchInput.value);
-
-                    allOptions.forEach(function (option) {
-                        var haystack = normalize(option.text + ' ' + option.value);
-                        var visible = query === '' || haystack.indexOf(query) !== -1;
-
-                        option.hidden = !visible;
-                        option.disabled = !visible;
-                    });
+                if (window.bootstrap && window.bootstrap.Modal) {
+                    var modal = document.getElementById(id);
+                    if (modal) {
+                        window.bootstrap.Modal.getOrCreateInstance(modal).hide();
+                    }
                 }
+            }
 
-                function syncSearchWithSelection() {
-                    var selectedOption = select.options[select.selectedIndex];
-                    if (!selectedOption) {
-                        return;
-                    }
-
-                    searchInput.value = selectedOption.value === '' ? '' : selectedOption.text;
-                    filterOptions();
-                }
-
-                searchInput.addEventListener('input', filterOptions);
-
-                searchInput.addEventListener('keydown', function (event) {
-                    if (event.key !== 'Enter') {
-                        return;
-                    }
-
-                    var firstVisibleOption = allOptions.find(function (option) {
-                        return !option.hidden && !option.disabled && option.value !== '';
-                    });
-
-                    if (!firstVisibleOption) {
-                        return;
-                    }
-
-                    event.preventDefault();
-                    select.value = firstVisibleOption.value;
-                    syncSearchWithSelection();
+            document.addEventListener('livewire:init', function () {
+                Livewire.on('show-falta-modal', function () {
+                    showModalById('faltaFormModal');
                 });
 
-                select.addEventListener('change', syncSearchWithSelection);
-
-                select.dataset.searchEnhanced = '1';
-                syncSearchWithSelection();
-            }
-
-            function prepareCreateForm() {
-                form.setAttribute('action', '/direccion/falta');
-                if (methodInput) {
-                    methodInput.value = 'POST';
-                }
-                if (idInput) {
-                    idInput.value = '';
-                }
-                enhanceProfesorSelect();
-            }
-
-            prepareCreateForm();
-
-            if (openButton) {
-                openButton.addEventListener('click', prepareCreateForm);
-            }
-
-            function setFieldValue(fieldName, value) {
-                var field = document.getElementById(fieldName + '_id');
-                if (!field) {
-                    return;
-                }
-
-                var type = (field.getAttribute('type') || '').toLowerCase();
-                if (type === 'checkbox') {
-                    field.checked = !!value;
-                    return;
-                }
-
-                if (value === null || typeof value === 'undefined') {
-                    field.value = '';
-                    return;
-                }
-
-                field.value = value;
-            }
-
-            function prepareEditForm(id) {
-                var url = '/direccion/falta/' + id + '/edit-data';
-                showCreateModal();
-
-                fetch(url, { credentials: 'same-origin' })
-                    .then(function (response) {
-                        if (!response.ok) {
-                            throw new Error('HTTP ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(function (res) {
-                        var data = res && res.data ? res.data : {};
-                        Object.keys(data).forEach(function (key) {
-                            setFieldValue(key, data[key]);
-                        });
-
-                        form.setAttribute('action', '/direccion/falta/' + id + '/edit');
-                        if (methodInput) {
-                            methodInput.value = 'PUT';
-                        }
-                        if (idInput) {
-                            idInput.value = id;
-                        }
-
-                        enhanceProfesorSelect();
-                        var profesorSelect = document.getElementById('idProfesor_id');
-                        if (profesorSelect) {
-                            profesorSelect.dispatchEvent(new Event('change'));
-                        }
-                        showCreateModal();
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        alert("No s'ha pogut carregar la falta per editar.");
-                    });
-            }
-
-            document.addEventListener('click', function (event) {
-                var button = event.target.closest('.js-edit-falta');
-                if (!button) {
-                    return;
-                }
-
-                event.preventDefault();
-                var id = button.getAttribute('data-id');
-                if (!id) {
-                    return;
-                }
-
-                prepareEditForm(id);
+                Livewire.on('hide-falta-modal', function () {
+                    hideModalById('faltaFormModal');
+                });
             });
         })();
     </script>

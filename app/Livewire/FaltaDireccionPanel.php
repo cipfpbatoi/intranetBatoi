@@ -2,18 +2,24 @@
 
 namespace Intranet\Livewire;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
+use Intranet\Entities\Profesor;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
- * Pilot Livewire per al panell de faltes de Direcció.
- *
- * Manté convivència amb el flux legacy de `/direccion/falta`.
+ * Panell Livewire de faltes de Direcció.
  */
 class FaltaDireccionPanel extends Component
 {
+    use AuthorizesRequests;
+    use WithFileUploads;
+
     /**
      * @var array<int, array<string, mixed>>
      */
@@ -33,6 +39,21 @@ class FaltaDireccionPanel extends Component
     public string $message = '';
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
+    public bool $showFormModal = false;
+    public bool $isEditing = false;
+    public ?int $formFaltaId = null;
+    public string $formIdProfesor = '';
+    public string $formProfessorSearch = '';
+    public string $formDesde = '';
+    public string $formHasta = '';
+    public bool $formBaja = false;
+    public bool $formDiaCompleto = true;
+    public string $formHoraIni = '';
+    public string $formHoraFin = '';
+    public string $formMotivos = '';
+    public string $formObservaciones = '';
+    public ?TemporaryUploadedFile $formFichero = null;
+    public string $existingFichero = '';
 
     private ?FaltaService $faltaService = null;
 
@@ -42,6 +63,7 @@ class FaltaDireccionPanel extends Component
     public function mount(): void
     {
         $this->loadFilterOptions();
+        $this->resetForm();
         $this->reloadFaltes();
     }
 
@@ -59,6 +81,45 @@ class FaltaDireccionPanel extends Component
     public function updatedFilterEstat(): void
     {
         $this->reloadFaltes();
+    }
+
+    /**
+     * Sincronitza el professor seleccionat des del cercador del modal.
+     */
+    public function updatedFormProfessorSearch(string $value): void
+    {
+        $normalized = $this->normalizeProfessorLabel($value);
+
+        foreach ($this->professorOptions as $dni => $label) {
+            if ($normalized === $this->normalizeProfessorLabel($label) || trim($value) === $dni) {
+                $this->formIdProfesor = $dni;
+                return;
+            }
+        }
+    }
+
+    /**
+     * Ajusta hores quan canvia el tipus de falta.
+     */
+    public function updatedFormDiaCompleto(bool $value): void
+    {
+        if ($value) {
+            $this->formHoraIni = '';
+            $this->formHoraFin = '';
+        }
+    }
+
+    /**
+     * Ajusta camps derivats quan es marca una baixa llarga.
+     */
+    public function updatedFormBaja(bool $value): void
+    {
+        if ($value) {
+            $this->formDiaCompleto = true;
+            $this->formHoraIni = '';
+            $this->formHoraFin = '';
+            $this->formHasta = $this->formDesde;
+        }
     }
 
     /**
@@ -133,6 +194,97 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
+     * Obri el modal en mode creació.
+     */
+    public function crear(): void
+    {
+        $this->resetFeedback();
+        $this->resetForm();
+        $this->showFormModal = true;
+        $this->dispatch('show-falta-modal');
+    }
+
+    /**
+     * Obri el modal en mode edició.
+     */
+    public function editar(int $id): void
+    {
+        $this->resetFeedback();
+
+        $falta = Falta::find($id);
+        if (!$falta) {
+            $this->error = 'No s\\\'ha trobat la falta.';
+            return;
+        }
+
+        if (!in_array((int) $falta->estado, [1, 2], true)) {
+            $this->error = 'Només es poden editar faltes sense autoritzar.';
+            return;
+        }
+
+        $this->isEditing = true;
+        $this->formFaltaId = (int) $falta->id;
+        $this->formIdProfesor = (string) $falta->idProfesor;
+        $this->formProfessorSearch = $this->professorOptions[$this->formIdProfesor] ?? (string) $falta->idProfesor;
+        $this->formDesde = (string) $falta->getRawOriginal('desde');
+        $this->formHasta = (string) ($falta->getRawOriginal('hasta') ?: $falta->getRawOriginal('desde'));
+        $this->formBaja = (int) $falta->baja === 1;
+        $this->formDiaCompleto = (int) $falta->dia_completo === 1;
+        $this->formHoraIni = (string) $falta->getRawOriginal('hora_ini');
+        $this->formHoraFin = (string) $falta->getRawOriginal('hora_fin');
+        $this->formMotivos = (string) $falta->motivos;
+        $this->formObservaciones = (string) $falta->observaciones;
+        $this->existingFichero = (string) ($falta->fichero ?? '');
+        $this->showFormModal = true;
+
+        $this->dispatch('show-falta-modal');
+    }
+
+    /**
+     * Tanca el modal de formulari.
+     */
+    public function cancelForm(): void
+    {
+        $this->resetForm();
+        $this->dispatch('hide-falta-modal');
+    }
+
+    /**
+     * Guarda la falta des del propi component Livewire.
+     */
+    public function guardar(): void
+    {
+        $this->resetFeedback();
+        $this->syncProfessorSearch();
+        $this->validate($this->formRules(), [], $this->validationAttributes());
+
+        if ($this->formFaltaId !== null) {
+            $falta = Falta::find($this->formFaltaId);
+            if (!$falta) {
+                $this->error = 'No s\\\'ha trobat la falta.';
+                return;
+            }
+
+            $this->authorize('update', $falta);
+            $this->faltas()->update($this->formFaltaId, $this->buildFormRequest());
+            $this->message = 'Falta actualitzada correctament.';
+        } else {
+            $this->authorize('create', Falta::class);
+            $id = $this->faltas()->create($this->buildFormRequest());
+
+            if (!$this->formBaja) {
+                $this->faltas()->init($id);
+            }
+
+            $this->message = 'Falta creada correctament.';
+        }
+
+        $this->resetForm();
+        $this->reloadFaltes();
+        $this->dispatch('hide-falta-modal');
+    }
+
+    /**
      * Esborra una falta només si encara no està autoritzada.
      */
     public function esborrar(int $id): void
@@ -200,17 +352,16 @@ class FaltaDireccionPanel extends Component
      */
     private function loadFilterOptions(): void
     {
-        $this->professorOptions = Falta::query()
-            ->with('Profesor')
-            ->orderBy('idProfesor')
+        $this->professorOptions = Profesor::query()
+            ->Activo()
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->orderBy('nombre')
             ->get()
-            ->map(function (Falta $falta) {
-                $dni = (string) $falta->idProfesor;
-                $label = $falta->Profesor->fullName ?? $dni;
-                return trim($label . ' (' . $dni . ')');
+            ->mapWithKeys(function (Profesor $profesor): array {
+                $label = trim($profesor->fullName . ' (' . $profesor->dni . ')');
+                return [(string) $profesor->dni => $label];
             })
-            ->unique()
-            ->values()
             ->toArray();
 
         $this->estatOptions = Falta::query()
@@ -230,6 +381,28 @@ class FaltaDireccionPanel extends Component
     {
         $this->error = '';
         $this->message = '';
+    }
+
+    /**
+     * Reinicialitza el formulari modal.
+     */
+    private function resetForm(): void
+    {
+        $this->showFormModal = false;
+        $this->isEditing = false;
+        $this->formFaltaId = null;
+        $this->formIdProfesor = AuthUser()->dni ?? '';
+        $this->formProfessorSearch = $this->professorOptions[$this->formIdProfesor] ?? '';
+        $this->formDesde = now()->format('Y-m-d');
+        $this->formHasta = now()->format('Y-m-d');
+        $this->formBaja = false;
+        $this->formDiaCompleto = true;
+        $this->formHoraIni = '';
+        $this->formHoraFin = '';
+        $this->formMotivos = '';
+        $this->formObservaciones = '';
+        $this->formFichero = null;
+        $this->existingFichero = '';
     }
 
     /**
@@ -282,5 +455,89 @@ class FaltaDireccionPanel extends Component
         }
 
         return $this->faltaService;
+    }
+
+    /**
+     * Regles del formulari de crear/editar.
+     *
+     * @return array<string, string>
+     */
+    private function formRules(): array
+    {
+        return [
+            'formIdProfesor' => 'required',
+            'formDesde' => 'exclude_if:formBaja,1|required|date',
+            'formHasta' => 'exclude_if:formBaja,1|nullable|date',
+            'formMotivos' => 'required',
+            'formObservaciones' => 'nullable|max:200',
+            'formHoraIni' => 'exclude_if:formBaja,1|required_unless:formDiaCompleto,1,true,on',
+            'formHoraFin' => 'exclude_if:formBaja,1|required_unless:formDiaCompleto,1,true,on',
+            'formFichero' => 'nullable|mimes:pdf,jpg,jpeg,png',
+        ];
+    }
+
+    /**
+     * Etiquetes llegibles per als errors de validació.
+     *
+     * @return array<string, string>
+     */
+    private function validationAttributes(): array
+    {
+        return [
+            'formIdProfesor' => 'professor',
+            'formDesde' => 'data d\'inici',
+            'formHasta' => 'data de fi',
+            'formMotivos' => 'motiu',
+            'formObservaciones' => 'observacions',
+            'formHoraIni' => 'hora d\'inici',
+            'formHoraFin' => 'hora de fi',
+            'formFichero' => 'fitxer',
+        ];
+    }
+
+    /**
+     * Construeix el request que espera el servei d'aplicació.
+     */
+    private function buildFormRequest(): Request
+    {
+        $payload = [
+            'idProfesor' => $this->formIdProfesor,
+            'desde' => $this->formDesde,
+            'hasta' => $this->formHasta !== '' ? $this->formHasta : $this->formDesde,
+            'baja' => $this->formBaja ? '1' : '0',
+            'dia_completo' => $this->formDiaCompleto ? '1' : '0',
+            'hora_ini' => $this->formDiaCompleto ? null : $this->formHoraIni,
+            'hora_fin' => $this->formDiaCompleto ? null : $this->formHoraFin,
+            'motivos' => $this->formMotivos,
+            'observaciones' => $this->formObservaciones,
+        ];
+
+        $files = [];
+        if ($this->formFichero !== null) {
+            $files['fichero'] = $this->formFichero;
+        }
+
+        return Request::create('/direccion/falta-livewire', 'POST', $payload, [], $files);
+    }
+
+    /**
+     * Intenta fixar l'identificador de professor a partir del text del cercador.
+     */
+    private function syncProfessorSearch(): void
+    {
+        if ($this->formIdProfesor !== '') {
+            return;
+        }
+
+        $this->updatedFormProfessorSearch($this->formProfessorSearch);
+    }
+
+    /**
+     * Normalitza una etiqueta de professor per a comparacions de cercador.
+     */
+    private function normalizeProfessorLabel(string $value): string
+    {
+        $normalized = preg_replace('/\s+/', ' ', trim($value));
+        return mb_strtolower((string) $normalized);
     }
 }
