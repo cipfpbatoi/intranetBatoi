@@ -56,7 +56,6 @@ class ComisionDireccionPanelTest extends TestCase
             ->test(ComisionDireccionPanel::class);
 
         $component
-            ->assertSee('Pilot funcional')
             ->assertSee('Imprimir Comissions autoritzades (1)')
             ->assertSee('Autoritzar comissions pendents (1)')
             ->assertSee('Imprimir pagaments seleccionats (0/1)')

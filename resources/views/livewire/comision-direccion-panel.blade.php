@@ -1,10 +1,4 @@
 <div>
-    <h2>Comissions - Pilot Livewire Direcció</h2>
-
-    <p class="text-muted">
-        Pilot funcional en convivència amb el panell legacy (<code>/direccion/comision</code>).
-    </p>
-
     @if ($error !== '')
         <div class="alert alert-danger">{{ $error }}</div>
     @endif
@@ -88,8 +82,6 @@
                 Autoritzar comissions pendents ({{ $pendingAuthorizationCount }})
             </button>
         @endif
-
-        <a class="btn btn-default" href="/direccion/comision">Tornar a versió legacy</a>
     </div>
 
     <div class="row" style="margin-bottom: 10px;">

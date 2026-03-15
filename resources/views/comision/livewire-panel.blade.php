@@ -1,4 +1,4 @@
 <x-pages.livewire
-    title="Comissions (Pilot Livewire)"
+    title="Comissions de servei de Direcció"
     component="comision-direccion-panel"
 />

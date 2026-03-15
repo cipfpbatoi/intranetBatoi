@@ -2,24 +2,23 @@
 
 ## Estat actual
 
-Convivixen dos camins per al panell de Direcció de comissions:
+El panell de Direcció de comissions ja entra per Livewire en:
 
-- Legacy: `/direccion/comision`
-- Pilot Livewire: `/direccion/comision-livewire`
+- `/direccion/comision`
 
-El pilot nou ja resol millor el llistat, els filtres, la paginació, el modal de detall i part de les accions, però encara reutilitza peces del flux legacy. Això implica que **encara no es pot eliminar el legacy** sense abans desacoblar dependències.
+La ruta antiga:
+
+- `/direccion/comision-livewire`
+
+queda només com a redirecció de compatibilitat.
 
 ## Peces implicades
 
-### Ruta i entrada legacy
+### Ruta i entrada actual
 
 - `routes/direccion.php`
-  - `GET /direccion/comision` -> `PanelComisionController@index`
-
-### Ruta i entrada nova
-
-- `routes/direccion.php`
-  - `GET /direccion/comision-livewire` -> vista `resources/views/comision/livewire-panel.blade.php`
+  - `GET /direccion/comision` -> vista `resources/views/comision/livewire-panel.blade.php`
+  - `GET /direccion/comision-livewire` -> redirecció de compatibilitat
   - component `app/Livewire/ComisionDireccionPanel.php`
 
 ### Controller legacy que encara continua viu
@@ -111,19 +110,19 @@ Ja desacoblat del controller legacy generalista:
 
 Les següents no s'han d'eliminar mentre no es tanque completament el flux nou:
 
-- `ComisionController::printAutoritzats()`
-- `ComisionController::payment()`
-- `ComisionController::autorizar()`
+- `ComisionController`
+- `resources/views/comision/detalle.blade.php`
+- rutes de `routes/profesor.php`
 
 Motiu:
 
-- encara tenen rutes actives
-- encara poden ser usades pel flux legacy
-- formen part d'un flux funcional validat per Direcció
+- encara donen servei al flux de professorat
+- hi ha funcionalitat FCT i detall que no hem retirat del mòdul antic
 
 ## Peces candidates a bridge
 
-El següent pas correcte no és esborrar el controller, sinó aprimar-lo.
+El treball pendent ja no és el panell de Direcció, sinó el mòdul antic que
+continua donant servei a professorat/FCT.
 
 En `ComisionController` hi ha una barreja de:
 
@@ -133,7 +132,8 @@ En `ComisionController` hi ha una barreja de:
 - gestió FCT
 - notificacions/correus
 
-La part de Direcció hauria d'anar quedant en serveis reutilitzables, deixant el controller com a façana prima temporal.
+La part de Direcció ja s'ha tret del controller principal. Ara la decisió és si
+convé segmentar el que queda entre flux general de professorat i flux FCT.
 
 ## Ordre recomanat de retirada
 
@@ -141,13 +141,12 @@ La part de Direcció hauria d'anar quedant en serveis reutilitzables, deixant el
 
 Objectiu:
 
-- mantindre els dos panells operatius
-- deixar clar què és pilot nou i què és compatibilitat
+- mantindre compatibilitat sense mantindre dos pantalles actives
 
 Accions:
 
 - documentar dependències actuals
-- marcar en comentaris i phpDoc els punts bridge
+- fer que `/direccion/comision` ja siga el panell nou
 
 ### Fase 2. Traure del controller les accions bulk de Direcció
 
@@ -171,15 +170,14 @@ Objectiu:
 
 Accions:
 
-- decidir si el formulari de comissió continua com a bridge temporal
-- o si es passa a un formulari propi Livewire
+- passar el formulari de comissió a Livewire
+- traure gestor documental a una ruta específica de Direcció
 
 ### Fase 4. Retirada visible del legacy
 
 Només quan el pilot cobrisca el 100% del flux de Direcció:
 
-- amagar l'enllaç a `/direccion/comision`
-- deixar la ruta legacy només per compatibilitat interna temporal
+- deixar la ruta antiga només com a redirecció temporal
 - eliminar vistes i JS antics no referenciats
 - simplificar o segmentar `ComisionController`
 
@@ -195,20 +193,25 @@ Una peça legacy de `comision` només s'hauria d'eliminar si es complixen les tr
 
 El següent treball amb millor retorn és:
 
-1. revisar si `autorizar()`, `printAutoritzats()` i `payment()` continuen sent necessaris només per a la ruta legacy
-2. deixar `ComisionController` com a bridge mínim del camí antic
-3. revisar després si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
-4. decidir quan s'amaga l'enllaç a `/direccion/comision`
+1. revisar si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
+2. decidir si `ComisionController` es pot segmentar entre flux de professorat i flux FCT
+3. fer la mateixa retirada segura en `falta`, `actividad` i `expediente`
+
+## Estat de tancament del panell de Direcció
+
+Des del punt de vista de Direcció, el mòdul de comissions queda pràcticament
+tancat en este sprint:
+
+- ruta principal migrada a Livewire
+- accions bulk desacoblades
+- edició desacoblada
+- gestor documental desacoblat
+- codi mort exclusiu de Direcció eliminat
+
+El que queda en `ComisionController` respon ja al flux viu de professorat/FCT.
 
 ## Decisió pràctica
 
-No convé "llevar el legacy" ara.
-
-Sí convé:
-
-- identificar-lo
-- aprimar-lo
-- marcar-lo
-- retirar-lo per peces
-
-En este mòdul, el primer objectiu ja no és "fer que funcione", perquè això ja ho fa. Ara el bon objectiu és **reduir dependències del panell nou respecte al controller legacy**.
+En este mòdul, el panell de Direcció ja ha quedat desacoblat. El que queda ara és
+retirada del codi antic que encara siga exclusiu de Direcció i simplificació del
+camí legacy que continua viu per professorat/FCT.

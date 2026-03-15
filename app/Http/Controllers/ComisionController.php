@@ -123,28 +123,6 @@ class ComisionController extends ModalController
     }
 
     /**
-     * Actualitza una comissió des del panell Livewire de Direcció.
-     *
-     * @param ComisionRequest $request
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateFromDireccion(ComisionRequest $request, $id)
-    {
-        $comision = $this->wrapNotFound(
-            fn () => $this->comisionService()->findOrFail((int) $id),
-            'Comissió no trobada',
-            ['comision_id' => $id]
-        );
-        $this->authorize('update', $comision);
-        $this->persist($request, $id);
-
-        return redirect()->route('comision.direccion.livewire')
-            ->with('success', 'Comissió actualitzada correctament.');
-    }
-
-    /**
      * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
@@ -280,29 +258,6 @@ class ComisionController extends ModalController
 
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function payment()
-    {
-        return $this->imprimir('payments', 6, 5, 'landscape', false);
-    }
-
-    public function printAutoritzats()
-    {
-        return $this->imprimir('comisionsServei');
-    }
-
-    /**
-     * @param $id
-     * @throws NotFoundDomainException
-     */
-    public function paid($id)
-    {
-        $this->authorize('update', $this->findComisionOrFail($id));
-        $this->setEstado($id, 5);
-    }
-
-    /**
      * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
@@ -311,16 +266,6 @@ class ComisionController extends ModalController
     {
         $this->authorize('update', $this->findComisionOrFail($id));
         $this->setEstado($id, 4);
-        return back();
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function autorizar()
-    {
-        $this->authorize('create', Comision::class);
-        StateService::makeAll($this->comisionService()->pendingAuthorization(), 2);
         return back();
     }
 

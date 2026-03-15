@@ -13,9 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Pilot Livewire per al panell de comissions de Direcció.
- *
- * Manté convivència amb el flux legacy de `/direccion/comision`.
+ * Panell Livewire de comissions de Direcció.
  */
 class ComisionDireccionPanel extends Component
 {
