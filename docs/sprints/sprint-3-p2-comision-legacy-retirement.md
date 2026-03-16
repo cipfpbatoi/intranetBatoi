@@ -195,7 +195,7 @@ El següent treball amb millor retorn és:
 
 1. revisar si `resources/views/comision/detalle.blade.php` continua sent necessari per al flux de Direcció o queda només per FCT/professorat
 2. decidir si `ComisionController` es pot segmentar entre flux de professorat i flux FCT
-3. fer la mateixa retirada segura en `falta`, `actividad` i `expediente`
+3. mantindre este mòdul com a referència de tancament per a la resta de panells de Direcció
 
 ## Estat de tancament del panell de Direcció
 
@@ -215,3 +215,7 @@ El que queda en `ComisionController` respon ja al flux viu de professorat/FCT.
 En este mòdul, el panell de Direcció ja ha quedat desacoblat. El que queda ara és
 retirada del codi antic que encara siga exclusiu de Direcció i simplificació del
 camí legacy que continua viu per professorat/FCT.
+
+Actualització:
+
+- el panell de Direcció de comissions es pot considerar funcionalment tancat dins de l'abast del Sprint 3

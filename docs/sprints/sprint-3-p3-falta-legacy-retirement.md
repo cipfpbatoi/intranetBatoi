@@ -189,9 +189,9 @@ Per tant, en `falta` el primer objectiu no és bulk actions ni PDF, sinó **subs
 
 El següent treball amb millor retorn en `falta` és:
 
-1. revisar si `PanelFaltaController` continua tenint algun paper real o queda només com a residu de compatibilitat
-2. segmentar millor `FaltaController` entre flux de professorat i flux comú
-3. decidir si `destroy/resolve/refuse/alta` de Direcció també han de traure's a bridges específics
+1. segmentar millor `FaltaController` entre flux de professorat i flux comú
+2. revisar si `store/update` legacy continuen sent només una via de professorat
+3. simplificar la documentació i els bridges de Direcció que ja han quedat estabilitzats
 
 ## Decisió pràctica
 
@@ -202,3 +202,7 @@ Sí convé:
 - considerar `FaltaController` com a bridge temporal
 - assumir que Direcció ja no depén del formulari legacy
 - retirar després les rutes/controladors de suport que realment hagen quedat morts
+
+Actualització:
+
+- `PanelFaltaController` ja s'ha eliminat del camí de Direcció

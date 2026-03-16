@@ -87,6 +87,7 @@ Inclou:
 ### S3-01 Audit JS legacy i dependències
 Prioritat: Alta
 Estat: Fet parcialment i reconduït
+Tancament: No
 
 Tasques:
 - Inventariar usos de jQuery i plugins per pantalla/fitxer.
@@ -100,6 +101,7 @@ Criteris d'acceptació:
 ### S3-02 Token/Auth estable en web + API
 Prioritat: Alta
 Estat: Molt avançat
+Tancament: Pràcticament sí
 
 Tasques:
 - Consolidar flux Bearer Sanctum en web interna.
@@ -113,6 +115,7 @@ Criteris d'acceptació:
 ### S3-03 Migració vertical Signatura (jQuery -> JS modern)
 Prioritat: Alta
 Estat: Avançat
+Tancament: No
 
 Tasques:
 - Migrar `public/js/Signatura/index.js` a JS modern (`fetch`, events nadius).
@@ -126,6 +129,7 @@ Criteris d'acceptació:
 ### S3-04 Migració vertical FCT crítica
 Prioritat: Alta
 Estat: Parcial / pendent de rematada
+Tancament: No
 
 Tasques:
 - Migrar scripts FCT de major ús (grid/modal/accions principals).
@@ -138,6 +142,7 @@ Criteris d'acceptació:
 ### S3-05 Capa comuna JS d'infra
 Prioritat: Mitjana-Alta
 Estat: Avançada
+Tancament: Parcial
 
 Tasques:
 - Definir `apiClient` compartit (headers, Bearer, errors, parse).
@@ -150,6 +155,7 @@ Criteris d'acceptació:
 ### S3-06 Proves i regressió
 Prioritat: Alta
 Estat: Avançada
+Tancament: Parcial
 
 Tasques:
 - Crear checklist de regressió funcional per mòduls migrats.
@@ -163,6 +169,7 @@ Criteris d'acceptació:
 ### S3-07 Retirada parcial jQuery
 Prioritat: Mitjana
 Estat: Parcial
+Tancament: No
 
 Tasques:
 - Eliminar imports/usos de jQuery en mòduls ja migrats.
@@ -175,6 +182,7 @@ Criteris d'acceptació:
 ### S3-08 Panells Livewire de Direcció
 Prioritat: Alta
 Estat: Pràcticament tancada
+Tancament: Sí
 
 Tasques:
 - Construir panell Livewire de `falta.direccion`.
@@ -191,6 +199,7 @@ Criteris d'acceptació:
 ### S3-09 Pla de retirada progressiva del legacy
 Prioritat: Alta
 Estat: Avançada
+Tancament: Parcial
 
 Tasques:
 - Documentar dependències entre pilots nous i controllers legacy.
@@ -226,6 +235,15 @@ Criteris d'acceptació:
 ## Punt de tall actual
 
 L'sprint es pot considerar molt avançat a nivell funcional i clarament avançat en retirada de legacy de Direcció.
+
+Lectura honesta per subsprint:
+
+- `S3-08`: tancada
+- `S3-09`: parcial alta
+- `S3-02`: pràcticament tancable
+- `S3-05`: parcial però usable
+- `S3-06`: parcial però suficient per defensar el treball nou
+- `S3-01`, `S3-03`, `S3-04`, `S3-07`: no tancades
 
 Per donar-lo per realment tancat, el següent bloc natural és:
 

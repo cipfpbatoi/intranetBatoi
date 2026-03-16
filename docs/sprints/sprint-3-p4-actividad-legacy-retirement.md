@@ -228,9 +228,9 @@ Per això en este mòdul convé anar amb més disciplina i menys pressa.
 
 El següent treball amb millor retorn és:
 
-1. decidir si Direcció necessita editar/esborrar des del panell nou
-2. documentar quines parts del detall legacy són de professorat i quines val la pena pujar a Direcció
-3. simplificar `ActividadController` una vegada quede clar l'abast real
+1. documentar quines parts del detall legacy són de professorat i quines val la pena mantindre només fora de Direcció
+2. simplificar `ActividadController` una vegada quede clar l'abast real
+3. executar regressió manual curta del panell final de Direcció
 
 Actualització:
 
@@ -247,3 +247,7 @@ Sí convé:
 - mantindre el detail legacy mentre no estiga clar què necessita exactament Direcció
 
 En este mòdul, el primer objectiu bo no és “recrear tot el legacy”, sinó **fer que el panell nou deixe de dependre de rutes legacy per a les accions massives i de control**.
+
+Actualització:
+
+- Direcció ja no necessita `show` complet, només el modal enriquit, document i valoració

@@ -189,9 +189,9 @@ Una peça legacy d'`expediente` només s'hauria d'eliminar si es complixen les t
 
 El següent treball amb millor retorn és:
 
-1. decidir després si Direcció necessita CRUD complet dins del pilot nou
-2. revisar si queda algun accés visible al panell antic de Direcció
-3. simplificar `ExpedienteController` una vegada Direcció deixe d'usar-ne més peces
+1. decidir després si Direcció necessita CRUD complet dins del panell nou
+2. simplificar `ExpedienteController` una vegada Direcció deixe d'usar-ne més peces
+3. executar regressió manual curta del panell final de Direcció
 
 ## Decisió pràctica
 
@@ -208,3 +208,4 @@ En este mòdul, el primer objectiu bo és **deixar de dependre del controller le
 Actualització:
 
 - `ExpedienteController::autorizar()` i `ExpedienteController::imprimir()` ja han quedat fora del flux de Direcció
+- `PanelExpedienteController` ja s'ha eliminat
