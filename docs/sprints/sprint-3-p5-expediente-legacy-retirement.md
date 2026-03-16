@@ -40,7 +40,7 @@ El panell nou de `ExpedienteDireccionPanel` ja resol:
 - rebutjar expedient pendent amb motiu
 - mostrar detall en modal
 - mostrar comptadors en botons globals
-- mostrar accés a document/PDF/vista completa des del modal quan toca
+- mostrar accés a document/PDF des del modal quan toca
 - ser la ruta principal de Direcció
 
 ## Què encara depén del legacy
@@ -99,9 +99,6 @@ Per tant, el mòdul legacy continua sent l'únic camí complet per a estes opera
 
 No convé eliminar encara:
 
-- `ExpedienteController::autorizar()`
-- `ExpedienteController::imprimir()`
-- `ExpedienteController::pdf()`
 - `ExpedienteController::show()`
 - `ExpedienteController::store()`
 - `ExpedienteController::update()`
@@ -111,7 +108,7 @@ No convé eliminar encara:
 Motiu:
 
 - continuen tenint rutes actives
-- el panell nou encara les reutilitza parcialment
+- el panell nou encara depén del mòdul legacy per al CRUD de professorat
 - algunes cobrixen casos que el pilot encara no ha reemplaçat
 
 ## Peces candidates a bridge
@@ -119,11 +116,8 @@ Motiu:
 En `ExpedienteController` hi ha una barreja de:
 
 - CRUD clàssic
-- autorització d'estats
-- impressió col·lectiva
-- PDF individual
 - show complet
-- integració amb gestor documental
+- CRUD i inicialització del flux de professorat
 
 El pas correcte no és esborrar-lo ara, sinó reduir-lo a **bridge temporal**.
 
@@ -181,7 +175,6 @@ Només quan el pilot cobrisca el flux principal:
 
 - amagar l'accés a `/direccion/expediente`
 - deixar el legacy només per compatibilitat temporal
-- simplificar `PanelExpedienteController`
 - simplificar `ExpedienteController`
 
 ## Criteri de retirada segura
@@ -197,7 +190,7 @@ Una peça legacy d'`expediente` només s'hauria d'eliminar si es complixen les t
 El següent treball amb millor retorn és:
 
 1. decidir després si Direcció necessita CRUD complet dins del pilot nou
-2. revisar si `PanelExpedienteController` encara té valor fora de compatibilitat
+2. revisar si queda algun accés visible al panell antic de Direcció
 3. simplificar `ExpedienteController` una vegada Direcció deixe d'usar-ne més peces
 
 ## Decisió pràctica
