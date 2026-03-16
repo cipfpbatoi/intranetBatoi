@@ -1,4 +1,4 @@
 <x-pages.livewire
-    title="Expedients (Pilot Livewire)"
+    title="Expedients de Direcció"
     component="expediente-direccion-panel"
 />

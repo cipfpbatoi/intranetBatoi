@@ -2,33 +2,26 @@
 
 ## Estat actual
 
-Convivixen dos camins per al panell de Direcció d'expedients:
+El panell principal de Direcció d'expedients ja és:
 
-- Legacy: `/direccion/expediente`
-- Pilot Livewire: `/direccion/expediente-livewire`
+- `/direccion/expediente`
 
-El pilot nou ja cobrix el nucli del flux de Direcció, però encara reutilitza diverses peces del mòdul legacy. Per tant, **encara no convé retirar el legacy** sense desacoblar abans les dependències que queden.
+I la ruta antiga de prova queda com a redirecció de compatibilitat:
+
+- `/direccion/expediente-livewire` -> `/direccion/expediente`
+
+El panell nou ja cobrix el nucli del flux de Direcció, però encara reutilitza diverses peces del mòdul legacy. Per tant, **encara no convé retirar tot el legacy** sense desacoblar abans les dependències que queden.
 
 ## Peces implicades
 
-### Ruta i entrada legacy
-
 - `routes/direccion.php`
-  - `GET /direccion/expediente` -> `PanelExpedienteController@index`
-
-### Ruta i entrada nova
-
-- `routes/direccion.php`
-  - `GET /direccion/expediente-livewire` -> vista `resources/views/expediente/livewire-panel.blade.php`
+  - `GET /direccion/expediente` -> vista `resources/views/expediente/livewire-panel.blade.php`
+  - `GET /direccion/expediente-livewire` -> redirecció de compatibilitat
   - component `app/Livewire/ExpedienteDireccionPanel.php`
 
 ### Controller legacy encara reutilitzat
 
 - `app/Http/Controllers/ExpedienteController.php`
-
-### Panell legacy encara operatiu
-
-- `app/Http/Controllers/PanelExpedienteController.php`
 
 ## Què ja substituïx el panell Livewire
 
@@ -48,56 +41,48 @@ El panell nou de `ExpedienteDireccionPanel` ja resol:
 - mostrar detall en modal
 - mostrar comptadors en botons globals
 - mostrar accés a document/PDF/vista completa des del modal quan toca
+- ser la ruta principal de Direcció
 
 ## Què encara depén del legacy
 
 ### 1. Bulk autoritzar expedients pendents
 
-En la vista Livewire:
-
-- `resources/views/livewire/expediente-direccion-panel.blade.php`
-  - botó amb `href="/direccion/expediente/autorizar"`
-
-En backend:
+Ja desacoblat del controller legacy:
 
 - `routes/direccion.php`
   - `GET /direccion/expediente/autorizar`
-- `app/Http/Controllers/ExpedienteController.php::autorizar()`
+- `app/Http/Controllers/Direccion/Expediente/AuthorizeController.php`
 
 ### 2. Imprimir expedients autoritzats
 
-En la vista Livewire:
-
-- `resources/views/livewire/expediente-direccion-panel.blade.php`
-  - botó amb `href="/direccion/expediente/pdf"`
-
-En backend:
+Ja desacoblat del controller legacy:
 
 - `routes/direccion.php`
   - `GET /direccion/expediente/pdf`
-- `app/Http/Controllers/ExpedienteController.php::imprimir()`
+- `app/Http/Controllers/Direccion/Expediente/PrintController.php`
 
 ### 3. Gestor documental
 
-El botó de document del modal usa una ruta clàssica:
+Ja desacoblat del flux legacy de professorat:
 
-- `routes/profesor.php`
-  - `GET /expediente/{actividad}/gestor`
-- `app/Http/Controllers/Core/IntranetController.php::gestor()`
-
-Nota:
-
-- la ruta està declarada amb el paràmetre `{actividad}`, però funcionalment apunta a expedients
-- és un detall legacy que convé revisar abans de consolidar el mòdul
+- `routes/direccion.php`
+  - `GET /direccion/expediente/{expediente}/gestor`
+- `app/Http/Controllers/Direccion/Expediente/GestorController.php`
 
 ### 4. PDF individual i show complet
 
-El modal del pilot reutilitza:
+El modal del pilot ja no reutilitza el PDF individual del legacy:
+
+- `routes/direccion.php`
+  - `GET /direccion/expediente/{expediente}/pdf`
+- `app/Http/Controllers/Direccion/Expediente/PdfController.php`
+
+La vista completa `show` ja no és necessària per a Direcció.
+
+En professorat continua existint:
 
 - `routes/profesor.php`
-  - `GET /expediente/{expediente}/pdf`
   - `GET /expediente/{expediente}/show`
-- `app/Http/Controllers/ExpedienteController.php::pdf()`
 - `app/Http/Controllers/ExpedienteController.php::show()`
 
 ### 5. Formulari, edició i esborrat
@@ -211,9 +196,9 @@ Una peça legacy d'`expediente` només s'hauria d'eliminar si es complixen les t
 
 El següent treball amb millor retorn és:
 
-1. traure `autorizar()` i `imprimir()` del controller legacy cap a servici/bridge específic
-2. revisar la ruta `expediente.gestor`, perquè la firma actual és confusa
-3. decidir després si Direcció necessita CRUD complet dins del pilot nou
+1. decidir després si Direcció necessita CRUD complet dins del pilot nou
+2. revisar si `PanelExpedienteController` encara té valor fora de compatibilitat
+3. simplificar `ExpedienteController` una vegada Direcció deixe d'usar-ne més peces
 
 ## Decisió pràctica
 

@@ -1,8 +1,4 @@
 <div>
-    <p class="text-muted">
-        Pilot funcional en convivència amb el panell legacy (<code>/direccion/expediente</code>).
-    </p>
-
     @if ($error !== '')
         <div class="alert alert-danger">{{ $error }}</div>
     @endif
@@ -30,8 +26,6 @@
                     Autoritzar expedients pendents ({{ $pendingAuthorizationCount }})
                 </a>
             @endif
-
-            <a class="btn btn-default" href="/direccion/expediente">Tornar a versió legacy</a>
         </div>
     </div>
 
@@ -166,7 +160,7 @@
                     @if ($selectedExpediente !== null && $selectedExpediente['hasDocument'])
                         <a
                             class="btn btn-info"
-                            href="{{ route('expediente.gestor', ['actividad' => $selectedExpediente['id']]) }}"
+                            href="{{ route('expediente.direccion.gestor', ['expediente' => $selectedExpediente['id']]) }}"
                             target="_blank"
                             rel="noopener"
                         >
@@ -177,22 +171,11 @@
                     @if ($selectedExpediente !== null && $selectedExpediente['canPdf'])
                         <a
                             class="btn btn-default"
-                            href="{{ route('expediente.pdf', ['expediente' => $selectedExpediente['id']]) }}"
+                            href="{{ route('expediente.direccion.pdf.item', ['expediente' => $selectedExpediente['id']]) }}"
                             target="_blank"
                             rel="noopener"
                         >
                             PDF
-                        </a>
-                    @endif
-
-                    @if ($selectedExpediente !== null && $selectedExpediente['canShow'])
-                        <a
-                            class="btn btn-default"
-                            href="{{ route('expediente.show', ['expediente' => $selectedExpediente['id']]) }}"
-                            target="_blank"
-                            rel="noopener"
-                        >
-                            Vista completa
                         </a>
                     @endif
 

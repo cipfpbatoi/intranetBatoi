@@ -14,20 +14,12 @@ Route::post('/comision/{comision}/refuse', ['as' => 'comision.refuse', 'uses' =>
 Route::get('/comision-livewire/pdf', ['as' => 'comision.direccion.pdf', 'uses' => 'Direccion\\Comision\\PrintController']);
 Route::get('/comision-livewire/paid', ['as' => 'comision.direccion.paid', 'uses' => 'Direccion\\Comision\\PaymentPrintController']);
 
-Route::get('/expediente', ['as' => 'expediente.direccion.index', 'uses' => 'PanelExpedienteController@index']);
-Route::view('/expediente-livewire', 'expediente.livewire-panel')->name('expediente.direccion.livewire');
-Route::get(
-    '/expediente/{expediente}/authorize',
-    ['as' => 'expediente.authorize', 'uses' => 'ExpedienteController@accept']
-);
-Route::get(
-    '/expediente/{expediente}/unauthorize',
-    ['as' => 'expediente.unauthorize', 'uses' => 'ExpedienteController@resign']
-);
-Route::get('/expediente/{expediente}/show', ['as' => 'expediente.show', 'uses' => 'ExpedienteController@show']);
-Route::post('/expediente/{expediente}/refuse', ['as' => 'expediente.refuse', 'uses' => 'ExpedienteController@refuse']);
-Route::get('/expediente/autorizar', ['as' => 'expediente.autorizar', 'uses' => 'ExpedienteController@autorizar']);
-Route::get('/expediente/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteController@imprimir']);
+Route::view('/expediente', 'expediente.livewire-panel')->name('expediente.direccion.index');
+Route::redirect('/expediente-livewire', '/direccion/expediente')->name('expediente.direccion.livewire');
+Route::get('/expediente/{expediente}/gestor', ['as' => 'expediente.direccion.gestor', 'uses' => 'Direccion\\Expediente\\GestorController']);
+Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.direccion.pdf.item', 'uses' => 'Direccion\\Expediente\\PdfController']);
+Route::get('/expediente/autorizar', ['as' => 'expediente.autorizar', 'uses' => 'Direccion\\Expediente\\AuthorizeController']);
+Route::get('/expediente/pdf', ['as' => 'expediente.direccion.pdf', 'uses' => 'Direccion\\Expediente\\PrintController']);
 
 
 Route::view('/actividad', 'actividad.livewire-panel')->name('actividad.direccion.index');

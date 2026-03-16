@@ -8,9 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Pilot Livewire per al panell d'expedients de Direcció.
- *
- * Manté convivència amb el flux legacy de `/direccion/expediente`.
+ * Panell Livewire d'expedients de Direcció.
  */
 class ExpedienteDireccionPanel extends Component
 {
@@ -241,7 +239,6 @@ class ExpedienteDireccionPanel extends Component
             'situacion' => (string) $expediente->situacion,
             'hasDocument' => !empty($expediente->idDocumento),
             'canPdf' => (int) $expediente->estado === 2 || (bool) $expediente->esInforme,
-            'canShow' => (int) $expediente->estado > 2,
         ];
     }
 

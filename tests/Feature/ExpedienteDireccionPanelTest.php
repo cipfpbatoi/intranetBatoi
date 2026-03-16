@@ -59,7 +59,7 @@ class ExpedienteDireccionPanelTest extends TestCase
             ->test(ExpedienteDireccionPanel::class);
 
         $component
-            ->assertSee('Pilot funcional')
+            ->assertDontSee('Pilot funcional')
             ->assertSee('Imprimir expedients autoritzats (1)')
             ->assertSee('Autoritzar expedients pendents (1)')
             ->assertSee('Maria Garcia Lopez')
