@@ -8,9 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Pilot Livewire per al panell d'activitats de Direcció.
- *
- * Manté convivència amb el flux legacy de `/direccion/actividad`.
+ * Panell Livewire d'activitats de Direcció.
  */
 class ActividadDireccionPanel extends Component
 {

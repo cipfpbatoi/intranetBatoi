@@ -1,4 +1,4 @@
 <x-pages.livewire
-    title="Activitats (Pilot Livewire)"
+    title="Activitats de Direcció"
     component="actividad-direccion-panel"
 />

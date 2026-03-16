@@ -1,8 +1,4 @@
 <div>
-    <p class="text-muted">
-        Pilot funcional en convivència amb el panell legacy (<code>/direccion/actividad</code>).
-    </p>
-
     @if ($error !== '')
         <div class="alert alert-danger">{{ $error }}</div>
     @endif
@@ -31,7 +27,6 @@
                 </a>
             @endif
 
-            <a class="btn btn-default" href="/direccion/actividad">Tornar a versió legacy</a>
         </div>
     </div>
 

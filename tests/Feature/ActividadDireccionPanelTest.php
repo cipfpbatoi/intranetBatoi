@@ -59,7 +59,7 @@ class ActividadDireccionPanelTest extends TestCase
             ->test(ActividadDireccionPanel::class);
 
         $component
-            ->assertSee('Pilot funcional')
+            ->assertDontSee('Pilot funcional')
             ->assertSee('Imprimir activitats autoritzades (1)')
             ->assertSee('Autoritzar activitats pendents (1)')
             ->assertSee('Jordi Marti Perez')

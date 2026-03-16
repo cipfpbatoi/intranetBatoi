@@ -2,33 +2,26 @@
 
 ## Estat actual
 
-Convivixen dos camins per al panell de Direcció d'activitats:
+El panell principal de Direcció d'activitats ja és:
 
-- Legacy: `/direccion/actividad`
-- Pilot Livewire: `/direccion/actividad-livewire`
+- `/direccion/actividad`
 
-El pilot nou ja resol una part important del flux de Direcció, però encara reutilitza diverses peces del mòdul legacy. Açò implica que **encara no convé retirar el legacy** sense desacoblar abans les dependències que queden.
+I la ruta antiga de prova queda com a redirecció de compatibilitat:
+
+- `/direccion/actividad-livewire` -> `/direccion/actividad`
+
+El panell nou ja resol una part important del flux de Direcció, però encara reutilitza diverses peces del mòdul legacy. Açò implica que **encara no convé retirar tot el legacy** sense desacoblar abans les dependències que queden.
 
 ## Peces implicades
 
-### Ruta i entrada legacy
-
 - `routes/direccion.php`
-  - `GET /direccion/actividad` -> `PanelActividadController@index`
-
-### Ruta i entrada nova
-
-- `routes/direccion.php`
-  - `GET /direccion/actividad-livewire` -> vista `resources/views/actividad/livewire-panel.blade.php`
+  - `GET /direccion/actividad` -> vista `resources/views/actividad/livewire-panel.blade.php`
+  - `GET /direccion/actividad-livewire` -> redirecció de compatibilitat
   - component `app/Livewire/ActividadDireccionPanel.php`
 
 ### Controller legacy encara reutilitzat
 
 - `app/Http/Controllers/ActividadController.php`
-
-### Panell legacy encara operatiu
-
-- `app/Http/Controllers/PanelActividadController.php`
 
 ## Què ja substituïx el panell Livewire
 
@@ -49,21 +42,17 @@ El panell nou de `ActividadDireccionPanel` ja resol:
 - mostrar botons globals condicionals per:
   - autoritzar pendents
   - imprimir autoritzades
+- ser la ruta principal de Direcció
 
 ## Què encara depén del legacy
 
 ### 1. Bulk autoritzar activitats pendents
 
-En la vista Livewire:
-
-- `resources/views/livewire/actividad-direccion-panel.blade.php`
-  - botó amb `href="/direccion/actividad/autorizar"`
-
-En backend:
+Ja desacoblat del controller legacy:
 
 - `routes/direccion.php`
   - `GET /direccion/actividad/autorizar`
-- `app/Http/Controllers/ActividadController.php::autorizar()`
+- `app/Http/Controllers/Direccion/Actividad/AuthorizeController.php`
 
 Punt important:
 
@@ -72,16 +61,11 @@ Punt important:
 
 ### 2. Imprimir activitats autoritzades
 
-En la vista Livewire:
-
-- `resources/views/livewire/actividad-direccion-panel.blade.php`
-  - botó amb `href="/direccion/actividad/pdf"`
-
-En backend:
+Ja desacoblat del controller legacy:
 
 - `routes/direccion.php`
   - `GET /direccion/actividad/pdf`
-- `app/Http/Controllers/ActividadController.php::printAutoritzats()`
+- `app/Http/Controllers/Direccion/Actividad/PrintController.php`
 
 ### 3. Gestor documental
 
@@ -125,8 +109,6 @@ Per tant, el legacy continua sent l'únic camí funcional complet per a eixes op
 
 No convé eliminar encara:
 
-- `ActividadController::autorizar()`
-- `ActividadController::printAutoritzats()`
 - `ActividadController::gestor()`
 - `ActividadController::printValue()`
 - `ActividadController::showValue()`
@@ -174,11 +156,8 @@ Objectiu:
 
 Accions:
 
-- extraure a servei:
-  - bulk autoritzar
-  - impressió d'autoritzades
-  - sincronització calendari si correspon
-- substituir en Livewire els `href` directes al controller legacy
+- bulk autoritzar i impressió d'autoritzades ja desacoblats en controllers de Direcció
+- queda revisar si convé extraure la lògica comuna a servici específic
 
 Esta és la primera fase amb millor retorn tècnic.
 
@@ -210,9 +189,8 @@ Accions:
 
 Només quan el pilot cobrisca el flux principal de Direcció:
 
-- amagar l'accés a `/direccion/actividad`
+- amagar l'accés a `/direccion/actividad-livewire`
 - deixar el legacy temporalment només per compatibilitat interna
-- simplificar `PanelActividadController`
 - simplificar `ActividadController`
 
 ## Criteri de retirada segura
