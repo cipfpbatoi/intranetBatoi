@@ -5,6 +5,7 @@ LABEL maintainer="Arturo Candela"
 ARG WWWGROUP=1000
 ARG WWWUSER=1000
 ARG NODE_VERSION=20
+ARG NPM_VERSION=11
 ARG POSTGRES_VERSION=14
 
 WORKDIR /var/www/html
@@ -32,7 +33,7 @@ RUN apt-get update \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g npm@10.8.2 \
+    && npm install -g npm@${NPM_VERSION} \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc/apt/keyrings/yarn.gpg >/dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
