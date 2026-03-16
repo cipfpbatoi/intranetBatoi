@@ -12,16 +12,23 @@ Issue mare relacionada: #79
 
 ## Estat real del sprint
 
-Durant l'execució, l'sprint s'ha orientat sobretot a una migració funcional incremental de panells de Direcció a Livewire, mantenint convivència amb el legacy.
+Durant l'execució, l'sprint s'ha orientat sobretot a una migració funcional incremental de panells de Direcció a Livewire, amb substitució progressiva del panell legacy en els mòduls principals.
 
 Resultat actual:
 
-- estabilització funcional Laravel 12 i auth/token: avançada
+- estabilització funcional Laravel 12 i auth/token: molt avançada
 - migració JS/jQuery: parcial
-- pilots Livewire de Direcció: avançats
-- retirada completa del legacy: encara pendent
+- panells Livewire de Direcció: molt avançats
+- retirada del legacy de Direcció: avançada però no completa
 
-Pilots creats:
+Panells creats i activats com a entrada principal de Direcció:
+
+- `direccion/falta`
+- `direccion/comision`
+- `direccion/actividad`
+- `direccion/expediente`
+
+Rutes de compatibilitat encara existents:
 
 - `direccion/falta-livewire`
 - `direccion/comision-livewire`
@@ -55,23 +62,25 @@ Inclou:
 - infraestructura comuna JS millorada
 - però no hi ha retirada total de jQuery ni de tot el JS legacy
 
-### L3 - Pilots Livewire de Direcció
-Estat: Avançada
+### L3 - Panells Livewire de Direcció
+Estat: Molt avançada
 
 Inclou:
 
-- pilots funcionals de `falta`, `comision`, `actividad` i `expediente`
+- panells funcionals de `falta`, `comision`, `actividad` i `expediente`
+- rutes principals de Direcció substituïdes en els quatre casos
 - proves específiques per component
-- convivència temporal amb el panell legacy
+- millores UX i desacoblament progressiu del legacy
 
 ### L4 - Retirada progressiva de legacy
-Estat: En preparació activa
+Estat: Avançada
 
 Inclou:
 
 - inventari de dependències legacy per mòdul
 - plans de desmantellament per fases
-- encara sense desacoblament complet de controllers i rutes històriques
+- desacoblament de rutes, bulk actions i bridges específics en diversos mòduls
+- eliminació de panells antics de Direcció ja morts
 
 ## Backlog prioritzat
 
@@ -163,19 +172,19 @@ Criteris d'acceptació:
 - Reducció mesurable d'ús de jQuery en àmbit Sprint 3.
 - Cap pantalla crítica del sprint depén de jQuery per funcionar.
 
-### S3-08 Pilots Livewire de Direcció
+### S3-08 Panells Livewire de Direcció
 Prioritat: Alta
-Estat: Avançada
+Estat: Pràcticament tancada
 
 Tasques:
-- Construir pilot Livewire de `falta.direccion`.
-- Construir pilot Livewire de `comision.direccion`.
-- Construir pilot Livewire de `actividad.direccion`.
-- Construir pilot Livewire de `expediente.direccion`.
-- Mantindre convivència amb rutes i controllers legacy.
+- Construir panell Livewire de `falta.direccion`.
+- Construir panell Livewire de `comision.direccion`.
+- Construir panell Livewire de `actividad.direccion`.
+- Construir panell Livewire de `expediente.direccion`.
+- Substituir l'entrada principal de Direcció quan el panell nou siga suficient.
 
 Criteris d'acceptació:
-- Cada panell nou és accessible per una ruta pròpia sense trencar la legacy.
+- Cada panell nou és accessible i usable com a entrada principal de Direcció.
 - Hi ha filtre, accions bàsiques i visualització funcional per a Direcció.
 - Cada pilot té almenys una prova específica.
 
@@ -187,6 +196,7 @@ Tasques:
 - Documentar dependències entre pilots nous i controllers legacy.
 - Identificar quines peces poden quedar com a bridge temporal.
 - Definir ordre de desacoblament per mòdul.
+- Eliminar panells de Direcció i mètodes legacy que ja no tenen rutes actives.
 
 Criteris d'acceptació:
 - Existeix un document de retirada per cada pilot principal.
@@ -205,21 +215,23 @@ Criteris d'acceptació:
 ## Ordre real executat
 1. Estabilització funcional Laravel 12 i auth/token
 2. Migració/reducció parcial de JS legacy en fluxos crítics
-3. Pilot Livewire `falta.direccion`
-4. Pilot Livewire `comision.direccion`
-5. Pilot Livewire `actividad.direccion`
-6. Pilot Livewire `expediente.direccion`
+3. Panell Livewire `falta.direccion`
+4. Panell Livewire `comision.direccion`
+5. Panell Livewire `actividad.direccion`
+6. Panell Livewire `expediente.direccion`
 7. Documents de retirada progressiva del legacy
+8. Desacoblament de bulk actions, gestors documentals i PDFs individuals
+9. Eliminació de panells legacy morts de Direcció
 
 ## Punt de tall actual
 
-L'sprint es pot considerar avançat a nivell funcional, però no complet a nivell d'eliminació de legacy.
+L'sprint es pot considerar molt avançat a nivell funcional i clarament avançat en retirada de legacy de Direcció.
 
 Per donar-lo per realment tancat, el següent bloc natural és:
 
-- desacoblar accions globals dels controllers legacy
-- decidir quins pilots necessiten CRUD complet
-- només després plantejar la retirada visible de rutes i panells antics
+- decidir quins panells necessiten realment CRUD complet per a Direcció
+- simplificar controllers generalistes deixant només fluxos vius de professorat
+- fer una última passada de revisió documental i de tancament
 
 ## Definició de fet (DoD) Sprint 3
 - Fluxos crítics estabilitzats en Laravel 12.
@@ -228,7 +240,8 @@ Per donar-lo per realment tancat, el següent bloc natural és:
 - Evidència de proves i traçabilitat en issues/commits.
 
 ## DoD realista després d'esta execució
-- Hi ha pilots Livewire funcionals per als principals panells de Direcció.
-- Hi ha proves específiques per als pilots creats.
-- El legacy està identificat i documentat, encara que no completament retirat.
-- El següent pas tècnic per a desacoblar legacy és clar en cada mòdul.
+- Hi ha panells Livewire funcionals i principals per als principals fluxos de Direcció.
+- Hi ha proves específiques per als panells i per diversos bridges nous de Direcció.
+- El legacy de Direcció està identificat, documentat i parcialment retirat.
+- Els panells legacy morts de Direcció s'han eliminat en els mòduls principals.
+- El següent pas tècnic és sobretot simplificació final i tancament, no ja construcció inicial.
