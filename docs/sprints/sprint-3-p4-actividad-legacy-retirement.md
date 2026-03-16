@@ -43,6 +43,12 @@ El panell nou de `ActividadDireccionPanel` ja resol:
   - autoritzar pendents
   - imprimir autoritzades
 - ser la ruta principal de Direcció
+- resoldre les accions de fila principals directament des del component Livewire:
+  - autoritzar
+  - tornar a l'estat anterior
+  - rebutjar
+  - marcar ITACA
+  - veure en modal
 
 ## Què encara depén del legacy
 
@@ -98,7 +104,7 @@ Encara existix el flux complet de detall i gestió:
 - `app/Http/Controllers/ActividadController.php::detalle()`
 - vistes associades d'`extraescolares`
 
-Ara mateix el pilot de Direcció no depén directament d'esta ruta per al flux principal, però continua sent part important del mòdul legacy.
+Ara mateix Direcció no depén d'esta ruta per al flux principal. Continua sent part important del mòdul legacy de professorat.
 
 ### 6. Edició i esborrat
 
@@ -120,7 +126,7 @@ No convé eliminar encara:
 Motiu:
 
 - continuen tenint rutes actives
-- el panell nou encara les reutilitza indirectament
+- continuen sent el flux operatiu de professorat
 - algunes encapsulen més lògica de negoci que una simple redirecció
 
 ## Peces candidates a bridge
@@ -158,7 +164,9 @@ Objectiu:
 Accions:
 
 - bulk autoritzar i impressió d'autoritzades ja desacoblats en controllers de Direcció
-- queda revisar si convé extraure la lògica comuna a servici específic
+- gestor documental i PDF de valoració ja desacoblats en controllers de Direcció
+- les accions de fila de Direcció ja no depenen de rutes pròpies del legacy
+- queda revisar si convé extraure més lògica comuna a servici específic
 
 Esta és la primera fase amb millor retorn tècnic.
 
@@ -220,9 +228,9 @@ Per això en este mòdul convé anar amb més disciplina i menys pressa.
 
 El següent treball amb millor retorn és:
 
-1. traure `autorizar()` i `printAutoritzats()` del controller legacy cap a servici/bridge específic
-2. decidir si Direcció necessita editar/esborrar des del pilot nou
-3. documentar després quines parts del detall legacy són de Direcció i quines són només de professorat
+1. decidir si Direcció necessita editar/esborrar des del panell nou
+2. documentar quines parts del detall legacy són de professorat i quines val la pena pujar a Direcció
+3. simplificar `ActividadController` una vegada quede clar l'abast real
 
 ## Decisió pràctica
 
@@ -231,7 +239,7 @@ No convé llevar el legacy d'`actividad` ara.
 Sí convé:
 
 - identificar-lo
-- desacoblar primer les accions globals
+- desacoblar primer les accions globals i els accessos documentals de Direcció
 - mantindre el detail legacy mentre no estiga clar què necessita exactament Direcció
 
 En este mòdul, el primer objectiu bo no és “recrear tot el legacy”, sinó **fer que el panell nou deixe de dependre de rutes legacy per a les accions massives i de control**.

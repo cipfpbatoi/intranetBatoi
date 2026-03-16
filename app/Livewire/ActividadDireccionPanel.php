@@ -2,7 +2,10 @@
 
 namespace Intranet\Livewire;
 
+use Illuminate\Support\Carbon;
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Entities\Actividad;
+use Intranet\Entities\Hora;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -245,7 +248,7 @@ class ActividadDireccionPanel extends Component
         $query = Actividad::query()
             ->with(['profesores' => function ($profesores): void {
                 $profesores->select('dni', 'nombre', 'apellido1', 'apellido2');
-            }, 'tipoActividad.departament'])
+            }, 'grupos:codigo,nombre', 'tipoActividad.departament'])
             ->where('extraescolar', 1)
             ->where('estado', '>', 0)
             ->orderByDesc('desde');
@@ -274,8 +277,24 @@ class ActividadDireccionPanel extends Component
      */
     private function mapActividad(Actividad $actividad): array
     {
+        $desde = $this->parseActividadDate($actividad, 'desde');
+        $hasta = $this->parseActividadDate($actividad, 'hasta');
         $profesores = $actividad->profesores
-            ->map(fn ($profesor) => trim(($profesor->fullName ?? '') ?: ($profesor->dni ?? '')))
+            ->map(function ($profesor) use ($desde, $hasta): array {
+                $label = trim(($profesor->fullName ?? '') ?: ($profesor->dni ?? ''));
+                $grupsAfectats = $this->scheduledGroupsForProfesor((string) $profesor->dni, $desde, $hasta);
+
+                return [
+                    'dni' => (string) $profesor->dni,
+                    'nom' => $label,
+                    'teHorariDocent' => $grupsAfectats !== [],
+                    'grupsAfectats' => $grupsAfectats,
+                ];
+            })
+            ->filter(fn (array $profesor): bool => $profesor['nom'] !== '')
+            ->values();
+        $grups = $actividad->grupos
+            ->map(fn ($grup) => (string) ($grup->nombre ?? $grup->codigo ?? ''))
             ->filter()
             ->values();
 
@@ -283,15 +302,19 @@ class ActividadDireccionPanel extends Component
             'id' => (int) $actividad->id,
             'name' => (string) $actividad->name,
             'descripcion' => (string) ($actividad->descripcion ?? ''),
+            'objetivos' => (string) ($actividad->objetivos ?? ''),
             'desde' => (string) $actividad->desde,
             'hasta' => (string) $actividad->hasta,
             'estado' => (int) $actividad->estado,
             'situacion' => (string) $actividad->situacion,
             'tipo' => $actividad->complementaria ? 'Complementària' : 'No complementària',
             'tipoActividad' => (string) ($actividad->tipoActividad->vliteral ?? '-'),
+            'justificacioRa' => (string) ($actividad->tipoActividad->justificacio ?? ''),
             'departamento' => (string) ($actividad->tipoActividad->departamento ?? 'CENTRE'),
-            'coordinador' => $profesores->first() ?: 'Sense assignar',
-            'profesores' => $profesores->all(),
+            'coordinador' => $profesores->first()['nom'] ?? 'Sense assignar',
+            'profesores' => $profesores->pluck('nom')->all(),
+            'participants' => $profesores->all(),
+            'grups' => $grups->all(),
             'hasDocument' => !empty($actividad->idDocumento),
             'idDocumento' => $actividad->idDocumento ? (int) $actividad->idDocumento : null,
             'canDesautorize' => (int) $actividad->estado === 3,
@@ -403,5 +426,47 @@ class ActividadDireccionPanel extends Component
         return app()->makeWith(AutorizacionStateService::class, [
             'class' => Actividad::class,
         ]);
+    }
+
+    /**
+     * Retorna el servei d'horaris.
+     */
+    private function horarios(): HorarioService
+    {
+        return app(HorarioService::class);
+    }
+
+    /**
+     * Parseja la data/hora real de l'activitat evitant accessors de presentació.
+     */
+    private function parseActividadDate(Actividad $actividad, string $field): Carbon
+    {
+        return Carbon::parse((string) $actividad->getRawOriginal($field));
+    }
+
+    /**
+     * Retorna els grups lectius del professor solapats amb l'activitat.
+     *
+     * @return array<int, string>
+     */
+    private function scheduledGroupsForProfesor(string $dni, Carbon $desde, Carbon $hasta): array
+    {
+        $sesiones = Hora::horasAfectadas($desde->format('H:i'), $hasta->format('H:i'))
+            ->map(fn ($codigo) => (int) $codigo)
+            ->values()
+            ->all();
+
+        if ($sesiones === []) {
+            return [];
+        }
+
+        return $this->horarios()
+            ->gruposByProfesorDiaAndSesiones($dni, nameDay($desde->toDateString()), $sesiones)
+            ->pluck('idGrupo')
+            ->filter()
+            ->map(fn ($grup) => (string) $grup)
+            ->unique()
+            ->values()
+            ->all();
     }
 }

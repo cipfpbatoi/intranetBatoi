@@ -75,6 +75,25 @@
         </div>
     </div>
 
+    @if ($rebutjarId !== null)
+        <div class="panel panel-danger" style="margin-top: 20px;">
+            <div class="panel-heading">Rebutjar activitat #{{ $rebutjarId }}</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="motiu-rebutjar-actividad">Motiu</label>
+                    <textarea
+                        id="motiu-rebutjar-actividad"
+                        class="form-control"
+                        rows="3"
+                        wire:model.defer="motiuRebutjar"
+                    ></textarea>
+                </div>
+                <button type="button" class="btn btn-danger" wire:click="confirmarRebutjar">Confirmar rebuig</button>
+                <button type="button" class="btn btn-default" wire:click="cancelarRebutjar">Cancelar</button>
+            </div>
+        </div>
+    @endif
+
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead>
@@ -138,25 +157,6 @@
         {{ $paginator->links() }}
     </div>
 
-    @if ($rebutjarId !== null)
-        <div class="panel panel-danger" style="margin-top: 20px;">
-            <div class="panel-heading">Rebutjar activitat #{{ $rebutjarId }}</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="motiu-rebutjar-actividad">Motiu</label>
-                    <textarea
-                        id="motiu-rebutjar-actividad"
-                        class="form-control"
-                        rows="3"
-                        wire:model.defer="motiuRebutjar"
-                    ></textarea>
-                </div>
-                <button type="button" class="btn btn-danger" wire:click="confirmarRebutjar">Confirmar rebuig</button>
-                <button type="button" class="btn btn-default" wire:click="cancelarRebutjar">Cancelar</button>
-            </div>
-        </div>
-    @endif
-
     <div id="showActividad" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -172,12 +172,47 @@
                             <li><strong>Tipus activitat:</strong> {{ $selectedActividad['tipoActividad'] }}</li>
                             <li><strong>Departament:</strong> {{ $selectedActividad['departamento'] }}</li>
                             <li><strong>Coordinador:</strong> {{ $selectedActividad['coordinador'] }}</li>
-                            <li><strong>Professorat:</strong> {{ implode(', ', $selectedActividad['profesores']) !== '' ? implode(', ', $selectedActividad['profesores']) : '-' }}</li>
                             <li><strong>Des de:</strong> {{ $selectedActividad['desde'] }}</li>
                             <li><strong>Fins:</strong> {{ $selectedActividad['hasta'] }}</li>
                             <li><strong>Tipus:</strong> {{ $selectedActividad['tipo'] }}</li>
                             <li><strong>Estat:</strong> {{ $selectedActividad['situacion'] }}</li>
+                            <li><strong>Justificació RA:</strong> {{ $selectedActividad['justificacioRa'] !== '' ? $selectedActividad['justificacioRa'] : '-' }}</li>
+                            <li><strong>Objectius:</strong> {{ $selectedActividad['objetivos'] !== '' ? $selectedActividad['objetivos'] : '-' }}</li>
                         </ul>
+
+                        <hr>
+
+                        <h4>Participants</h4>
+                        @if ($selectedActividad['participants'] !== [])
+                            <ul class="list-unstyled">
+                                @foreach ($selectedActividad['participants'] as $participant)
+                                    <li style="margin-bottom: 8px;">
+                                        <strong>{{ $participant['nom'] }}</strong>
+                                        @if ($participant['teHorariDocent'])
+                                            <span class="label label-danger" style="margin-left: 8px;">Té horari docent</span>
+                                            @foreach ($participant['grupsAfectats'] as $grup)
+                                                <span class="label label-warning" style="margin-left: 4px;">{{ $grup }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="label label-success" style="margin-left: 8px;">Sense docència assignada</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted">No hi ha professorat participant.</p>
+                        @endif
+
+                        <h4>Grups participants</h4>
+                        @if ($selectedActividad['grups'] !== [])
+                            <ul class="list-unstyled">
+                                @foreach ($selectedActividad['grups'] as $grup)
+                                    <li>{{ $grup }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted">No hi ha grups associats.</p>
+                        @endif
                     @endif
                 </div>
                 <div class="modal-footer">

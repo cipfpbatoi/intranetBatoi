@@ -32,15 +32,8 @@ Route::get('/expediente/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteCo
 
 Route::view('/actividad', 'actividad.livewire-panel')->name('actividad.direccion.index');
 Route::redirect('/actividad-livewire', '/direccion/actividad')->name('actividad.direccion.livewire');
-Route::get('/actividad/{actividad}/authorize', ['as' => 'actividad.authorize', 'uses' => 'ActividadController@accept']);
-Route::get(
-    '/actividad/{actividad}/unauthorize',
-    ['as' => 'actividad.unauthorize', 'uses' => 'ActividadController@resign']
-);
-Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.direccion.gestor', 'uses' => 'Direccion\\Actividad\\GestorController']);
 Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.direccion.pdfVal', 'uses' => 'Direccion\\Actividad\\ValuePdfController']);
-Route::post('/actividad/{actividad}/refuse', ['as' => 'actividad.refuse', 'uses' => 'ActividadController@refuse']);
 Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'Direccion\\Actividad\\PrintController']);
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Direccion\\Actividad\\AuthorizeController']);
 

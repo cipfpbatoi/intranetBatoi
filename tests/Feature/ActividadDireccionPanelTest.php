@@ -40,6 +40,10 @@ class ActividadDireccionPanelTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('horarios');
+        Schema::connection('sqlite')->dropIfExists('horas');
+        Schema::connection('sqlite')->dropIfExists('actividad_grupo');
+        Schema::connection('sqlite')->dropIfExists('grupos');
         Schema::connection('sqlite')->dropIfExists('actividad_profesor');
         Schema::connection('sqlite')->dropIfExists('tipo_actividad');
         Schema::connection('sqlite')->dropIfExists('departamentos');
@@ -142,6 +146,13 @@ class ActividadDireccionPanelTest extends TestCase
             ->assertSet('selectedActividad.id', 2)
             ->assertSet('selectedActividad.name', 'Jornada convivencia')
             ->assertSet('selectedActividad.coordinador', 'Jordi Marti Perez');
+
+        $selected = $component->get('selectedActividad');
+
+        $this->assertSame('Memòria activitat', $selected['objetivos']);
+        $this->assertSame("Activitat per a consolidar aprenentatges.", $selected['justificacioRa']);
+        $this->assertSame(['2CFMLFPJ', '1CFMLFPG'], $selected['participants'][0]['grupsAfectats']);
+        $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
     private function direccionUser(): Profesor
@@ -186,6 +197,17 @@ class ActividadDireccionPanelTest extends TestCase
             $table->timestamps();
         });
 
+        Schema::connection('sqlite')->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo', 10)->primary();
+            $table->string('nombre')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('actividad_grupo', function (Blueprint $table): void {
+            $table->unsignedInteger('idActividad');
+            $table->string('idGrupo', 10);
+        });
+
         Schema::connection('sqlite')->create('departamentos', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('cliteral')->nullable();
@@ -209,6 +231,25 @@ class ActividadDireccionPanelTest extends TestCase
             $table->unsignedInteger('idActividad');
             $table->string('idProfesor', 10);
             $table->boolean('coordinador')->default(false);
+        });
+
+        Schema::connection('sqlite')->create('horas', function (Blueprint $table): void {
+            $table->unsignedInteger('codigo')->primary();
+            $table->string('hora_ini', 5);
+            $table->string('hora_fin', 5);
+        });
+
+        Schema::connection('sqlite')->create('horarios', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('idProfesor', 10);
+            $table->string('modulo')->nullable();
+            $table->string('idGrupo', 10)->nullable();
+            $table->unsignedInteger('ocupacion')->nullable();
+            $table->string('aula')->nullable();
+            $table->string('dia_semana', 1);
+            $table->unsignedInteger('sesion_orden');
+            $table->boolean('plantilla')->default(false);
+            $table->timestamps();
         });
 
         Schema::connection('sqlite')->create('activities', function (Blueprint $table): void {
@@ -290,7 +331,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'cliteral' => 'Eixida',
                 'vliteral' => 'Eixida cultural',
                 'departamento_id' => 10,
-                'justificacio' => null,
+                'justificacio' => 'Activitat per a consolidar aprenentatges.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -317,6 +358,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'complementaria' => 1,
                 'fueraCentro' => 1,
                 'transport' => 0,
+                'objetivos' => 'Visita guiada',
                 'idDocumento' => null,
                 'estado' => 1,
                 'created_at' => now(),
@@ -333,6 +375,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'complementaria' => 1,
                 'fueraCentro' => 1,
                 'transport' => 0,
+                'objetivos' => 'Memòria activitat',
                 'idDocumento' => 99,
                 'estado' => 2,
                 'created_at' => now(),
@@ -349,6 +392,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'complementaria' => 1,
                 'fueraCentro' => 1,
                 'transport' => 0,
+                'objetivos' => null,
                 'idDocumento' => null,
                 'estado' => 3,
                 'created_at' => now(),
@@ -365,6 +409,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'complementaria' => 0,
                 'fueraCentro' => 1,
                 'transport' => 1,
+                'objetivos' => null,
                 'idDocumento' => null,
                 'estado' => 4,
                 'created_at' => now(),
@@ -377,6 +422,51 @@ class ActividadDireccionPanelTest extends TestCase
             ['idActividad' => 2, 'idProfesor' => 'ACT100', 'coordinador' => 1],
             ['idActividad' => 3, 'idProfesor' => 'ACT200', 'coordinador' => 1],
             ['idActividad' => 4, 'idProfesor' => 'ACT200', 'coordinador' => 1],
+        ]);
+
+        DB::connection('sqlite')->table('grupos')->insert([
+            [
+                'codigo' => 'GRP001',
+                'nombre' => '1r CFGM Estètica',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        DB::connection('sqlite')->table('actividad_grupo')->insert([
+            ['idActividad' => 2, 'idGrupo' => 'GRP001'],
+        ]);
+
+        DB::connection('sqlite')->table('horas')->insert([
+            ['codigo' => 1, 'hora_ini' => '08:55', 'hora_fin' => '09:50'],
+            ['codigo' => 2, 'hora_ini' => '09:50', 'hora_fin' => '10:45'],
+        ]);
+
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => 'ACT100',
+                'modulo' => 'MOD1',
+                'idGrupo' => '2CFMLFPJ',
+                'ocupacion' => null,
+                'aula' => 'A1',
+                'dia_semana' => nameDay('2026-03-21'),
+                'sesion_orden' => 1,
+                'plantilla' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'ACT100',
+                'modulo' => 'MOD2',
+                'idGrupo' => '1CFMLFPG',
+                'ocupacion' => null,
+                'aula' => 'A2',
+                'dia_semana' => nameDay('2026-03-21'),
+                'sesion_orden' => 2,
+                'plantilla' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
