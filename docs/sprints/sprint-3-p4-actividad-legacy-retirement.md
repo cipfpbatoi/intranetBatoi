@@ -232,6 +232,10 @@ El següent treball amb millor retorn és:
 2. documentar quines parts del detall legacy són de professorat i quines val la pena pujar a Direcció
 3. simplificar `ActividadController` una vegada quede clar l'abast real
 
+Actualització:
+
+- `ActividadController::autorizar()` i `ActividadController::printAutoritzats()` ja no tenen sentit per a Direcció i es poden considerar retirats del flux actual
+
 ## Decisió pràctica
 
 No convé llevar el legacy d'`actividad` ara.

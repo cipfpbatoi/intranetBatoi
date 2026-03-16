@@ -204,3 +204,7 @@ Sí convé:
 - revisar la coherència de les rutes encara compartides
 
 En este mòdul, el primer objectiu bo és **deixar de dependre del controller legacy per a autoritzar i imprimir en bloc**, i només després valorar la migració del formulari.
+
+Actualització:
+
+- `ExpedienteController::autorizar()` i `ExpedienteController::imprimir()` ja han quedat fora del flux de Direcció

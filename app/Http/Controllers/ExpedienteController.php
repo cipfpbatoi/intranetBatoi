@@ -91,15 +91,6 @@ class ExpedienteController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['esInforme', '==', 1]]));
     }
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function autorizar()
-    {
-        app(ExpedienteWorkflowService::class)->authorizePending();
-        return back();
-    }
-
     //inicializat a init (normalment 1)
 
     /**
@@ -165,52 +156,6 @@ class ExpedienteController extends ModalController
 
         return self::hazPdf("pdf.expediente.$vista",$dades)->stream();
     }
-
-
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function imprimir()
-    {
-        $expedientes = $this->expedients()->readyToPrint();
-
-        if ($expedientes->count()) {
-            foreach ($this->expedients()->allTypes() as $tipo) {
-                $todos = $expedientes->where('tipo', $tipo->id);
-
-                if ($todos->count()) {
-                    // Generem el PDF
-                    $pdf = self::hazPdf("pdf.expediente.$tipo->vista", $todos);
-
-                    // Nom del fitxer
-                    //$nom = "Expediente_" . $tipo->titulo . "_" . now()->format('Ymd_His') . ".pdf";
-                    $nom = "Expediente_" . Str::slug($tipo->titulo, '_') . "_" . now()->format('Ymd_His') . ".pdf";
-
-                    $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-                    $tags = "listado llistat expediente expedient $tipo->titulo";
-
-                    // Guardem el document
-                    $gestor = new GestorService();
-                    $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags]);
-
-                    // Modifiquem l'estat de tots els elements
-                    StateService::makeAll($todos, '_print');
-
-                    // Enllacem els elements amb el document
-                    StateService::makeLink($todos, $doc);
-                     // Guardem i descarreguem el PDF
-                    $pdf->save(storage_path('/app/' . $nomComplet));
-                    return response()->download(storage_path('/app/' . $nomComplet), $nom);
-                }
-            }
-        }
-
-        Alert::info(trans('messages.generic.empty'));
-        return back();
-    }
-
-
     /*
     * show($id) return vista
     * busca en model de dades i el mostra amb vista show
