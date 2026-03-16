@@ -86,8 +86,8 @@ Inclou:
 
 ### S3-01 Audit JS legacy i dependències
 Prioritat: Alta
-Estat: Fet parcialment i reconduït
-Tancament: No
+Estat: Tancada com a auditoria
+Tancament: Sí
 
 Tasques:
 - Inventariar usos de jQuery i plugins per pantalla/fitxer.
@@ -98,10 +98,15 @@ Criteris d'acceptació:
 - Document curt amb mapa `fitxer -> dependències -> risc -> prioritat`.
 - Llista tancada de pantalles crítiques a migrar primer.
 
+Evidència:
+
+- `docs/sprints/sprint-3-js-audit.md`
+- `docs/sprints/sprint-3-jquery-pendents.md`
+
 ### S3-02 Token/Auth estable en web + API
 Prioritat: Alta
-Estat: Molt avançat
-Tancament: Pràcticament sí
+Estat: Tancada
+Tancament: Sí
 
 Tasques:
 - Consolidar flux Bearer Sanctum en web interna.
@@ -111,6 +116,11 @@ Tasques:
 Criteris d'acceptació:
 - Sense 401 espuris en fluxos crítics.
 - Proves manuals OK en `/signatura` i endpoints relacionats.
+
+Evidència:
+
+- `tests/Feature/ApiAuthTokenExchangeFeatureTest.php`
+- `routes/api.php`
 
 ### S3-03 Migració vertical Signatura (jQuery -> JS modern)
 Prioritat: Alta
@@ -154,7 +164,7 @@ Criteris d'acceptació:
 
 ### S3-06 Proves i regressió
 Prioritat: Alta
-Estat: Avançada
+Estat: Avançada amb checklist definida
 Tancament: Parcial
 
 Tasques:
@@ -165,6 +175,11 @@ Tasques:
 Criteris d'acceptació:
 - Checklist completada per cada vertical migrada.
 - 0 regressions crítiques obertes al tancament del sprint.
+
+Evidència:
+
+- `docs/sprints/sprint-3-test-coverage.md`
+- `docs/sprints/sprint-3-regressio-manual.md`
 
 ### S3-07 Retirada parcial jQuery
 Prioritat: Mitjana
@@ -240,10 +255,11 @@ Lectura honesta per subsprint:
 
 - `S3-08`: tancada
 - `S3-09`: parcial alta
-- `S3-02`: pràcticament tancable
+- `S3-02`: tancada
 - `S3-05`: parcial però usable
 - `S3-06`: parcial però suficient per defensar el treball nou
-- `S3-01`, `S3-03`, `S3-04`, `S3-07`: no tancades
+- `S3-01`: tancada
+- `S3-03`, `S3-04`, `S3-07`: no tancades
 
 Per donar-lo per realment tancat, el següent bloc natural és:
 

@@ -1,13 +1,32 @@
 # Sprint 3 - Pendents de retirada jQuery
 
-Data d'actualització: 2026-03-11  
-Branca: `sprint-3-js-migration`
+Data d'actualització: 2026-03-16
+Branca: `sprint-3-livewire-vue`
 
 ## Objectiu
 Deixar constància explícita de quins punts encara depenen de jQuery i per què, després de la migració incremental de Sprint 3.
 
 ## Pendents per dependència tècnica
-- No hi ha dependències jQuery residuals en `public/js` (fora de codi vendor/no objectiu de migració).
+- Continuen existint dependències jQuery residuals en codi propi.
+- Recompte actual:
+  - fitxers amb jQuery/ajax: **24**
+  - fitxers amb `.modal(...)`: **4**
+  - fitxers amb DataTables: **19**
+
+Fitxers principals que continuen pendents:
+
+- Base compartida:
+  - `resources/assets/js/custom.js`
+  - `resources/assets/js/ppIntranet.js`
+  - `public/js/app.js`
+  - `public/js/common/ui-helpers.js`
+- Fluxos FCT i administració:
+  - `public/js/Fct/grid.js`
+  - `public/js/Empresa/index.js`
+  - `public/js/Comision/grid.js`
+  - `public/js/Menu/grid.js`
+  - `public/js/TipoActividad/grid.js`
+  - `public/js/Lote/index.js`
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
@@ -32,3 +51,7 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
 - Mantindre només compatibilitat centralitzada en `public/js/common/ui-helpers.js` mentre convisquen pantalles BS4/BS5.
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
 - Reauditar i deixar el recompte de fitxers amb jQuery en mínim residual justificat.
+
+## Relació amb S3-01
+- `S3-01` queda tancada com a auditoria i mapa de risc.
+- `S3-07` continua oberta perquè la retirada efectiva de jQuery encara no està completada.

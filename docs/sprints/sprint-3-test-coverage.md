@@ -101,6 +101,10 @@ Abans de donar Sprint 3 per quasi tancat, el més rendible és:
 2. validar que no hi ha errors de consola ni rutes mortes
 3. no invertir més ara en proves exhaustives del legacy residual, llevat que aparega una incidència concreta
 
+Checklist disponible en:
+
+- [sprint-3-regressio-manual.md](./sprint-3-regressio-manual.md)
+
 ## Conclusió
 
 No hi ha proves de tot.
