@@ -184,7 +184,7 @@
                     @if ($selectedActividad !== null && $selectedActividad['hasDocument'])
                         <a
                             class="btn btn-info"
-                            href="{{ route('actividad.gestor', ['actividad' => $selectedActividad['id']]) }}"
+                            href="{{ route('actividad.direccion.gestor', ['actividad' => $selectedActividad['id']]) }}"
                             target="_blank"
                             rel="noopener"
                         >
@@ -195,7 +195,7 @@
                     @if ($selectedActividad !== null && $selectedActividad['canPdfValue'])
                         <a
                             class="btn btn-default"
-                            href="{{ route('actividad.pdfVal', ['actividad' => $selectedActividad['id']]) }}"
+                            href="{{ route('actividad.direccion.pdfVal', ['actividad' => $selectedActividad['id']]) }}"
                             target="_blank"
                             rel="noopener"
                         >

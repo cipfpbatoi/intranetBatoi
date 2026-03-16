@@ -69,20 +69,24 @@ Ja desacoblat del controller legacy:
 
 ### 3. Gestor documental
 
-El botó de document del modal encara usa la ruta clàssica:
+Ja desacoblat del controller legacy:
 
-- `routes/profesor.php`
-  - `GET /actividad/{actividad}/gestor`
-- `app/Http/Controllers/ActividadController.php::gestor()`
+- `routes/direccion.php`
+  - `GET /direccion/actividad/{actividad}/gestor`
+- `app/Http/Controllers/Direccion/Actividad/GestorController.php`
 
 ### 4. PDF i vista de valoració
 
-El modal del pilot també reutilitza el flux legacy de valoració:
+El modal del pilot ja no depén del controller legacy per al PDF de valoració:
+
+- `routes/direccion.php`
+  - `GET /direccion/actividad/{actividad}/pdfVal`
+- `app/Http/Controllers/Direccion/Actividad/ValuePdfController.php`
+
+La vista de valoració encara continua en legacy:
 
 - `routes/profesor.php`
-  - `GET /actividad/{actividad}/pdfVal`
   - `GET /actividad/{actividad}/showVal`
-- `app/Http/Controllers/ActividadController.php::printValue()`
 - `app/Http/Controllers/ActividadController.php::showValue()`
 
 ### 5. Show/detall complet legacy
@@ -109,8 +113,6 @@ Per tant, el legacy continua sent l'únic camí funcional complet per a eixes op
 
 No convé eliminar encara:
 
-- `ActividadController::gestor()`
-- `ActividadController::printValue()`
 - `ActividadController::showValue()`
 - `ActividadController::detalle()`
 - les rutes de professorat associades al detall i valoració
@@ -130,7 +132,6 @@ En `ActividadController` hi ha actualment una barreja de:
 - autorització d'estats
 - integració amb Google Calendar
 - valoració posterior
-- gestor documental
 - ITACA
 
 La retirada correcta no passa per esborrar el controller, sinó per convertir-lo progressivament en un **bridge**.

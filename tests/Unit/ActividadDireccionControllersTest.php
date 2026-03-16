@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\Direccion\Actividad\AuthorizeController;
+use Intranet\Http\Controllers\Direccion\Actividad\GestorController;
 use Intranet\Http\Controllers\Direccion\Actividad\PrintController;
+use Intranet\Http\Controllers\Direccion\Actividad\ValuePdfController;
+use Intranet\Services\Document\PdfService;
 use Intranet\Services\General\AutorizacionPrintService;
 use Mockery;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\TestCase;
 
 class ActividadDireccionControllersTest extends TestCase
@@ -50,6 +54,7 @@ class ActividadDireccionControllersTest extends TestCase
 
         Schema::connection('sqlite')->dropIfExists('actividad_profesor');
         Schema::connection('sqlite')->dropIfExists('actividades');
+        Schema::connection('sqlite')->dropIfExists('documentos');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -91,6 +96,45 @@ class ActividadDireccionControllersTest extends TestCase
         $this->assertSame($expected, $controller());
     }
 
+    public function test_gestor_controller_redirigeix_al_document(): void
+    {
+        $this->seedActividad(2, 'Activitat amb document');
+        DB::connection('sqlite')->table('actividades')->where('id', 1)->update(['idDocumento' => 88]);
+
+        $controller = new GestorController();
+        $response = $controller(1);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertStringEndsWith('/documento/88/show', $response->getTargetUrl());
+    }
+
+    public function test_value_pdf_controller_delega_en_pdf_service(): void
+    {
+        $this->seedActividad(4, 'Activitat valorada');
+        $expected = new Response('pdf', 200);
+
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldReceive('hazPdf')
+            ->once()
+            ->with('pdf.valoracionActividad', Mockery::type('Intranet\\Entities\\Actividad'), null)
+            ->andReturn(new class($expected) {
+                public function __construct(private Response $response)
+                {
+                }
+
+                public function stream(): Response
+                {
+                    return $this->response;
+                }
+            });
+
+        $this->app->instance(PdfService::class, $pdf);
+
+        $controller = new ValuePdfController();
+
+        $this->assertSame($expected, $controller(1));
+    }
+
     private function createSchema(): void
     {
         Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
@@ -112,6 +156,7 @@ class ActividadDireccionControllersTest extends TestCase
             $table->dateTime('desde')->nullable();
             $table->dateTime('hasta')->nullable();
             $table->boolean('extraescolar')->default(true);
+            $table->unsignedBigInteger('idDocumento')->nullable();
             $table->tinyInteger('estado')->default(0);
             $table->timestamps();
         });
@@ -120,6 +165,13 @@ class ActividadDireccionControllersTest extends TestCase
             $table->unsignedInteger('idActividad');
             $table->string('idProfesor', 10);
             $table->boolean('coordinador')->default(false);
+        });
+
+        Schema::connection('sqlite')->create('documentos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('fichero')->nullable();
+            $table->string('enlace')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -141,14 +193,26 @@ class ActividadDireccionControllersTest extends TestCase
     private function seedActividad(int $estado, string $name): void
     {
         DB::connection('sqlite')->table('actividades')->insert([
+            'id' => DB::connection('sqlite')->table('actividades')->count() + 1,
             'name' => $name,
             'descripcion' => 'Descripcio',
             'desde' => '2026-03-18 09:00:00',
             'hasta' => '2026-03-18 10:00:00',
             'extraescolar' => 1,
+            'idDocumento' => null,
             'estado' => $estado,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        DB::connection('sqlite')->table('documentos')->updateOrInsert(
+            ['id' => 88],
+            [
+                'fichero' => null,
+                'enlace' => '/documento/88/show',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
     }
 }

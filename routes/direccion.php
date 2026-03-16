@@ -38,6 +38,8 @@ Route::get(
     ['as' => 'actividad.unauthorize', 'uses' => 'ActividadController@resign']
 );
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
+Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.direccion.gestor', 'uses' => 'Direccion\\Actividad\\GestorController']);
+Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.direccion.pdfVal', 'uses' => 'Direccion\\Actividad\\ValuePdfController']);
 Route::post('/actividad/{actividad}/refuse', ['as' => 'actividad.refuse', 'uses' => 'ActividadController@refuse']);
 Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'Direccion\\Actividad\\PrintController']);
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Direccion\\Actividad\\AuthorizeController']);
