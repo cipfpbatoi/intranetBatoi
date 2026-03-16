@@ -3,7 +3,7 @@ services:
 
         restart: unless-stopped
         
-        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel12-prod}
+        image: arturocandela/intranet:${IMAGE_TAG_PROD:-laravel12-prod}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:
