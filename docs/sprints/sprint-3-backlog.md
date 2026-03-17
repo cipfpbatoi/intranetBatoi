@@ -245,7 +245,7 @@ Evidència:
 
 Blocant actual:
 
-- Continuen existint 24 fitxers amb jQuery/ajax i 4 amb `.modal(...)`.
+- Continuen existint 4 fitxers amb ús directe de jQuery/ajax/modal i 4 amb `.modal(...)`.
 - El fallback de modal en `public/js/common/ui-helpers.js` continua sent intencional mentre conviuen pantalles BS4/BS5.
 
 ### S3-08 Panells Livewire de Direcció

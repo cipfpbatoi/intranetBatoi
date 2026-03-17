@@ -1,8 +1,9 @@
 (function () {
     'use strict';
 
-    var hasV2 = typeof window.DataTable === 'function';
-    var hasJqDt = !!(window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function');
+    var tableHelper = window.intranetDataTable || {};
+    var hasV2 = typeof tableHelper.hasDataTableV2 === 'function' && tableHelper.hasDataTableV2();
+    var hasJqDt = typeof tableHelper.hasJQueryDataTable === 'function' && tableHelper.hasJQueryDataTable();
 
     if (!hasV2 && !hasJqDt) {
         console.warn('DataTables no està disponible: grid.js no s’inicialitza.');
@@ -14,10 +15,7 @@
         return;
     }
 
-    if (hasV2 && typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(table)) {
-        return;
-    }
-    if (hasJqDt && window.jQuery.fn.dataTable && typeof window.jQuery.fn.dataTable.isDataTable === 'function' && window.jQuery.fn.dataTable.isDataTable(table)) {
+    if (typeof tableHelper.isInitialized === 'function' && tableHelper.isInitialized(table)) {
         return;
     }
 
@@ -40,9 +38,14 @@
         }
     };
 
-    var dataTable = hasV2
-        ? new window.DataTable(table, options)
-        : window.jQuery(table).DataTable(options);
+    var dataTable = typeof tableHelper.init === 'function'
+        ? tableHelper.init(table, options)
+        : null;
+
+    if (!dataTable) {
+        table.style.visibility = 'visible';
+        return;
+    }
 
     table.addEventListener('draw.dt', function () {
         dataTable.columns.adjust();

@@ -58,10 +58,6 @@
             window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
             return;
         }
-
-        if (window.jQuery) {
-            window.jQuery(modalElement).modal('show');
-        }
     }
 
     function hideModal(id) {
@@ -79,10 +75,6 @@
         if (window.bootstrap && window.bootstrap.Modal) {
             window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
             return;
-        }
-
-        if (window.jQuery) {
-            window.jQuery(modalElement).modal('hide');
         }
     }
 

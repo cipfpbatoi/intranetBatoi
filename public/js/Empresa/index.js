@@ -10,47 +10,21 @@
         return (value || '').toString().trim();
     }
 
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
+    }
+
     function getById(id) {
         return document.getElementById(id);
     }
 
-    function apiAuthOptions(extraData) {
-        var tokenNode = getById('_token');
-        var legacyToken = trim(tokenNode ? tokenNode.textContent : '');
-        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-        var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
-        var data = extraData ? Object.assign({}, extraData) : {};
-        var headers = {};
-
-        if (bearerToken) {
-            headers.Authorization = 'Bearer ' + bearerToken;
-        }
-        if (legacyToken) {
-            data.api_token = legacyToken;
+    function apiGet(url, extraData) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url, extraData);
         }
 
-        return { headers: headers, data: data };
-    }
-
-    function withQueryParams(url, params) {
-        var query = new URLSearchParams(params || {}).toString();
-        if (!query) {
-            return url;
-        }
-        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-    }
-
-    function fetchJson(url, auth) {
-        return fetch(withQueryParams(url, auth.data), {
-            method: 'GET',
-            headers: auth.headers,
-            credentials: 'same-origin'
-        }).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-            return response.json();
-        });
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
     }
 
     function getAutorizado() {
@@ -87,22 +61,20 @@
         return info;
     }
 
-    function initDataTable(tableElement, autorizado) {
+    function initDataTable(tableElement) {
         if (!tableElement) {
             return Promise.resolve(null);
         }
 
-        var hasV2 = typeof window.DataTable === 'function';
-        var hasJqDt = !!(window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.DataTable === 'function');
+        var tableHelper = window.intranetDataTable || {};
+        var hasV2 = typeof tableHelper.hasDataTableV2 === 'function' && tableHelper.hasDataTableV2();
+        var hasJqDt = typeof tableHelper.hasJQueryDataTable === 'function' && tableHelper.hasJQueryDataTable();
 
         if (!hasV2 && !hasJqDt) {
             return Promise.resolve(null);
         }
 
-        if (hasV2 && typeof window.DataTable.isDataTable === 'function' && window.DataTable.isDataTable(tableElement)) {
-            return Promise.resolve(null);
-        }
-        if (hasJqDt && window.jQuery.fn.dataTable && typeof window.jQuery.fn.dataTable.isDataTable === 'function' && window.jQuery.fn.dataTable.isDataTable(tableElement)) {
+        if (typeof tableHelper.isInitialized === 'function' && tableHelper.isInitialized(tableElement)) {
             return Promise.resolve(null);
         }
 
@@ -133,9 +105,14 @@
                 tableElement.style.visibility = 'visible';
             };
 
-            var dataTable = hasV2
-                ? new window.DataTable(tableElement, options)
-                : window.jQuery(tableElement).DataTable(options);
+            var dataTable = typeof tableHelper.init === 'function'
+                ? tableHelper.init(tableElement, options)
+                : null;
+
+            if (!dataTable) {
+                tableElement.style.visibility = 'visible';
+                return;
+            }
 
             tableElement.addEventListener('draw.dt', function () {
                 dataTable.columns.adjust();
@@ -186,9 +163,7 @@
             initWithOptions(withCommonOptions({}));
         }
 
-        var authDatatable = apiAuthOptions();
-
-        return fetchJson('/api/convenio', authDatatable).then(function (result) {
+        return apiGet('/api/convenio').then(function (result) {
             var rows = result && result.data ? result.data : [];
             initWithApiRows(rows);
         }).catch(function () {
@@ -231,7 +206,7 @@
         }
 
         bindTableActions(tableElement);
-        var initPromise = initDataTable(tableElement, getAutorizado());
+        var initPromise = initDataTable(tableElement);
         if (initPromise && typeof initPromise.catch === 'function') {
             initPromise.catch(function (error) {
                 window.console.log(error);

@@ -1,6 +1,6 @@
 # Sprint 3 - Pendents de retirada jQuery
 
-Data d'actualització: 2026-03-16
+Data d'actualització: 2026-03-17
 Branca: `sprint-3-livewire-vue`
 
 ## Objectiu
@@ -9,9 +9,9 @@ Deixar constància explícita de quins punts encara depenen de jQuery i per què
 ## Pendents per dependència tècnica
 - Continuen existint dependències jQuery residuals en codi propi.
 - Recompte actual:
-  - fitxers amb jQuery/ajax: **24**
+  - fitxers amb ús directe de jQuery/ajax/modal: **4**
   - fitxers amb `.modal(...)`: **4**
-  - fitxers amb DataTables: **19**
+  - fitxers amb DataTables: **20**
 
 Fitxers principals que continuen pendents:
 
@@ -20,18 +20,23 @@ Fitxers principals que continuen pendents:
   - `resources/assets/js/ppIntranet.js`
   - `public/js/app.js`
   - `public/js/common/ui-helpers.js`
-- Fluxos FCT i administració:
-  - `public/js/Fct/grid.js`
-  - `public/js/Empresa/index.js`
-  - `public/js/Comision/grid.js`
-  - `public/js/Menu/grid.js`
-  - `public/js/TipoActividad/grid.js`
-  - `public/js/Lote/index.js`
+
+Infraestructura de compatibilitat introduïda:
+
+- `public/js/common/data-table.js`
+  - Centralitza la compatibilitat DataTables v2 / jQuery DataTables.
+
+Reducció efectiva en esta passada:
+
+- `public/js/Comision/grid.js` ja no depén directament de jQuery per inicialitzar DataTables.
+- `public/js/Fct/show.js` ja no manté fallback local de modal; usa el helper compartit.
+- `public/js/Lote/index.js` ja no manté fallback local de modal ni inicialitza DataTables amb `$("#datatable")`.
+- `public/js/grid.js`, `public/js/Empresa/index.js`, `public/js/Comision/grid.js` i `public/js/Lote/index.js` deleguen ara la compatibilitat DataTables en `public/js/common/data-table.js`.
 
 ## Fallbacks jQuery intencionals (compatibilitat modal)
 - Patró temporal centralitzat:
   - Fallback de modal mantingut únicament en `public/js/common/ui-helpers.js`.
-  - Els fitxers funcionals migrats ja no inclouen fallback local a `window.jQuery(...).modal(...)`.
+  - Els fitxers funcionals migrats del sprint ja no inclouen fallback local a `window.jQuery(...).modal(...)`.
 - Helper compartit introduït:
   - `public/js/common/ui-helpers.js`
   - Carregat des de `resources/views/js/js.blade.php` i `resources/views/js/modaljs.blade.php`.

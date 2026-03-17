@@ -5,6 +5,7 @@ const ESTADOS=[ 'BUIDA','ALTA', 'INVENTARIANT','FINALITZADA'];
 const MANTENIMIENTO=7;
 var selecionado = null;
 var options = {};
+var dataTable = null;
 
 function apiAuthOptions(extraData) {
     var tokenElement = document.getElementById('_token');
@@ -39,10 +40,6 @@ function showModal(id) {
         window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
         return;
     }
-
-    if (window.jQuery) {
-        window.jQuery(modalElement).modal('show');
-    }
 }
 
 function hideModal(id) {
@@ -59,10 +56,6 @@ function hideModal(id) {
     if (window.bootstrap && window.bootstrap.Modal) {
         window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
         return;
-    }
-
-    if (window.jQuery) {
-        window.jQuery(modalElement).modal('hide');
     }
 }
 
@@ -112,6 +105,109 @@ function requestJson(method, url, payload) {
     });
 }
 
+function initDataTable(auth) {
+    var tableElement = document.getElementById('datatable');
+    var tableHelper = window.intranetDataTable || {};
+    var hasV2 = typeof tableHelper.hasDataTableV2 === 'function' && tableHelper.hasDataTableV2();
+    var hasJqDt = typeof tableHelper.hasJQueryDataTable === 'function' && tableHelper.hasJQueryDataTable();
+
+    if (!tableElement || (!hasV2 && !hasJqDt)) {
+        return null;
+    }
+
+    if (typeof tableHelper.isInitialized === 'function' && tableHelper.isInitialized(tableElement)) {
+        return null;
+    }
+
+    tableElement.style.visibility = 'hidden';
+
+    var instance;
+    var tableOptions = {
+        ajax : {
+            method: 'GET',
+            url: '/api/lote',
+            headers: auth.headers,
+            data: auth.data,
+        },
+        deferRender : true,
+        dataSrc : 'data',
+        rowId : 'registre',
+        order: [[ 5, 'desc' ]],
+        columnDefs: [
+            {className: 'estado', targets: [ 4 ]},
+            {className: 'operaciones', targets: [ 7 ]}
+        ],
+        columns: [
+            { data:'registre'},
+            { data:'proveedor'},
+            { data:'factura'},
+            {
+                data: null, render: function (data) {
+                    if (data.procedencia) {
+                        return PROCEDENCIAS[data.procedencia];
+                    }
+
+                    return 'Desconocido';
+                },
+            },
+            {
+                data: null, render: function (data) {
+                    return ESTADOS[data.estado];
+                },
+            },
+            { data:'fechaAlta'},
+            { data:'departamento'},
+            { data: null, render: function (data){
+                return  (data.estado == 1) ? contenido+operaciones+inventariable:
+                        (data.estado == 2) ? contenido+editar:
+                        (data.estado == 0) ? contenido+operaciones+capturar:contenido+editar+`<a href="/direccion/lote/`+data.registre+`/print" class="QR">
+                                <i class="fa fa-barcode" title="Codi QR"></i>                
+                            </a>`;
+                },
+            },
+        ],
+        language: {
+            url: '/json/cattable.json'
+        },
+        initComplete: function () {
+            if (instance && instance.columns && typeof instance.columns.adjust === 'function') {
+                instance.columns.adjust();
+            }
+
+            tableElement.style.visibility = 'visible';
+        }
+    };
+
+    instance = typeof tableHelper.init === 'function'
+        ? tableHelper.init(tableElement, tableOptions)
+        : null;
+
+    if (!instance) {
+        tableElement.style.visibility = 'visible';
+        return null;
+    }
+
+    tableElement.addEventListener('draw.dt', function () {
+        if (instance && instance.columns && typeof instance.columns.adjust === 'function') {
+            instance.columns.adjust();
+        }
+    });
+
+    tableElement.addEventListener('responsive-resize.dt', function () {
+        if (instance && instance.columns && typeof instance.columns.adjust === 'function') {
+            instance.columns.adjust();
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (instance && instance.columns && typeof instance.columns.adjust === 'function') {
+            instance.columns.adjust();
+        }
+    });
+
+    return instance;
+}
+
 
     // FUncionalidades de los botones
     var rolElement = document.getElementById('rol');
@@ -135,56 +231,7 @@ function requestJson(method, url, payload) {
                 </a>`;
     var auth = apiAuthOptions();
     var articulos = cargaArticulos();
-    $("#datatable").DataTable( {
-        ajax : {
-            method: "GET",
-            url: '/api/lote',
-            headers: auth.headers,
-            data: auth.data,
-        },
-        deferRender : true,
-        dataSrc : 'data',
-        rowId : 'registre',
-        order: [[ 5, "desc" ]],
-        columnDefs: [
-            {className: "estado", "targets": [ 4 ]} ,
-            {className: "operaciones", "targets": [ 7 ]} ,
-        ],
-        columns: [
-            { data:'registre'},
-            { data:'proveedor'},
-            { data:'factura'},
-            {
-                data: null, render: function (data) {
-                    if (data.procedencia)
-                        return PROCEDENCIAS[data.procedencia];
-                    else return 'Desconocido';
-                    },
-            },
-            {
-                data: null, render: function (data) {
-                        return ESTADOS[data.estado];
-                    },
-            },
-            { data:'fechaAlta'},
-            { data:'departamento'},
-            { data: null, render: function (data){
-                return  (data.estado == 1) ? contenido+operaciones+inventariable:
-                        (data.estado == 2) ? contenido+editar:
-                        (data.estado == 0) ? contenido+operaciones+capturar:contenido+editar+`<a href="/direccion/lote/`+data.registre+`/print" class="QR">
-                                <i class="fa fa-barcode" title="Codi QR"></i>                
-                            </a>`;
-                },
-            },
-        ],
-//        rowCallback: function ( row, data ) {
-//            // Set the checked state of the checkbox in the table
-//            $('input.editor-active', row).prop( 'checked', data.fechaultimoinventario != null );
-//        },
-        language: {
-            url: "/json/cattable.json"
-        }
-    });
+    dataTable = initDataTable(auth);
 
 document.addEventListener('DOMContentLoaded', function () {
     var table = document.getElementById('datatable');
