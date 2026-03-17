@@ -7,7 +7,7 @@
     @stack('styles')
     @yield('css')
 </head>
-<body class="nav-md">
+<body class="nav-md" style="width: 100% !important;">
 @if (authUser())
     <div class="container body">
         <div class="main_container">
