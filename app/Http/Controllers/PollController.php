@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Poll\PollWorkflowService;
+use Intranet\Entities\Grupo;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
 
@@ -48,6 +49,27 @@ class PollController extends IntranetController
         }
 
         return $this->pollWorkflowService;
+    }
+
+    /**
+     * Retorna el curs (1 o 2) de l'usuari autenticat basant-se en el seu grup.
+     * Per a alumnes, el curs prové del seu grup assignat.
+     * Per a professors/tutors, prové del grup que tutoritzen.
+     * Retorna null si no es pot determinar el curs.
+     */
+    protected function getUserCurs(): ?int
+    {
+        $user = AuthUser();
+        if (isset($user->nia)) {
+            $grupo = $user->Grupo->first();
+            return $grupo ? (int) $grupo->curso : null;
+        }
+        $grupoCodi = $user->GrupoTutoria;
+        if ($grupoCodi) {
+            $grupo = Grupo::find($grupoCodi);
+            return $grupo ? (int) $grupo->curso : null;
+        }
+        return null;
     }
 
     protected function iniBotones()

@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\QueryException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
@@ -51,7 +52,14 @@ class EspacioController extends ModalController
     public function store(EspacioRequest $request)
     {
         $this->authorize('create', Espacio::class);
-        $this->persist($request);
+        try {
+            $this->persist($request);
+        } catch (QueryException $e) {
+            if ($this->isDuplicateAulaQueryException($e)) {
+                return $this->duplicateAulaResponse();
+            }
+            throw $e;
+        }
         return $this->redirect();
     }
 
@@ -65,8 +73,42 @@ class EspacioController extends ModalController
     {
         $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
         $this->authorize('update', $espacio);
-        $this->persist($request, $id);
+        try {
+            $this->persist($request, $id);
+        } catch (QueryException $e) {
+            if ($this->isDuplicateAulaQueryException($e)) {
+                return $this->duplicateAulaResponse();
+            }
+            throw $e;
+        }
         return $this->redirect();
+    }
+
+    /**
+     * Detecta violació d'unicitat de la PK `espacios.aula`.
+     *
+     * @param QueryException $e
+     * @return bool
+     */
+    private function isDuplicateAulaQueryException(QueryException $e): bool
+    {
+        $message = strtolower((string) $e->getMessage());
+
+        return (string) $e->getCode() === '23000'
+            && str_contains($message, 'duplicate entry')
+            && str_contains($message, 'espacios.primary');
+    }
+
+    /**
+     * Genera resposta de validació per aula duplicada.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function duplicateAulaResponse()
+    {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['aula' => 'L\'aula ja existeix.']);
     }
 
     /**
