@@ -8,7 +8,7 @@
     @stack('styles')
     @yield('css')
 </head>
-<body class="nav-md">
+<body class="nav-md" style="max-width: 95% !important;">
 
     <div class="container body">
         <div class="main_container">
