@@ -3,6 +3,7 @@
 <title>{{trans("models.Falta_itaca.edit")}}</title>
 @endsection
 @section('content')
+{{-- @deprecated Vista legacy del flux de birrets/ITACA. --}}
 <div class="formularionormal borderedondo">
     <div class="contenedor centrado" id='app'>
         <br><h4 class="centrado">{{ trans('models.modelos.Falta_itaca')}}</h4><br>

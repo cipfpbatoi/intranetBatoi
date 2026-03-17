@@ -1,39 +1,49 @@
 'use strict';
 
-const MODEL = "incidencia";
+const MODEL = 'incidencia';
 var id;
 
-$(function () {
-    $(".refuse").on("click", function (event) {
-        event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#dialogo").attr("href", "");
-        id = $(this).parents(".profile_view").attr("id");
-    });
-    $("#formDialogo").on("submit", function () {
-        $(this).attr("action", MODEL + "/" + id + "/refuse");
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        var refuseButton = event.target.closest('.refuse');
+        if (refuseButton) {
+            event.preventDefault();
+            refuseButton.setAttribute('data-toggle', 'modal');
+            refuseButton.setAttribute('data-target', '#dialogo');
+            refuseButton.setAttribute('href', '');
+            var refuseCard = refuseButton.closest('.profile_view');
+            id = refuseCard ? refuseCard.id : '';
+            return;
+        }
+
+        var resolveButton = event.target.closest('.resolve');
+        if (resolveButton) {
+            event.preventDefault();
+            resolveButton.setAttribute('data-toggle', 'modal');
+            resolveButton.setAttribute('data-target', '#aviso');
+            resolveButton.setAttribute('href', '');
+            var resolveCard = resolveButton.closest('.profile_view');
+            id = resolveCard ? resolveCard.id : '';
+        }
     });
 
-    $(".resolve").on("click", function (event) {
-        event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#aviso").attr("href", "");
-        id = $(this).parents(".profile_view").attr("id");
-    });
-    $("#formAviso").on("submit", function () {
-        $(this).attr("action","/mantenimiento/" + MODEL + "/" + id + "/resolve");
-    });
-    $("#explicacion").focus();    
+    var formDialogo = document.getElementById('formDialogo');
+    if (formDialogo) {
+        formDialogo.addEventListener('submit', function () {
+            this.setAttribute('action', MODEL + '/' + id + '/refuse');
+        });
+    }
+
+    var formAviso = document.getElementById('formAviso');
+    if (formAviso) {
+        formAviso.addEventListener('submit', function () {
+            this.setAttribute('action', '/mantenimiento/' + MODEL + '/' + id + '/resolve');
+        });
+    }
+
+    var explicacion = document.getElementById('explicacion');
+    if (explicacion) {
+        explicacion.focus();
+    }
 });
-
-function getToken() {
-    var ppio = document.cookie.indexOf("XSRF-TOKEN=");
-    if (ppio === -1)
-        return "";
-    else
-        ppio += 11;	// para no coger el nombre de la cookie
-    var fin = document.cookie.indexOf(";", ppio);
-    if (fin === -1)
-        fin = document.cookie.length;
-    return document.cookie.substring(ppio, fin);
-}
-
  

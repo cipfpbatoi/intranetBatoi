@@ -1,30 +1,99 @@
+(function () {
+    'use strict';
 
-$(".seleccion").on("click",function(event){
-    event.preventDefault();
-    $(this).attr("data-toggle", "modal").attr("data-target", "#A3A").attr("href", "");
-    var url = $(this).attr("data-url");
-    var route = $(this).attr("id");
-    $('#formA3A').attr("action",route);
-    var auth = apiAuthOptions();
-    $.ajax({
-        method: "GET",
-        url: url,
-        dataType: 'json',
-        headers: auth.headers,
-        data: auth.data
-    })
-        .then(function (result) {
-            pintaTablaSeleccion(result.data,"#tableA3");
-         }, function (result) {
-            console.log("La solicitud no se ha podido completar.");
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
+    }
+
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
+    }
+
+    function setModalAttrs(element, targetId) {
+        if (!element) {
+            return;
+        }
+
+        element.setAttribute('href', '');
+    }
+
+    function openModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+    }
+
+    function hideModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.hideModal === 'function') {
+            helpers.hideModal(id);
+            return;
+        }
+    }
+
+    function apiGet(url) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
+        }
+
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
+    }
+
+    function handleSeleccionClick(button, event) {
+        event.preventDefault();
+        setModalAttrs(button, 'A3A');
+        openModal('A3A');
+
+        var url = button.getAttribute('data-url') || '';
+        var route = button.getAttribute('id') || '';
+        var form = document.getElementById('formA3A');
+        if (form) {
+            form.setAttribute('action', route);
+        }
+
+        apiGet(url)
+            .then(function (result) {
+                if (typeof window.pintaTablaSeleccion === 'function') {
+                    window.pintaTablaSeleccion(result.data, '#tableA3');
+                }
+            })
+            .catch(function () {
+                console.log('La solicitud no se ha podido completar.');
+            });
+    }
+
+    function handleSubmitClick(button, event) {
+        event.preventDefault();
+
+        var checkAll = document.getElementById('checkall');
+        if (checkAll) {
+            checkAll.checked = false;
+        }
+
+        hideModal('signatura');
+        setModalAttrs(button, 'loading');
+        openModal('loading');
+
+        var form = document.getElementById('formA3A');
+        if (form) {
+            form.submit();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.seleccion').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                handleSeleccionClick(button, event);
+            });
         });
-});
 
-$("#A3A .submit").click(function(event) {
-    event.preventDefault();
-    $("#checkall").prop('checked',false);
-    $('#signatura').modal('hide');
-    $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
-    $("#formA3A" ).submit();
-});
-
+        document.querySelectorAll('#A3A .submit').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                handleSubmitClick(button, event);
+            });
+        });
+    });
+})();

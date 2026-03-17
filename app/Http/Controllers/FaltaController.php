@@ -147,4 +147,5 @@ class FaltaController extends ModalController
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
     }
+
 }

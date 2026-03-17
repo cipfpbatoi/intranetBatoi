@@ -6,22 +6,47 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
+/**
+ * Layout principal de la Intranet amb selector de runtime JS.
+ *
+ * Modes disponibles:
+ * - legacy: només assets clàssics de `public/js`.
+ * - hybrid: assets clàssics + entrada Vite moderna (`resources/assets/js/app.js`).
+ * - vite: només entrades Vite (`legacy-app.js`, `app.js`, `ppIntranet.js`).
+ */
 class App extends Component
 {
+    /**
+     * Usuari autenticat actual.
+     *
+     * @var mixed
+     */
     public $user;
 
 
     /**
-     * Create a new component instance.
+     * Crea una nova instància del component.
+     *
+     * @param mixed $panel
+     * @param string $title
+     * @param bool $skipLegacyJs
+     * @param string $jsMode
      */
-    public function __construct(public $panel=null, public $title = ' ' )
+    public function __construct(
+        public $panel = null,
+        public string $title = ' ',
+        public bool $skipLegacyJs = false,
+        public string $jsMode = 'hybrid'
+    )
     {
         $this->user = authUser();
-
+        if (!in_array($this->jsMode, ['legacy', 'hybrid', 'vite'], true)) {
+            $this->jsMode = 'hybrid';
+        }
     }
 
     /**
-     * Get the view / contents that represent the component.
+     * Retorna la vista que representa el component.
      */
     public function render(): View|Closure|string
     {

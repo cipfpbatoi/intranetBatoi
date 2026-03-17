@@ -14,6 +14,11 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
 
+/**
+ * Controlador legacy de justificació i autorització de birrets/ITACA.
+ *
+ * @deprecated Mantingut per compatibilitat mentre es retira el flux antic de birrets.
+ */
 class FaltaItacaController extends IntranetController
 {
     use Autorizacion,Imprimir;
@@ -41,8 +46,13 @@ class FaltaItacaController extends IntranetController
 
         return $this->faltaItacaWorkflowService;
     }
-
-
+    /**
+     * Pantalla legacy de professorat per a birrets.
+     *
+     * @deprecated Flux antic pendent de retirada.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function index()
     {
         Session::forget('redirect');
@@ -52,6 +62,14 @@ class FaltaItacaController extends IntranetController
         return view('falta.itaca', compact('profesor', 'horarios', 'horas'));
     }
     
+    /**
+     * Genera l'informe PDF legacy de birrets.
+     *
+     * @deprecated Mantingut mentre existix el flux de birrets.
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public static function printReport($request)
     {
         $service = app(FaltaItacaWorkflowService::class);
@@ -72,12 +90,30 @@ class FaltaItacaController extends IntranetController
                         ->download($nomComplet);
 
     }
+
+    /**
+     * Resol una absència del flux legacy de birrets.
+     *
+     * @deprecated Mantingut mentre existix el flux de birrets.
+     *
+     * @param int|string $id
+     * @return mixed
+     */
     public function resolve($id)
     {
         $this->faltes()->resolveByAbsenceId((int) $id);
         return $this->follow(1, 1);
     }
 
+    /**
+     * Rebutja una absència del flux legacy de birrets.
+     *
+     * @deprecated Mantingut mentre existix el flux de birrets.
+     *
+     * @param int|string $id
+     * @param Request $request
+     * @return mixed
+     */
     public function refuse($id, Request $request)
     {
         $this->faltes()->refuseByAbsenceId((int) $id, $request->explicacion);

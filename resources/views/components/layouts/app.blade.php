@@ -4,7 +4,7 @@
     <x-layouts.meta />
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ mix('css/components/app.css') }}">
+    @vite('resources/assets/sass/app.scss')
     <style>
         .iconopequeno { width: 25px; height: 25px; }
         .iconomediano { width: 30px; height: 30px; }
@@ -19,6 +19,12 @@
     data-js-debug="{{ app()->isLocal() ? '1' : '0' }}"
     data-legacy-features="@yield('legacy_features')"
 >
+    @php
+        $legacyApiToken = authUser()->api_token ?? '';
+    @endphp
+    @if (is_string($legacyApiToken) && $legacyApiToken !== '')
+        <span id="_token" class="hidden" style="display:none;">{{ $legacyApiToken }}</span>
+    @endif
 
     <div class="container body">
         <div class="main_container">
@@ -41,15 +47,36 @@
             {{-- Peu de pàgina --}}
             <x-layouts.footer />
         </div>
-    </div>
+</div>
 
 
 {{-- JS --}}
-<script src="{{ asset('js/app.js') }}"></script>
-<script src="{{ mix('js/components/app.js') }}"></script>
-@unless(!empty($skipLegacyJs))
-<script src="{{ mix('js/ppIntranet.js') }}"></script>
-@endunless
+@php
+    $resolvedJsMode = in_array($jsMode ?? 'hybrid', ['legacy', 'hybrid', 'vite'], true)
+        ? ($jsMode ?? 'hybrid')
+        : 'hybrid';
+@endphp
+
+@if ($resolvedJsMode === 'vite')
+    @vite('resources/assets/js/legacy-app.js')
+    @vite('resources/assets/js/app.js')
+    @unless(!empty($skipLegacyJs))
+        @vite('resources/assets/js/ppIntranet.js')
+    @endunless
+@else
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/components/app.js') }}"></script>
+    @unless(!empty($skipLegacyJs))
+        @if ($resolvedJsMode === 'legacy')
+            <script src="{{ asset('js/ppIntranet.js') }}"></script>
+        @else
+            @vite('resources/assets/js/ppIntranet.js')
+        @endif
+    @endunless
+    @if ($resolvedJsMode === 'hybrid')
+        @vite('resources/assets/js/app.js')
+    @endif
+@endif
 @yield('scripts')
 @stack('scripts')
 </body>

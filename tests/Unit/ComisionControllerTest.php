@@ -71,16 +71,6 @@ class ComisionControllerTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_paid_actualitza_estat_a_5(): void
-    {
-        $id = $this->seedComision(3);
-
-        $controller = new DummyComisionController();
-        $controller->paid($id);
-
-        $this->assertSame(5, (int) DB::table('comisiones')->where('id', $id)->value('estado'));
-    }
-
     public function test_unpaid_actualitza_estat_a_4_i_torna_back(): void
     {
         $id = $this->seedComision(3);

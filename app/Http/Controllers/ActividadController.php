@@ -514,33 +514,6 @@ class ActividadController extends ModalController
     }
 
     /**
-     * Autoritza activitats en estat 1 i, si hi ha credencials, les exporta a calendari.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function autorizar()
-    {
-        $activitats = Actividad::where('estado', '1')->get();
-        if (file_exists(storage_path(env('services.calendar.calendarCredentialsPath')))) {
-            $gC = new GoogleCalendarService();
-            foreach ($activitats as $activitat){
-                $assistents = $activitat->profesores()->select('email')->get()->toArray();
-                $gC->addEvent(
-                    $activitat->name,
-                    $activitat->descripcion,
-                    $activitat->desde,
-                    $activitat->hasta,
-                    $assistents
-                );
-            }
-            $gC->saveEvents();
-        }
-        StateService::makeAll($activitats, 2);
-        return back();
-    }
-
-
-    /**
      * Accepta l'activitat incrementant estat i sincronitzant calendari extern.
      *
      * @param int|string $id
@@ -574,15 +547,6 @@ class ActividadController extends ModalController
         if ($redirect) {
             return $this->follow($iniSta, $finSta);
         }
-    }
-
-    /**
-     * Imprimeix el llistat d'autoritzats.
-     *
-     * @return mixed
-     */
-    public function printAutoritzats(){
-        return $this->imprimir('extraescolars');
     }
 
     /**

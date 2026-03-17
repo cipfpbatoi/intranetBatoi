@@ -1,45 +1,100 @@
 'use strict';
 
-$(function () {
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
+    }
+
+    function trim(value) {
+        return (value || '').toString().trim();
+    }
+
+    function getLegacyToken() {
+        var tokenElement = byId('_token');
+        return tokenElement ? trim(tokenElement.textContent) : '';
+    }
+
+    function getBearerToken() {
+        var meta = document.querySelector('meta[name="user-bearer-token"]');
+        return meta ? trim(meta.getAttribute('content')) : '';
+    }
+
     function apiAuthOptions(extraData) {
-        var legacyToken = $.trim($("#_token").text());
-        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-        var data = extraData || {};
+        var data = extraData ? Object.assign({}, extraData) : {};
         var headers = {};
+        var bearerToken = getBearerToken();
+        var legacyToken = getLegacyToken();
 
         if (bearerToken) {
-            headers.Authorization = "Bearer " + bearerToken;
+            headers.Authorization = 'Bearer ' + bearerToken;
         }
-    if (legacyToken) {
+        if (legacyToken) {
             data.api_token = legacyToken;
         }
 
         return { headers: headers, data: data };
     }
 
-    $('.checkbox').on('change', function (event) {
-        var idProfesor = $(this).prop('name');
-        var idReunion = $(this).parent(1).parent(1).parent(1).parent(1).parent(1).prop('id');
-        var asiste = $(this).prop("checked")?1:0;
-        var auth = apiAuthOptions({
-            idProfesor: idProfesor,
-            idReunion: idReunion,
-            asiste: asiste,
-        });
-        $.ajax({
-            method: "PUT",
-            url: "/api/asistencia/cambiar",
-            headers: auth.headers,
-            data: auth.data,
-        }).then(function (res) {
-            console.log(res)
-        }, function (res) {
-            if (asiste) {
-                $(this).removeProp("checked");
-            } else {
-                $(this).prop("checked");
+    function toFormBody(data) {
+        var params = new URLSearchParams();
+        Object.keys(data || {}).forEach(function (key) {
+            if (data[key] !== undefined && data[key] !== null) {
+                params.append(key, String(data[key]));
             }
-            console.log(res)
         });
-    })
-});
+        return params.toString();
+    }
+
+    function getAncestorId(element) {
+        var current = element;
+        while (current && current !== document.body) {
+            if (current.id) {
+                return current.id;
+            }
+            current = current.parentElement;
+        }
+        return '';
+    }
+
+    function updateAsistencia(payload) {
+        var auth = apiAuthOptions(payload);
+        var headers = Object.assign({}, auth.headers, {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        });
+
+        return fetch('/api/asistencia/cambiar', {
+            method: 'PUT',
+            headers: headers,
+            body: toFormBody(auth.data),
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.text();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.checkbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                var asiste = checkbox.checked ? 1 : 0;
+                var previous = !checkbox.checked;
+                var payload = {
+                    idProfesor: checkbox.name,
+                    idReunion: getAncestorId(checkbox),
+                    asiste: asiste
+                };
+
+                updateAsistencia(payload)
+                    .then(function (result) {
+                        window.console.log(result);
+                    })
+                    .catch(function (error) {
+                        checkbox.checked = previous;
+                        window.console.log(error);
+                    });
+            });
+        });
+    });
+})();

@@ -1,40 +1,93 @@
 'use strict';
 
-$(function() {
-	function apiAuthOptions(extraData) {
-		var legacyToken = $.trim($("#_token").text());
-		var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-		var data = extraData || {};
-		var headers = {};
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
+    }
 
-		if (bearerToken) {
-			headers.Authorization = "Bearer " + bearerToken;
-		}
-    if (legacyToken) {
-			data.api_token = legacyToken;
-		}
+    function trim(value) {
+        return (value || '').toString().trim();
+    }
 
-		return { headers: headers, data: data };
-	}
+    function getLegacyToken() {
+        var tokenElement = byId('_token');
+        return tokenElement ? trim(tokenElement.textContent) : '';
+    }
 
-	$('.del-notif').on('click', function() {
-		// borrar notificación
-		var id=$(this).parents('li').attr('id');
-		var auth = apiAuthOptions();
-		$.ajax({
-            method: "GET",
-            url: "/notification/"+id+"/delete",
+    function getBearerToken() {
+        var meta = document.querySelector('meta[name="user-bearer-token"]');
+        return meta ? trim(meta.getAttribute('content')) : '';
+    }
+
+    function apiAuthOptions(extraData) {
+        var data = extraData ? Object.assign({}, extraData) : {};
+        var headers = {};
+        var bearerToken = getBearerToken();
+        var legacyToken = getLegacyToken();
+
+        if (bearerToken) {
+            headers.Authorization = 'Bearer ' + bearerToken;
+        }
+        if (legacyToken) {
+            data.api_token = legacyToken;
+        }
+
+        return { headers: headers, data: data };
+    }
+
+    function withQueryParams(url, params) {
+        var query = new URLSearchParams(params || {}).toString();
+        if (!query) {
+            return url;
+        }
+
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+    }
+
+    function deleteNotification(id) {
+        var auth = apiAuthOptions();
+        return fetch(withQueryParams('/notification/' + id + '/delete', auth.data), {
+            method: 'GET',
             headers: auth.headers,
-            data: auth.data,
-        }).then(function (result) {
-        	console.log(result);
-		}, function(res) {
-        	console.log(res);			
-		})
-	})
-})
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.text();
+        });
+    }
 
-$(document).ready(function() {
-	var table = $('#datatable').DataTable();
-	table.order([0, 'dsc']).draw();
-});
+    function initTableOrder() {
+        if (typeof window.DataTable !== 'function') {
+            return;
+        }
+
+        var table = new window.DataTable('#datatable');
+        if (table && typeof table.order === 'function') {
+            table.order([0, 'dsc']).draw();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.del-notif').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var item = button.closest('li');
+                var id = item ? item.id : '';
+                if (!id) {
+                    return;
+                }
+
+                deleteNotification(id)
+                    .then(function (result) {
+                        window.console.log(result);
+                    })
+                    .catch(function (error) {
+                        window.console.log(error);
+                    });
+            });
+        });
+
+        initTableOrder();
+    });
+})();

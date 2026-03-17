@@ -1,0 +1,371 @@
+# Sprint 3 - Migració funcional incremental
+
+## Context
+Sprint orientat a estabilitzar fluxos funcionals crítics en Laravel 12 i avançar la migració de JS legacy de forma incremental, amb convivència temporal de codi antic i modern.
+
+Issue mare relacionada: #79
+
+## Objectius del sprint
+- Garantir estabilitat funcional en fluxos crítics (FCT, Signatura, APIs associades, auth/token).
+- Migrar JS de mòduls prioritaris de jQuery a JavaScript modern, sense regressions.
+- Reduir dependències legacy amb evidència de proves.
+
+## Estat real del sprint
+
+Durant l'execució, l'sprint s'ha orientat sobretot a una migració funcional incremental de panells de Direcció a Livewire, amb substitució progressiva del panell legacy en els mòduls principals.
+
+Resultat actual:
+
+- estabilització funcional Laravel 12 i auth/token: molt avançada
+- migració JS/jQuery: parcial
+- panells Livewire de Direcció: molt avançats
+- retirada del legacy de Direcció: avançada però no completa
+
+Panells creats i activats com a entrada principal de Direcció:
+
+- `direccion/falta`
+- `direccion/comision`
+- `direccion/actividad`
+- `direccion/expediente`
+
+Rutes de compatibilitat encara existents:
+
+- `direccion/falta-livewire`
+- `direccion/comision-livewire`
+- `direccion/actividad-livewire`
+- `direccion/expediente-livewire`
+
+Documentació de retirada progressiva creada:
+
+- `docs/sprints/sprint-3-p2-comision-legacy-retirement.md`
+- `docs/sprints/sprint-3-p3-falta-legacy-retirement.md`
+- `docs/sprints/sprint-3-p4-actividad-legacy-retirement.md`
+- `docs/sprints/sprint-3-p5-expediente-legacy-retirement.md`
+
+## Estat per línia de treball
+
+### L1 - Estabilització funcional Laravel 12
+Estat: Molt avançada
+
+Inclou:
+
+- ajustos d'auth/token
+- correccions de fluxos crítics
+- regressió manual acumulada del treball funcional
+
+### L2 - Migració JS legacy / jQuery
+Estat: Parcial
+
+Inclou:
+
+- reducció de dependència en mòduls prioritaris
+- infraestructura comuna JS millorada
+- però no hi ha retirada total de jQuery ni de tot el JS legacy
+
+### L3 - Panells Livewire de Direcció
+Estat: Molt avançada
+
+Inclou:
+
+- panells funcionals de `falta`, `comision`, `actividad` i `expediente`
+- rutes principals de Direcció substituïdes en els quatre casos
+- proves específiques per component
+- millores UX i desacoblament progressiu del legacy
+
+### L4 - Retirada progressiva de legacy
+Estat: Avançada
+
+Inclou:
+
+- inventari de dependències legacy per mòdul
+- plans de desmantellament per fases
+- desacoblament de rutes, bulk actions i bridges específics en diversos mòduls
+- eliminació de panells antics de Direcció ja morts
+
+## Backlog prioritzat
+
+### S3-01 Audit JS legacy i dependències
+Prioritat: Alta
+Estat: Tancada com a auditoria
+Tancament: Sí
+
+Tasques:
+- Inventariar usos de jQuery i plugins per pantalla/fitxer.
+- Classificar riscos (alt, mitjà, baix) i impacte funcional.
+- Identificar mòduls crítics de primera onada de migració.
+
+Criteris d'acceptació:
+- Document curt amb mapa `fitxer -> dependències -> risc -> prioritat`.
+- Llista tancada de pantalles crítiques a migrar primer.
+
+Evidència:
+
+- `docs/sprints/sprint-3-js-audit.md`
+- `docs/sprints/sprint-3-jquery-pendents.md`
+
+### S3-02 Token/Auth estable en web + API
+Prioritat: Alta
+Estat: Tancada
+Tancament: Sí
+
+Tasques:
+- Consolidar flux Bearer Sanctum en web interna.
+- Verificar renovació de token en sessió i no ús accidental de tokens caducats.
+- Validar endpoints crítics protegits amb `auth:sanctum`.
+
+Criteris d'acceptació:
+- Sense 401 espuris en fluxos crítics.
+- Proves manuals OK en `/signatura` i endpoints relacionats.
+
+Evidència:
+
+- `tests/Feature/ApiAuthTokenExchangeFeatureTest.php`
+- `routes/api.php`
+
+### S3-03 Migració vertical Signatura (jQuery -> JS modern)
+Prioritat: Alta
+Estat: Tancada
+Tancament: Sí
+
+Tasques:
+- Migrar `public/js/Signatura/index.js` a JS modern (`fetch`, events nadius).
+- Mantindre comportament funcional equivalent en modal i càrrega d'elements.
+- Gestionar errors de xarxa/auth de forma explícita.
+
+Criteris d'acceptació:
+- Botons A1/A5/A3 funcionals.
+- Càrrega de taula i enviament sense regressions.
+
+Evidència:
+
+- `public/js/Signatura/index.js`
+- `public/js/selDoc.js`
+- `public/js/indexModal.js`
+- `public/js/selecciona.js`
+- `docs/sprints/sprint-3-regressio-manual.md`
+
+Tancament funcional:
+
+- Revisió manual del flux `signatura` executada el `2026-03-17`.
+- Validats els fluxos A1/A5/A3 sense regressions bloquejants reportades.
+
+### S3-04 Migració vertical FCT crítica
+Prioritat: Alta
+Estat: Tancada
+Tancament: Sí
+
+Tasques:
+- Migrar scripts FCT de major ús (grid/modal/accions principals).
+- Reutilitzar capa comuna d'API/auth per evitar duplicació.
+
+Criteris d'acceptació:
+- Flux FCT habitual de tutor sense errors funcionals.
+- Sense dependència directa de `$` en els fitxers migrats.
+
+Evidència:
+
+- `public/js/Fct/grid.js`
+- `public/js/Fct/create.js`
+- `public/js/Fct/show.js`
+- `tests/Feature/ApiFctControllerFeatureTest.php`
+- `tests/Feature/ApiAlumnoFctControllerFeatureTest.php`
+
+Blocant actual:
+
+- Els fitxers principals `public/js/Fct/grid.js`, `public/js/Fct/create.js` i `public/js/Fct/show.js` ja reutilitzen la capa comuna d'auth/API.
+- La inicialització de datepicker queda centralitzada en `public/js/datepicker.js`, fora del codi específic de FCT.
+- Revisió funcional final del flux habitual de tutor FCT executada el `2026-03-17`.
+- `Fctdual` no bloqueja `S3-04`: queda fora d'abast funcional per estar marcat com a legacy/deprecated.
+
+Inventari legacy exclòs de l'abast actual:
+
+- JS: `public/js/Fctdual/index.js`, `public/js/Fctdual/modal.js`, `public/js/Dual/create.js`
+- Vistes: `resources/views/fctdual/*`, `resources/views/dual/*`
+- Backend: `app/Http/Controllers/Deprecated/DualController.php`, `app/Http/Controllers/API/DualController.php`, `app/Http/Controllers/PanelDualController.php`, `app/Http/Controllers/PanelPGDualController.php`, `app/Http/Controllers/CicloDualController.php`
+- Model/recursos/requests: `app/Entities/Dual.php`, `app/Http/Resources/DualResource.php`, `app/Http/Requests/DualRequest.php`, `app/Http/Requests/CicloDualRequest.php`
+
+### S3-05 Capa comuna JS d'infra
+Prioritat: Mitjana-Alta
+Estat: Avançada
+Tancament: Parcial
+
+Tasques:
+- Definir `apiClient` compartit (headers, Bearer, errors, parse).
+- Definir helpers mínims de DOM/events per a codi comú.
+
+Criteris d'acceptació:
+- Nous mòduls migrats utilitzen utilitats comunes.
+- Reducció de codi duplicat en peticions API.
+
+Evidència:
+
+- `public/js/common/api-auth.js`
+- `public/js/common/ui-helpers.js`
+
+Pendent real:
+
+- Encara no hi ha un `apiClient` únic i complet reutilitzat de forma homogènia per tots els mòduls migrats.
+
+### S3-06 Proves i regressió
+Prioritat: Alta
+Estat: Tancada
+Tancament: Sí
+
+Tasques:
+- Crear checklist de regressió funcional per mòduls migrats.
+- Executar proves manuals i, on siga viable, automatitzades.
+- Registrar incidències i traçabilitat contra issues.
+
+Criteris d'acceptació:
+- Checklist completada per cada vertical migrada.
+- 0 regressions crítiques obertes al tancament del sprint.
+
+Evidència:
+
+- `docs/sprints/sprint-3-test-coverage.md`
+- `docs/sprints/sprint-3-regressio-manual.md`
+
+Tancament funcional:
+
+- Revisió manual completada en `Signatura`, `FCT crítica` i els quatre panells prioritaris de Direcció.
+- No queden regressions crítiques obertes en els fluxos migrats validats durant l'sprint.
+
+### S3-07 Retirada parcial jQuery
+Prioritat: Mitjana
+Estat: Tancada
+Tancament: Sí
+
+Tasques:
+- Eliminar imports/usos de jQuery en mòduls ja migrats.
+- Mantindre convivència només on encara no s'ha migrat.
+
+Criteris d'acceptació:
+- Reducció mesurable d'ús de jQuery en àmbit Sprint 3.
+- Cap pantalla crítica del sprint depén de jQuery per funcionar.
+
+Evidència:
+
+- `docs/sprints/sprint-3-jquery-pendents.md`
+- `docs/sprints/sprint-3-js-audit.md`
+
+Blocant actual:
+
+- Continuen existint 4 fitxers amb ús directe de jQuery/ajax/modal i 4 amb `.modal(...)`.
+- El fallback de modal en `public/js/common/ui-helpers.js` continua sent intencional mentre conviuen pantalles BS4/BS5.
+
+Tancament funcional:
+
+- El residual de jQuery queda concentrat en infraestructura compartida i compatibilitat transversal.
+- No queda dependència directa dispersa en els fluxos crítics del sprint (`Signatura`, `FCT`, `Comissió`, `Empresa`, `Lote`, `grid`).
+- El deute pendent passa a considerar-se neteja d'infra legacy, no bloqueig funcional d'Sprint 3.
+
+### S3-08 Panells Livewire de Direcció
+Prioritat: Alta
+Estat: Pràcticament tancada
+Tancament: Sí
+
+Tasques:
+- Construir panell Livewire de `falta.direccion`.
+- Construir panell Livewire de `comision.direccion`.
+- Construir panell Livewire de `actividad.direccion`.
+- Construir panell Livewire de `expediente.direccion`.
+- Substituir l'entrada principal de Direcció quan el panell nou siga suficient.
+
+Criteris d'acceptació:
+- Cada panell nou és accessible i usable com a entrada principal de Direcció.
+- Hi ha filtre, accions bàsiques i visualització funcional per a Direcció.
+- Cada pilot té almenys una prova específica.
+
+### S3-09 Pla de retirada progressiva del legacy
+Prioritat: Alta
+Estat: Avançada
+Tancament: Parcial
+
+Tasques:
+- Documentar dependències entre pilots nous i controllers legacy.
+- Identificar quines peces poden quedar com a bridge temporal.
+- Definir ordre de desacoblament per mòdul.
+- Eliminar panells de Direcció i mètodes legacy que ja no tenen rutes actives.
+
+Criteris d'acceptació:
+- Existeix un document de retirada per cada pilot principal.
+- Queda clar què no es pot eliminar encara i per què.
+- Hi ha un següent pas tècnic accionable per a cada mòdul.
+
+## Ordre d'execució recomanat
+1. S3-01
+2. S3-02
+3. S3-03
+4. S3-05 (en paral·lel amb S3-03/S3-04)
+5. S3-04
+6. S3-06
+7. S3-07
+
+## Ordre real executat
+1. Estabilització funcional Laravel 12 i auth/token
+2. Migració/reducció parcial de JS legacy en fluxos crítics
+3. Panell Livewire `falta.direccion`
+4. Panell Livewire `comision.direccion`
+5. Panell Livewire `actividad.direccion`
+6. Panell Livewire `expediente.direccion`
+7. Documents de retirada progressiva del legacy
+8. Desacoblament de bulk actions, gestors documentals i PDFs individuals
+9. Eliminació de panells legacy morts de Direcció
+
+## Punt de tall actual
+
+L'sprint es pot considerar molt avançat a nivell funcional i clarament avançat en retirada de legacy de Direcció.
+
+Lectura honesta per subsprint:
+
+- `S3-08`: tancada
+- `S3-09`: parcial alta
+- `S3-02`: tancada
+- `S3-05`: parcial però usable
+- `S3-06`: tancada
+- `S3-01`: tancada
+- `S3-03`: tancada
+- `S3-04`: tancada
+- `S3-07`: tancada
+
+Per donar-lo per realment tancat, el següent bloc natural és:
+
+- simplificar controllers generalistes deixant només fluxos vius de professorat
+- fer una última passada de revisió documental i de tancament
+
+## Definició de fet (DoD) Sprint 3
+- Fluxos crítics estabilitzats en Laravel 12.
+- Mòduls prioritaris migrats a JS modern sense regressions.
+- Regressió manual prioritària executada en `Direcció`, `Signatura` i `FCT crítica`.
+- Residual legacy acotat i documentat com a deute tècnic fora del bloqueig funcional del sprint.
+
+## Tancament executiu
+
+Subsprints tancades:
+
+- `S3-01`
+- `S3-02`
+- `S3-03`
+- `S3-04`
+- `S3-06`
+- `S3-07`
+- `S3-08`
+
+Subsprints parcialment obertes però defensables:
+
+- `S3-05`: capa comuna JS avançada però no completament homogenitzada.
+- `S3-09`: pla de retirada progressiva avançat, amb deute legacy encara documentat.
+
+Conclusió de sprint:
+
+- L'Sprint 3 queda funcionalment tancable.
+- El treball pendent passa a ser principalment simplificació d'infra compartida i retirada progressiva del legacy residual.
+- Autenticació API coherent amb Sanctum.
+- Evidència de proves i traçabilitat en issues/commits.
+
+## DoD realista després d'esta execució
+- Hi ha panells Livewire funcionals i principals per als principals fluxos de Direcció.
+- Hi ha proves específiques per als panells i per diversos bridges nous de Direcció.
+- El legacy de Direcció està identificat, documentat i parcialment retirat.
+- Els panells legacy morts de Direcció s'han eliminat en els mòduls principals.
+- El següent pas tècnic és sobretot simplificació final i tancament, no ja construcció inicial.

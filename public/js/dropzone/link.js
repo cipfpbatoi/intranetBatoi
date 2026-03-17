@@ -1,5 +1,6 @@
 function apiAuthOptions(extraData) {
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
+    var bearerTokenMeta = document.querySelector('meta[name="user-bearer-token"]');
+    var bearerToken = ((bearerTokenMeta && bearerTokenMeta.getAttribute('content')) || "").trim();
     var data = extraData || {};
     var headers = {};
 
@@ -8,6 +9,18 @@ function apiAuthOptions(extraData) {
     }
 
     return { headers: headers, data: data };
+}
+
+function fetchJson(url, options) {
+    return fetch(url, options).then(function (response) {
+        if (!response.ok) {
+            return response.text().then(function (text) {
+                throw new Error(text || ("Error HTTP " + response.status));
+            });
+        }
+
+        return response.json();
+    });
 }
 
 Dropzone.options.myDropzone = {
@@ -24,35 +37,44 @@ Dropzone.options.myDropzone = {
     disablePreviews: true,
     dictRemoveFileConfirmation: "Vas a esborrar el fitxer",
     headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content
     },
 
     init: function() {
         var auth = apiAuthOptions();
-        var expediente = $('#id').attr('value');
-        var modelo = $('#modelo').attr('value');
-        myDropzone = this;
+        var expedienteInput = document.getElementById('id');
+        var modeloInput = document.getElementById('modelo');
+        var expediente = expedienteInput ? expedienteInput.value : '';
+        var modelo = modeloInput ? modeloInput.value : '';
+        var myDropzone = this;
 
         if (auth.headers.Authorization) {
             this.options.headers.Authorization = auth.headers.Authorization;
         }
 
         this.on("complete", function(file) {
-            $(".dz-remove").html(
-                "<div>" +
-                "<span class='fa fa-trash text-danger' style='font-size: 1.5em'></span>" +
-                "</div>");
-            $(".dz-error-message").html("");
+            var removeLinks = document.querySelectorAll('.dz-remove');
+            var errorMessages = document.querySelectorAll('.dz-error-message');
+
+            removeLinks.forEach(function (link) {
+                link.innerHTML = "<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>";
+            });
+
+            errorMessages.forEach(function (messageNode) {
+                messageNode.innerHTML = "";
+            });
         });
 
-        $.ajax({
-            url: '/api/getAttached/'+modelo+'/'+expediente,
-            type: 'GET',
-            dataType: 'json',
+        var attachedUrl = '/api/getAttached/' + modelo + '/' + expediente;
+        if (Object.keys(auth.data).length > 0) {
+            attachedUrl += '?' + new URLSearchParams(auth.data).toString();
+        }
+
+        fetchJson(attachedUrl, {
+            method: 'GET',
             headers: auth.headers,
-            data: auth.data,
-            success: function(data){
-                $.each(data.data, function (key, mockFile) {
+        }).then(function (data) {
+            (data.data || []).forEach(function (mockFile) {
                     myDropzone.emit("addedfile", mockFile);
                     if (!mockFile.referencesTo) {
                         var previewName = mockFile.file ? mockFile.file : mockFile.name;
@@ -65,8 +87,10 @@ Dropzone.options.myDropzone = {
                     myDropzone.files.push(mockFile);
                     myDropzone.emit("complete", mockFile);
                 });
-            },
+        }).catch(function (error) {
+            alert("No s'han pogut carregar els adjunts: " + error.message);
         });
+
         this.on("addedfile", function (file) {
             if (file.size == 0) {
                 this.removeFile(file);
@@ -105,32 +129,36 @@ Dropzone.options.myDropzone = {
             myDropzone.processQueue.bind(myDropzone)
         );
         this.on("removedfile", function(file){
-                $.ajax({
-                    url: '/api/removeAttached/' + modelo + '/' + expediente + '/' + file.name,
-                    type: 'GET',
-                    dataType: 'json',
-                    headers: auth.headers,
-                    data: auth.data,
-                    error: function(data){
-                        alert("No s'ha pogut esborrar: "+data.responseText);
-                        myDropzone.emit("addedfile", file);
-                        myDropzone.createThumbnailFromUrl(file,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
-                        myDropzone.emit("success", file);
-                        myDropzone.files.push(file);
-                        myDropzone.emit("complete", file);
-                    }
-                });
+            var removeUrl = '/api/removeAttached/' + modelo + '/' + expediente + '/' + file.name;
+            if (Object.keys(auth.data).length > 0) {
+                removeUrl += '?' + new URLSearchParams(auth.data).toString();
+            }
+
+            fetchJson(removeUrl, {
+                method: 'GET',
+                headers: auth.headers,
+            }).catch(function (error) {
+                alert("No s'ha pogut esborrar: " + error.message);
+                myDropzone.emit("addedfile", file);
+                myDropzone.createThumbnailFromUrl(file,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                myDropzone.emit("success", file);
+                myDropzone.files.push(file);
+                myDropzone.emit("complete", file);
+            });
 
         })
     },
 };
 
-$(function () {
-    $('.message').on("click", function(event){
-        event.preventDefault();
-        let message = $(this).parent().attr('title');
-        if (confirm(message)) {
-            location.href = $(this).attr('href');
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.message').forEach(function (messageLink) {
+        messageLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            var parent = messageLink.parentElement;
+            var message = parent ? parent.getAttribute('title') : '';
+            if (confirm(message)) {
+                location.href = messageLink.getAttribute('href');
+            }
+        });
     });
 });
