@@ -124,8 +124,8 @@ Evidència:
 
 ### S3-03 Migració vertical Signatura (jQuery -> JS modern)
 Prioritat: Alta
-Estat: Avançat
-Tancament: No
+Estat: Tancada
+Tancament: Sí
 
 Tasques:
 - Migrar `public/js/Signatura/index.js` a JS modern (`fetch`, events nadius).
@@ -136,10 +136,23 @@ Criteris d'acceptació:
 - Botons A1/A5/A3 funcionals.
 - Càrrega de taula i enviament sense regressions.
 
+Evidència:
+
+- `public/js/Signatura/index.js`
+- `public/js/selDoc.js`
+- `public/js/indexModal.js`
+- `public/js/selecciona.js`
+- `docs/sprints/sprint-3-regressio-manual.md`
+
+Tancament funcional:
+
+- Revisió manual del flux `signatura` executada el `2026-03-17`.
+- Validats els fluxos A1/A5/A3 sense regressions bloquejants reportades.
+
 ### S3-04 Migració vertical FCT crítica
 Prioritat: Alta
-Estat: Parcial / pendent de rematada
-Tancament: No
+Estat: Tancada
+Tancament: Sí
 
 Tasques:
 - Migrar scripts FCT de major ús (grid/modal/accions principals).
@@ -148,6 +161,28 @@ Tasques:
 Criteris d'acceptació:
 - Flux FCT habitual de tutor sense errors funcionals.
 - Sense dependència directa de `$` en els fitxers migrats.
+
+Evidència:
+
+- `public/js/Fct/grid.js`
+- `public/js/Fct/create.js`
+- `public/js/Fct/show.js`
+- `tests/Feature/ApiFctControllerFeatureTest.php`
+- `tests/Feature/ApiAlumnoFctControllerFeatureTest.php`
+
+Blocant actual:
+
+- Els fitxers principals `public/js/Fct/grid.js`, `public/js/Fct/create.js` i `public/js/Fct/show.js` ja reutilitzen la capa comuna d'auth/API.
+- La inicialització de datepicker queda centralitzada en `public/js/datepicker.js`, fora del codi específic de FCT.
+- Revisió funcional final del flux habitual de tutor FCT executada el `2026-03-17`.
+- `Fctdual` no bloqueja `S3-04`: queda fora d'abast funcional per estar marcat com a legacy/deprecated.
+
+Inventari legacy exclòs de l'abast actual:
+
+- JS: `public/js/Fctdual/index.js`, `public/js/Fctdual/modal.js`, `public/js/Dual/create.js`
+- Vistes: `resources/views/fctdual/*`, `resources/views/dual/*`
+- Backend: `app/Http/Controllers/Deprecated/DualController.php`, `app/Http/Controllers/API/DualController.php`, `app/Http/Controllers/PanelDualController.php`, `app/Http/Controllers/PanelPGDualController.php`, `app/Http/Controllers/CicloDualController.php`
+- Model/recursos/requests: `app/Entities/Dual.php`, `app/Http/Resources/DualResource.php`, `app/Http/Requests/DualRequest.php`, `app/Http/Requests/CicloDualRequest.php`
 
 ### S3-05 Capa comuna JS d'infra
 Prioritat: Mitjana-Alta
@@ -161,6 +196,15 @@ Tasques:
 Criteris d'acceptació:
 - Nous mòduls migrats utilitzen utilitats comunes.
 - Reducció de codi duplicat en peticions API.
+
+Evidència:
+
+- `public/js/common/api-auth.js`
+- `public/js/common/ui-helpers.js`
+
+Pendent real:
+
+- Encara no hi ha un `apiClient` únic i complet reutilitzat de forma homogènia per tots els mòduls migrats.
 
 ### S3-06 Proves i regressió
 Prioritat: Alta
@@ -193,6 +237,16 @@ Tasques:
 Criteris d'acceptació:
 - Reducció mesurable d'ús de jQuery en àmbit Sprint 3.
 - Cap pantalla crítica del sprint depén de jQuery per funcionar.
+
+Evidència:
+
+- `docs/sprints/sprint-3-jquery-pendents.md`
+- `docs/sprints/sprint-3-js-audit.md`
+
+Blocant actual:
+
+- Continuen existint 24 fitxers amb jQuery/ajax i 4 amb `.modal(...)`.
+- El fallback de modal en `public/js/common/ui-helpers.js` continua sent intencional mentre conviuen pantalles BS4/BS5.
 
 ### S3-08 Panells Livewire de Direcció
 Prioritat: Alta
@@ -259,7 +313,9 @@ Lectura honesta per subsprint:
 - `S3-05`: parcial però usable
 - `S3-06`: parcial però suficient per defensar el treball nou
 - `S3-01`: tancada
-- `S3-03`, `S3-04`, `S3-07`: no tancades
+- `S3-03`: tancada
+- `S3-04`: tancada
+- `S3-07`: no tancada
 
 Per donar-lo per realment tancat, el següent bloc natural és:
 

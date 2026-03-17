@@ -1,122 +1,94 @@
 <?php
 
+$defaultMailer = env('MAIL_MAILER', env('MAIL_DRIVER', 'smtp'));
+$smtpHost = env('MAIL_HOST', '127.0.0.1');
+$smtpPort = (int) env('MAIL_PORT', 25);
+$smtpEncryption = env('MAIL_ENCRYPTION');
+$smtpUsername = env('MAIL_USERNAME');
+$smtpPassword = env('MAIL_PASSWORD');
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | MyMail Driver
+    | Default Mailer
     |--------------------------------------------------------------------------
     |
-    | Laravel supports both SMTP and PHP's "mail" function as drivers for the
-    | sending of e-mail. You may specify which one you're using throughout
-    | your application here. By default, Laravel is setup for SMTP mail.
-    |
-    | Supported: "smtp", "mail", "sendmail", "mailgun", "mandrill",
-    |            "ses", "sparkpost", "log"
+    | Laravel 12 utilitza "MAIL_MAILER", però mantenim compatibilitat amb
+    | "MAIL_DRIVER" per als entorns antics del projecte i proves existents.
     |
     */
 
-    'driver' => env('MAIL_DRIVER', 'smtp'),
+    'default' => $defaultMailer,
 
     /*
     |--------------------------------------------------------------------------
-    | SMTP Host Address
+    | Legacy Driver Key
     |--------------------------------------------------------------------------
     |
-    | Here you may provide the host address of the SMTP server used by your
-    | applications. A default option is provided that is compatible with
-    | the Mailgun mail service which will provide reliable deliveries.
+    | Alguns punts del projecte encara poden llegir "mail.driver". Es manté
+    | sincronitzada amb el mailer per evitar regressions durant la transició.
     |
     */
 
-    'host' => env('MAIL_HOST', 'localhost'),
+    'driver' => $defaultMailer,
 
     /*
     |--------------------------------------------------------------------------
-    | SMTP Host Port
+    | Mailer Configurations
+    |--------------------------------------------------------------------------
+    */
+
+    'mailers' => [
+        'smtp' => [
+            'transport' => 'smtp',
+            'host' => $smtpHost,
+            'port' => $smtpPort,
+            'encryption' => $smtpEncryption ?: null,
+            'username' => $smtpUsername ?: null,
+            'password' => $smtpPassword ?: null,
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+        ],
+
+        'log' => [
+            'transport' => 'log',
+            'channel' => env('MAIL_LOG_CHANNEL'),
+        ],
+
+        'array' => [
+            'transport' => 'array',
+        ],
+
+        'failover' => [
+            'transport' => 'failover',
+            'mailers' => ['smtp', 'log'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Legacy SMTP Keys
     |--------------------------------------------------------------------------
     |
-    | This is the SMTP port used by your application to deliver e-mails to
-    | users of the application. Like the host we have set this value to
-    | stay compatible with the Mailgun e-mail application by default.
+    | Es mantenen per compatibilitat amb codi històric que puga consultar-los.
     |
     */
 
-    'port' => env('MAIL_PORT', 25),
+    'host' => $smtpHost,
+    'port' => $smtpPort,
+    'encryption' => $smtpEncryption ?: null,
+    'username' => $smtpUsername ?: null,
+    'password' => $smtpPassword ?: null,
 
     /*
     |--------------------------------------------------------------------------
     | Global "From" Address
     |--------------------------------------------------------------------------
-    |
-    | You may wish for all e-mails sent by your application to be sent from
-    | the same address. Here, you may specify a name and address that is
-    | used globally for all e-mails that are sent by your application.
-    |
     */
 
     'from' => [
-        'address' => config('contacto.host.email'),
-        'name' => 'Intranet',
+        'address' => env('MAIL_FROM_ADDRESS', config('contacto.host.email')),
+        'name' => env('MAIL_FROM_NAME', 'Intranet'),
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | E-MyMail Encryption Protocol
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the encryption protocol that should be used when
-    | the application send e-mail messages. A sensible default using the
-    | transport layer security protocol should provide great security.
-    |
-    */
-
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | SMTP Server Username
-    |--------------------------------------------------------------------------
-    |
-    | If your SMTP server requires a username for authentication, you should
-    | set it here. This will get used to authenticate with your server on
-    | connection. You may also set the "password" value below this one.
-    |
-    */
-
-    'username' => env('MAIL_USERNAME', 'intranet@cipfpbatoi.es'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Sendmail System Path
-    |--------------------------------------------------------------------------
-    |
-    | When using the "sendmail" driver to send e-mails, we will need to know
-    | the path to where Sendmail lives on this server. A default path has
-    | been provided here, which will work well on most of your systems.
-    |
-    */
-
-    'password' => env('MAIL_PASSWORD', '1234'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Markdown MyMail Settings
-    |--------------------------------------------------------------------------
-    |
-    | If you are using Markdown based email rendering, you may configure your
-    | theme and component paths here, allowing you to customize the design
-    | of the emails. Or, you may simply stick with the Laravel defaults!
-    |
-    */
-
-//    'markdown' => [
-//        'theme' => 'default',
-//
-//        'paths' => [
-//            resource_path('views/vendor/mail'),
-//        ],
-//    ],
-
 ];
-

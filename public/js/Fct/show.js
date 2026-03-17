@@ -5,50 +5,19 @@
         return window.intranetUiHelpers || {};
     }
 
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
+    }
+
     function trim(value) {
         return (value || '').toString().trim();
     }
 
-    function getApiAuthOptions(extraData) {
-        if (typeof window.apiAuthOptions === 'function') {
-            return window.apiAuthOptions(extraData);
-        }
-
-        var tokenElement = document.querySelector('#_token');
-        var legacyToken = trim(tokenElement ? tokenElement.textContent : '');
-        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-        var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
-        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        var csrfToken = trim(csrfMeta ? csrfMeta.getAttribute('content') : '');
-        var data = extraData ? Object.assign({}, extraData) : {};
-        var headers = {};
-
-        if (csrfToken) {
-            headers['X-CSRF-TOKEN'] = csrfToken;
-        }
-
-        if (bearerToken) {
-            headers.Authorization = 'Bearer ' + bearerToken;
-        }
-
-        if (legacyToken) {
-            data.api_token = legacyToken;
-        }
-
-        return { headers: headers, data: data };
-    }
-
-    function withQueryParams(url, params) {
-        var query = new URLSearchParams(params || {}).toString();
-        if (!query) {
-            return url;
-        }
-
-        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-    }
-
     function requestJson(method, url, extraData) {
-        var auth = getApiAuthOptions(extraData);
+        var apiAuth = getApiAuth();
+        var auth = typeof apiAuth.apiAuthOptions === 'function'
+            ? apiAuth.apiAuthOptions(extraData)
+            : { headers: {}, data: extraData || {} };
         var options = {
             method: method,
             headers: Object.assign({}, auth.headers),
@@ -56,7 +25,9 @@
         };
 
         if (method === 'GET') {
-            url = withQueryParams(url, auth.data);
+            url = typeof apiAuth.withQueryParams === 'function'
+                ? apiAuth.withQueryParams(url, auth.data)
+                : url;
         } else {
             options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
             options.body = new URLSearchParams(auth.data).toString();
@@ -87,6 +58,10 @@
             window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
             return;
         }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
+        }
     }
 
     function hideModal(id) {
@@ -104,6 +79,10 @@
         if (window.bootstrap && window.bootstrap.Modal) {
             window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
             return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('hide');
         }
     }
 
@@ -143,16 +122,48 @@
         ul.appendChild(li);
     }
 
+    function setAlumnoOptions(options) {
+        var select = document.getElementById('alumnoFct');
+        if (!select) {
+            return null;
+        }
+
+        select.innerHTML = '';
+        (options || []).forEach(function (item) {
+            select.appendChild(item);
+        });
+
+        return select;
+    }
+
+    function buildOption(value, text, disabled, selected) {
+        var option = document.createElement('option');
+        option.value = value || '';
+        option.textContent = text || '';
+        option.disabled = !!disabled;
+        option.selected = !!selected;
+        return option;
+    }
+
     function loadAlumnat(fctId) {
+        setAlumnoOptions([
+            buildOption('', 'Carregant alumnat...', true, true)
+        ]);
+
         requestJson('GET', '/fct/' + fctId + '/alFct')
             .then(function (response) {
                 var fctAl = response.data || [];
-                var select = document.getElementById('alumnoFct');
+                var select = setAlumnoOptions([]);
                 if (!select) {
                     return;
                 }
 
-                select.innerHTML = '';
+                if (!fctAl.length) {
+                    setAlumnoOptions([
+                        buildOption('', 'Sense alumnat disponible', true, true)
+                    ]);
+                    return;
+                }
 
                 fctAl.forEach(function (alumne) {
                     var option = document.createElement('option');
@@ -160,11 +171,12 @@
                     option.textContent = alumne.nombre;
                     select.appendChild(option);
                 });
-
-                showModal('dialogo_alumno');
             })
             .catch(function (error) {
                 console.error('Error en obtenir els alumnes:', error);
+                setAlumnoOptions([
+                    buildOption('', 'No s\'ha pogut carregar l\'alumnat', true, true)
+                ]);
             });
     }
 
@@ -190,14 +202,19 @@
             });
         });
 
-        document.querySelectorAll('.alumnat').forEach(function (element) {
-            element.addEventListener('click', function (event) {
-                event.preventDefault();
-                if (!fctId) {
-                    return;
-                }
-                loadAlumnat(fctId);
-            });
+        document.addEventListener('click', function (event) {
+            var alumnatButton = event.target.closest('.alumnat');
+            if (!alumnatButton) {
+                return;
+            }
+
+            event.preventDefault();
+            if (!fctId) {
+                return;
+            }
+
+            showModal('dialogo_alumno');
+            loadAlumnat(fctId);
         });
 
         var formDialogoAlumno = document.getElementById('formDialogo_alumno');

@@ -19,4 +19,6 @@
         @endforeach
     @endforeach
 </ul>
-<a class="alumnat"><em class="fa fa-plus"></em>Afegir seguiment</a>
+<button type="button" class="btn btn-link alumnat">
+    <em class="fa fa-plus"></em>Afegir seguiment
+</button>

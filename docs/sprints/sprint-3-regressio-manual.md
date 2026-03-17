@@ -88,6 +88,11 @@ Ruta: `direccion/expediente`
 
 Ruta: `signatura`
 
+Resultat revisió manual:
+
+- validada el `2026-03-17`
+- sense regressions bloquejants reportades en el flux revisat
+
 - botons A1/A5/A3 obrin modal i carreguen dades
 - no hi ha errors de consola en obrir modals
 - enviament múltiple no queda bloquejat
@@ -97,6 +102,11 @@ Ruta: `signatura`
 ## 7. FCT crítica
 
 Ruta base: fluxos de tutor FCT
+
+Resultat revisió manual:
+
+- validada el `2026-03-17`
+- sense regressions bloquejants reportades en el flux revisat
 
 - grid principal carrega sense errors JS
 - accions principals del grid funcionen

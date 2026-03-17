@@ -7,6 +7,10 @@ var day;
 var month;
 var tipo;
 
+function getApiAuth() {
+    return window.intranetApiAuth || {};
+}
+
 function trim(value) {
     return (value || '').toString().trim();
 }
@@ -43,41 +47,11 @@ function appendActivityLink(listTarget, activityId, iconClass, comment) {
     bindDraggableLink(document.getElementById(String(activityId)));
 }
 
-function apiAuthOptions(extraData) {
-    var tokenElement = document.querySelector('#_token');
-    var legacyToken = trim(tokenElement ? tokenElement.textContent : '');
-    var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-    var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
-    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-    var csrfToken = trim(csrfMeta ? csrfMeta.getAttribute('content') : '');
-    var data = extraData || {};
-    var headers = {};
-
-    if (csrfToken) {
-        headers['X-CSRF-TOKEN'] = csrfToken;
-    }
-
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
-    }
-    if (legacyToken) {
-        data.api_token = legacyToken;
-    }
-
-    return { headers: headers, data: data };
-}
-
-function withQueryParams(url, params) {
-    var query = new URLSearchParams(params || {}).toString();
-    if (!query) {
-        return url;
-    }
-
-    return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-}
-
 function apiRequest(method, url, extraData) {
-    var auth = apiAuthOptions(extraData);
+    var apiAuth = getApiAuth();
+    var auth = typeof apiAuth.apiAuthOptions === 'function'
+        ? apiAuth.apiAuthOptions(extraData)
+        : { headers: {}, data: extraData || {} };
     var options = {
         method: method,
         headers: Object.assign({}, auth.headers),
@@ -85,7 +59,9 @@ function apiRequest(method, url, extraData) {
     };
 
     if (method === 'GET') {
-        url = withQueryParams(url, auth.data);
+        url = typeof apiAuth.withQueryParams === 'function'
+            ? apiAuth.withQueryParams(url, auth.data)
+            : url;
     } else {
         options.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
         options.body = new URLSearchParams(auth.data).toString();
@@ -279,37 +255,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    var appLocaleMeta = document.querySelector('meta[name="app-locale"]');
-    var htmlLang = document.documentElement.getAttribute('lang') || 'es';
-    var pageLocale = (((appLocaleMeta && appLocaleMeta.getAttribute('content')) || htmlLang || 'es').toLowerCase()).split('-')[0];
-    var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
-    var dateFormat = pageLocale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
-    var dateTimeFormat = pageLocale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
-
-    if (typeof moment !== 'undefined' && typeof moment.locale === 'function') {
-        moment.locale(pickerLocale);
-    }
-
-    // Dependència temporal: datetimepicker continua sent plugin jQuery.
-    if (window.jQuery && typeof window.jQuery.fn.datetimepicker === 'function') {
-        window.jQuery('input[type=text].datetime').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: dateTimeFormat,
-            stepping: 15,
-        });
-        window.jQuery('input[type=text].time').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: 'HH:mm',
-            stepping: 15,
-        });
-        window.jQuery('input[type=text].date').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: dateFormat,
-        });
-    }
     Array.from(document.querySelectorAll('.dragable')).forEach((item) => {
         bindDraggableLink(item);
     });

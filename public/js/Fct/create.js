@@ -1,54 +1,17 @@
 (function () {
     'use strict';
 
-    function trim(value) {
-        return (value || '').toString().trim();
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
     }
 
-    function getApiAuthOptions(extraData) {
-        if (typeof window.apiAuthOptions === 'function') {
-            return window.apiAuthOptions(extraData);
+    function apiGet(url) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
         }
 
-        var legacyTokenEl = document.querySelector('#_token');
-        var legacyToken = trim(legacyTokenEl ? legacyTokenEl.textContent : '');
-        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-        var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
-        var data = extraData ? Object.assign({}, extraData) : {};
-        var headers = {};
-
-        if (bearerToken) {
-            headers.Authorization = 'Bearer ' + bearerToken;
-        }
-
-        if (legacyToken) {
-            data.api_token = legacyToken;
-        }
-
-        return { headers: headers, data: data };
-    }
-
-    function withQueryParams(url, params) {
-        var query = new URLSearchParams(params || {}).toString();
-        if (!query) {
-            return url;
-        }
-
-        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-    }
-
-    function fetchJsonGet(url, auth) {
-        return fetch(withQueryParams(url, auth.data), {
-            method: 'GET',
-            headers: auth.headers,
-            credentials: 'same-origin'
-        }).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-
-            return response.json();
-        });
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -61,9 +24,8 @@
 
         colaboracionSelect.addEventListener('change', function () {
             var idColaboracion = colaboracionSelect.value;
-            var auth = getApiAuthOptions();
 
-            fetchJsonGet('/api/colaboracion/instructores/' + idColaboracion, auth)
+            apiGet('/api/colaboracion/instructores/' + idColaboracion)
                 .then(function (result) {
                     var newOptions = result.data || [];
                     instructorSelect.innerHTML = '';

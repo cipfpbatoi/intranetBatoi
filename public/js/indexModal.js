@@ -5,6 +5,10 @@
         return window.intranetUiHelpers || {};
     }
 
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
+    }
+
     function trim(value) {
         return (value || '').toString().trim();
     }
@@ -23,61 +27,13 @@
         return window.location.href.replace(/#/, '');
     }
 
-    function apiAuthOptions(extraData) {
-        var legacyToken = '';
-        document.querySelectorAll('#_token').forEach(function (tokenElem) {
-            if (legacyToken) {
-                return;
-            }
-
-            var candidate = trim(tokenElem.textContent || tokenElem.value || '');
-            if (candidate) {
-                legacyToken = candidate;
-            }
-        });
-
-        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-        var bearerToken = trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
-        var data = extraData ? Object.assign({}, extraData) : {};
-        var headers = {};
-
-        if (bearerToken) {
-            headers.Authorization = 'Bearer ' + bearerToken;
-        }
-
-        if (legacyToken) {
-            data.api_token = legacyToken;
-        }
-
-        return { headers: headers, data: data };
-    }
-
-    function withQueryParams(url, params) {
-        var query = new URLSearchParams(params || {}).toString();
-        if (!query) {
-            return url;
-        }
-
-        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-    }
-
-    function fetchJson(url, options) {
-        return fetch(url, options).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-
-            return response.json();
-        });
-    }
-
     function apiGet(url) {
-        var auth = apiAuthOptions();
-        return fetchJson(withQueryParams(url, auth.data), {
-            method: 'GET',
-            headers: auth.headers,
-            credentials: 'same-origin'
-        });
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
+        }
+
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
     }
 
     function setModalAttrs(element, targetId) {

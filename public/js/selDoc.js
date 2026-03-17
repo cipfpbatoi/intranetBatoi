@@ -5,6 +5,10 @@
         return window.intranetUiHelpers || {};
     }
 
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
+    }
+
     function setModalAttrs(element, targetId) {
         if (!element) {
             return;
@@ -19,16 +23,6 @@
             helpers.showModal(id);
             return;
         }
-
-        var modalElement = document.getElementById(id);
-        if (!modalElement) {
-            return;
-        }
-
-        if (window.bootstrap && window.bootstrap.Modal) {
-            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
-            return;
-        }
     }
 
     function hideModal(id) {
@@ -37,62 +31,15 @@
             helpers.hideModal(id);
             return;
         }
-
-        var modalElement = document.getElementById(id);
-        if (!modalElement) {
-            return;
-        }
-
-        if (window.bootstrap && window.bootstrap.Modal) {
-            window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
-            return;
-        }
     }
 
-    function getApiAuthOptions(extraData) {
-        if (typeof window.apiAuthOptions === 'function') {
-            return window.apiAuthOptions(extraData);
+    function apiGet(url) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
         }
 
-        var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
-        var bearerToken = (bearerMeta ? bearerMeta.getAttribute('content') : '') || '';
-        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        var csrfToken = (csrfMeta ? csrfMeta.getAttribute('content') : '') || '';
-        var data = extraData ? Object.assign({}, extraData) : {};
-        var headers = {};
-
-        if (csrfToken.trim()) {
-            headers['X-CSRF-TOKEN'] = csrfToken.trim();
-        }
-
-        if (bearerToken.trim()) {
-            headers.Authorization = 'Bearer ' + bearerToken.trim();
-        }
-
-        return { headers: headers, data: data };
-    }
-
-    function withQueryParams(url, params) {
-        var query = new URLSearchParams(params || {}).toString();
-        if (!query) {
-            return url;
-        }
-
-        return url + (url.indexOf('?') === -1 ? '?' : '&') + query;
-    }
-
-    function fetchJson(url, auth) {
-        return fetch(withQueryParams(url, auth.data), {
-            method: 'GET',
-            headers: auth.headers,
-            credentials: 'same-origin'
-        }).then(function (response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-
-            return response.json();
-        });
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
     }
 
     function handleSeleccionClick(button, event) {
@@ -107,9 +54,7 @@
             form.setAttribute('action', route);
         }
 
-        var auth = getApiAuthOptions();
-
-        fetchJson(url, auth)
+        apiGet(url)
             .then(function (result) {
                 if (typeof window.pintaTablaSeleccion === 'function') {
                     window.pintaTablaSeleccion(result.data, '#tableA3');

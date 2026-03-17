@@ -47,6 +47,31 @@ Fitxers principals que continuen pendents:
 - Bloc funcional DUAL/FCTDUAL (JS, vistes Blade, CSS i classes PHP específiques)
   - Marcat com a legacy/deprecated per evitar nous desenvolupaments sobre eixe camí.
 
+Inventari localitzat de punts deprecated:
+
+- JS:
+  - `public/js/Fctdual/index.js`
+  - `public/js/Fctdual/modal.js`
+  - `public/js/Dual/create.js`
+- Vistes:
+  - `resources/views/fctdual/index.blade.php`
+  - `resources/views/fctdual/partials/grid.blade.php`
+  - `resources/views/dual/*.blade.php`
+- Backend:
+  - `app/Http/Controllers/Deprecated/DualController.php`
+  - `app/Http/Controllers/API/DualController.php`
+  - `app/Http/Controllers/PanelDualController.php`
+  - `app/Http/Controllers/PanelPGDualController.php`
+  - `app/Http/Controllers/CicloDualController.php`
+  - `app/Entities/Dual.php`
+  - `app/Http/Resources/DualResource.php`
+  - `app/Http/Requests/DualRequest.php`
+  - `app/Http/Requests/CicloDualRequest.php`
+
+Nota d'abast:
+
+- Este inventari es considera explícitament fora de l'abast de rematada funcional d'Sprint 3.
+
 ## Criteri per tancar S3-07
 - Mantindre només compatibilitat centralitzada en `public/js/common/ui-helpers.js` mentre convisquen pantalles BS4/BS5.
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
