@@ -33,6 +33,8 @@ sudo chown -R $USER:$USER storage bootstrap/cache && chmod -R 775 storage bootst
 
 L'aplicació estarà disponible en **<https://localhost>**. L'usuari inicial és `admin@intranet.my` amb contrasenya `12345678`.
 
+Per al flux de build, push i desplegament d'una imatge immutable de preproducció/producció, consulta [docker-prod.md](./docker-prod.md).
+
 Serveis disponibles:
 
 | Servei     | URL                                        |

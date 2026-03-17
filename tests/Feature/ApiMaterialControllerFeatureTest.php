@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
+/**
+ * Tests de regressió de l'API de materials/inventari.
+ */
 class ApiMaterialControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -207,6 +210,110 @@ class ApiMaterialControllerFeatureTest extends TestCase
         $this->assertSame('AULA1', $items[0]['espacio']);
     }
 
+    public function test_inventario_no_mostra_proposta_si_el_canvi_ja_esta_resolt(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'PMAT004',
+            'rol' => config('roles.rol.direccion'),
+            'departamento' => 1,
+            'api_token' => 'token-material-resolt',
+            'activo' => 1,
+        ]);
+
+        DB::table('articulos')->insert([
+            'id' => 21,
+            'descripcion' => 'Projector',
+        ]);
+
+        DB::table('articulos_lote')->insert([
+            'id' => 210,
+            'lote_id' => 'L-021',
+            'articulo_id' => 21,
+            'unidades' => 1,
+        ]);
+
+        DB::table('materiales')->insert([
+            'id' => 211,
+            'descripcion' => 'Projector sala reunions',
+            'espacio' => 'E amable',
+            'estado' => 1,
+            'inventariable' => 1,
+            'articulo_lote_id' => 210,
+        ]);
+
+        DB::table('materiales_baja')->insert([
+            'idMaterial' => 211,
+            'tipo' => 1,
+            'estado' => 1,
+        ]);
+
+        $response = $this
+            ->withoutMiddleware()
+            ->getJson('/api/inventario?api_token=token-material-resolt');
+
+        $response->assertOk();
+        $response->assertJsonPath('success', true);
+
+        $data = $response->json('data');
+        $items = is_array($data) && array_key_exists('data', $data) ? $data['data'] : $data;
+
+        $this->assertIsArray($items);
+        $this->assertCount(1, $items);
+        $this->assertSame('E amable', $items[0]['espacio']);
+    }
+
+    public function test_inventario_mostra_proposta_si_el_canvi_esta_pendent(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'PMAT005',
+            'rol' => config('roles.rol.direccion'),
+            'departamento' => 1,
+            'api_token' => 'token-material-pendent',
+            'activo' => 1,
+        ]);
+
+        DB::table('articulos')->insert([
+            'id' => 22,
+            'descripcion' => 'Projector',
+        ]);
+
+        DB::table('articulos_lote')->insert([
+            'id' => 220,
+            'lote_id' => 'L-022',
+            'articulo_id' => 22,
+            'unidades' => 1,
+        ]);
+
+        DB::table('materiales')->insert([
+            'id' => 221,
+            'descripcion' => 'Projector orientació',
+            'espacio' => 'ORI1',
+            'estado' => 1,
+            'inventariable' => 1,
+            'articulo_lote_id' => 220,
+        ]);
+
+        DB::table('materiales_baja')->insert([
+            'idMaterial' => 221,
+            'tipo' => 1,
+            'estado' => 0,
+        ]);
+
+        $response = $this
+            ->withoutMiddleware()
+            ->getJson('/api/inventario?api_token=token-material-pendent');
+
+        $response->assertOk();
+        $response->assertJsonPath('success', true);
+
+        $data = $response->json('data');
+        $items = is_array($data) && array_key_exists('data', $data) ? $data['data'] : $data;
+
+        $this->assertIsArray($items);
+        $this->assertCount(1, $items);
+        $this->assertSame('Proposta Nova Ubicació', $items[0]['espacio']);
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
@@ -251,6 +358,7 @@ class ApiMaterialControllerFeatureTest extends TestCase
                 $table->increments('id');
                 $table->unsignedInteger('idMaterial');
                 $table->unsignedTinyInteger('tipo')->default(0);
+                $table->unsignedTinyInteger('estado')->default(0);
             });
         }
     }
