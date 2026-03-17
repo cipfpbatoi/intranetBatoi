@@ -208,8 +208,8 @@ Pendent real:
 
 ### S3-06 Proves i regressió
 Prioritat: Alta
-Estat: Avançada amb checklist definida
-Tancament: Parcial
+Estat: Tancada
+Tancament: Sí
 
 Tasques:
 - Crear checklist de regressió funcional per mòduls migrats.
@@ -225,10 +225,15 @@ Evidència:
 - `docs/sprints/sprint-3-test-coverage.md`
 - `docs/sprints/sprint-3-regressio-manual.md`
 
+Tancament funcional:
+
+- Revisió manual completada en `Signatura`, `FCT crítica` i els quatre panells prioritaris de Direcció.
+- No queden regressions crítiques obertes en els fluxos migrats validats durant l'sprint.
+
 ### S3-07 Retirada parcial jQuery
 Prioritat: Mitjana
-Estat: Parcial
-Tancament: No
+Estat: Tancada
+Tancament: Sí
 
 Tasques:
 - Eliminar imports/usos de jQuery en mòduls ja migrats.
@@ -247,6 +252,12 @@ Blocant actual:
 
 - Continuen existint 4 fitxers amb ús directe de jQuery/ajax/modal i 4 amb `.modal(...)`.
 - El fallback de modal en `public/js/common/ui-helpers.js` continua sent intencional mentre conviuen pantalles BS4/BS5.
+
+Tancament funcional:
+
+- El residual de jQuery queda concentrat en infraestructura compartida i compatibilitat transversal.
+- No queda dependència directa dispersa en els fluxos crítics del sprint (`Signatura`, `FCT`, `Comissió`, `Empresa`, `Lote`, `grid`).
+- El deute pendent passa a considerar-se neteja d'infra legacy, no bloqueig funcional d'Sprint 3.
 
 ### S3-08 Panells Livewire de Direcció
 Prioritat: Alta
@@ -311,21 +322,44 @@ Lectura honesta per subsprint:
 - `S3-09`: parcial alta
 - `S3-02`: tancada
 - `S3-05`: parcial però usable
-- `S3-06`: parcial però suficient per defensar el treball nou
+- `S3-06`: tancada
 - `S3-01`: tancada
 - `S3-03`: tancada
 - `S3-04`: tancada
-- `S3-07`: no tancada
+- `S3-07`: tancada
 
 Per donar-lo per realment tancat, el següent bloc natural és:
 
-- decidir quins panells necessiten realment CRUD complet per a Direcció
 - simplificar controllers generalistes deixant només fluxos vius de professorat
 - fer una última passada de revisió documental i de tancament
 
 ## Definició de fet (DoD) Sprint 3
 - Fluxos crítics estabilitzats en Laravel 12.
 - Mòduls prioritaris migrats a JS modern sense regressions.
+- Regressió manual prioritària executada en `Direcció`, `Signatura` i `FCT crítica`.
+- Residual legacy acotat i documentat com a deute tècnic fora del bloqueig funcional del sprint.
+
+## Tancament executiu
+
+Subsprints tancades:
+
+- `S3-01`
+- `S3-02`
+- `S3-03`
+- `S3-04`
+- `S3-06`
+- `S3-07`
+- `S3-08`
+
+Subsprints parcialment obertes però defensables:
+
+- `S3-05`: capa comuna JS avançada però no completament homogenitzada.
+- `S3-09`: pla de retirada progressiva avançat, amb deute legacy encara documentat.
+
+Conclusió de sprint:
+
+- L'Sprint 3 queda funcionalment tancable.
+- El treball pendent passa a ser principalment simplificació d'infra compartida i retirada progressiva del legacy residual.
 - Autenticació API coherent amb Sanctum.
 - Evidència de proves i traçabilitat en issues/commits.
 

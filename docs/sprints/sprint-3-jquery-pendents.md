@@ -82,6 +82,12 @@ Nota d'abast:
 - Eliminar fallback `.modal(...)` quan totes les pantalles del sprint funcionen només amb Bootstrap 5.
 - Reauditar i deixar el recompte de fitxers amb jQuery en mínim residual justificat.
 
+Resultat actual:
+
+- `S3-07` es dona per tancada a `2026-03-17`.
+- El residual de jQuery queda limitat a infraestructura compartida i compatibilitat transversal.
+- La feina pendent passa a considerar-se neteja d'infra legacy, no bloqueig funcional d'Sprint 3.
+
 ## Relació amb S3-01
 - `S3-01` queda tancada com a auditoria i mapa de risc.
-- `S3-07` continua oberta perquè la retirada efectiva de jQuery encara no està completada.
+- `S3-07` queda tancada com a retirada parcial efectiva en l'abast funcional del sprint.

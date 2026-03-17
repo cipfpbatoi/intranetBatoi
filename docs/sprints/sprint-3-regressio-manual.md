@@ -84,6 +84,11 @@ Ruta: `direccion/expediente`
 - `Gestor Documental` funciona
 - `PDF` individual funciona si existix
 
+Resultat revisió manual Direcció:
+
+- validada el `2026-03-17`
+- sense regressions bloquejants reportades en `direccion/falta`, `direccion/comision`, `direccion/actividad` i `direccion/expediente`
+
 ## 6. Signatura
 
 Ruta: `signatura`
@@ -115,8 +120,8 @@ Resultat revisió manual:
 
 ## Resultat de tancament
 
-Per considerar `S3-06` tancada cal:
+`S3-06` queda tancada perquè:
 
-- executar esta checklist
-- registrar incidències trobades
-- no deixar regressions crítiques obertes en auth, Direcció o Signatura
+- la checklist funcional prioritària s'ha executat
+- les incidències bloquejants detectades durant la revisió han quedat resoltes
+- no queden regressions crítiques obertes en auth, Direcció, Signatura o FCT crítica

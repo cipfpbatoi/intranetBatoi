@@ -95,11 +95,11 @@ El focus del sprint no ha sigut cobrir exhaustivament eixos mòduls, sinó no tr
 
 ## Recomanació de tancament
 
-Abans de donar Sprint 3 per quasi tancat, el més rendible és:
+Treball executat per al tancament funcional:
 
-1. executar una regressió manual curta dels quatre panells de Direcció
-2. validar que no hi ha errors de consola ni rutes mortes
-3. no invertir més ara en proves exhaustives del legacy residual, llevat que aparega una incidència concreta
+1. regressió manual curta executada sobre els quatre panells de Direcció
+2. validació manual completada també en `Signatura` i `FCT crítica`
+3. resolució de les incidències bloquejants detectades durant la revisió
 
 Checklist disponible en:
 
@@ -107,6 +107,6 @@ Checklist disponible en:
 
 ## Conclusió
 
-No hi ha proves de tot.
+No hi ha proves de tot el sistema.
 
-Sí hi ha proves suficients i defensables del que realment s'ha construït i desacoblat en Sprint 3.
+Sí que hi ha proves automàtiques i regressió manual suficients i defensables del que realment s'ha construït, migrat o desacoblat en Sprint 3.
