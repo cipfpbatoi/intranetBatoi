@@ -6,38 +6,42 @@
 'use strict';
 
 import jQuery from 'jquery';
-import dt from 'datatables.net-bs4';
-import dtButtons from 'datatables.net-buttons-bs4';
-import dtResponsive from 'datatables.net-responsive-bs4';
-import dtKeyTable from 'datatables.net-keytable-bs4';
-import dtScroller from 'datatables.net-scroller-bs4';
-import dtFixedHeader from 'datatables.net-fixedheader-bs4';
+import DataTable from 'datatables.net/js/dataTables.mjs';
+import 'datatables.net-bs4/js/dataTables.bootstrap4.mjs';
+import 'datatables.net-buttons/js/dataTables.buttons.mjs';
+import 'datatables.net-buttons-bs4/js/buttons.bootstrap4.mjs';
+import 'datatables.net-responsive/js/dataTables.responsive.mjs';
+import 'datatables.net-responsive-bs4/js/responsive.bootstrap4.mjs';
+import 'datatables.net-keytable/js/dataTables.keyTable.mjs';
+import 'datatables.net-keytable-bs4/js/keyTable.bootstrap4.mjs';
+import 'datatables.net-scroller/js/dataTables.scroller.mjs';
+import 'datatables.net-scroller-bs4/js/scroller.bootstrap4.mjs';
+import 'datatables.net-fixedheader/js/dataTables.fixedHeader.mjs';
+import 'datatables.net-fixedheader-bs4/js/fixedHeader.bootstrap4.mjs';
 
-require('datatables.net-bs4/css/dataTables.bootstrap4.css');
-require('datatables.net-buttons-bs4/css/buttons.bootstrap4.css');
-require('datatables.net-responsive-bs4/css/responsive.bootstrap4.css');
-require('datatables.net-keytable-bs4/css/keyTable.bootstrap4.css');
-require('datatables.net-scroller-bs4/css/scroller.bootstrap4.css');
-require('datatables.net-fixedheader-bs4/css/fixedHeader.bootstrap4.css');
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
+import 'datatables.net-buttons-bs4/css/buttons.bootstrap4.css';
+import 'datatables.net-responsive-bs4/css/responsive.bootstrap4.css';
+import 'datatables.net-keytable-bs4/css/keyTable.bootstrap4.css';
+import 'datatables.net-scroller-bs4/css/scroller.bootstrap4.css';
+import 'datatables.net-fixedheader-bs4/css/fixedHeader.bootstrap4.css';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import JSZip from 'jszip';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 // Reutilitza jQuery global (amb plugins) si ja està carregat per Gentelella
 const $ = window.jQuery || jQuery;
 window.$ = window.jQuery = $;
+window.DataTable = window.DataTable || DataTable;
 
-dt(window, $);
-dtButtons(window, $);
-dtResponsive(window, $);
-dtKeyTable(window, $);
-dtScroller(window, $);
-dtFixedHeader(window, $);
-
-window.JSZip = require('jszip');
-const pdfMake = require('pdfmake/build/pdfmake');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+window.JSZip = JSZip;
+if (typeof pdfMake.addVirtualFileSystem === 'function') {
+	pdfMake.addVirtualFileSystem(pdfFonts);
+} else if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+	pdfMake.vfs = pdfFonts.pdfMake.vfs;
+}
 window.pdfMake = pdfMake;
-
-require('datatables.net-buttons/js/buttons.html5.js');
-require('datatables.net-buttons/js/buttons.print.js');
 
 const intranetRuntime = window.IntranetRuntime || (window.IntranetRuntime = {});
 intranetRuntime.isProduction = intranetRuntime.isProduction ?? (

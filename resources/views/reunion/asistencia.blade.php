@@ -1,6 +1,24 @@
 @extends('layouts.intranet')
 @section('css')
 <title> @lang("models.Reunion.detalle")</title>
+<style>
+    .reunion-richtext-wrapper {
+        width: 100%;
+    }
+
+    .reunion-richtext-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .reunion-richtext-editor {
+        min-height: 140px;
+        height: auto;
+        overflow: auto;
+    }
+</style>
 @endsection
 @section('content')
 <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
@@ -22,4 +40,5 @@
     @endif
 <script src="/js/Reunion/checkAsistencia.js"></script>
 <script src="/js/tabledit.js"></script>
+<script src="/js/Reunion/richText.js"></script>
 @endsection

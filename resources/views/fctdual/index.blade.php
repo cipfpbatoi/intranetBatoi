@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 @extends('layouts.intranet')
 @section('css')
     <title>{{$panel->getTitulo()}}</title>

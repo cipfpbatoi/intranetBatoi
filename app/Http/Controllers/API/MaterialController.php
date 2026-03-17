@@ -10,6 +10,7 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Controlador API de materials.
@@ -210,11 +211,35 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => $missatge], 'OK');
     }
 
+    /**
+     * Resol usuari API compatible amb Sanctum Bearer i fallback legacy api_token.
+     *
+     * @param Request $request
+     * @return mixed|null
+     */
     private function resolveApiUser(Request $request)
     {
+        $guardUser = $request->user();
+        if ($guardUser) {
+            return $guardUser;
+        }
+
+        $sanctumUser = $request->user('sanctum');
+        if ($sanctumUser) {
+            return $sanctumUser;
+        }
+
         $guardUser = $request->user('api');
         if ($guardUser) {
             return $guardUser;
+        }
+
+        $bearer = (string) $request->bearerToken();
+        if ($bearer !== '') {
+            $accessToken = PersonalAccessToken::findToken($bearer);
+            if ($accessToken && $accessToken->tokenable) {
+                return $accessToken->tokenable;
+            }
         }
 
         $token = (string) ($request->query('api_token')

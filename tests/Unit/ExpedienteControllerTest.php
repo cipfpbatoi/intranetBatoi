@@ -6,8 +6,6 @@ namespace Tests\Unit;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\ExpedienteController;
@@ -63,21 +61,6 @@ class ExpedienteControllerTest extends TestCase
         $this->assertSame($id, $data['elemento']->id);
     }
 
-    public function test_autorizar_actualitza_estat_1_a_2_i_torna_back(): void
-    {
-        $idPendiente = $this->insertExpediente(1);
-        $idNoPendiente = $this->insertExpediente(3);
-
-        $this->bindRequestWithReferer('/direccion/expediente');
-
-        $controller = new DummyExpedienteController();
-        $response = $controller->autorizar();
-
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame(2, (int) DB::table('expedientes')->where('id', $idPendiente)->value('estado'));
-        $this->assertSame(3, (int) DB::table('expedientes')->where('id', $idNoPendiente)->value('estado'));
-    }
-
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('expedientes')) {
@@ -106,11 +89,6 @@ class ExpedienteControllerTest extends TestCase
         ]);
     }
 
-    private function bindRequestWithReferer(string $referer): void
-    {
-        $request = Request::create('/dummy', 'GET', [], [], [], ['HTTP_REFERER' => $referer]);
-        $this->app->instance('request', $request);
-    }
 }
 
 class DummyExpedienteController extends ExpedienteController

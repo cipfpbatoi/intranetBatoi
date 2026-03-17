@@ -1,120 +1,216 @@
-(function ($) {
+(function () {
     'use strict';
 
-const PRACTICAS=31;
-const DUAL=37;
+    var PRACTICAS = 31;
+    var DUAL = 37;
+    var ID = 'id';
+    var TABLA = 'Empresa';
 
-
-var autorizado=(!($('#rol').text()%PRACTICAS)||!($('#rol').text()%DUAL));
-
-
-const COLUMNS=[
-            {data: 'concierto'},
-            {data: 'nombre'},
-            {data: 'direccion'},
-            {data: 'localidad'},
-            {data: 'telefono'},
-            {data: 'email'},
-            {data: 'cif'},
-            {data: 'actividad'},
-            {data: null },
-        ];
-const ID = 'id';
-const TABLA ='Empresa';
-
-function apiAuthOptions(extraData) {
-    var legacyToken = $.trim($("#_token").text());
-    var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-    var data = extraData || {};
-    var headers = {};
-
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
-    }
-    if (legacyToken) {
-        data.api_token = legacyToken;
+    function trim(value) {
+        return (value || '').toString().trim();
     }
 
-    return { headers: headers, data: data };
-}
-    
-if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
-    // Ja inicialitzada per una altra capa.
-} else {
-    const table = $('#datatable');
-    if (!table.length) {
-        return;
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
     }
 
-    // Evita salts visuals mentre es calculen les amplades.
-    table.css('visibility', 'hidden');
+    function getById(id) {
+        return document.getElementById(id);
+    }
 
-    var authDatatable = apiAuthOptions();
-    const dataTable = table.DataTable({
-        language: {
-            url: '/json/cattable.json'
-        },
-        ajax : {
-            method: "GET",
-            url: '/api/convenio',
-            headers: authDatatable.headers,
-            data: authDatatable.data,
-        },
-        deferRender: true,
-        autoWidth: false,
-        columns: COLUMNS,
-        rowId : ID,
-        responsive: true,
-        rowCallback: function (row, data){
-            if (data.conveni) {
-                $(row).addClass('bg-green')
+    function apiGet(url, extraData) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url, extraData);
+        }
+
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
+    }
+
+    function getAutorizado() {
+        var rolNode = getById('rol');
+        var rol = parseInt(trim(rolNode ? rolNode.textContent : ''), 10);
+        if (Number.isNaN(rol)) {
+            return false;
+        }
+        return (rol % PRACTICAS === 0) || (rol % DUAL === 0);
+    }
+
+    function getRowInfo(source) {
+        var row = source ? source.closest('tr') : null;
+        var table = source ? source.closest('table') : null;
+        if (!row || !table) {
+            return '\n';
+        }
+
+        var headers = table.querySelectorAll('thead th');
+        var cells = row.querySelectorAll('td');
+        var info = '\n';
+
+        for (var i = 0; i < cells.length; i += 1) {
+            var cell = cells[i];
+            var text = trim(cell ? cell.textContent : '');
+            if (!text) {
+                continue;
             }
-        },
-        columnDefs: [
-            {
+
+            var header = headers[i] ? trim(headers[i].textContent) : '';
+            info += ' - ' + header + ': ' + cell.innerHTML + '\n';
+        }
+
+        return info;
+    }
+
+    function initDataTable(tableElement) {
+        if (!tableElement) {
+            return Promise.resolve(null);
+        }
+
+        var tableHelper = window.intranetDataTable || {};
+        var hasV2 = typeof tableHelper.hasDataTableV2 === 'function' && tableHelper.hasDataTableV2();
+        var hasJqDt = typeof tableHelper.hasJQueryDataTable === 'function' && tableHelper.hasJQueryDataTable();
+
+        if (!hasV2 && !hasJqDt) {
+            return Promise.resolve(null);
+        }
+
+        if (typeof tableHelper.isInitialized === 'function' && tableHelper.isInitialized(tableElement)) {
+            return Promise.resolve(null);
+        }
+
+        tableElement.style.visibility = 'hidden';
+
+        function withCommonOptions(options) {
+            options.language = { url: '/json/cattable.json' };
+            options.deferRender = true;
+            options.autoWidth = false;
+            options.responsive = true;
+            options.columnDefs = options.columnDefs || [];
+            options.columnDefs.push({
                 responsivePriority: 1,
-                targets: COLUMNS.length-1,
-                "render": function () {
-                        if (autorizado){
-                            return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>`;
-                        }
+                targets: -1
+            });
+            return options;
+        }
+
+        function initWithOptions(options) {
+            var originalInitComplete = options.initComplete;
+            options.initComplete = function () {
+                if (typeof originalInitComplete === 'function') {
+                    originalInitComplete.apply(this, arguments);
                 }
-            },
-        ],
-        initComplete: function () {
-            const api = this.api();
-            api.columns.adjust();
-            $(api.table().node()).css('visibility', 'visible');
-        }
-    });
-    table.on('draw.dt responsive-resize.dt', function () {
-        dataTable.columns.adjust();
-    });
+                if (dataTable && dataTable.columns && typeof dataTable.columns.adjust === 'function') {
+                    dataTable.columns.adjust();
+                }
+                tableElement.style.visibility = 'visible';
+            };
 
-    $(window).on('resize', function () {
-        dataTable.columns.adjust();
-    });
+            var dataTable = typeof tableHelper.init === 'function'
+                ? tableHelper.init(tableElement, options)
+                : null;
 
-    $('#datatable').on('click', 'a.delete', function (event) {
-        let info="\n";
-        let titles=$(this).parents('table').find('thead').find('th');
-        $(this).parent().siblings().each(function(i, item) {
-            if (item.innerHTML.trim().length>0) {
-                info+=` - ${titles.eq(i).text().trim()}: ${item.innerHTML}\n`;
+            if (!dataTable) {
+                tableElement.style.visibility = 'visible';
+                return;
             }
-        })
-        if (confirm('Vas a borrar el elemento:'+info)) {
-            $(this).attr("href","/"+TABLA.toLowerCase()+"/"+$(this).parent().parent().attr('id')+"/delete");
-        } else {
-            event.preventDefault();
+
+            tableElement.addEventListener('draw.dt', function () {
+                dataTable.columns.adjust();
+            });
+            tableElement.addEventListener('responsive-resize.dt', function () {
+                dataTable.columns.adjust();
+            });
+            window.addEventListener('resize', function () {
+                dataTable.columns.adjust();
+            });
         }
-    })
-    // Botón shown
-    $('#datatable').on('click', 'a.shown', function (event) {
-        $(this).attr("href","/"+TABLA.toLowerCase()+"/"+$(this).parent().parent().attr('id')+"/detalle");
-    })
-    $('#datatable').on('click', 'a.document', function (event) {
-        $(this).attr("href","/"+TABLA.toLowerCase()+"/"+$(this).parent().parent().attr('id')+"/document");
-    })
-}
-})(jQuery);
+
+        function initWithApiRows(rows) {
+            initWithOptions(withCommonOptions({
+                data: rows,
+                rowId: ID,
+                columns: [
+                    { data: 'concierto' },
+                    { data: 'nombre' },
+                    { data: 'direccion' },
+                    { data: 'localidad' },
+                    { data: 'telefono' },
+                    { data: 'email' },
+                    { data: 'cif' },
+                    { data: 'actividad' },
+                    { data: null }
+                ],
+                createdRow: function (row, rowData) {
+                    if (rowData && rowData.conveni) {
+                        row.classList.add('bg-green');
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 8,
+                        render: function (data, type, rowData) {
+                            if (!rowData || !rowData.id) {
+                                return '';
+                            }
+                            return '<a href="/empresa/' + rowData.id + '/detalle" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>';
+                        }
+                    }
+                ]
+            }));
+        }
+
+        function initFromDomFallback() {
+            initWithOptions(withCommonOptions({}));
+        }
+
+        return apiGet('/api/convenio').then(function (result) {
+            var rows = result && result.data ? result.data : [];
+            initWithApiRows(rows);
+        }).catch(function () {
+            initFromDomFallback();
+        });
+    }
+
+    function bindTableActions(tableElement) {
+        if (!tableElement) {
+            return;
+        }
+
+        tableElement.addEventListener('click', function (event) {
+            var deleteLink = event.target.closest('a.delete');
+            if (deleteLink) {
+                var info = getRowInfo(deleteLink);
+                if (confirm('Vas a borrar el elemento:' + info)) {
+                    var row = deleteLink.closest('tr');
+                    var rowId = row ? row.id : '';
+                    deleteLink.setAttribute('href', '/' + TABLA.toLowerCase() + '/' + rowId + '/delete');
+                } else {
+                    event.preventDefault();
+                }
+                return;
+            }
+
+            var documentLink = event.target.closest('a.document');
+            if (documentLink) {
+                var rowDoc = documentLink.closest('tr');
+                var rowDocId = rowDoc ? rowDoc.id : '';
+                documentLink.setAttribute('href', '/' + TABLA.toLowerCase() + '/' + rowDocId + '/document');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var tableElement = getById('datatable');
+        if (!tableElement) {
+            return;
+        }
+
+        bindTableActions(tableElement);
+        var initPromise = initDataTable(tableElement);
+        if (initPromise && typeof initPromise.catch === 'function') {
+            initPromise.catch(function (error) {
+                window.console.log(error);
+            });
+        }
+    });
+})();

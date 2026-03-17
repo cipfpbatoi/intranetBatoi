@@ -37,6 +37,11 @@
 <script>
 import axios from 'axios'
 import { withApiAuth } from '../utils/api-auth';
+import ProfesSelect from './ProfesSelect.vue';
+import RecursosSelect from './RecursosSelect.vue';
+import HorasSelect from './HorasSelect.vue';
+import HorasTable from './HorasTable.vue';
+import FechaPicker from '../utils/FechaPicker.vue';
 const ruta='/api/reserva';
 
 const rolDirecc=2;
@@ -49,11 +54,11 @@ const maxDiasReserva=30;
 
     export default {
         components: {
-          'profes-select': require('./ProfesSelect.vue'),
-          'recursos-select': require('./RecursosSelect.vue'),
-          'horas-select': require('./HorasSelect.vue'),
-          'horas-table': require('./HorasTable.vue'),
-          'fecha-picker': require('../utils/FechaPicker.vue'),
+          'profes-select': ProfesSelect,
+          'recursos-select': RecursosSelect,
+          'horas-select': HorasSelect,
+          'horas-table': HorasTable,
+          'fecha-picker': FechaPicker,
         },
         props: ['horas', 'espacios','profes'],
         data() {

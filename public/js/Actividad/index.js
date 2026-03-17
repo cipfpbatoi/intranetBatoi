@@ -1,31 +1,55 @@
 'use strict';
-
-const MODEL="actividad";
+const MODEL = 'actividad';
 var id;
 
-$(function() {
-	$(".refuse").on("click", function(event){
-		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-//		$("#formExplicacion").find("input[name=_token]").val(getToken());
-		id=$(this).parents(".profile_view").attr("id");
-	});
-	$("#formDialogo").on("submit", function(){
-		$(this).attr("action",MODEL+"/"+id+"/refuse");
-	});
-	$("#explicacion").focus();
-	$('#complementaria_id').change(function() {
-		if ($(this).is(':checked')) {
-			// Si està seleccionat, canvia el text del label a Justificacio_RA
-			$('#field_descripcion_id label').text('Justificació RA');
-			$('#descripcion_id').attr('placeholder', 'Justificació RA');
-		} else {
-			// Si no està seleccionat, canvia el text del label a Descripció d'activitat
-			$('#field_descripcion_id label').text("Descripció d'activitat");
-			$('#descripcion_id').attr('placeholder', 'Descripció d\'activitat');
-		}
-	});
-})
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.refuse').forEach(function (refuseLink) {
+        refuseLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            refuseLink.setAttribute('data-toggle', 'modal');
+            refuseLink.setAttribute('data-target', '#dialogo');
+            refuseLink.setAttribute('href', '');
+
+            var profileView = refuseLink.closest('.profile_view');
+            id = profileView ? profileView.id : undefined;
+        });
+    });
+
+    var formDialogo = document.getElementById('formDialogo');
+    if (formDialogo) {
+        formDialogo.addEventListener('submit', function () {
+            if (id) {
+                formDialogo.setAttribute('action', MODEL + '/' + id + '/refuse');
+            }
+        });
+    }
+
+    var explicacion = document.getElementById('explicacion');
+    if (explicacion) {
+        explicacion.focus();
+    }
+
+    var complementaria = document.getElementById('complementaria_id');
+    if (!complementaria) {
+        return;
+    }
+
+    complementaria.addEventListener('change', function () {
+        var label = document.querySelector('#field_descripcion_id label');
+        var descripcion = document.getElementById('descripcion_id');
+        if (!label || !descripcion) {
+            return;
+        }
+
+        if (complementaria.checked) {
+            label.textContent = 'Justificació RA';
+            descripcion.setAttribute('placeholder', 'Justificació RA');
+        } else {
+            label.textContent = "Descripció d'activitat";
+            descripcion.setAttribute('placeholder', "Descripció d'activitat");
+        }
+    });
+});
 
 function getToken() {
 	var ppio=document.cookie.indexOf("XSRF-TOKEN=");

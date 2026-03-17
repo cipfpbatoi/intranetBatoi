@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Intranet\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Intranet\Http\Middleware\TrustProxies::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
     ];
 
     /**

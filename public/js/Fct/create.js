@@ -1,40 +1,45 @@
-$(function () {
-    function apiAuthOptions(extraData) {
-        var legacyToken = $.trim($("#_token").text());
-        var bearerToken = $.trim($('meta[name="user-bearer-token"]').attr('content') || "");
-        var data = extraData || {};
-        var headers = {};
+(function () {
+    'use strict';
 
-        if (bearerToken) {
-            headers.Authorization = "Bearer " + bearerToken;
-        }
-    if (legacyToken) {
-            data.api_token = legacyToken;
-        }
-
-        return { headers: headers, data: data };
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
     }
 
-    $('#idColaboracion_id').change(function () {
-        var idColaboracion = $("#idColaboracion_id").val();
-        var auth = apiAuthOptions();
-        $.ajax({
-            method: "GET",
-            url: "/api/colaboracion/instructores/" + idColaboracion,
-            dataType: 'json',
-            headers: auth.headers,
-            data: auth.data
-        })
-            .then(function (result) {
-                var newOptions = result.data;
-                var $el = $("#idInstructor_id");
-                $el.empty(); // remove old options
-                $.each(newOptions, function (key, value) {
-                    $el.append($("<option></option>")
-                        .attr("value", value.dni).text(value.name+' '+value.surnames));
+    function apiGet(url) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
+        }
+
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var colaboracionSelect = document.getElementById('idColaboracion_id');
+        var instructorSelect = document.getElementById('idInstructor_id');
+
+        if (!colaboracionSelect || !instructorSelect) {
+            return;
+        }
+
+        colaboracionSelect.addEventListener('change', function () {
+            var idColaboracion = colaboracionSelect.value;
+
+            apiGet('/api/colaboracion/instructores/' + idColaboracion)
+                .then(function (result) {
+                    var newOptions = result.data || [];
+                    instructorSelect.innerHTML = '';
+
+                    newOptions.forEach(function (value) {
+                        var option = document.createElement('option');
+                        option.value = value.dni;
+                        option.textContent = value.name + ' ' + value.surnames;
+                        instructorSelect.appendChild(option);
+                    });
+                })
+                .catch(function () {
+                    console.log('La solicitud no se ha podido completar.');
                 });
-            }, function (result) {
-                console.log("La solicitud no se ha podido completar.");
-            });
+        });
     });
-});
+})();

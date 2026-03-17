@@ -60,6 +60,6 @@
                 </section>
             </div>
         </div>          
-        <script src="{{ mix('js/components/app.js') }}"></script>
+        @vite('resources/assets/js/app.js')
     </body>
 </html>

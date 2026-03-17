@@ -47,6 +47,7 @@ class PanelFaltaItacaController extends BaseController
      */
     protected function iniBotones()
     {
+        // @deprecated Accés legacy al flux d'autorització de birrets via ITACA.
         $this->panel->setBoton(
             'index',
             new BotonBasico(

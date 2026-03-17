@@ -60,11 +60,28 @@ class ComisionService
     }
 
     /**
+     * Autoritza en bloc totes les comissions pendents.
+     */
+    public function authorizeAllPending(): int
+    {
+        return $this->comisionRepository->authorizeAllPending();
+    }
+
+    /**
      * @return EloquentCollection<int, Comision>
      */
     public function prePayByProfesor(string $dni): EloquentCollection
     {
         return $this->comisionRepository->prePayByProfesor($dni);
+    }
+
+    /**
+     * @param array<int, string> $dnis
+     * @return EloquentCollection<int, Comision>
+     */
+    public function prePayByProfesores(array $dnis): EloquentCollection
+    {
+        return $this->comisionRepository->prePayByProfesores($dnis);
     }
 
     public function hasPendingUnpaidByProfesor(string $dni): bool

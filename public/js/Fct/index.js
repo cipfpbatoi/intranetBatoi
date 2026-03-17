@@ -1,15 +1,27 @@
 'use strict';
 
-const MODEL = "fct";
+const MODEL = 'fct';
 var id;
 
-$(function () {
-    $(".pdf").on("click", function (event) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        var pdfButton = event.target.closest('.pdf');
+        if (!pdfButton) {
+            return;
+        }
+
         event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#fechas").attr("href", "");
-        id = $(this).parents(".lineaGrupo").attr("id");
+        pdfButton.setAttribute('data-toggle', 'modal');
+        pdfButton.setAttribute('data-target', '#fechas');
+        pdfButton.setAttribute('href', '');
+        var row = pdfButton.closest('.lineaGrupo') || pdfButton.closest('tr');
+        id = row ? row.id : '';
     });
-    $("#formFechas").on("submit", function () {
-        $(this).attr("action", "/" + MODEL + "/" + id + "/pdf");
-    });
+
+    var formFechas = document.getElementById('formFechas');
+    if (formFechas) {
+        formFechas.addEventListener('submit', function () {
+            this.setAttribute('action', '/' + MODEL + '/' + id + '/pdf');
+        });
+    }
 });

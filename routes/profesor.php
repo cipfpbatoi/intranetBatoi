@@ -184,8 +184,6 @@ Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha'
 
 Route::resource('/falta', 'FaltaController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/falta/{falta}/delete', ['as' => 'falta.destroy', 'uses' => 'FaltaController@destroy']);
-Route::get('/falta/create/direccion', ['as' => 'falta.create.direccion' , 'uses' => 'PanelFaltaController@create']);
-Route::post('/falta/create/direccion', ['as' => 'falta.store.direccion', 'uses' => 'FaltaController@store']);
 Route::post('/falta/create', ['as' => 'falta.store', 'uses' => 'FaltaController@store']);
 Route::put('/falta/{falta}/edit', ['as' => 'falta.update', 'uses' => 'FaltaController@update']);
 Route::get('/falta/{falta}/pdf', ['as' => 'falta.pdf', 'uses' => 'FaltaController@pdf']);
@@ -484,6 +482,7 @@ Route::get(
     '/programacion/{programacion}/seguimiento',
     ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']
 );
+// @deprecated Pantalla legacy de birrets/ITACA per a professorat.
 Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
 
 

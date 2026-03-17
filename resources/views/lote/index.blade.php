@@ -19,4 +19,5 @@
     </x-modal>
 @include('intranet.partials.modal.index')
 @include('js.tablesjs')
+{{ Html::script("/js/common/ui-helpers.js") }}
 @endsection

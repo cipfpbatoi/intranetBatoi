@@ -4,47 +4,38 @@ Route::get('/profesor', ['as' => 'profesor.index', 'uses' => 'ProfesorController
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'direccion.mensaje', 'uses' => 'ProfesorController@alerta']);
 
 
-Route::get('/comision', ['as' => 'comision.direccion.index', 'uses' => 'PanelComisionController@index']);
+Route::view('/comision', 'comision.livewire-panel')->name('comision.direccion.index');
+Route::redirect('/comision-livewire', '/direccion/comision')->name('comision.direccion.livewire');
+Route::get('/comision/{comision}/gestor', ['as' => 'comision.direccion.gestor', 'uses' => 'Direccion\\Comision\\GestorController']);
 Route::get('/comision/{comision}/authorize', ['as' => 'comision.authorize', 'uses' => 'ComisionController@accept']);
 Route::get('/comision/{comision}/unauthorize', ['as' => 'comision.unauthorize', 'uses' => 'ComisionController@resign']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.dir.show', 'uses' => 'ComisionController@show']);
 Route::post('/comision/{comision}/refuse', ['as' => 'comision.refuse', 'uses' => 'ComisionController@refuse']);
-Route::get('/comision/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@printAutoritzats']);
-Route::get('/comision/autorizar', ['as' => 'comision.autorizar', 'uses' => 'ComisionController@autorizar']);
-Route::get('/comision/paid', ['as' => 'comision.paid', 'uses' => 'ComisionController@payment']);
+Route::get('/comision-livewire/pdf', ['as' => 'comision.direccion.pdf', 'uses' => 'Direccion\\Comision\\PrintController']);
+Route::get('/comision-livewire/paid', ['as' => 'comision.direccion.paid', 'uses' => 'Direccion\\Comision\\PaymentPrintController']);
 
-Route::get('/expediente', ['as' => 'expediente.direccion.index', 'uses' => 'PanelExpedienteController@index']);
-Route::get(
-    '/expediente/{expediente}/authorize',
-    ['as' => 'expediente.authorize', 'uses' => 'ExpedienteController@accept']
-);
-Route::get(
-    '/expediente/{expediente}/unauthorize',
-    ['as' => 'expediente.unauthorize', 'uses' => 'ExpedienteController@resign']
-);
-Route::get('/expediente/{expediente}/show', ['as' => 'expediente.show', 'uses' => 'ExpedienteController@show']);
-Route::post('/expediente/{expediente}/refuse', ['as' => 'expediente.refuse', 'uses' => 'ExpedienteController@refuse']);
-Route::get('/expediente/autorizar', ['as' => 'expediente.autorizar', 'uses' => 'ExpedienteController@autorizar']);
-Route::get('/expediente/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteController@imprimir']);
+Route::view('/expediente', 'expediente.livewire-panel')->name('expediente.direccion.index');
+Route::redirect('/expediente-livewire', '/direccion/expediente')->name('expediente.direccion.livewire');
+Route::get('/expediente/{expediente}/gestor', ['as' => 'expediente.direccion.gestor', 'uses' => 'Direccion\\Expediente\\GestorController']);
+Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.direccion.pdf.item', 'uses' => 'Direccion\\Expediente\\PdfController']);
+Route::get('/expediente/autorizar', ['as' => 'expediente.autorizar', 'uses' => 'Direccion\\Expediente\\AuthorizeController']);
+Route::get('/expediente/pdf', ['as' => 'expediente.direccion.pdf', 'uses' => 'Direccion\\Expediente\\PrintController']);
 
 
-Route::get('/actividad', ['as' => 'actividad.direccion.index', 'uses' => 'PanelActividadController@index']);
-Route::get('/actividad/{actividad}/authorize', ['as' => 'actividad.authorize', 'uses' => 'ActividadController@accept']);
-Route::get(
-    '/actividad/{actividad}/unauthorize',
-    ['as' => 'actividad.unauthorize', 'uses' => 'ActividadController@resign']
-);
-Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
-Route::post('/actividad/{actividad}/refuse', ['as' => 'actividad.refuse', 'uses' => 'ActividadController@refuse']);
-Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'ActividadController@printAutoritzats']);
-Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'ActividadController@autorizar']);
+Route::view('/actividad', 'actividad.livewire-panel')->name('actividad.direccion.index');
+Route::redirect('/actividad-livewire', '/direccion/actividad')->name('actividad.direccion.livewire');
+Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.direccion.gestor', 'uses' => 'Direccion\\Actividad\\GestorController']);
+Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.direccion.pdfVal', 'uses' => 'Direccion\\Actividad\\ValuePdfController']);
+Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'Direccion\\Actividad\\PrintController']);
+Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Direccion\\Actividad\\AuthorizeController']);
 
-Route::get('/falta', ['as' => 'falta.direccion.index', 'uses' => 'PanelFaltaController@index']);
+Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');
+Route::redirect('/falta-livewire', '/direccion/falta')->name('falta.direccion.livewire');
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
-Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
+Route::get('/falta/{falta}/show', ['as' => 'falta.direccion.show', 'uses' => 'Direccion\\Falta\\ShowController']);
+Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'Direccion\\Falta\\DocumentController']);
+Route::get('/falta/{falta}/delete', ['as' => 'falta.direccion.destroy', 'uses' => 'FaltaController@destroy']);
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
-Route::post('/falta', ['as' => 'falta.store', 'uses' => 'FaltaController@store']);
-Route::put('/falta/{falta}/edit', ['as' => 'falta.edit', 'uses' => 'FaltaController@update']);
 Route::get('/falta/{falta}/alta', ['as' => 'falta.alta', 'uses' => 'FaltaController@alta']);
 Route::get('/falta_itaca', ['as' => 'faltaItaca.direccion.index', 'uses' => 'PanelFaltaItacaController@index']);
 Route::get('/falta_itaca/{falta}/resolve', ['as' => 'faltaItaca.resolve', 'uses' => 'FaltaItacaController@resolve']);
@@ -99,6 +90,7 @@ Route::post('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteControl
 Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'MaterialModController@index']);
 Route::get('/signatures', ['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);
 Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'PanelSignaturaController@sign']);
+// @deprecated Flux legacy d'autorització de birrets via ITACA.
 Route::post('/itaca/birret', ['as'=>'itaca.birret', 'uses'=>'ItacaController@birret']);
 Route::post('/itaca/faltes', ['as'=>'itaca.faltes', 'uses'=>'ItacaController@faltes']);
 

@@ -1,4 +1,4 @@
-<x-layouts.app title="Control setmanal fitxages" :skipLegacyJs="true">
+<x-layouts.app title="Control setmanal fitxages" :skipLegacyJs="true" jsMode="vite">
 
 <div id="app">
     <control-semana-view 

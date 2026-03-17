@@ -258,29 +258,6 @@ class ComisionController extends ModalController
 
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function payment()
-    {
-        return $this->imprimir('payments', 6, 5, 'landscape', false);
-    }
-
-    public function printAutoritzats()
-    {
-        return $this->imprimir('comisionsServei');
-    }
-
-    /**
-     * @param $id
-     * @throws NotFoundDomainException
-     */
-    public function paid($id)
-    {
-        $this->authorize('update', $this->findComisionOrFail($id));
-        $this->setEstado($id, 5);
-    }
-
-    /**
      * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
@@ -289,16 +266,6 @@ class ComisionController extends ModalController
     {
         $this->authorize('update', $this->findComisionOrFail($id));
         $this->setEstado($id, 4);
-        return back();
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function autorizar()
-    {
-        $this->authorize('create', Comision::class);
-        StateService::makeAll($this->comisionService()->pendingAuthorization(), 2);
         return back();
     }
 
