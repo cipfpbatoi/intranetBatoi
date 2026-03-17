@@ -10,7 +10,7 @@
 </head>
 <body class="nav-md">
 
-    <div class="container-fluid body">
+    <div class="container body">
         <div class="main_container">
 
             {{-- Sidebar i top navigation --}}
