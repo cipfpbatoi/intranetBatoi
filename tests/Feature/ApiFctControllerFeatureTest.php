@@ -41,6 +41,7 @@ class ApiFctControllerFeatureTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('alumno_fcts');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -60,6 +61,7 @@ class ApiFctControllerFeatureTest extends TestCase
     public function test_seguimiento_amb_sanctum_crea_activity_review(): void
     {
         $this->insertProfesor('PFCT01');
+        $this->insertAlumnoFct(123, 'PFCT01');
         $user = Profesor::on('sqlite')->findOrFail('PFCT01');
         Sanctum::actingAs($user);
 
@@ -110,6 +112,18 @@ class ApiFctControllerFeatureTest extends TestCase
                 $table->timestamps();
             });
         }
+
+        if (!Schema::connection('sqlite')->hasTable('alumno_fcts')) {
+            Schema::connection('sqlite')->create('alumno_fcts', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->unsignedInteger('idFct')->nullable();
+                $table->string('idAlumno', 20)->nullable();
+                $table->string('idProfesor', 10)->nullable();
+                $table->unsignedInteger('horas')->default(0);
+                $table->unsignedTinyInteger('pg0301')->default(0);
+                $table->unsignedTinyInteger('a56')->default(0);
+            });
+        }
     }
 
     private function insertProfesor(string $dni): void
@@ -127,6 +141,19 @@ class ApiFctControllerFeatureTest extends TestCase
             'activo' => 1,
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+    }
+
+    private function insertAlumnoFct(int $id, string $idProfesor): void
+    {
+        DB::table('alumno_fcts')->insert([
+            'id' => $id,
+            'idFct' => 1,
+            'idAlumno' => 'A001',
+            'idProfesor' => $idProfesor,
+            'horas' => 0,
+            'pg0301' => 0,
+            'a56' => 0,
         ]);
     }
 }

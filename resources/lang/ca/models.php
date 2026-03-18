@@ -358,20 +358,6 @@ return array(
             'an2' => 'Imprimir annexes II signats',
             'an3' => 'Imprimir annexes III signats',
         ),
-        'Dual' => array(
-            'index' => 'FP Dual',
-            'create' => 'Nova Dual',
-            'edit' => 'Editar Dual',
-            'delete' => 'Esborrar Dual',
-            'fin' => 'Finalitzar Dual',
-            'anexe_vii' => 'Imprimir Annexe VII',
-            'anexe_va' => 'Imprimier Annexe V(a)',
-            'anexe_vb' => 'Imprimier Annexe V(b)',
-            'anexeVI' => 'Imprimir Annexe VI',
-            'anexeXIV' => 'Imprimir Annexe XIV',
-            'anexeXIII' => 'Imprimir AnnexeXIII',
-            'firma' => 'Generar ZIP firma'
-        ),
         'Direccion' => array(
            'acta' => 'Acta completada',
             'reject' => 'Rebutjar Acta',
@@ -413,16 +399,6 @@ return array(
             'create' => 'Nou cicle',
             'edit' => 'Editar cicle',
             'delete' => 'Esborrar cicle'
-        ),
-        'Falta_itaca' => array(
-            'index' => 'No marcatge Birret',
-            'edit' => 'Editar Birret',
-            'resolve' => 'Justificar',
-            '0' => 'No comunicada',
-            '3' => 'Rebutjada',
-            '1' => 'Pendent',
-            '2' => 'Justificada',
-            '4' => 'Itaca',
         ),
         'Horario' => array(
             'index' => 'Modificar Horari :quien',
@@ -475,10 +451,6 @@ return array(
           'index' => 'Control Fct :quien',
            'check' => 'Control documentació'
           
-        ),
-        'Fctdual' => array(
-            'index' => 'Control Dual :quien',
-            'check' => 'Control documentació'
         ),
         'fctDay' => array(
             'show' => 'Calendari pràctiques :quien',
@@ -587,7 +559,6 @@ return array(
             'TipoIncidencia' => 'Incidència',
             'OrdenTrabajo' => 'Ordre de Treball',
             'Ciclo' => 'Cicle',
-            'Falta_itaca' => 'Justificar Birret',
             'Instructor' => 'Instructora',
             'Proyecto' => 'Projecte',
             'Evaluacion' => 'Avaluació',
@@ -601,7 +572,6 @@ return array(
             'ArticuloLote' => 'Articles Factura',
             'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
-            'Fctdual' => 'Revisió Dual',
             'Solicitud' => "Derivació al departament d'orientació",
             'Signatura' => 'Signatures Digitals',
             'Cotxe' => 'Vehicles'

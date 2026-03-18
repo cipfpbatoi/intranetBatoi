@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class EspacioControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutEvents();
+        Event::fake();
 
         $this->sqlitePath = storage_path('espacio_controller_feature_testing.sqlite');
         if (file_exists($this->sqlitePath)) {
@@ -143,4 +144,3 @@ class EspacioControllerFeatureTest extends TestCase
         ]);
     }
 }
-

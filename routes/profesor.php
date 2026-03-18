@@ -482,25 +482,19 @@ Route::get(
     '/programacion/{programacion}/seguimiento',
     ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']
 );
-// @deprecated Pantalla legacy de birrets/ITACA per a professorat.
-Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
-
 
 Route::get('/profesor/backChange', ['as' =>'profesor.backChange', 'uses' => 'ProfesorController@backChange']);
 
 //Jefa de practicas
 Route::get('/fctcap/{grupo}/check', ['as' => 'fctcap.acta', 'uses' => 'PanelPG0301Controller@indice']);
-Route::get('/fctcap/{grupo}/dual', ['as' => 'fctcap.dual', 'uses' => 'PanelPGDualController@indice']);
 Route::get('/fctcap/{grupo}/show', ['as' => 'fctcap.show', 'uses' => 'PanelPracticasController@show']);
 Route::get('/controlFct', ['as'=> 'controlFct.index', 'uses' => 'PanelPracticasController@index']);
-Route::get('/controlDual',['as'=> 'controlDual.index', 'uses' => 'PanelDualController@index']);
 
 //gestor documental
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
 Route::get('/expediente/{actividad}/gestor', ['as' => 'expediente.gestor', 'uses' => 'ExpedienteController@gestor']);
 Route::get('/falta/{actividad}/gestor', ['as' => 'falta.gestor', 'uses' => 'FaltaController@gestor']);
 Route::get('/comision/{actividad}/gestor', ['as' => 'comision.gestor', 'uses' => 'ComisionController@gestor']);
-Route::get('/itaca/{actividad}/gestor', ['as' => 'itaca.gestor', 'uses' => 'FaltaItacaController@gestor']);
 Route::get('/actividad/{actividad}/itaca', ['as' => 'actividad.itaca', 'uses' => 'ActividadController@itaca']);
 
 //control guadira
@@ -539,8 +533,6 @@ Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'Articul
 Route::get('/articulo/{id}/detalle', ['as' => 'articulo.detalle', 'uses' => 'ArticuloController@detalle']);
 
 Route::get('/task/{id}/check', ['as'=>'task.check', 'uses'=>'TaskController@check']);
-Route::get('/ciclodual/edit', ['as'=>'cicloDual.edit', 'uses'=>'CicloDualController@edit']);
-Route::put('/ciclodual/edit', ['as'=>'cicloDual.update', 'uses'=>'CicloDualController@update']);
 
 Route::get(
     '/autorizacion/{nia}/actividad/{id}',

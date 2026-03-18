@@ -1,26 +1,26 @@
 <?php
 
-Route::get('/incidencia', ['as' => 'incidencia.mantenimiento.index', 'uses' => 'PanelIncidenciaController@index']);
+Route::view('/incidencia', 'incidencia.livewire-panel')->name('incidencia.mantenimiento.index');
 Route::get(
     '/incidencia/{incidencia}/authorize',
-    ['as' => 'incidencia.authorize', 'uses' => 'IncidenciaController@accept']
+    ['as' => 'incidencia.authorize', 'uses' => 'MantenimientoIncidenciaController@accept']
 );
 Route::get(
     '/incidencia/{incidencia}/unauthorize',
-    ['as' => 'incidencia.unauthorize', 'uses' => 'IncidenciaController@resign']
+    ['as' => 'incidencia.unauthorize', 'uses' => 'MantenimientoIncidenciaController@resign']
 );
 Route::get('/incidencia/{incidencia}/show', ['as' => 'incidencia.show', 'uses' => 'IncidenciaController@show']);
 Route::post(
     '/incidencia/{incidencia}/resolve',
-    ['as' => 'incidencia.resolve', 'uses' => 'IncidenciaController@resolve']
+    ['as' => 'incidencia.resolve', 'uses' => 'MantenimientoIncidenciaController@resolve']
 );
-Route::post('/incidencia/{incidencia}/refuse', ['as' => 'incidencia.refuse', 'uses' => 'IncidenciaController@refuse']);
+Route::post('/incidencia/{incidencia}/refuse', ['as' => 'incidencia.refuse', 'uses' => 'MantenimientoIncidenciaController@refuse']);
 Route::get(
     '/incidencia/{incidencia}/orden',
-    ['as' => 'incidencia.orden', 'uses' => 'IncidenciaController@generarOrden']
+    ['as' => 'incidencia.orden', 'uses' => 'MantenimientoIncidenciaController@generarOrden']
 );
 Route::get('/incidencia/{incidencia}/remove',
-    ['as' => 'incidencia.remove', 'uses' => 'IncidenciaController@removeOrden']
+    ['as' => 'incidencia.remove', 'uses' => 'MantenimientoIncidenciaController@removeOrden']
 );
 
 Route::resource('/ordentrabajo', 'OrdenTrabajoController', ['except' => ['show', 'destroy', 'update']]);

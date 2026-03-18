@@ -1,20 +1,29 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Controllers\Deprecated;
 
+use Carbon\Carbon;
 use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Interactions\WebDriverActions;
+use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Falta_itaca;
+use Intranet\Entities\Falta;
+use Intranet\Exceptions\IntranetException;
+use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Requests\PasswordRequest;
 use Intranet\Services\School\ItacaService;
-use Intranet\Exceptions\IntranetException;
-use Carbon\Carbon;
-use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Services\UI\AppAlert as Alert;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * Controlador legacy d'integració amb ITACA conservat fora del flux actiu.
+ *
+ * Mantingut només com a referència i possible punt de recuperació futura.
+ * No té rutes web actives en Sprint 5.
+ *
+ * @deprecated No forma part del flux actual de l'aplicació.
+ */
 class ItacaController extends Controller
 {
     /**
@@ -39,7 +48,7 @@ class ItacaController extends Controller
 
             try {
                 $itacaService->goToLlist();
-            } catch ( NoSuchElementException $e) {
+            } catch (NoSuchElementException $e) {
                 $itacaService->close();
                 Alert::danger('No he pogut accedir al llistat. Potser la sessió ha expirat o el login ha fallat.');
                 return back();
@@ -58,7 +67,7 @@ class ItacaController extends Controller
             } else {
                 try {
                     $itacaService->goToLlist();
-                } catch (IntranetException | \Facebook\WebDriver\Exception\NoSuchElementException $e) {
+                } catch (IntranetException | NoSuchElementException $e) {
                     Alert::danger($e->getMessage());
                     $itacaService->close();
                     Alert::info("$count extraescolars actualitzades, $failures errors de $total");
@@ -71,68 +80,14 @@ class ItacaController extends Controller
         $itacaService->close();
         Alert::info("$count activitats actualitzades, $failures errors de $total");
         return back();
-
     }
 
     /**
-     * Flux legacy d'autorització de birrets via ITACA.
+     * Enviament de faltes completes a ITACA.
      *
-     * @deprecated Mantingut només per compatibilitat mentre es retira el flux legacy de birrets.
-     *
-     * @param Request $request
+     * @param PasswordRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function birret(Request $request)
-    {
-        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', $request->month)->get();
-        $total = count($faltas);
-
-        if ($total == 0) {
-            Alert::info('No hi ha faltas pendents');
-            return back();
-        }
-
-        try {
-            $dni = authUser()->dni;
-            $itacaService = new ItacaService($dni, $request->password);
-
-            try {
-                $itacaService->goToLlist();
-            } catch ( NoSuchElementException $e) {
-                $itacaService->close();
-                Alert::danger('No he pogut accedir al llistat. Potser la sessió ha expirat o el login ha fallat.');
-                return back();
-            }
-        } catch (IntranetException $e) {
-            Alert::danger('No he pogut loguejar-me: ' . $e->getMessage());
-            return back();
-        }
-
-        $count = 0;
-        $failures = 0;
-
-        foreach ($faltas as $falta) {
-            if ($itacaService->processFalta($falta)) {
-                $count++;
-            } else {
-                try {
-                    $itacaService->goToLlist();
-                } catch (IntranetException | \Facebook\WebDriver\Exception\NoSuchElementException $e) {
-                    Alert::danger($e->getMessage());
-                    $itacaService->close();
-                    Alert::info("$count faltas actualizadas, $failures errores de $total");
-                    return back();
-                }
-                $failures++;
-            }
-        }
-
-        $itacaService->close();
-        Alert::info("$count faltas actualizadas, $failures errores de $total");
-        return back();
-    }
-
-
     public function faltes(PasswordRequest $request)
     {
         try {
@@ -201,7 +156,15 @@ class ItacaController extends Controller
         return back();
     }
 
-    private function tryOne(ItacaService $itacaService, mixed $falta, $fecha): int
+    /**
+     * Intenta registrar una falta concreta en ITACA.
+     *
+     * @param ItacaService $itacaService
+     * @param mixed $falta
+     * @param string $fecha
+     * @return int
+     */
+    private function tryOne(ItacaService $itacaService, mixed $falta, string $fecha): int
     {
         try {
             sleep(1);
@@ -251,7 +214,7 @@ class ItacaController extends Controller
             Alert::danger($e->getMessage());
             return 0;
         }
+
         return 1;
     }
-
 }
