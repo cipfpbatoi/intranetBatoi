@@ -327,7 +327,7 @@ trait BatoiModels
     {
 
         if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
+            Alert::danger(__('messages.generic.invalidFormat'));
             return;
         }
 
@@ -336,7 +336,7 @@ trait BatoiModels
         $extension = strtolower($file->getClientOriginalExtension());
 
         if (!in_array($extension, $allowedExtensions)) {
-            Alert::danger(trans('messages.generic.invalidFileType'));
+            Alert::danger(__('messages.generic.invalidFileType'));
             return;
         }
 

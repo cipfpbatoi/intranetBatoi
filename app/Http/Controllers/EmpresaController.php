@@ -151,7 +151,7 @@ class EmpresaController extends IntranetController
         if ($elemento->fichero) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }
-        Alert::danger(trans("messages.generic.nodocument"));
+        Alert::danger(__("messages.generic.nodocument"));
         return back();
     }
 

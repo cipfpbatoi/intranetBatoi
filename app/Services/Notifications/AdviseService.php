@@ -45,7 +45,7 @@ class AdviseService
                 "%s %s %s",
                 getClase($this->element),
                 primryKey($this->element),
-                trans("models." . getClase($this->element) . '.' . $this->element->estado)
+                __("models." . getClase($this->element) . '.' . $this->element->estado)
             );
         }
 

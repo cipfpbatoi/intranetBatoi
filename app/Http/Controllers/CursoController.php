@@ -153,7 +153,7 @@ class CursoController extends ModalController
         if ($elemento->link) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }
-        Alert::danger(trans("messages.generic.nodocument"));
+        Alert::danger(__("messages.generic.nodocument"));
         return back();
     }
 

@@ -211,7 +211,7 @@ abstract class IntranetController extends BaseController
             return $response;
         }
 
-        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+        throw new NotFoundDomainException(__("messages.generic.nodocument"), [
             'model' => $this->model,
             'id' => $id,
             'path' => $path,
@@ -232,7 +232,7 @@ abstract class IntranetController extends BaseController
             return redirect("/documento/$documento/show");
         }
 
-        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+        throw new NotFoundDomainException(__("messages.generic.nodocument"), [
             'model' => $this->model,
             'id' => $id,
         ]);

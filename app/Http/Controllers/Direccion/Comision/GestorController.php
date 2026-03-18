@@ -27,7 +27,7 @@ class GestorController extends Controller
             return redirect('/documento/' . $comision->idDocumento . '/show');
         }
 
-        throw new NotFoundDomainException(trans('messages.generic.nodocument'), [
+        throw new NotFoundDomainException(__('messages.generic.nodocument'), [
             'model' => 'Comision',
             'id' => $id,
         ]);

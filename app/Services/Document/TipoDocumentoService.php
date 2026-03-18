@@ -7,11 +7,11 @@ class TipoDocumentoService
     
     public static function allPestana()
     {
-        if (esRol(authUser()->rol,config('roles.rol.qualitat'))) return ['Millora'=>trans('messages.buttons.Millora')];
+        if (esRol(authUser()->rol,config('roles.rol.qualitat'))) return ['Millora'=>__('messages.buttons.Millora')];
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
             if (userIsAllow($a['rol'])&& $a['pestana'])
-                $todos[$a['index']] = trans('messages.buttons.'.$a['index']);
+                $todos[$a['index']] = __('messages.buttons.'.$a['index']);
         }
         return $todos;
     }

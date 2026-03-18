@@ -269,8 +269,8 @@ class PanelFctAvalController extends IntranetController
 
         $asociacionesAval = [1, 2, 4, 5];
         $asociacionesNoExempt = [1, 4, 5];
-        $labelRenuncia = trans('messages.buttons.renuncia');
-        $labelExpulsat = trans('messages.buttons.expulsat');
+        $labelRenuncia = __('messages.buttons.renuncia');
+        $labelExpulsat = __('messages.buttons.expulsat');
         $titleRenuncia = "Marcar com a $labelRenuncia";
         $titleExpulsat = "Marcar com a $labelExpulsat";
         $this->panel->setBoton(

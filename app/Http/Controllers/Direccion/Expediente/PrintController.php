@@ -47,7 +47,7 @@ class PrintController extends Controller
             }
         }
 
-        Alert::info(trans('messages.generic.empty'));
+        Alert::info(__('messages.generic.empty'));
 
         return back();
     }

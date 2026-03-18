@@ -19,19 +19,19 @@ class ImportService
     public function resolveXmlFile(Request $request, string $field = 'fichero'): ?UploadedFile
     {
         if (!$request->hasFile($field) || !file_exists((string) $request->file($field))) {
-            Alert::danger(trans('messages.generic.noFile'));
+            Alert::danger(__('messages.generic.noFile'));
             return null;
         }
 
         $file = $request->file($field);
         if (!$file instanceof UploadedFile) {
-            Alert::danger(trans('messages.generic.noFile'));
+            Alert::danger(__('messages.generic.noFile'));
             return null;
         }
 
         $extension = strtolower((string) $file->getClientOriginalExtension());
         if (!$file->isValid() || $extension !== 'xml') {
-            Alert::danger(trans('messages.generic.invalidFormat'));
+            Alert::danger(__('messages.generic.invalidFormat'));
             return null;
         }
 
@@ -58,4 +58,3 @@ class ImportService
         return $request->primera === 'on';
     }
 }
-
