@@ -3,11 +3,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
-use Intranet\Entities\OrdenTrabajo;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
@@ -65,67 +63,6 @@ class IncidenciaController extends ModalController
             ->where('idProfesor', '=', $this->currentProfesorDni())
             ->get();
     }
-
-    /**
-     * @param $id
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function generarOrden($id)
-    {
-        $incidencia = $this->findIncidenciaOrFail($id);
-        $this->authorize('update', $incidencia);
-
-        $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
-                ->where('estado', 0)
-                ->where('idProfesor', $this->currentProfesorDni())
-                ->get()
-                ->first();
-
-        if (!$orden) {
-            $orden = $this->generateOrder($incidencia);
-        }
-
-        $incidencia->orden = $orden->id;
-        $incidencia->save();
-        if ($incidencia->estado == 1) {
-            return $this->accept($id);
-        }
-        Session::put('pestana', $incidencia->estado);
-        return back();
-    }
-
-    /**
-     * @param $incidencia
-     */
-    protected function generateOrder(Incidencia $incidencia):OrdenTrabajo
-    {
-        $dni = $this->currentProfesorDni();
-        $user = AuthUser();
-        $orden = new OrdenTrabajo();
-        $orden->idProfesor = $dni;
-        $orden->estado = 0;
-        $orden->tipo = $incidencia->tipo;
-        $orden->descripcion =
-            'Ordre oberta el dia '.Hoy().' pel profesor '.($user->FullName ?? $user->fullName ?? $dni).' relativa a '.$incidencia->Tipos->literal;
-        $orden->save();
-        return $orden;
-    }
-
-    /**
-     * @param $id
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function removeOrden($id)
-    {
-        $incidencia = $this->findIncidenciaOrFail($id);
-        $this->authorize('update', $incidencia);
-        $incidencia->orden = null;
-        $incidencia->save();
-        return back();
-    }
-
 
     /**
      * @param $id

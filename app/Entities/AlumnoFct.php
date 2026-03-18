@@ -57,11 +57,6 @@ class AlumnoFct extends Model
         return $this->belongsTo(Fct::class, 'idFct', 'id');
     }
 
-    public function Dual()
-    {
-        return $this->belongsTo(Dual::class, 'idFct', 'id');
-    }
-
     public function Signatures()
     {
         return $this->hasMany(Signatura::class, 'idSao', 'idSao');

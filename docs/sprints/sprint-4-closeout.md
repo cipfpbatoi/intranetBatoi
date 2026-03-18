@@ -47,3 +47,12 @@ Es recomana donar el sprint per tancat si s'accepta que:
 ## Següent pas recomanat
 Obrir un pendent específic post-sprint per a:
 - deute tècnic de Sass i chunking
+- inventari i retirada de `deprecated`/legacy/codi mort
+- migració d'incidències cap a un panell nou alineat amb els panells de Direcció/Manteniment
+
+## Situació de branca
+
+La branca de treball d'Sprint 4 es considera tancada a data `2026-03-18`.
+
+- `origin/Laravel12` ja incorpora el merge de `sprint-4-issue-78` via PR `#93`
+- el treball següent no hauria de continuar sobre esta branca, sinó sobre una nova branca de sanejament/post-sprint

@@ -6,10 +6,7 @@ namespace Intranet\Services\School;
 
 use Google\Service\AndroidPublisher\ActivateBasePlanRequest;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Hora;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Automation\SeleniumService;
 use Intranet\Services\UI\AppAlert as Alert;
@@ -70,49 +67,6 @@ class ItacaService
     public function processActivitat(Actividad $activitat): bool
     {
         return true;
-    }
-    public function processFalta(Falta_itaca $falta): bool
-    {
-        try {
-            $this->ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
-            $this->ss->waitAndClick("//button[contains(text(),'Buscar')]");
-            sleep(1);
-            $element = $this->ss->getDriver()->findElement(WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
-            (new WebDriverActions($this->ss->getDriver()))->contextClick($element)->perform();
-            $this->ss->waitAndClick("//span[contains(text(),'Faltas docente')]");
-            sleep(1);
-
-            $fechaActual = date('d/m/Y');
-            $this->ss->fill(WebDriverBy::xpath("//input[@value='$fechaActual']"), $falta->dia);
-            $this->ss->waitAndClick("//button[contains(text(),'Cambiar Fecha')]");
-            sleep(2);
-
-            $diaSemana = date('N', strtotime($falta->dia)) + 1;
-            $hora = Hora::find($falta->sesion_orden);
-            $textHora = $hora->hora_ini.' - '.$hora->hora_fin;
-            $expresionXPath = "//table//tr/td[$diaSemana]//div[starts-with(@title, '$textHora')]";
-            $this->ss->waitAndClick($expresionXPath);
-            sleep(1);
-            $this->ss->waitAndClick("//button[contains(text(),'Impartido por titular')]");
-            sleep(1);
-
-            $checkboxLabel = $this->ss->getDriver()->findElement(WebDriverBy::xpath('//label[contains(text(), "Clase impartida por el profesor titular.")]'));
-            $checkboxId = $checkboxLabel->getAttribute('for');
-            $checkbox = $this->ss->getDriver()->findElement(WebDriverBy::id($checkboxId));
-            if (!$checkbox->isSelected()) {
-                $checkbox->click();
-            }
-            $this->ss->waitAndClick("//button[contains(text(),'Guardar')]");
-            $this->ss->waitAndClick("//button[contains(text(),'Aceptar')]");
-            $this->ss->waitAndClick(WebDriverBy::className('z-icon-times'));
-
-            $falta->estado = 4;
-            $falta->save();
-            return true;
-        } catch (\Exception $e) {
-            Alert::danger("{$e->getMessage()} {$falta->Profesor->shortName} {$falta->dia} {$falta->sesion_orden}");
-            return false;
-        }
     }
 
     private function closeNoticias()

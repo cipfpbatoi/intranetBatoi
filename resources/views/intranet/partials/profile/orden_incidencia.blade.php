@@ -1,19 +1,19 @@
 @foreach ($panel->getElementos($pestana) as $elemento)
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-    <div id="{{$elemento->id}}" class="well profile_view">
+    <div id="{{ $elemento->id }}" class="well profile_view">
         <div class="col-sm-12">
             <h4 class="brief">
                 <em class="fa fa-wrench"></em>
-                <strong> id.{{$elemento->id}}</strong>
-                {{$elemento->material}} {{ $elemento->descripcion }}.
+                <strong>id.{{ $elemento->id }}</strong>
+                {{ $elemento->material }} {{ $elemento->descripcion }}.
             </h4>
             @if (!empty($elemento->observaciones))
-                <h5><em class="fa fa-comment-o"></em> {{$elemento->observaciones}}</h5>
+                <h5><em class="fa fa-comment-o"></em> {{ $elemento->observaciones }}</h5>
             @endif
             @if (!empty($elemento->imagen))
                 <div class="incidencia-imatge" style="margin-top: 8px;">
                     <a href="{{ Storage::url($elemento->imagen) }}"
-                       class="js-incidencia-image"
+                       class="js-orden-incidencia-image"
                        data-image="{{ Storage::url($elemento->imagen) }}"
                        aria-label="Veure imatge ampliada">
                         <img src="{{ Storage::url($elemento->imagen) }}"
@@ -24,40 +24,39 @@
                 </div>
             @endif
             <div class="left col-xs-12">
-                <h5> <em class="fa fa-tag"></em> {{$elemento->Xespacio}}</h5>
-                <h5><em class="fa fa-tag"></em> {{$elemento->Tipos->literal}}</h5>
+                <h5><em class="fa fa-tag"></em> {{ $elemento->Xespacio }}</h5>
+                <h5><em class="fa fa-tag"></em> {{ $elemento->Tipos->literal }}</h5>
                 <ul class="list-unstyled">
-                        <li><em class="fa fa-user"></em>
-                            {{$elemento->Creador->nombre}} {{$elemento->Creador->apellido1}}
-                        </li>
-                        <li><em class="fa fa-group"></em>
-                            @if (isset($elemento->Responsables->nombre))
-                                {{$elemento->Responsables->nombre}} {{$elemento->Responsables->apellido1}}
-                            @else
-                                No assignat
-                            @endif
-                        </li>
+                    <li><em class="fa fa-user"></em>
+                        {{ $elemento->Creador->nombre }} {{ $elemento->Creador->apellido1 }}
+                    </li>
+                    <li><em class="fa fa-group"></em>
+                        @if (isset($elemento->Responsables->nombre))
+                            {{ $elemento->Responsables->nombre }} {{ $elemento->Responsables->apellido1 }}
+                        @else
+                            No assignat
+                        @endif
+                    </li>
                 </ul>
                 @if (isset($elemento->solucion))
-                    <h5><em class="fa fa-lightbulb-o"></em>{{$elemento->solucion}}</h5>
+                    <h5><em class="fa fa-lightbulb-o"></em>{{ $elemento->solucion }}</h5>
                 @endif
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
             <div class="col-xs-12 col-sm-6 emphasis">
                 <p class="ratings">
-                    {{$elemento->fecha}}<br/>
+                    {{ $elemento->fecha }}<br/>
                     @if (isset($elemento->orden))
-                    <a href="{{ route('orden.anexo', ['orden' => $elemento->orden]) }}" class="btn btn-primary btn-xs">
-                        @lang("validation.attributes.orden") {{$elemento->orden}}
-                    </a>
+                        <a href="{{ route('orden.anexo', ['orden' => $elemento->orden]) }}" class="btn btn-primary btn-xs">
+                            @lang('validation.attributes.orden') {{ $elemento->orden }}
+                        </a>
                     @endif
                 </p>
-                
             </div>
             <div class="col-xs-12 col-sm-6 emphasis">
                 <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" /><br/>
-             </div>
+            </div>
         </div>
     </div>
 </div>
@@ -77,7 +76,7 @@
         }
     </style>
 
-    <div class="modal fade" id="incidenciaImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="ordenIncidenciaImageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -85,7 +84,7 @@
                     <h5 class="modal-title">Imatge incidència</h5>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="incidenciaImageModalImg" src="" alt="Imatge incidència ampliada" style="max-width: 100%; height: auto;">
+                    <img id="ordenIncidenciaImageModalImg" src="" alt="Imatge incidència ampliada" style="max-width: 100%; height: auto;">
                 </div>
             </div>
         </div>
@@ -93,18 +92,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.js-incidencia-image').forEach(function (link) {
+            document.querySelectorAll('.js-orden-incidencia-image').forEach(function (link) {
                 link.addEventListener('click', function (event) {
                     event.preventDefault();
                     var src = this.getAttribute('data-image');
-                    var img = document.getElementById('incidenciaImageModalImg');
+                    var img = document.getElementById('ordenIncidenciaImageModalImg');
                     if (img) {
                         img.src = src;
                     }
                     if (window.bootstrap && window.bootstrap.Modal) {
-                        window.bootstrap.Modal.getOrCreateInstance(document.getElementById('incidenciaImageModal')).show();
+                        window.bootstrap.Modal.getOrCreateInstance(document.getElementById('ordenIncidenciaImageModal')).show();
                     } else if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
-                        window.intranetUiHelpers.showModal('incidenciaImageModal');
+                        window.intranetUiHelpers.showModal('ordenIncidenciaImageModal');
                     } else {
                         window.open(src, '_blank', 'noopener');
                     }

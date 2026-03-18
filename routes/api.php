@@ -150,8 +150,6 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('doficha', 'FicharController@fichar');
     Route::get('verficha', 'FicharController@entrefechas');
-    Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
-    Route::post('itaca', 'FaltaItacaController@guarda');
     Route::get('/aula', 'ReservaController@unsecure');
 });
 

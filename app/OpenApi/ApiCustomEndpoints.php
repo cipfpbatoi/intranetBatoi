@@ -485,52 +485,6 @@ class ApiCustomEndpoints
     }
 
     /**
-     * Endpoint custom: GET /itaca/{dia}/{idProfesor}
-     */
-    #[OA\Get(
-        path: '/itaca/{dia}/{idProfesor}',
-        operationId: 'itaca_dia_idProfesor_get',
-        summary: 'Hores potencials ITACA per dia i professor',
-        tags: ['Professorat'],
-        security: [['sanctum' => []]],
-        parameters: [
-            new OA\Parameter(name: 'dia', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'date')),
-            new OA\Parameter(name: 'idProfesor', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'Hores potencials', content: new OA\JsonContent(ref: '#/components/schemas/ItacaPotencialResponse')),
-            new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-            new OA\Response(response: 422, description: 'Validacio incorrecta', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
-            new OA\Response(response: 500, description: 'Error intern', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-        ]
-    )]
-    public function itaca_dia_idProfesor_get(): void
-    {
-    }
-
-    /**
-     * Endpoint custom: POST /itaca
-     */
-    #[OA\Post(
-        path: '/itaca',
-        operationId: 'itaca_post',
-        summary: 'Guarda o actualitza faltes ITACA',
-        tags: ['Professorat'],
-        security: [['sanctum' => []]],
-
-        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ItacaGuardarRequest')),
-        responses: [
-            new OA\Response(response: 200, description: 'Resultat per sessio', content: new OA\JsonContent(ref: '#/components/schemas/ItacaGuardarResponse')),
-            new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-            new OA\Response(response: 422, description: 'Validacio incorrecta', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
-            new OA\Response(response: 500, description: 'Error intern', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-        ]
-    )]
-    public function itaca_post(): void
-    {
-    }
-
-    /**
      * Endpoint custom: GET /aula
      */
     #[OA\Get(

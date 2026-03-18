@@ -33,7 +33,9 @@ class PanelOrdenTrabajoController extends BaseController
     public function search()
     {
         Gate::authorize('viewAny', Incidencia::class);
-        return Incidencia::where('orden',$this->search)->get(); 
+        return Incidencia::with(['Tipos', 'Responsables', 'Creador', 'Espacios'])
+            ->where('orden', $this->search)
+            ->get();
     }
     
     public function iniBotones()
@@ -48,7 +50,7 @@ class PanelOrdenTrabajoController extends BaseController
     
     public function iniPestanas($parametres = null)
     {
-        $this->panel->setPestana(trans('validation.attributes.orden').' '.$this->search, true, 'profile.incidencia',null,null,1,$this->parametresVista);
+        $this->panel->setPestana('orden_detall', true, 'profile.orden_incidencia', null, null, true, $this->parametresVista);
     }
     
     

@@ -18,7 +18,6 @@
     <div class="form-group item"><label class="control-label col-md-3 col-sm-3 col-xs-12">Llistat:</label>
     <div class="col-md-6 col-sm-6 col-xs-12"><select name='llistat' class="form-control">
         <option value='faltas'>Ausències</option>
-        <option value='birret'>Oblit Birret</option>
         </select></div></div>
     <div class="form-group item"><label class="control-label col-md-3 col-sm-3 col-xs-12">Tancar mes i generar informe gestor Documental:</label><div class="col-md-6 col-sm-6 col-xs-12"><input type='checkbox' class="form-control" id='mensual' name='mensual' /></div></div>
     <input type='submit' class='btn btn-success'value='Enviar'/>
