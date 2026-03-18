@@ -64,7 +64,7 @@ class TutoriaController extends IntranetController
     public function indexTutoria()
     {
         $todos = Tutoria::all();
-        $this->titulo = ['que' => trans('messages.menu.Orientacion')];
+        $this->titulo = ['que' => __('messages.menu.Orientacion')];
         $this->iniTutBotones();
         return $this->grid($todos, false);
     }

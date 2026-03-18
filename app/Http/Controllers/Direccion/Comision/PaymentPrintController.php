@@ -46,7 +46,7 @@ class PaymentPrintController extends Controller
             return $response;
         }
 
-        Alert::info(trans('messages.generic.empty'));
+        Alert::info(__('messages.generic.empty'));
 
         return back();
     }

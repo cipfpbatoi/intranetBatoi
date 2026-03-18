@@ -108,7 +108,7 @@ class AlumnoGrupoController extends ModalController
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo'))) {
-                $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
+                $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => __('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
             }
         }
         $this->panel->setBoton(

@@ -85,7 +85,7 @@ class Curso extends Model
     }
     public function getEstadoAttribute()
     {
-        return $this->activo?trans('validation.attributes.Activo'):trans('validation.attributes.Inactivo');
+        return $this->activo?__('validation.attributes.Activo'):__('validation.attributes.Inactivo');
     }
 
     public function scopeActivo($query)

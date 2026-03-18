@@ -210,20 +210,20 @@ class HorarioService
         $horasDentro = $this->byProfesorDiaOrdered($dni, $dia);
 
         if ($horasDentro->isEmpty()) {
-            return ['momento' => trans('messages.generic.notoday'), 'ahora' => trans('messages.generic.home')];
+            return ['momento' => __('messages.generic.notoday'), 'ahora' => __('messages.generic.home')];
         }
 
         if ((int) $horasDentro->last()->sesion_orden < (int) $sesionActual) {
-            return ['momento' => (string) $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];
+            return ['momento' => (string) $horasDentro->last()->hasta, 'ahora' => __('messages.generic.home')];
         }
 
         if ((int) $horasDentro->first()->sesion_orden > (int) $sesionActual) {
-            return ['momento' => (string) $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
+            return ['momento' => (string) $horasDentro->first()->desde, 'ahora' => __('messages.generic.home')];
         }
 
         $horaActual = $horasDentro->where('sesion_orden', $sesionActual)->first();
         if (!$horaActual) {
-            return ['momento' => trans('messages.generic.patio'), 'ahora' => trans('messages.generic.patio')];
+            return ['momento' => __('messages.generic.patio'), 'ahora' => __('messages.generic.patio')];
         }
 
         if (

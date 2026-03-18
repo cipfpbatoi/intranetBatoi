@@ -10,13 +10,13 @@
             <li>
                 <a href="javascript:;">
                     <i class="fa fa-clock-o float-end"></i>
-                    {!! trans("messages.generic.entrada") !!} -> {!! $entrada !!}
+                    {!! __("messages.generic.entrada") !!} -> {!! $entrada !!}
                 </a>
             </li>
             <li>
                 <a href="javascript:;">
                     <i class="fa fa-clock-o float-end"></i>
-                    {!! trans("messages.generic.salida") !!} -> {!! $salida !!}
+                    {!! __("messages.generic.salida") !!} -> {!! $salida !!}
                 </a>
             </li>
 
@@ -31,7 +31,7 @@
             <li>
                 <a href="{{ route('profesor.backChange') }}">
                     <i class="fa fa-user float-end"></i>
-                    {!! trans("messages.generic.backChange") !!}
+                    {!! __("messages.generic.backChange") !!}
                 </a>
             </li>
         @endif

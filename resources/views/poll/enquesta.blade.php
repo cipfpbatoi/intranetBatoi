@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.Poll.show")}}</title>
+<title>{{__("models.Poll.show")}}</title>
 @endsection
 @section('content')
     <form method="post" action="/poll/{{$poll->id}}/do">

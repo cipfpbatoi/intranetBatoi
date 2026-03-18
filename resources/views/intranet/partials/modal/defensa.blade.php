@@ -1,6 +1,6 @@
 <!-- Modal per a assignar tutor, data i hora -->
-<x-modal name="assignar_tutor" title='{{ trans("Assignar tutor individual, data i hora de defensa") }}'
-         message='{{ trans("Omple els següents camps:") }}'>
+<x-modal name="assignar_tutor" title='{{ __("Assignar tutor individual, data i hora de defensa") }}'
+         message='{{ __("Omple els següents camps:") }}'>
 
     <!-- Seleccionar Tutor -->
     <label class="control-label" for="idProfesor">@lang("Tutor Individual"):</label>

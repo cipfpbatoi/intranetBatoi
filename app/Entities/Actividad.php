@@ -220,7 +220,7 @@ class Actividad extends Model
      */
     public function getsituacionAttribute()
     {
-        return trans('models.Actividad.' . $this->estado);
+        return __('models.Actividad.' . $this->estado);
     }
 
     /**

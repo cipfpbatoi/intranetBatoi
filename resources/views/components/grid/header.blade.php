@@ -3,7 +3,7 @@
 <tr>
     @foreach ($rejilla as $item)
         <th>
-            @php($label = trans("validation.attributes." . trim($item, 'X')))
+            @php($label = __("validation.attributes." . trim($item, 'X')))
             {{ str_contains($label, 'alidation.') ? ucwords($item) : $label }}
         </th>
     @endforeach

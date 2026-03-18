@@ -69,26 +69,26 @@ class FicharController extends IntranetController
         $profesor = $this->profesores()->findByCodigo((string) $request->codigo);
 
         if (!$profesor) {
-            Alert::danger(trans('messages.generic.nocodigo'));
+            Alert::danger(__('messages.generic.nocodigo'));
             return back();
         }
 
         $fichaje = $fitxatgeService->fitxar($profesor->dni);
 
         if ($fichaje === null) {
-            Alert::danger(trans('messages.generic.acaba')); // Ja ha fitxat fa menys de 10 min
+            Alert::danger(__('messages.generic.acaba')); // Ja ha fitxat fa menys de 10 min
             return back();
         }
 
         if ($fichaje === false) {
-            Alert::danger(trans('messages.generic.fueraCentro')); // IP no vàlida
+            Alert::danger(__('messages.generic.fueraCentro')); // IP no vàlida
             return back();
         }
 
         if ($fichaje->salida !== null) {
-            Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
+            Alert::info(__('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
         } else {
-            Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
+            Alert::success(__('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
         }
 
         return back();

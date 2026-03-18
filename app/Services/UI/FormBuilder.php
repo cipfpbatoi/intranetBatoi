@@ -96,8 +96,8 @@ class FormBuilder
 
     private function translate($key)
     {
-        return !strpos(trans('validation.attributes.' . $key), 'alidation.')
-            ? trans('validation.attributes.' . $key)
+        return !strpos(__('validation.attributes.' . $key), 'alidation.')
+            ? __('validation.attributes.' . $key)
             : ucwords($key);
     }
 
@@ -134,9 +134,9 @@ class FormBuilder
             $parametres = [];
             $inputTpe = $this->elemento->getInputType($property);
             $inputType[$property]['type'] = $this->aspect($parametres, $inputTpe['type'] ?? 'text');
-            $label = existsTranslate('models.'.$model.'.'.$property) ? trans('models.'.$model.'.'.$property):null;
-            $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.')
-                ? trans('validation.attributes.' . $property)
+            $label = existsTranslate('models.'.$model.'.'.$property) ? __('models.'.$model.'.'.$property):null;
+            $ph = !strpos(__('validation.attributes.' . $property), 'alidation.')
+                ? __('validation.attributes.' . $property)
                 : ucwords($property);
 
             $parametres['id'] = $property . '_id';
@@ -166,4 +166,3 @@ class FormBuilder
         return($inputType);
     }
 }
-

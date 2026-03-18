@@ -35,7 +35,7 @@ class Menu extends Model
     }
     public function getXactivoAttribute()
     {
-        return trans('messages.states.' . $this->activo);
+        return __('messages.states.' . $this->activo);
     }
     public function getCategoriaAttribute()
     {
@@ -47,7 +47,7 @@ class Menu extends Model
     }
     public function getDescripcionAttribute()
     {
-        return trans("messages.menu.".ucwords($this->nombre));
+        return __("messages.menu.".ucwords($this->nombre));
     }
 
     /**

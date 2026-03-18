@@ -93,7 +93,7 @@ class Modulo_ciclo extends Model
     }
     public function getSituacionAttribute()
     {
-        return isblankTrans('models.Modulo.'.$this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Modulo.'.$this->estado);
+        return isblankTrans('models.Modulo.'.$this->estado) ? __('messages.situations.' . $this->estado) : __('models.Modulo.'.$this->estado);
     }
     
 }

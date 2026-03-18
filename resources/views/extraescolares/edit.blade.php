@@ -3,7 +3,7 @@
 <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
     <div class="x_panel" style="margin-bottom: 15px;">
         <div class="x_title">
-            <h2>{{ trans("models.Actividad.titulo", ['actividad' => $Actividad->name]) }}</h2>
+            <h2>{{ __("models.Actividad.titulo", ['actividad' => $Actividad->name]) }}</h2>
             <a href="{{ route('actividad.edit', ['actividad' => $Actividad->id]) }}" class="btn btn-primary btn-sm float-end">
                 Editar
             </a>
@@ -11,10 +11,10 @@
         </div>
         <div class="x_content">
             <p class="text-muted" style="margin-bottom: 6px;">
-                <strong>{{ trans('validation.attributes.desde') }}:</strong> {{ $desdeVal }}
+                <strong>{{ __('validation.attributes.desde') }}:</strong> {{ $desdeVal }}
             </p>
             <p class="text-muted" style="margin-bottom: 6px;">
-                <strong>{{ trans('validation.attributes.hasta') }}:</strong> {{ $hastaVal }}
+                <strong>{{ __('validation.attributes.hasta') }}:</strong> {{ $hastaVal }}
             </p>
             <p class="text-muted" style="margin-bottom: 6px;">
                 <strong>Coordinador:</strong> {{ $coordinadorNom }}

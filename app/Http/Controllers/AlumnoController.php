@@ -67,23 +67,6 @@ class AlumnoController extends PerfilController
         return back();
 
     }
-
-//    public function baja($id)
-//    {
-//        $expediente = new Expediente();
-//        $expediente->idAlumno = $id;
-//        $expediente->idProfesor = AuthUser()->dni;
-//        $expediente->fecha = Hoy();
-//        $expediente->tipo = 1;
-//        $expediente->estado = 1;
-//        $expediente->explicacion = trans("models.accept.Expediente", ['alumno' => $expediente->Alumno->nombre . ' ' . $expediente->Alumno->apellido1 . ' ' . $expediente->Alumno->apellido2, 'profesor' =>
-//            $expediente->Profesor->FullName]);
-//        $expediente->save();
-//        avisa($id, $expediente->explicacion, '#', $expediente->Profesor->FullName);
-//        avisa($expediente->idProfesor, $expediente->explicacion, '/expediente/' . $expediente->id . '/edit');
-//        return back();
-//    }
-
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */

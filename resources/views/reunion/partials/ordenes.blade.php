@@ -36,10 +36,10 @@
                                     >
                                         {!! Html::image(
                                                 'img/delete.png',
-                                                trans("messages.buttons.delete"),
+                                                __("messages.buttons.delete"),
                                                 array(
                                                     'class' => 'iconopequeno',
-                                                    'title'=>trans("messages.buttons.delete")
+                                                    'title'=>__("messages.buttons.delete")
                                                     )
                                                 )
                                         !!}
@@ -48,8 +48,8 @@
                                 <a href="#" class="editGrupo">
                                     {!! Html::image(
                                         'img/edit.png',
-                                        trans("messages.buttons.edit"),
-                                        array('class' => 'iconopequeno','title'=>trans("messages.buttons.edit"))
+                                        __("messages.buttons.edit"),
+                                        array('class' => 'iconopequeno','title'=>__("messages.buttons.edit"))
                                         )
                                     !!}
                                 </a>

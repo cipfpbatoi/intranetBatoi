@@ -274,7 +274,7 @@ abstract class ModalController extends Controller
             return $response;
         }
 
-        throw new NotFoundDomainException(trans("messages.generic.nodocument"), [
+        throw new NotFoundDomainException(__("messages.generic.nodocument"), [
             'model' => $this->model,
             'id' => $id,
             'path' => $path,

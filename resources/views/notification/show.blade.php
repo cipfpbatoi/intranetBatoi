@@ -8,9 +8,9 @@
                                                 @if ($elemento->enlace != '#')
                                                         <li><p><a href="{{$elemento->enlace}}" >Anar</a></p></li>
                                                 @endif
-                                                <li><p> {{ trans("validation.attributes.idProfesor") }} : {{ $elemento->emissor }}</p></li>
-                                                <li><p> {{ trans("validation.attributes.motivo") }} : {{ $elemento->motiu }}</p></li>
-                                                <li><p> {{ trans("validation.attributes.fecha") }} : {{ $elemento->data }}</p></li>
+                                                <li><p> {{ __("validation.attributes.idProfesor") }} : {{ $elemento->emissor }}</p></li>
+                                                <li><p> {{ __("validation.attributes.motivo") }} : {{ $elemento->motiu }}</p></li>
+                                                <li><p> {{ __("validation.attributes.fecha") }} : {{ $elemento->data }}</p></li>
                                         </ul>
                                 </div>
                         </div>
@@ -18,6 +18,5 @@
         </div>
 @endsection
 @section('titulo')
-        {{trans("models.$modelo.show")}} {{$elemento->getKey()}}
+        {{__("models.$modelo.show")}} {{$elemento->getKey()}}
 @endsection
-

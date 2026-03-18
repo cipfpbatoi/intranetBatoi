@@ -44,7 +44,7 @@
 </div>
 <div class="modal-footer">
     <button id="close" type="button" class="btn btn-danger" data-bs-dismiss="modal">@lang("messages.buttons.cancel")</button>
-    {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
+    {!! Form::submit(__('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
     <x-ui.errors />
 </div>

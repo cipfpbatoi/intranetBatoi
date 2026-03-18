@@ -30,7 +30,7 @@ class DocumentResponder
             return redirect($context->link());
         }
 
-        Alert::warning(trans("messages.generic.nodocument"));
+        Alert::warning(__("messages.generic.nodocument"));
         return back();
     }
 }

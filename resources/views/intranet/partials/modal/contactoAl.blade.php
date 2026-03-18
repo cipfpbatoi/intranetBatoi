@@ -1,6 +1,6 @@
 <!-- Modal Nou -->
 <x-modal name="dialogo_alumno" title='Contacte Fct'
-         message='{{ trans("messages.buttons.confirmar")}}'>
+         message='{{ __("messages.buttons.confirmar")}}'>
     <label class="control-label" for="alumnoFct">Selecciona Alumne/a:</label>
     <select id="alumnoFct" name="alumnoFct" class="form-control">
     </select>

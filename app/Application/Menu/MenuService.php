@@ -344,13 +344,13 @@ class MenuService
             return '';
         }
 
-        $direct = trans('messages.menu.' . $rawKey);
+        $direct = __('messages.menu.' . $rawKey);
         if ($direct !== 'messages.menu.' . $rawKey) {
             return (string) $direct;
         }
 
         $titleKey = Str::title($rawKey);
-        $title = trans('messages.menu.' . $titleKey);
+        $title = __('messages.menu.' . $titleKey);
         if ($title !== 'messages.menu.' . $titleKey) {
             return (string) $title;
         }

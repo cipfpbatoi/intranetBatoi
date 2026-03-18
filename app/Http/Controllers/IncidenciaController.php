@@ -140,7 +140,7 @@ class IncidenciaController extends ModalController
         $extension = strtolower($file->getClientOriginalExtension());
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
         if (!in_array($extension, $allowedExtensions, true)) {
-            Alert::danger(trans('messages.generic.invalidFileType'));
+            Alert::danger(__('messages.generic.invalidFileType'));
             return;
         }
 

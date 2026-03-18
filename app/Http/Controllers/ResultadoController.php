@@ -162,7 +162,7 @@ class ResultadoController extends ModalController
             $datosInforme = $grupo->nombre;
             return $this->hazPdf('pdf.resultado', $resultados, $datosInforme)->stream();
         }
-        Alert::danger(trans("messages.generic.nogroup"));
+        Alert::danger(__("messages.generic.nogroup"));
         return back();
     }
 

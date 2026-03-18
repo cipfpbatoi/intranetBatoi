@@ -13,7 +13,7 @@ class TaskFileService
     public function store(UploadedFile $file, Task $task): ?string
     {
         if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
+            Alert::danger(__('messages.generic.invalidFormat'));
             return null;
         }
 
@@ -24,4 +24,3 @@ class TaskFileService
         );
     }
 }
-

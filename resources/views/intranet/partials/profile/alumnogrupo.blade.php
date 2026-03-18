@@ -17,7 +17,7 @@
             </li>
             <li><em class="fa fa-envelope"></em> {{$elemento->email}}</li>
             <x-slot name="rattings">
-                    <a>{{ $alumno->edat }} {{ trans("validation.attributes.años") }}</a>
+                    <a>{{ $alumno->edat }} {{ __("validation.attributes.años") }}</a>
                     @if ($alumno->repite == 0)
                         <a href="#"><span class="fa fa-star-o"></span></a>
                     @else

@@ -42,7 +42,7 @@ class PanelOrdenTrabajoController extends BaseController
     {
         Gate::authorize('viewAny', Incidencia::class);
         $this->panel->setBoton('index', new BotonBasico("$this->search.pdf", ['where'=>['estado','==',0]],"mantenimiento/ordentrabajo" ));
-        $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>trans('messages.buttons.verorden')],"mantenimiento" ));
+        $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>__('messages.buttons.verorden')],"mantenimiento" ));
         $this->panel->setBoton('profile', new BotonIcon("incidencia.remove", ['class' => 'btn-danger unauthorize','where'=>['estado','<',3]],'mantenimiento'));
         $this->panel->setBoton('profile', new BotonPost("incidencia.resolve", ['class' => 'resolve btn-danger unauthorize','where'=>['estado','==',2]],'mantenimiento'));
         

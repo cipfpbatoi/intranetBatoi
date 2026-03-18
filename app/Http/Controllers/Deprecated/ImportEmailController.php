@@ -52,12 +52,12 @@ class ImportEmailController extends Controller
     public function store(Request $request)
     {
         if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
-            Alert::danger(trans('messages.generic.noFile'));
+            Alert::danger(__('messages.generic.noFile'));
             return back();
         }
         $extension = $request->file('fichero')->getClientOriginalExtension();
         if (!$request->file('fichero')->isValid() || $extension <> 'csv') {
-            Alert::danger(trans('messages.generic.invalidFormat'));
+            Alert::danger(__('messages.generic.invalidFormat'));
             return back();
         }
 
@@ -104,4 +104,3 @@ class ImportEmailController extends Controller
         return 0;
     }
 }
-

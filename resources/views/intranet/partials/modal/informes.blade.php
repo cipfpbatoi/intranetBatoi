@@ -1,6 +1,6 @@
 <!-- Modal Nou -->
 <x-modal name="seleccion" title='Selecciona elements' action="/documentacionFCT/A1"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+         message='{{ __("messages.buttons.confirmar")}}'>
         <strong>Selecciona Document:</strong>
         <select name="informe" id="informe">
                 <option value="">--</option>

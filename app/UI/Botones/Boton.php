@@ -59,7 +59,7 @@ abstract class Boton
         if ($text = existsTranslate("models." . ucwords($this->modelo) . ".default")) {
             return $text;
         }
-        return trans("messages.buttons.$this->accion");
+        return __("messages.buttons.$this->accion");
     }
 
     /**

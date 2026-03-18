@@ -139,7 +139,7 @@ class Pestana
         $key = 'messages.buttons.' . $this->getNombre();
 
         return Lang::has($key)
-            ? trans($key)
+            ? __($key)
             : $this->getNombre();
     }
 

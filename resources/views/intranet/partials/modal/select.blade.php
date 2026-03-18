@@ -1,6 +1,6 @@
 <!-- Modal Nou -->
 <x-modal name="select" title='Trial element' action="/{{ strtolower($panel->getModel())}}/selecciona"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+         message='{{ __("messages.buttons.confirmar")}}'>
         <label class="control-label" for="seleccion">Selecciona element:</label>
         @method('put')
         <select name="idAcompanyant" id="seleccion">

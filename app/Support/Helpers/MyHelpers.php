@@ -386,12 +386,12 @@ function nameRolesUser($rolUsuario)
     $jerarquia = config('roles.rol');
     $roles = [];
     if ($rolUsuario == 1) {
-        return array(trans('messages.rol.todos'));
+        return array(__('messages.rol.todos'));
     }
 
     foreach ($jerarquia as $key => $rol) {
         if (($rol != 1) && ($rolUsuario % $rol == 0)) {
-            $roles[] = trans('messages.rol.' . $key);
+            $roles[] = __('messages.rol.' . $key);
         }
     }
     return $roles;
@@ -481,7 +481,8 @@ function rol($roles)
  */
 function blankTrans($mensaje)
 {
-    return trans($mensaje) == $mensaje ? '' : trans($mensaje);
+    $translated = __($mensaje);
+    return $translated == $mensaje ? '' : $translated;
 }
 
 /**
@@ -492,7 +493,7 @@ function blankTrans($mensaje)
  */
 function isblankTrans($mensaje)
 {
-    return trans($mensaje) == $mensaje;
+    return __($mensaje) == $mensaje;
 }
 
 /**
@@ -709,7 +710,7 @@ function inRol($roles)
  */
 function existsTranslate($text)
 {
-    $translated = trans($text);
+    $translated = __($text);
     return $translated != $text ? $translated : null;
 }
 

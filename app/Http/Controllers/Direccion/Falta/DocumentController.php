@@ -37,7 +37,7 @@ class DocumentController extends Controller
             return $response;
         }
 
-        throw new NotFoundDomainException(trans('messages.generic.nodocument'), [
+        throw new NotFoundDomainException(__('messages.generic.nodocument'), [
             'model' => 'Falta',
             'id' => $id,
             'path' => $path,

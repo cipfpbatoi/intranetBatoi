@@ -125,8 +125,8 @@ class Expediente extends Model
     public function getSituacionAttribute()
     {
         return isblankTrans('models.Expediente.'.$this->estado)
-            ? trans('messages.situations.'.$this->estado)
-            : trans('models.Expediente.' . $this->estado);
+            ? __('messages.situations.'.$this->estado)
+            : __('models.Expediente.' . $this->estado);
     }
     public function getXtipoAttribute()
     {
