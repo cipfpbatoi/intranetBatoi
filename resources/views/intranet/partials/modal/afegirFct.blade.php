@@ -1,6 +1,6 @@
 <!-- Modal Nou -->
-<x-modal name="AddAlumno" title='{{ trans("models.modelos.Alumno")}}' clase="form-horizontal form-label-left"
-         message='{{ trans("messages.generic.anadir") }} {{ trans("models.modelos.Alumno") }}'>
+<x-modal name="AddAlumno" title='{{ __("models.modelos.Alumno")}}' clase="form-horizontal form-label-left"
+         message='{{ __("messages.generic.anadir") }} {{ __("models.modelos.Alumno") }}'>
     <input type="hidden" id='idColaboracion' name="idColaboracion" value=""/>
     <input type="hidden" name="asociacion" value="1"/>
     <div id="idAlumno" class="form-group">

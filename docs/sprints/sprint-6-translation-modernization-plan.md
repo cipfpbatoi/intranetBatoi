@@ -22,6 +22,12 @@ Iniciar la modernització del sistema de traduccions actual cap a un model més 
 - revisar components Blade reutilitzables
 - revisar helpers i components nous amb menor risc
 
+## Estat actual
+
+- Tall A executat en components compartits, panells UI i modals comuns
+- `trans()` eliminat d'eixes zones en favor de `__()`
+- pendent el següent tall sobre helpers dinàmics i vistes amb més risc
+
 ## Riscos
 
 - regressions textuals en UI
