@@ -6,10 +6,10 @@
         <tr>
             @foreach ($panel->getRejilla() as $item)
             <th>
-                @if (strpos(trans("validation.attributes.$item"),'alidation.'))
+                @if (strpos(__("validation.attributes.$item"),'alidation.'))
                 {{ucwords($item)}}
                 @else
-                {{trans("validation.attributes.$item")}}
+                {{__("validation.attributes.$item")}}
                 @endif
             </th>
             @endforeach
@@ -22,10 +22,10 @@
         <tr>
             @foreach ($panel->getRejilla() as $item)
             <th>
-                @if (strpos(trans("validation.attributes.$item"),'alidation.'))
+                @if (strpos(__("validation.attributes.$item"),'alidation.'))
                 {{ucwords($item)}}
                 @else
-                {{trans("validation.attributes.$item")}}
+                {{__("validation.attributes.$item")}}
                 @endif
             </th>
             @endforeach

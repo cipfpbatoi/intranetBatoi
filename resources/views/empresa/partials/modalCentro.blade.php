@@ -3,7 +3,7 @@
         name="AddCenter"
         title='Afegir Centre Treball'
         action="/centro/create"
-        message='{{ trans("messages.buttons.confirmar")}}'
+        message='{{ __("messages.buttons.confirmar")}}'
 >
     <input type="hidden" id="idCentro" value="" />
     <div class="form-group item row">

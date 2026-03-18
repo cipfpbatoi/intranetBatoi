@@ -11,7 +11,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="delGrupo" style="border:0;background:transparent;padding:0;" title="@lang('messages.buttons.delete')" onclick="return confirm('Segur que vols eliminar este grup de la activitat?');">
-                        {!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno')) !!}
+                        {!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno')) !!}
                     </button>
                 </form>
             </td>

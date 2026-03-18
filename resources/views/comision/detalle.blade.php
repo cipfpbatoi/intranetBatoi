@@ -3,7 +3,7 @@
     <title></title>
 @endsection
 @section('content')
-    <h4 class="centrado">{{trans("models.modelos.Comision")}} de {{authUser()->ShortName}}
+    <h4 class="centrado">{{__("models.modelos.Comision")}} de {{authUser()->ShortName}}
         de {{fechaString($comision->desde)}}</h4>
 
 
@@ -26,8 +26,8 @@
                            onclick="return confirm('Segur que vols eliminar esta visita?');">
                             {!! Html::image(
                                     'img/delete.png',
-                                    trans("messages.buttons.delete"),
-                                    array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))
+                                    __("messages.buttons.delete"),
+                                    array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))
                                     )
                             !!}
                         </a>

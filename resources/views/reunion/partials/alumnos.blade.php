@@ -21,7 +21,7 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><a href="{{ route('reunion.alumno.destroy', ['reunion' => $formulario->getElemento()->id, 'alumno' => $alumno->nia]) }}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
+                    <td><a href="{{ route('reunion.alumno.destroy', ['reunion' => $formulario->getElemento()->id, 'alumno' => $alumno->nia]) }}" class="delGrupo">{!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}</a></td>
                 </tr>
                 @endforeach
             </table>

@@ -22,7 +22,7 @@
 </div>
 <!-- Modal -->
 <x-modal name="dialogo" title='  '
-         message='{{ trans("messages.buttons.confirmar")}}'>
+         message='{{ __("messages.buttons.confirmar")}}'>
     <label class="control-label" for="explicacion">@lang("messages.generic.motivo"):</label>
     <textarea id="explicacion" name="explicacion" class="form-control"></textarea>
 </x-modal>

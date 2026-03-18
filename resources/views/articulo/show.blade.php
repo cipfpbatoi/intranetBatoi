@@ -1,4 +1,4 @@
-<x-layouts.app  title="Dades de {{trans("models.$modelo.show")}} {{$elemento->getKey()}}">
+<x-layouts.app  title="Dades de {{__("models.$modelo.show")}} {{$elemento->getKey()}}">
      <div class="col-md-6 col-sm-6 col-xs-12">
         <div class="x_panel">
             <div class="x_content">

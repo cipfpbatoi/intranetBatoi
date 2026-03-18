@@ -9,9 +9,9 @@
             <td>@if ($profesor->coordinador) <strong>Coordinador</strong> @endif</td>
             <td>
                 @can('manageMembers', $Gt)
-                    <a href="{{ route('grupotrabajo.profesor.destroy', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
+                    <a href="{{ route('grupotrabajo.profesor.destroy', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}</a>
                     @if (!$profesor->coordinador)
-                        <a href="{{ route('grupotrabajo.profesor.coordinador', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/coordinador.png',trans("messages.buttons.coordinador"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.coordinador"))) !!}</a>
+                        <a href="{{ route('grupotrabajo.profesor.coordinador', ['grupotrabajo' => $Gt->id, 'profesor' => $profesor->dni]) }}" >{!! Html::image('img/coordinador.png',__("messages.buttons.coordinador"),array('class' => 'iconopequeno','title'=>__("messages.buttons.coordinador"))) !!}</a>
                     @endif
                 @endcan
             </td>

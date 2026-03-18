@@ -68,7 +68,7 @@ class Articulo extends Model
 
         // 1) Primer validem
         if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
+            Alert::danger(__('messages.generic.invalidFormat'));
             return null;
         }
 

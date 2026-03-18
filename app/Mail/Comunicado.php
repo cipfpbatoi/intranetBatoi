@@ -40,7 +40,7 @@ class Comunicado extends Mailable
         $vista = $this->view($this->vista, ['remitente'=>$this->remitente])
                         ->from($this->remitente['email'], $nombre)
                         ->replyTo($this->remitente['email'], $nombre)
-                        ->subject(trans("models.modelos." . $this->modelo));
+                        ->subject(__("models.modelos." . $this->modelo));
         if (isset($this->attach)) {
             foreach ($this->attach as $index => $value) {
                 $vista = $vista->attach(storage_path($index), ['mime' => $value]);

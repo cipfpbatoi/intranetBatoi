@@ -14,8 +14,8 @@
                         <td><span class='select' name='nota'>{{ config('auxiliares.notas')[$orden->nota] ?? '' }}</span></td>
                         <td><span class='textarea' name='observaciones'>{{ $orden->observaciones }}</td>
                         <td><span class='botones'>
-                        <a href="#" class="editGrupo">{!! Html::image('img/edit.png',trans("messages.buttons.edit"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.edit"))) !!}</a>
-                        <a href="{{ route('seguimiento.alumnos.delete', ['seguimiento' => $orden->id]) }}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
+                        <a href="#" class="editGrupo">{!! Html::image('img/edit.png',__("messages.buttons.edit"),array('class' => 'iconopequeno','title'=>__("messages.buttons.edit"))) !!}</a>
+                        <a href="{{ route('seguimiento.alumnos.delete', ['seguimiento' => $orden->id]) }}" class="delGrupo">{!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}</a>
                     </span>
                         </td>
                     </tr>
