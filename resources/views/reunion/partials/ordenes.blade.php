@@ -1,17 +1,16 @@
-<div class="panel">
-    <a class="panel-heading"
-       role="tab"
+<div class="card">
+    <a class="d-block"
        id="headingTwo"
-       data-toggle="collapse"
-       data-parent="#accordion"
+       data-bs-toggle="collapse"
+       data-bs-parent="#accordion"
        href="#collapseTwo"
        aria-expanded="true"
        aria-controls="collapseTwo"
     >
-        <h4 class="panel-title"><i class="fa fa-bars"></i> @lang("models.Reunion.ordenes")</h4>
+        <h4 class="card-title"><i class="fa fa-bars"></i> @lang("models.Reunion.ordenes")</h4>
     </a>
-    <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
-        <div class="panel-body">
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+        <div class="card-body">
             <table class="table table-striped table-condensed" name='ordenreunion'>
                 <tr>
                     <th style="width: 5%">@lang("validation.attributes.orden")</th>

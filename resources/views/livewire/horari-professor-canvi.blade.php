@@ -43,7 +43,7 @@
         <button class="btn btn-primary" type="button" wire:click="guardarProposta" @if(!$editable) disabled @endif>
             Sol·licitar el canvi
         </button>
-        <button class="btn btn-default" type="button" wire:click="novaProposta">
+        <button class="btn btn-secondary" type="button" wire:click="novaProposta">
             Nova proposta
         </button>
         <button class="btn btn-danger" type="button" wire:click="esborrarProposta"

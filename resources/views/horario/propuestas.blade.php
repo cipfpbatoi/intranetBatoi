@@ -4,10 +4,10 @@
     <h2>Propostes de canvi d'horari</h2>
 
     <div class="mb-3">
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Pendiente') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Pendiente']) }}">Pendents</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Aceptado') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Aceptado']) }}">Acceptades</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Rebutjat') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Rebutjat']) }}">Rebutjades</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Todos']) }}">Totes</a>
+        <a class="btn @if(($estado ?? 'Pendiente') === 'Pendiente') btn-primary @else btn-secondary @endif" href="{{ route('horario.propuestas', ['estado' => 'Pendiente']) }}">Pendents</a>
+        <a class="btn @if(($estado ?? 'Pendiente') === 'Aceptado') btn-primary @else btn-secondary @endif" href="{{ route('horario.propuestas', ['estado' => 'Aceptado']) }}">Acceptades</a>
+        <a class="btn @if(($estado ?? 'Pendiente') === 'Rebutjat') btn-primary @else btn-secondary @endif" href="{{ route('horario.propuestas', ['estado' => 'Rebutjat']) }}">Rebutjades</a>
+        <a class="btn @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @else btn-secondary @endif" href="{{ route('horario.propuestas', ['estado' => 'Todos']) }}">Totes</a>
     </div>
 
     @php
@@ -51,7 +51,7 @@
                         @endif
                     </td>
                     <td>
-                        <a class="btn btn-default" href="{{ route('horario.profesor.change', ['profesor' => $proposta['dni'], 'proposta' => $proposta['id']]) }}" title="Veure" aria-label="Veure">
+                        <a class="btn btn-secondary" href="{{ route('horario.profesor.change', ['profesor' => $proposta['dni'], 'proposta' => $proposta['id']]) }}" title="Veure" aria-label="Veure">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </a>
                         @php

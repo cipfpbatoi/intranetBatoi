@@ -201,6 +201,18 @@ function init_legacy_popover_hover_bridge() {
     }
 
     var PopoverConstructor = $.fn.popover.Constructor;
+    if (typeof PopoverConstructor.prototype.leave !== 'function') {
+        $('body').popover({
+            selector: '[data-popover]',
+            trigger: 'click hover',
+            delay: {
+                show: 50,
+                hide: 400
+            }
+        });
+        return;
+    }
+
     if (!PopoverConstructor.__intranetLeavePatched) {
         var originalLeave = PopoverConstructor.prototype.leave;
         PopoverConstructor.prototype.leave = function(obj) {
@@ -272,7 +284,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     // Protecció per si Bootstrap no està carregat
     if ($.fn.tooltip) {
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-toggle="tooltip"], [data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
     }
@@ -1132,7 +1144,7 @@ if (typeof NProgress != 'undefined') {
               return false;
             })
             .change(function() {
-              $(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');
+              $(this).parent('.dropdown-menu').siblings('.dropdown-toggle, [data-bs-toggle="dropdown"]').dropdown('toggle');
             })
             .keydown('esc', function() {
               this.value = '';
@@ -1164,7 +1176,7 @@ if (typeof NProgress != 'undefined') {
           } else {
             intranetDebugLog("error uploading file", reason, detail);
           }
-          $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
+          $('<div class="alert alert-dismissible fade show"> <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
             '<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
         }
 
@@ -1216,7 +1228,7 @@ if (typeof NProgress != 'undefined') {
 
 
 			// Tooltip
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"], [data-bs-toggle="tooltip"]').tooltip();
 
 
 			// Cropper
@@ -2720,7 +2732,17 @@ if (typeof NProgress != 'undefined') {
 				  };
 				}();
 
-				$('#datatable').DataTable();
+				// Manté l'autoinit legacy per a pantalles sense grid específic, però
+				// evita conflictes amb models que ja gestionen DataTables des del seu
+				// propi fitxer `grid.js`.
+				var $legacyDatatable = $('#datatable');
+				var managedModels = ['Actividad', 'Comision', 'Menu', 'TipoActividad'];
+				var datatableModel = $legacyDatatable.attr('name');
+				var shouldSkipLegacyDatatable = datatableModel && managedModels.indexOf(datatableModel) !== -1;
+
+				if ($legacyDatatable.length && !shouldSkipLegacyDatatable && !$.fn.dataTable.isDataTable($legacyDatatable[0])) {
+				  $legacyDatatable.DataTable();
+				}
 
 				$('#datatable-keytable').DataTable({
 				  keys: true

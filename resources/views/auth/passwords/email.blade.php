@@ -34,11 +34,11 @@
                             <form method="post" action="{{ url('/password/email') }}">
                                 {!! csrf_field() !!}
 
-                                <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
-                                    <input type="email" class="form-control" name="email"  placeholder="Email">
+                                <div class="form-group">
+                                    <input type="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" name="email"  placeholder="Email">
                                     <span class="fa fa-envelope form-control-feedback"></span>
                                     @if ($errors->has('email'))
-                                    <span class="help-block">
+                                    <span class="invalid-feedback d-block">
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                     @endif
@@ -46,7 +46,7 @@
 
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <button type="submit" class="btn btn-primary pull-right">
+                                        <button type="submit" class="btn btn-primary float-end">
                                             <i class="fa fa-btn fa-envelope"></i> Restablir contrasenya
                                         </button>
                                     </div>

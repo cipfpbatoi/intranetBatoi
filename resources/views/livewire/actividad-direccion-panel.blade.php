@@ -76,9 +76,9 @@
     </div>
 
     @if ($rebutjarId !== null)
-        <div class="panel panel-danger" style="margin-top: 20px;">
-            <div class="panel-heading">Rebutjar activitat #{{ $rebutjarId }}</div>
-            <div class="panel-body">
+        <div class="card border-danger" style="margin-top: 20px;">
+            <div class="card-header">Rebutjar activitat #{{ $rebutjarId }}</div>
+            <div class="card-body">
                 <div class="form-group">
                     <label for="motiu-rebutjar-actividad">Motiu</label>
                     <textarea
@@ -89,7 +89,7 @@
                     ></textarea>
                 </div>
                 <button type="button" class="btn btn-danger" wire:click="confirmarRebutjar">Confirmar rebuig</button>
-                <button type="button" class="btn btn-default" wire:click="cancelarRebutjar">Cancelar</button>
+                <button type="button" class="btn btn-secondary" wire:click="cancelarRebutjar">Cancelar</button>
             </div>
         </div>
     @endif
@@ -157,12 +157,12 @@
         {{ $paginator->links() }}
     </div>
 
-    <div id="showActividad" class="modal fade" role="dialog">
+    <div id="showActividad" class="modal fade" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Detall activitat</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Detall activitat</h5>
                 </div>
                 <div class="modal-body">
                     @if ($selectedActividad !== null)
@@ -189,12 +189,12 @@
                                     <li style="margin-bottom: 8px;">
                                         <strong>{{ $participant['nom'] }}</strong>
                                         @if ($participant['teHorariDocent'])
-                                            <span class="label label-danger" style="margin-left: 8px;">Té horari docent</span>
+                                            <span class="badge text-bg-danger" style="margin-left: 8px;">Té horari docent</span>
                                             @foreach ($participant['grupsAfectats'] as $grup)
-                                                <span class="label label-warning" style="margin-left: 4px;">{{ $grup }}</span>
+                                                <span class="badge text-bg-warning" style="margin-left: 4px;">{{ $grup }}</span>
                                             @endforeach
                                         @else
-                                            <span class="label label-success" style="margin-left: 8px;">Sense docència assignada</span>
+                                            <span class="badge text-bg-success" style="margin-left: 8px;">Sense docència assignada</span>
                                         @endif
                                     </li>
                                 @endforeach
@@ -229,7 +229,7 @@
 
                     @if ($selectedActividad !== null && $selectedActividad['canPdfValue'])
                         <a
-                            class="btn btn-default"
+                            class="btn btn-secondary"
                             href="{{ route('actividad.direccion.pdfVal', ['actividad' => $selectedActividad['id']]) }}"
                             target="_blank"
                             rel="noopener"
@@ -238,7 +238,7 @@
                         </a>
                     @endif
 
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tancar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tancar</button>
                 </div>
             </div>
         </div>
@@ -253,12 +253,17 @@
             window.__actividadLivewireUiInit = true;
 
             function showModalById(id) {
-                var element = document.getElementById(id);
-                if (!element || typeof window.jQuery === 'undefined') {
+                if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
+                    window.intranetUiHelpers.showModal(id);
                     return;
                 }
 
-                window.jQuery(element).modal('show');
+                var element = document.getElementById(id);
+                if (!element || !window.bootstrap || !window.bootstrap.Modal) {
+                    return;
+                }
+
+                window.bootstrap.Modal.getOrCreateInstance(element).show();
             }
 
             document.addEventListener('livewire:init', function () {

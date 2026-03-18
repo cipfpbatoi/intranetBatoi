@@ -1,19 +1,18 @@
 @php $agrupados = $panel->getElementos($pestana)->groupBy('dia'); @endphp
 @foreach ($agrupados as $grupo)
 @php $nombre = $pestana->getNombre().$grupo->first()->dia; @endphp
-<div class="panel">
-    <a class="panel-heading"
-       role="tab"
+<div class="card">
+    <a class="d-block"
        id="heading{{$nombre}}"
-       data-toggle="collapse"
-       data-parent="#accordion"
+       data-bs-toggle="collapse"
+       data-bs-parent="#accordion"
        href="#collapse{{$nombre}}"
        aria-expanded="false"
        aria-controls="collapse{{$nombre}}">
-            <h4 class="panel-title"><em class="fa fa-bars"></em> {{$grupo->first()->dia}}</h4>
+            <h4 class="card-title"><em class="fa fa-bars"></em> {{$grupo->first()->dia}}</h4>
     </a>
-    <div id="collapse{{$nombre}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{$nombre}}">
-        <div class="panel-body">
+    <div id="collapse{{$nombre}}" class="collapse" aria-labelledby="heading{{$nombre}}">
+        <div class="card-body">
             <div class='form_box'>
                 @php $usuarios = $grupo->groupBy('idProfesor'); @endphp
                 @foreach ($usuarios as $usuario)

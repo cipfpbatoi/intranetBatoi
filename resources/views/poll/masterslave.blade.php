@@ -11,7 +11,7 @@
             <div class="col-xs-12 invoice-header">
                 <h1>
                     <i class="fa fa-globe"></i> @lang("models.modelos.$modelo") 
-                    <small class="pull-right">{{$elemento->actiu}}</small>
+                    <small class="float-end">{{$elemento->actiu}}</small>
                 </h1>
             </div>
         </div>
@@ -50,7 +50,7 @@
         <!-- this row will not appear when printing -->
         <div class="message_wrapper">
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddOption">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOption">
                         @lang("messages.generic.anadir") @lang("models.modelos.Option")
                 </button>
         </div>

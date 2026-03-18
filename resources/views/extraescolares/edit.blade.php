@@ -4,7 +4,7 @@
     <div class="x_panel" style="margin-bottom: 15px;">
         <div class="x_title">
             <h2>{{ trans("models.Actividad.titulo", ['actividad' => $Actividad->name]) }}</h2>
-            <a href="{{ route('actividad.edit', ['actividad' => $Actividad->id]) }}" class="btn btn-primary btn-sm pull-right">
+            <a href="{{ route('actividad.edit', ['actividad' => $Actividad->id]) }}" class="btn btn-primary btn-sm float-end">
                 Editar
             </a>
             <div class="clearfix"></div>
@@ -25,8 +25,8 @@
         </div>
     </div>
     <p>
-        <span class="label label-primary">Professors: {{ $sProfesores->count() }}</span>
-        <span class="label label-info" style="margin-left: 8px;">Grups: {{ $sGrupos->count() }}</span>
+        <span class="badge bg-primary">Professors: {{ $sProfesores->count() }}</span>
+        <span class="badge bg-info" style="margin-left: 8px;">Grups: {{ $sGrupos->count() }}</span>
     </p>
     <div class="clearfix"></div>
 </div>

@@ -47,7 +47,7 @@
 
                 {{-- Notificacions --}}
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                    <a href="#" class="dropdown-toggle info-number" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
                         @if ($totalNotifications > 0)
                             <span class="badge bg-green">{{ $totalNotifications }}</span>

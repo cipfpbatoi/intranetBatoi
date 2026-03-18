@@ -43,7 +43,7 @@
             </div>
             @if(($elemento->relacionadas ?? collect())->isNotEmpty())
                 <ul class="list-unstyled" style="margin-top:.5rem">
-                    <li><span class="label label-default">Altres cicles (mateix centre/departament)</span></li>
+                    <li><span class="badge bg-secondary">Altres cicles (mateix centre/departament)</span></li>
 
                     @foreach ($elemento->relacionadas as $rel)
                         <li class="small" style="margin-top:.25rem">
@@ -53,13 +53,13 @@
 
                             @if(($rel->contactos ?? collect())->isNotEmpty())
                                 @if ($rel->estado == 3)
-                                    <span class="label label-danger">Contactada</span>
+                                    <span class="badge bg-danger">Contactada</span>
                                 @endif
                                 @if ($rel->estado == 2)
-                                    <span class="label label-success">Contactada</span>
+                                    <span class="badge bg-success">Contactada</span>
                                 @endif
                                 @if ($rel->estado == 1)
-                                    <span class="label label-warning">Contactada</span>
+                                    <span class="badge bg-warning text-dark">Contactada</span>
                                 @endif
                                 <div class="mt-1">
                                     @foreach ($rel->contactos as $act)

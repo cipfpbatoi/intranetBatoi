@@ -8,12 +8,12 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li class="">
-                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                    <a href="javascript:;" class="user-profile dropdown-toggle" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         {{ authUser()->nombre}} {{authUser()->apellido1}}
                         <span class=" fa fa-angle-down"></span>
                     </a>
-                    <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-usermenu">
                         @include('layouts.partials.topmenu')
                     </ul>
                 </li>
@@ -51,7 +51,7 @@
                     </li>
                 @endcan
                 <li role="presentation" class="dropdown">
-                    <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
+                    <a href="javascript:;" class="dropdown-toggle info-number" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
                         <span class="badge bg-green">@if ($total  = count(authUser()->unreadNotifications))

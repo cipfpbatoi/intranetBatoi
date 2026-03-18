@@ -2,9 +2,9 @@
     <h3>{{ $fechaEsp }}</h3>
 
     <div class="mb-3" style="display:flex;gap:8px;align-items:center;">
-        <button type="button" class="btn btn-default" wire:click="diaAnterior">Dia anterior</button>
+        <button type="button" class="btn btn-secondary" wire:click="diaAnterior">Dia anterior</button>
         <input type="date" class="form-control" style="max-width:180px;" wire:model.live="fecha">
-        <button type="button" class="btn btn-default" wire:click="diaSeguent">Dia següent</button>
+        <button type="button" class="btn btn-secondary" wire:click="diaSeguent">Dia següent</button>
     </div>
 
     <table id="tabla-datos" border="1">

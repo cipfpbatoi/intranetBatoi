@@ -1,10 +1,10 @@
 @include('empresa.partials.instructores')
 <ul class="nav navbar-right panel_toolbox">
     <li>
-        <a class="addCol panel-heading collapsed"
+        <a class="addCol"
            href="{{$centro->id}}"
-           data-toggle="modal"
-           data-target="#AddColaboration"
+           data-bs-toggle="modal"
+           data-bs-target="#AddColaboration"
         >
             <em class="fa fa-plus-square-o"> Nova Col·laboració</em>
         </a>
@@ -12,8 +12,8 @@
 </ul>
 <h2><em class="fa fa-graduation-cap"></em> Col·laboracions</h2>
 @foreach ($centro->Colaboraciones as $colaboracion)
-    <div class="accordion"  id="accordion{{$colaboracion->id}}" role="tablist" aria-multiselectable="true">
-        <div class="panel">
+    <div class="accordion" id="accordion{{$colaboracion->id}}">
+        <div class="card">
             <ul class="nav navbar-right panel_toolbox">
                 @if ($misColaboracionesIds->contains($colaboracion->id))
                     <li>
@@ -37,33 +37,29 @@
                     </li>
                 @endif
             </ul>
-            <a class="panel-heading collapsed"
-               role="tab"
+            <a class="d-block collapsed"
                id="headingOne{{$colaboracion->id}}"
-               data-toggle="collapse"
-               data-parent="#accordion{{$colaboracion->id}}"
+               data-bs-toggle="collapse"
+               data-bs-parent="#accordion{{$colaboracion->id}}"
                href="#collapseOne{{$colaboracion->id}}"
-               aria-expanded="true"
-               aria-controls="collapseOne"
-            >
+               aria-expanded="false"
+               aria-controls="collapseOne{{$colaboracion->id}}">
                 @if ($colaboracion->idCiclo == $cicloTutoria)
-                    <h4 class="panel-title">
+                    <h4 class="card-title">
                         {{ $colaboracion->ciclo->ciclo }}
                         <em class="fa fa-group user-profile-icon"></em> {{$colaboracion->puestos}}
                     </h4>
                 @else
-                    <h4 style="color:darkgrey" class="panel-title" >
+                    <h4 style="color:darkgrey" class="card-title">
                         {{ strtolower($colaboracion->ciclo->ciclo) }}
                         <em class="fa fa-group user-profile-icon"></em> {{$colaboracion->puestos}}
                     </h4>
                 @endif
             </a>
             <div id="collapseOne{{$colaboracion->id}}"
-                 class="panel-collapse collapse"
-                 role="tabpanel"
-                 aria-labelledby="headingOne"
-            >
-                <div class="panel-body">
+                 class="collapse"
+                 aria-labelledby="headingOne{{$colaboracion->id}}">
+                <div class="card-body">
                     <em class="fa fa-user user-profile-icon"></em> {!! $colaboracion->contacto !!}
                     <em class="fa fa-phone user-profile-icon"></em> {{$colaboracion->telefono}}
                     <em class="fa fa-envelope user-profile-icon"></em> {{$colaboracion->email}}

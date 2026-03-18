@@ -6,6 +6,22 @@
         <title>Pantalla Login</title>
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="stylesheet" href="{{ asset('css/socials.css') }}">
+        <style>
+            .login-access {
+                width: 100%;
+                max-width: 320px;
+                margin: 0 auto 14px;
+            }
+
+            .login-access .btn {
+                display: block;
+                width: 100%;
+                min-height: 46px;
+                padding: 10px 16px;
+                font-size: 16px;
+                font-weight: 600;
+            }
+        </style>
     </head>
     <body class="login">
         <a class="hiddenanchor" id="signup"></a>
@@ -16,16 +32,16 @@
                 <section class="login_content">
                     <form>
                     <h1>Panel de entrada</h1>
-                    <div class="panel-body">
-                        <a href="{{url('/profesor/login')}}" class="btn btn-lg waves-effect waves-light btn-block facebook">Profesor</a>
+                    <div class="panel-body login-access">
+                        <a href="{{url('/profesor/login')}}" class="btn btn-lg waves-effect waves-light w-100 facebook">Profesor</a>
                     </div>
-                    <div class="panel-body">
-                        <a href="{{url('/alumno/login')}}" class="btn btn-lg waves-effect waves-light btn-block twitter">Alumno</a>
+                    <div class="panel-body login-access">
+                        <a href="{{url('/alumno/login')}}" class="btn btn-lg waves-effect waves-light w-100 twitter">Alumno</a>
                     </div>
                     @if (config('variables.authGoogle'))
-                        <div class="panel-body">
+                        <div class="panel-body login-access">
                             <p class="or-social">Or Use Social Login</p>
-                            <a href="{{url('social/google')}}" class="btn btn-lg waves-effect waves-light btn-block google">Google+</a>
+                            <a href="{{url('social/google')}}" class="btn btn-lg waves-effect waves-light w-100 google">Google+</a>
                         </div>
                     @endif
                     <div class="clearfix"></div>
@@ -43,4 +59,3 @@
         </div>
     </body>
 </html>
-

@@ -126,7 +126,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" data-toggle="modal" data-target="#AddCenter">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#AddCenter">
                             <em class="fa fa-plus-square-o"></em>
                         </a>
                     </li>
