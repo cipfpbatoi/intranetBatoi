@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.$modelo.show")}}</title>
+<title>{{__("models.$modelo.show")}}</title>
 @endsection
 @section('content')
 <!-- page content -->
@@ -61,7 +61,7 @@
 <!-- /page content -->
 @endsection
 @section('titulo')
-{{trans("models.$modelo.show")}} {{$elemento->getKey()}}
+{{__("models.$modelo.show")}} {{$elemento->getKey()}}
 @endsection
 @section('scripts')
 

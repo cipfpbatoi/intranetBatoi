@@ -135,8 +135,8 @@ class Comision extends Model
     public function getsituacionAttribute()
     {
         return isblankTrans('models.Comision.' . $this->estado)
-            ? trans('messages.situations.' . $this->estado)
-            : trans('models.Comision.' . $this->estado);
+            ? __('messages.situations.' . $this->estado)
+            : __('models.Comision.' . $this->estado);
     }
     public function getTotalAttribute()
     {

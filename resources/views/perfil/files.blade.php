@@ -1,4 +1,4 @@
-<x-layouts.app :title="trans('models.Profesor.files')">
+<x-layouts.app :title="__('models.Profesor.files')">
     <x-form.profesor-files :profesor="$profesor" />
 
     @push('scripts')

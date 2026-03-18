@@ -112,8 +112,8 @@ class Falta extends Model
     public function getSituacionAttribute()
     {
         return isblankTrans('models.Falta.' . $this->estado) ?
-            trans('messages.situations.' . $this->estado) :
-            trans('models.Falta.' . $this->estado);
+            __('messages.situations.' . $this->estado) :
+            __('models.Falta.' . $this->estado);
     }
     public function getMotivoAttribute()
     {
