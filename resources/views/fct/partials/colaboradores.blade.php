@@ -36,7 +36,11 @@
                            value="@lang('messages.generic.modificar') @lang('validation.attributes.horas')"/>
                 </div>
             @endif
-             <button type="button" class="btn btn-link" data-toggle="modal" data-target="#AddInstructor">
+             <button
+                 type="button"
+                 class="btn btn-link"
+                 onclick="if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') { window.intranetUiHelpers.showModal('AddInstructor'); } else if (window.bootstrap && window.bootstrap.Modal) { window.bootstrap.Modal.getOrCreateInstance(document.getElementById('AddInstructor')).show(); } return false;"
+             >
                  <em class="fa fa-plus"></em>@lang("messages.generic.anadir") @lang("models.modelos.Colaborador")
              </button>
         @endif
@@ -44,6 +48,4 @@
 
 @include('fct.partials.modalColaboradores')
 <x-ui.errors />
-
-
 

@@ -1,14 +1,14 @@
 @php $agrupados = $panel->getElementos($pestana)->groupBy('desde'); @endphp
 @foreach ($agrupados as $grupo)
     @php $nombre = $pestana->getNombre().$grupo->first()->desde; @endphp
-    <div class="panel">
-        <a class="panel-heading" role="tab" id="heading{{$nombre}}" data-toggle="collapse" data-parent="#accordion"
+    <div class="card">
+        <a class="d-block" id="heading{{$nombre}}" data-bs-toggle="collapse" data-bs-parent="#accordion"
            href="#collapse{{$nombre}}" aria-expanded="false" aria-controls="collapse{{$nombre}}">
-            <h4 class="panel-title"><i class="fa fa-bars"></i> {{$grupo->first()->desde}}</h4>
+            <h4 class="card-title"><i class="fa fa-bars"></i> {{$grupo->first()->desde}}</h4>
         </a>
-        <div id="collapse{{$nombre}}" class="panel-collapse collapse" role="tabpanel"
+        <div id="collapse{{$nombre}}" class="collapse"
              aria-labelledby="heading{{$nombre}}">
-            <div class="panel-body">
+            <div class="card-body">
                 <div class='form_box'>
                     @foreach ($grupo as $elemento)
                         <div class="col-md-3 col-sm-3 col-xs-11 profile_details">

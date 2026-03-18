@@ -30,13 +30,13 @@
 
 
 @endphp
-<div id="anexo" class="modal fade" role="dialog">
+<div id="anexo" class="modal fade" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">{{ trans('models.Resultado.llenar')}}</h4>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title">{{ trans('models.Resultado.llenar')}}</h5>
             </div>
             <div class="modal-body">
                 <form id='formAnexo' class="form-horizontal" action="/dual/anexeVI" method="POST">
@@ -126,7 +126,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" form="formAviso" class="btn btn-primary">@lang("messages.buttons.init")</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">@lang("messages.buttons.cancel")</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang("messages.buttons.cancel")</button>
             </div>
         </div>
     </div>

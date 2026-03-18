@@ -27,6 +27,10 @@ Criteris d'acceptació:
 - Informe de diferències BS4 -> BS5 aplicades al projecte.
 - Llista prioritzada de pantalles i components amb més risc visual o funcional.
 
+Resultat actual:
+- Auditoria documentada en `docs/sprints/sprint-4-01-bs4-bs5-auditoria.md` a data `2026-03-18`.
+- S4-01 queda preparada per donar pas a `S4-02`.
+
 ### S4-02 Migració de components comuns
 Prioritat: Alta
 
@@ -38,6 +42,12 @@ Tasques:
 Criteris d'acceptació:
 - Components comuns funcionals amb Bootstrap 5 en pantalles prioritàries.
 - No hi ha regressions visuals greus en els patrons reutilitzats.
+
+Resultat actual:
+- Infraestructura Bootstrap/DataTables migrada a BS5 i compilant correctament a data `2026-03-18`.
+- Components compartits, tabs, modals, dropdowns i formularis comuns adaptats o coberts per capa de compatibilitat temporal.
+- Fluxos crítics validats funcionalment en `FCT`, `Empresa`, Direcció i Bústia.
+- Queden fora d'este tall els warnings de Sass legacy (`@import`) i l'optimització de chunking de `ppIntranet`, que no bloquegen l'ús.
 
 ### S4-03 Revisió de layouts i tema
 Prioritat: Mitjana-Alta
@@ -62,6 +72,12 @@ Tasques:
 Criteris d'acceptació:
 - Checklist QA visual desktop/mòbil executada.
 - Fluxos crítics sense regressions visuals greus.
+
+Resultat actual:
+- Checklist preparada en `docs/sprints/sprint-4-qa-checklist.md` a data `2026-03-18`.
+- Checklist ja repassada a nivell tècnic amb incidències principals corregides.
+- Execució manual final desktop/mòbil completada sobre els fluxos prioritaris.
+- Sense incidències visuals greus obertes dins de l'abast del sprint.
 
 ## Tall inicial recomanat
 
@@ -120,6 +136,18 @@ Checklist de fase 1:
 - Fluxos crítics sense regressions visuals greus.
 - DataTables i components UI compatibles amb Bootstrap 5 en pantalles prioritàries.
 - Documentació d'estils i patrons actualitzada.
+
+## Estat actual del sprint
+- `S4-01`: completada.
+- `S4-02`: rematada a nivell funcional per al front prioritzat.
+- `S4-03`: completada a nivell de revisió visual dels layouts i ajustos del tema en l'abast prioritzat.
+- `S4-04`: completada amb revisió tècnica i validació manual final dels fluxos prioritaris.
+
+## Proposta de tancament
+- El sprint queda preparat per a tancament.
+- Document de tancament: `docs/sprints/sprint-4-closeout.md`.
+- No queden incidències visuals greus obertes dins de l'abast del sprint.
+- Els residuals restants passen a deute tècnic conegut no bloquejant.
 
 ## Risc/impacte
 Risc alt (visual), impacte alt en consistència i vida útil de la UI.

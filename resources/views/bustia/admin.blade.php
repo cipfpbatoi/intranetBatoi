@@ -16,12 +16,35 @@ Administrador Busties
 @section('scripts')
     <livewire:scripts />
     <script>
-    // Bootstrap 4 + Livewire v3
     document.addEventListener('livewire:init', function () {
-        Livewire.on('open-contact', () => $('#contactModal').modal('show'));
-        Livewire.on('close-contact', () => $('#contactModal').modal('hide'));
-        Livewire.on('open-message', () => $('#messageModal').modal('show'));
-        Livewire.on('close-message', () => $('#messageModal').modal('hide'));
+        const showModal = (id) => {
+            if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
+                window.intranetUiHelpers.showModal(id);
+                return;
+            }
+
+            const modal = document.getElementById(id);
+            if (modal && window.bootstrap && window.bootstrap.Modal) {
+                window.bootstrap.Modal.getOrCreateInstance(modal).show();
+            }
+        };
+
+        const hideModal = (id) => {
+            if (window.intranetUiHelpers && typeof window.intranetUiHelpers.hideModal === 'function') {
+                window.intranetUiHelpers.hideModal(id);
+                return;
+            }
+
+            const modal = document.getElementById(id);
+            if (modal && window.bootstrap && window.bootstrap.Modal) {
+                window.bootstrap.Modal.getOrCreateInstance(modal).hide();
+            }
+        };
+
+        Livewire.on('open-contact', () => showModal('contactModal'));
+        Livewire.on('close-contact', () => hideModal('contactModal'));
+        Livewire.on('open-message', () => showModal('messageModal'));
+        Livewire.on('close-message', () => hideModal('messageModal'));
     });
     </script>
 @endsection

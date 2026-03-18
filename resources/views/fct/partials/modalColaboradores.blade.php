@@ -2,17 +2,13 @@
 <div class="modal fade"
      id="AddInstructor"
      tabindex="-1"
-     role="dialog"
      aria-labelledby="AddInstructorTitle"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="AddInstructorTitle">@lang("models.modelos.Colaborador")
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </h4>
+                <h5 class="modal-title" id="AddInstructorTitle">@lang("models.modelos.Colaborador")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" class="agua" action="/fct/{{$fct->id}}/instructorCreate">
                 <div class="modal-body">
@@ -33,9 +29,9 @@
                     />
                  </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <input id="submit"
-                           class="boton"
+                           class="btn btn-primary"
                            type="submit"
                            value="@lang("messages.generic.anadir") @lang("models.modelos.Colaborador") "
                     >

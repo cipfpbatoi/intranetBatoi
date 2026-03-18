@@ -2,7 +2,7 @@
     @foreach ($panel->getElementos($pestana) as $elemento)
     @php $enlace = $elemento->enlace?$elemento->enlace:"/reunion/".$elemento->id."/pdf" @endphp
     <li class="media event col-md-3 col-lg-3" style="border-bottom: 2px">
-        <a href="{{$enlace}}" class="pull-left border-aero profile_thumb">
+        <a href="{{$enlace}}" class="float-start border-aero profile_thumb">
             <em class="fa fa-paperclip aero"></em>
         </a>
         <div class="media-body">
@@ -21,4 +21,3 @@
     </li>
     @endforeach
 </ul>
-

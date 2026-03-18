@@ -52,7 +52,7 @@
         @vite('resources/assets/js/ppIntranet.js')
     @endunless
 @else
-    <script src="{{ asset('js/app.js') }}"></script>
+    @vite('resources/assets/js/legacy-app.js')
     <script src="{{ asset('js/components/app.js') }}"></script>
     @unless(View::hasSection('skip_legacy_js'))
         @if ($resolvedJsMode === 'legacy')

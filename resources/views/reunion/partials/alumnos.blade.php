@@ -1,9 +1,9 @@
-<div class="panel">
-    <a class="panel-heading collapsed" role="tab" id="headingFour" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-        <h4 class="panel-title"><i class="fa fa-bars"></i> @lang("models.Reunion.alumnos")</h4>
+<div class="card">
+    <a class="d-block collapsed" id="headingFour" data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+        <h4 class="card-title"><i class="fa fa-bars"></i> @lang("models.Reunion.alumnos")</h4>
     </a>
-    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-        <div id="{{$formulario->getElemento()->id}}" class="panel-body">
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
+        <div id="{{$formulario->getElemento()->id}}" class="card-body">
             <table class="table table-striped table-condensed">
                 <tr><th>NIA</th> <th>@lang("validation.attributes.name")</th><th>@lang("validation.attributes.valoraciones")</th><th>@lang("validation.attributes.operaciones")</th></tr>
                 @foreach ($sAlumnos as $alumno)

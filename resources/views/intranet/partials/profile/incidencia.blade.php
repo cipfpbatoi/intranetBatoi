@@ -77,14 +77,12 @@
         }
     </style>
 
-    <div class="modal fade" id="incidenciaImageModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="incidenciaImageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Tancar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Imatge incidència</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tancar"></button>
+                    <h5 class="modal-title">Imatge incidència</h5>
                 </div>
                 <div class="modal-body text-center">
                     <img id="incidenciaImageModalImg" src="" alt="Imatge incidència ampliada" style="max-width: 100%; height: auto;">
@@ -103,8 +101,10 @@
                     if (img) {
                         img.src = src;
                     }
-                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.modal) {
-                        window.jQuery('#incidenciaImageModal').modal('show');
+                    if (window.bootstrap && window.bootstrap.Modal) {
+                        window.bootstrap.Modal.getOrCreateInstance(document.getElementById('incidenciaImageModal')).show();
+                    } else if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
+                        window.intranetUiHelpers.showModal('incidenciaImageModal');
                     } else {
                         window.open(src, '_blank', 'noopener');
                     }

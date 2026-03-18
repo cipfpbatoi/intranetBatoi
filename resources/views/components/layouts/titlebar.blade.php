@@ -11,7 +11,7 @@
 
         {{-- Idiomes --}}
         <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                 <i class="fa fa-wrench"></i>
             </a>
             <ul class="dropdown-menu" role="menu">

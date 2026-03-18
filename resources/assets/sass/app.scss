@@ -13,3 +13,111 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
+
+/* Compatibilitat visual temporal per a modals BS5 sobre CSS legacy BS3. */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header .btn-close {
+  margin-left: auto;
+  order: 2;
+}
+
+.modal-header .modal-title,
+.modal-header h4,
+.modal-header h5 {
+  order: 1;
+  margin-right: 0.75rem;
+}
+
+.btn-close {
+  box-sizing: content-box;
+  width: 1em;
+  height: 1em;
+  padding: 0.25em;
+  color: #000;
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  opacity: 0.5;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.btn-close::before {
+  content: "\00d7";
+  display: block;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  color: #000;
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+/* Ajust visual de la paginació de DataTables sobre tema legacy. */
+div.dt-container div.dt-paging ul.pagination {
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item {
+  margin: 0;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-link {
+  border-radius: 0.65rem;
+  border: 1px solid #d5dbe7;
+  background: #fff;
+  color: #52627a;
+  font-weight: 600;
+  padding: 0.55rem 0.9rem;
+  min-width: 2.75rem;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-link:hover {
+  background: #f5f9ff;
+  border-color: #9bbcf3;
+  color: #274c77;
+  box-shadow: 0 4px 12px rgba(39, 76, 119, 0.12);
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item.active .page-link {
+  background: #2d6cdf;
+  border-color: #2d6cdf;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(45, 108, 223, 0.22);
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item.disabled .page-link {
+  background: #f3f4f7;
+  border-color: #dde2eb;
+  color: #9aa5b5;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* Ajustos visuals dels formularis de login legacy. */
+.login .login_content .login-actions {
+  width: min(100%, 22rem);
+  margin: 1rem auto 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.login .login_content .login-actions .btn {
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

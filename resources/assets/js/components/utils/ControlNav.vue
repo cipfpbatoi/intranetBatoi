@@ -1,7 +1,7 @@
 <template>
     <div>
-        <a href="#" @click.prevent="clicked(true)" class="pull-left prev-day">{{ titulo }} anterior</a>
-        <a href="#" @click.prevent="clicked(false)" class="pull-right next-day">{{ titulo }} siguiente</a>
+        <a href="#" @click.prevent="clicked(true)" class="float-start prev-day">{{ titulo }} anterior</a>
+        <a href="#" @click.prevent="clicked(false)" class="float-end next-day">{{ titulo }} siguiente</a>
     </div>  
 </template>
 

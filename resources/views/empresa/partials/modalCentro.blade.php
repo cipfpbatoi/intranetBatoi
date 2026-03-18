@@ -6,7 +6,7 @@
         message='{{ trans("messages.buttons.confirmar")}}'
 >
     <input type="hidden" id="idCentro" value="" />
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="nombre">
             @lang("validation.attributes.nombre")
         </label>
@@ -21,7 +21,7 @@
             />
         </div>
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="direccion">
             @lang("validation.attributes.direccion"):</label>
         <div class="col-md-8 col-sm-8 col-xs-12">
@@ -35,7 +35,7 @@
             />
         </div>
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="localidad">
             @lang("validation.attributes.localidad"):
         </label>
@@ -51,7 +51,7 @@
         </div>
         <input type='hidden' name='idEmpresa' value="{!!$elemento->id!!}">
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="horarios">Horaris:</label>
         <div class="col-md-8 col-sm-8 col-xs-12">
             <input type='text'
@@ -62,7 +62,7 @@
                    class='form-control' />
         </div>
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="codiPostal">Codi Postal:</label>
         <div class="col-md-8 col-sm-8 col-xs-12">
             <input type='text'
@@ -73,7 +73,7 @@
                    class='form-control' />
         </div>
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="idioma">Idioma:</label>
         <div class="col-md-8 col-sm-8 col-xs-12">
             <select name='idioma' class='form-control' id="idiomaCentro" >
@@ -85,7 +85,7 @@
             </select>
         </div>
     </div>
-    <div class="form-group item has-feedback row">
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="observaciones">
             @lang("validation.attributes.observaciones"):</label>
         <div class="col-md-8 col-sm-8 col-xs-12">

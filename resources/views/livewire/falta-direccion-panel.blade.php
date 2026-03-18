@@ -48,14 +48,14 @@
     </div>
 
     @if ($rebutjarId !== null)
-        <div class="panel panel-default">
-            <div class="panel-heading"><strong>Rebutjar falta #{{ $rebutjarId }}</strong></div>
-            <div class="panel-body">
+        <div class="card border-secondary" style="margin-top: 20px;">
+            <div class="card-header"><strong>Rebutjar falta #{{ $rebutjarId }}</strong></div>
+            <div class="card-body">
                 <label for="motiuRebutjar">Motiu</label>
                 <textarea id="motiuRebutjar" class="form-control" wire:model.defer="motiuRebutjar"></textarea>
                 <div class="mt-2" style="margin-top: 10px;">
                     <button class="btn btn-danger" type="button" wire:click="confirmarRebutjar">Confirmar rebuig</button>
-                    <button class="btn btn-default" type="button" wire:click="cancelarRebutjar">Cancel·lar</button>
+                    <button class="btn btn-secondary" type="button" wire:click="cancelarRebutjar">Cancel·lar</button>
                 </div>
             </div>
         </div>
@@ -143,17 +143,15 @@
         </tbody>
     </table>
 
-    <div id="faltaFormModal" class="modal fade" role="dialog" wire:ignore.self>
+    <div id="faltaFormModal" class="modal fade" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form wire:submit.prevent="guardar">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" wire:click="cancelForm">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                        <h4 class="modal-title">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="cancelForm"></button>
+                        <h5 class="modal-title">
                             {{ $isEditing ? "Editar absència del professorat" : "Comunicació d'Absència Professorat" }}
-                        </h4>
+                        </h5>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -236,7 +234,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" wire:click="cancelForm">Cancel·lar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cancelForm">Cancel·lar</button>
                         <button type="submit" class="btn btn-primary">
                             {{ $isEditing ? 'Guardar canvis' : 'Guardar' }}
                         </button>
@@ -259,11 +257,6 @@
                     return;
                 }
 
-                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
-                    window.jQuery('#' + id).modal('show');
-                    return;
-                }
-
                 if (window.bootstrap && window.bootstrap.Modal) {
                     var modal = document.getElementById(id);
                     if (modal) {
@@ -275,11 +268,6 @@
             function hideModalById(id) {
                 if (window.intranetUiHelpers && typeof window.intranetUiHelpers.hideModal === 'function') {
                     window.intranetUiHelpers.hideModal(id);
-                    return;
-                }
-
-                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
-                    window.jQuery('#' + id).modal('hide');
                     return;
                 }
 

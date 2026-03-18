@@ -14,8 +14,9 @@
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
                             <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
                                 @foreach ($panel->getPestanas() as $pestana)
-                                    <li role="presentation" class="{{$pestana->getActiva()}}">
-                                        <a href="#tab_{{$pestana->getNombre()}}" id="{{$pestana->getNombre()}}-tabb" role="tab" data-toggle="tab" aria-controls="{{$pestana->getNombre()}}" aria-expanded="true">
+                                    @php($isActive = trim((string) $pestana->getActiva()) !== '')
+                                    <li class="nav-item" role="presentation">
+                                        <a href="#tab_{{$pestana->getNombre()}}" class="nav-link {{ $isActive ? 'active' : '' }}" id="{{$pestana->getNombre()}}-tabb" role="tab" data-bs-toggle="tab" aria-controls="{{$pestana->getNombre()}}" aria-selected="{{ $isActive ? 'true' : 'false' }}">
                                             @if (strpos(trans("messages.buttons.".$pestana->getNombre()),'essages')==1)
                                                 {{$pestana->getNombre()}}
                                             @else
@@ -27,7 +28,8 @@
                             </ul>
                             <div id="myTabContent1" class="tab-content">
                                 @foreach ($panel->getPestanas() as $pestana)
-                                    <div role="tabpanel" class="tab-pane fade {{$pestana->getActiva()}} in" id="tab_{{$pestana->getNombre()}}" aria-labelledby="{{$pestana->getNombre()}}-tab">
+                                    @php($isActive = trim((string) $pestana->getActiva()) !== '')
+                                    <div role="tabpanel" class="tab-pane fade {{ $isActive ? 'show active' : '' }}" id="tab_{{$pestana->getNombre()}}" aria-labelledby="{{$pestana->getNombre()}}-tab">
                                         @yield($pestana->getNombre())
                                     </div>
                                 @endforeach

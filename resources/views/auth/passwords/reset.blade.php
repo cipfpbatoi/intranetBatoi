@@ -28,33 +28,33 @@
 
                                 <input type="hidden" name="token" value="{{ $token }}">
 
-                                <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
-                                    <input type="email" class="form-control" name="email"  placeholder="Email">
+                                <div class="form-group">
+                                    <input type="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" name="email"  placeholder="Email">
                                     <span class="fa fa-envelope form-control-feedback"></span>
                                     @if ($errors->has('email'))
-                                    <span class="help-block">
+                                    <span class="invalid-feedback d-block">
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                     @endif
                                 </div>
 
-                                <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
-                                    <input type="password" class="form-control" name="password" placeholder="Password">
+                                <div class="form-group">
+                                    <input type="password" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" name="password" placeholder="Password">
                                     <span class="fa fa-lock form-control-feedback"></span>
 
                                     @if ($errors->has('password'))
-                                    <span class="help-block">
+                                    <span class="invalid-feedback d-block">
                                         <strong>{{ $errors->first('password') }}</strong>
                                     </span>
                                     @endif
                                 </div>
 
-                                <div class="form-group has-feedback{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                                    <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm password">
+                                <div class="form-group">
+                                    <input type="password" name="password_confirmation" class="form-control {{ $errors->has('password_confirmation') ? 'is-invalid' : '' }}" placeholder="Confirm password">
                                     <span class="fa fa-lock form-control-feedback"></span>
 
                                     @if ($errors->has('password_confirmation'))
-                                    <span class="help-block">
+                                    <span class="invalid-feedback d-block">
                                         <strong>{{ $errors->first('password_confirmation') }}</strong>
                                     </span>
                                     @endif
@@ -62,7 +62,7 @@
 
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <button type="submit" class="btn btn-primary pull-right">
+                                        <button type="submit" class="btn btn-primary float-end">
                                             <i class="fa fa-btn fa-refresh"></i>Canvia Password
                                         </button>
                                     </div>

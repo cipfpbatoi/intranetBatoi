@@ -152,7 +152,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" wire:click="closeMessage" data-dismiss="modal">Tancar</button>
+                <button class="btn btn-secondary" wire:click="closeMessage" data-bs-dismiss="modal">Tancar</button>
             </div>
             </div>
         </div>

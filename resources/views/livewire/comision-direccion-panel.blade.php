@@ -8,8 +8,8 @@
     @endif
 
     @if ($pendingPayments !== [])
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card border-secondary">
+            <div class="card-header">
                 <button
                     type="button"
                     class="btn btn-link"
@@ -18,12 +18,20 @@
                     aria-controls="pendingPaymentsPanel"
                     style="display: block; width: 100%; color: inherit; text-align: left; padding: 0; text-decoration: none;"
                 >
-                    <strong>Pagaments pendents</strong>
-                    <span class="pull-right">{{ count($pendingPayments) }} professor(s)</span>
+                    <span>
+                        <strong>Pagaments pendents</strong>
+                    </span>
+                    <span class="float-end text-end">
+                        <span class="d-block">{{ count($pendingPayments) }} professor(s)</span>
+                        <span class="text-muted">
+                            <i class="fa {{ $paymentsExpanded ? 'fa-chevron-up' : 'fa-chevron-down' }}" aria-hidden="true"></i>
+                            {{ $paymentsExpanded ? 'Ocultar' : 'Desplegar' }}
+                        </span>
+                    </span>
                 </button>
             </div>
-            <div id="pendingPaymentsPanel" @class(['panel-collapse', 'collapse', 'in' => $paymentsExpanded])>
-                <div class="panel-body">
+            <div id="pendingPaymentsPanel" @class(['collapse', 'show' => $paymentsExpanded])>
+                <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -113,14 +121,14 @@
     </div>
 
     @if ($rebutjarId !== null)
-        <div class="panel panel-default">
-            <div class="panel-heading"><strong>Rebutjar comissió #{{ $rebutjarId }}</strong></div>
-            <div class="panel-body">
+        <div class="card border-secondary" style="margin-top: 20px;">
+            <div class="card-header"><strong>Rebutjar comissió #{{ $rebutjarId }}</strong></div>
+            <div class="card-body">
                 <label for="motiuRebutjar">Motiu</label>
                 <textarea id="motiuRebutjar" class="form-control" wire:model.defer="motiuRebutjar"></textarea>
                 <div class="mt-2" style="margin-top: 10px;">
                     <button class="btn btn-danger" type="button" wire:click="confirmarRebutjar">Confirmar rebuig</button>
-                    <button class="btn btn-default" type="button" wire:click="cancelarRebutjar">Cancel·lar</button>
+                    <button class="btn btn-secondary" type="button" wire:click="cancelarRebutjar">Cancel·lar</button>
                 </div>
             </div>
         </div>
@@ -214,12 +222,12 @@
         </div>
     @endif
 
-    <div id="editComision" class="modal fade" role="dialog" wire:ignore.self>
+    <div id="editComision" class="modal fade" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                    <h4 class="modal-title">Editar comissió</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Editar comissió</h5>
                 </div>
                 <form wire:submit.prevent="guardarEdicio">
                     <div class="modal-body">
@@ -341,7 +349,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" wire:click="cancelarEditar">Cancel·lar</button>
+                        <button type="button" class="btn btn-secondary" wire:click="cancelarEditar">Cancel·lar</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
@@ -349,12 +357,12 @@
         </div>
     </div>
 
-    <div id="showComision" class="modal fade" role="dialog">
+    <div id="showComision" class="modal fade" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                    <h4 class="modal-title">Comissió de servei</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Comissió de servei</h5>
                 </div>
                 <div class="modal-body">
                     @if ($selectedComision !== null)
@@ -389,7 +397,7 @@
                             Veure document
                         </a>
                     @endif
-                    <button class="btn btn-default" data-dismiss="modal" type="button">Tancar</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Tancar</button>
                 </div>
             </div>
         </div>
@@ -408,11 +416,6 @@
                     return;
                 }
 
-                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
-                    window.jQuery('#' + id).modal('show');
-                    return;
-                }
-
                 if (window.bootstrap && window.bootstrap.Modal) {
                     var modal = document.getElementById(id);
                     if (modal) {
@@ -424,11 +427,6 @@
             function hideModalById(id) {
                 if (window.intranetUiHelpers && typeof window.intranetUiHelpers.hideModal === 'function') {
                     window.intranetUiHelpers.hideModal(id);
-                    return;
-                }
-
-                if (window.jQuery && typeof window.jQuery.fn.modal === 'function') {
-                    window.jQuery('#' + id).modal('hide');
                     return;
                 }
 

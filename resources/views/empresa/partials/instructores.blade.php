@@ -1,23 +1,19 @@
 @if ($existeColaboracion)
-    <div class="accordion" id="accordion0{{$centro->id}}" role="tablist" aria-multiselectable="true">
-        <div class="panel">
-            <a class="panel-heading collapsed"
-               role="tab"
+    <div class="accordion" id="accordion0{{$centro->id}}">
+        <div class="card">
+            <a class="d-block collapsed"
                id="headingOne0{{$centro->id}}"
-               data-toggle="collapse"
-               data-parent="#accordion0{{$centro->id}}"
+               data-bs-toggle="collapse"
+               data-bs-parent="#accordion0{{$centro->id}}"
                href="#collapseOne0{{$centro->id}}"
-               aria-expanded="true"
-               aria-controls="collapseOne"
-            >
-                <h4 class="panel-title">- Instructors -</h4>
+               aria-expanded="false"
+               aria-controls="collapseOne0{{$centro->id}}">
+                <h4 class="card-title">- Instructors -</h4>
             </a>
             <div id="collapseOne0{{$centro->id}}"
-                 class="panel-collapse collapse"
-                 role="tabpanel"
-                aria-labelledby="headingOne"
-            >
-                <div class="panel-body">
+                 class="collapse"
+                aria-labelledby="headingOne0{{$centro->id}}">
+                <div class="card-body">
                     <a href="{{ route('instructor.create', ['centro' => $centro->id]) }}">Nou Instructor</a>
                     @foreach ($centro->instructores->sortBy('departamento')->groupBy('departamento') as $departament)
                         @if (!empty($departament->first()->departamento))

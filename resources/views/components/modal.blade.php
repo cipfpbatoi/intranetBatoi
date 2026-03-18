@@ -1,11 +1,11 @@
-<div id="{{$name}}" class="modal fade" role="dialog">
+<div id="{{$name}}" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog {{$clase}}">
         <div class="modal-content">
             <div class="modal-header">
                 @if ($dismiss)
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 @endif
-                <h4 class="modal-title">{{$title}}</h4>
+                <h5 class="modal-title">{{$title}}</h5>
             </div>
             <div class="modal-body">
                 <form id="form{{ucwords($name)}}" action="{{$action}}" enctype="multipart/form-data" method="POST">
@@ -22,7 +22,7 @@
                         {{$message}}
                     </button>
                 @endif
-                <button type="button" class="btn btn-default" data-dismiss="modal">{{$cancel}}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{$cancel}}</button>
             </div>
         </div>
     </div>

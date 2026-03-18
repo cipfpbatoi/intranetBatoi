@@ -38,7 +38,7 @@
         </div>
     <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>
+            <a class="btn dropdown-toggle" data-bs-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>
                 &nbsp<b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
+            <a class="btn dropdown-toggle" data-bs-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
             <div class="dropdown-menu input-append">
                 <input class="span2" placeholder="URL" type="text" data-edit="createLink" />
                 <button class="btn" type="button">Add</button>

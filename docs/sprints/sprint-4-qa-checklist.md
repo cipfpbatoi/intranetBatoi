@@ -1,71 +1,116 @@
-# Sprint 4 - QA Regressió Manual
+# Sprint 4 - QA Visual BS5
 
-Data: 2026-03-12  
-Branca objectiu: `sprint-4-js-migration`
+Data d'actualització: 2026-03-18  
+Branca objectiu: `sprint-4-js-migration`  
+Issue relacionada: #78
 
 ## Objectiu
-Validar que la retirada addicional de jQuery en Sprint 4 no introdueix regressions en els mòduls migrats.
+Executar una validació manual curta però útil dels fluxos prioritaris després de la migració Bootstrap 4 -> Bootstrap 5.
+
+## Abast
+- Components compartits: modals, tabs, dropdowns, alerts i tooltips.
+- Fluxos crítics revisats en `S4-02`.
+- Validació visual bàsica en desktop i mòbil.
 
 ## Preparació
-1. Iniciar app i assets:
-   - `php artisan serve` (o docker equivalent)
+1. Arrancar aplicació i assets:
+   - `php artisan serve` o equivalent
    - `npm run dev`
-2. Obrir consola del navegador per revisar errors JS.
-3. Entrar amb usuari amb permisos de gestió (professor/direcció).
+2. Fer un recarregat fort del navegador abans de començar.
+3. Obrir consola del navegador.
+4. Fer les proves, com a mínim, en:
+   - desktop ample (`>= 1280px`)
+   - mòbil estret (`~390px`)
 
 ## Criteri de pas
-- Sense errors JS bloquejants en consola durant els fluxos.
-- Crides `fetch` amb resposta 2xx en flux normal.
-- Modals de mòduls migrats sense tancament inesperat.
-- Taules i accions mantenen comportament previ.
+- No hi ha errors JS bloquejants en consola.
+- Els modals s'obrin, es tanquen i no deixen la pantalla bloquejada.
+- Les pestanyes canvien correctament i mostren contingut.
+- Dropdowns i tooltips responen sense comportaments estranys.
+- No hi ha desquadres greus de layout en desktop o mòbil.
 
-## Checklist Sprint 4
-1. Col·laboració (grid i modal)
-   - Acció: afegir, editar i eliminar accions des de la graella.
-   - Esperat: flux complet sense `$.ajax` ni errors de modal.
+## Checklist prioritària
+1. Layout global
+   - Acció: entrar a una pantalla interna amb menú lateral i topnav.
+   - Esperat: sidebar, topnav, dropdown d'usuari i dropdown de notificacions funcionen.
 
-2. Empresa (detall i baixa)
-   - Acció: obrir detall, descarregar document, eliminar amb confirmació.
-   - Esperat: accions correctes i UI estable.
+2. Modals compartits
+   - Acció: obrir i tancar qualsevol modal migrat des de botó principal, `btn-close` i botó de cancel·lar.
+   - Esperat: el modal és visible, la `x` queda alineada, el `backdrop` desapareix en tancar i la pantalla torna a ser interactiva.
 
-3. Materials (Material, Inventari, Lot, ArticleLot)
-   - Acció: alta/edició/baixa i moviments principals.
-   - Esperat: peticions correctes i actualització de taules sense regressions.
+3. Tabs compartides
+   - Acció: canviar entre pestanyes en una pantalla amb tabs.
+   - Esperat: la pestanya activa canvia, el panell mostra contingut i no queda buit.
 
-4. Reserva
-   - Acció: seleccionar recurs, navegar dies, reservar i alliberar rang d'hores.
-   - Esperat: càrrega de franges per dia, validacions correctes i operacions per API sense regressions.
+4. FCT detall
+   - Ruta/objectiu: `resources/views/fct/show.blade.php`
+   - Acció: navegar tabs i obrir modal d'afegir col·laborador.
+   - Esperat: tabs correctes i modal operatiu sense bloqueig de pantalla.
 
-5. FCT grid
-   - Acció: obrir comentari telefònic, editar seguiment, borrar evidència, drag&drop.
-   - Esperat: modal `#dialogo` funciona, comentaris persisteixen, esborrat i còpia operatius.
+5. Empresa detall
+   - Ruta/objectiu: `resources/views/empresa/show.blade.php`
+   - Acció: obrir modals de centres/instructors i revisar collapses o blocs relacionats.
+   - Esperat: accions visibles, modals estables i sense solapaments estranys.
 
-6. Faltes
-   - Acció: rebutjar falta, obrir modal de contrasenya, enviar formulari.
-   - Esperat: accions de modal i submit correctes sense jQuery directe al mòdul.
+6. Direcció
+   - Ruta/objectiu: panells Livewire de falta, comissió, activitat i expedient.
+   - Acció: expandir blocs, canviar tabs si n'hi ha i obrir modals de detall/formulari.
+   - Esperat: targetes/collapses estables, modals correctes i cap regressió visual greu.
 
-7. Mòduls curts de gestió
-   - Acció: provar resolució/accions en Reunion, Solicitud, Incidencia i FCT PDF.
-   - Esperat: modals i submits amb URLs correctes, sense errors JS en consola.
+7. Bústia
+   - Ruta/objectiu: administració de bústies.
+   - Acció: obrir “Contacte” i “Veure” missatge complet.
+   - Esperat: modals correctes, botó de tancar visible i tancament net.
 
-8. Canvi d'horari professorat
-   - Acció: iniciar proposta, moure cel·les via drag&drop, guardar i (direcció) aprovar/aplicar.
-   - Esperat: canvis persistits en API, marcat de moviments coherent i flux d'aprovació estable.
+8. Reunió
+   - Ruta/objectiu: parcials de reunió migrats.
+   - Acció: revisar modals/accordions d'alumnat, professorat, ordres i edició.
+   - Esperat: desplegables i modals correctes.
 
-9. Guardia (registre)
-   - Acció: seleccionar dia/hora, registrar observacions i guardar.
-   - Esperat: habilitació/inhabilitació coherent dels camps i persistència per API.
+9. Perfil intranet
+   - Ruta/objectiu: faltes, comissions, incidències i activitat.
+   - Acció: revisar alerts, modals d'imatge i etiquetes/badges.
+   - Esperat: components visibles, textos llegibles i cap classe legacy mal pintada.
 
-10. Guardia biblioteca (compat)
-   - Acció: mateix flux de registre en pantalla/variant de biblioteca.
-   - Esperat: detecció d'entorn i habilitació de camps coherent amb el comportament anterior.
+10. Autenticació
+   - Ruta/objectiu: login professorat, alumnat, extern i canvi/reset de contrasenya.
+   - Acció: revisar formularis amb i sense errors de validació.
+   - Esperat: botons a ample complet, errors amb estil coherent i sense classes BS3 visibles.
 
-## Residuals coneguts (acceptats temporalment)
-1. `public/js/common/ui-helpers.js`
-   - Fallback jQuery de `.modal(...)` per compatibilitat BS4/BS5.
-2. `public/js/Fct/grid.js`
-   - Inicialització `datetimepicker` via plugin jQuery.
+11. Responsive mòbil
+   - Acció: repetir com a mínim layout global, FCT i Bústia en ample mòbil.
+   - Esperat: no hi ha desbordaments greus, botons clicables i modals utilisables.
+
+## Incidències a registrar si apareixen
+- modal que no tanca o deixa `backdrop`
+- tab que canvia però deixa panell buit
+- dropdown que no desplega
+- `btn-close` desalineat o invisible
+- badges/alerts amb estil antic inconsistent
+- overflow horitzontal greu en mòbil
+
+## Residuals coneguts acceptats temporalment
+1. `resources/assets/sass/app.scss`
+   - warning de Sass per `@import` legacy.
+2. `resources/assets/js/ppIntranet.js`
+   - chunk gran en compilació Vite.
+3. Capa de compatibilitat temporal en `resources/assets/js/bootstrap.js`
+   - mantinguda expressament mentre es tanca la revisió visual final.
 
 ## Estat de tancament
-- [ ] QA manual completada i validada.
-- [ ] 0 regressions crítiques obertes en àmbit Sprint 4.
+- [x] Checklist repassada a nivell tècnic i documental.
+- [x] Incidències principals detectades durant la revisió corregides:
+  - modals bloquejant la pantalla
+  - tabs sense contingut visible
+  - `btn-close` desalineat/invisible
+  - paginació DataTables amb acabat visual pobre
+  - mides inconsistents en botons de login
+  - scripts legacy (`datepicker.js`, `grid.js`) fent fallida prematura
+- [x] Execució manual formal en desktop.
+- [x] Execució manual formal en mòbil.
+- [x] 0 regressions visuals greus obertes en fluxos prioritaris.
+
+## Preparació per a tancament
+- El sprint es pot considerar preparat per a tancament funcional.
+- La passada manual final confirma el comportament correcte dels fluxos prioritaris.
+- No queden bloquejos funcionals oberts dins de l'abast del sprint.
