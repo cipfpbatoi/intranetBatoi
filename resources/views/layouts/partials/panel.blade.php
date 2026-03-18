@@ -17,10 +17,10 @@
                                     @php($isActive = trim((string) $pestana->getActiva()) !== '')
                                     <li class="nav-item" role="presentation">
                                         <a href="#tab_{{$pestana->getNombre()}}" class="nav-link {{ $isActive ? 'active' : '' }}" id="{{$pestana->getNombre()}}-tabb" role="tab" data-bs-toggle="tab" aria-controls="{{$pestana->getNombre()}}" aria-selected="{{ $isActive ? 'true' : 'false' }}">
-                                            @if (strpos(trans("messages.buttons.".$pestana->getNombre()),'essages')==1)
+                                            @if (strpos(__("messages.buttons.".$pestana->getNombre()),'essages')==1)
                                                 {{$pestana->getNombre()}}
                                             @else
-                                                {{trans("messages.buttons.".$pestana->getNombre())}}
+                                                {{__("messages.buttons.".$pestana->getNombre())}}
                                             @endif
                                         </a>
                                     </li>

@@ -58,8 +58,8 @@ class ActivityService
     private function notifyUser(Activity $activity): void
     {
         if ($activity->model_class) {
-            $modelName = trans('models.modelos.' . class_basename($activity->model_class));
-            $message = trans("messages.generic.{$activity->action}");
+            $modelName = __('models.modelos.' . class_basename($activity->model_class));
+            $message = __("messages.generic.{$activity->action}");
             Alert::success("$modelName $message");
         }
     }
