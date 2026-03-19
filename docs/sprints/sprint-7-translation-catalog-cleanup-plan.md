@@ -131,6 +131,17 @@ Estat actual de Tall C:
   - PHP per catàlegs de domini (`models`, `validation`, `messages`)
   - JSON només si apareix una necessitat real per a frases lliures d'UI
 
+Estat actual de Tall D:
+
+- ja està inventariat el risc principal de `messages.php`
+- `messages.menu.*` té consum dinàmic via `MenuService` i `Menu::getDescripcionAttribute()`
+- `messages.buttons.*` té consum dinàmic via `Boton::translateText()`
+- `Panel::setBotonera()` i `Pestana::getLabel()` amplien encara més el consum implícit de `buttons.*`
+- conseqüència:
+  - no es poden podar claus de `menu.*` ni `buttons.*` només amb `rg`
+  - abans de normalitzar naming caldrà creuar `menu.*` amb `menus.nombre`
+  - i `buttons.*` amb les accions efectives de `Boton`, `Panel`, pestanyes i configs de model
+
 ### Tall E
 
 - preparar una neteja de claus mortes i duplicades

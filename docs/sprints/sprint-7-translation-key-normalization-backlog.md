@@ -85,3 +85,101 @@ Separar què es pot normalitzar de forma segura del que encara depén de noms di
 
 - inventariar accions de botons que es resolen dinàmicament contra `messages.buttons.*`
 - identificar quines claus es poden convertir en alias documentats i quines es poden retirar
+
+## Tall D2 executat
+
+### Consumidors dinàmics confirmats
+
+- `messages.menu.*`
+  - no es resol només per ús literal en Blade o PHP
+  - [`MenuService.php`](/Users/igomis/Code/intranetBatoi/app/Application/Menu/MenuService.php) traduïx títols amb `messages.menu.<rawKey>`
+  - [`Menu.php`](/Users/igomis/Code/intranetBatoi/app/Entities/Menu.php) traduïx descripcions amb `messages.menu.` + `ucwords($this->nombre)`
+  - això implica que qualsevol valor persistit en `menus.nombre` pot activar una clau encara que `rg` no la trobe literal
+- `messages.buttons.*`
+  - es resolen dinàmicament des de [`Boton.php`](/Users/igomis/Code/intranetBatoi/app/UI/Botones/Boton.php)
+  - l'`accion` del botó cau per defecte a `messages.buttons.<accio>`
+  - també hi ha accions secundàries que venen de `config/modelos.php`
+
+### Claus confirmades com a vives
+
+- `buttons.mensaje`
+  - continua viva
+  - hi ha rutes actives `profesor.mensaje`, `direccion.mensaje` i `alumno.mensaje`
+  - també hi ha botons dinàmics en [`ProfesorController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/ProfesorController.php) i [`AlumnoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/AlumnoController.php)
+- `buttons.avisar`
+  - continua viva
+  - apareix literalment en modals compartits com [`aviso.blade.php`](/Users/igomis/Code/intranetBatoi/resources/views/intranet/partials/modal/aviso.blade.php) i [`entreFechas.blade.php`](/Users/igomis/Code/intranetBatoi/resources/views/intranet/partials/modal/entreFechas.blade.php)
+- `menu.Empresa`
+  - continua viva
+  - hi ha ús literal en [`empresa/show.blade.php`](/Users/igomis/Code/intranetBatoi/resources/views/empresa/show.blade.php)
+
+### Claus sospitoses però no podables encara
+
+- `menu.Empresas`
+- `menu.Equipodirectivo`
+- `menu.Poll`
+- `menu.Resultados`
+
+Lectura:
+
+- `rg` no troba ús literal clar d'estes claus
+- això no demostra que estiguen mortes, perquè poden vindre de dades persistides en la taula `menus`
+- fins que no es faça inventari de `menus.nombre`, s'han de considerar aliases vius o com a mínim claus bloquejades
+
+### Criteri que queda fixat
+
+- no renombrar ni esborrar `menu.*` només per falta d'ús literal
+- no renombrar ni esborrar `buttons.*` si la clau pot arribar des de `Boton::$accion` o des de config de models
+- qualsevol poda futura de `menu.*` requerix creuament previ amb dades persistides
+
+## Tall D3 executat
+
+### Consumidors dinàmics confirmats
+
+- `messages.buttons.*`
+  - [`Boton.php`](/Users/igomis/Code/intranetBatoi/app/UI/Botones/Boton.php) resol el fallback de text a `messages.buttons.<accio>`
+  - [`Panel.php`](/Users/igomis/Code/intranetBatoi/app/UI/Panels/Panel.php) genera botoneres per defecte a partir de `model.accio`
+  - [`Pestana.php`](/Users/igomis/Code/intranetBatoi/app/UI/Panels/Pestana.php) també prova `messages.buttons.<nom>`
+- conseqüència:
+  - una clau `buttons.*` pot estar viva encara que no aparega literalment en Blade
+  - no es pot deduir mort només amb `rg`
+
+### Famílies d'accions confirmades com a vives
+
+- CRUD i navegació base
+  - `create`, `show`, `edit`, `delete`, `init`, `link`, `pdf`, `active`
+- accions de notificació o workflow
+  - `mensaje`, `avisar`, `notification`, `read`, `resolve`, `refuse`
+- accions específiques de mòdul
+  - `do`, `detalle`, `document`, `email`, `ics`, `carnet`, `barcode`, `coordinador`
+
+### Lectura pràctica
+
+- hi ha centenars d'ús potencials de `messages.buttons.*` repartits entre controllers, pestanyes i modals
+- a més dels botons manuals, hi ha molta generació implícita des de `Panel::setBotonera()`
+- això convertix `buttons.*` en un espai d'alias funcional, no en un catàleg purament literal
+
+### Claus especialment sensibles
+
+- `buttons.show`
+- `buttons.edit`
+- `buttons.delete`
+- `buttons.init`
+- `buttons.link`
+- `buttons.pdf`
+- `buttons.active`
+- `buttons.mensaje`
+- `buttons.avisar`
+
+Raó:
+
+- no són només textos visibles
+- també són convencions de nom d'acció dins del framework intern de panells
+
+### Següent tall segur
+
+- inventariar, si cal, les accions reals usades per `Boton`/`Panel` per separar:
+  - claus base de framework intern
+  - claus literals d'UI
+  - alias històrics que encara depenen de rutes o models
+- fins aleshores, qualsevol normalització de `buttons.*` s'ha de limitar a documentar i no a renombrar
