@@ -1,23 +1,21 @@
 @php
-    $misElementos = $panel->getElementos($pestana)->where('tutor',authUser()->dni);
-    $otros =  $panel->getElementos($pestana)->where('tutor','!=',authUser()->dni);
+    $elementos = $panel->getElementos($pestana)->sortBy('localidad')->values();
+    $localidadActual = null;
 @endphp
-@foreach ($misElementos as $elemento)
-        @php
-            $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')
-            ->id($elemento->id)
-            ->notUpdate()
-            ->orderBy('created_at')
-            ->get();
-        @endphp
-        @include ('intranet.partials.profile.partials.colaboracion')
-@endforeach
-@foreach ($otros as $elemento)
+
+@foreach ($elementos as $elemento)
     @php
-        $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')
-        ->id($elemento->id)
-        ->orderBy('created_at')
-        ->get();
+        $contactos = $elemento->contactos ?? collect();
+        $isMine = $elemento->tutor === authUser()->dni;
+        $localidad = $elemento->localidad;
     @endphp
+    @if ($localidadActual !== $localidad)
+        @php($localidadActual = $localidad)
+        <div class="col-xs-12" style="margin-top: 8px; margin-bottom: 6px;">
+            <div style="padding: 6px 10px; border-left: 4px solid #1abb9c; background: #f7f9fb;">
+                <strong><em class="fa fa-map-marker"></em> {{ $localidadActual }}</strong>
+            </div>
+        </div>
+    @endif
     @include ('intranet.partials.profile.partials.colaboracion')
 @endforeach

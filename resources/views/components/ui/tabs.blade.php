@@ -1,10 +1,17 @@
 @props(['id', 'pestanyes','panel'])
 
+@php
+    $tabs = $panel->getPestanas();
+    $hasActiveTab = collect($tabs)->contains(
+        static fn ($pestana): bool => trim((string) $pestana->getActiva()) !== ''
+    );
+@endphp
+
 <div class="x_content">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="{{ $id }}" class="nav nav-tabs bar_tabs right" role="tablist">
-            @foreach ($panel->getPestanas() as $pestana)
-                @php($isActive = trim((string) $pestana->getActiva()) !== '')
+            @foreach ($tabs as $pestana)
+                @php($isActive = trim((string) $pestana->getActiva()) !== '' || (!$hasActiveTab && $loop->first))
                 <li class="nav-item" role="presentation">
                     <a href="#tab_{{ $pestana->getNombre()  }}"
                        class="nav-link {{ $isActive ? 'active' : '' }}"
@@ -20,8 +27,8 @@
         </ul>
 
         <div id="{{ $id }}Content" class="tab-content">
-            @foreach ($panel->getPestanas() as $pestana)
-                @php($isActive = trim((string) $pestana->getActiva()) !== '')
+            @foreach ($tabs as $pestana)
+                @php($isActive = trim((string) $pestana->getActiva()) !== '' || (!$hasActiveTab && $loop->first))
                 <div role="tabpanel"
                      class="tab-pane fade {{ $isActive ? 'show active' : '' }}"
                      id="tab_{{ $pestana->getNombre() }}"
