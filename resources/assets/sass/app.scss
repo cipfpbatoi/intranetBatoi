@@ -121,3 +121,186 @@ div.dt-container div.dt-paging ul.pagination .page-item.disabled .page-link {
   align-items: center;
   justify-content: center;
 }
+
+/* Recupera l'estil dels tickets tipus x-note en profile.documento sota Vite. */
+.bootdeys .documento-ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.bootdeys .documento-ticket-grid > .documento-ticket {
+  margin-top: 0;
+  width: auto;
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+@media (max-width: 991.98px) {
+  .bootdeys .documento-ticket-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .bootdeys .documento-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bootdeys .content-card {
+  margin-top: 30px;
+}
+
+.bootdeys .card-big-shadow {
+  position: relative;
+  height: 100%;
+}
+
+.bootdeys .card-big-shadow::before {
+  content: "";
+  position: absolute;
+  inset: 18px 16px -14px 16px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0) 70%);
+  filter: blur(10px);
+  z-index: 0;
+}
+
+.bootdeys .card.card-just-text {
+  display: flex;
+  height: 100%;
+  min-height: 100%;
+  position: relative;
+  z-index: 1;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 20px;
+  color: #252422;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.bootdeys .card.card-just-text .content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px 65px;
+  text-align: center;
+}
+
+.bootdeys .card .content {
+  padding: 20px 20px 10px;
+}
+
+.bootdeys .card .category,
+.bootdeys .card .label {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.bootdeys .card .description {
+  font-size: 16px;
+  color: #66615b;
+}
+
+.bootdeys .card .title,
+.bootdeys .card .stats,
+.bootdeys .card .category,
+.bootdeys .card .description,
+.bootdeys .card .content,
+.bootdeys .card .card-footer,
+.bootdeys .card small,
+.bootdeys .card .content a {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bootdeys .card[data-background="color"] .title,
+.bootdeys .card[data-background="color"] .stats,
+.bootdeys .card[data-background="color"] .category,
+.bootdeys .card[data-background="color"] .description,
+.bootdeys .card[data-background="color"] .content,
+.bootdeys .card[data-background="color"] .card-footer,
+.bootdeys .card[data-background="color"] small,
+.bootdeys .card[data-background="color"] .content a {
+  color: #fff;
+}
+
+.bootdeys .card[data-color="blue"] {
+  background: #b8d8d8;
+}
+
+.bootdeys .card[data-color="blue"] .description {
+  color: #506568;
+}
+
+.bootdeys .card[data-color="blue"] .category {
+  color: #7a9e9f;
+}
+
+.bootdeys .card[data-color="green"] {
+  background: #d5e5a3;
+}
+
+.bootdeys .card[data-color="green"] .description {
+  color: #60773d;
+}
+
+.bootdeys .card[data-color="green"] .category {
+  color: #92ac56;
+}
+
+.bootdeys .card[data-color="yellow"] {
+  background: #ffe28c;
+}
+
+.bootdeys .card[data-color="yellow"] .description {
+  color: #b25825;
+}
+
+.bootdeys .card[data-color="yellow"] .category {
+  color: #d88715;
+}
+
+.bootdeys .card[data-color="brown"] {
+  background: #d6c1ab;
+}
+
+.bootdeys .card[data-color="brown"] .description {
+  color: #75442e;
+}
+
+.bootdeys .card[data-color="brown"] .category {
+  color: #a47e65;
+}
+
+.bootdeys .card[data-color="purple"] {
+  background: #baa9ba;
+}
+
+.bootdeys .card[data-color="purple"] .description {
+  color: #3a283d;
+}
+
+.bootdeys .card[data-color="purple"] .category {
+  color: #5a283d;
+}
+
+.bootdeys .card[data-color="orange"] {
+  background: #ff8f5e;
+}
+
+.bootdeys .card[data-color="orange"] .description {
+  color: #772510;
+}
+
+.bootdeys .card[data-color="orange"] .category {
+  color: #e95e37;
+}
+
+.bootdeys .card a:hover .title {
+  transform: translateY(-1px);
+}

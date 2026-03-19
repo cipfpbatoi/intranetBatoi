@@ -2,7 +2,7 @@
     $direccion = esRol(authUser()->rol, config('roles.rol.direccion'))
 @endphp
 <div class="container bootstrap snippets bootdeys">
-        <div class="row">
+        <div class="row documento-ticket-grid">
             @foreach ($panel->getElementos($pestana) as $elemento)
                 @php
                     $enlace = $elemento->enlace??"/documento/".$elemento->id."/show";
@@ -19,4 +19,3 @@
             @endforeach
         </div>
 </div>
-
