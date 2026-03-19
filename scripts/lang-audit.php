@@ -1,0 +1,166 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Auditoria bàsica dels catàlegs de traducció.
+ *
+ * Comprovacions:
+ * - paritat de claus entre `ca` i la resta d'idiomes per fitxer
+ * - patrons de naming potencialment incoherents en `messages.php`
+ * - valors duplicats dins de `messages.php`
+ *
+ * Ús:
+ *   php scripts/lang-audit.php
+ */
+
+$root = dirname(__DIR__);
+$langRoot = $root.'/resources/lang';
+$baseLang = 'ca';
+$catalogs = ['messages', 'models', 'validation'];
+$langs = ['ca', 'es', 'en'];
+
+/**
+ * @return array<string, mixed>
+ */
+function loadCatalog(string $path): array
+{
+    if (!file_exists($path)) {
+        return [];
+    }
+
+    /** @var array<string, mixed> $data */
+    $data = include $path;
+    return $data;
+}
+
+/**
+ * @param array<string, mixed> $data
+ * @return array<string, string>
+ */
+function flattenCatalog(array $data): array
+{
+    $flat = [];
+
+    $walk = static function (array $node, string $prefix = '') use (&$walk, &$flat): void {
+        foreach ($node as $key => $value) {
+            $path = $prefix === '' ? (string) $key : $prefix.'.'.$key;
+            if (is_array($value)) {
+                $walk($value, $path);
+                continue;
+            }
+
+            $flat[$path] = (string) $value;
+        }
+    };
+
+    $walk($data);
+    ksort($flat);
+
+    return $flat;
+}
+
+/**
+ * @param array<string, string> $flat
+ * @return list<string>
+ */
+function suspiciousMessageKeys(array $flat): array
+{
+    $suspects = [];
+
+    foreach (array_keys($flat) as $key) {
+        if (preg_match('/^buttons\.[A-Z]/', $key) === 1) {
+            $suspects[] = $key;
+            continue;
+        }
+
+        if (preg_match('/^menu\.[A-Z]/', $key) === 1) {
+            $suspects[] = $key;
+            continue;
+        }
+
+        if (preg_match('/[a-z][A-Z]/', $key) === 1) {
+            $suspects[] = $key;
+        }
+    }
+
+    sort($suspects);
+
+    return array_values(array_unique($suspects));
+}
+
+/**
+ * @param array<string, string> $flat
+ * @return array<string, list<string>>
+ */
+function duplicateValues(array $flat): array
+{
+    $duplicates = [];
+
+    foreach ($flat as $key => $value) {
+        if ($value === '') {
+            continue;
+        }
+
+        $duplicates[$value][] = $key;
+    }
+
+    foreach ($duplicates as $value => $keys) {
+        if (count($keys) < 2) {
+            unset($duplicates[$value]);
+        }
+    }
+
+    arsort($duplicates);
+
+    return $duplicates;
+}
+
+echo "== Lang Audit ==\n";
+echo "Base language: {$baseLang}\n\n";
+
+foreach ($catalogs as $catalog) {
+    echo "== {$catalog}.php ==\n";
+    $base = flattenCatalog(loadCatalog("{$langRoot}/{$baseLang}/{$catalog}.php"));
+
+    foreach ($langs as $lang) {
+        if ($lang === $baseLang) {
+            continue;
+        }
+
+        $current = flattenCatalog(loadCatalog("{$langRoot}/{$lang}/{$catalog}.php"));
+        $extra = array_values(array_diff(array_keys($current), array_keys($base)));
+        $missing = array_values(array_diff(array_keys($base), array_keys($current)));
+
+        echo "- {$lang}: extra=".count($extra).", missing=".count($missing)."\n";
+        if ($extra !== []) {
+            echo "  extra sample: ".implode(', ', array_slice($extra, 0, 8))."\n";
+        }
+        if ($missing !== []) {
+            echo "  missing sample: ".implode(', ', array_slice($missing, 0, 8))."\n";
+        }
+    }
+
+    echo "\n";
+}
+
+$messages = flattenCatalog(loadCatalog("{$langRoot}/{$baseLang}/messages.php"));
+$suspects = suspiciousMessageKeys($messages);
+
+echo "== Naming suspects in ca/messages.php ==\n";
+echo count($suspects)." keys\n";
+if ($suspects !== []) {
+    echo implode("\n", array_slice($suspects, 0, 80))."\n";
+}
+echo "\n";
+
+$duplicates = duplicateValues($messages);
+echo "== Duplicate values in ca/messages.php ==\n";
+$shown = 0;
+foreach ($duplicates as $value => $keys) {
+    echo count($keys)."x\t{$value}\t".implode(', ', $keys)."\n";
+    $shown++;
+    if ($shown >= 20) {
+        break;
+    }
+}

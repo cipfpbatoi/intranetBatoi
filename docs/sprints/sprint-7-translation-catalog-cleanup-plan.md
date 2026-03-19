@@ -114,6 +114,17 @@ Desviacions detectades:
   - claus sobrants
   - claus històriques amb naming incoherent
 
+Estat actual de Tall C:
+
+- hi ha naming heterogeni en `messages.php`, sobretot en `buttons.*` i `menu.*`
+- conviuen claus en `PascalCase`, `camelCase` i minúscula plana
+- hi ha valors duplicats entre dominis diferents (`buttons`, `generic`, `menu`, `rol`)
+- encara no s'ha renombrat cap clau, perquè això obliga a tocar consumidors i pot generar regressions
+- s'ha afegit una auditoria reusable en `scripts/lang-audit.php` per detectar:
+  - extras i missings respecte a `ca`
+  - claus sospitoses per naming
+  - valors duplicats dins de `messages.php`
+
 ### Tall D
 
 - definir criteri estable:
