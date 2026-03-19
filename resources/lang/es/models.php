@@ -336,7 +336,6 @@ return array(
             'proyecto' => 'Subir proyecto',
             'upload' => 'Zip Informes',
             'dropzone' => 'Guardar Informes',
-            'convalidacion' => 'FCT Convalidada/Exento',
             'pg0301' => 'Hoja Control Servicio',
             'pr0402' => 'Entrevista Alumnado',
             'pr0401' => 'Entrevista Final Instructor',
@@ -356,8 +355,7 @@ return array(
             'link' => 'Adjuntar ficheros',
             'an1' => 'Imprimir anexos I firmados',
             'an2' => 'Imprimir anexos II firmados',
-            'an3' => 'Imprimir anexos III firmados',
-            'an5' => 'Imprimir comptencias adquiridas'
+            'an3' => 'Imprimir anexos III firmados'
         ),
         'Ipguardia' => array(
             'index' => 'Control IP',
@@ -434,7 +432,6 @@ return array(
             'index' => 'Fct x Alumno',
             'convalidacion' => 'FCT Convalidada/Exento',
             'auth' => 'Imprimir autoritzaciones',
-            'create' => 'Nueva Exención',
             'edit' => 'Modificar Datos Fct',
             'pdf' => 'Imprimir certificados Alumno',
             'email' => 'Enviar aviso rellenar diario',
@@ -448,8 +445,8 @@ return array(
 
         ),
         'AlumnoFct' => array(
+            'create' => 'Nova Exempció',
             'selecciona' => 'Alumno/a',
-            'create' => 'Nueva Exención',
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
@@ -565,7 +562,6 @@ return array(
             'Evaluacion' => 'Avaluación',
             'Colaborador' => 'Col.laborador',
             'PPoll' => 'Plantilla encuesta',
-            'Ppoll' => 'Plantilla encuesta',
             'Poll' => 'Encuesta',
             'Option' => 'Pregunta',
             'AlumnoResultado' => 'Avaluacio Alumne',

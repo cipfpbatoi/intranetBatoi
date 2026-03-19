@@ -1,0 +1,27 @@
+name: Lang Audit
+
+on:
+  pull_request:
+    branches:
+      - Laravel12
+      - master
+  push:
+    branches:
+      - Laravel12
+
+jobs:
+  lang-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Run language catalog audit
+        run: php scripts/lang-audit.php --strict-parity
