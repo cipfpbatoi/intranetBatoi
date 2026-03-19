@@ -144,6 +144,7 @@ Estat actual de Tall D:
   - `menu.Departamento` i `menu.Controlrango` ja queden cobertes en `ca/es/en`
   - `birret/Authbirret` passen a retirada explícita de menús via migració de dades
   - ja hi ha una primera poda segura de `menu.*` sobre claus sense presència ni en BBDD ni en codi/config
+  - i una segona poda curta sobre claus sense presència en BBDD ni coincidència exacta fora del catàleg
 - conseqüència:
   - no es poden podar claus de `menu.*` ni `buttons.*` només amb `rg`
   - abans de normalitzar naming caldrà creuar `menu.*` amb `menus.nombre`

@@ -278,3 +278,30 @@ S'ha retirat un primer paquet de claus de menú que complien totes les condicion
   - codi/config
   - i punts d'entrada de menú
 - la resta de claus `unused_in_db` continuen bloquejades fins fer el mateix nivell de comprovació
+
+## Tall D7 executat
+
+### Poda segura addicional de `menu.*`
+
+S'ha retirat un segon paquet de claus que, a més de no existir en `menus`, tampoc tenen coincidències exactes fora del catàleg.
+
+### Claus eliminades
+
+- `menu.List`
+- `menu.Igualtat`
+- `menu.Procediment`
+- `menu.Usuario`
+
+### Claus que continuen bloquejades
+
+- `menu.Acompanyant`
+- `menu.Actas`
+- `menu.Comissio`
+- `menu.Consell`
+- `menu.Pla`
+- `menu.Programacion`
+
+Lectura:
+
+- encara que no apareguen en la BBDD actual, continuen sent polisèmiques o tenen col·lisions clares amb altres àrees del producte
+- no són bona candidata a poda automàtica sense un tall específic de renombrat o consolidació semàntica
