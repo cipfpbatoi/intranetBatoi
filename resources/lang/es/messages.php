@@ -63,14 +63,12 @@ return array(
         'change' => 'Acceder como ese Usuario',
         'backChange' => 'Volver a mi usuario',
         'resempresa' => 'Inserción laboral',
-        'falta' => 'Ausencias',
         'desde' => 'Desde',
         'hasta' => 'Hasta',
         'resum' => 'Resumen',
         'tasks' => 'Tareas pendientes',
         'explicacion' => 'Explicación',
         'fechatramite' => 'Fecha comunicación alumno',
-        'afternoon' => 'Tarde',
         'faltas' => 'Ausencias',
         'reuniones' => 'Reuniones',
         'calendari' => 'Calendario Escolar'
@@ -330,7 +328,6 @@ return array(
         'Projecte' =>  'Propuesta proyecto',
         'Projectes' => 'Módulo Proyecto',
         'Certificat' => 'Cita previa Certificado Digital',
-        'afternoon' => 'Tarde',
         'Calendari' => 'Calendario Escolar',
         'Cotxe' => 'Vehículos',
         'Tipoactividad' => 'Tipo Act. Extraescolar'
