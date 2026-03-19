@@ -25,6 +25,9 @@
                 <h5>
                      {{$elemento->Centro->nombre}}
                 </h5>
+                <p class="small text-muted mb-2">
+                    <em class="fa fa-map-marker"></em> {{$elemento->localidad}}
+                </p>
                 <p class="mb-2">
                     <span class="badge {{ $isMine ? 'bg-success' : 'bg-secondary' }}">
                         {{ $isMine ? 'Meua' : 'Altre tutor' }}
@@ -34,11 +37,9 @@
                     </span>
                 </p>
                 <ul class="list-unstyled">
-                    <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
                     <li><em class="fa fa-user"></em> {{$elemento->contacto ?: 'Sense contacte'}}</li>
                     <li><em class="fa fa-phone"></em> {{$elemento->telefono ?: 'Sense telèfon'}}</li>
                     <li><em class="fa fa-envelope"></em> {{$elemento->email ?: 'Sense email'}}</li>
-                    <li><em class="fa fa-user-secret"></em> {{$elemento->profesor ?? 'No assignada'}}</li>
                 </ul>
 
                 @if ($ultimContacte)
@@ -75,7 +76,10 @@
                                 @endif
                             </strong>
                         </li>
+                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
+                        <li><em class="fa fa-user-secret"></em> {{$elemento->profesor ?? 'No assignada'}}</li>
                 @else
+                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
                         <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios}}</li>
                         <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion}}</li>
                         <li><em class="fa fa-folder"></em> {{$elemento->Centro->Empresa->actividad}}</li>
@@ -141,15 +145,12 @@
            
         </div>
         <div class="col-xs-12 bottom text-center">
-            <div class="col-xs-12 col-sm-4 emphasis">
-                <p class="ratings">
-                    {{$elemento->localidad}}<br/>
-                </p>
-            </div>
-            <div class="col-xs-12 col-sm-8 emphasis">
+            <div class="col-xs-12 emphasis">
                 @isset (authUser()->emailItaca)
-                    <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null"/><br/>
-                    <x-botones :panel="$panel" tipo="nofct" :elemento="$elemento ?? null"/>
+                    <div class="d-flex flex-wrap justify-content-center gap-1">
+                        <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" :centrado="false" />
+                        <x-botones :panel="$panel" tipo="nofct" :elemento="$elemento ?? null" :centrado="false" />
+                    </div>
                 @endisset
             </div>
         </div>
