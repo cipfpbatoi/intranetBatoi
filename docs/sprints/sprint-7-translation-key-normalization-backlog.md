@@ -251,3 +251,30 @@ Lectura:
 - `Departamento` i `Controlrango` deixen de ser absències de `messages.menu.*`
 - `Birret/Authbirret` deixen de considerar-se “claus a recuperar”
 - la neteja de `birret` queda limitada a menús, no a documentació ni a altres textos residuals
+
+## Tall D6 executat
+
+### Poda segura de `menu.*`
+
+S'ha retirat un primer paquet de claus de menú que complien totes les condicions següents:
+
+- no apareixen en la taula `menus` actual
+- no apareixen en seeders, migracions, config funcional, rutes ni codi d'aplicació
+- només sobrevivien dins de `resources/lang/*/messages.php`
+
+### Claus eliminades
+
+- `menu.Authpropuesta`
+- `menu.Borrarprg`
+- `menu.Moodle`
+- `menu.Pga`
+- `menu.Rri`
+- `menu.Emergencias`
+
+### Criteri que queda fixat
+
+- esta poda és segura només perquè hi havia absència simultània en:
+  - dades reals
+  - codi/config
+  - i punts d'entrada de menú
+- la resta de claus `unused_in_db` continuen bloquejades fins fer el mateix nivell de comprovació
