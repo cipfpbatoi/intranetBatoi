@@ -6,19 +6,23 @@ declare(strict_types=1);
  * Auditoria bàsica dels catàlegs de traducció.
  *
  * Comprovacions:
+ * - existència dels fitxers de catàleg requerits per idioma
  * - paritat de claus entre `ca` i la resta d'idiomes per fitxer
  * - patrons de naming potencialment incoherents en `messages.php`
  * - valors duplicats dins de `messages.php`
  *
  * Ús:
  *   php scripts/lang-audit.php
+ *   php scripts/lang-audit.php --strict-parity
  */
 
 $root = dirname(__DIR__);
 $langRoot = $root.'/resources/lang';
 $baseLang = 'ca';
-$catalogs = ['messages', 'models', 'validation'];
+$catalogs = ['auth', 'messages', 'models', 'pagination', 'passwords', 'validation'];
 $langs = ['ca', 'es', 'en'];
+$strictParity = in_array('--strict-parity', $argv, true);
+$parityErrors = 0;
 
 /**
  * @return array<string, mixed>
@@ -121,18 +125,37 @@ echo "Base language: {$baseLang}\n\n";
 
 foreach ($catalogs as $catalog) {
     echo "== {$catalog}.php ==\n";
-    $base = flattenCatalog(loadCatalog("{$langRoot}/{$baseLang}/{$catalog}.php"));
+    $basePath = "{$langRoot}/{$baseLang}/{$catalog}.php";
+    $baseExists = file_exists($basePath);
+    echo "- {$baseLang}: ".($baseExists ? 'present' : 'missing')."\n";
+    if (!$baseExists) {
+        $parityErrors++;
+        echo "\n";
+        continue;
+    }
+
+    $base = flattenCatalog(loadCatalog($basePath));
 
     foreach ($langs as $lang) {
         if ($lang === $baseLang) {
             continue;
         }
 
-        $current = flattenCatalog(loadCatalog("{$langRoot}/{$lang}/{$catalog}.php"));
+        $path = "{$langRoot}/{$lang}/{$catalog}.php";
+        if (!file_exists($path)) {
+            echo "- {$lang}: file missing\n";
+            $parityErrors++;
+            continue;
+        }
+
+        $current = flattenCatalog(loadCatalog($path));
         $extra = array_values(array_diff(array_keys($current), array_keys($base)));
         $missing = array_values(array_diff(array_keys($base), array_keys($current)));
 
         echo "- {$lang}: extra=".count($extra).", missing=".count($missing)."\n";
+        if ($extra !== [] || $missing !== []) {
+            $parityErrors++;
+        }
         if ($extra !== []) {
             echo "  extra sample: ".implode(', ', array_slice($extra, 0, 8))."\n";
         }
@@ -163,4 +186,9 @@ foreach ($duplicates as $value => $keys) {
     if ($shown >= 20) {
         break;
     }
+}
+
+if ($strictParity && $parityErrors > 0) {
+    fwrite(STDERR, "\nParity audit failed with {$parityErrors} issue(s).\n");
+    exit(1);
 }
