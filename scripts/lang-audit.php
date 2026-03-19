@@ -10,6 +10,7 @@ declare(strict_types=1);
  * - paritat de claus entre `ca` i la resta d'idiomes per fitxer
  * - patrons de naming potencialment incoherents en `messages.php`
  * - valors duplicats dins de `messages.php`
+ * - agrupació de duplicats coneguts que no s'han de podar a cegues
  *
  * Ús:
  *   php scripts/lang-audit.php
@@ -120,6 +121,30 @@ function duplicateValues(array $flat): array
     return $duplicates;
 }
 
+/**
+ * @return array<string, string>
+ */
+function knownDuplicateNotes(): array
+{
+    return [
+        'Actes' => 'Duplicat transversal entre buttons/generic/menu; probable deute històric de UI.',
+        'Enquestes' => 'Pot dependre de noms de menú dinàmics (`Enquestes` vs `Poll`).',
+        'Empreses' => 'Pot dependre de noms de menú dinàmics (`Empresa` vs `Empresas`).',
+        'Equip directiu' => 'Possible alias funcional entre menú curt i menú visible.',
+        'Seguiments' => 'Pot vindre de menú/config i no només d\'ús literal.',
+        'Autorització d\'horaris' => 'Claus de menú aparentment redundants, però de risc per noms dinàmics.',
+        'Reunions' => 'Hi ha convivència entre generic i menú.',
+        'Direcció' => 'Convivència entre generic i rol.',
+        'Calendari Escolar' => 'Convivència entre generic i menú.',
+        'Activitats' => 'Convivència entre generic i menú.',
+        'Horari' => 'Convivència entre button i generic.',
+        'Gestor Documental' => 'Convivència entre button i menú.',
+        'Accedir com a eixa persona' => 'Convivència entre button i generic.',
+        'Avisar' => 'Clau `mensaje` encara viva via accions dinàmiques.',
+        'Alumnat' => 'Convivència entre button i menú.',
+    ];
+}
+
 echo "== Lang Audit ==\n";
 echo "Base language: {$baseLang}\n\n";
 
@@ -180,8 +205,12 @@ echo "\n";
 $duplicates = duplicateValues($messages);
 echo "== Duplicate values in ca/messages.php ==\n";
 $shown = 0;
+$notes = knownDuplicateNotes();
 foreach ($duplicates as $value => $keys) {
     echo count($keys)."x\t{$value}\t".implode(', ', $keys)."\n";
+    if (isset($notes[$value])) {
+        echo "  note: {$notes[$value]}\n";
+    }
     $shown++;
     if ($shown >= 20) {
         break;
