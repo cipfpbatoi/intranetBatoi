@@ -43,6 +43,21 @@ class ColaboracionController extends ModalController
     protected $formFields = ColaboracionCrudSchema::FORM_FIELDS;
 
     /**
+     * Inicialitza el controlador modal amb una vista pròpia per al llistat departamental.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->panel = new \Intranet\UI\Panels\Panel(
+            $this->model,
+            $this->gridFields,
+            'colaboracion.departamento',
+            true,
+            $this->parametresVista
+        );
+    }
+
+    /**
      *
      */
     public function iniBotones()
