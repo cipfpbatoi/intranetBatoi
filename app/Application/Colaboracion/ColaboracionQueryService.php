@@ -106,6 +106,7 @@ class ColaboracionQueryService
 
         $meves->each(function ($mine) use ($pairKey, $relacionadesPerParella, $activitiesByColab): void {
             $llista = $relacionadesPerParella->get($pairKey($mine), collect());
+            $mine->contactos = $activitiesByColab->get($mine->id, collect());
 
             $llista->each(function ($related) use ($activitiesByColab): void {
                 $related->contactos = $activitiesByColab->get($related->id, collect());
@@ -117,4 +118,3 @@ class ColaboracionQueryService
         return $meves;
     }
 }
-

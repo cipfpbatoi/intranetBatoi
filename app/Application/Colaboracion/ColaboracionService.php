@@ -28,7 +28,9 @@ class ColaboracionService
         }
 
         $relacionades = $this->queryService->relatedByCenterDepartment($meves);
-        $activitiesByColab = $this->queryService->groupedActivitiesByColaboracion($relacionades);
+        $activitiesByColab = $this->queryService->groupedActivitiesByColaboracion(
+            $meves->concat($relacionades)->values()
+        );
 
         return $this->queryService
             ->attachRelatedAndContacts($meves, $relacionades, $activitiesByColab)
@@ -48,4 +50,3 @@ class ColaboracionService
         return optional($colaboraciones->first()->Ciclo)->literal;
     }
 }
-
