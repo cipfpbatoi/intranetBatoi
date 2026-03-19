@@ -51,7 +51,12 @@ class ColaboracionQueryServiceTest extends TestCase
 
         $this->assertCount(1, $resultat);
         $this->assertSame([$contacteMeu], $resultat->first()->contactos->all());
+        $this->assertSame($contacteMeu, $resultat->first()->ultimaActividad);
         $this->assertCount(1, $resultat->first()->relacionadas);
+        $this->assertSame(
+            $contacteRelacionat,
+            $resultat->first()->relacionadas->first()->ultimaActividad
+        );
         $this->assertSame(
             [$contacteRelacionat],
             $resultat->first()->relacionadas->first()->contactos->all()

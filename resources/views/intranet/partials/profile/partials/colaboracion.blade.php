@@ -13,7 +13,7 @@
     };
     $collapseId = 'colaboracion-detall-' . $elemento->id;
     $relatedCollapseId = 'colaboracion-relacionades-' . $elemento->id;
-    $ultimContacte = $contactos->last();
+    $ultimContacte = $elemento->ultimaActividad ?? null;
     $relacionadas = $elemento->relacionadas ?? collect();
 @endphp
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
@@ -89,10 +89,12 @@
                 <p class="small text-muted mb-1">
                     <strong>Activitat recent</strong>
                 </p>
-                @foreach ($contactos as $contacto)
+                @forelse ($contactos as $contacto)
                     <x-activity :activity="$contacto" />
                     <br/>
-                @endforeach
+                @empty
+                    <p class="small text-muted">Sense activitat recent</p>
+                @endforelse
             </div>
             @if($relacionadas->isNotEmpty())
                 <div class="col-md-12 col-xs-12 collapse" id="{{ $relatedCollapseId }}" style="margin-top:.5rem">
