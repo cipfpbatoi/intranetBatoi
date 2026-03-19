@@ -8,8 +8,136 @@
         tipo: null
     };
 
+    var MAX_RETRIES = 40;
+    var RETRY_DELAY_MS = 250;
+
     function trim(value) {
         return (value || '').toString().trim();
+    }
+
+    function getTableHelper() {
+        return window.intranetDataTable || {};
+    }
+
+    function hasDataTables() {
+        var tableHelper = getTableHelper();
+        var hasV2 = typeof tableHelper.hasDataTableV2 === 'function' && tableHelper.hasDataTableV2();
+        var hasJqDt = typeof tableHelper.hasJQueryDataTable === 'function' && tableHelper.hasJQueryDataTable();
+
+        return hasV2 || hasJqDt;
+    }
+
+    function paintRow(row, statusText) {
+        var stateText = trim(statusText).toLowerCase();
+
+        row.classList.remove('bg-green', 'bg-red', 'bg-warning');
+
+        if (stateText.indexOf('col·labora') !== -1 && stateText.indexOf('no col') === -1) {
+            row.classList.add('bg-green');
+            return;
+        }
+
+        if (stateText.indexOf('no col') !== -1) {
+            row.classList.add('bg-red');
+            return;
+        }
+
+        if (stateText.indexOf('no sé') !== -1 || stateText.indexOf('no contactada') !== -1) {
+            row.classList.add('bg-warning');
+        }
+    }
+
+    function paintExistingRows(table) {
+        if (!table) {
+            return;
+        }
+
+        table.querySelectorAll('tbody tr').forEach(function (row) {
+            var stateCell = row.querySelector("span[name='Xestado']");
+            var stateText = stateCell ? stateCell.textContent : '';
+            paintRow(row, stateText);
+        });
+    }
+
+    function initGrid() {
+        var tableHelper = getTableHelper();
+        var table = document.getElementById('datatable');
+
+        if (!table) {
+            return true;
+        }
+
+        paintExistingRows(table);
+
+        if (!hasDataTables()) {
+            return false;
+        }
+
+        if (typeof tableHelper.isInitialized === 'function' && tableHelper.isInitialized(table)) {
+            return true;
+        }
+
+        table.style.visibility = 'hidden';
+
+        var dataTable = null;
+        var options = {
+            language: { url: '/json/cattable.json' },
+            deferRender: true,
+            responsive: true,
+            autoWidth: false,
+            rowCallback: function (row, data) {
+                paintRow(row, data && data[3] ? data[3] : '');
+            },
+            columnDefs: [
+                { responsivePriority: 1, targets: 0 },
+                { responsivePriority: 1, targets: -1 },
+                { responsivePriority: 2, targets: 3 }
+            ],
+            initComplete: function () {
+                if (dataTable && dataTable.columns && typeof dataTable.columns.adjust === 'function') {
+                    dataTable.columns.adjust();
+                }
+                table.style.visibility = 'visible';
+            }
+        };
+
+        dataTable = typeof tableHelper.init === 'function'
+            ? tableHelper.init(table, options)
+            : null;
+
+        if (!dataTable) {
+            table.style.visibility = 'visible';
+            return true;
+        }
+
+        table.addEventListener('draw.dt', function () {
+            dataTable.columns.adjust();
+        });
+
+        table.addEventListener('responsive-resize.dt', function () {
+            dataTable.columns.adjust();
+        });
+
+        window.addEventListener('resize', function () {
+            dataTable.columns.adjust();
+        });
+
+        return true;
+    }
+
+    function bootGrid(retriesLeft) {
+        if (initGrid()) {
+            return;
+        }
+
+        if (retriesLeft <= 0) {
+            console.warn('DataTables no està disponible: Colaboracion/grid.js no s’inicialitza.');
+            return;
+        }
+
+        window.setTimeout(function () {
+            bootGrid(retriesLeft - 1);
+        }, RETRY_DELAY_MS);
     }
 
     function getLegacyToken() {
@@ -245,6 +373,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        bootGrid(MAX_RETRIES);
         hideInitialButtons();
         initDatePickers();
 

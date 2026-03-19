@@ -82,10 +82,7 @@ class ColaboracionController extends ModalController
 
         return Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
-            ->whereHas('Centro.Empresa', static function ($query): void {
-                $query->where('concierto', 1);
-            })
-            ->with(['Centro.Empresa'])
+            ->with(['Centro.Empresa', 'Ciclo', 'Propietario'])
             ->get();
     }
 
