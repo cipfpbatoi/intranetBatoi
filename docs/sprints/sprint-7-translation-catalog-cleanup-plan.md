@@ -137,6 +137,12 @@ Estat actual de Tall D:
 - `messages.menu.*` té consum dinàmic via `MenuService` i `Menu::getDescripcionAttribute()`
 - `messages.buttons.*` té consum dinàmic via `Boton::translateText()`
 - `Panel::setBotonera()` i `Pestana::getLabel()` amplien encara més el consum implícit de `buttons.*`
+- el creuament amb `menus.nombre` real confirma:
+  - absències de catàleg encara vives en dades (`Authbirret`, `Birret`, `Controlrango`, `Departamento`)
+  - i un grup de claus `menu.*` sense correspondència en la BBDD actual
+- després del tall actual:
+  - `menu.Departamento` i `menu.Controlrango` ja queden cobertes en `ca/es/en`
+  - `birret/Authbirret` passen a retirada explícita de menús via migració de dades
 - conseqüència:
   - no es poden podar claus de `menu.*` ni `buttons.*` només amb `rg`
   - abans de normalitzar naming caldrà creuar `menu.*` amb `menus.nombre`

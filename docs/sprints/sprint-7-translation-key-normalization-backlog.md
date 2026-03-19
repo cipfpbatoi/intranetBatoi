@@ -183,3 +183,71 @@ Raó:
   - claus literals d'UI
   - alias històrics que encara depenen de rutes o models
 - fins aleshores, qualsevol normalització de `buttons.*` s'ha de limitar a documentar i no a renombrar
+
+## Tall D4 executat
+
+### Creuament real amb `menus.nombre`
+
+S'ha comparat la taula `menus` real del contenidor amb `resources/lang/ca/messages.php`, aplicant la mateixa normalització que usa el codi (`ucwords`).
+
+### Claus persistides en BBDD però absents en `ca`
+
+- `menu.Authbirret`
+- `menu.Birret`
+- `menu.Controlrango`
+- `menu.Departamento`
+
+Lectura:
+
+- `Authbirret` i `Birret` són residu clar de legacy ja retirat del codi, però encara present en dades
+- `Departamento` no és legacy obvi; és una absència real de catàleg si encara hi ha menú viu
+- `Controlrango` també està present en dades i requerix revisió funcional abans de decidir si es traduïx o si es neteja de BBDD
+
+### Claus de `ca` sense correspondència actual en `menus.nombre`
+
+- `menu.Acompanyant`
+- `menu.Actas`
+- `menu.Authpropuesta`
+- `menu.Borrarprg`
+- `menu.Comissio`
+- `menu.Consell`
+- `menu.Emergencias`
+- `menu.Igualtat`
+- `menu.List`
+- `menu.Moodle`
+- `menu.Pga`
+- `menu.Pla`
+- `menu.Procediment`
+- `menu.Programacion`
+- `menu.Rri`
+- `menu.Usuario`
+
+Lectura:
+
+- no apareixen en la taula `menus` actual
+- això no prova que siguen mortes en tots els entorns
+- sí que les convertix en candidates de revisió, sobretot si tampoc tenen ús literal ni entrada de seeder
+
+### Criteri que queda fixat
+
+- `menu.Authbirret` i `menu.Birret` apunten a residu de dades, no a necessitat de recuperar legacy
+- abans de podar claus `unused_in_db`, convé revisar seeders/config o altres entorns
+- `menu.Departamento` i `menu.Controlrango` passen a incidència de catàleg o de dades, no a poda automàtica
+
+## Tall D5 executat
+
+### Ajustos aplicats
+
+- s'ha afegit suport de catàleg per a:
+  - `menu.Departamento`
+  - `menu.Controlrango`
+- s'ha decidit tractar `birret/Authbirret` només com a residu de menús
+- s'ha afegit una migració idempotent per eliminar de `menus`:
+  - `birret`
+  - `Authbirret`
+
+### Estat resultant
+
+- `Departamento` i `Controlrango` deixen de ser absències de `messages.menu.*`
+- `Birret/Authbirret` deixen de considerar-se “claus a recuperar”
+- la neteja de `birret` queda limitada a menús, no a documentació ni a altres textos residuals
