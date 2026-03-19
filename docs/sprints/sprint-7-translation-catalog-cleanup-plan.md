@@ -8,15 +8,15 @@ Sanejar els catàlegs de `resources/lang` després del Sprint 6, deixant una bas
 
 ### Estructura de fitxers
 
-- `ca`: `messages.php`, `models.php`, `pagination.php`, `reminders.php`, `validation.php`
-- `es`: `messages.php`, `models.php`, `pagination.php`, `reminders.php`, `validation.php`
+- `ca`: `messages.php`, `models.php`, `pagination.php`, `validation.php`
+- `es`: `messages.php`, `models.php`, `pagination.php`, `validation.php`
 - `en`: `auth.php`, `messages.php`, `pagination.php`, `passwords.php`, `validation.php`
 
 Conclusió:
 
 - no hi ha paritat estructural entre idiomes
-- `en` no té `models.php` ni `reminders.php`
-- `ca` i `es` no tenen `auth.php` ni `passwords.php`
+- `en` no tenia `models.php`
+- `ca` i `es` no tenien `auth.php` ni `passwords.php`
 - hi ha fitxers residuals `.DS_Store` en `resources/lang` i `resources/lang/es`
 
 ### Diferències de claus
@@ -81,8 +81,8 @@ Desviacions detectades:
 #### Altres fitxers
 
 - `pagination.php`: paritat completa
-- `reminders.php`: paritat entre `ca` i `es`, absent en `en`
-- `auth.php` i `passwords.php`: només existixen en `en`
+- `auth.php` i `passwords.php`: ja existixen en `ca`, `es` i `en`
+- `reminders.php`: residual legacy, sense ús detectat al projecte ni al framework actual
 
 ## Lectura pràctica
 
@@ -103,8 +103,8 @@ Desviacions detectades:
 
 - restaurar paritat estructural mínima:
   - crear `en/models.php`
-  - crear `en/reminders.php`
-  - decidir si `ca` i `es` necessiten `auth.php` i `passwords.php`
+  - crear `ca/auth.php`, `ca/passwords.php`, `es/auth.php` i `es/passwords.php`
+  - retirar `reminders.php` si es confirma que és legacy sense ús
 
 ### Tall C
 

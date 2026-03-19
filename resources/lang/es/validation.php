@@ -166,6 +166,7 @@ return array(
                 'movil2' => 'Móvil',
                 'sexo' => 'Sexo',
                 'codigo_postal' => 'Código Postal',
+                'departamento' => 'Departament',
                 'fecha_ingreso' => 'Fecha de Ingreso',
                 'fecha_nac' => 'Fecha de Nacimiento',
                 'fecha_baja' => 'Fecha de Baja',

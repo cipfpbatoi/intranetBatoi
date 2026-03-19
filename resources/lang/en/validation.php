@@ -48,6 +48,7 @@ return [
         'numeric' => 'The :attribute may not be greater than :max.',
         'file'    => 'The :attribute may not be greater than :max kilobytes.',
         'string'  => 'The :attribute may not be greater than :max characters.',
+        'array'   => 'El campo :attribute debe tener al menos :min elementos.',
     ],
     'mimes'                => 'The :attribute must be a file of type: :values.',
     'min'                  => [

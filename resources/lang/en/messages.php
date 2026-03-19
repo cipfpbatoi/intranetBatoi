@@ -161,6 +161,7 @@ return array(
         'GestioAdministrativa' => 'Administrative management',
         'Seguretat' => 'Safety/Health',
         'Convivencia' => 'Coexistence/Equality',
+        'Dual' => 'Dual',
         'Protocol' => 'Inclusion and coexistence protocols',
         'Tutories' => 'Inclusion and coexistence tutors',
         'Comissio' => 'Inclusion and coexistence committee',

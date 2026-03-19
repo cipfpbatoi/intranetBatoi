@@ -69,6 +69,7 @@ return array(
         'tasks' => 'Tareas pendientes',
         'explicacion' => 'Explicación',
         'fechatramite' => 'Fecha comunicación alumno',
+        'afternoon' => 'Vesprada',
         'faltas' => 'Ausencias',
         'reuniones' => 'Reuniones',
         'calendari' => 'Calendario Escolar'

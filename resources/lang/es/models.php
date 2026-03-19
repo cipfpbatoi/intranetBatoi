@@ -445,6 +445,7 @@ return array(
 
         ),
         'AlumnoFct' => array(
+            'create' => 'Nova Exempció',
             'selecciona' => 'Alumno/a',
         ),
         'Alumnofctaval' => array(
