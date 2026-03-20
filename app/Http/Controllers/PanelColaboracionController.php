@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Colaboracion\ColaboracionService;
+use Intranet\Application\Colaboracion\ColaboracionPreasignacionService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Requests\ColaboracionRequest;
@@ -20,6 +21,7 @@ use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 /**
  * Class PanelColaboracionController
@@ -31,6 +33,7 @@ class PanelColaboracionController extends IntranetController
 
     private ?GrupoService $grupoService = null;
     private ?ColaboracionService $colaboracionService = null;
+    private ?ColaboracionPreasignacionService $preasignacionService = null;
 
     const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
@@ -45,11 +48,16 @@ class PanelColaboracionController extends IntranetController
 
     protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
 
-    public function __construct(?GrupoService $grupoService = null, ?ColaboracionService $colaboracionService = null)
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?ColaboracionService $colaboracionService = null,
+        ?ColaboracionPreasignacionService $preasignacionService = null
+    )
     {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->colaboracionService = $colaboracionService;
+        $this->preasignacionService = $preasignacionService;
     }
 
     private function grupos(): GrupoService
@@ -68,6 +76,15 @@ class PanelColaboracionController extends IntranetController
         }
 
         return $this->colaboracionService;
+    }
+
+    private function preasignaciones(): ColaboracionPreasignacionService
+    {
+        if ($this->preasignacionService === null) {
+            $this->preasignacionService = app(ColaboracionPreasignacionService::class);
+        }
+
+        return $this->preasignacionService;
     }
 
 
@@ -258,6 +275,76 @@ class PanelColaboracionController extends IntranetController
     private function showEmpresa($id)
     {
         return redirect()->route('empresa.detalle', ['empresa' => $id]);
+    }
+
+    /**
+     * Guarda una preassignació provisional d'alumnat per a una col·laboració.
+     *
+     * @param Request $request
+     * @param int $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storePreasignacion(Request $request, int $id)
+    {
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
+        $this->authorize('update', $colaboracion);
+
+        $this->validate($request, [
+            'idAlumno' => 'required|string',
+            'estado' => 'nullable|string',
+            'observaciones' => 'nullable|string',
+        ]);
+
+        try {
+            $this->preasignaciones()->create(
+                $colaboracion->id,
+                (string) $request->idAlumno,
+                (string) AuthUser()->dni,
+                (string) ($request->estado ?: 'proposta'),
+                $request->observaciones
+            );
+            Alert::success('Preassignació guardada correctament.');
+        } catch (RuntimeException $e) {
+            Alert::warning($e->getMessage());
+        }
+
+        Session::put('pestana', 3);
+        return back();
+    }
+
+    /**
+     * Descarta una preassignació existent des del panell del tutor.
+     *
+     * @param int $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function descartarPreasignacion(int $id)
+    {
+        $preasignacion = $this->wrapNotFound(
+            fn () => \Intranet\Entities\ColaboracionPreasignacion::query()
+                ->with('Colaboracion')
+                ->findOrFail($id),
+            'Preassignació no trobada',
+            ['preasignacion_id' => $id]
+        );
+        $this->authorize('update', $preasignacion->Colaboracion);
+
+        try {
+            $this->preasignaciones()->descartar($preasignacion->id);
+            Alert::success('Preassignació eliminada correctament.');
+        } catch (RuntimeException $e) {
+            Alert::warning($e->getMessage());
+        }
+
+        Session::put('pestana', 3);
+        return back();
     }
 
     /**

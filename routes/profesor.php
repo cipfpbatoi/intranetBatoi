@@ -284,6 +284,8 @@ Route::get('/colaboracion/{colaboracion}/edit', [
 Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'PanelColaboracionController@copy']);
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'PanelColaboracionController@store']);
 Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'PanelColaboracionController@destroy']);
+Route::post('/colaboracion/{colaboracion}/preasignacion', ['as' => 'colaboracion.preasignacion.store', 'uses' => 'PanelColaboracionController@storePreasignacion']);
+Route::get('/colaboracion/preasignacion/{id}/descartar', ['as' => 'colaboracion.preasignacion.descartar', 'uses' => 'PanelColaboracionController@descartarPreasignacion']);
 
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show','index']]);

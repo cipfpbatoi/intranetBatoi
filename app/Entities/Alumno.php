@@ -82,6 +82,14 @@ class Alumno extends Authenticatable
         return $this->hasMany(AlumnoFct::class, 'idAlumno', 'nia');
     }
 
+    /**
+     * Retorna les preassignacions provisionals d'este alumne.
+     */
+    public function Preasignaciones(): HasMany
+    {
+        return $this->hasMany(ColaboracionPreasignacion::class, 'idAlumno', 'nia');
+    }
+
     public function FctsColaboracion(int $colaboracion): BelongsToMany
     {
         return $this->Fcts()->wherePivot('idColaboracion', $colaboracion);

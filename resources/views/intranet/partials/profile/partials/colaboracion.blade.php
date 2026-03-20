@@ -13,8 +13,25 @@
     };
     $collapseId = 'colaboracion-detall-' . $elemento->id;
     $relatedCollapseId = 'colaboracion-relacionades-' . $elemento->id;
+    $preasignacionesCollapseId = 'colaboracion-preasignaciones-' . $elemento->id;
+    $preasignacionModalId = 'preasignacion_' . $elemento->id;
     $ultimContacte = $elemento->ultimaActividad ?? null;
     $relacionadas = $elemento->relacionadas ?? collect();
+    $preasignaciones = $elemento->preasignacionesPanel ?? collect();
+    $preasignacionAlumnoOptions = $elemento->preasignacionAlumnoOptions ?? collect();
+    $canPreassign = isset($pestana) && $pestana->getNombre() === 'colabora';
+    $activePreasignacionesCount = $preasignaciones
+        ->whereIn('estado', ['proposta', 'reservada'])
+        ->count();
+    $hasPreasignacionCapacity = $activePreasignacionesCount < max(1, (int) ($elemento->puestos ?? 1));
+    $preasignacionBadgeClass = static function (string $estado): string {
+        return match ($estado) {
+            'reservada' => 'bg-success',
+            'convertida' => 'bg-primary',
+            'descartada' => 'bg-danger',
+            default => 'bg-warning text-dark',
+        };
+    };
 @endphp
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
     <div id="{{$elemento->id}}" class="well profile_view"
@@ -55,6 +72,13 @@
                             aria-controls="{{ $collapseId }}">
                         Més detall
                     </button>
+                    @if ($preasignaciones->isNotEmpty() || $canPreassign)
+                        <button class="btn btn-default btn-xs" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#{{ $preasignacionesCollapseId }}" aria-expanded="false"
+                                aria-controls="{{ $preasignacionesCollapseId }}">
+                            Reserves ({{ $activePreasignacionesCount }}/{{ max(1, (int) ($elemento->puestos ?? 1)) }})
+                        </button>
+                    @endif
                     @if($relacionadas->isNotEmpty())
                         <button class="btn btn-default btn-xs" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#{{ $relatedCollapseId }}" aria-expanded="false"
@@ -86,6 +110,50 @@
                         <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
                 @endisset
                     </ul>
+                </div>
+
+                <div class="collapse" id="{{ $preasignacionesCollapseId }}">
+                    @if ($preasignaciones->isEmpty())
+                        <p class="small text-muted">Encara no hi ha cap alumne preassignat.</p>
+                    @else
+                        <ul class="list-unstyled">
+                            @foreach ($preasignaciones as $preasignacion)
+                                <li class="preasignacion-item" style="margin-bottom:.5rem">
+                                    <div class="d-flex justify-content-between align-items-start gap-2">
+                                        <div>
+                                            <strong>{{ optional($preasignacion->Alumno)->fullName ?? $preasignacion->idAlumno }}</strong>
+                                            <span class="badge {{ $preasignacionBadgeClass((string) $preasignacion->estado) }}">
+                                                {{ ucfirst((string) $preasignacion->estado) }}
+                                            </span>
+                                            <div class="text-muted">
+                                                {{ data_get($preasignacion, 'Alumno.Grupo.0.codigo', 'Sense grup') }}
+                                                ·
+                                                {{ optional($preasignacion->Profesor)->shortName ?? $preasignacion->idProfesor }}
+                                            </div>
+                                            @if (optional($preasignacion->Alumno)->nia)
+                                                <div>
+                                                    <a href="{{ route('alumno.days', ['id' => $preasignacion->Alumno->nia]) }}"
+                                                       class="preasignacion-horari-link">
+                                                        <em class="fa fa-calendar"></em> Horari
+                                                    </a>
+                                                </div>
+                                            @endif
+                                            @if (!empty($preasignacion->observaciones))
+                                                <div>{{ $preasignacion->observaciones }}</div>
+                                            @endif
+                                        </div>
+                                        @if (in_array((string) $preasignacion->estado, ['proposta', 'reservada'], true))
+                                            <a href="{{ route('colaboracion.preasignacion.descartar', ['id' => $preasignacion->id]) }}"
+                                               class="btn btn-default btn-xs"
+                                               onclick="return confirm('Segur que vols descartar esta preassignació?');">
+                                                <em class="fa fa-times"></em>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
                 </div>
             </div>
 
@@ -148,6 +216,17 @@
             <div class="col-xs-12 emphasis">
                 @isset (authUser()->emailItaca)
                     <div class="d-flex flex-wrap justify-content-center gap-1">
+                        @if ($canPreassign)
+                            <button type="button"
+                                    class="btn btn-info btn-xs"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#{{ $preasignacionModalId }}"
+                                    @disabled($preasignacionAlumnoOptions->isEmpty() || !$hasPreasignacionCapacity)
+                                    title="{{ !$hasPreasignacionCapacity ? 'Ja no queden llocs lliures en esta col·laboració' : ($preasignacionAlumnoOptions->isEmpty() ? 'No hi ha alumnat disponible per a este cicle' : 'Reservar alumnat') }}"
+                                    style="{{ $hasPreasignacionCapacity ? '' : 'display:none;' }}">
+                                <em class="fa fa-user-plus"></em> Reservar
+                            </button>
+                        @endif
                         <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" :centrado="false" />
                         <x-botones :panel="$panel" tipo="nofct" :elemento="$elemento ?? null" :centrado="false" />
                     </div>
@@ -156,3 +235,36 @@
         </div>
     </div>
 </div>
+
+@if ($canPreassign)
+    <x-modal name="{{ $preasignacionModalId }}"
+             title="Reservar alumnat"
+             action="{{ route('colaboracion.preasignacion.store', ['colaboracion' => $elemento->id]) }}"
+             message="{{ $preasignacionAlumnoOptions->isEmpty() || !$hasPreasignacionCapacity ? '' : 'Guardar' }}">
+        <input type="hidden" name="estado" value="proposta">
+
+        @if (!$hasPreasignacionCapacity)
+            <p class="text-muted mb-0">Ja no queden llocs lliures per a reservar més alumnat.</p>
+        @elseif ($preasignacionAlumnoOptions->isEmpty())
+            <p class="text-muted mb-0">No hi ha alumnat disponible del teu grup de tutoria per a este cicle.</p>
+        @else
+            <div class="form-group">
+                <label for="preasignacion-alumno-{{ $elemento->id }}">Alumne</label>
+                <select id="preasignacion-alumno-{{ $elemento->id }}" name="idAlumno" class="form-control" required>
+                    <option value="">Selecciona alumnat del teu grup</option>
+                    @foreach ($preasignacionAlumnoOptions as $nia => $label)
+                        <option value="{{ $nia }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="preasignacion-observaciones-{{ $elemento->id }}">Observacions</label>
+                <textarea id="preasignacion-observaciones-{{ $elemento->id }}"
+                          name="observaciones"
+                          class="form-control"
+                          rows="3"></textarea>
+            </div>
+        @endif
+    </x-modal>
+@endif

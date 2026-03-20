@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
@@ -57,6 +58,14 @@ class Colaboracion extends Model
     public function Propietario()
     {
         return $this->belongsTo(Profesor::class, 'tutor', 'dni');
+    }
+
+    /**
+     * Retorna les preassignacions provisionals d'alumnat per a esta col·laboració.
+     */
+    public function Preasignaciones(): HasMany
+    {
+        return $this->hasMany(ColaboracionPreasignacion::class, 'idColaboracion', 'id');
     }
     public function votes()
     {

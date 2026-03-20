@@ -12,7 +12,10 @@ use Intranet\Entities\Colaboracion;
  */
 class ColaboracionService
 {
-    public function __construct(private readonly ColaboracionQueryService $queryService)
+    public function __construct(
+        private readonly ColaboracionQueryService $queryService,
+        private readonly ColaboracionPreasignacionService $preasignacionService
+    )
     {
     }
 
@@ -32,10 +35,12 @@ class ColaboracionService
             $meves->concat($relacionades)->values()
         );
 
-        return $this->queryService
+        $panel = $this->queryService
             ->attachRelatedAndContacts($meves, $relacionades, $activitiesByColab)
             ->sortBy(static fn ($item) => $item->empresa)
             ->values();
+
+        return $this->preasignacionService->hydrateForPanel($panel, $dni);
     }
 
     /**
