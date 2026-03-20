@@ -49,6 +49,31 @@ La resta s'ha de protegir.
   - obert incorrecte
 - documentar per què és públic o per què s'ha de tancar
 
+Inventari provisional:
+
+- tancats en este sprint:
+  - `projecte`
+  - `actividad/{actividad}/getFiles`
+  - `presencia/resumen-rango`
+  - `convenio`
+- públic justificat de moment:
+  - `auth/exchange`
+- públics pendents de tractament específic:
+  - `miIp`
+  - `server-time`
+  - `porta/obrir`
+  - `porta/obrir-automatica`
+  - `eventPortaSortida`
+  - `eventPorta`
+
+Observació:
+
+- els endpoints de porta/cotxe no semblen adequats per a `auth:sanctum` clàssic; probablement necessitaran token d'integració, signatura o allowlist d'IP.
+- conclusió provisional del bloc de porta:
+  - `porta/obrir` és només un endpoint manual de prova
+  - `eventPorta` i `eventPortaSortida` tenen sentit com a webhooks explícits d'entrada/eixida
+  - `porta/obrir-automatica` no té consum intern localitzat i és candidat a redundància o deprecació
+
 ### Tall B - Enduriment mínim
 
 - afegir `auth:api,sanctum` als endpoints sensibles que ara estan oberts
