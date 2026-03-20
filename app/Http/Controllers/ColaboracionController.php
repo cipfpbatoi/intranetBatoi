@@ -13,6 +13,7 @@ use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Services\Document\PdfFormService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Response;
 
@@ -147,12 +148,17 @@ class ColaboracionController extends ModalController
 
 
     /**
-     * @param $id
+     * Mostra el detall de la col·laboració.
+     *
+     * Manté l'accés directe per URL i, quan la petició arriba en mode modal,
+     * retorna només el parcial del contingut per incrustar-lo al diàleg.
+     *
+     * @param Request $request
+     * @param int|string $id
      * @throws NotFoundDomainException
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $elemento = $this->findModelOrFail(
             Colaboracion::class,
@@ -160,7 +166,26 @@ class ColaboracionController extends ModalController
             'Col·laboració no trobada',
             ['colaboracion_id' => $id]
         );
-        return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
+
+        $elemento->loadMissing([
+            'Centro.Empresa',
+            'Centro.instructores',
+            'Ciclo',
+            'Propietario',
+        ]);
+
+        $ultimContacte = Activity::query()
+            ->modelo('Colaboracion')
+            ->id($elemento->id)
+            ->notUpdate()
+            ->latest('created_at')
+            ->first();
+
+        if ($request->boolean('modal') || $request->ajax()) {
+            return view('colaboracion.partials.show', compact('elemento', 'ultimContacte'));
+        }
+
+        return view('colaboracion.show', compact('elemento', 'ultimContacte'));
     }
 
     public function printAnexeIV($colaboracion)
