@@ -92,6 +92,12 @@ Observació:
 - evitar barreges arbitràries
 - deixar clar el contracte d'autenticació de cada família d'endpoints
 
+Decisions provisionals de coherència:
+
+- `auth/exchange` es manté públic perquè és el pont deliberat de `api_token` legacy a Sanctum
+- `miIp` i `server-time` es mantenen públics com a endpoints d'infraestructura/diagnòstic
+- el bloc de porta queda fora d'este tall de coherència perquè necessita protecció d'integració, no autenticació d'usuari
+
 ### Tall D - Proves de regressió
 
 - afegir proves que fallen si un endpoint sensible queda accessible sense auth
