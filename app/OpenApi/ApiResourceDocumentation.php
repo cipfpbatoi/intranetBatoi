@@ -11,13 +11,14 @@ class ApiResourceDocumentation
 {
 
     /**
-     * Operacions REST de /alumnofct (public).
+     * Operacions REST de /alumnofct (protegides).
      */
     #[OA\Get(
         path: '/alumnofct',
         operationId: 'alumnofctIndex',
         summary: 'Llista de registres de alumnofct',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         responses: [
             new OA\Response(response: 200, description: 'Llistat', content: new OA\JsonContent(ref: '#/components/schemas/AlumnoFctCollectionResponse')),
@@ -28,7 +29,8 @@ class ApiResourceDocumentation
         path: '/alumnofct',
         operationId: 'alumnofctStore',
         summary: 'Crea un registre de alumnofct',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(ref: '#/components/schemas/AlumnoFctUpsertRequest')),
         responses: [
@@ -41,7 +43,8 @@ class ApiResourceDocumentation
         path: '/alumnofct/{id}',
         operationId: 'alumnofctShow',
         summary: 'Obte el detall de alumnofct',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         responses: [
@@ -54,7 +57,8 @@ class ApiResourceDocumentation
         path: '/alumnofct/{id}',
         operationId: 'alumnofctUpdate',
         summary: 'Actualitza un registre de alumnofct',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(ref: '#/components/schemas/AlumnoFctUpsertRequest')),
@@ -69,7 +73,8 @@ class ApiResourceDocumentation
         path: '/alumnofct/{id}',
         operationId: 'alumnofctDestroy',
         summary: 'Elimina un registre de alumnofct',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         responses: [
@@ -83,13 +88,14 @@ class ApiResourceDocumentation
     }
 
     /**
-     * Operacions REST de /projecte (public).
+     * Operacions REST de /projecte (protegides).
      */
     #[OA\Get(
         path: '/projecte',
         operationId: 'projecteIndex',
         summary: 'Llista de registres de projecte',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         responses: [
             new OA\Response(response: 200, description: 'Llistat', content: new OA\JsonContent(ref: '#/components/schemas/GenericCollectionResponse')),
@@ -100,7 +106,8 @@ class ApiResourceDocumentation
         path: '/projecte',
         operationId: 'projecteStore',
         summary: 'Crea un registre de projecte',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(ref: '#/components/schemas/GenericUpsertRequest')),
         responses: [
@@ -113,7 +120,8 @@ class ApiResourceDocumentation
         path: '/projecte/{id}',
         operationId: 'projecteShow',
         summary: 'Obte el detall de projecte',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         responses: [
@@ -126,7 +134,8 @@ class ApiResourceDocumentation
         path: '/projecte/{id}',
         operationId: 'projecteUpdate',
         summary: 'Actualitza un registre de projecte',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(ref: '#/components/schemas/GenericUpsertRequest')),
@@ -141,7 +150,8 @@ class ApiResourceDocumentation
         path: '/projecte/{id}',
         operationId: 'projecteDestroy',
         summary: 'Elimina un registre de projecte',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+        security: [['sanctum' => []]],
 
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         responses: [
