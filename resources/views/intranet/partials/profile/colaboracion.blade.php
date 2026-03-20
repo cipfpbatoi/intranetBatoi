@@ -16,12 +16,17 @@
 
 <div class="col-xs-12 mb-3">
     <label for="{{ $filterId }}" class="form-label fw-semibold">Filtrar per poble</label>
-    <select id="{{ $filterId }}" class="form-control mis-colaboraciones-town-filter" data-target-tab="{{ $tabName }}">
-        <option value="">Tots els pobles</option>
+    <input id="{{ $filterId }}"
+           class="form-control mis-colaboraciones-town-filter"
+           data-target-tab="{{ $tabName }}"
+           list="{{ $filterId }}-options"
+           type="search"
+           placeholder="Escriu part del poble">
+    <datalist id="{{ $filterId }}-options">
         @foreach ($townOptions as $townOption)
-            <option value="{{ $townOption }}">{{ $townOption }}</option>
+            <option value="{{ $townOption }}"></option>
         @endforeach
-    </select>
+    </datalist>
 </div>
 
 @foreach ($elementos as $elemento)
@@ -45,14 +50,27 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                var normalizeTown = function (value) {
+                    return (value || '')
+                        .toString()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toUpperCase()
+                        .replace(/[0-9]/g, ' ')
+                        .replace(/Y/g, 'I')
+                        .replace(/[^A-Z\s]/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                };
+
                 document.querySelectorAll('.mis-colaboraciones-town-filter').forEach(function (filter) {
-                    filter.addEventListener('change', function () {
-                        var selectedTown = filter.value;
+                    var applyTownFilter = function () {
+                        var selectedTown = normalizeTown(filter.value);
                         var targetTab = filter.getAttribute('data-target-tab') || '';
 
                         document.querySelectorAll('.mis-colaboraciones-town-group[data-target-tab="' + targetTab + '"]').forEach(function (group) {
-                            var groupTown = group.getAttribute('data-town') || '';
-                            var visible = !selectedTown || groupTown === selectedTown;
+                            var groupTown = normalizeTown(group.getAttribute('data-town') || '');
+                            var visible = !selectedTown || groupTown.indexOf(selectedTown) !== -1;
                             group.style.display = visible ? '' : 'none';
 
                             var next = group.nextElementSibling;
@@ -61,7 +79,10 @@
                                 next = next.nextElementSibling;
                             }
                         });
-                    });
+                    };
+
+                    filter.addEventListener('input', applyTownFilter);
+                    filter.addEventListener('change', applyTownFilter);
                 });
             });
         </script>

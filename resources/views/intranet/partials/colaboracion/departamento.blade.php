@@ -60,12 +60,16 @@
 
     <div class="mb-3">
         <label for="colaboracion-town-filter" class="form-label fw-semibold">Filtrar per poble</label>
-        <select id="colaboracion-town-filter" class="form-control">
-            <option value="">Tots els pobles</option>
+        <input id="colaboracion-town-filter"
+               class="form-control"
+               list="colaboracion-town-options"
+               type="search"
+               placeholder="Escriu part del poble">
+        <datalist id="colaboracion-town-options">
             @foreach ($townOptions as $townOption)
-                <option value="{{ $townOption }}">{{ $townOption }}</option>
+                <option value="{{ $townOption }}"></option>
             @endforeach
-        </select>
+        </datalist>
     </div>
 
     @forelse ($townGroups as $localidad => $townItems)
@@ -106,7 +110,8 @@
                                     @endphp
 
                                     <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
-                                       class="text-decoration-none text-reset">
+                                       class="js-colaboracion-show text-decoration-none text-reset"
+                                       data-show-title="Detall col·laboració">
                                         <div class="rounded px-2 py-2"
                                              style="border:1px solid #e6e9ed;background:#fbfbfc;">
                                             <div class="d-flex flex-wrap gap-1 mb-1">
@@ -149,15 +154,30 @@
             }
 
             var groups = Array.from(document.querySelectorAll('.colaboracion-town-group'));
+            var normalizeTown = function (value) {
+                return (value || '')
+                    .toString()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toUpperCase()
+                    .replace(/[0-9]/g, ' ')
+                    .replace(/Y/g, 'I')
+                    .replace(/[^A-Z\s]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            };
 
-            filter.addEventListener('change', function () {
-                var selectedTown = filter.value;
+            var applyTownFilter = function () {
+                var selectedTown = normalizeTown(filter.value);
 
                 groups.forEach(function (group) {
-                    var groupTown = group.getAttribute('data-town') || '';
-                    group.style.display = (!selectedTown || groupTown === selectedTown) ? '' : 'none';
+                    var groupTown = normalizeTown(group.getAttribute('data-town') || '');
+                    group.style.display = (!selectedTown || groupTown.indexOf(selectedTown) !== -1) ? '' : 'none';
                 });
-            });
+            };
+
+            filter.addEventListener('input', applyTownFilter);
+            filter.addEventListener('change', applyTownFilter);
         });
     </script>
 @endpush
