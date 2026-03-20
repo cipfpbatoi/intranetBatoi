@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
@@ -150,6 +151,9 @@ class ComisionDireccionPanelTest extends TestCase
 
     public function test_editar_i_guardar_edicio_actualitza_la_comissio_des_del_component(): void
     {
+        $desde = Carbon::tomorrow()->addDay()->setTime(9, 30);
+        $hasta = (clone $desde)->setTime(11, 45);
+
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(ComisionDireccionPanel::class);
 
@@ -157,8 +161,8 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSet('editComisionId', 1)
             ->assertSet('editProfessorName', 'Maria Garcia Lopez');
 
-        $component->set('editDesde', '2026-03-20T09:30')
-            ->set('editHasta', '2026-03-20T11:45')
+        $component->set('editDesde', $desde->format('Y-m-d\\TH:i'))
+            ->set('editHasta', $hasta->format('Y-m-d\\TH:i'))
             ->set('editServicio', 'Servei editat')
             ->set('editGastos', '18.50')
             ->set('editKilometraje', '25')
@@ -172,8 +176,8 @@ class ComisionDireccionPanelTest extends TestCase
 
         $updated = DB::connection('sqlite')->table('comisiones')->where('id', 1)->first();
         $this->assertSame('Servei editat', $updated->servicio);
-        $this->assertSame('2026-03-20 09:30', $updated->desde);
-        $this->assertSame('2026-03-20 11:45', $updated->hasta);
+        $this->assertSame($desde->format('Y-m-d H:i'), $updated->desde);
+        $this->assertSame($hasta->format('Y-m-d H:i'), $updated->hasta);
         $this->assertSame('Seat', $updated->marca);
         $this->assertSame('1234ABC', $updated->matricula);
         $this->assertSame('Alcoi - València', $updated->itinerario);
