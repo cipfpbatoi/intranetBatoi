@@ -103,6 +103,32 @@ class AlumnoFctController extends ApiResourceController
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');
     }
 
+    /**
+     * Retorna només els camps editables que necessita el modal d'edició.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit($id)
+    {
+        $registro = $this->wrapNotFound(
+            fn () => $this->alumnoFcts()->findOrFail((int) $id),
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
+
+        return $this->sendResponse([
+            'id' => $registro->id,
+            'desde' => $registro->desde,
+            'hasta' => $registro->hasta,
+            'beca' => $registro->beca,
+            'autorizacion' => $registro->autorizacion,
+            'flexible' => $registro->flexible,
+            'valoracio' => $registro->valoracio,
+        ], 'OK');
+    }
+
 
 
 }

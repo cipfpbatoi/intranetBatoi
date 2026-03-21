@@ -7,6 +7,8 @@ namespace Tests\Feature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ApiEmpresaControllerFeatureTest extends TestCase
@@ -36,6 +38,7 @@ class ApiEmpresaControllerFeatureTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('empresas');
+        Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -46,6 +49,10 @@ class ApiEmpresaControllerFeatureTest extends TestCase
 
     public function test_convenio_filtra_i_ordena_per_nom(): void
     {
+        $this->insertProfesor('PEMP01');
+        $user = Profesor::on('sqlite')->findOrFail('PEMP01');
+        Sanctum::actingAs($user);
+
         DB::table('empresas')->insert([
             [
                 'id' => 1,
@@ -154,6 +161,41 @@ class ApiEmpresaControllerFeatureTest extends TestCase
                 $table->timestamps();
             });
         }
+
+        if (!Schema::connection('sqlite')->hasTable('profesores')) {
+            Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
+                $table->string('dni', 10)->primary();
+                $table->integer('codigo')->nullable();
+                $table->string('nombre')->nullable();
+                $table->string('apellido1')->nullable();
+                $table->string('apellido2')->nullable();
+                $table->string('departamento')->nullable();
+                $table->string('email')->nullable();
+                $table->unsignedInteger('rol')->default(config('roles.rol.profesor'));
+                $table->string('api_token', 80)->nullable();
+                $table->date('fecha_baja')->nullable();
+                $table->boolean('activo')->default(true);
+                $table->timestamps();
+            });
+        }
+    }
+
+    private function insertProfesor(string $dni): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => $dni,
+            'codigo' => random_int(1000, 9999),
+            'nombre' => 'Nom',
+            'apellido1' => 'Cognom1',
+            'apellido2' => 'Cognom2',
+            'departamento' => 'DEP1',
+            'email' => strtolower($dni).'@test.local',
+            'rol' => config('roles.rol.profesor'),
+            'api_token' => bin2hex(random_bytes(20)),
+            'fecha_baja' => null,
+            'activo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
-

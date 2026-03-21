@@ -154,6 +154,8 @@ class ApiBatch1ModernizationFeatureTest extends TestCase
     public function test_presencia_resumen_rango_torna_resum_per_dia_i_professor(): void
     {
         $this->insertProfesor('PAPI03');
+        $user = Profesor::on('sqlite')->findOrFail('PAPI03');
+        Sanctum::actingAs($user);
 
         $mockService = Mockery::mock(PresenciaResumenService::class);
         $mockService->shouldReceive('resumenDia')
@@ -183,6 +185,34 @@ class ApiBatch1ModernizationFeatureTest extends TestCase
         $response->assertJsonPath('0.dni', 'PAPI03');
         $response->assertJsonPath('0.days.2026-03-10.status', 'OK');
         $response->assertJsonPath('0.days.2026-03-10.in_center_minutes', 90);
+    }
+
+    public function test_presencia_resumen_rango_requerix_autenticacio(): void
+    {
+        $response = $this->getJson('/api/presencia/resumen-rango?desde=2026-03-10&hasta=2026-03-10&dni=PAPI03');
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_activity_get_files_requerix_autenticacio(): void
+    {
+        $response = $this->getJson('/api/actividad/1/getFiles');
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_projecte_index_requerix_autenticacio(): void
+    {
+        $response = $this->getJson('/api/projecte');
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_convenio_requerix_autenticacio(): void
+    {
+        $response = $this->getJson('/api/convenio');
+
+        $response->assertUnauthorized();
     }
 
     private function createSchema(): void

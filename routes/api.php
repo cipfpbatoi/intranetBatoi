@@ -13,24 +13,24 @@ use Illuminate\Http\Request;
   |
  */
 
-Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
-Route::resource('projecte', 'ProjecteController', ['except' => [ 'create']]);
-Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice')->middleware('auth:api,sanctum');
-Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
-Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
 Route::get('porta/obrir', 'CotxeController@obrirTest');
 Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
 Route::post('eventPorta', 'CotxeController@eventEntrada');
-Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
 Route::post('/auth/exchange', 'AuthTokenController@exchange');
 Route::get('/auth/me', 'AuthTokenController@me')->middleware('auth:sanctum');
 Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:sanctum');
-Route::resource('actividad', 'ActividadController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
 
 Route::group(['middleware' => 'auth:api,sanctum'], function () {
+    Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']]);
+    Route::resource('projecte', 'ProjecteController', ['except' => [ 'create']]);
+    Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice');
+    Route::get('/convenio', 'EmpresaController@indexConvenio');
+    Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
+    Route::get('/presencia/resumen-rango', 'PresenciaResumenController@rango');
+    Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
     Route::get('grupo/list/{id}', 'GrupoController@list')->middleware('auth:api,sanctum');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:api,sanctum');
     Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:api,sanctum');

@@ -20,6 +20,11 @@
     }
 
     function getFormModal() {
+        var createModal = document.getElementById('create');
+        if (createModal) {
+            return createModal.querySelector('form');
+        }
+
         return document.querySelector('.modal form');
     }
 
@@ -62,6 +67,104 @@
         }
     }
 
+    function normalizePickerValue(rawValue, field) {
+        var value = trim(rawValue);
+        if (!value) {
+            return '';
+        }
+
+        var pageLocale = (((document.querySelector('meta[name="app-locale"]') || {}).content || document.documentElement.lang || 'es').toLowerCase()).split('-')[0];
+        var isEnglish = pageLocale === 'en';
+        var isDateTime = field.classList.contains('datetime');
+        var isTime = field.classList.contains('time');
+
+        if (isTime) {
+            return value;
+        }
+
+        var parts;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            parts = value.split('-');
+            return isEnglish
+                ? parts[1] + '/' + parts[2] + '/' + parts[0]
+                : parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+
+        if (/^\d{2}-\d{2}-\d{4}$/.test(value)) {
+            parts = value.split('-');
+            return isEnglish
+                ? parts[1] + '/' + parts[0] + '/' + parts[2]
+                : parts[0] + '/' + parts[1] + '/' + parts[2];
+        }
+
+        if (isDateTime && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(value)) {
+            parts = value.split(' ');
+            var datePart = normalizePickerValue(parts[0], field);
+            return datePart ? datePart + ' ' + parts[1] : value;
+        }
+
+        if (isDateTime && /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}/.test(value)) {
+            parts = value.split(' ');
+            var normalizedDate = normalizePickerValue(parts[0], field);
+            return normalizedDate ? normalizedDate + ' ' + parts[1] : value;
+        }
+
+        return value;
+    }
+
+    function normalizeNativeInputValue(rawValue, field) {
+        var value = trim(rawValue);
+        if (!value) {
+            return '';
+        }
+
+        var type = (field.getAttribute('type') || '').toLowerCase();
+        var match;
+
+        if (type === 'time') {
+            match = value.match(/^(\d{2}:\d{2})/);
+            return match ? match[1] : value;
+        }
+
+        if (type === 'date') {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                return value;
+            }
+
+            match = value.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
+            if (match) {
+                return match[3] + '-' + match[2] + '-' + match[1];
+            }
+
+            match = value.match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})/);
+            if (match) {
+                return match[1] + '-' + match[2] + '-' + match[3];
+            }
+
+            return value;
+        }
+
+        if (type === 'datetime-local') {
+            if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+                return value;
+            }
+
+            match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/);
+            if (match) {
+                return match[1] + '-' + match[2] + '-' + match[3] + 'T' + match[4];
+            }
+
+            match = value.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})[ T](\d{2}:\d{2})/);
+            if (match) {
+                return match[3] + '-' + match[2] + '-' + match[1] + 'T' + match[4];
+            }
+
+            return value;
+        }
+
+        return value;
+    }
+
     function setInputValue(field, value) {
         if (!field) {
             return;
@@ -69,6 +172,7 @@
 
         var tagName = field.tagName.toUpperCase();
         var type = (field.getAttribute('type') || '').toUpperCase();
+        var nativeType = type.toLowerCase();
 
         if (tagName === 'INPUT' && type === 'CHECKBOX') {
             field.checked = !!value;
@@ -83,7 +187,44 @@
             return;
         }
 
-        field.value = value;
+        if (tagName === 'INPUT' && (nativeType === 'date' || nativeType === 'datetime-local' || nativeType === 'time')) {
+            field.value = normalizeNativeInputValue(value, field);
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+            return;
+        }
+
+        var normalizedValue = value;
+        if (field.classList.contains('date') || field.classList.contains('datetime') || field.classList.contains('time')) {
+            normalizedValue = normalizePickerValue(value, field);
+
+            if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.datetimepicker === 'function') {
+                var $field = window.jQuery(field);
+                var pickerInstance = $field.data('DateTimePicker');
+                if (pickerInstance) {
+                    if (!normalizedValue) {
+                        pickerInstance.clear();
+                    } else if (typeof window.moment === 'function') {
+                        pickerInstance.date(window.moment(normalizedValue, [
+                            'DD/MM/YYYY',
+                            'MM/DD/YYYY',
+                            'DD/MM/YYYY HH:mm',
+                            'MM/DD/YYYY HH:mm',
+                            'MM/DD/YYYY h:mm A',
+                            'HH:mm'
+                        ], true));
+                    } else {
+                        pickerInstance.date(normalizedValue);
+                    }
+                }
+
+                $field.val(normalizedValue).trigger('change');
+            }
+        }
+
+        field.value = normalizedValue;
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     function fillEditForm(data, id) {
@@ -106,7 +247,7 @@
 
         var primerElem = '';
         Object.keys(data || {}).forEach(function (propiedad) {
-            var elem = document.getElementById(propiedad + '_id');
+            var elem = formModal.querySelector('#' + propiedad + '_id');
             if (!elem) {
                 return;
             }
@@ -127,7 +268,7 @@
         }
 
         if (primerElem) {
-            var firstField = document.getElementById(primerElem + '_id');
+            var firstField = formModal.querySelector('#' + primerElem + '_id');
             if (firstField && typeof firstField.focus === 'function') {
                 firstField.focus();
             }

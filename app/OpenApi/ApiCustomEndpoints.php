@@ -17,7 +17,8 @@ class ApiCustomEndpoints
         path: '/alumnofct/{grupo}/grupo',
         operationId: 'alumnofct_grupo_grupo_get',
         summary: 'Llista alumnes FCT d un grup',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+
 
         parameters: [
             new OA\Parameter(name: 'grupo', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
@@ -39,7 +40,8 @@ class ApiCustomEndpoints
         path: '/convenio',
         operationId: 'convenio_get',
         summary: 'Llista convenis disponibles',
-        tags: ['FCT (Public)'],
+        tags: ['FCT'],
+
 
 
         responses: [
@@ -79,7 +81,8 @@ class ApiCustomEndpoints
         path: '/actividad/{actividad}/getFiles',
         operationId: 'actividad_actividad_getFiles_get',
         summary: 'Obte fitxers associats a una activitat',
-        tags: ['Activitats (Public)'],
+        tags: ['Activitats'],
+        security: [['sanctum' => []]],
 
         parameters: [
             new OA\Parameter(name: 'actividad', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
@@ -204,7 +207,8 @@ class ApiCustomEndpoints
         path: '/presencia/resumen-rango',
         operationId: 'presencia_resumen_rango_get',
         summary: 'Resum de presencia per professor en un rang de dates',
-        tags: ['Guardies (Public)'],
+        tags: ['Guardies'],
+        security: [['sanctum' => []]],
         parameters: [
             new OA\Parameter(name: 'desde', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date')),
             new OA\Parameter(name: 'hasta', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date')),
@@ -252,7 +256,7 @@ class ApiCustomEndpoints
         operationId: 'alumnofct_grupo_dual_get',
         summary: 'Llista alumnes FCT dual d un grup',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'grupo', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -275,7 +279,7 @@ class ApiCustomEndpoints
         operationId: 'fct_id_alFct_get',
         summary: 'Obte seguiment FCT per identificador',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -298,7 +302,7 @@ class ApiCustomEndpoints
         operationId: 'fct_id_alFct_post',
         summary: 'Guarda seguiment FCT per identificador',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -932,7 +936,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_instructores_id_get',
         summary: 'Llista instructors d una colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -954,7 +958,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_resolve_get',
         summary: 'Resol una colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -976,7 +980,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_refuse_get',
         summary: 'Rebutja una colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -998,7 +1002,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_unauthorize_get',
         summary: 'Desautoritza una colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1020,7 +1024,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_switch_get',
         summary: 'Canvia estat d una colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1042,7 +1046,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_telefonico_post',
         summary: 'Registra contacte telefonic de colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1065,7 +1069,7 @@ class ApiCustomEndpoints
         operationId: 'colaboracion_colaboracion_book_post',
         summary: 'Programa una visita o cita de colaboracio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'colaboracion', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1088,7 +1092,7 @@ class ApiCustomEndpoints
         operationId: 'documentacionFCT_documento_get',
         summary: 'Executa generacio de document FCT',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'documento', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1110,7 +1114,7 @@ class ApiCustomEndpoints
         operationId: 'signatura_get',
         summary: 'Obte signatura',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
 
         responses: [
             new OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
@@ -1130,7 +1134,7 @@ class ApiCustomEndpoints
         operationId: 'signatura_director_get',
         summary: 'Obte signatura de direccio',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
 
         responses: [
             new OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
@@ -1150,7 +1154,7 @@ class ApiCustomEndpoints
         operationId: 'signatura_a1_get',
         summary: 'Obte signatura A1',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
 
         responses: [
             new OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
@@ -1171,6 +1175,7 @@ class ApiCustomEndpoints
         summary: 'Obte dades de matricula per token',
         tags: ['FCT'],
         security: [['sanctum' => []]],
+
         parameters: [
             new OA\Parameter(name: 'token', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
@@ -1191,7 +1196,7 @@ class ApiCustomEndpoints
         path: '/test/matricula/{token}',
         operationId: 'test_matricula_token_get',
         summary: 'Obte dades de matricula de prova',
-        tags: ['Altres'],
+        tags: ['FCT'],
         security: [['sanctum' => []]],
         parameters: [
             new OA\Parameter(name: 'token', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
@@ -1260,7 +1265,7 @@ class ApiCustomEndpoints
         operationId: 'matricula_send_post',
         summary: 'Envia notificacio de matricula',
         tags: ['FCT'],
-        security: [['sanctum' => []]],
+
 
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(type: 'object')),
         responses: [

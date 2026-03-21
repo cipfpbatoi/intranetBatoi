@@ -28,11 +28,21 @@ class AlumnoFctResource extends JsonResource
             'hasta' => $this->hasta,
             'insercion' => $this->insercion,
             'pg0301' => $this->pg0301,
-            'profesor' => $this->Alumno->Tutor[0]->dni,
-            'alumno' => $this->quien,
+            'profesor' => $this->idProfesor,
+            'alumno' => $this->resolveAlumnoDisplay(),
             'horas' => $this->horas
         ];
     }
+
+    /**
+     * Retorna un identificador o nom d'alumne sense forçar relacions fràgils.
+     */
+    private function resolveAlumnoDisplay(): string
+    {
+        if ($this->resource->relationLoaded('Alumno') && $this->resource->Alumno !== null) {
+            return (string) ($this->resource->Alumno->fullName ?? $this->resource->idAlumno);
+        }
+
+        return (string) $this->resource->idAlumno;
+    }
 }
-
-
