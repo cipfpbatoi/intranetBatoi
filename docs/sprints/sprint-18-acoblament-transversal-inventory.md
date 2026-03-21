@@ -223,3 +223,138 @@ Tall B:
   - `lateral`
   - `legacy`
 - i deixar una proposta de frontera per domini
+
+## Tall B
+
+## Classificació per severitat
+
+### FCT
+
+- `fort`
+  - [`PanelFctAvalController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/PanelFctAvalController.php)
+    centralitza massa subfluxos: avaluació, actes, qualitat, SAO, projecte, estadística i documents.
+  - [`resources/views/fct/show.blade.php`](/Users/igomis/Code/intranetBatoi/resources/views/fct/show.blade.php)
+    depén directament de `Colaboracion`, `Centro`, `Empresa`, `Instructor` i `Cotutor`.
+- `fràgil`
+  - doble via web/API per a seguiment i alumnat FCT (`/fct/{id}/alFct`, `alumnofct`, imports, emails).
+  - `FctAlumnoController` continua fent de controlador de gestió, impressió, mail i documents.
+- `lateral`
+  - dependència contínua de `Documento`, `Adjunto`, `Signatura`, `Projecte`, `Qualitat`.
+- `legacy`
+  - JS específic repartit en `Fct/show.js`, `Fct/grid.js`, `Fctcap/index.js`, `Fctdual/index.js`.
+
+### Colaboraciones
+
+- `fort`
+  - [`public/js/Colaboracion/grid.js`](/Users/igomis/Code/intranetBatoi/public/js/Colaboracion/grid.js)
+    és el punt d'orquestració real de massa operacions.
+  - el domini suporta simultàniament:
+    - agenda de contacte
+    - estat comercial
+    - instructors
+    - reserves
+    - pont a creació de FCT
+- `fràgil`
+  - la mateixa informació es representa des de departament, tutor, empresa i FCT create.
+  - hi ha coexistència de vistes compactes, modals, targetes i grid antic.
+- `lateral`
+  - lligam fort amb `Activity`, `Fct`, `Alumno` i `Centro`.
+- `legacy`
+  - gran part del comportament depén encara de JS procedural i accions GET mutadores.
+
+### Documentos
+
+- `fort`
+  - [`DocumentoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/DocumentoController.php)
+    governa massa variants de document.
+  - el model `Documento` està assumint subdominis molt diferents sota un mateix contracte.
+- `fràgil`
+  - tres interfícies distintes per al mateix domini:
+    - panell legacy
+    - perfil/tickets
+    - Livewire
+  - filtres i criteris d'accés repartits entre controllers, serveis i Blade.
+- `lateral`
+  - el domini documental està escampat per PDFs, emails, FCT, projecte i signatures.
+- `legacy`
+  - controllers com [`PanelDocAgrupadosController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/PanelDocAgrupadosController.php)
+    continuen operant directament sobre model + `TipoDocumentoService`.
+
+## Fronteres recomanades
+
+### FCT
+
+Hauria de quedar dins:
+
+- pràctica real
+- alumnat assignat
+- instructors i cotutoria
+- seguiment real
+- calendari/hores
+- avaluació final
+
+Hauria d'eixir fora:
+
+- relació comercial inicial amb empresa
+- captació o classificació de centres
+- gestió genèrica de documents
+- signatures com a infraestructura transversal
+
+Capa que hauria de governar:
+
+- servei d'aplicació `Fct`
+- no la vista ni el JS del panell
+
+### Colaboraciones
+
+Hauria de quedar dins:
+
+- relació centre-cicle
+- disponibilitat de llocs
+- estat de contacte amb el centre
+- instructors i dades operatives del centre
+- reserves prèvies a FCT
+
+Hauria d'eixir fora:
+
+- seguiment FCT real
+- documentació FCT
+- decisions d'avaluació
+- calendari d'alumnat
+
+Capa que hauria de governar:
+
+- serveis `ColaboracionService` i `ColaboracionQueryService`
+- no `grid.js` com a orquestrador principal
+
+### Documentos
+
+Hauria de quedar dins:
+
+- metadades comunes
+- adjunt i fitxer
+- permisos i visibilitat
+- llistat, filtrat i cicle de vida bàsic
+
+Hauria d'eixir fora:
+
+- lògica específica de projecte
+- lògica específica de qualitat FCT
+- efectes sobre notes o estat acadèmic
+- generació/negoci de signatures
+
+Capa que hauria de governar:
+
+- serveis de document i accions específiques per subdomini
+- no un únic `DocumentoController` per a tots els casos
+
+## Priorització de refactors futurs
+
+1. Separar millor `colaboracion` de `FCT`.
+   Ara és el punt on més es nota la frontera borrosa.
+2. Tallar responsabilitats de [`DocumentoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/DocumentoController.php).
+   És el nucli més transversal del tercer domini.
+3. Reduir el pes orquestrador del JS legacy.
+   Sobretot en [`public/js/Colaboracion/grid.js`](/Users/igomis/Code/intranetBatoi/public/js/Colaboracion/grid.js) i el bloc FCT.
+4. Replantejar `PanelFctAvalController`.
+   És probablement el controlador amb més acoblament funcional.
