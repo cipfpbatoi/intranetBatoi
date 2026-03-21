@@ -66,11 +66,12 @@ class FormBuilder
         $inputType = [];
         foreach ($formFields as $key => $properties) {
             $parametres = [];
-            $inputType[$key]['type'] = $this->aspect($parametres, $properties['type']??'text');
+            $declaredType = $properties['type'] ?? 'text';
+            $inputType[$key]['type'] = $this->aspect($parametres, $declaredType);
 
             $parametres['id'] = $key . '_id';
             $parametres['ph'] = $this->translate($key);
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$key]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $this->resolveCssInputClass($declaredType, $inputType[$key]['type']);
 
             $inputType[$key]['default'] = $properties['default'] ?? null;
 
@@ -133,7 +134,8 @@ class FormBuilder
         foreach ($this->fillable as $property) {
             $parametres = [];
             $inputTpe = $this->elemento->getInputType($property);
-            $inputType[$property]['type'] = $this->aspect($parametres, $inputTpe['type'] ?? 'text');
+            $declaredType = $inputTpe['type'] ?? 'text';
+            $inputType[$property]['type'] = $this->aspect($parametres, $declaredType);
             $label = existsTranslate('models.'.$model.'.'.$property) ? __('models.'.$model.'.'.$property):null;
             $ph = !strpos(__('validation.attributes.' . $property), 'alidation.')
                 ? __('validation.attributes.' . $property)
@@ -144,7 +146,7 @@ class FormBuilder
             if ($label) {
                 $parametres['label'] = $label;
             }
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$property]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $this->resolveCssInputClass($declaredType, $inputType[$property]['type']);
 
             $inputType[$property]['default'] = $inputTpe['default'] ?? null;
 
@@ -164,5 +166,18 @@ class FormBuilder
             $inputType[$property]['params'] = $parametres;
         }
         return($inputType);
+    }
+
+    /**
+     * Conserva la classe funcional del tipus original encara que es renderitze com a text.
+     *
+     * Els camps `date/time/datetime` es pinten com a `text`, però el JS legacy
+     * depén de la classe CSS original per inicialitzar el datepicker.
+     */
+    private function resolveCssInputClass(string $declaredType, string $renderType): string
+    {
+        return in_array($declaredType, ['date', 'time', 'datetime'], true)
+            ? $declaredType
+            : $renderType;
     }
 }
