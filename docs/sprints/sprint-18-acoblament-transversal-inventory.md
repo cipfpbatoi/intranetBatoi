@@ -358,3 +358,174 @@ Capa que hauria de governar:
    Sobretot en [`public/js/Colaboracion/grid.js`](/Users/igomis/Code/intranetBatoi/public/js/Colaboracion/grid.js) i el bloc FCT.
 4. Replantejar `PanelFctAvalController`.
    És probablement el controlador amb més acoblament funcional.
+
+## Tall C
+
+## Frontera operativa per domini
+
+Este tall ja no descriu només el problema. Fixa quina capa hauria de prendre decisions i quins punts són candidats immediats a extracció.
+
+### FCT
+
+#### Govern recomanat
+
+- `model`
+  - `Fct`
+  - `AlumnoFct`
+- `servei d'aplicació`
+  - creació/assignació
+  - seguiment
+  - calendari/hores
+  - avaluació
+  - emissió de certificats
+- `controller`
+  - només coordinació HTTP i autorització
+- `vista/JS`
+  - presentació i interacció local
+
+#### No hauria de governar
+
+- captació de centres
+- estat comercial de col·laboracions
+- cicle de vida de documents genèrics
+- signatura com a infraestructura comuna
+
+#### Candidats a extracció
+
+- extraure de [`PanelFctAvalController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/PanelFctAvalController.php):
+  - estadística
+  - actes
+  - qualitat
+  - operacions SAO
+- extraure de [`FctAlumnoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/FctAlumnoController.php):
+  - mails
+  - impressió documental
+  - convalidacions
+- reduir dependència directa en Blade de:
+  - `Fct -> Colaboracion -> Centro -> Empresa`
+
+#### Regla de frontera
+
+Si una operació té sentit encara que la relació comercial amb el centre ja estiga resolta, ha de viure en `FCT`, no en `colaboracion`.
+
+### Colaboraciones
+
+#### Govern recomanat
+
+- `model`
+  - `Colaboracion`
+  - `ColaboracionPreasignacion`
+- `servei d'aplicació`
+  - estat de contacte
+  - instructors
+  - llocs disponibles
+  - reserves prèvies
+  - consulta per tutor/departament
+- `controller`
+  - muntar panells i delegar
+- `vista/JS`
+  - UI de llistat, filtres i accions locals
+
+#### No hauria de governar
+
+- seguiment real de pràctiques
+- avaluació FCT
+- calendari d'alumnat
+- emissió documental FCT
+
+#### Candidats a extracció
+
+- traure de [`public/js/Colaboracion/grid.js`](/Users/igomis/Code/intranetBatoi/public/js/Colaboracion/grid.js):
+  - mutacions de negoci
+  - lògica de reserva
+  - lògica d'agenda/contacte
+- consolidar en serveis:
+  - `resolve/refuse/unauthorize/switch`
+  - `book/telefonico`
+  - reserves i capacitat
+- separar millor:
+  - vista de departament
+  - vista personal del tutor
+  - ús de col·laboració dins de creació FCT
+
+#### Regla de frontera
+
+Si una operació només prepara o classifica una possible pràctica, és `colaboracion`. Si ja afecta alumnat en pràctica real, és `FCT`.
+
+### Documentos
+
+#### Govern recomanat
+
+- `model`
+  - `Documento`
+  - `Adjunto`
+- `servei d'aplicació`
+  - cicle de vida bàsic
+  - permisos i visibilitat
+  - metadades comunes
+- `accions específiques`
+  - projecte
+  - qualitat FCT
+  - signatures
+  - imports/exports especials
+- `controller`
+  - només entrada HTTP per cada subflux
+
+#### No hauria de governar
+
+- decisions acadèmiques
+- canvi de nota o estat FCT
+- flux específic de projecte
+- negoci de signatures
+
+#### Candidats a extracció
+
+- extraure de [`DocumentoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/DocumentoController.php):
+  - projecte FCT
+  - qualitat upload
+  - nota vinculada a `AlumnoFct`
+- separar en accions/subcontroladors:
+  - `DocumentoProjecteController` o equivalent
+  - `DocumentoQualitatController` o equivalent
+  - servei específic de documentació FCT
+- unificar després criteri d'UI:
+  - panell legacy
+  - tickets/perfil
+  - Livewire
+
+#### Regla de frontera
+
+Si una operació pot aplicar a qualsevol document, és `Documento`. Si només té sentit en FCT, projecte o qualitat, ha d'eixir del controlador genèric.
+
+## Candidats immediats per a sprints futurs
+
+### Sprint curt sobre FCT
+
+- auditar [`PanelFctAvalController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/PanelFctAvalController.php)
+- separar estadística i actes
+- reduir mètodes que barregen UI i negoci
+
+### Sprint curt sobre Colaboraciones
+
+- partir [`public/js/Colaboracion/grid.js`](/Users/igomis/Code/intranetBatoi/public/js/Colaboracion/grid.js) en peces:
+  - grid visual
+  - mutacions d'estat
+  - reserves
+  - modal/contacte
+
+### Sprint curt sobre Documentos
+
+- traure del [`DocumentoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/DocumentoController.php) les accions de projecte i qualitat
+- deixar-lo només com a gestor documental comú
+
+## Decisió que queda fixada
+
+La frontera prioritària a aclarir és:
+
+- `colaboracion` prepara
+- `FCT` executa
+
+I en paral·lel:
+
+- `Documento` conserva infraestructura comuna
+- però el negoci específic ha d'eixir del controlador genèric
