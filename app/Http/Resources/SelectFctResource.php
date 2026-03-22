@@ -18,7 +18,7 @@ class SelectFctResource extends JsonResource
         /** @var Fct|null $fct */
         $fct = $this->resource instanceof Fct ? $this->resource : $this->Fct;
         $nom_centre = $fct?->relatedCenter()?->nombre;
-        $instructor = $this->Instructor->nombre ?? $fct?->Instructor?->nombre;
+        $instructor = $this->Instructor?->nombre ?? $fct?->Instructor?->nombre;
 
         return [
             'id' => $this->id,
