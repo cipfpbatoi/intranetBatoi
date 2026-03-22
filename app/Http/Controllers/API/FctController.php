@@ -19,11 +19,16 @@ class FctController extends ApiResourceController
          */
         public function telefonico($id, Request $request)
         {
+            $fct = Fct::find($id);
+            if ($fct === null) {
+                return $this->sendNotFound('FCT not found');
+            }
+
             $activity = $this->upsertDailyActivity(
                 'phone',
                 $id,
                 (string) $request->explicacion,
-                static fn (string $resourceId) => Fct::find($resourceId),
+                static fn () => $fct,
                 'Seguiment telefònic'
             );
 
