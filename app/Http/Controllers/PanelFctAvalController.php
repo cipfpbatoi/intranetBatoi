@@ -19,12 +19,15 @@ use Intranet\Entities\Ciclo;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
+use Intranet\Services\UI\FormBuilder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -826,6 +829,71 @@ class PanelFctAvalController extends IntranetController
         $ciclos2 = $this->avals()->estadistiques($grupos2);
 
         return view('fct.estadisticas', compact('ciclos1', 'ciclos2', 'grupos1', 'grupos2'));
+    }
+
+    /**
+     * Mostra el formulari reduït per a editar la nota de projecte.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function edit($id = null)
+    {
+        $elemento = $this->findModelOrFail(
+            AlumnoFct::class,
+            $id,
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
+        abort_unless($this->canManageProjectGrade($elemento), 403);
+
+        $formulario = new FormBuilder($elemento, AlumnoFctAvalCrudSchema::FORM_FIELDS);
+        $modelo = $this->model;
+
+        return view($this->chooseView('edit'), compact('formulario', 'modelo'));
+    }
+
+    /**
+     * Actualitza exclusivament la nota de projecte d'una FCT avaluable.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function update(Request $request, $id)
+    {
+        $elemento = $this->findModelOrFail(
+            AlumnoFct::class,
+            $id,
+            "FCT d'alumne no trobada",
+            ['alumno_fct_id' => $id]
+        );
+        abort_unless($this->canManageProjectGrade($elemento), 403);
+
+        $validated = $request->validate([
+            'calProyecto' => 'nullable|numeric|min:0|max:10',
+        ]);
+
+        $elemento->calProyecto = $validated['calProyecto'] ?? null;
+        $elemento->save();
+
+        return $this->redirect();
+    }
+
+    /**
+     * Determina si l'usuari autenticat pot gestionar la nota de projecte.
+     */
+    private function canManageProjectGrade(AlumnoFct $elemento): bool
+    {
+        $user = AuthUser();
+        if (!$user) {
+            return false;
+        }
+
+        return in_array(
+            (string) $elemento->idProfesor,
+            Profesor::getSubstituts((string) $user->dni),
+            true
+        );
     }
 
     /**

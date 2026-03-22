@@ -82,12 +82,12 @@ class FctProjecteDocumentoController extends IntranetController
     /**
      * Mostra el formulari de document de projecte associat a una FCT avaluable.
      *
-     * @param int|string $idFct
      * @throws NotFoundDomainException
      */
-    public function create($idFct)
+    public function create($default = [])
     {
         $this->authorize('create', Documento::class);
+        $idFct = request()->route('fct');
 
         $fct = $this->alumnoFcts()->findOrFail((int) $idFct);
         $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
@@ -106,15 +106,14 @@ class FctProjecteDocumentoController extends IntranetController
 
     /**
      * Persistix el document de projecte i actualitza la nota del projecte si cal.
-     *
-     * @param int|string $fct
      */
-    public function store(Request $request, $fct)
+    public function store(Request $request)
     {
         $this->authorize('create', Documento::class);
         $this->validate($request, (new DocumentoStoreRequest())->rules());
+        $fct = $request->route('fct');
 
-        if ($request->filled('nota')) {
+        if ($fct !== null && $request->filled('nota')) {
             $this->forms()->updateNota($this->alumnoFcts(), (int) $fct, $request->nota);
             if ((float) $request->nota < 5) {
                 return $this->redirect();
