@@ -2,23 +2,24 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
+use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
-use Response;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Illuminate\Support\Facades\Log;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class CentroController
  * @package Intranet\Http\Controllers
  */
-class CentroController extends IntranetController
+class CentroController extends ModalController
 {
 
 
@@ -31,31 +32,30 @@ class CentroController extends IntranetController
      */
     protected $model = 'Centro';
 
-
     /**
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(CentroRequest $request, $id)
     {
-        parent::update($request, $id);
+        $this->persist($request, $id);
         Session::put('pestana', 2);
         return $this->showEmpresa($request->idEmpresa);
     }
 
     private function showEmpresa($id)
     {
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $id]);
     }
 
     /**
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(CentroRequest $request)
     {
-        parent::store($request);
+        $this->persist($request);
         Session::put('pestana',2);
         return $this->showEmpresa($request->idEmpresa);
     }
@@ -64,20 +64,29 @@ class CentroController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $centro = Centro::find($id);
-        $empresa = Centro::find($id)->idEmpresa;
-        $misColaboraciones =Colaboracion::Micolaboracion($empresa)->count();
-        if (rolesUser(config('roles.rol.administrador'))) {
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
+        $empresa = $centro->idEmpresa;
+
+        if (isAdmin()) {
             parent::destroy($id);
         } else {
-            if ($centro->Colaboraciones->count() == $misColaboraciones){
+            $misColaboraciones = Colaboracion::MiColaboracion($empresa)->count();
+
+            if ($centro->colaboraciones()->count() == $misColaboraciones){
                 try {
                     parent::destroy($id);
                 } catch (QueryException $exception){
+                    report($exception);
+                    Log::warning('No es pot esborrar el centre per restriccions de claus.', [
+                        'centro_id' => $id,
+                        'empresa_id' => $empresa,
+                        'error' => $exception->getMessage(),
+                    ]);
                     Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixe centre d'anys anteriors.");
                 }
             } else {
@@ -88,9 +97,15 @@ class CentroController extends IntranetController
         return $this->showEmpresa($empresa);
     }
 
+    /**
+     * @param EmpresaCentroRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function empresaCreateCentro(EmpresaCentroRequest $request, $id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresaAnt = $centro->Empresa;
         if ($empresaAnt->concierto == $request->concierto) {
             $empresaAnt->concierto = null;

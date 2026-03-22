@@ -2,8 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Grupo\GrupoService;
 
 class AVIIIResource extends PrintResource
 {
@@ -23,9 +22,9 @@ class AVIIIResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
-        $secretario = Profesor::find(config('avisos.secretario'))->fullName;
-        $director = Profesor::find(config('avisos.director'))->fullName;
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
+        $secretario = cargo('secretario')->fullName;
+        $director = cargo('director')->fullName;
         return [
             'SECRET 1' => $secretario,
             'ALUMNE' => $alumno->fullName,

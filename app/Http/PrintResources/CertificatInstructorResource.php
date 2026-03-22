@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Profesor;
 
 class CertificatInstructorResource extends PrintResource
 {
@@ -22,8 +21,8 @@ class CertificatInstructorResource extends PrintResource
      */
     public function toArray()
     {
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director = cargo('director');
         return [
             'untitled1' => $secretario->fullName,
             'untitled13' =>  $secretario->fullName,

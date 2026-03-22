@@ -8,23 +8,23 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li class="">
-                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                    <a href="javascript:;" class="user-profile dropdown-toggle" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         {{ authUser()->nombre}} {{authUser()->apellido1}}
                         <span class=" fa fa-angle-down"></span>
                     </a>
-                    <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-usermenu">
                         @include('layouts.partials.topmenu')
                     </ul>
                 </li>
                 @if (!isset(authUser()->nia))
                     <li class="">
                         
-                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">
-                                @if ( estaDentro())
-                                    {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                            <a href="{{ route('fichar.ficha') }}">
+                                @if ($insideAuth ?? false)
+                                    <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                                 @else
-                                    {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                    <img src="{{ asset('img/clock-icon-rojo.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                                 @endif
                             </a>
                        
@@ -51,7 +51,7 @@
                     </li>
                 @endcan
                 <li role="presentation" class="dropdown">
-                    <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
+                    <a href="javascript:;" class="dropdown-toggle info-number" data-bs-toggle="dropdown"
                        aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
                         <span class="badge bg-green">@if ($total  = count(authUser()->unreadNotifications))
@@ -69,7 +69,7 @@
                             @endphp
 
                             <li id='{{$notifications->id}}'>
-                                <a class="papelera" href="/notification/{{$notifications->id}}/delete">
+                                <a class="papelera" href="{{ route('notification.delete', ['notification' => $notifications->id]) }}">
                                     <span class="image">
                                         <img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno"/>
                                     </span>
@@ -90,7 +90,7 @@
                             </li>
                          @endforeach
                         <div class="text-center">
-                            <a href="/notification">
+                            <a href="{{ route('notificacion.index') }}">
                                 <strong>@lang("messages.buttons.seeAll")</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -102,4 +102,3 @@
     </div>
 </div>
 <!-- /top navigation -->
-

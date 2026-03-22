@@ -2,20 +2,18 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Intranet\Http\Requests\OptionStoreRequest;
 use Intranet\Entities\Poll\Option;
-use Response;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use Intranet\UI\Botones\BotonImg;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class OptionController
  * @package Intranet\Http\Controllers
  */
-class OptionController extends IntranetController
+class OptionController extends ModalController
 {
     /**
      * @var string
@@ -35,24 +33,32 @@ class OptionController extends IntranetController
     protected $gridFields = [ 'question','scala'];
 
     /**
-     * @param Request $request
+     * @param OptionStoreRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(OptionStoreRequest $request)
     {
-        parent::store($request);
-        return redirect()->action('PPollController@show', ['id' => $request->ppoll_id]);
+        $this->authorize('create', Option::class);
+        $this->persist($request);
+        return redirect()->route('ppoll.show', ['id' => $request->ppoll_id]);
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $poll = Option::find($id)->ppoll_id;
+        try {
+            $option = Option::findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Opció no trobada', ['option_id' => $id], $e);
+        }
+        $this->authorize('delete', $option);
+        $poll = $option->ppoll_id;
         parent::destroy($id);
-        return redirect()->action('PPollController@show', ['id' => $poll]);
+        return redirect()->route('ppoll.show', ['id' => $poll]);
     }
     
     

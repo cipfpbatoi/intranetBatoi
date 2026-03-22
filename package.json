@@ -1,27 +1,41 @@
 {
     "private": true,
+    "engines": {
+        "node": ">=20.20.1 <21",
+        "npm": ">=11.11.0 <12"
+    },
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "hot": "mix watch --hot",
-        "production": "NODE_OPTIONS=--openssl-legacy-provider mix --production"
+        "dev": "vite",
+        "build": "vite build",
+        "production": "vite build"
     },
     "devDependencies": {
+        "@popperjs/core": "^2.11.8",
+        "@vitejs/plugin-vue2": "^2.3.3",
         "axios": "^0.21.1",
-        "bootstrap": "^4.0.0",
-        "cross-env": "^5.1",
+        "bootstrap": "^5.3.8",
         "jquery": "^3.2",
-        "laravel-mix": "^6.0.13",
-        "lodash": "^4.17.4",
-        "popper.js": "^1.12",
-        "postcss": "^8.2.8",
-        "resolve-url-loader": "^3.1.2",
-        "sass": "^1.32.8",
-        "sass-loader": "^10.1.1"
+        "laravel-vite-plugin": "^1.0.5",
+        "lodash": "^4.17.23",
+        "postcss": "^8.5.8",
+        "sass": "^1.97.3",
+        "vite": "^5.4.11"
     },
     "dependencies": {
-        "gentelella": "^1.4.0",
+        "datatables.net": "^2.3.7",
+        "datatables.net-bs5": "^2.3.7",
+        "datatables.net-buttons": "^3.2.6",
+        "datatables.net-buttons-bs5": "^3.2.6",
+        "datatables.net-fixedheader": "^4.0.6",
+        "datatables.net-fixedheader-bs5": "^4.0.6",
+        "datatables.net-keytable": "^2.12.2",
+        "datatables.net-keytable-bs5": "^2.12.2",
+        "datatables.net-responsive": "^3.0.8",
+        "datatables.net-responsive-bs5": "^3.0.8",
+        "datatables.net-scroller": "^2.4.3",
+        "datatables.net-scroller-bs5": "^2.4.3",
+        "jszip": "^3.10.1",
+        "pdfmake": "^0.3.5",
         "vue": "^2.5.7",
         "vue-datepicker": "^1.3.0",
         "vue-loader": "^15.9.6",

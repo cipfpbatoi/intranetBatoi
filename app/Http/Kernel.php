@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Intranet\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Intranet\Http\Middleware\TrustProxies::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
     ];
 
     /**
@@ -31,7 +32,6 @@ class Kernel extends HttpKernel
         'web' => [
             \Intranet\Http\Middleware\SessionTimeout::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Styde\Html\Alert\Middleware::class,
             \Intranet\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -42,7 +42,10 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:600,1',
+            \Intranet\Http\Middleware\ApiTokenToBearer::class,
+            \Intranet\Http\Middleware\LegacyApiTokenDeprecation::class,
             'bindings',
         ],
         'profesor' => [

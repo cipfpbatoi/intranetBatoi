@@ -3,7 +3,7 @@
         name="AddEnterprise"
         title='Afegir Empresa des de Centre'
         action="#"
-        message='{{ trans("messages.buttons.confirmar")}}'
+        message='{{ __("messages.buttons.confirmar")}}'
 >
         <input type='text'
                name='cif'

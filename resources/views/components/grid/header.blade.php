@@ -1,8 +1,9 @@
-@props(['panel'])
+@props(['panel', 'pestana' => null])
+@php($rejilla = ($pestana && $pestana->getRejilla()) ? $pestana->getRejilla() : $panel->getRejilla())
 <tr>
-    @foreach ($panel->getRejilla() as $item)
+    @foreach ($rejilla as $item)
         <th>
-            @php($label = trans("validation.attributes." . trim($item, 'X')))
+            @php($label = __("validation.attributes." . trim($item, 'X')))
             {{ str_contains($label, 'alidation.') ? ucwords($item) : $label }}
         </th>
     @endforeach

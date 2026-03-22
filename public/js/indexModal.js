@@ -1,130 +1,483 @@
-'use strict'
-var modelo = $("#datatable").attr('name').toLowerCase();
-var formModal = $('.modal form');
-var token = $("#_token").text();
-$(function () {
-    $('#create').on('hidden.bs.modal', function () {
-        var id=$(this).find('#id').val();
-        if (id) {
-            $('#'.id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
-        }
-    })
-    $("a.btn-primary.btn.txtButton").on("click", function (e) {
-        e.preventDefault();
-        var formModal = $('.modal form');
-        $('#id').val('');
-        $('.form-horizontal')[0].reset();
-        formModal.attr('action',jQuery(location).attr('href').replace(/#/,""));
-        $('#metodo').val('POST');
-        $(this).attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
-    });
+'use strict';
 
-    if ($('div .alert-danger').length) {
-        if ($('#id').val() > 0){
-           var formModal = $('.modal form');
-           var href = formModal.attr('action')+'/'+$('#id').val()+'/edit';
-           formModal.attr('action',href);
-        }
-        let cur_modal = localStorage.getItem("cur_modal");
-        if (!cur_modal) {
-            cur_modal = '#create';
-        } else {
-            localStorage.removeItem("cur_modal");
-        }
-        $(cur_modal).modal('show');
+(function () {
+    function getHelpers() {
+        return window.intranetUiHelpers || {};
     }
-    //  Barcode
-    $('#datatable').on('click', 'a.QR', function (event) {
-        let url = $(this).prop('href') + '/';
-        event.preventDefault();
-        var posicion = window.prompt("Introdueix posició de la primera etiqueta", 1);
-        url += posicion;
-        $(location).attr('href', url);
-    });
-})
 
-jQuery(document).on('auxclick', '.fa-edit', function (e) {
-    if (e.which === 2) { //middle Click
-        return false;
+    function getApiAuth() {
+        return window.intranetApiAuth || {};
     }
-    return true;
-});
-jQuery(document).ready(function() {
-    // Temporalment deshabilitar enllaços amb la classe `.fa-edit` afegint-los una classe `disabled-link`
-    jQuery('.fa-edit').addClass('disabled-link').on('click', function(e) {
-        // Prevenir l'acció per defecte dels enllaços si tenen la classe `disabled-link`
-        if (jQuery(this).hasClass('disabled-link')) {
-            e.preventDefault();
-            return false;
+
+    function trim(value) {
+        return (value || '').toString().trim();
+    }
+
+    function getModelo() {
+        var datatable = document.getElementById('datatable');
+        var modelName = datatable ? datatable.getAttribute('name') : '';
+        return trim(modelName).toLowerCase();
+    }
+
+    function getFormModal() {
+        var createModal = document.getElementById('create');
+        if (createModal) {
+            return createModal.querySelector('form');
         }
-    });
-    jQuery(".fa-edit").on("contextmenu",function(e){
-        return false;
-    });
-    // Una vegada la pàgina estigui completament carregada, reactivar els enllaços eliminant la classe `disabled-link`
-    jQuery(window).on('load', function() {
-        jQuery('.fa-edit').removeClass('disabled-link');
-    });
-});
 
+        return document.querySelector('.modal form');
+    }
 
+    function getCurrentUrlWithoutHash() {
+        return window.location.href.replace(/#/, '');
+    }
 
-jQuery("#datatable").on("click",".fa-edit" ,function (e) {
-    e.preventDefault();
-    var id = $(this).parents('tr').attr('id');
-    $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
-    $.ajax({
-        method: "GET",
-        url: "/api/" + modelo + "/" + id + "/edit",
-        dataType: 'json',
-        data: {api_token: token},
-    }).then(function (res) {
-        formModal.attr('action', jQuery(location).attr('href').replace(/#/,"")+"/"+id+"/edit");
-        formModal.find('#metodo').val('PUT').end().find('#id').val(id);
-        var primerElem = "";
-        for (var propiedad in res.data) {
-            var elem = $('#' + propiedad + '_id');
-            if (elem.length > 0) {
-                // El campo existe en el formulario
-                if (!primerElem)
-                    primerElem = propiedad;
-                if (elem[0].tagName.toUpperCase() == "INPUT" && elem.attr('type').toUpperCase() == "CHECKBOX") {
-                    elem.prop('checked', res.data[propiedad]);
-                } else {
-                    if (elem[0].tagName.toUpperCase() == "INPUT" && elem.attr('type').toUpperCase()=='FILE'){
-                        $("[id='Fichero Actual']").text(res.data[propiedad]);
+    function apiGet(url) {
+        var apiAuth = getApiAuth();
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
+        }
+
+        return Promise.reject(new Error('intranetApiAuth.apiGet no disponible'));
+    }
+
+    function setModalAttrs(element, targetId) {
+        if (!element) {
+            return;
+        }
+
+        element.setAttribute('href', '');
+    }
+
+    function showModal(id) {
+        var helpers = getHelpers();
+        if (typeof helpers.showModal === 'function') {
+            helpers.showModal(id);
+            return;
+        }
+
+        var modalElement = document.getElementById(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+    }
+
+    function getPageLocale() {
+        return (((document.querySelector('meta[name="app-locale"]') || {}).content || document.documentElement.lang || 'es').toLowerCase()).split('-')[0];
+    }
+
+    function formatPickerDate(value) {
+        var pageLocale = getPageLocale();
+        var isEnglish = pageLocale === 'en';
+        var parts = value.split('-');
+
+        return isEnglish
+            ? parts[1] + '/' + parts[2] + '/' + parts[0]
+            : parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+
+    function getPickerValue(rawValue, field) {
+        var value = trim(rawValue);
+        if (!value) {
+            return '';
+        }
+
+        var isDateTime = field.classList.contains('datetime');
+        var isTime = field.classList.contains('time');
+
+        if (isTime) {
+            return /^\d{2}:\d{2}$/.test(value) ? value : '';
+        }
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return formatPickerDate(value);
+        }
+
+        if (isDateTime && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(value)) {
+            var parts = value.split(' ');
+            var datePart = formatPickerDate(parts[0]);
+            return datePart ? datePart + ' ' + parts[1] : '';
+        }
+
+        return '';
+    }
+
+    function getNativeInputValue(rawValue, field) {
+        var value = trim(rawValue);
+        if (!value) {
+            return '';
+        }
+
+        var type = (field.getAttribute('type') || '').toLowerCase();
+
+        if (type === 'time') {
+            return /^\d{2}:\d{2}$/.test(value) ? value : '';
+        }
+
+        if (type === 'date') {
+            return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : '';
+        }
+
+        if (type === 'datetime-local') {
+            if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+                return value;
+            }
+
+            var match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}:\d{2})$/);
+            if (match) {
+                return match[1] + '-' + match[2] + '-' + match[3] + 'T' + match[4];
+            }
+
+            return '';
+        }
+
+        return value;
+    }
+
+    function getPickerMomentFormat(field) {
+        var pageLocale = getPageLocale();
+        var isEnglish = pageLocale === 'en';
+
+        if (field.classList.contains('time')) {
+            return 'HH:mm';
+        }
+
+        if (field.classList.contains('datetime')) {
+            return isEnglish ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+        }
+
+        return isEnglish ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+    }
+
+    function setInputValue(field, value) {
+        if (!field) {
+            return;
+        }
+
+        var tagName = field.tagName.toUpperCase();
+        var type = (field.getAttribute('type') || '').toUpperCase();
+        var nativeType = type.toLowerCase();
+
+        if (tagName === 'INPUT' && type === 'CHECKBOX') {
+            field.checked = !!value;
+            return;
+        }
+
+        if (tagName === 'INPUT' && type === 'FILE') {
+            var fileLabel = document.querySelector("[id='Fichero Actual']");
+            if (fileLabel) {
+                fileLabel.textContent = value;
+            }
+            return;
+        }
+
+        if (tagName === 'INPUT' && (nativeType === 'date' || nativeType === 'datetime-local' || nativeType === 'time')) {
+            field.value = getNativeInputValue(value, field);
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+            return;
+        }
+
+        var normalizedValue = value;
+        if (field.classList.contains('date') || field.classList.contains('datetime') || field.classList.contains('time')) {
+            normalizedValue = getPickerValue(value, field);
+
+            if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.datetimepicker === 'function') {
+                var $field = window.jQuery(field);
+                var pickerInstance = $field.data('DateTimePicker');
+                if (pickerInstance) {
+                    if (!normalizedValue) {
+                        pickerInstance.clear();
+                    } else if (typeof window.moment === 'function') {
+                        pickerInstance.date(window.moment(normalizedValue, getPickerMomentFormat(field), true));
+                    } else {
+                        pickerInstance.date(normalizedValue);
                     }
-                    else elem.val(res.data[propiedad]);
                 }
-                if (res.data[propiedad] != '')
-                    elem.focus();
+
+                $field.val(normalizedValue).trigger('change');
             }
         }
-        if (typeof (postModal) == 'function')
-            postModal();
-        $('#'+primerElem+ '_id').focus();
-    }, function (error) {
-        console.log(error);
-    })
-});
 
-jQuery("#datatable").on("click",".fa-eye" ,function (e) {
-    e.preventDefault();
-    var id = $(this).parents('tr').attr('id');
-    $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#show").attr("href", "");
-    $.ajax({
-        method: "GET",
-        url: "/api/" + modelo + "/" + id ,
-        dataType: 'json',
-        data: {api_token: token},
-    }).then(function (res) {
-        var html = '<ul class="to_do">';
-        for (var propiedad in res.data) {
-            if (propiedad === 'fichero' && res.data[propiedad]!=null)
-                html += "<li><img src='storage/"+res.data[propiedad]+"' height='400' width='300'/>'</li>";
-            else
-                html += "<li><strong style='text-transform: capitalize'>"+propiedad+"</strong>: "+res.data[propiedad]+"</li>";
+        field.value = normalizedValue;
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function fillEditForm(data, id) {
+        var formModal = getFormModal();
+        if (!formModal) {
+            return;
         }
-        $("#campos").html(html);
+
+        formModal.setAttribute('action', getCurrentUrlWithoutHash() + '/' + id + '/edit');
+
+        var metodo = formModal.querySelector('#metodo');
+        if (metodo) {
+            metodo.value = 'PUT';
+        }
+
+        var hiddenId = formModal.querySelector('#id');
+        if (hiddenId) {
+            hiddenId.value = id;
+        }
+
+        var primerElem = '';
+        Object.keys(data || {}).forEach(function (propiedad) {
+            var elem = formModal.querySelector('#' + propiedad + '_id');
+            if (!elem) {
+                return;
+            }
+
+            if (!primerElem) {
+                primerElem = propiedad;
+            }
+
+            setInputValue(elem, data[propiedad]);
+
+            if (data[propiedad] !== '' && typeof elem.focus === 'function') {
+                elem.focus();
+            }
+        });
+
+        if (typeof window.postModal === 'function') {
+            window.postModal();
+        }
+
+        if (primerElem) {
+            var firstField = formModal.querySelector('#' + primerElem + '_id');
+            if (firstField && typeof firstField.focus === 'function') {
+                firstField.focus();
+            }
+        }
+    }
+
+    function renderShowData(data) {
+        var campos = document.getElementById('campos');
+        if (!campos) {
+            return;
+        }
+
+        var html = '<ul class="to_do">';
+        Object.keys(data || {}).forEach(function (propiedad) {
+            if (propiedad === 'fichero' && data[propiedad] !== null) {
+                html += "<li><img src='storage/" + data[propiedad] + "' height='400' width='300'/>'</li>";
+            } else {
+                html += "<li><strong style='text-transform: capitalize'>" + propiedad + '</strong>: ' + data[propiedad] + '</li>';
+            }
+        });
+        html += '</ul>';
+
+        campos.innerHTML = html;
+    }
+
+    function initCreateButton() {
+        document.querySelectorAll('a.btn-primary.btn.txtButton').forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var formModal = getFormModal();
+                var idField = document.getElementById('id');
+                if (idField) {
+                    idField.value = '';
+                }
+
+                var horizontalForm = document.querySelector('.form-horizontal');
+                if (horizontalForm && typeof horizontalForm.reset === 'function') {
+                    horizontalForm.reset();
+                }
+
+                if (formModal) {
+                    formModal.setAttribute('action', getCurrentUrlWithoutHash());
+                }
+
+                var metodoField = document.getElementById('metodo');
+                if (metodoField) {
+                    metodoField.value = 'POST';
+                }
+
+                setModalAttrs(button, 'create');
+                showModal('create');
+            });
+        });
+    }
+
+    function initDangerAlertModalRestore() {
+        var hasDanger = document.querySelectorAll('div .alert-danger').length > 0;
+        if (!hasDanger) {
+            return;
+        }
+
+        var idField = document.getElementById('id');
+        var idValue = idField ? idField.value : '';
+
+        if (Number(idValue) > 0) {
+            var formModal = getFormModal();
+            if (formModal) {
+                var action = formModal.getAttribute('action') || '';
+                formModal.setAttribute('action', action + '/' + idValue + '/edit');
+            }
+        }
+
+        var curModal = localStorage.getItem('cur_modal');
+        if (!curModal) {
+            curModal = '#create';
+        } else {
+            localStorage.removeItem('cur_modal');
+        }
+
+        var modalId = curModal.replace(/^#/, '');
+        showModal(modalId);
+    }
+
+    function initCreateHiddenHandler() {
+        var createModal = document.getElementById('create');
+        if (!createModal) {
+            return;
+        }
+
+        createModal.addEventListener('hidden.bs.modal', function () {
+            var idField = createModal.querySelector('#id');
+            var idValue = idField ? trim(idField.value) : '';
+            if (!idValue) {
+                return;
+            }
+
+            var row = document.getElementById(idValue);
+            if (!row) {
+                return;
+            }
+
+            var editIcon = row.querySelector('.fa-edit');
+            if (!editIcon) {
+                return;
+            }
+
+            var anchor = editIcon.closest('a');
+            if (!anchor) {
+                return;
+            }
+
+            anchor.setAttribute('href', getCurrentUrlWithoutHash() + '/' + idValue + '/edit');
+        });
+    }
+
+    function initAuxClickGuard() {
+        document.addEventListener('auxclick', function (event) {
+            var target = event.target;
+            if (!(target instanceof Element) || !target.matches('.fa-edit')) {
+                return;
+            }
+
+            if (event.which === 2) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    function initEditTemporaryDisable() {
+        document.querySelectorAll('.fa-edit').forEach(function (elem) {
+            elem.classList.add('disabled-link');
+            elem.addEventListener('click', function (event) {
+                if (elem.classList.contains('disabled-link')) {
+                    event.preventDefault();
+                }
+            });
+
+            elem.addEventListener('contextmenu', function (event) {
+                event.preventDefault();
+            });
+        });
+
+        window.addEventListener('load', function () {
+            document.querySelectorAll('.fa-edit').forEach(function (elem) {
+                elem.classList.remove('disabled-link');
+            });
+        });
+    }
+
+    function initDatatableActions() {
+        var datatable = document.getElementById('datatable');
+        if (!datatable) {
+            return;
+        }
+
+        var modelo = getModelo();
+
+        datatable.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!(target instanceof Element)) {
+                return;
+            }
+
+            var qrIcon = target.closest('a.QR');
+            if (qrIcon) {
+                event.preventDefault();
+                var baseUrl = (qrIcon.getAttribute('href') || '') + '/';
+                var posicion = window.prompt('Introdueix posició de la primera etiqueta', 1);
+                window.location.href = baseUrl + posicion;
+                return;
+            }
+
+            var editIcon = target.closest('.fa-edit');
+            if (editIcon) {
+                event.preventDefault();
+                var row = editIcon.closest('tr');
+                var id = row ? row.getAttribute('id') : '';
+                if (!id) {
+                    return;
+                }
+
+                var editAnchor = editIcon.closest('a');
+                setModalAttrs(editAnchor, 'create');
+                showModal('create');
+
+                apiGet('/api/' + modelo + '/' + id + '/edit')
+                    .then(function (res) {
+                        fillEditForm(res.data, id);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+                return;
+            }
+
+            var eyeIcon = target.closest('.fa-eye');
+            if (eyeIcon) {
+                event.preventDefault();
+                var rowEye = eyeIcon.closest('tr');
+                var idEye = rowEye ? rowEye.getAttribute('id') : '';
+                if (!idEye) {
+                    return;
+                }
+
+                var eyeAnchor = eyeIcon.closest('a');
+                setModalAttrs(eyeAnchor, 'show');
+                showModal('show');
+
+                apiGet('/api/' + modelo + '/' + idEye)
+                    .then(function (res) {
+                        renderShowData(res.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initCreateHiddenHandler();
+        initCreateButton();
+        initDangerAlertModalRestore();
+        initAuxClickGuard();
+        initEditTemporaryDisable();
+        initDatatableActions();
     });
-});
+})();

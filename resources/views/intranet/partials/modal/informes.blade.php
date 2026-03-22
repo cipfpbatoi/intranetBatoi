@@ -1,6 +1,6 @@
 <!-- Modal Nou -->
 <x-modal name="seleccion" title='Selecciona elements' action="/documentacionFCT/A1"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+         message='{{ __("messages.buttons.confirmar")}}'>
         <strong>Selecciona Document:</strong>
         <select name="informe" id="informe">
                 <option value="">--</option>
@@ -11,5 +11,6 @@
         <hr/>
         <table id="tableSeleccion"></table>
 </x-modal>
+{{ Html::script("/js/common/api-auth.js") }}
 {{ Html::script("/js/extended.js") }}
 {{ Html::script("/js/taulaCheck.js") }}

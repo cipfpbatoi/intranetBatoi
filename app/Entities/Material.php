@@ -4,10 +4,15 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
-
+use Intranet\Presentation\Crud\MaterialCrudSchema;
+ 
+/**
+ * Model de material inventariable/no inventariable.
+ */
 class Material extends Model
 {
-
+    use \Intranet\Entities\Concerns\BatoiModels;
+ 
     protected $table = 'materiales';
     public $timestamps = false;
     protected $fillable = [
@@ -25,20 +30,9 @@ class Material extends Model
         'articulo_lote_id'
     ];
 
-    use \Intranet\Entities\Concerns\BatoiModels;
-
-    protected $rules = [
-        'descripcion' => 'required',
-        'espacio' => 'required',
-        'unidades' => 'numeric',
-    ];
-    protected $inputTypes = [
-        'espacio' => ['type' => 'select'],
-        'procedencia' => ['type' => 'select'],
-        'inventariable' => ['type' => 'checkbox'],
-        'estado' => ['type' => 'select'],
-        'articulo_id' => ['type' => 'hidden'],
-    ];
+   
+    protected $rules = MaterialCrudSchema::RULES;
+    protected $inputTypes = MaterialCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -73,14 +67,27 @@ class Material extends Model
         return hazArray(Espacio::all(), 'aula', 'descripcion');
     }
 
+    /**
+     * Retorna l'espai visible en inventari.
+     *
+     * Si hi ha una proposta pendent de canvi d'ubicació (tipo=1, estado=0),
+     * es mostra l'etiqueta de proposta; en qualsevol altre cas, l'espai real.
+     *
+     * @return string
+     */
     public function getEspaiAttribute()
     {
-        $materialBaja = MaterialBaja::where('idMaterial',$this->id)->first();
-        if ($materialBaja && $materialBaja->tipo) {
+        $tePropostaUbicacioPendent = MaterialBaja::query()
+            ->where('idMaterial', $this->id)
+            ->where('tipo', 1)
+            ->where('estado', 0)
+            ->exists();
+
+        if ($tePropostaUbicacioPendent) {
             return 'Proposta Nova Ubicació';
-        } else {
-            return $this->espacio;
         }
+
+        return $this->espacio;
     }
 
     public function getProcedenciaOptions()

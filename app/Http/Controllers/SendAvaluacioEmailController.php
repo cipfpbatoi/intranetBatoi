@@ -5,8 +5,10 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Seeder;
 use Intranet\Mail\MatriculaAlumne;
+use Intranet\Exceptions\NotFoundDomainException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
+use Intranet\Http\Requests\SendAvaluacioEmailStoreRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 
@@ -38,7 +40,7 @@ class SendAvaluacioEmailController extends Seeder
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function store(Request $request)
+    public function store(SendAvaluacioEmailStoreRequest $request)
     {
         $aR = AlumnoReunion::where('idAlumno', $request->nia)->get()->last();
         if (!$aR) {
@@ -50,15 +52,19 @@ class SendAvaluacioEmailController extends Seeder
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function getToken(Request $request)
     {
         $aR = AlumnoReunion::where('token', $request->token)->first();
-        if (!$aR){
-            Alert::danger('No hi ha cap alumne amb eixe token');
-            return back();
-        } else {
-            return view('seeder.sendAvaluacio', compact('aR'));
+        if (!$aR) {
+            throw new NotFoundDomainException('No hi ha cap alumne amb eixe token', ['token' => $request->token]);
         }
+
+        return view('seeder.sendAvaluacio', compact('aR'));
     }
 
     private function obtenToken($aR)
@@ -99,6 +105,12 @@ class SendAvaluacioEmailController extends Seeder
             }
         }
         catch (\Exception $e){
+            report($e);
+            \Illuminate\Support\Facades\Log::error('Error enviant correu de matrícula/avaluació.', [
+                'student_id' => $aR->Alumno->dni ?? null,
+                'reunion_id' => $aR->reunion ?? null,
+                'error' => $e->getMessage(),
+            ]);
             avisa($aR->Reunion->idProfesor,
                 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
                 '#','Servidor de correu');

@@ -2,29 +2,39 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\AlumnoGrupoUpdateRequest;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\AlumnoGrupo;
-use Illuminate\Support\Facades\Auth;
-use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
-use Intranet\Entities\Alumno;
-use Intranet\Services\UI\FormBuilder;
 
-class AlumnoGrupoController extends IntranetController
+class AlumnoGrupoController extends ModalController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
+    /**
+     * Filtre del grup actual per al llistat modal.
+     *
+     * @var string|null
+     */
+    protected $search = null;
     protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
         'extraescolars','DA','subGrupo','posicion','telef2'];
     const FOL = 12;
-    protected $modal = true;
 
+    /**
+     * Punt d'entrada legacy per a rutes que passen el grup en URL.
+     *
+     * @param string $grupo
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($grupo)
+    {
+        $this->search = $grupo;
+        return $this->index();
+    }
 
     public function search()
     {
@@ -50,24 +60,34 @@ class AlumnoGrupoController extends IntranetController
     protected function redirect()
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
-        return redirect()->action('AlumnoGrupoController@indice',['grupo'=>$grupoTutoria]);
+        return redirect()->route('alumnogrupo.index', ['grupo' => $grupoTutoria]);
     }
 
-    public function updateModal(Request $request, $grupo, $alumno)
+    public function updateModal(AlumnoGrupoUpdateRequest $request, $grupo, $alumno)
     {
         $elemento = AlumnoGrupo::where('idAlumno', $alumno)->where('idGrupo', $grupo)->first(); //busca si hi ha
-        $this->validateAll($request, $elemento);    // valida les dades
+        if (!$elemento) {
+            abort(404);
+        }
         $elemento->fillAll($request);        // ompli i guarda
         return $this->redirect();
     }
 
-    protected function realStore(Request $request, $id = null)
+    protected function realStore(AlumnoGrupoUpdateRequest $request, $id = null)
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
         $elemento = AlumnoGrupo::where('idAlumno', $id)->where('idGrupo', $grupoTutoria)->first(); //busca si hi ha
-        $this->validateAll($request, $elemento);    // valida les dades
+        if (!$elemento) {
+            abort(404);
+        }
 
         return $elemento->fillAll($request);        // ompli i guarda
+    }
+
+    public function update(AlumnoGrupoUpdateRequest $request, $id)
+    {
+        $this->realStore($request, $id);
+        return $this->redirect();
     }
 
     protected function iniBotones()
@@ -88,7 +108,7 @@ class AlumnoGrupoController extends IntranetController
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo'))) {
-                $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
+                $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => __('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
             }
         }
         $this->panel->setBoton(

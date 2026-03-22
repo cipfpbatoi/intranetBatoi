@@ -3,8 +3,9 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\TutoriaCrudSchema;
 
 class Tutoria extends Model
 {
@@ -22,21 +23,8 @@ class Tutoria extends Model
         'fichero',
         
     ];
-    protected $rules = [
-        'desde' => 'required|date',
-        'hasta' => 'required|date',
-        'tipo' => 'required',
-        'descripcion' => 'required',
-        'grupos' => 'required',
-        ];
-    protected $inputTypes = [
-        'obligatoria' => ['type' => 'checkbox'],
-        'fichero' => ['type' => 'file'],
-        'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
-        'grupos' => ['type' => 'select'],
-        'tipo' => ['type' => 'select']
-    ];
+    protected $rules = TutoriaCrudSchema::RULES;
+    protected $inputTypes = TutoriaCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -50,13 +38,19 @@ class Tutoria extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        if (empty($entrada)) {
+            return '';
+        }
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        if (empty($entrada)) {
+            return '';
+        }
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
     public function getGruposOptions()
@@ -73,11 +67,11 @@ class Tutoria extends Model
     }
     protected function getGrupoAttribute()
     {
-        return config('auxiliares.grupoTutoria')[$this->grupos];
+        return config("auxiliares.grupoTutoria.{$this->grupos}") ?? '';
     }
     protected function getTiposAttribute()
     {
-        return config('auxiliares.tipoTutoria')[$this->tipo];
+        return config("auxiliares.tipoTutoria.{$this->tipo}") ?? '';
     }
 
     protected function getEstatAttribute()
@@ -87,8 +81,9 @@ class Tutoria extends Model
 
     protected function getFeedBackAttribute()
     {
-        if (authUser()->GrupoTutoria) {
-            return $this->Grupos->where('codigo', authUser()->GrupoTutoria)->count() ? "Realitzada" : "Incompleta";
+        $user = authUser();
+        if ($user && $user->GrupoTutoria) {
+            return $this->Grupos->where('codigo', $user->GrupoTutoria)->count() ? "Realitzada" : "Incompleta";
         }
 
         return $this->Grupos->count();

@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\ActividadController;
-use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
 class ActividadControllerTest extends TestCase
@@ -62,12 +61,13 @@ class ActividadControllerTest extends TestCase
         ]);
 
         $this->bindRequestWithReferer('/activitat/' . $actividad->id);
-        Alert::shouldReceive('warning')->once();
+        session()->forget('app_alerts');
 
         $controller = new DummyActividadController();
         $response = $controller->notify($actividad->id);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSessionAlertType('warning');
     }
 
     public function test_menorauth_torna_back_si_alumne_no_esta_assocciat(): void
@@ -80,12 +80,13 @@ class ActividadControllerTest extends TestCase
         ]);
 
         $this->bindRequestWithReferer('/activitat/' . $actividad->id . '/autoritzats');
-        Alert::shouldReceive('warning')->once();
+        session()->forget('app_alerts');
 
         $controller = new DummyActividadController();
         $response = $controller->menorAuth('A0001', $actividad->id);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSessionAlertType('warning');
     }
 
     public function test_detalle_filtra_selects_sense_elements_ja_assignats(): void
@@ -303,12 +304,13 @@ class ActividadControllerTest extends TestCase
         ]);
 
         $this->bindRequestWithReferer('/activitat/' . $actividadId . '/detalle');
-        Alert::shouldReceive('warning')->once();
+        session()->forget('app_alerts');
 
         $controller = new DummyActividadController();
         $response = $controller->coordinador($actividadId, 'P411');
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSessionAlertType('warning');
         $this->assertSame(1, (int) DB::table('actividad_profesor')
             ->where('idActividad', $actividadId)
             ->where('idProfesor', 'P410')
@@ -337,12 +339,13 @@ class ActividadControllerTest extends TestCase
         ]);
 
         $this->bindRequestWithReferer('/activitat/' . $actividadId . '/detalle');
-        Alert::shouldReceive('info')->once();
+        session()->forget('app_alerts');
 
         $controller = new DummyActividadController();
         $response = $controller->borrarProfesor($actividadId, 'P420');
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSessionAlertType('info');
         $this->assertSame(1, DB::table('actividad_profesor')
             ->where('idActividad', $actividadId)
             ->count());
@@ -441,6 +444,15 @@ class ActividadControllerTest extends TestCase
         }
     }
 
+    private function assertSessionAlertType(string $type): void
+    {
+        $alerts = session('app_alerts', []);
+        $this->assertTrue(
+            collect($alerts)->contains(static fn (array $alert): bool => ($alert['type'] ?? null) === $type),
+            "No s'ha trobat cap alerta de tipus {$type} en sessió."
+        );
+    }
+
     private function bindRequestWithReferer(string $referer): void
     {
         $request = Request::create('/dummy', 'GET', [], [], [], ['HTTP_REFERER' => $referer]);
@@ -467,8 +479,23 @@ class AlumnoLite extends Model
 
 class DummyActividadController extends ActividadController
 {
+    /**
+     * Constructor buit per evitar la inicialització de UI/panell en proves unitàries.
+     */
     public function __construct()
     {
-        // Evitem inicialització de UI/panell en proves unitàries.
+        // Intencionalment buit.
+    }
+
+    /**
+     * Omet l'autorització en tests unitaris de comportament intern del controlador.
+     *
+     * @param mixed $ability
+     * @param mixed $arguments
+     * @return true
+     */
+    public function authorize($ability, $arguments = [])
+    {
+        return true;
     }
 }

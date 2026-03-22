@@ -32,7 +32,7 @@ class Modulo extends Model
 
     public function Horario()
     {
-        return $this->hasMany(Horario::class, 'codigo', 'modulo');
+        return $this->hasMany(Horario::class, 'modulo', 'codigo');
     }
     
     
@@ -42,22 +42,29 @@ class Modulo extends Model
     
     public function scopeMisModulos($query, $profesor = null)
     {
-        $profesor = $profesor ?? authUser();
-        $modulos = Horario::select('modulo')
-                ->Profesor($profesor->dni)
-                ->whereNotNull('idGrupo')
-                ->distinct()
-                ->get()
-                ->toarray();
+        $dni = is_string($profesor) ? $profesor : (($profesor->dni ?? null) ?: authUser()->dni);
+
+        $modulos = Horario::query()
+            ->Profesor($dni)
+            ->whereNotNull('idGrupo')
+            ->distinct()
+            ->pluck('modulo')
+            ->filter()
+            ->values()
+            ->all();
+
         return $query->whereIn('codigo', $modulos);
     }
     
     public function scopeModulosGrupo($query,$grupo){
-        $modulos = Horario::select('modulo')
-                ->Grup($grupo)
-                ->distinct()
-                ->get()
-                ->toarray();
+        $modulos = Horario::query()
+            ->Grup($grupo)
+            ->distinct()
+            ->pluck('modulo')
+            ->filter()
+            ->values()
+            ->all();
+
         return $query->whereIn('codigo', $modulos);
     }
     
@@ -67,6 +74,7 @@ class Modulo extends Model
     }
     public function getliteralAttribute()
     {
-        return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
+        $lang = session('lang', App::getLocale());
+        return $lang === 'es' ? $this->cliteral : $this->vliteral;
     }
 }

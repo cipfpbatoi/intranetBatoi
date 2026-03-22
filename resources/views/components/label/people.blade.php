@@ -1,7 +1,7 @@
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
     <div id="{{$id}}" class="well profile_view">
         <div  class="col-sm-12">
-            <h4 class="brief"><em>{{ $cab1 }}</em></h4>
+            <h4 class="brief"><em><strong>{{ $cab1 }}</strong></em></h4>
             <div class="left col-xs-8">
                 <p><em>{{ $cab2 }}</em></p>
                 <ul class="list-unstyled">

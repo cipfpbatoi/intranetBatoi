@@ -3,7 +3,9 @@
 /storage
 /vendor
 /.idea
-/.vscode
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/launch.json
 /.vagrant
 Homestead.json
 Homestead.yaml
@@ -11,7 +13,6 @@ npm-debug.log
 yarn-error.log
 .env
 /public/img/pdf
-composer.lock
 /nbproject/private/
 /.DS_Store
 .phpunit.result.cache
@@ -21,3 +22,10 @@ composer.lock
 /storage/framework/sessions
 /bootstrap/cache
 /storage/logs
+/public/build
+/public/hot
+/public/js/components/app.js
+/public/js/components/app.js.LICENSE.txt
+/public/js/ppIntranet.js
+/public/js/ppIntranet.js.LICENSE.txt
+/public/mix-manifest.json

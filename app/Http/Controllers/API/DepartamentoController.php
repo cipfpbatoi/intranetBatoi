@@ -4,10 +4,9 @@ namespace Intranet\Http\Controllers\API;
 
 
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\JDepartamentoResource;
 
-class DepartamentoController extends ApiBaseController
+class DepartamentoController extends ApiResourceController
 {
 
     protected $model = 'Departamento';

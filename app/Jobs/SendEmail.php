@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Mail\Mailer;
 use Intranet\Mail\Comunicado;
-use Intranet\Events\EmailSended;
+use Intranet\Services\Mail\EmailPostSendService;
 
 
 class SendEmail implements ShouldQueue
@@ -56,7 +56,7 @@ class SendEmail implements ShouldQueue
                 '#',
                 'SERVIDOR DE CORRREU'
             );
-            event(new EmailSended($this->elemento, $this->correo));
+            app(EmailPostSendService::class)->markFctEmailSent($this->elemento, $this->correo);
         }
     }
 }

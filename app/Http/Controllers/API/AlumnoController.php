@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Intranet\Services\Media\ImageService;
 
-class AlumnoController extends ApiBaseController
+class AlumnoController extends ApiResourceController
 {
 
     public function putImage(Request $request,$id)

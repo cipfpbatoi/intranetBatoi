@@ -7,10 +7,11 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Departamento;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\DepartamentoRequest;
 
 /**
- * Class CicloController
+ * Class DepartamentoController
  * @package Intranet\Http\Controllers
  */
 class DepartamentoController extends ModalController
@@ -34,7 +35,6 @@ class DepartamentoController extends ModalController
         'idProfesor' => ['type' => 'select']
     ];
 
-
     protected function iniBotones()
     {
         $this->panel->setBoton(
@@ -47,15 +47,46 @@ class DepartamentoController extends ModalController
 
     public function store(DepartamentoRequest $request)
     {
-        $new = new Departamento();
-        $new->fillAll($request);
+        $this->authorize('create', Departamento::class);
+        $this->persist($request);
         return $this->redirect();
     }
 
+    /**
+     * @param DepartamentoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(DepartamentoRequest $request, $id)
     {
-        Departamento::findOrFail($id)->fillAll($request);
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('update', $departamento);
+        $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un departament amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $departamento = $this->findModelOrFail(
+            Departamento::class,
+            $id,
+            'Departament no trobat',
+            ['departamento_id' => $id]
+        );
+        $this->authorize('delete', $departamento);
+        return parent::destroy($id);
     }
 
     protected function search()

@@ -11,7 +11,7 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class AlumnoCursoController extends IntranetController
 {

@@ -5,7 +5,8 @@ namespace Intranet\Services\Mail;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\Mail\EmailPostSendService;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Envia correus a partir d'un MyMail.
@@ -59,7 +60,7 @@ class MailSender
                     Activity::record('email', $element, null, $fecha, $mail->register);
                 }
 
-                $this->sendEvent($mail);
+                $this->handlePostSend($mail);
             } else {
                 Alert::danger("No s'ha pogut enviar correu a $contact. Comprova email");
             }
@@ -72,12 +73,17 @@ class MailSender
      * @param MyMail $mail
      * @return void
      */
-    private function sendEvent(MyMail $mail)
+    private function handlePostSend(MyMail $mail): void
     {
-        if (session()->has('email_action')) {
-            $event = session()->get('email_action');
-            event(new $event($mail->getTo()));
-            session()->forget('email_action');
+        $action = session()->get('email_action');
+        if (!$action) {
+            return;
+        }
+
+        session()->forget('email_action');
+
+        if ($action === 'annexe_individual' || $action === 'Intranet\\Events\\EmailAnnexeIndividual') {
+            app(EmailPostSendService::class)->handleAnnexeIndividual($mail->getTo());
         }
     }
 }

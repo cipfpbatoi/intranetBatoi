@@ -1,7 +1,17 @@
 <?php
 
-use Intranet\Entities\Profesor;
-use Jenssegers\Date\Date;
+use Intranet\Application\Profesor\ProfesorService;
+use Illuminate\Support\Carbon;
+
+/**
+ * Resol el servei de professorat per als helpers globals.
+ *
+ * @return ProfesorService
+ */
+function profesorService(): ProfesorService
+{
+    return app(ProfesorService::class);
+}
 
 /**
  * Genera una URL d'asset amb versió basada en `filemtime` per evitar caché antic.
@@ -18,6 +28,40 @@ function asset_nocache(string $path)
         : time();
 
     return asset($path) . '?v=' . $version;
+}
+
+/**
+ * Retorna la URL de la foto de perfil o un placeholder si no existeix.
+ *
+ * Evita múltiples 404 en llistats grans comprovant existència en servidor
+ * i cachejant el resultat durant la mateixa petició.
+ *
+ * @param string|null $foto
+ * @return string
+ */
+function profile_photo_url(?string $foto): string
+{
+    static $existsCache = [];
+    $placeholder = asset('img/coordinador.png');
+
+    if (empty($foto)) {
+        return $placeholder;
+    }
+
+    $raw = trim($foto);
+    $normalized = basename(str_replace('\\', '/', $raw));
+
+    if ($normalized === '' || $normalized === '.') {
+        return $placeholder;
+    }
+
+    if (!array_key_exists($normalized, $existsCache)) {
+        $existsCache[$normalized] = file_exists(public_path('storage/fotos/' . $normalized));
+    }
+
+    return $existsCache[$normalized]
+        ? asset('storage/fotos/' . $normalized)
+        : $placeholder;
 }
 
 /**
@@ -147,7 +191,7 @@ function evaluacion()
  */
 function curso()
 {
-    $hoy = new Date();
+    $hoy = new Carbon();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -162,7 +206,7 @@ function curso()
  */
 function cursoAnterior()
 {
-    $hoy = new Date();
+    $hoy = new Carbon();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -189,7 +233,7 @@ function fullDireccion()
  */
 function cargo($cargo)
 {
-    return \Intranet\Entities\Profesor::find(config("avisos.$cargo"));
+    return profesorService()->find((string) config("avisos.$cargo"));
 }
 
 /**
@@ -202,8 +246,12 @@ function signatura($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
-            return config("signatures.genere.$key")
-                    [Intranet\Entities\Profesor::find(config("avisos.$key"))->sexo];
+            $profesor = profesorService()->find((string) config("avisos.$key"));
+            if (!$profesor) {
+                return null;
+            }
+
+            return config("signatures.genere.$key")[$profesor->sexo];
         }
     }
 }
@@ -253,18 +301,31 @@ function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
 }
 
 /**
- * Resol l'usuari professor autenticat per API token.
+ * Resol l'usuari professor per context API.
+ *
+ * Prioritat:
+ * 1. Usuari autenticat (`sanctum` o `api`).
+ * 2. Token explícit passat per paràmetre.
+ * 3. Token legacy en request (`api_token`).
  *
  * @param string|null $token
  * @return \Intranet\Entities\Profesor|null
  */
 function apiAuthUser($token=null)
 {
-    if ($token==null) {
-        $token = $_GET['api_token']??null;
+    $request = request();
+    if ($request !== null) {
+        $authUser = $request->user('sanctum') ?? $request->user('api');
+        if ($authUser !== null) {
+            return $authUser;
+        }
     }
-    return Intranet\Entities\Profesor::where('api_token', $token)->first() ?? null;
-        //??Intranet\Entities\Profesor::find('021652470V');
+
+    if ($token === null && $request !== null) {
+        $token = $request->query('api_token') ?? $request->input('api_token');
+    }
+
+    return $token ? profesorService()->findByApiToken((string) $token) : null;
 }
 
 /**
@@ -325,12 +386,12 @@ function nameRolesUser($rolUsuario)
     $jerarquia = config('roles.rol');
     $roles = [];
     if ($rolUsuario == 1) {
-        return array(trans('messages.rol.todos'));
+        return array(__('messages.rol.todos'));
     }
 
     foreach ($jerarquia as $key => $rol) {
         if (($rol != 1) && ($rolUsuario % $rol == 0)) {
-            $roles[] = trans('messages.rol.' . $key);
+            $roles[] = __('messages.rol.' . $key);
         }
     }
     return $roles;
@@ -387,7 +448,7 @@ function isAdmin()
 function usersWithRol($rol)
 {
     $usuarios = [];
-    foreach (Profesor::activo()->get() as $usuario) {
+    foreach (profesorService()->activos() as $usuario) {
         if (esRol($usuario->rol, $rol)) {
             $usuarios[] = $usuario->dni;
         }
@@ -420,7 +481,8 @@ function rol($roles)
  */
 function blankTrans($mensaje)
 {
-    return trans($mensaje) == $mensaje ? '' : trans($mensaje);
+    $translated = __($mensaje);
+    return $translated == $mensaje ? '' : $translated;
 }
 
 /**
@@ -431,7 +493,7 @@ function blankTrans($mensaje)
  */
 function isblankTrans($mensaje)
 {
-    return trans($mensaje) == $mensaje;
+    return __($mensaje) == $mensaje;
 }
 
 /**
@@ -541,7 +603,7 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         if (strlen($id) == 8) {
             $quien = \Intranet\Entities\Alumno::find($id);
         } else {
-            $quien = \Intranet\Entities\Profesor::find($id);
+            $quien = profesorService()->find((string) $id);
         }
         if ($quien) {
             $quien->notify(new \Intranet\Notifications\mensajePanel(
@@ -648,7 +710,7 @@ function inRol($roles)
  */
 function existsTranslate($text)
 {
-    $translated = trans($text);
+    $translated = __($text);
     return $translated != $text ? $translated : null;
 }
 
@@ -671,8 +733,11 @@ function firstWord($cadena)
 
 function cargaDatosCertificado($datos, $date=null)
 {
-    $secretario = Profesor::find(config('avisos.secretario'));
-    $director = Profesor::find(config('avisos.director'));
+    $secretario = profesorService()->find((string) config('avisos.secretario'));
+    $director = profesorService()->find((string) config('avisos.director'));
+    if (!$secretario || !$director) {
+        return $datos;
+    }
     $datos['fecha'] = fechaString($date, 'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
@@ -920,12 +985,12 @@ function in_substr($item, int $long)
                 ), 0, 5),
                 // útil per a saber quina vista
                 'trace'  => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8))
-                                ->pluck('file')
-                                ->filter()
-                                ->implode(' | '),
+                    ->pluck('file')
+                    ->filter()
+                    ->implode(' | '),
             ]);
         } catch (\Throwable $e) {
-            // si falla el log, no trenquem res
+            error_log('[in_substr] No s\'ha pogut escriure log: ' . $e->getMessage());
         }
 
         $item = implode(', ', array_map('strval', $item));

@@ -2,18 +2,24 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\General\StateService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\ModuloGrupoService;
+use Intranet\Services\UI\AppAlert as Alert;
 
+/**
+ * Class ProgramacionController
+ * @package Intranet\Http\Controllers
+ */
 class ProgramacionController extends IntranetController
 {
 
@@ -23,53 +29,94 @@ class ProgramacionController extends IntranetController
     protected $gridFields = ['Xciclo','XModulo', 'situacion'];
     protected $modal = false;
     protected $items = 6;
+    private ?HorarioService $horarioService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
     
     
     protected function search()
     {
         return Programacion::misProgramaciones()
-            ->with('Ciclo')
-            ->with('Modulo')
+            ->with(['Ciclo', 'Modulo'])
+            ->orderBy('idModuloCiclo')
             ->get();
     }
-    
+
     //inicializat a init (normalment 1)
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function init($id)
     {
-        $prg = Programacion::find($id);
+        $prg = $this->findModelOrFail(Programacion::class, $id, 'Programació no trobada', ['programacio_id' => $id]);
         $staSrv = new StateService($prg);
         $staSrv->putEstado($this->init);
         $prg->Profesor = AuthUser()->dni;
         $prg->save();
         return back();
     }
-    
-    
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     protected function seguimiento($id)
     {
-        $elemento = Programacion::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         return view('programacion.seguimiento', compact('elemento'));
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor){
+        if (!$modulo) {
+            throw new NotFoundDomainException('Mòdul del grup no trobat', ['modulo_grupo_id' => $id]);
+        }
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
             $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                 "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-            avisa($profesor['idProfesor'], $texto);
+            avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function advise($id)
     {
-        $elemento = Modulo_ciclo::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Modulo_ciclo::class,
+            $id,
+            'Mòdul del cicle no trobat',
+            ['modulo_ciclo_id' => $id]
+        );
         if (isset($elemento->Modulo->codigo)){
-            $horario = Horario::where('modulo', $elemento->Modulo->codigo)
-                ->first();
+            $horario = $this->horarios()->firstByModulo((string) $elemento->Modulo->codigo);
             if ($horario) {
                 avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
                 Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");
@@ -79,9 +126,20 @@ class ProgramacionController extends IntranetController
         }
         return back();
     }
-    
+
+    /**
+     * @param Request $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     protected function updateSeguimiento(Request $request, $id){
-        $elemento = Programacion::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         $elemento->criterios = $request->criterios;
         $elemento->metodologia = $request->metodologia;
         $elemento->propuestas = $request->propuestas;
@@ -90,9 +148,19 @@ class ProgramacionController extends IntranetController
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function link($id)
     {
-        $elemento = Programacion::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Programacion::class,
+            $id,
+            'Programació no trobada',
+            ['programacio_id' => $id]
+        );
         return redirect()->away($elemento->fichero);
     }
     

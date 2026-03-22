@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\TaskCrudSchema;
 
 class TaskRequest extends FormRequest
 {
@@ -23,10 +24,6 @@ class TaskRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'descripcion' => 'required|max:100',
-            'vencimiento' => 'required|date',
-            'destinatario' => 'required|numeric'
-        ];
+        return TaskCrudSchema::RULES;
     }
 }

@@ -12,9 +12,9 @@
             </h1>
         @else
             @if ($ultimo === false)
-                <h1> {{ trans('messages.generic.fueraCentro') }}</h1>
+                <h1> {{ __('messages.generic.fueraCentro') }}</h1>
             @else
-                <h1>{{ trans('messages.generic.acaba') }}</h1>
+                <h1>{{ __('messages.generic.acaba') }}</h1>
             @endif
         @endif
     </body>

@@ -4,16 +4,15 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Setting;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
+use Intranet\Exceptions\NotFoundDomainException;
 
 
 /**
- * Class LoteController
- * @package Intranet\Http\Controllers
+ * Controlador de manteniment de settings de sistema.
  */
 class SettingController extends ModalController
 {
@@ -37,21 +36,34 @@ class SettingController extends ModalController
         $this->panel->setBotonera(['create'], ['edit','delete']);
     }
 
-    public function store(Request $request)
+    public function store(SettingRequest $request)
     {
-        $new = new Setting();
-        $new->fillAll($request);
-        $new->save();
+        $this->authorize('create', Setting::class);
+        $this->persist($request);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
-    public function update(Request $request, $id)
+    public function update(SettingRequest $request, $id)
     {
-        Setting::findOrFail($id)->fillAll($request);
+        $setting = $this->findModelOrFail(Setting::class, $id, 'Configuració no trobada', ['setting_id' => $id]);
+        $this->authorize('update', $setting);
+        $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
+    /**
+     * Elimina un setting existent.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $setting = $this->findModelOrFail(Setting::class, $id, 'Configuració no trobada', ['setting_id' => $id]);
+        $this->authorize('delete', $setting);
+        return parent::destroy($id);
+    }
 
 }

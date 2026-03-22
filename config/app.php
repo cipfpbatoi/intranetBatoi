@@ -153,7 +153,6 @@ return [
          * Package Service Providers...
          */
         //dates en local
-        Jenssegers\Date\DateServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         //GrahamCampbell\Markdown\MarkdownServiceProvider::class,
@@ -163,11 +162,11 @@ return [
          * Application Service Providers...
          */
         Intranet\Providers\AppServiceProvider::class,
+        Intranet\Providers\ViewComposerServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
-        Intranet\Providers\HtmlServiceProvider::class,
         Intranet\Providers\ValidationServiceProvider::class,
         Intranet\Providers\SettingsProvider::class
 
@@ -220,9 +219,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         
-        'Date' => Jenssegers\Date\Date::class,
-       
         'Form' => Collective\Html\FormFacade::class,
+        'Field' => Intranet\Support\Facades\Field::class,
         'Formulario' => Intranet\Services\FormBuilder::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,

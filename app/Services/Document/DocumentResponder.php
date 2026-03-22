@@ -2,7 +2,7 @@
 
 namespace Intranet\Services\Document;
 
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class DocumentResponder
 {
@@ -30,7 +30,7 @@ class DocumentResponder
             return redirect($context->link());
         }
 
-        Alert::warning(trans("messages.generic.nodocument"));
+        Alert::warning(__("messages.generic.nodocument"));
         return back();
     }
 }

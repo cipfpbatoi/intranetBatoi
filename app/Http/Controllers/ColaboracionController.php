@@ -4,15 +4,17 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
-use Jenssegers\Date\Date;
-use mikehaertl\pdftk\Pdf;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
+use Intranet\Services\Document\PdfFormService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Response;
 
 /**
@@ -33,50 +35,27 @@ class ColaboracionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [
-        'short',
-        'Xciclo',
-        'puestos',
-        'Xestado',
-        'localidad',
-        'contacto',
-        'email',
-        'telefono',
-        'horari',
-        'profesor',
-        'ultimo',
-        'anotacio'
-    ];
+    protected $gridFields = ColaboracionCrudSchema::GRID_FIELDS;
     /**
      * @var array
      */
     protected $titulo = [];
     protected $profile = false;
-    protected $formFields= [
-        'idCentro' => ['type' => 'hidden'],
-        'idCiclo' => ['type' => 'hidden'],
-        'contacto' => ['type' => 'text'],
-        'telefono' => ['type'=>'number'],
-        'email' => ['type'=>'email'],
-        'puestos' => ['type' => 'text'],
-        'estado' => ['type' => 'select'],
-        'anotacio' => ['type' => 'textarea'],
-    ];
-
+    protected $formFields = ColaboracionCrudSchema::FORM_FIELDS;
 
     /**
-     * @param Request $request
-     * @param null $id
-     * @return mixed
+     * Inicialitza el controlador modal amb una vista pròpia per al llistat departamental.
      */
-    protected function realStore(Request $request, $id = null)
+    public function __construct()
     {
-        $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
-        if ($id) {
-            $elemento->setRule('idCentro', $elemento->getRule('idCentro').','.$id);
-        }
-        $this->validateAll($request, $elemento);    // valida les dades
-        return $elemento->fillAll($request);        // ompli i guarda
+        parent::__construct();
+        $this->panel = new \Intranet\UI\Panels\Panel(
+            $this->model,
+            $this->gridFields,
+            'colaboracion.departamento',
+            true,
+            $this->parametresVista
+        );
     }
 
     /**
@@ -112,17 +91,36 @@ class ColaboracionController extends ModalController
     public function search()
     {
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
-        $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
-        $colaboraciones = Colaboracion::whereIn('idCiclo', $ciclos)->with('Centro')->get();
-        return $colaboraciones->filter(function ($colaboracion) {
-            return $colaboracion->Centro->Empresa->concierto;
-        });
+        $ciclos = Ciclo::query()
+            ->where('departamento', AuthUser()->departamento)
+            ->pluck('id')
+            ->all();
+
+        return Colaboracion::query()
+            ->whereIn('idCiclo', $ciclos)
+            ->with(['Centro.Empresa', 'Ciclo', 'Propietario'])
+            ->get();
     }
 
+    /**
+     * Actualitza una col·laboració des del formulari específic de panell.
+     *
+     * Manté el flux legacy: escriu estat/tutor i registra anotació en Activity.
+     *
+     * @param ColaboracionRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(ColaboracionRequest $request, $id)
     {
-        $colaboracion = Colaboracion::findOrFail($id);
-        $colaboracion->fillAll($request);
+        $this->persist($request, $id);
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
@@ -150,22 +148,51 @@ class ColaboracionController extends ModalController
 
 
     /**
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * Mostra el detall de la col·laboració.
+     *
+     * Manté l'accés directe per URL i, quan la petició arriba en mode modal,
+     * retorna només el parcial del contingut per incrustar-lo al diàleg.
+     *
+     * @param Request $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $elemento = Colaboracion::findOrFail($id);
-        return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
+        $elemento = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
+
+        $elemento->loadMissing([
+            'Centro.Empresa',
+            'Centro.instructores',
+            'Ciclo',
+            'Propietario',
+        ]);
+
+        $ultimContacte = Activity::query()
+            ->modelo('Colaboracion')
+            ->id($elemento->id)
+            ->notUpdate()
+            ->latest('created_at')
+            ->first();
+
+        if ($request->boolean('modal') || $request->ajax()) {
+            return view('colaboracion.partials.show', compact('elemento', 'ultimContacte'));
+        }
+
+        return view('colaboracion.show', compact('elemento', 'ultimContacte'));
     }
 
     public function printAnexeIV($colaboracion)
     {
         $file = storage_path("tmp/dual$colaboracion->id/ANEXO_IV.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_IV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoIV($colaboracion))->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/ANEXO_IV.pdf', $this->makeArrayPdfAnexoIV($colaboracion), $file);
         }
         return $file;
     }
@@ -174,9 +201,7 @@ class ColaboracionController extends ModalController
     {
         $file = storage_path("tmp/dual$colaboracion->id/Conveni.pdf");
         if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/Conveni.pdf');
-            $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
-                ->saveAs($file);
+            app(PdfFormService::class)->fillAndSave('fdf/Conveni.pdf', $this->makeArrayPdfConveni($colaboracion), $file);
         }
 
         return $file;
@@ -214,8 +239,8 @@ class ColaboracionController extends ModalController
         $array[28] = config('contacto.poblacion');
         $array[29] = config('contacto.provincia');
         $array[30] = config('contacto.email');
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 = new Carbon();
+        Carbon::setLocale('ca');
         $array[31] = config('contacto.poblacion');
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');

@@ -4,6 +4,12 @@ namespace Intranet\Services\UI;
 
 use Illuminate\View\View;
 
+/**
+ * Construeix la configuració de camps per als formularis dinàmics del projecte.
+ *
+ * Manté compatibilitat amb el sistema legacy de templates, però prioritza
+ * tipus HTML natius per a dates i hores quan el contracte del camp ja és clar.
+ */
 class FormBuilder
 {
 
@@ -66,11 +72,12 @@ class FormBuilder
         $inputType = [];
         foreach ($formFields as $key => $properties) {
             $parametres = [];
-            $inputType[$key]['type'] = $this->aspect($parametres, $properties['type']??'text');
+            $declaredType = $properties['type'] ?? 'text';
+            $inputType[$key]['type'] = $this->aspect($parametres, $declaredType);
 
             $parametres['id'] = $key . '_id';
             $parametres['ph'] = $this->translate($key);
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$key]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $this->resolveCssInputClass($declaredType, $inputType[$key]['type']);
 
             $inputType[$key]['default'] = $properties['default'] ?? null;
 
@@ -96,11 +103,18 @@ class FormBuilder
 
     private function translate($key)
     {
-        return !strpos(trans('validation.attributes.' . $key), 'alidation.')
-            ? trans('validation.attributes.' . $key)
+        return !strpos(__('validation.attributes.' . $key), 'alidation.')
+            ? __('validation.attributes.' . $key)
             : ucwords($key);
     }
 
+    /**
+     * Resol el tipus final de control i el template visual a emprar.
+     *
+     * @param array<int|string, mixed> $parametres
+     * @param string $originalType
+     * @return string
+     */
     private function aspect(&$parametres, $originalType)
     {
         switch ($originalType) {
@@ -110,11 +124,17 @@ class FormBuilder
                 break;
             case 'name':
             case 'card':
-            case 'time':
-            case 'date':
-            case 'datetime':
                 $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
                 $finalType='text';
+                break;
+            case 'time':
+            case 'date':
+                $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
+                $finalType = $originalType;
+                break;
+            case 'datetime':
+                $parametres['template'] = 'themes/bootstrap/fields/datetime';
+                $finalType='datetimeLocal';
                 break;
             default:
                 $finalType = $originalType;
@@ -133,10 +153,11 @@ class FormBuilder
         foreach ($this->fillable as $property) {
             $parametres = [];
             $inputTpe = $this->elemento->getInputType($property);
-            $inputType[$property]['type'] = $this->aspect($parametres, $inputTpe['type'] ?? 'text');
-            $label = existsTranslate('models.'.$model.'.'.$property) ? trans('models.'.$model.'.'.$property):null;
-            $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.')
-                ? trans('validation.attributes.' . $property)
+            $declaredType = $inputTpe['type'] ?? 'text';
+            $inputType[$property]['type'] = $this->aspect($parametres, $declaredType);
+            $label = existsTranslate('models.'.$model.'.'.$property) ? __('models.'.$model.'.'.$property):null;
+            $ph = !strpos(__('validation.attributes.' . $property), 'alidation.')
+                ? __('validation.attributes.' . $property)
                 : ucwords($property);
 
             $parametres['id'] = $property . '_id';
@@ -144,7 +165,7 @@ class FormBuilder
             if ($label) {
                 $parametres['label'] = $label;
             }
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$property]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $this->resolveCssInputClass($declaredType, $inputType[$property]['type']);
 
             $inputType[$property]['default'] = $inputTpe['default'] ?? null;
 
@@ -165,5 +186,22 @@ class FormBuilder
         }
         return($inputType);
     }
-}
 
+    /**
+     * Conserva la classe funcional del tipus declarat per a JS/CSS legacy residual.
+     *
+     * Encara que alguns camps ja es renderitzen com a inputs natius,
+     * la classe declarativa (`date/time/datetime`) continua sent útil
+     * en plantilles o scripts que inspeccionen el camp.
+     *
+     * @param string $declaredType
+     * @param string $renderType
+     * @return string
+     */
+    private function resolveCssInputClass(string $declaredType, string $renderType): string
+    {
+        return in_array($declaredType, ['date', 'time', 'datetime'], true)
+            ? $declaredType
+            : $renderType;
+    }
+}

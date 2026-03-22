@@ -24,9 +24,9 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 import ControlNav from '../utils/ControlNav.vue';
-
-const token=document.getElementById('_token').innerHTML;
+import { withApiAuth } from '../utils/api-auth';
 
 export default {
   components: {
@@ -51,7 +51,9 @@ export default {
       const desde = this.sumaFecha(1);
       const hasta = this.sumaFecha(5);
 
-      axios.get('/api/presencia/resumen-rango?desde='+desde+'&hasta='+hasta+'&api_token='+token)
+      axios.get('/api/presencia/resumen-rango', withApiAuth({
+        params: { desde, hasta }
+      }))
         .then(resp => {
           const map = {};
           resp.data.forEach(p => {

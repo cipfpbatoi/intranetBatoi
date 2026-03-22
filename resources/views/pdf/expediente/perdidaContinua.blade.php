@@ -33,7 +33,7 @@
                         L'alumna
                     @endif
                     {{$elemento->Alumno->FullName}}
-                    @php  $nac = new Jenssegers\Date\Date($elemento->Alumno->fecha_nac) @endphp
+                    @php $nac = \Illuminate\Support\Carbon::parse($elemento->Alumno->fecha_nac); @endphp
                     @if ($nac->age < 18 )
                         i pares/mares o tutor/a legal de
                         @if ($elemento->Alumno->sexo == 'H')

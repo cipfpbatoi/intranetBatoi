@@ -2,15 +2,14 @@
 
 namespace Intranet\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Intranet\Entities\AlumnoFct;
 
+/**
+ * Event de baixa d'alumne en FCT.
+ */
 class FctAlDeleted
 {
 
@@ -18,21 +17,17 @@ class FctAlDeleted
         InteractsWithSockets,
         SerializesModels;
 
+    /**
+     * @var mixed
+     */
     public $fct;
 
+    /**
+     * @param AlumnoFct $fctAl
+     */
     public function __construct(AlumnoFct $fctAl)
     {
         $this->fct = $fctAl->Fct;
-     }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
     }
 
 }

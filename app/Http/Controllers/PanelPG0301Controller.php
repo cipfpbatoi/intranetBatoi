@@ -2,30 +2,60 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
-
-use Intranet\Entities\Grupo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Fct;
 
 class PanelPG0301Controller extends BaseController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Fctcap';
     protected $vista = ['index' => 'FctCap'];
     protected $gridFields = ['id','Nombre','Centro' ,'desde','hasta'];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    /**
+     * Mostra el llistat per grup amb autorització prèvia.
+     *
+     * @param mixed $search
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($search)
+    {
+        Gate::authorize('manageFctControl', Fct::class);
+        return parent::indice($search);
+    }
     
     protected function iniBotones()
     {
+        Gate::authorize('manageFctControl', Fct::class);
         Session::put('redirect', 'PanelPG0301Controller@indice');
     }
     
     protected function search()
     {
-        $grupo = Grupo::findOrFail($this->search);
+        Gate::authorize('manageFctControl', Fct::class);
+        $grupo = $this->grupos()->find((string) $this->search);
+        abort_unless($grupo !== null, 404);
         $this->titulo = ['quien' => $grupo->nombre ];
         return $grupo->codigo;
     }

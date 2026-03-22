@@ -19,7 +19,6 @@ return
     'seguimentAlumnes' => ['codi' => 'F6.PC04' ,'edicio' => '00'],
     'fullVacances' => ['codi' => 'F7.PC04' ,'edicio' => '00'],
     'comunicacioAbsencia' => ['codi' => 'F1.PS04' ,'edicio' => '00'],
-    'comunicacioBirret' => ['codi' => 'F2.PS04' ,'edicio' => '00'],
     'certificatsFCT' => ['codi' => 'F3.PC04' , 'edicio' => '00'],
     'certificatInstructor' => ['codi' => 'F3.PC04' , 'edicio' => '00'],
     'certificatRiscos' => ['codi' => '' ,'edicio' => '00','vista'=>''],

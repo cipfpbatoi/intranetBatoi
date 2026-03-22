@@ -3,16 +3,29 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
-use Intranet\Entities\Comision;
-use Intranet\Entities\Horario;
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Guardia;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
-use Intranet\Entities\Profesor;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CreateDailyGuards extends Command
 {
+    private ComisionService $comisionService;
+    private ProfesorService $profesorService;
+    private HorarioService $horarioService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->comisionService = app(ComisionService::class);
+        $this->profesorService = app(ProfesorService::class);
+        $this->horarioService = app(HorarioService::class);
+    }
 
     /**
      * The name and signature of the console command.
@@ -39,7 +52,7 @@ class CreateDailyGuards extends Command
     private function substitutoActual($dni)
     {
         do {
-            $substituto = Profesor::where('sustituye_a', $dni)->first();
+            $substituto = $this->profesorService->findBySustituyeA((string) $dni);
             if ($substituto) {
                 $dni = $substituto->dni;
             }
@@ -47,17 +60,21 @@ class CreateDailyGuards extends Command
         return $dni;
     }
 
-    public function handle()
+    public function handle(): int
     {
-        if (config('variables.controlDiario')) {
+        try {
+            if (!config('variables.controlDiario')) {
+                return self::SUCCESS;
+            }
+
             $this->createGuardias();
-            $comisiones = Comision::Dia(hoy())->get();
+            $comisiones = $this->comisionService->byDay(hoy());
             foreach ($comisiones as $elemento) {
                 $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
             }
             $actividades = Actividad::Dia(hoy())
-                    ->where('fueraCentro', '=', 1)
-                    ->get();
+                ->where('fueraCentro', '=', 1)
+                ->get();
             foreach ($actividades as $actividad) {
                 foreach ($actividad->profesores as $profesor) {
                     $this->creaGuardia($actividad, 'El professor està en Activitat extraescolar', $profesor->dni);
@@ -67,6 +84,15 @@ class CreateDailyGuards extends Command
             foreach ($faltas as $falta) {
                 $this->creaGuardia($falta, 'El professor ha notificado ausencia');
             }
+
+            return self::SUCCESS;
+        } catch (Throwable $e) {
+            report($e);
+            Log::error('Error creant guardies diàries.', [
+                'exception' => $e->getMessage(),
+            ]);
+
+            return self::FAILURE;
         }
     }
 
@@ -83,19 +109,14 @@ class CreateDailyGuards extends Command
             }
 
             if (count($horas)) {
-                $horario = Horario::distinct()
-                    ->Profesor($idProfesor)
-                    ->Dia($diaSemana)
-                    ->GuardiaAll()
-                    ->whereIn('sesion_orden', $horas)
-                    ->get();
+                $horario = $this->horarioService->guardiaAllByProfesorAndDiaAndSesiones(
+                    (string) $idProfesor,
+                    (string) $diaSemana,
+                    $horas
+                );
             }
         } else {
-            $horario = Horario::distinct()
-                ->Profesor($idProfesor)
-                ->Dia($diaSemana)
-                ->GuardiaAll()
-                ->get();
+            $horario = $this->horarioService->guardiaAllByProfesorAndDia((string) $idProfesor, (string) $diaSemana);
         }
 
         foreach ($horario as $horasAfectadas) {
@@ -136,10 +157,11 @@ class CreateDailyGuards extends Command
     private function createGuardias()
     {
         $diaSemana = nameDay(hoy());
-        foreach (Horario::GuardiaAll()
-                     ->Dia($diaSemana)
-                     ->get() as $horario) {
-            $profesor = Profesor::find($horario->idProfesor);
+        foreach ($this->horarioService->guardiaAllByDia((string) $diaSemana) as $horario) {
+            $profesor = $this->profesorService->find((string) $horario->idProfesor);
+            if (!$profesor) {
+                continue;
+            }
             if ($profesor->fecha_baja) {
                 $guardia['idProfesor'] = $this->substitutoActual($horario->idProfesor);
             } else {

@@ -3,7 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 
 class Guardia extends Model
@@ -27,21 +26,14 @@ class Guardia extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
-    public static function ahora(){
-        $sesion = sesion(hora());
-        $dia_semana = hoy();
-        return Guardia::where('dia',$dia_semana)
-            ->where('hora', $sesion)
-            ->get();
+    public function scopeProfesor($query, $idProfesor)
+    {
+        return $query->where('idProfesor', $idProfesor);
     }
-    public static function estoy($idProfesor = null){
-        $idProfesor = $idProfesor??authUser()->dni;
-        $sesion = sesion(hora());
-        $dia_semana = hoy();
-        return (Guardia::where('idProfesor',$idProfesor)
-            ->where('dia',$dia_semana)
-            ->where('hora', $sesion)
-            ->first())?true:false;
+
+    public function scopeDiaHora($query, $dia, $hora)
+    {
+        return $query->where('dia', $dia)->where('hora', $hora);
     }
-    
+
 }

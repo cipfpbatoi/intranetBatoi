@@ -2,14 +2,15 @@
 
 namespace Intranet\Http\Controllers\Auth\Profesor;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use function PHPUnit\Framework\isNull;
+use Intranet\Services\Auth\ApiSessionTokenService;
+use Intranet\Entities\Profesor;
 
 class LoginController extends Controller
 {
@@ -24,13 +25,43 @@ class LoginController extends Controller
       |
      */
 
-use AuthenticatesUsers;
+    use AuthenticatesUsers;
+    private ?ProfesorService $profesorService = null;
+    private ?ApiSessionTokenService $apiSessionTokenService = null;
 
     protected $redirectTo = '/home';
 
     public function username()
     {
         return 'codigo';
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    private function apiSessionTokens(): ApiSessionTokenService
+    {
+        if ($this->apiSessionTokenService === null) {
+            $this->apiSessionTokenService = app(ApiSessionTokenService::class);
+        }
+
+        return $this->apiSessionTokenService;
+    }
+
+    /**
+     * Hook del trait AuthenticatesUsers després de login satisfactori.
+     */
+    protected function authenticated(Request $request, $user): void
+    {
+        if ($user instanceof Profesor) {
+            $this->apiSessionTokens()->issueForProfesor($user, 'web-login');
+        }
     }
 
     protected function credentials(Request $request)
@@ -61,10 +92,12 @@ use AuthenticatesUsers;
 
     public function logout()
     {
+        $this->apiSessionTokens()->revokeCurrentFromSession();
+
         if (isPrivateAddress(getClientIpAddress())) {
             Auth::guard('profesor')->logout();
             Session()->flush();
-            return redirect('/login');
+            return redirect()->route('login');
         }
         Auth::guard('profesor')->logout();
         Session()->flush();
@@ -74,7 +107,7 @@ use AuthenticatesUsers;
 
     public function plogin(Request $request)
     {
-        $profesor = Profesor::where('codigo', $request->codigo)->get()->first();
+        $profesor = $this->profesores()->findByCodigo((string) $request->codigo);
         if (isset($profesor) && !isset($profesor->changePassword)) {
             if ($profesor->dni ==  $request->password) {
                 return view('auth/profesor/firstLogin', compact('profesor'));
@@ -85,7 +118,7 @@ use AuthenticatesUsers;
             }
         } else {
             if (!isset($profesor)) {
-                $profesor = Profesor::where('email', $request->codigo)->get()->first();
+                $profesor = $this->profesores()->findByEmail((string) $request->codigo);
             }
             if (isset($profesor->idioma)) {
                 session(['lang' => $profesor->idioma]);
@@ -112,14 +145,18 @@ use AuthenticatesUsers;
         if ($validator->fails()) {
             return back()->withInput()->withErrors($validator);
         } else {
-            $profesor = Profesor::where('codigo', $request->codigo)->get()->first();
+            $profesor = $this->profesores()->findByCodigo((string) $request->codigo);
+            if (!$profesor) {
+                return back()->withInput()->withErrors(['codigo' => "Usuari no trobat"]);
+            }
             $profesor->email = $request->email;
             $profesor->password = bcrypt(trim($request->password));
             $profesor->changePassword = date('Y-m-d');
             $profesor->save();
             Auth::login($profesor);
+            $this->apiSessionTokens()->issueForProfesor($profesor, 'web-first-login');
             session(['lang' => $profesor->idioma]);
-            return redirect('/home');
+            return redirect()->route('home.profesor');
         }
 
     }

@@ -8,6 +8,20 @@
             $tipo = $default[$property]['type'];
             $params = $default[$property]['params'] ?? [];
             $value = $default[$property]['default'];
+            $inputClass = (string) ($params['class'] ?? '');
+            $renderType = $tipo;
+
+            if (str_contains($inputClass, ' datetime')) {
+                $renderType = 'datetimeLocal';
+                $value = is_string($value) ? preg_replace('/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})$/', '$1T$2', $value) : $value;
+                unset($params['template']);
+            } elseif (str_contains($inputClass, ' date')) {
+                $renderType = 'date';
+                unset($params['template']);
+            } elseif (str_contains($inputClass, ' time')) {
+                $renderType = 'time';
+                unset($params['template']);
+            }
         @endphp
 
         @switch($tipo)
@@ -20,21 +34,10 @@
                 />
                 @break
 
-            @case('date')
-            @case('datetime')
-            @case('time')
-                <x-form.generic-field
-                        :name="$property"
-                        type="text"
-                        :value="$value"
-                        :params="$params"
-                />
-                @break
-
             @default
                 <x-form.generic-field
                         :name="$property"
-                        :type="$tipo"
+                        :type="$renderType"
                         :value="$value"
                         :params="$params"
                 />
@@ -43,8 +46,8 @@
     @endforeach
 </div>
 <div class="modal-footer">
-    <button id='close' class="btn btn-danger" data-dismiss="modal" value='' />@lang("messages.buttons.cancel")</button>
-    {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
+    <button id="close" type="button" class="btn btn-danger" data-bs-dismiss="modal">@lang("messages.buttons.cancel")</button>
+    {!! Form::submit(__('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
     <x-ui.errors />
 </div>

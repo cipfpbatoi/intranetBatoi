@@ -26,5 +26,6 @@
     <x-modal name="materiales" title=''
              message='Guardar'>
     </x-modal>
+    {{ Html::script("/js/common/ui-helpers.js") }}
     {{ Html::script("/js/barcode.js") }}
 @endsection

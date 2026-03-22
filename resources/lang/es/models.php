@@ -266,7 +266,7 @@ return array(
             'estan' => 'Tienes todos los resultados del departamento disponibles',
             'generado' => 'El informe del departamento está disponible'
         ),
-        'Alumnoresultado' => array(
+        'AlumnoResultado' => array(
             'index' => 'Insertar calificaciones del modulo/grupo :quien',
             'create' => 'Añadir calificación'
         ),
@@ -276,8 +276,9 @@ return array(
             'edit' => 'Modifica Documento',
             'default' => 'Modifica Documentación Calidad',
         ),
-        'Proyecto' => array(
-            'create' => 'Subir proyecto alumno'
+        'Projecte' => array(
+            'create' => 'Subir proyecto alumno',
+            'index' => 'Gestión de proyectos'
         ),
         'Empresa' => array(
             'index' => 'Listado Empresas',
@@ -335,7 +336,6 @@ return array(
             'proyecto' => 'Subir proyecto',
             'upload' => 'Zip Informes',
             'dropzone' => 'Guardar Informes',
-            'convalidacion' => 'FCT Convalidada/Exento',
             'pg0301' => 'Hoja Control Servicio',
             'pr0402' => 'Entrevista Alumnado',
             'pr0401' => 'Entrevista Final Instructor',
@@ -343,16 +343,19 @@ return array(
             'autDireccio' => 'Autorización Dirección Situación Excepcional',
             'autAlumnat' => 'Conformidad Alumnado Situación Excepcional',
             'print' => 'Informes',
+            'all' => 'Ver todos',
+            'only' => 'Ver activos',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
             'insercio' => "Inserción Laboral",
+            'alumno' => 'x Alumnado',
+            'empresa' => 'x Empresa',
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
             'link' => 'Adjuntar ficheros',
             'an1' => 'Imprimir anexos I firmados',
             'an2' => 'Imprimir anexos II firmados',
-            'an3' => 'Imprimir anexos III firmados',
-            'an5' => 'Imprimir comptencias adquiridas'
+            'an3' => 'Imprimir anexos III firmados'
         ),
         'Ipguardia' => array(
             'index' => 'Control IP',
@@ -361,20 +364,6 @@ return array(
             'index' => 'Variables de Configuración',
             'edit' => 'Editar Configuración',
             'create' => 'Crear Configuración',
-        ),
-        'Dual' => array(
-            'index' => 'FP Dual',
-            'create' => 'Nueva Dual',
-            'edit' => 'Editar Dual',
-            'delete' => 'Borrar Dual',
-            'fin' => 'Finalizar Dual',
-            'anexe_vii' => 'Imprimir Anexo VII',
-            'anexe_va' => 'Imprimier Anexo V(a)',
-            'anexe_vb' => 'Imprimier Anexo V(b)',
-            'anexeVI' => 'Imprimir Anexo VI',
-            'anexeXIV' => 'Imprimir Anexo XIV',
-            'anexeXIII' => 'Imprimir AnexoXIII',
-            'firma' => 'Generar zip firma'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' ,
@@ -418,23 +407,13 @@ return array(
             'edit' => 'Editar ciclo',
             'delete' => 'Suprimir ciclo'
         ),
-        'Falta_itaca' => array(
-            'index' => 'Sin marcaje Birret',
-            'edit' => 'Editar Birret',
-            'resolve' => 'Justificar',
-            '0' => 'No comunicada',
-            '1' => 'Pendiente',
-            '2' => 'Justificada',
-            '3' => 'Rechazada',
-            '4' => 'Itaca'
-        ),
         'Instructor' => array(
           'index' => 'Consulta de instructores',
            'edit' => 'Editar instructor',
            'create' => 'Crear instructor',
            'copy' => 'Copiar instructor'
         ),
-    '   Infdepartamento' => array(
+        'Infdepartamento' => array(
           'index' => 'Consulta informes de departamento',
           'create' => 'Crear Informe departamento',
           'edit' => 'Modificar informe departamento',
@@ -453,21 +432,21 @@ return array(
             'index' => 'Fct x Alumno',
             'convalidacion' => 'FCT Convalidada/Exento',
             'auth' => 'Imprimir autoritzaciones',
-            'create' => 'Nueva Exención',
             'edit' => 'Modificar Datos Fct',
             'pdf' => 'Imprimir certificados Alumno',
             'email' => 'Enviar aviso rellenar diario',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
             'selecciona' => 'Alumno/a',
+            'A5' => 'Informe competencias adquiridas',
             'delete' => 'Borra fct',
             'unlink' => 'Borra conexión con el SAO',
             'importa' => 'Importa anexos dual año anterior'
 
         ),
         'AlumnoFct' => array(
+            'create' => 'Nova Exempció',
             'selecciona' => 'Alumno/a',
-            'create' => 'Nueva Exención',
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
@@ -479,11 +458,7 @@ return array(
             'check' => 'Control documentación'
 
         ),
-        'Fctdual' => array(
-            'index' => 'Control Dual :quien',
-            'check' => 'Control documentacióN'
-        ),
-        'FctDay' => array(
+        'fctDay' => array(
             'show' => 'Calendario prácticas :quien',
 
         ),
@@ -499,6 +474,9 @@ return array(
             'index' => 'Mantenimento Plantillas Encuestas',
             'edit' => 'Editar Plantilla',
             'slave' => 'Ver preguntas',
+        ),
+        'Modulo_ciclo' => array(
+            'index' => 'Programaciones'
         ),
         'Lote' => array(
             'show' => 'Factura :quien',
@@ -579,12 +557,11 @@ return array(
             'TipoIncidencia' => 'TipoIncidencia',
             'OrdenTrabajo' => 'Orden de Trabajo',
             'Ciclo' => 'Ciclo',
-            'Falta_itaca' => 'Justificar Birret',
             'Instructor' => 'Instructor',
             'Proyecto' => 'Proyecto',
             'Evaluacion' => 'Avaluación',
             'Colaborador' => 'Col.laborador',
-            'Ppoll' => 'Plantilla encuesta',
+            'PPoll' => 'Plantilla encuesta',
             'Poll' => 'Encuesta',
             'Option' => 'Pregunta',
             'AlumnoResultado' => 'Avaluacio Alumne',
@@ -593,6 +570,7 @@ return array(
             'Articulo' => 'Articulo',
             'Incidencia' => 'Incidencia',
             'Fctcap' => 'Revisión FCT',
+            'Solicitud' => 'Derivación al departamento de orientación',
             'Signatura' => 'Firmas Digitales',
             'Cotxe' => 'Vehículos'
         ),

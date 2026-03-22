@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.$modelo.show")}}</title>
+<title>{{__("models.$modelo.show")}}</title>
 @endsection
 @section('content')
 <!-- page content -->
@@ -11,7 +11,7 @@
             <div class="col-xs-12 invoice-header">
                 <h1>
                     <i class="fa fa-globe"></i> @lang("models.modelos.$modelo") 
-                    <small class="pull-right">{{$elemento->actiu}}</small>
+                    <small class="float-end">{{$elemento->actiu}}</small>
                 </h1>
             </div>
         </div>
@@ -38,7 +38,7 @@
                         <tr>
                             <td>{{$option->question}}</td>
                             <td>{{$option->scala}}</td>
-                            <td><a href="/option/{!!$option->id!!}/delete" class="delGrupo"><i class="fa fa-trash"></i></a></td>
+                            <td><a href="{{ route('option.destroy', ['id' => $option->id]) }}" class="delGrupo"><i class="fa fa-trash"></i></a></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -50,7 +50,7 @@
         <!-- this row will not appear when printing -->
         <div class="message_wrapper">
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddOption">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddOption">
                         @lang("messages.generic.anadir") @lang("models.modelos.Option")
                 </button>
         </div>
@@ -61,9 +61,8 @@
 <!-- /page content -->
 @endsection
 @section('titulo')
-{{trans("models.$modelo.show")}} {{$elemento->getKey()}}
+{{__("models.$modelo.show")}} {{$elemento->getKey()}}
 @endsection
 @section('scripts')
 
 @endsection
-

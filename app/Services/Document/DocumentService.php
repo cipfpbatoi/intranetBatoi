@@ -3,10 +3,10 @@ namespace Intranet\Services\Document;
 
 use Intranet\Services\Mail\MyMail;
 use Intranet\Services\Document\PdfService;
+use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
-use Styde\Html\Facades\Alert;
-use mikehaertl\pdftk\Pdf as PdfTk;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -198,6 +198,14 @@ class DocumentService
         $resource = PrintResource::build($this->document->printResource, $this->elements);
         $resource->setFlatten(true);
         $tmp_name = FDFPrepareService::exec($resource);
+        if (!is_string($tmp_name) || $tmp_name === '' || !file_exists($tmp_name)) {
+            Log::error('No s\'ha pogut generar el PDF temporal per a signatura', [
+                'resource' => $this->document->printResource,
+                'path' => $tmp_name,
+            ]);
+            Alert::danger('No s\'ha pogut generar el document temporal per a signar.');
+            return response()->json(['error' => 'No s\'ha pogut generar el document temporal per a signar'], 400);
+        }
 
         if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
             try {
@@ -220,8 +228,13 @@ class DocumentService
                 );
 
                 return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
-            } catch (\Exception $e) {
-                Alert::info($e->getMessage());
+            } catch (\Throwable $e) {
+                report($e);
+                Log::error('Error signant document.', [
+                    'route' => $this->document->route ?? null,
+                    'error' => $e->getMessage(),
+                ]);
+                Alert::danger($e->getMessage());
             }
         }
 
@@ -264,15 +277,17 @@ class DocumentService
         }
 
         // Si només hi ha un PDF, el retorna directament
-        $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-        $tmpDir = dirname(storage_path($tmpFile));
-        if (!is_dir($tmpDir)) {
-            mkdir($tmpDir, 0775, true);
-        }
-        if (!$pdf->saveAs(storage_path($tmpFile))) {
-            Log::error('Error concatenant PDFs en sèrie', ['error' => $pdf->getError()]);
-            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
+        try {
+            app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
+        } catch (\Throwable $e) {
+            report($e);
+            Log::error('Error concatenant PDFs en sèrie', [
+                'error' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'pdfCount' => count($pdfs),
+            ]);
+            return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
@@ -301,13 +316,17 @@ class DocumentService
             return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
         }
 
-        $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-
-        // Opcionalment, comprovar $pdf->saveAs() i l’error de pdftk
-        if (!$pdf->saveAs(storage_path($tmpFile))) {
-            // $pdf->getError() retorna info de pdftk si falla
-            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
+        try {
+            app(PdfMergeService::class)->merge($pdfs, storage_path($tmpFile));
+        } catch (\Throwable $e) {
+            report($e);
+            Log::error('Error concatenant PDFs per concatenació simple', [
+                'error' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'pdfCount' => count($pdfs),
+            ]);
+            return response()->json(['error' => 'Error concatenant PDFs: ' . $e->getMessage()], 400);
         }
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
@@ -332,9 +351,15 @@ class DocumentService
         try {
             $zipPath = ZipService::exec($pdfs, $filename);
         } catch (\InvalidArgumentException $e) {
+            report($e);
             return response()->json(['error' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
-            Log::error('Error generant ZIP', ['message' => $e->getMessage()]);
+            report($e);
+            Log::error('Error generant ZIP', [
+                'message' => $e->getMessage(),
+                'document' => $this->document->route ?? null,
+                'count' => is_array($pdfs) ? count($pdfs) : null,
+            ]);
             return response()->json(['error' => 'No s\'ha pogut generar el ZIP'], 500);
         }
 

@@ -4,10 +4,9 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
-use Intranet\Events\ActividadCreated;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 
 
 /**
@@ -46,26 +45,12 @@ class Actividad extends Model
         'desde' => 'required|date',
         'hasta' => 'required|date|after:desde',
     ];
-    protected $inputTypes = [
-        'id' => ['type' => 'hidden'],
-        'tipo_actividad_id' => ['type' => 'select'],
-        'objetivos' => ['type' => 'textarea'],
-        'extraescolar' => ['type' => 'hidden'],
-        'descripcion' => ['type' => 'textarea'],
-        'comentarios' => ['type' => 'textarea'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        //'poll' => ['type' => 'checkbox'],
-        'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox'],
-        'complementaria' => ['type' => 'checkbox'],
-
-    ];
+    protected $inputTypes = ActividadCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'deleted' => ActivityReport::class,
-        'created' => ActividadCreated::class,
     ];
     public $descriptionField = 'name';
     protected $hidden = ['created_at', 'updated_at'];
@@ -134,7 +119,7 @@ class Actividad extends Model
      */
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
@@ -146,7 +131,7 @@ class Actividad extends Model
      */
     public function getHastaAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y H:i');
     }
 
@@ -235,7 +220,7 @@ class Actividad extends Model
      */
     public function getsituacionAttribute()
     {
-        return trans('models.Actividad.' . $this->estado);
+        return __('models.Actividad.' . $this->estado);
     }
 
     /**

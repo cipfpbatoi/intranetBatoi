@@ -4,15 +4,16 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoIncidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\TipoIncidenciaRequest;
+use Intranet\Presentation\Crud\TipoIncidenciaCrudSchema;
 
 
 /**
- * Class ComisionController
+ * Class TipoIncidenciaController
  * @package Intranet\Http\Controllers
  */
 class TipoIncidenciaController extends ModalController
@@ -22,14 +23,8 @@ class TipoIncidenciaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nombre', 'nom','profesor','tipo'];
-    protected $formFields = [
-        'id' => ['type' => 'text'],
-        'nombre' => ['type' => 'text'],
-        'nom' => ['type' => 'text'],
-        'idProfesor' => ['type' => 'select'],
-        'tipus' => ['type' => 'select']
-    ];
+    protected $gridFields = TipoIncidenciaCrudSchema::GRID_FIELDS;
+    protected $formFields = TipoIncidenciaCrudSchema::FORM_FIELDS;
     /**
      * @var string
      */
@@ -55,15 +50,46 @@ class TipoIncidenciaController extends ModalController
 
     public function store(TipoIncidenciaRequest $request)
     {
-        $new = new TipoIncidencia();
-        $new->fillAll($request);
+        $this->authorize('create', TipoIncidencia::class);
+        $this->persist($request);
         return $this->redirect();
     }
 
+    /**
+     * @param TipoIncidenciaRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(TipoIncidenciaRequest $request, $id)
     {
-        TipoIncidencia::findOrFail($id)->fillAll($request);
+        $tipoIncidencia = $this->findModelOrFail(
+            TipoIncidencia::class,
+            $id,
+            "Tipus d'incidència no trobat",
+            ['tipo_incidencia_id' => $id]
+        );
+        $this->authorize('update', $tipoIncidencia);
+        $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un tipus d'incidència amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $tipoIncidencia = $this->findModelOrFail(
+            TipoIncidencia::class,
+            $id,
+            "Tipus d'incidència no trobat",
+            ['tipo_incidencia_id' => $id]
+        );
+        $this->authorize('delete', $tipoIncidencia);
+        return parent::destroy($id);
     }
 
 }

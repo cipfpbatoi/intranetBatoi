@@ -8,26 +8,34 @@
                         {{ $panel->getTitulo() }}
                     </x-layouts.titlebar>
                     <div class="x_content">
-                        {!! Alert::render() !!}
+                        {!! \Intranet\Services\UI\AppAlert::render() !!}
                     </div>
                     <div class="x_content">
+                        @php
+                            $tabs = $panel->getPestanas();
+                            $hasActiveTab = collect($tabs)->contains(
+                                static fn ($pestana): bool => trim((string) $pestana->getActiva()) !== ''
+                            );
+                        @endphp
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
                             <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
-                                @foreach ($panel->getPestanas() as $pestana)
-                                    <li role="presentation" class="{{$pestana->getActiva()}}">
-                                        <a href="#tab_{{$pestana->getNombre()}}" id="{{$pestana->getNombre()}}-tabb" role="tab" data-toggle="tab" aria-controls="{{$pestana->getNombre()}}" aria-expanded="true">
-                                            @if (strpos(trans("messages.buttons.".$pestana->getNombre()),'essages')==1)
+                                @foreach ($tabs as $pestana)
+                                    @php($isActive = trim((string) $pestana->getActiva()) !== '' || (!$hasActiveTab && $loop->first))
+                                    <li class="nav-item" role="presentation">
+                                        <a href="#tab_{{$pestana->getNombre()}}" class="nav-link {{ $isActive ? 'active' : '' }}" id="{{$pestana->getNombre()}}-tabb" role="tab" data-bs-toggle="tab" aria-controls="{{$pestana->getNombre()}}" aria-selected="{{ $isActive ? 'true' : 'false' }}">
+                                            @if (strpos(__("messages.buttons.".$pestana->getNombre()),'essages')==1)
                                                 {{$pestana->getNombre()}}
                                             @else
-                                                {{trans("messages.buttons.".$pestana->getNombre())}}
+                                                {{__("messages.buttons.".$pestana->getNombre())}}
                                             @endif
                                         </a>
                                     </li>
                                 @endforeach
                             </ul>
                             <div id="myTabContent1" class="tab-content">
-                                @foreach ($panel->getPestanas() as $pestana)
-                                    <div role="tabpanel" class="tab-pane fade {{$pestana->getActiva()}} in" id="tab_{{$pestana->getNombre()}}" aria-labelledby="{{$pestana->getNombre()}}-tab">
+                                @foreach ($tabs as $pestana)
+                                    @php($isActive = trim((string) $pestana->getActiva()) !== '' || (!$hasActiveTab && $loop->first))
+                                    <div role="tabpanel" class="tab-pane fade {{ $isActive ? 'show active' : '' }}" id="tab_{{$pestana->getNombre()}}" aria-labelledby="{{$pestana->getNombre()}}-tab">
                                         @yield($pestana->getNombre())
                                     </div>
                                 @endforeach

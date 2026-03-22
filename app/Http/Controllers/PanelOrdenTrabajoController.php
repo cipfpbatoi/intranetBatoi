@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonPost;
 use Intranet\Entities\Incidencia;
+use Illuminate\Support\Facades\Gate;
 
 class PanelOrdenTrabajoController extends BaseController
 {
@@ -16,16 +17,32 @@ class PanelOrdenTrabajoController extends BaseController
     protected $model = 'Incidencia';
     protected $parametresVista = ['modal' => ['explicacion','aviso']];
     
+    /**
+     * Mostra el detall d'orde de treball amb autorització prèvia.
+     *
+     * @param mixed $search
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($search)
+    {
+        Gate::authorize('viewAny', Incidencia::class);
+        return parent::indice($search);
+    }
+
     
     public function search()
     {
-        return Incidencia::where('orden',$this->search)->get(); 
+        Gate::authorize('viewAny', Incidencia::class);
+        return Incidencia::with(['Tipos', 'Responsables', 'Creador', 'Espacios'])
+            ->where('orden', $this->search)
+            ->get();
     }
     
     public function iniBotones()
     {
+        Gate::authorize('viewAny', Incidencia::class);
         $this->panel->setBoton('index', new BotonBasico("$this->search.pdf", ['where'=>['estado','==',0]],"mantenimiento/ordentrabajo" ));
-        $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>trans('messages.buttons.verorden')],"mantenimiento" ));
+        $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>__('messages.buttons.verorden')],"mantenimiento" ));
         $this->panel->setBoton('profile', new BotonIcon("incidencia.remove", ['class' => 'btn-danger unauthorize','where'=>['estado','<',3]],'mantenimiento'));
         $this->panel->setBoton('profile', new BotonPost("incidencia.resolve", ['class' => 'resolve btn-danger unauthorize','where'=>['estado','==',2]],'mantenimiento'));
         
@@ -33,7 +50,7 @@ class PanelOrdenTrabajoController extends BaseController
     
     public function iniPestanas($parametres = null)
     {
-        $this->panel->setPestana(trans('validation.attributes.orden').' '.$this->search, true, 'profile.incidencia',null,null,1,$this->parametresVista);
+        $this->panel->setPestana('orden_detall', true, 'profile.orden_incidencia', null, null, true, $this->parametresVista);
     }
     
     

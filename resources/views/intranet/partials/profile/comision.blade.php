@@ -1,10 +1,10 @@
 @php $agrupados = $panel->getElementos($pestana)->groupBy('idProfesor'); @endphp
 @foreach ($agrupados as $dni => $grupo)
     @php $nombre = $pestana->getNombre().$dni; @endphp
-        <div class="panel">
-            <a class="panel-heading" role="tab" id="heading{{$nombre}}" data-toggle="collapse" data-parent="#accordion"
+        <div class="card">
+            <a class="d-block" id="heading{{$nombre}}" data-bs-toggle="collapse" data-bs-parent="#accordion"
                href="#collapse{{$nombre}}" aria-expanded="false" aria-controls="collapse{{$nombre}}">
-                <h4 class="panel-title">
+                <h4 class="card-title">
                     <i class="fa fa-bars"></i>
                     {{$grupo->first()->Profesor->fullName}}
 
@@ -15,9 +15,9 @@
                 <em class="fa fa-money"></em> {{ $grupo->sum('total') }} €
                 <input class='user' type="checkbox" name="{{$dni}}" value="{{$dni}}">
             @endif
-            <div id="collapse{{$nombre}}" class="panel-collapse collapse" role="tabpanel"
+            <div id="collapse{{$nombre}}" class="collapse"
                  aria-labelledby="heading{{$nombre}}">
-                <div class="panel-body">
+                <div class="card-body">
                     <div class='form_box'>
                         @foreach ($grupo as $elemento)
                             <x-label

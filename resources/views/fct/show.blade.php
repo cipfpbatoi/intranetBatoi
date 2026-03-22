@@ -7,7 +7,7 @@
             </div>
         @else
         <h3>
-            <a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>
+            <a href="{{ route('empresa.detalle', ['empresa' => $fct->Colaboracion->Centro->idEmpresa]) }}">
                 {{$fct->Colaboracion->Centro->nombre}}
             </a>
         </h3>
@@ -77,55 +77,55 @@
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="" role="tabpanel" data-example-id="togglable-tabs">
             <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                <li role="presentation" @if ($activa == 1 ) class="active" @endif>
-                    <a href="#tab_content1" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">
+                <li class="nav-item" role="presentation">
+                    <a href="#tab_content1" class="nav-link @if ($activa == 1) active @endif" role="tab" id="alumno-tab" data-bs-toggle="tab" aria-selected="{{ $activa == 1 ? 'true' : 'false' }}">
                         @lang("validation.attributes.alumno")
                     </a>
                 </li>
-                <li role="presentation" @if ($activa == 2 ) class="active" @endif>
-                    <a href="#tab_content2" role="tab" id="contactos-tab" data-toggle="tab" aria-expanded="false">
+                <li class="nav-item" role="presentation">
+                    <a href="#tab_content2" class="nav-link @if ($activa == 2) active @endif" role="tab" id="contactos-tab" data-bs-toggle="tab" aria-selected="{{ $activa == 2 ? 'true' : 'false' }}">
                         @lang("models.Colaboracion.contactos")
                     </a>
                 </li>
-                <li role="presentation" @if ($activa == 3 ) class="active" @endif>
-                    <a href="#tab_content3" id="alumnado-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                <li class="nav-item" role="presentation">
+                    <a href="#tab_content3" class="nav-link @if ($activa == 3) active @endif" id="alumnado-tab" role="tab" data-bs-toggle="tab" aria-selected="{{ $activa == 3 ? 'true' : 'false' }}">
                         @lang("models.Colaboracion.fctAl")
                     </a>
                 </li>
-                <li role="presentation" @if ($activa == 4)class="active" @endif>
-                    <a href="#tab_content4" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                <li class="nav-item" role="presentation">
+                    <a href="#tab_content4" class="nav-link @if ($activa == 4) active @endif" id="centro-tab" role="tab" data-bs-toggle="tab" aria-selected="{{ $activa == 4 ? 'true' : 'false' }}">
                         @lang("models.Colaboracion.centro")
                     </a>
                 </li>
-                <li role="presentation" @if ($activa == 5) class="active" @endif>
-                    <a href="#tab_content5" id="colaborador-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                <li class="nav-item" role="presentation">
+                    <a href="#tab_content5" class="nav-link @if ($activa == 5) active @endif" id="colaborador-tab" role="tab" data-bs-toggle="tab" aria-selected="{{ $activa == 5 ? 'true' : 'false' }}">
                         @lang("models.modelos.Colaborador")
                     </a>
                 </li>
             </ul>
             <div id="myTabContent" class="tab-content">
                 <div role="tabpanel"
-                     class="tab-pane fade @if ($activa == 1) active in @endif" id="tab_content1"
+                     class="tab-pane fade @if ($activa == 1) show active @endif" id="tab_content1"
                      aria-labelledby="alumno-tab">
                    @include('fct.partials.alumnos')
                 </div>
                 <div role="tabpanel"
-                     class="tab-pane fade @if ($activa == 2) active in @endif" id="tab_content2"
+                     class="tab-pane fade @if ($activa == 2) show active @endif" id="tab_content2"
                      aria-labelledby="contactos-tab">
                     @include('fct.partials.contactos')
                 </div>
                 <div role="tabpanel"
-                     class="tab-pane fade @if ($activa == 3) active in @endif" id="tab_content3"
+                     class="tab-pane fade @if ($activa == 3) show active @endif" id="tab_content3"
                      aria-labelledby="alumnado-tab">
                     @include('fct.partials.alumnado')
                 </div>
                 <div role="tabpanel"
-                     class="tab-pane fade @if ($activa == 4) active in @endif" id="tab_content4"
+                     class="tab-pane fade @if ($activa == 4) show active @endif" id="tab_content4"
                      aria-labelledby="centro-tab">
                     @include('fct.partials.centro')
                 </div>
                 <div role="tabpanel"
-                     class="tab-pane fade @if ($activa == 5) active in @endif" id="tab_content5"
+                     class="tab-pane fade @if ($activa == 5) show active @endif" id="tab_content5"
                      aria-labelledby="colaborador-tab">
                     @include('fct.partials.colaboradores')
                 </div>
@@ -136,6 +136,8 @@
     @push('scripts')
     {{ Html::script("/js/datepicker.js") }}
     @include('intranet.partials.modal.contactoAl')
+    {{ Html::script("/js/common/ui-helpers.js") }}
+    {{ Html::script("/js/common/api-auth.js") }}
     {{ Html::script("/js/Fct/show.js") }}
     @endpush
 </x-layouts.app>

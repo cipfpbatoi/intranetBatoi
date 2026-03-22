@@ -2,16 +2,19 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
+use Intranet\Http\Requests\ModuloCicloRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\Entities\Modulo_ciclo;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
  * Class Modulo_cicloController
  * @package Intranet\Http\Controllers
  */
-class Modulo_cicloController extends IntranetController
+class Modulo_cicloController extends ModalController
 {
     const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
 
@@ -27,17 +30,7 @@ class Modulo_cicloController extends IntranetController
      * @var array
      */
     protected $gridFields = ['id', 'Xmodulo','Xciclo','curso','enlace','Xdepartamento'];
-    /**
-     * @var
-     */
-    protected $vista;
-    /**
-     * @var bool
-     */
-    protected $modal = false;
 
-
-    
     /**
      *
      */
@@ -46,6 +39,38 @@ class Modulo_cicloController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico('modulo_ciclo.create', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
         $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.edit', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
         $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.delete', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
+    }
+
+    public function store(ModuloCicloRequest $request)
+    {
+        $this->authorize('create', Modulo_ciclo::class);
+        $this->persist($request);
+        return $this->redirect();
+    }
+
+    /**
+     * @param ModuloCicloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function update(ModuloCicloRequest $request, $id)
+    {
+        $this->authorize('update', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
+    /**
+     * Elimina un enllaç mòdul-cicle amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', $this->findModelOrFail(Modulo_ciclo::class, (int) $id, 'Mòdul-cicle no trobat', ['modulo_ciclo_id' => $id]));
+        return parent::destroy($id);
     }
 
 }

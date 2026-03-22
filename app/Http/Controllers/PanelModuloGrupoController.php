@@ -4,11 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\BaseController;
 
-use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Programacion;
 use Intranet\UI\Botones\BotonImg;
-use Illuminate\Support\Facades\Session;
 
 class PanelModuloGrupoController extends BaseController
 {

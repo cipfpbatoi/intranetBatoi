@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\BaseController;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Panels\Panel;
@@ -40,6 +41,7 @@ class PanelProcedimientoController extends BaseController
 
     public function index()
     {
+        Gate::authorize('create', Expediente::class);
         $todos = $this->search();
 
         $this->panel->setPestana("Per_assignar",  true , 'profile.expediente',
@@ -56,6 +58,7 @@ class PanelProcedimientoController extends BaseController
      */
     protected function iniBotones()
     {
+        Gate::authorize('create', Expediente::class);
 
         if (esRol(AuthUser()->rol,config('roles.rol.direccion'))) {
             $this->panel->setBoton('profile',new BotonImg('expediente.user', ['text' => 'Assignar Acompanyant', 'img' => 'fa-user', 'class' => 'user', 'where' => ['estado', '==', 4]]));
@@ -72,6 +75,7 @@ class PanelProcedimientoController extends BaseController
      */
     protected function search()
     {
+        Gate::authorize('create', Expediente::class);
         return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',2)->get(), 'id'))->where('estado','>=',4)->get();
     }
 

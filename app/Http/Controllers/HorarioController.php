@@ -2,26 +2,50 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\HorarioUpdateRequest;
+use Intranet\Presentation\Crud\HorarioCrudSchema;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Storage;
-use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\Notifications\NotificationService;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Services\UI\FormBuilder;
 
-class HorarioController extends IntranetController
+/**
+ * Gestiona el canvi temporal d'horaris i la revisió de propostes.
+ */
+class HorarioController extends ModalController
 {
 
     protected $model = 'Horario';
     protected $perfil = 'profesor';
-    protected $gridFields = ['XModulo','XOcupacion' ,'dia_semana', 'desde', 'aula'];
-    protected $modal = true;
+    protected $gridFields = HorarioCrudSchema::GRID_FIELDS;
+    protected $formFields = HorarioCrudSchema::FORM_FIELDS;
+    private ?HorarioService $horarioService = null;
+    private ?ProfesorService $profesorService = null;
 
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
     private function getJsonFromFile($dni){
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
@@ -30,21 +54,55 @@ class HorarioController extends IntranetController
         return null;
     }
 
-    private function changeHorary($dni,$cambios){
+    /**
+     * Aplica els canvis d'horari utilitzant la posició original com a referència.
+     *
+     * @param string $dni
+     * @param iterable|null $cambios
+     */
+    private function changeHorary(string $dni, $cambios): void
+    {
+        if (!is_iterable($cambios)) {
+            return;
+        }
+        $horarios = $this->horarios()->byProfesor((string) $dni)->sortBy('id');
+        $horariosById = [];
+        $horariosByCell = [];
+
+        foreach ($horarios as $horario) {
+            $horariosById[(string) $horario->id] = $horario;
+            $cell = $horario->sesion_orden . '-' . $horario->dia_semana;
+            if (!isset($horariosByCell[$cell])) {
+                $horariosByCell[$cell] = $horario;
+            }
+        }
+
         foreach ($cambios as $cambio) {
+            $from = is_array($cambio) ? ($cambio['de'] ?? null) : ($cambio->de ?? null);
+            $to = is_array($cambio) ? ($cambio['a'] ?? null) : ($cambio->a ?? null);
+            $id = is_array($cambio) ? ($cambio['id'] ?? null) : ($cambio->id ?? null);
 
-            $de=explode("-",$cambio->de);
-            $a=explode("-", $cambio->a);
-
-            $horario = Horario::dia($de[1])->orden($de[0])->Profesor($dni)->first();
-            if ($horario){
-                $horario->dia_semana = $a[1];
-                $horario->sesion_orden = $a[0];
-                $horario->save();
-            } else {
-                Alert::info("Horari".$de[1].' '.$de[0]." del profesor $dni no trobat");
+            if (!$from || !$to) {
+                continue;
             }
 
+            $horario = $id ? ($horariosById[(string) $id] ?? null) : ($horariosByCell[(string) $from] ?? null);
+            if (!$horario) {
+                $deParts = explode('-', (string) $from, 2);
+                $dia = $deParts[1] ?? '';
+                $sesion = $deParts[0] ?? '';
+                Alert::info("Horari" . $dia . ' ' . $sesion . " del profesor $dni no trobat");
+                continue;
+            }
+
+            $aParts = explode('-', (string) $to, 2);
+            if (count($aParts) < 2) {
+                continue;
+            }
+
+            $horario->sesion_orden = (int) $aParts[0];
+            $horario->dia_semana = (string) $aParts[1];
+            $horario->save();
         }
     }
     private function saveCopy($dni,$data){
@@ -96,7 +154,7 @@ class HorarioController extends IntranetController
     public function changeTableAll(){
         $correctos = 0;
 
-        foreach (Profesor::select('dni')->Activo()->get() as $profe) {
+        foreach ($this->profesores()->activos() as $profe) {
             $correctos += $this->changeTable($profe->dni,false);
         }
         Alert::success("He fet $correctos canvis d'horaris");
@@ -140,7 +198,7 @@ class HorarioController extends IntranetController
             $propuestas[] = [
                 'dni' => $dni,
                 'id' => $data['id'] ?? basename($file, '.json'),
-                'profesor' => Profesor::find($dni),
+                'profesor' => $this->profesores()->find((string) $dni),
                 'estado' => $data['estado'] ?? 'Pendiente',
                 'obs' => $data['obs'] ?? '',
                 'motiu_rebuig' => $data['motiu_rebuig'] ?? '',
@@ -240,7 +298,7 @@ class HorarioController extends IntranetController
 
     protected function sendAcceptationEmail(string $dni, array $data, string $id): void
     {
-        $profesor = Profesor::find($dni);
+        $profesor = $this->profesores()->find($dni);
         if (!$profesor || empty($profesor->email)) {
             return;
         }
@@ -277,8 +335,8 @@ class HorarioController extends IntranetController
         if ($id == null) {
             $id = AuthUser()->id;
         }
-        $horario = Horario::HorarioSemanal($id);
-        $profesor = Profesor::find($id);
+        $horario = $this->horarios()->semanalByProfesor((string) $id);
+        $profesor = $this->profesores()->find((string) $id);
         return view('horario.profesor-cambiar', compact('horario', 'profesor'));
     }
 
@@ -297,6 +355,12 @@ class HorarioController extends IntranetController
         return $this->modificarHorario(Session::get('horarioProfesor'));
     }
 
+    public function update(HorarioUpdateRequest $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
     /**
      * @param $idProfesor
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -304,8 +368,14 @@ class HorarioController extends IntranetController
     protected function modificarHorario($idProfesor){
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         Session::put('horarioProfesor',$idProfesor);
-        $this->titulo = ['quien' => Profesor::find($idProfesor)->fullName]; // paràmetres per al titol de la vista
+        $this->titulo = ['quien' => $this->profesores()->find((string) $idProfesor)->fullName]; // paràmetres per al titol de la vista
         $this->iniBotones();
-        return $this->grid(Horario::Profesor($idProfesor)->get());
+        return $this->panel->render(
+            $this->horarios()->byProfesor((string) $idProfesor),
+            $this->titulo,
+            'intranet.indexModal',
+            new FormBuilder($this->createWithDefaultValues(), $this->formFields)
+        );
     }
+
 }

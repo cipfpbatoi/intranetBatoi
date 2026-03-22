@@ -4,11 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Illuminate\Http\Request;
 use Intranet\Entities\Guardia;
 use Intranet\Entities\Hora;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -36,7 +33,20 @@ class GuardiaController extends IntranetController
         $ip = getClientIpAddress();
         if ($ip) {
             $horas = Hora::all();
-            return view('guardias.guardia',compact('horas'));
+            $dia = hoy();
+            $sesion = sesion(hora());
+            $dni = authUser()->dni;
+
+            $estoy = Guardia::query()
+                ->Profesor($dni)
+                ->DiaHora($dia, $sesion)
+                ->exists();
+
+            $guardiasAhora = $estoy
+                ? Guardia::query()->DiaHora($dia, $sesion)->get()
+                : collect();
+
+            return view('guardias.guardia', compact('horas', 'estoy', 'guardiasAhora'));
         }
     }
 

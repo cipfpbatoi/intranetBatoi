@@ -1,19 +1,18 @@
 <!-- Modal -->
-@php($ciclos = \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)->get())
 <x-modal
         name="AddColaboration"
         title='Afegir Colaboració'
         action="/colaboracion/create"
-        message='{{ trans("messages.buttons.confirmar")}}'
+        message='{{ __("messages.buttons.confirmar")}}'
 >
     <input type="hidden" id="id" value="" />
     <div class="form-group row">
         <label class="control-label" for="idCiclo">Cicle</label>
         <select id='idCiclo' name='idCiclo' class="form-control">
-                @foreach ($ciclos as $cicle)
+                @foreach ($ciclosDepartamento as $cicle)
                     <option
                             value='{{ $cicle->id }}'
-                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $ciclo ? 'selected' :  '')}}
+                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $cicloTutoria ? 'selected' :  '')}}
                     >
                         {!! $cicle->ciclo !!}
                     </option>
@@ -38,7 +37,7 @@
     </div>
     <div class="form-group row">
         <label class="control-label" for="telefono">@lang("validation.attributes.telef1")</label>
-        <input id="telefono" type="text" name="telefono" placeholder="{{trans("validation.attributes.telef1")}}"
+        <input id="telefono" type="text" name="telefono" placeholder="{{__("validation.attributes.telef1")}}"
                        value="{{ old('telefono') }}" class="form-control"/>
     </div>
     <div class="form-group row">

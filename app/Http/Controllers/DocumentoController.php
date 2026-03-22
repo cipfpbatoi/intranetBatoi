@@ -2,41 +2,86 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Application\Documento\DocumentoFormService;
+use Intranet\Application\Documento\DocumentoLifecycleService;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
-
-
+use Intranet\Http\Requests\DocumentoStoreRequest;
 use Illuminate\Http\Request;
+
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Profesor;
+use Intranet\Presentation\Crud\DocumentoCrudSchema;
 use Intranet\Services\Document\TipoDocumentoService;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Controlador de gestió de documents i fluxos associats de FCT/qualitat.
+ */
 class DocumentoController extends IntranetController
 {
+    private ?DocumentoFormService $documentoFormService = null;
+    private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
+    private ?DocumentoLifecycleService $documentoLifecycleService = null;
 
     protected $model = 'Documento';
-    protected $formFields = ['tipoDocumento' => ['type' => 'select'],
-        'rol' => ['type' => 'hidden'],
-        'propietario' => ['disabled' => 'disabled'],
-        'grupo' => ['type' => 'select'],
-        'supervisor' => ['type' => 'hidden'],
-        'ciclo' => ['type' => 'hidden'],
-        'detalle' => ['type' => 'textarea'],
-        'curso' => ['disabled'=> 'disabled'],
-        'descripcion' => ['type' => 'text'],
-        'enlace' => ['type' => 'text'],
-        'fichero' => ['type' => 'file'],
-        'activo' => ['type' => 'checkbox'],
-        'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
-    ];
+    protected $formFields = DocumentoCrudSchema::FORM_FIELDS;
+
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?AlumnoFctService $alumnoFctService = null,
+        ?DocumentoLifecycleService $documentoLifecycleService = null
+    )
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
+        $this->documentoLifecycleService = $documentoLifecycleService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
+
+    private function documentos(): DocumentoLifecycleService
+    {
+        if ($this->documentoLifecycleService === null) {
+            $this->documentoLifecycleService = app(DocumentoLifecycleService::class);
+        }
+
+        return $this->documentoLifecycleService;
+    }
+
+    private function forms(): DocumentoFormService
+    {
+        if ($this->documentoFormService === null) {
+            $this->documentoFormService = app(DocumentoFormService::class);
+        }
+
+        return $this->documentoFormService;
+    }
 
 
     protected function redirect()
@@ -53,9 +98,11 @@ class DocumentoController extends IntranetController
 
     public function store(Request $request, $fct = null)
     {
+        $this->authorize('create', Documento::class);
+        $this->validate($request, (new DocumentoStoreRequest())->rules());
        
-        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
-            $this->saveNota($request->nota, $fct);
+        if ($request->filled('nota')) {
+            $this->forms()->updateNota($this->alumnoFcts(), (int) $fct, $request->nota);
             if ($request->nota < 5) {
                 return $this->redirect();
             }
@@ -79,19 +126,6 @@ class DocumentoController extends IntranetController
 
         return $this->redirect();
     }
-
-
-
-    private function saveNota($nota, $fct)
-    {
-        $fctAl = AlumnoFct::findOrFail($fct);
-        $fctAl->calProyecto = $nota;
-        if ($fctAl->calificacion < 1) {
-            $fctAl->calificacion = 1;
-        }
-        $fctAl->save();
-    }
-
     protected function createWithDefaultValues($default=[])
     {
         return (new CreateOrUpdateDocumentAction())->build(
@@ -101,36 +135,16 @@ class DocumentoController extends IntranetController
 
     public function project($idFct)
     {
-        if ($fct = AlumnoFct::findOrFail($idFct)) {
-
-            $proyecto = $fct->Alumno->Projecte ?? null;
-            $descripcion = $proyecto->titol ?? '';
-            $detalle = $proyecto->descripcio ?? '';
-            $elemento = (new CreateOrUpdateDocumentAction())->build([
-                'curso' => Curso(),
-                'propietario' => $fct->Alumno->FullName,
-                'supervisor' => AuthUser()->FullName,
-                'activo' => true,
-                'tipoDocumento' => 'Proyecto',
-                'idDocumento' => '',
-                'ciclo' => Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo,
-                'descripcion' => $descripcion,
-                'detalle' => $detalle,
-            ]);
+        $this->authorize('create', Documento::class);
+        if ($fct = $this->alumnoFcts()->findOrFail((int) $idFct)) {
+            $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
+            $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
+            $elemento = (new CreateOrUpdateDocumentAction())->build(
+                $this->forms()->projectDefaults($fct, $ciclo, AuthUser()->FullName)
+            );
             $formulario = new FormBuilder(
                 $elemento,
-                [
-                    'tipoDocumento' => ['disabled' => 'disabled'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'curso' => ['disabled'=> 'disabled'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'descripcion' => ['type' => 'text'],
-                    'detalle' => ['type' => 'textarea'],
-                    'nota' => ['type' => 'text'],
-                    'fichero' => ['type' => 'file'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
+                DocumentoCrudSchema::projectFormFields()
             );
             $modelo = $this->model;
             Session::put('redirect', 'PanelFctAvalController@index');
@@ -140,12 +154,21 @@ class DocumentoController extends IntranetController
 
     }
 
+    /**
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function qualitatUpload($id)
     {
-        $profesor = Profesor::findOrFail($id);
+        $this->authorize('create', Documento::class);
+        $profesor = app(ProfesorService::class)->findOrFail((string) $id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
-        $grupo = Grupo::QTutor($id)->first();
+        $grupo = $this->grupos()->firstByTutor((string) $id);
+        if (!$grupo) {
+            throw new NotFoundDomainException('No hi ha grup de tutoria assignat', ['profesor_id' => $id]);
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
             'curso' => Curso(),
             'propietario' => $profesor->FullName,
@@ -192,44 +215,33 @@ class DocumentoController extends IntranetController
                 Adjunto::destroy($adjunto);
                 unlink($file);
             }
-            return redirect('/alumnofct');
+            return redirect()->route('alumnofct.index');
         }
         $elemento->delete();
         return back();
     }
 
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws NotFoundDomainException
+     */
     public function qualitat()
     {
-        $grupo = Grupo::QTutor(AuthUser()->dni)->first();
+        $this->authorize('create', Documento::class);
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
+        if (!$grupo) {
+            throw new NotFoundDomainException(
+                'No hi ha grup de tutoria assignat',
+                ['profesor_id' => AuthUser()->dni]
+            );
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->build([
-            'curso' => Curso(),
-            'propietario' => AuthUser()->FullName,
-            'supervisor' => AuthUser()->FullName,
-            'activo' => true,
-            'tipoDocumento' => 'FCT',
-            'idDocumento' => '',
-            'ciclo' => $grupo->Ciclo->ciclo,
-            'grupo' => $grupo->nombre,
-            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
-            'instrucciones' => 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor',
+            ...$this->forms()->qualitatDefaults($grupo, AuthUser()->FullName),
         ]);
         $formulario = new FormBuilder(
             $elemento,
-            [
-                'tipoDocumento' => ['disabled' => 'disabled'],
-                'instrucciones' => ['disabled' => 'disabled'],
-                'curso' => ['disabled'=> 'disabled'],
-                'rol' => ['type' => 'hidden'],
-                'propietario' => ['disabled' => 'disabled'],
-                'grupo' => ['disabled' => 'disabled'],
-                'supervisor' => ['type' => 'hidden'],
-                'ciclo' => ['type' => 'hidden'],
-                'detalle' => ['type' => 'textarea'],
-                'descripcion' => ['type' => 'text'],
-                'fichero' => ['type' => 'file'],
-                'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-            ]
+            DocumentoCrudSchema::qualitatFormFields()
         );
         $modelo = $this->model;
         Session::put('redirect', 'FctController@index');
@@ -239,60 +251,25 @@ class DocumentoController extends IntranetController
     public function edit($id = null)
     {
         $elemento = Documento::findOrFail($id);
-        $formulario = $elemento->enlace?
-            new FormBuilder(
-                $elemento,
-                [
-                    'tipoDocumento' => ['type' => 'select'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'rol' => ['type' => 'hidden'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'detalle' => ['type' => 'textarea'],
-                    'curso' => ['disabled' => 'disabled'],
-                    'grupo' => ['disabled' => 'disabled'],
-                    'descripcion' => ['type' => 'text'],
-                    'enlace' => ['type' => 'text'],
-                    'activo' => ['type' => 'checkbox'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
-            ):
-            new FormBuilder(
-                $elemento,
-                [
-                    'tipoDocumento' => ['type' => 'select'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'rol' => ['type' => 'hidden'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'detalle' => ['type' => 'textarea'],
-                    'curso' => ['disabled' => 'disabled'],
-                    'grupo' => ['disabled' => 'disabled'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'descripcion' => ['type' => 'text'],
-                    'fichero' => ['type' => 'file'],
-                    'activo' => ['type' => 'checkbox'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
-            );
+        $this->authorize('update', $elemento);
+        $formulario = new FormBuilder($elemento, DocumentoCrudSchema::editFormFields((bool) $elemento->enlace));
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
     
     public function show($id)
     {
-        $gestor = new GestorService(null, Documento::find($id));
+        $documento = Documento::findOrFail($id);
+        $this->authorize('view', $documento);
+        $gestor = new GestorService(null, $documento);
         return $gestor->render();
     }
 
     public function destroy($id)
     {
         $borrar = Documento::findOrFail($id);
-        if ($borrar) {
-            if ($borrar->link && !$borrar->exist) {
-                unlink(storage_path('app/' . $borrar->fichero));
-            }
-            $borrar->delete();
-        }
+        $this->authorize('delete', $borrar);
+        $this->documentos()->delete($borrar);
         return $this->redirect();
     }
 

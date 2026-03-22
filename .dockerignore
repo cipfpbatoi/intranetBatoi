@@ -1,0 +1,62 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDEs & Editors
+.vscode
+.idea
+.editorconfig
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+thumbs.db
+
+# Documentation & Config
+README.md
+CONTRIBU*.md
+CLAUDE.md
+AGENTS.md
+docker-compose*.yml
+Dockerfile
+
+# Laravel
+vendor/
+storage/logs/*
+storage/app/*
+bootstrap/cache
+.env*
+!.env.example
+
+# Node/npm
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Testing
+tests/
+phpunit.xml
+phpunit.xml.dist
+.phpunit.cache
+
+# Docker specific
+docker/
+!docker/8.3/start-container
+!docker/8.3/supervisord.conf
+!docker/8.3/php.ini
+!docker/8.3/wkhtmltox_0.12.6.1-2.jammy_amd64.deb 
+
+
+
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Other
+*.md
+.DS_Store
+Makefile

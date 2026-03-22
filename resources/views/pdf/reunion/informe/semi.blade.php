@@ -76,10 +76,10 @@ Curs 2019-20</p>
     @endforeach
 @endforeach
 <p style="margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%; page-break-before: always"><br/></p>
-<p class="left"><b>Valoració del teu treball durant el 3r trimestre</b></p>
+<p class="left"><b>Notes dels mòduls</b></p>
 <p class="normal"><br/></p>
 @foreach ($todos->Alumno->AlumnoResultado as $resultado)
-    <p class="left"><strong>{{$resultado->modulo}}</strong>: {{$resultado->valoracion}}</p>
+    <p class="left"><strong>{{$resultado->modulo}}</strong>: {{ config('auxiliares.notas')[$resultado->nota] ?? $resultado->nota }}</p>
 @endforeach
 <p class="normal"><br/><br/></p>
 <p class="title">_______ALTRES DADES D’INTERÉS________________________________</p>

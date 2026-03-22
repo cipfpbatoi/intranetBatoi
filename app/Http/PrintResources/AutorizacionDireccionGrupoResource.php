@@ -2,8 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Grupo\GrupoService;
 
 class AutorizacionDireccionGrupoResource extends PrintResource
 {
@@ -22,8 +21,8 @@ class AutorizacionDireccionGrupoResource extends PrintResource
      */
     public function toArray()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
-        $director = Profesor::find(config('avisos.director'))->fullName;
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
+        $director = cargo('director')->fullName;
         $alumnes = '';
         $data_actual = new \DateTime();
         $any_academic_inici =

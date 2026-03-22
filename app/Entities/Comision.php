@@ -2,9 +2,10 @@
 
 namespace Intranet\Entities;
 
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
 class Comision extends Model
 {
@@ -43,14 +44,7 @@ class Comision extends Model
         'itinerario',
     ];
 
-    protected $inputTypes = [
-        'idProfesor' => ['type' => 'hidden'],
-        'medio' => ['type' => 'select'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        'fct' => ['type' => 'checkbox'],
-        'servicio' => ['type' => 'textarea'],
-    ];
+    protected $inputTypes = ComisionCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -87,13 +81,13 @@ class Comision extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
     public function getHastaAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y H:i');
     }
 
@@ -141,8 +135,8 @@ class Comision extends Model
     public function getsituacionAttribute()
     {
         return isblankTrans('models.Comision.' . $this->estado)
-            ? trans('messages.situations.' . $this->estado)
-            : trans('models.Comision.' . $this->estado);
+            ? __('messages.situations.' . $this->estado)
+            : __('models.Comision.' . $this->estado);
     }
     public function getTotalAttribute()
     {

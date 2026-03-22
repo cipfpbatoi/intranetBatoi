@@ -2,15 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoUpdateRequest;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\UI\Botones\BotonIcon;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Profesor;
 
 
 /**
@@ -35,11 +37,12 @@ class AlumnoController extends PerfilController
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new AlumnoUpdateRequest())->rules());
         $new = Alumno::find($id);
 
         parent::update($request, $new);
 
-        return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
+        return redirect()->route('alumnogrupo.index', ['grupo' => $new->Grupo()->first()->codigo]);
     }
 
     /**
@@ -48,34 +51,22 @@ class AlumnoController extends PerfilController
      */
     public function carnet($alumno)
     {
-        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Carbon::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function checkFol($id)
     {
-        $alumne = Alumno::findOrFail($id);
+        $alumne = $this->findModelOrFail(Alumno::class, $id, 'Alumne no trobat', ['alumno_id' => $id]);
         $alumne->fol = ($alumne->fol==0)?1:0;
         $alumne->save();
         return back();
 
     }
-
-//    public function baja($id)
-//    {
-//        $expediente = new Expediente();
-//        $expediente->idAlumno = $id;
-//        $expediente->idProfesor = AuthUser()->dni;
-//        $expediente->fecha = Hoy();
-//        $expediente->tipo = 1;
-//        $expediente->estado = 1;
-//        $expediente->explicacion = trans("models.accept.Expediente", ['alumno' => $expediente->Alumno->nombre . ' ' . $expediente->Alumno->apellido1 . ' ' . $expediente->Alumno->apellido2, 'profesor' =>
-//            $expediente->Profesor->FullName]);
-//        $expediente->save();
-//        avisa($id, $expediente->explicacion, '#', $expediente->Profesor->FullName);
-//        avisa($expediente->idProfesor, $expediente->explicacion, '/expediente/' . $expediente->id . '/edit');
-//        return back();
-//    }
-
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
@@ -84,8 +75,7 @@ class AlumnoController extends PerfilController
         if (AuthUser()->Grupo) {
             $grupo = AuthUser()->Grupo->count() ? AuthUser()->Grupo->first()->codigo : '';
             $this->panel->setPestana('profile', true, 'profile.equipo', null, null, 1);
-            return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
-                                    ->Grupo($grupo)->get());
+            return $this->grid(app(ProfesorService::class)->byGrupo((string) $grupo));
         }
         return back();
     }

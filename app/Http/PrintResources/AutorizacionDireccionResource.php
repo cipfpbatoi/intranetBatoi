@@ -2,8 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Grupo\GrupoService;
 
 class AutorizacionDireccionResource extends PrintResource
 {
@@ -23,8 +22,8 @@ class AutorizacionDireccionResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
-        $director = Profesor::find(config('avisos.director'))->fullName;
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
+        $director = cargo('director')->fullName;
         return [
             'untitled1' => config('contacto.nombre').' '.config('contacto.codi'),
             'untitled2' => $grupo->Ciclo->vliteral ,

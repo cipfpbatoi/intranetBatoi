@@ -11,6 +11,7 @@ use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\LoteRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 
@@ -34,19 +35,52 @@ class LoteController extends ModalController
 
     protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
 
+    protected function search()
+    {
+        return Lote::query()
+            ->with('Departamento')
+            ->withCount([
+                'ArticuloLote',
+                'Materiales',
+                'Materiales as materiales_invent_count' => static function ($query) {
+                    $query->where('espacio', 'INVENT');
+                },
+            ])
+            ->get();
+    }
+
 
 
     public function store(LoteRequest $request)
     {
-        $new = new Lote();
-        $new->fillAll($request);
+        $this->authorize('create', Lote::class);
+        $this->persist($request);
         return $this->redirect();
     }
 
+    /**
+     * @param LoteRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(LoteRequest $request, $id)
     {
-        Lote::findOrFail($id)->fillAll($request);
+        $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]));
+        $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un lot amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]));
+        return parent::destroy($id);
     }
 
     protected function iniBotones()
@@ -54,18 +88,42 @@ class LoteController extends ModalController
         $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => [config('roles.rol.direccion'), config('roles.rol.administrador')]]));
     }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     protected function print($id,$posicion=1){
-        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, $posicion, 'portrait',[210,297],5)->stream();
+        $lote = $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]);
+        $this->authorize('update', $lote);
+        return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 
+    /**
+     * @param int|string $lote
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     protected function capture($lote){
+        $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
         $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
         return view('lote.inventario',compact('lote','materiales'));
     }
 
+    /**
+     * @param int|string $lote
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return void
+     */
     protected function postCapture($lote,Request $request){
+       $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
        foreach ($request->except('_token') as $key => $value){
            $material = Material::find($key);
+           if (!$material) {
+               throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
+           }
            if (!$value) {
                $value = $material->descripcion;
            }

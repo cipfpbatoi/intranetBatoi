@@ -5,9 +5,8 @@ namespace Intranet\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 
-class IncidenciaController extends ApiBaseController
+class IncidenciaController extends ApiResourceController
 {
 
     protected $model = 'Incidencia';

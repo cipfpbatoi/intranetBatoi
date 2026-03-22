@@ -7,6 +7,8 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Solicitud;
+use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
 /**
@@ -20,7 +22,7 @@ class PanelSolicitudOrientacionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'motiu','situacion'];
+    protected $gridFields = SolicitudCrudSchema::ORIENTACION_GRID_FIELDS;
     /**
      * @var string
      */
@@ -52,9 +54,21 @@ class PanelSolicitudOrientacionController extends ModalController
         );
     }
 
+    /**
+     * Activa una sol·licitud d'orientació pendent.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
     public function active($id)
     {
-        $elemento = Solicitud::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('activate', $elemento);
         if ($elemento->estado == 1) {
             $elemento->estado = 2;
             $elemento->save();
@@ -68,9 +82,22 @@ class PanelSolicitudOrientacionController extends ModalController
         return back();
     }
 
+    /**
+     * Resol una sol·licitud d'orientació activa.
+     *
+     * @param Request $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
     public function resolve(Request $request, $id)
     {
-        $elemento = Solicitud::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('resolve', $elemento);
         if ($elemento->estado == 2) {
             $elemento->estado = 3;
             $elemento->solucion = $request->explicacion;
@@ -88,7 +115,9 @@ class PanelSolicitudOrientacionController extends ModalController
     }
 
 
-
+    /**
+     * Recupera les sol·licituds visibles per a l'orientador autenticat.
+     */
     public function search()
     {
         return Solicitud::where('idOrientador', AuthUser()->dni)->where('estado', '>', 0)->get();

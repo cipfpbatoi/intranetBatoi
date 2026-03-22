@@ -1,18 +1,16 @@
 @extends('layouts.intranet')
 @section('css')
 <title>@lang("models.Guardia.edit")</title>
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
 @endsection
 @section('content')
 <div class="form_box">
 
 </div>
-@if (\Intranet\Entities\Guardia::estoy())
+@if ($estoy)
     <div id="profesores" style="float:right">
         <strong>Profesors de guardia:</strong><br/>
         <ul>
-            @foreach (\Intranet\Entities\Guardia::ahora() as $guardia)
+            @foreach ($guardiasAhora as $guardia)
                 <li>{{$guardia->Profesor->fullName}}</li>
             @endforeach
         </ul>
@@ -58,8 +56,8 @@
             </div>
 
                  <div class='form-group item'>
-                     @if (\Intranet\Entities\Guardia::estoy())
-                        <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
+                     @if ($estoy)
+                        <a href="{{ route('guardia.control') }}" class="btn btn-dark">Control Personal</a>
                      @endif
                     <input id="submit" class="btn btn-success" type="submit" value="Guardar">
                  </div>
@@ -74,8 +72,6 @@
 @lang("models.Guardia.edit")
 @endsection
 @section('scripts')
-{{ Html::script('/assets/moment.js') }}
-{{ Html::script('/assets/datetimepicker/js/bootstrap-datetimepicker.min.js') }}
 {{ Html::script("/js/datepicker.js") }}
 {{ Html::script("/js/Guardia/edit.js") }}
 @endsection

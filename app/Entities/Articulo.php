@@ -3,7 +3,8 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Styde\Html\Facades\Alert;
+use Illuminate\Http\UploadedFile;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 
@@ -19,9 +20,19 @@ class Articulo extends Model
         'fichero' => ['type' => 'file'],
     ];
 
+    /**
+     * Lots on apareix l'article a través de la taula pivot `articulos_lote`.
+     */
     public function Lote()
     {
-        return $this->hasManyThrough(Lote::class, ArticuloLote::class, 'articulo_id', 'lote_id','id','registre');
+        return $this->belongsToMany(
+            Lote::class,
+            'articulos_lote',
+            'articulo_id',
+            'lote_id',
+            'id',
+            'registre'
+        );
     }
 
     public function getMiniaturaAttribute()
@@ -46,12 +57,19 @@ class Articulo extends Model
         return "Sense imatge";
     }
 
-    public function fillFile($file)
+    /**
+     * Guarda la imatge de l'article en `public/Articulos` i retorna la ruta relativa.
+     */
+    public function fillFile($file): ?string
     {
+        if (!$file instanceof UploadedFile) {
+            return null;
+        }
+
         // 1) Primer validem
         if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
-            return;
+            Alert::danger(__('messages.generic.invalidFormat'));
+            return null;
         }
 
 
@@ -59,12 +77,12 @@ class Articulo extends Model
         $filename = $this->id . '.' . $file->getClientOriginalExtension();
 
         // 4) Emmagatzemem el fitxer en 'storage/app/public/Articulos'
-        $file->storeAs('Articulos', $filename, 'public');
+        return $file->storeAs('Articulos', $filename, 'public');
 
     }
 
     public function setDescripcionAttribute($value){
-        $this->attributes['descripcion'] =ucwords(strtolower($value));
+        $this->attributes['descripcion'] = ucwords(strtolower(trim((string) $value)));
     }
 
 }

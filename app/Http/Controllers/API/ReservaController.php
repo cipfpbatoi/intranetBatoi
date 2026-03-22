@@ -2,37 +2,110 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Reserva;
-use Intranet\Entities\Profesor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class   ReservaController extends ApiBaseController
+/**
+ * Controlador API de reserves.
+ */
+class ReservaController extends ApiResourceController
 {
 
     protected $model = 'Reserva';
-    
-    public function show($cadena, $send=true)
+    private ?ProfesorService $profesorService = null;
+
+    public function index()
     {
-        $data = parent::show($cadena, false);
+        $request = request();
+        $filters = $this->extractQueryFilters($request);
+        if (empty($filters) && !$request->has('fields')) {
+            return parent::index();
+        }
+
+        $data = $this->queryByRequestFilters($filters, $request->query('fields'));
         foreach ($data as $uno) {
             if (isset($uno->Profesor->nombre)) {
                 $uno->nomProfe = $uno->Profesor->ShortName;
             }
         }
+
         return $this->sendResponse($data, 'OK');
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+    
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        $cadena = (string) $id;
+        $isLegacy = $this->isLegacyFilterExpression($cadena);
+        $data = $isLegacy
+            ? $this->queryLegacy($cadena)
+            : $this->singleReservaAsCollection($cadena);
+
+        foreach ($data as $uno) {
+            if (isset($uno->Profesor->nombre)) {
+                $uno->nomProfe = $uno->Profesor->ShortName;
+            }
+        }
+        $response = $this->sendResponse($data, 'OK');
+        if ($isLegacy) {
+            return $this->markLegacyUsage(
+                $response,
+                'reserva.show.filter-path',
+                '/api/reserva?idEspacio=...&dia=...'
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Support\Collection
+     */
+    private function singleReservaAsCollection(string $id)
+    {
+        return collect([
+            $this->findModelOrFail(Reserva::class, $id, 'Reserva no trobada', ['reserva_id' => $id]),
+        ]);
     }
 
 
     public function unsecure(Request $datosProfesor)
     {
-        $profesor = Profesor::find($datosProfesor->dni);
-        if (!$profesor || $datosProfesor->api_token !== $profesor->api_token) {
-            return $this->sendError('Persona no identificada', 401);
+        $authUser = $datosProfesor->user('sanctum') ?? $datosProfesor->user('api');
+        if ($authUser !== null) {
+            $dni = (string) ($datosProfesor->input('dni', $authUser->dni));
+            if ($dni !== (string) $authUser->dni) {
+                return $this->sendError('Persona no identificada', 401);
+            }
+            $profesor = $authUser;
+        } else {
+            $profesor = $this->profesores()->find((string) $datosProfesor->dni);
+            if (!$profesor || (string) $datosProfesor->input('api_token', '') !== (string) $profesor->api_token) {
+                return $this->sendError('Persona no identificada', 401);
+            }
         }
 
-        $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+        $reserva = Reserva::where('idProfesor', $profesor->dni)
             ->where('dia', Hoy())
             ->where('hora', sesion(hora()))
             ->first();
@@ -53,12 +126,19 @@ class   ReservaController extends ApiBaseController
                 }
                 return $this->sendError("No s'ha pogut modificar la porta");
             } catch (\Throwable $e) {
+                report($e);
+                Log::error('Error consultant o accionant la porta de la reserva.', [
+                    'professor_dni' => $profesor->dni,
+                    'id_reserva' => $reserva->id ?? null,
+                    'dispositivo' => $espacio->dispositivo ?? null,
+                    'error' => $e->getMessage(),
+                ]);
                 return $this->sendError("Error consultant el dispositiu: ".$e->getMessage(), 500);
             }
         }
 
         // Si no hi ha reserva en l'hora actual, intenta almenys tancar la porta de la reserva d'avui
-        $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+        $reserva = Reserva::where('idProfesor', $profesor->dni)
             ->where('dia', Hoy())
             ->first();
 
@@ -75,14 +155,19 @@ class   ReservaController extends ApiBaseController
         return $this->sendError('No tens cap reserva per ara', 401);
     }
 
-
+    /**
+     * Obté l'estat del dispositiu de la porta.
+     *
+     * @param mixed $dispositivo
+     * @return array
+     */
     private function getJson($dispositivo)
     {
         $user = config('variables.domotica.user');
         $pass = config('variables.domotica.pass');
         $link = 'http://172.16.10.74/api/devices/'.$dispositivo;
 
-        // Llança excepció si no és 2xx, així no tractem HTML/JSON d’error com si fora vàlid
+        // Llança excepció si no és 2xx, així no tractem HTML/JSON d’error com si fos vàlid
         $response = Http::withBasicAuth($user, $pass)
             ->acceptJson()
             ->get($link)
@@ -91,6 +176,13 @@ class   ReservaController extends ApiBaseController
         return $response->json(); // array|mixed
     }
 
+    /**
+     * Envia l’acció de seguretat al dispositiu: secure / unsecure.
+     *
+     * @param string $action
+     * @param mixed  $espacio
+     * @return bool
+     */
     private function action($action, $espacio): bool
     {
         $user = config('variables.domotica.user');
@@ -106,10 +198,118 @@ class   ReservaController extends ApiBaseController
         return $response->successful()?true:false;
     }
 
+    /**
+     * Interpreta el paràmetre de seguretat del dispositiu.
+     *
+     * @param array|mixed $data
+     * @return bool
+     */
     private function checkSecuredStatus($data): bool
     {
         // Seguretat per si no venen les claus
         $secured = $data['properties']['secured'] ?? null;
         return (is_numeric($secured) ? ((int)$secured) > 0 : (bool)$secured);
+    }
+
+    private function isLegacyFilterExpression(string $cadena): bool
+    {
+        foreach (['=', '>', '<', ']', '[', '!'] as $operator) {
+            if (strpos($cadena, $operator) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function queryLegacy(string $cadena)
+    {
+        $class = $this->resolveClass();
+        $filters = explode('&', $cadena);
+        $query = $class::query();
+        $fields = null;
+
+        foreach ($filters as $filter) {
+            [$field, $value] = array_pad(explode('=', $filter, 2), 2, null);
+            if ($field === 'fields') {
+                $fields = $value;
+                continue;
+            }
+            $this->applyLegacyCondition($query, $filter);
+        }
+
+        if ($fields !== null) {
+            $selectedFields = array_values(array_filter(array_map('trim', explode(',', $fields))));
+            if (!empty($selectedFields)) {
+                $query->select($selectedFields);
+            }
+        }
+
+        return $query->get();
+    }
+
+    private function extractQueryFilters(Request $request): array
+    {
+        return array_filter(
+            $request->query(),
+            static fn ($value, $field): bool => $field !== 'fields' && $value !== null && $value !== '',
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
+
+    private function queryByRequestFilters(array $filters, $fields = null)
+    {
+        $class = $this->resolveClass();
+        $query = $class::query();
+
+        foreach ($filters as $field => $value) {
+            $query->where((string) $field, '=', (string) $value);
+        }
+
+        if (is_string($fields) && $fields !== '') {
+            $selectedFields = array_values(array_filter(array_map('trim', explode(',', $fields))));
+            if (!empty($selectedFields)) {
+                $query->select($selectedFields);
+            }
+        }
+
+        return $query->get();
+    }
+
+    private function applyLegacyCondition($query, string $filter): void
+    {
+        foreach (['=', '<', '>', ']', '[', '!'] as $operator) {
+            $parts = explode($operator, $filter, 2);
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            $field = trim($parts[0]);
+            $value = trim($parts[1]);
+            if ($field === '' || $field === 'fields') {
+                return;
+            }
+
+            if ($value === 'null') {
+                if ($operator === '=') {
+                    $query->whereNull($field);
+                    return;
+                }
+                if ($operator === '!') {
+                    $query->whereNotNull($field);
+                    return;
+                }
+            }
+
+            $sqlOperator = match ($operator) {
+                ']' => '>=',
+                '[' => '<=',
+                '!' => '!=',
+                default => $operator,
+            };
+
+            $query->where($field, $sqlOperator, $value);
+            return;
+        }
     }
 }

@@ -5,9 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Requests\DesdeHastaRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\School\FaltaReportService;
-use Intranet\Services\General\GestorService;
-use Intranet\Services\General\StateService;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 
 class MensualController extends Controller
@@ -21,16 +19,13 @@ class MensualController extends Controller
 
     public function imprimir(DesdeHastaRequest $request, FaltaReportService $faltaReportService)
     {
-        if ($request->llistat === 'faltas') {
-            return $this->printFaltaReport($request, $faltaReportService);
-        }
-        return FaltaItacaController::printReport($request);
+        return $this->printFaltaReport($request, $faltaReportService);
     }
 
     private function printFaltaReport(DesdeHastaRequest $request, FaltaReportService $faltaReportService)
     {
-        $desde = new Date($request->desde);
-        $hasta = new Date($request->hasta);
+        $desde = new Carbon($request->desde);
+        $hasta = new Carbon($request->hasta);
         if ($request->mensual !== 'on') {
             return self::hazPdf(
                 "pdf.comunicacioAbsencia",

@@ -4,24 +4,29 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Reunion;
-use Intranet\Http\Requests;
-use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
+use Intranet\Exceptions\NotFoundDomainException;
 
-class AsistenciaController extends ApiBaseController
+/**
+ * Controlador API per a l'assistència a reunions.
+ */
+/**
+ * Controlador API per a assistència.
+ */
+class AsistenciaController extends ApiResourceController
 {
 
     protected $model = 'Asistencia';
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function cambiar(Request $request)
     {
-        $reunion = Reunion::findOrFail($request->idReunion);
-        if ($reunion) {
-            $reunion->profesores()->updateExistingPivot($request->idProfesor, ['asiste' => $request->asiste]);
-            return $this->sendResponse(['updated' => true], $reunion);
-        } else {
-            return $this->sendResponse(['updated' => false], 'KO');
-        }
+        $reunion = $this->findModelOrFail(Reunion::class, $request->idReunion, 'Reunió no trobada', ['reunion_id' => $request->idReunion]);
+        $reunion->profesores()->updateExistingPivot($request->idProfesor, ['asiste' => $request->asiste]);
+        return $this->sendResponse(['updated' => true], $reunion);
     }
 
 }

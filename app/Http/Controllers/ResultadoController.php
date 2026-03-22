@@ -2,16 +2,19 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Intranet\Entities\Grupo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\ModuloGrupoService;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -22,6 +25,8 @@ class ResultadoController extends ModalController
 {
 
     use Imprimir;
+
+    private ?GrupoService $grupoService = null;
 
     /**
      * @var string
@@ -41,38 +46,100 @@ class ResultadoController extends ModalController
     protected $modal = true;
 
     /**
-     *
+     * Configura els botons del panell de resultats.
      */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
+        $this->panel->setBoton(
+            'grid',
+            new \Intranet\UI\Botones\BotonImg(
+                'alumnoresultado.alumno',
+                [
+                    'img' => 'fa-users',
+                    'title' => "Seguiment d'alumnat",
+                    'aria-label' => "Seguiment d'alumnat",
+                    'where' => ['evaluacion', '==', 3],
+                ]
+            )
+        );
 
     }
 
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    /**
+     * @param int|string $idModulo
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     private function rellenaPropuestasMejora($idModulo){
-        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
-        return redirect("/programacion/$programacion/seguimiento");
+        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first();
+        if (!$programacion) {
+            throw new NotFoundDomainException('Programació no trobada', ['modulo_ciclo_id' => $idModulo]);
+        }
+        return redirect()->route('programacion.seguimiento', ['programacion' => $programacion]);
     }
 
     public function store(ResultadoStoreRequest $request)
     {
+        $this->authorize('create', Resultado::class);
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
-            $newRes = new Resultado();
             // Assegurem professor informant abans de guardar
             if (!$request->filled('idProfesor')) {
                 $request->merge(['idProfesor' => AuthUser()->dni]);
             }
-            $newRes->fillAll($request);
+            $this->persist($request);
             return $this->redirect();
         }
         Alert::danger("Eixe mòdul no es dona en eixe grup");
         return $this->redirect();
     }
 
+    /**
+     * @param ResultadoUpdateRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ResultadoUpdateRequest $request, $id)
     {
-        Resultado::findOrFail($id)->fillAll($request);
+        try {
+            $this->authorize('update', Resultado::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id], $e);
+        }
+        $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un resultat amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        try {
+            $this->authorize('delete', Resultado::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Resultat no trobat', ['resultado_id' => $id], $e);
+        }
+        return parent::destroy($id);
     }
 
     /**
@@ -80,7 +147,8 @@ class ResultadoController extends ModalController
      */
     public function search()
     {
-        return Resultado::whereIn('idModuloGrupo', hazArray(Modulo_Grupo::MisModulos(), 'id', 'id'))->get();
+        $misModulos = app(ModuloGrupoService::class)->misModulos(AuthUser()->dni);
+        return Resultado::whereIn('idModuloGrupo', hazArray($misModulos, 'id', 'id'))->get();
     }
 
     /**
@@ -88,13 +156,13 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
+        if ($grupo = $this->grupos()->largestByTutor(AuthUser()->dni)) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;
             return $this->hazPdf('pdf.resultado', $resultados, $datosInforme)->stream();
         }
-        Alert::danger(trans("messages.generic.nogroup"));
+        Alert::danger(__("messages.generic.nogroup"));
         return back();
     }
 

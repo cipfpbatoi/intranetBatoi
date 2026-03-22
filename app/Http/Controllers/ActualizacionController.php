@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -45,7 +45,7 @@ class ActualizacionController extends Controller
         } else {
             Alert::info('Ja tens la darrera versió');
         }
-        return redirect('/');
+        return redirect()->route('home');
     }
 
     private function runShell(string $command, string $label): void
@@ -54,17 +54,25 @@ class ActualizacionController extends Controller
             ? $this->gitEnv()
             : null;
 
+        $error = null;
         $process = Process::fromShellCommandline($command, base_path(), $env);
         $process->run();
+        $error = $process->getErrorOutput();
 
         if (! $process->isSuccessful()) {
-            $error = $process->getErrorOutput();
+            if (str_contains($error, 'Host key verification failed')) {
+                $this->addGithubKnownHost($env['HOME']);
+                $process = Process::fromShellCommandline($command, base_path(), $env);
+                $process->run();
+                $error = $process->getErrorOutput();
+            }
 
             // Torna a provar si git es queixa per "dubious ownership"
             if (str_contains($error, 'detected dubious ownership')) {
                 $this->markRepoAsSafe();
                 $process = Process::fromShellCommandline($command, base_path(), $env);
                 $process->run();
+                $error = $process->getErrorOutput();
             }
 
             if (str_contains($error, '.git/FETCH_HEAD') && str_contains($error, 'Permission denied')) {
@@ -77,7 +85,8 @@ class ActualizacionController extends Controller
             }
 
             if (! $process->isSuccessful()) {
-                Alert::warning("$label ha fallat: ".$process->getErrorOutput());
+                $message = $error ?: $process->getErrorOutput();
+                Alert::warning("$label ha fallat: ".$message);
                 return;
             }
         }
@@ -90,8 +99,31 @@ class ActualizacionController extends Controller
     {
         $home = storage_path('git-home');
         File::ensureDirectoryExists($home);
+        File::ensureDirectoryExists("$home/.ssh");
+        $knownHosts = rtrim($home, '/').'/.ssh/known_hosts';
+        $sshCommand = sprintf(
+            'ssh -o UserKnownHostsFile=%s -o StrictHostKeyChecking=no -o BatchMode=yes',
+            escapeshellarg($knownHosts)
+        );
 
-        return ['HOME' => $home];
+        return [
+            'HOME' => $home,
+            'GIT_SSH_COMMAND' => $sshCommand,
+        ];
+    }
+
+    /**
+     * Afegeix la clau pública de github.com a known_hosts de l'HOME del procés git.
+     */
+    private function addGithubKnownHost(string $home): void
+    {
+        $knownHosts = rtrim($home, '/').'/.ssh/known_hosts';
+        $scan = Process::fromShellCommandline(
+            'ssh-keyscan -H github.com >> '.escapeshellarg($knownHosts),
+            base_path(),
+            ['HOME' => $home]
+        );
+        $scan->run();
     }
 
     private function markRepoAsSafe(): void

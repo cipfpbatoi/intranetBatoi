@@ -4,7 +4,7 @@ namespace Intranet\Services\General;
 use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Documento;
 use Intranet\Services\Notifications\AdviseService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use function config, getClass, getClase;
 
 /**

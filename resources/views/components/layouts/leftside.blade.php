@@ -14,9 +14,6 @@
         <div class="profile clearfix">
             <div id="dni" class="hidden">{{ $user->dni }}</div>
             <div id="rol" class="hidden">{{ $user->rol }}</div>
-            @isset($user->api_token)
-                <div id="_token" class="hidden">{{ $user->api_token }}</div>
-            @endisset
 
             <div class="profile_pic">
                 <img src="{{ asset('/storage/fotos/' . $user->foto) }}" alt="FotoUsuari" class="img-circle profile_img">
@@ -33,33 +30,33 @@
             <div class="menu_section">
                 <h3>General</h3>
                 <ul class="nav side-menu">
-                    {!! Intranet\Entities\Menu::make('general') !!}
+                    {!! app(\Intranet\Application\Menu\MenuService::class)->make('general') !!}
                 </ul>
             </div>
         </div>
         <!-- /sidebar menu -->
         <!-- /menu footer buttons -->
         <div class="sidebar-footer hidden-small">
-            <a data-toggle="tooltip" data-placement="top" title="Ajuda" target="_blank"
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Ajuda" target="_blank"
                href='https://cipfpbatoi.github.io/intranetBatoi/'>
-                <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                <span class="fa fa-question-circle" aria-hidden="true"></span>
             </a>
-            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="FullScreen">
+                <span class="fa fa-expand" aria-hidden="true" id="toggle-fullscreen"></span>
             </a>
             @if (!$isAlumno)
-                <a data-toggle="tooltip" data-placement="top" title="Enviar codigo fichaje" href='myApiToken'>
-                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Enviar codigo fichaje" href='myApiToken'>
+                    <span class="fa fa-envelope" aria-hidden="true"></span>
                 </a>
-                <a data-toggle="tooltip" data-placement="top" title="Logout" href="/logout">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" href="{{ route('logout') }}">
+                    <span class="fa fa-sign-out" aria-hidden="true"></span>
                 </a>
             @else
-                <a data-toggle="tooltip" data-placement="top" title="Lock">
-                    <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Lock">
+                    <span class="fa fa-eye-slash" aria-hidden="true"></span>
                 </a>
-                <a data-toggle="tooltip" data-placement="top" title="Logout" href="/alumno/logout">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                <a data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" href="{{ route('logout.alumno') }}">
+                    <span class="fa fa-sign-out" aria-hidden="true"></span>
                 </a>
             @endif
         </div>

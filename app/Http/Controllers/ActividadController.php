@@ -2,7 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;
@@ -12,8 +15,7 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
 use Intranet\Http\Traits\Autorizacion;
@@ -23,35 +25,23 @@ use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\GoogleCalendarService;
 use Intranet\Services\General\StateService;
 use Intranet\Services\School\ActividadParticipantsService;
-use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
+use Illuminate\Support\Carbon;
+use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Controlador d'activitats extraescolars i complementàries.
+ */
 class ActividadController extends ModalController
 {
+    private ?GrupoService $grupoService = null;
 
     use Autorizacion, SCRUD, Imprimir;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
-    protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
-    protected $formFields= [
-        'id' => ['type' => 'hidden'],
-        'tipo_actividad_id' => ['type' => 'select'],
-        'name' => ['type' => 'text'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        'poll' => ['type' => 'hidden'],
-        'complementaria' => ['type' => 'checkbox'],
-        'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox'],
-        'descripcion' => ['type' => 'textarea'],
-        'objetivos' => ['type' => 'textarea'],
-        'extraescolar' => ['type' => 'hidden'],
-        'comentarios' => ['type' => 'textarea'],
-        'recomanada' => ['type' => 'hidden']
-    ];
-    
+    protected $gridFields = ActividadCrudSchema::GRID_FIELDS;
+    protected $formFields = ActividadCrudSchema::FORM_FIELDS;
+
     protected function search()
     {
         return Actividad::Profesor(AuthUser()->dni)
@@ -62,26 +52,63 @@ class ActividadController extends ModalController
 
     protected function createWithDefaultValues( $default=[])
     {
-        $data = new Date('tomorrow');
+        $data = new Carbon('tomorrow');
         return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 0,'recomanada'=>1,'complementaria'=>1,'fueraCentro'=>0,'transport'=>0]);
     }
 
+    /**
+     * Guarda una activitat i aplica els participants per defecte.
+     *
+     * @param ActividadRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(ActividadRequest $request)
     {
-        $new = new Actividad();
-        $new->fillAll($request);
-        return $this->showDetalle($new);
+        $this->authorize('create', Actividad::class);
+        $id = $this->persist($request);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->participantsService()->assignInitialParticipants($actividad, authUser()?->dni);
+        return $this->showDetalle($actividad->id);
     }
 
+    /**
+     * @param ActividadRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ActividadRequest $request, $id)
     {
-        Actividad::findOrFail($id)->fillAll($request);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('update', $actividad);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param ValoracionRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function valoracion(ValoracionRequest $request)
     {
-        $actividad = Actividad::findOrFail($request->idActividad);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $request->idActividad,
+            'Activitat no trobada',
+            ['actividad_id' => $request->idActividad]
+        );
+        $this->authorize('update', $actividad);
         $actividad->desenvolupament = $request->desenvolupament;
         $actividad->valoracio = $request->valoracio;
         $actividad->dades = $request->dades;
@@ -98,10 +125,17 @@ class ActividadController extends ModalController
      * Mostra la pantalla de valoració d'una activitat.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View
      */
     public function showValue($id){
-        $Actividad = Actividad::find($id);
+        $Actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('view', $Actividad);
         return view('extraescolares.showValue', compact('Actividad'));
     }
 
@@ -109,10 +143,17 @@ class ActividadController extends ModalController
      * Mostra el formulari per omplir la valoració.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View
      */
     public function value($id){
-        $Actividad = Actividad::find($id);
+        $Actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('update', $Actividad);
         return view('extraescolares.value', compact('Actividad'));
     }
 
@@ -120,10 +161,17 @@ class ActividadController extends ModalController
      * Genera el PDF de la valoració d'una activitat.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function printValue($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('view', $elemento);
         $informe = 'pdf.valoracionActividad';
         return app(PdfService::class)->hazPdf($informe, $elemento, null)->stream();
     }
@@ -146,34 +194,47 @@ class ActividadController extends ModalController
         return app(ActividadParticipantsService::class);
     }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     /**
      * Mostra el detall d'una activitat amb professors i grups associats.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View
      */
     public function detalle($id)
     {
-        $Actividad = Actividad::with(['profesores' => function ($query) {
-            $query->select('dni', 'apellido1', 'apellido2', 'nombre', 'coordinador')
-                ->orderBy('apellido1')
-                ->orderBy('apellido2');
-        }, 'grupos:codigo,nombre'])->findOrFail($id);
+        $Actividad = $this->wrapNotFound(
+            fn () => Actividad::with(['profesores' => function ($query) {
+                $query->select('dni', 'apellido1', 'apellido2', 'nombre', 'coordinador')
+                    ->orderBy('apellido1')
+                    ->orderBy('apellido2');
+            }, 'grupos:codigo,nombre'])->findOrFail($id),
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('view', $Actividad);
 
         $assignedProfesores = $Actividad->profesores->pluck('dni')->all();
         $assignedGrupos = $Actividad->grupos->pluck('codigo')->all();
 
         // Obtenir tots els professors actius i estructurar-los en un array associatiu
-        $tProfesores = Profesor::Activo()
+        $tProfesores = app(ProfesorService::class)->activosOrdered()
             ->whereNotIn('dni', $assignedProfesores)
-            ->orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->get()
             ->mapWithKeys(fn($p) => [$p->dni => "$p->apellido1 $p->apellido2, $p->nombre"])
             ->toArray();
 
         // Llista de tots els grups disponibles
-        $tGrupos = Grupo::whereNotIn('codigo', $assignedGrupos)
+        $tGrupos = $this->grupos()->all()
+            ->whereNotIn('codigo', $assignedGrupos)
             ->pluck('nombre', 'codigo')
             ->toArray();
 
@@ -215,10 +276,20 @@ class ActividadController extends ModalController
      *
      * @param Request $request
      * @param int|string $actividad_id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function altaGrupo(Request $request, $actividad_id)
     {
+        $this->authorize(
+            'manageParticipants',
+            $this->findModelOrFail(
+                Actividad::class,
+                $actividad_id,
+                'Activitat no trobada',
+                ['actividad_id' => $actividad_id]
+            )
+        );
         $this->participantsService()->addGroup($actividad_id, (string) $request->idGrupo);
         return $this->showDetalle($actividad_id);
     }
@@ -228,10 +299,20 @@ class ActividadController extends ModalController
      *
      * @param int|string $actividad_id
      * @param int|string $grupo_id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function borrarGrupo($actividad_id, $grupo_id)
     {
+        $this->authorize(
+            'manageParticipants',
+            $this->findModelOrFail(
+                Actividad::class,
+                $actividad_id,
+                'Activitat no trobada',
+                ['actividad_id' => $actividad_id]
+            )
+        );
         $this->participantsService()->removeGroup($actividad_id, (string) $grupo_id);
         return $this->showDetalle($actividad_id);
     }
@@ -241,10 +322,20 @@ class ActividadController extends ModalController
      *
      * @param Request $request
      * @param int|string $actividad_id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function altaProfesor(Request $request, $actividad_id)
     {
+        $this->authorize(
+            'manageParticipants',
+            $this->findModelOrFail(
+                Actividad::class,
+                $actividad_id,
+                'Activitat no trobada',
+                ['actividad_id' => $actividad_id]
+            )
+        );
         $this->participantsService()->addProfesor($actividad_id, (string) $request->idProfesor);
         return $this->showDetalle($actividad_id);
     }
@@ -255,10 +346,20 @@ class ActividadController extends ModalController
      *
      * @param int|string $actividad_id
      * @param string $profesor_id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function borrarProfesor($actividad_id, $profesor_id)
     {
+        $this->authorize(
+            'manageParticipants',
+            $this->findModelOrFail(
+                Actividad::class,
+                $actividad_id,
+                'Activitat no trobada',
+                ['actividad_id' => $actividad_id]
+            )
+        );
         if (!$this->participantsService()->removeProfesor($actividad_id, $profesor_id)) {
             Alert::info('No es pot donar de baixa el últim profesor');
             return back();
@@ -273,10 +374,20 @@ class ActividadController extends ModalController
      *
      * @param int|string $actividad_id
      * @param string $profesor_id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function coordinador($actividad_id, $profesor_id)
     {
+        $this->authorize(
+            'manageParticipants',
+            $this->findModelOrFail(
+                Actividad::class,
+                $actividad_id,
+                'Activitat no trobada',
+                ['actividad_id' => $actividad_id]
+            )
+        );
         if (!$this->participantsService()->assignCoordinator($actividad_id, $profesor_id)) {
             Alert::warning('El professor seleccionat no participa en l’activitat.');
             return back();
@@ -289,12 +400,19 @@ class ActividadController extends ModalController
      * Notifica a professorat afectat i tutors dels grups de l'activitat.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function notify($id)
     {
-        $actividad = Actividad::findOrFail($id);
-        $coordinador = Profesor::find($actividad->Creador());
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('notify', $actividad);
+        $coordinador = app(ProfesorService::class)->find((string) $actividad->Creador());
         if (!$coordinador) {
             Alert::warning('No hi ha cap coordinador assignat per a esta activitat.');
             return back();
@@ -309,12 +427,19 @@ class ActividadController extends ModalController
      * Genera/mostra l'autorització de menors i crea registres si encara no existixen.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function autorizacion($id)
     {
         $grups = [];
-        $actividad = Actividad::findOrFail($id);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('view', $actividad);
         $grups = ActividadGrupo::where('idActividad', $id)->pluck('idGrupo')->toArray();
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
@@ -341,10 +466,17 @@ class ActividadController extends ModalController
      * Mostra la pantalla de control d'autoritzacions de menors.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function autorize($id){
-        $actividad = Actividad::findOrFail($id);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
+        $this->authorize('view', $actividad);
         if ($actividad->menores()->count()) {
             return view('extraescolares.autorizados', compact('actividad'));
         }
@@ -378,41 +510,15 @@ class ActividadController extends ModalController
             'where' => ['estado', '<', '2'],
             'data-confirm' => 'Segur que vols eliminar esta activitat?',
         ]));
-        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Carbon::yesterday()]]));
     }
-
-    /**
-     * Autoritza activitats en estat 1 i, si hi ha credencials, les exporta a calendari.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function autorizar()
-    {
-        $activitats = Actividad::where('estado', '1')->get();
-        if (file_exists(storage_path(env('services.calendar.calendarCredentialsPath')))) {
-            $gC = new GoogleCalendarService();
-            foreach ($activitats as $activitat){
-                $assistents = $activitat->profesores()->select('email')->get()->toArray();
-                $gC->addEvent(
-                    $activitat->name,
-                    $activitat->descripcion,
-                    $activitat->desde,
-                    $activitat->hasta,
-                    $assistents
-                );
-            }
-            $gC->saveEvents();
-        }
-        StateService::makeAll($activitats, 2);
-        return back();
-    }
-
 
     /**
      * Accepta l'activitat incrementant estat i sincronitzant calendari extern.
      *
      * @param int|string $id
      * @param bool $redirect
+     * @throws NotFoundDomainException
      * @return mixed
      */
     protected function accept($id, $redirect = true)
@@ -420,7 +526,12 @@ class ActividadController extends ModalController
         $stSrv = new StateService($this->class, $id);
         if (file_exists(storage_path(env('services.calendar.calendarCredentialsPath')))) {
             $gC = new GoogleCalendarService();
-            $activitat = Actividad::find($id);
+            $activitat = $this->findModelOrFail(
+                Actividad::class,
+                $id,
+                'Activitat no trobada',
+                ['actividad_id' => $id]
+            );
             $assistents = $activitat->profesores()->select('email')->get()->toArray();
             $gC->addEvent(
                 $activitat->name,
@@ -439,23 +550,20 @@ class ActividadController extends ModalController
     }
 
     /**
-     * Imprimeix el llistat d'autoritzats.
-     *
-     * @return mixed
-     */
-    public function printAutoritzats(){
-        return $this->imprimir('extraescolars');
-    }
-
-    /**
      * Marca l'activitat com a tramitada en ITACA.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function itaca($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
         $elemento->estado = 5;
         $elemento->save();
         return $this->follow(4, 5);
@@ -466,10 +574,16 @@ class ActividadController extends ModalController
      *
      * @param string $nia
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function menorAuth($nia,$id){
-        $actividad = Actividad::findOrFail($id);
+        $actividad = $this->findModelOrFail(
+            Actividad::class,
+            $id,
+            'Activitat no trobada',
+            ['actividad_id' => $id]
+        );
         $alumno = $actividad->menores()->where('nia', $nia)->first();
         if (!$alumno) {
             Alert::warning('L’alumne no està associat a esta activitat.');
@@ -489,10 +603,13 @@ class ActividadController extends ModalController
      * Renderitza el document associat a l'activitat amb GestorService.
      *
      * @param int|string $id
+     * @throws NotFoundDomainException
      * @return mixed
      */
     public function gestor($id)
     {
-        return (new GestorService(Actividad::findOrFail($id)))->render();
+        return (new GestorService(
+            $this->findModelOrFail(Actividad::class, $id, 'Activitat no trobada', ['actividad_id' => $id])
+        ))->render();
     }
 }

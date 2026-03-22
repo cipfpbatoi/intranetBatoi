@@ -1,6 +1,6 @@
 @foreach ($messages as $msg)
-    <div class="alert alert-block alert-{{ $msg['type'] }} fade in">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <div class="alert alert-{{ $msg['type'] }} alert-dismissible fade show">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <p>
             <strong>{{ $msg['message'] }}</strong>
         </p>

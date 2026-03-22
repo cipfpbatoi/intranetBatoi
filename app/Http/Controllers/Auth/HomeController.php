@@ -29,10 +29,10 @@ abstract class HomeController extends Controller
 
         if ($this->guard === 'profesor') {
             if ($usuari->dni === '12345678A') {
-                return redirect('/fichar');
+                return redirect()->route('fichar.ficha');
             }
 
-            if (!estaDentro() && !Session::get('userChange')) {
+            if (!$fitxatgeService->isInside($usuari->dni, true) && !Session::get('userChange')) {
                 $fitxatgeService->fitxar($usuari->dni);
             }
 

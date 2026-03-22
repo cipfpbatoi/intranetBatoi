@@ -12,14 +12,14 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="delGrupo" style="border:0;background:transparent;padding:0;line-height:1;display:inline-block;vertical-align:middle;" title="@lang('messages.buttons.delete')" onclick="return confirm('Segur que vols eliminar este professor de la activitat?');">
-                        {!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno')) !!}
+                        {!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno')) !!}
                     </button>
                 </form>
                 @if (!$profesor->coordinador)
                     <form method="POST" action="{{ route('actividad.profesor.coordinador', ['actividad' => $Actividad->id, 'profesor' => $profesor->dni]) }}" style="display:inline-block;margin:0;vertical-align:middle;">
                         @csrf
                         <button type="submit" class="delGrupo" style="border:0;background:transparent;padding:0;line-height:1;display:inline-block;vertical-align:middle;" title="@lang('messages.buttons.coordinador')" onclick="return confirm('Segur que vols assignar este professor com a coordinador?');">
-                            {!! Html::image('img/coordinador.png',trans("messages.buttons.coordinador"),array('class' => 'iconopequeno')) !!}
+                            {!! Html::image('img/coordinador.png',__("messages.buttons.coordinador"),array('class' => 'iconopequeno')) !!}
                         </button>
                     </form>
                 @endif

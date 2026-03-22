@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Intranet\Presentation\Crud\TipoIncidenciaCrudSchema;
 
 class TipoIncidencia extends Model
 {
@@ -20,16 +21,21 @@ class TipoIncidencia extends Model
         'nom',
         'idProfesor',
         'tipus'];
+    protected $inputTypes = TipoIncidenciaCrudSchema::INPUT_TYPES;
 
 
     public function getLiteralAttribute()
     {
-        return App::getLocale(session('lang')) == 'es' ? $this->nombre : $this->nom;
+        return App::getLocale() === 'es' ? $this->nombre : $this->nom;
     }
 
     public function getTipoAttribute()
     {
-        return $this->tipus?config('auxiliares.tipoIncidencia')[$this->tipus]:'';
+        if (!$this->tipus) {
+            return '';
+        }
+
+        return config("auxiliares.tipoIncidencia.{$this->tipus}") ?? '';
     }
 
     public function Responsable()
@@ -49,13 +55,11 @@ class TipoIncidencia extends Model
 
     public function Rol($rol)
     {
-        $profesores = collect();
-        foreach (Profesor::where('activo', 1)->get() as $profe) {
-            if ($profe->rol % $rol == 0) {
-                $profesores->push($profe);
-            }
-        }
-        return $profesores;
+        return Profesor::query()
+            ->where('activo', 1)
+            ->get()
+            ->filter(static fn ($profe) => $profe->rol % $rol === 0)
+            ->values();
     }
     public function getProfesorAttribute()
     {

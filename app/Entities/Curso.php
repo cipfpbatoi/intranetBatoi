@@ -3,9 +3,10 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\CursoCrudSchema;
 
 // antigua manipuladores
 
@@ -28,16 +29,7 @@ class Curso extends Model
         'hora_fin',
         'aforo'
     ];
-    protected $inputTypes = [
-        'tipo' => ['type' => 'hidden'],
-        'comentario' => ['type' => 'textarea'],
-        'profesorado' => ['type' => 'textarea'],
-        'activo' => ['type' => 'radios', 'default' => [1 => 'Activo', 0 => 'Inactivo'], 'inline' => 'inline'],
-        'fecha_inicio' => ['type' => 'date'],
-        'fecha_fin' => ['type' => 'date'],
-        'hora_ini' => ['type' => 'time'],
-        'hora_fin' => ['type' => 'time'],
-    ];
+    protected $inputTypes = CursoCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -66,25 +58,25 @@ class Curso extends Model
 
     public function getFechaInicioAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getFechaFinAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y');
     }
 
     public function getHorainiAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('H:i');
     }
 
     public function getHorafinAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha = new Carbon($salida);
         return $fecha->format('H:i');
     }
     public function getNAlumnosAttribute()
@@ -93,7 +85,7 @@ class Curso extends Model
     }
     public function getEstadoAttribute()
     {
-        return $this->activo?trans('validation.attributes.Activo'):trans('validation.attributes.Inactivo');
+        return $this->activo?__('validation.attributes.Activo'):__('validation.attributes.Inactivo');
     }
 
     public function scopeActivo($query)

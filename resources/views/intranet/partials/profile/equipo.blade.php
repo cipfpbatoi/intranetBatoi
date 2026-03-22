@@ -3,7 +3,7 @@
             id="{{$elemento->dni}}"
             cab1="{{ $elemento->FullName }}"
             cab2="{{ $elemento->cliteral}} {{$elemento->idGrupo}}"
-            title="{{ asset('storage/fotos/'.$elemento->foto) }}"
+            title="{{ profile_photo_url($elemento->foto) }}"
             view="people"
     >
         @if (isset(authUser()->codigo))
@@ -20,12 +20,10 @@
         @endif
         <li><em class="fa fa-envelope"></em> {{$elemento->email}}</li>
         <x-slot name="rattings">
-            @if (estaDentro($elemento->dni))
-                {!! Html::image('img/clock-icon.png',
-                        'reloj',array('class' => 'iconopequeno', 'id' => 'imgFitxar')) !!}
+            @if (isset($insideByDni) ? $insideByDni((string) $elemento->dni) : false)
+                <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconopequeno" id="imgFitxar">
             @else
-                {!! Html::image('img/clock-icon-rojo.png',
-                        'reloj',array('class' => 'iconopequeno', 'id' => 'imgFitxar')) !!}
+                <img src="{{ asset('img/clock-icon-rojo.png') }}" alt="reloj" class="iconopequeno" id="imgFitxar">
             @endif
         </x-slot>
         <x-slot name="botones">

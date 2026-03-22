@@ -4,8 +4,9 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Projecte extends Model
 {
@@ -58,14 +59,18 @@ class Projecte extends Model
 
     public function getIdAlumneOptions()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
-        return hazArray($miGrupo->Alumnos,'nia','fullName');
+        $miGrupo = app(GrupoService::class)->byTutorOrSubstitute(authUser()->dni, authUser()->sustituye_a);
+        if ($miGrupo === null) {
+            return [];
+        }
+
+        return hazArray($miGrupo->Alumnos, 'nia', 'fullName');
 
     }
 
     public function getDefensaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 

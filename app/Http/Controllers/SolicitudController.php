@@ -4,17 +4,18 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\SolicitudRequest;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
 /**
- * Class ExpedienteController
+ * Class SolicitudController
  * @package Intranet\Http\Controllers
  */
 class SolicitudController extends ModalController
@@ -25,31 +26,53 @@ class SolicitudController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'situacion'];
+    protected $gridFields = SolicitudCrudSchema::GRID_FIELDS;
     /**
      * @var string
      */
     protected $model = 'Solicitud';
     protected $profile = false;
 
-
-
     public function store(SolicitudRequest $request)
     {
-        $new = new Solicitud();
-        $new->fillAll($request);
-        return $this->confirm($new->id);
+        $this->authorize('create', Solicitud::class);
+        $request->merge(['idProfesor' => AuthUser()->dni]);
+        $id = $this->persist($request);
+        return $this->confirm($id);
     }
 
-
+    /**
+     * @param SolicitudRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(SolicitudRequest $request, $id)
     {
-        Solicitud::findOrFail($id)->fillAll($request);
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('update', $solicitud);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function confirm($id){
-        $solicitud = Solicitud::findOrFail($id);
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('view', $solicitud);
         if ($solicitud->estado == 0 && $solicitud->idOrientador) {
             return ConfirmAndSend::render($this->model, $id,'Enviar a '.$solicitud->Orientador->FullName);
         } else {
@@ -74,12 +97,19 @@ class SolicitudController extends ModalController
     //inicializat a init (normalment 1)
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function init($id)
     {
-        $expediente = Solicitud::find($id);
+        $expediente = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('update', $expediente);
         $expediente->estado = 1;
         $expediente->save();
         app(NotificationService::class)->send($expediente->idOrientador, "T'he remes un cas per al seu estudi", '#', AuthUser()->fullName);
@@ -99,11 +129,40 @@ class SolicitudController extends ModalController
     * busca en model de dades i el mostra amb vista show
     */
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = Solicitud::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('solicitud.show', compact('elemento', 'modelo'));
+    }
+
+    /**
+     * Elimina una sol·licitud amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $solicitud = $this->findModelOrFail(
+            Solicitud::class,
+            $id,
+            'Sol·licitud no trobada',
+            ['solicitud_id' => $id]
+        );
+        $this->authorize('delete', $solicitud);
+        return parent::destroy($id);
     }
 
 }

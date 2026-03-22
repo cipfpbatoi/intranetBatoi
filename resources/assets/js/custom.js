@@ -1,3 +1,8 @@
+import jQuery from 'jquery';
+
+const $ = window.jQuery || jQuery;
+window.$ = window.jQuery = $;
+
 /**
  * Resize function without multiple trigger
  * 
@@ -30,9 +35,9 @@
     };
 
     // smartresize 
-    jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
+    $.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
 
-})(jQuery,'smartresize');
+})($,'smartresize');
 /**
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -48,6 +53,37 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
     $RIGHT_COL = $('.right_col'),
     $NAV_MENU = $('.nav_menu'),
     $FOOTER = $('footer');
+
+var intranetDebugEnabled = $BODY.data('js-debug') === 1 || $BODY.data('js-debug') === '1';
+
+function intranetDebugLog() {
+    if (!intranetDebugEnabled || !window.console || typeof window.console.log !== 'function') {
+        return;
+    }
+
+    window.console.log.apply(window.console, arguments);
+}
+
+function getDataTableApi($table) {
+    if (!$table || !$table.length || !$.fn.dataTable || !$.fn.dataTable.isDataTable($table[0])) {
+        return null;
+    }
+
+    if (typeof $table.DataTable === 'function') {
+        return $table.DataTable();
+    }
+
+    return null;
+}
+
+function redrawAllDataTables() {
+    $('.dataTable').each(function() {
+        var api = getDataTableApi($(this));
+        if (api && typeof api.draw === 'function') {
+            api.draw(false);
+        }
+    });
+}
 
 	
 	
@@ -70,7 +106,12 @@ var setContentHeight = function () {
 };
 
   $SIDEBAR_MENU.find('a').on('click', function(ev) {
-	  console.log('clicked - sidebar_menu');
+	  intranetDebugLog('clicked - sidebar_menu');
+        var href = ($(this).attr('href') || '').trim().toLowerCase();
+        if (href === '' || href === '#' || href.indexOf('javascript:') === 0) {
+            ev.preventDefault();
+        }
+
         var $li = $(this).parent();
 
         if ($li.is('.active')) {
@@ -101,7 +142,7 @@ var setContentHeight = function () {
 
 // toggle small or large menu 
 $MENU_TOGGLE.on('click', function() {
-		console.log('clicked - menu toggle');
+		intranetDebugLog('clicked - menu toggle');
 		
 		if ($BODY.hasClass('nav-md')) {
 			$SIDEBAR_MENU.find('li.active ul').hide();
@@ -115,7 +156,7 @@ $MENU_TOGGLE.on('click', function() {
 
 	setContentHeight();
 
-	$('.dataTable').each ( function () { $(this).dataTable().fnDraw(); });
+	redrawAllDataTables();
 });
 
 	// check active menu
@@ -149,6 +190,62 @@ $MENU_TOGGLE.on('click', function() {
 	}
 };
 // /Sidebar
+
+function init_legacy_popover_hover_bridge() {
+    if (
+        !$.fn.popover ||
+        !$.fn.popover.Constructor ||
+        !$.fn.popover.Constructor.prototype
+    ) {
+        return;
+    }
+
+    var PopoverConstructor = $.fn.popover.Constructor;
+    if (typeof PopoverConstructor.prototype.leave !== 'function') {
+        $('body').popover({
+            selector: '[data-popover]',
+            trigger: 'click hover',
+            delay: {
+                show: 50,
+                hide: 400
+            }
+        });
+        return;
+    }
+
+    if (!PopoverConstructor.__intranetLeavePatched) {
+        var originalLeave = PopoverConstructor.prototype.leave;
+        PopoverConstructor.prototype.leave = function(obj) {
+            var self = obj instanceof this.constructor ?
+                obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
+            var container, timeout;
+
+            originalLeave.call(this, obj);
+
+            if (obj.currentTarget) {
+                container = $(obj.currentTarget).siblings('.popover');
+                timeout = self.timeout;
+                container.one('mouseenter', function() {
+                    clearTimeout(timeout);
+                    container.one('mouseleave', function() {
+                        PopoverConstructor.prototype.leave.call(self, self);
+                    });
+                });
+            }
+        };
+
+        PopoverConstructor.__intranetLeavePatched = true;
+    }
+
+    $('body').popover({
+        selector: '[data-popover]',
+        trigger: 'click hover',
+        delay: {
+            show: 50,
+            hide: 400
+        }
+    });
+}
 
 	var randNum = function() {
 	  return (Math.floor(Math.random() * (1 + 40 - 20))) + 20;
@@ -187,7 +284,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     // Protecció per si Bootstrap no està carregat
     if ($.fn.tooltip) {
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-toggle="tooltip"], [data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
     }
@@ -195,14 +292,14 @@ $(document).ready(function() {
 // /Tooltip
 
 // Progressbar
-if ($(".progress .progress-bar")[0]) {
+if ($(".progress .progress-bar")[0] && $.fn.progressbar) {
     $('.progress .progress-bar').progressbar();
 }
 // /Progressbar
 
 // Switchery
 $(document).ready(function() {
-    if ($(".js-switch")[0]) {
+    if ($(".js-switch")[0] && typeof Switchery !== 'undefined') {
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
         elems.forEach(function (html) {
             var switchery = new Switchery(html, {
@@ -216,7 +313,7 @@ $(document).ready(function() {
 
 // iCheck
 $(document).ready(function() {
-    if ($("input.flat")[0]) {
+    if ($("input.flat")[0] && $.fn.iCheck) {
         $(document).ready(function () {
             $('input.flat').iCheck({
                 checkboxClass: 'icheckbox_flat-green',
@@ -261,10 +358,10 @@ $('.bulk_action input#check-all').on('ifUnchecked', function () {
 });
 
 function countChecked() {
-    if (checkState === 'all') {
+    if (checkState === 'all' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('check');
     }
-    if (checkState === 'none') {
+    if (checkState === 'none' && $.fn.iCheck) {
         $(".bulk_action input[name='table_records']").iCheck('uncheck');
     }
 
@@ -286,7 +383,7 @@ function countChecked() {
 $(document).ready(function() {
     $(".expand").on("click", function () {
         $(this).next().slideToggle(200);
-        $expand = $(this).find(">:first-child");
+        var $expand = $(this).find(">:first-child");
 
         if ($expand.text() == "+") {
             $expand.text("-");
@@ -307,38 +404,7 @@ if (typeof NProgress != 'undefined') {
     });
 }
 
-	
-	  //hover and retain popover when on popover content
-        var originalLeave = $.fn.popover.Constructor.prototype.leave;
-        $.fn.popover.Constructor.prototype.leave = function(obj) {
-          var self = obj instanceof this.constructor ?
-            obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-          var container, timeout;
-
-          originalLeave.call(this, obj);
-
-          if (obj.currentTarget) {
-            container = $(obj.currentTarget).siblings('.popover');
-            timeout = self.timeout;
-            container.one('mouseenter', function() {
-              //We entered the actual popover – call off the dogs
-              clearTimeout(timeout);
-              //Let's monitor popover content instead
-              container.one('mouseleave', function() {
-                $.fn.popover.Constructor.prototype.leave.call(self, self);
-              });
-            });
-          }
-        };
-
-        $('body').popover({
-          selector: '[data-popover]',
-          trigger: 'click hover',
-          delay: {
-            show: 50,
-            hide: 400
-          }
-        });
+        init_legacy_popover_hover_bridge();
 
 
 	function gd(year, month, day) {
@@ -350,7 +416,7 @@ if (typeof NProgress != 'undefined') {
 		
 		if( typeof ($.plot) === 'undefined'){ return; }
 		
-		console.log('init_flot_chart');
+		intranetDebugLog('init_flot_chart');
 		
 		
 		
@@ -556,14 +622,14 @@ if (typeof NProgress != 'undefined') {
         
 		
         if ($("#chart_plot_01").length){
-			console.log('Plot1');
+			intranetDebugLog('Plot1');
 			
 			$.plot( $("#chart_plot_01"), [ arr_data1, arr_data2 ],  chart_plot_01_settings );
 		}
 		
 		
 		if ($("#chart_plot_02").length){
-			console.log('Plot2');
+			intranetDebugLog('Plot2');
 			
 			$.plot( $("#chart_plot_02"), 
 			[{ 
@@ -579,7 +645,7 @@ if (typeof NProgress != 'undefined') {
 		}
 		
 		if ($("#chart_plot_03").length){
-			console.log('Plot3');
+			intranetDebugLog('Plot3');
 			
 			
 			$.plot($("#chart_plot_03"), [{
@@ -603,7 +669,7 @@ if (typeof NProgress != 'undefined') {
 	function init_starrr() {
 		
 		if( typeof (starrr) === 'undefined'){ return; }
-		console.log('init_starrr');
+		intranetDebugLog('init_starrr');
 		
 		$(".stars").starrr();
 
@@ -624,11 +690,11 @@ if (typeof NProgress != 'undefined') {
 	
 	function init_JQVmap(){
 
-		//console.log('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
+		//intranetDebugLog('check init_JQVmap [' + typeof (VectorCanvas) + '][' + typeof (jQuery.fn.vectorMap) + ']' );	
 		
 		if(typeof (jQuery.fn.vectorMap) === 'undefined'){ return; }
 		
-		console.log('init_JQVmap');
+		intranetDebugLog('init_JQVmap');
 	     
 			if ($('#world-map-gdp').length ){
 		 
@@ -670,7 +736,7 @@ if (typeof NProgress != 'undefined') {
 	function init_skycons(){
 				
 			if( typeof (Skycons) === 'undefined'){ return; }
-			console.log('init_skycons');
+			intranetDebugLog('init_skycons');
 		
 			var icons = new Skycons({
 				"color": "#73879C"
@@ -694,7 +760,7 @@ if (typeof NProgress != 'undefined') {
 				
 		if( typeof (Chart) === 'undefined'){ return; }
 		
-		console.log('init_chart_doughnut');
+		intranetDebugLog('init_chart_doughnut');
 	 
 		if ($('.canvasDoughnut').length){
 			
@@ -748,9 +814,9 @@ if (typeof NProgress != 'undefined') {
 			
 		if( typeof (Gauge) === 'undefined'){ return; }
 		
-		console.log('init_gauge [' + $('.gauge-chart').length + ']');
+		intranetDebugLog('init_gauge [' + $('.gauge-chart').length + ']');
 		
-		console.log('init_gauge');
+		intranetDebugLog('init_gauge');
 		
 
 		  var chart_gauge_settings = {
@@ -812,7 +878,7 @@ if (typeof NProgress != 'undefined') {
 		function init_sparklines() {
 			
 			if(typeof (jQuery.fn.sparkline) === 'undefined'){ return; }
-			console.log('init_sparklines'); 
+			intranetDebugLog('init_sparklines'); 
 			
 			
 			$(".sparkline_one").sparkline([2, 4, 3, 4, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 6, 3, 5, 4, 5, 4, 5, 4, 3, 4, 5, 6, 7, 5, 4, 3, 5, 6], {
@@ -930,7 +996,7 @@ if (typeof NProgress != 'undefined') {
 		function init_autocomplete() {
 			
 			if( typeof (autocomplete) === 'undefined'){ return; }
-			console.log('init_autocomplete');
+			intranetDebugLog('init_autocomplete');
 			
 			var countries = { AD:"Andorra",A2:"Andorra Test",AE:"United Arab Emirates",AF:"Afghanistan",AG:"Antigua and Barbuda",AI:"Anguilla",AL:"Albania",AM:"Armenia",AN:"Netherlands Antilles",AO:"Angola",AQ:"Antarctica",AR:"Argentina",AS:"American Samoa",AT:"Austria",AU:"Australia",AW:"Aruba",AX:"Åland Islands",AZ:"Azerbaijan",BA:"Bosnia and Herzegovina",BB:"Barbados",BD:"Bangladesh",BE:"Belgium",BF:"Burkina Faso",BG:"Bulgaria",BH:"Bahrain",BI:"Burundi",BJ:"Benin",BL:"Saint Barthélemy",BM:"Bermuda",BN:"Brunei",BO:"Bolivia",BQ:"British Antarctic Territory",BR:"Brazil",BS:"Bahamas",BT:"Bhutan",BV:"Bouvet Island",BW:"Botswana",BY:"Belarus",BZ:"Belize",CA:"Canada",CC:"Cocos [Keeling] Islands",CD:"Congo - Kinshasa",CF:"Central African Republic",CG:"Congo - Brazzaville",CH:"Switzerland",CI:"Côte d’Ivoire",CK:"Cook Islands",CL:"Chile",CM:"Cameroon",CN:"China",CO:"Colombia",CR:"Costa Rica",CS:"Serbia and Montenegro",CT:"Canton and Enderbury Islands",CU:"Cuba",CV:"Cape Verde",CX:"Christmas Island",CY:"Cyprus",CZ:"Czech Republic",DD:"East Germany",DE:"Germany",DJ:"Djibouti",DK:"Denmark",DM:"Dominica",DO:"Dominican Republic",DZ:"Algeria",EC:"Ecuador",EE:"Estonia",EG:"Egypt",EH:"Western Sahara",ER:"Eritrea",ES:"Spain",ET:"Ethiopia",FI:"Finland",FJ:"Fiji",FK:"Falkland Islands",FM:"Micronesia",FO:"Faroe Islands",FQ:"French Southern and Antarctic Territories",FR:"France",FX:"Metropolitan France",GA:"Gabon",GB:"United Kingdom",GD:"Grenada",GE:"Georgia",GF:"French Guiana",GG:"Guernsey",GH:"Ghana",GI:"Gibraltar",GL:"Greenland",GM:"Gambia",GN:"Guinea",GP:"Guadeloupe",GQ:"Equatorial Guinea",GR:"Greece",GS:"South Georgia and the South Sandwich Islands",GT:"Guatemala",GU:"Guam",GW:"Guinea-Bissau",GY:"Guyana",HK:"Hong Kong SAR China",HM:"Heard Island and McDonald Islands",HN:"Honduras",HR:"Croatia",HT:"Haiti",HU:"Hungary",ID:"Indonesia",IE:"Ireland",IL:"Israel",IM:"Isle of Man",IN:"India",IO:"British Indian Ocean Territory",IQ:"Iraq",IR:"Iran",IS:"Iceland",IT:"Italy",JE:"Jersey",JM:"Jamaica",JO:"Jordan",JP:"Japan",JT:"Johnston Island",KE:"Kenya",KG:"Kyrgyzstan",KH:"Cambodia",KI:"Kiribati",KM:"Comoros",KN:"Saint Kitts and Nevis",KP:"North Korea",KR:"South Korea",KW:"Kuwait",KY:"Cayman Islands",KZ:"Kazakhstan",LA:"Laos",LB:"Lebanon",LC:"Saint Lucia",LI:"Liechtenstein",LK:"Sri Lanka",LR:"Liberia",LS:"Lesotho",LT:"Lithuania",LU:"Luxembourg",LV:"Latvia",LY:"Libya",MA:"Morocco",MC:"Monaco",MD:"Moldova",ME:"Montenegro",MF:"Saint Martin",MG:"Madagascar",MH:"Marshall Islands",MI:"Midway Islands",MK:"Macedonia",ML:"Mali",MM:"Myanmar [Burma]",MN:"Mongolia",MO:"Macau SAR China",MP:"Northern Mariana Islands",MQ:"Martinique",MR:"Mauritania",MS:"Montserrat",MT:"Malta",MU:"Mauritius",MV:"Maldives",MW:"Malawi",MX:"Mexico",MY:"Malaysia",MZ:"Mozambique",NA:"Namibia",NC:"New Caledonia",NE:"Niger",NF:"Norfolk Island",NG:"Nigeria",NI:"Nicaragua",NL:"Netherlands",NO:"Norway",NP:"Nepal",NQ:"Dronning Maud Land",NR:"Nauru",NT:"Neutral Zone",NU:"Niue",NZ:"New Zealand",OM:"Oman",PA:"Panama",PC:"Pacific Islands Trust Territory",PE:"Peru",PF:"French Polynesia",PG:"Papua New Guinea",PH:"Philippines",PK:"Pakistan",PL:"Poland",PM:"Saint Pierre and Miquelon",PN:"Pitcairn Islands",PR:"Puerto Rico",PS:"Palestinian Territories",PT:"Portugal",PU:"U.S. Miscellaneous Pacific Islands",PW:"Palau",PY:"Paraguay",PZ:"Panama Canal Zone",QA:"Qatar",RE:"Réunion",RO:"Romania",RS:"Serbia",RU:"Russia",RW:"Rwanda",SA:"Saudi Arabia",SB:"Solomon Islands",SC:"Seychelles",SD:"Sudan",SE:"Sweden",SG:"Singapore",SH:"Saint Helena",SI:"Slovenia",SJ:"Svalbard and Jan Mayen",SK:"Slovakia",SL:"Sierra Leone",SM:"San Marino",SN:"Senegal",SO:"Somalia",SR:"Suriname",ST:"São Tomé and Príncipe",SU:"Union of Soviet Socialist Republics",SV:"El Salvador",SY:"Syria",SZ:"Swaziland",TC:"Turks and Caicos Islands",TD:"Chad",TF:"French Southern Territories",TG:"Togo",TH:"Thailand",TJ:"Tajikistan",TK:"Tokelau",TL:"Timor-Leste",TM:"Turkmenistan",TN:"Tunisia",TO:"Tonga",TR:"Turkey",TT:"Trinidad and Tobago",TV:"Tuvalu",TW:"Taiwan",TZ:"Tanzania",UA:"Ukraine",UG:"Uganda",UM:"U.S. Minor Outlying Islands",US:"United States",UY:"Uruguay",UZ:"Uzbekistan",VA:"Vatican City",VC:"Saint Vincent and the Grenadines",VD:"North Vietnam",VE:"Venezuela",VG:"British Virgin Islands",VI:"U.S. Virgin Islands",VN:"Vietnam",VU:"Vanuatu",WF:"Wallis and Futuna",WK:"Wake Island",WS:"Samoa",YD:"People's Democratic Republic of Yemen",YE:"Yemen",YT:"Mayotte",ZA:"South Africa",ZM:"Zambia",ZW:"Zimbabwe",ZZ:"Unknown or Invalid Region" };
 
@@ -965,7 +1031,7 @@ if (typeof NProgress != 'undefined') {
 		function init_parsley() {
 			
 			if( typeof (parsley) === 'undefined'){ return; }
-			console.log('init_parsley');
+			intranetDebugLog('init_parsley');
 			
 			$/*.listen*/('parsley:field:validate', function() {
 			  validateFront();
@@ -1040,7 +1106,7 @@ if (typeof NProgress != 'undefined') {
 		function init_select2() {
 			 
 			if( typeof (select2) === 'undefined'){ return; }
-			console.log('init_toolbox');
+			intranetDebugLog('init_toolbox');
 			 
 			$(".select2_single").select2({
 			  placeholder: "Select a state",
@@ -1060,7 +1126,7 @@ if (typeof NProgress != 'undefined') {
 		function init_wysiwyg() {
 			
 		if( typeof ($.fn.wysiwyg) === 'undefined'){ return; }
-		console.log('init_wysiwyg');	
+		intranetDebugLog('init_wysiwyg');	
 			
         function init_ToolbarBootstrapBindings() {
           var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
@@ -1078,7 +1144,7 @@ if (typeof NProgress != 'undefined') {
               return false;
             })
             .change(function() {
-              $(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');
+              $(this).parent('.dropdown-menu').siblings('.dropdown-toggle, [data-bs-toggle="dropdown"]').dropdown('toggle');
             })
             .keydown('esc', function() {
               this.value = '';
@@ -1108,9 +1174,9 @@ if (typeof NProgress != 'undefined') {
           if (reason === 'unsupported-file-type') {
             msg = "Unsupported format " + detail;
           } else {
-            console.log("error uploading file", reason, detail);
+            intranetDebugLog("error uploading file", reason, detail);
           }
-          $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>' +
+          $('<div class="alert alert-dismissible fade show"> <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
             '<strong>File upload error</strong> ' + msg + ' </div>').prependTo('#alerts');
         }
 
@@ -1135,7 +1201,7 @@ if (typeof NProgress != 'undefined') {
 			
 			
 			if( typeof ($.fn.cropper) === 'undefined'){ return; }
-			console.log('init_cropper');
+			intranetDebugLog('init_cropper');
 			
 			var $image = $('#image');
 			var $download = $('#download');
@@ -1162,31 +1228,31 @@ if (typeof NProgress != 'undefined') {
 
 
 			// Tooltip
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"], [data-bs-toggle="tooltip"]').tooltip();
 
 
 			// Cropper
 			$image.on({
 			  'build.cropper': function (e) {
-				console.log(e.type);
+				intranetDebugLog(e.type);
 			  },
 			  'built.cropper': function (e) {
-				console.log(e.type);
+				intranetDebugLog(e.type);
 			  },
 			  'cropstart.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'cropmove.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'cropend.cropper': function (e) {
-				console.log(e.type, e.action);
+				intranetDebugLog(e.type, e.action);
 			  },
 			  'crop.cropper': function (e) {
-				console.log(e.type, e.x, e.y, e.width, e.height, e.rotate, e.scaleX, e.scaleY);
+				intranetDebugLog(e.type, e.x, e.y, e.width, e.height, e.rotate, e.scaleX, e.scaleY);
 			  },
 			  'zoom.cropper': function (e) {
-				console.log(e.type, e.ratio);
+				intranetDebugLog(e.type, e.ratio);
 			  }
 			}).cropper(options);
 
@@ -1258,7 +1324,7 @@ if (typeof NProgress != 'undefined') {
 					try {
 					  data.option = JSON.parse($target.val());
 					} catch (e) {
-					  console.log(e.message);
+					  intranetDebugLog(e.message);
 					}
 				  }
 				}
@@ -1289,7 +1355,7 @@ if (typeof NProgress != 'undefined') {
 				  try {
 					$target.val(JSON.stringify(result));
 				  } catch (e) {
-					console.log(e.message);
+					intranetDebugLog(e.message);
 				  }
 				}
 
@@ -1369,18 +1435,18 @@ if (typeof NProgress != 'undefined') {
 		function init_knob() {
 		
 				if( typeof ($.fn.knob) === 'undefined'){ return; }
-				console.log('init_knob');
+				intranetDebugLog('init_knob');
 	
 				$(".knob").knob({
 				  change: function(value) {
-					//console.log("change : " + value);
+					//intranetDebugLog("change : " + value);
 				  },
 				  release: function(value) {
-					//console.log(this.$.attr('value'));
-					console.log("release : " + value);
+					//intranetDebugLog(this.$.attr('value'));
+					intranetDebugLog("release : " + value);
 				  },
 				  cancel: function() {
-					console.log("cancel : ", this);
+					intranetDebugLog("cancel : ", this);
 				  },
 				  /*format : function (value) {
 				   return value + '%';
@@ -1475,7 +1541,7 @@ if (typeof NProgress != 'undefined') {
 		function init_InputMask() {
 			
 			if( typeof ($.fn.inputmask) === 'undefined'){ return; }
-			console.log('init_InputMask');
+			intranetDebugLog('init_InputMask');
 			
 				$(":input").inputmask();
 				
@@ -1486,7 +1552,7 @@ if (typeof NProgress != 'undefined') {
 		function init_ColorPicker() {
 			
 			if( typeof ($.fn.colorpicker) === 'undefined'){ return; }
-			console.log('init_ColorPicker');
+			intranetDebugLog('init_ColorPicker');
 			
 				$('.demo1').colorpicker();
 				$('.demo2').colorpicker();
@@ -1510,7 +1576,7 @@ if (typeof NProgress != 'undefined') {
 		function init_IonRangeSlider() {
 			
 			if( typeof ($.fn.ionRangeSlider) === 'undefined'){ return; }
-			console.log('init_IonRangeSlider');
+			intranetDebugLog('init_IonRangeSlider');
 			
 			$("#range_27").ionRangeSlider({
 			  type: "double",
@@ -1575,47 +1641,92 @@ if (typeof NProgress != 'undefined') {
 			
 		};
 	   
-	   
+		   
 	   /* DATERANGEPICKER */
-	   
-		function init_daterangepicker() {
 
-			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker');
-		
-			var cb = function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
-			  $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-			};
+		function getPageLocale() {
+			var pageLocale = ($('meta[name="app-locale"]').attr('content') || $('html').attr('lang') || 'es').toLowerCase();
+			var localePrefix = pageLocale.split('-')[0];
 
-			var optionSet1 = {
-			  startDate: moment().subtract(29, 'days'),
-			  endDate: moment(),
-			  minDate: '01/01/2012',
-			  maxDate: '12/31/2015',
-			  dateLimit: {
-				days: 60
-			  },
-			  showDropdowns: true,
-			  showWeekNumbers: true,
-			  timePicker: false,
-			  timePickerIncrement: 1,
-			  timePicker12Hour: true,
-			  ranges: {
-				'Today': [moment(), moment()],
-				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-			  },
-			  opens: 'left',
-			  buttonClasses: ['btn btn-default'],
-			  applyClass: 'btn-small btn-primary',
-			  cancelClass: 'btn-small',
-			  format: 'MM/DD/YYYY',
-			  separator: ' to ',
-			  locale: {
+			if (localePrefix === 'ca' || localePrefix === 'es' || localePrefix === 'en') {
+				return localePrefix;
+			}
+
+			return 'es';
+		}
+
+		function getMomentLocale() {
+			var locale = getPageLocale();
+			var localeForMoment = locale === 'en' ? 'en' : 'es';
+
+			if (typeof moment !== 'undefined') {
+				moment.locale(localeForMoment);
+			}
+
+			return locale;
+		}
+
+		function getDateRangePresetLabels(locale) {
+			if (locale === 'en') {
+				return {
+					'Today': [moment(), moment()],
+					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+			if (locale === 'ca') {
+				return {
+					'Avui': [moment(), moment()],
+					'Ahir': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últims 7 dies': [moment().subtract(6, 'days'), moment()],
+					'Últims 30 dies': [moment().subtract(29, 'days'), moment()],
+					'Aquest mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+				return {
+					'Hoy': [moment(), moment()],
+					'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+					'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+					'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+					'Este mes': [moment().startOf('month'), moment().endOf('month')],
+					'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				};
+			}
+
+		function getDateRangeLocaleConfig(locale) {
+			if (locale === 'ca') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Netejar',
+					fromLabel: 'Des de',
+					toLabel: 'Fins a',
+					customRangeLabel: 'Personalitzat',
+					daysOfWeek: ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'],
+					monthNames: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+					firstDay: 1
+				};
+			}
+
+			if (locale === 'es') {
+				return {
+					applyLabel: 'Aplicar',
+					cancelLabel: 'Limpiar',
+					fromLabel: 'Desde',
+					toLabel: 'Hasta',
+					customRangeLabel: 'Personalizado',
+					daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sà'],
+					monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+					firstDay: 1
+				};
+			}
+
+			return {
 				applyLabel: 'Submit',
 				cancelLabel: 'Clear',
 				fromLabel: 'From',
@@ -1624,43 +1735,97 @@ if (typeof NProgress != 'undefined') {
 				daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
 				monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 				firstDay: 1
-			  }
+			};
+		}
+
+		function getDateRangeDefaultFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
+		}
+
+		function getDateRangeDisplayFormat(locale) {
+			return locale === 'en' ? 'MMMM D, YYYY' : 'D MMMM YYYY';
+		}
+
+		function getDateTimeRangeFormat(locale) {
+			return locale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+		}
+
+		function init_daterangepicker() {
+
+			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+			intranetDebugLog('init_daterangepicker');
+
+			var locale = getPageLocale();
+			var dateRangeFormat = getDateRangeDefaultFormat(locale);
+			var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+			getMomentLocale();
+
+			var cb = function(start, end, label) {
+				intranetDebugLog(start.toISOString(), end.toISOString(), label);
+				$('#reportrange span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
+			};
+
+			var optionSet1 = {
+				startDate: moment().subtract(29, 'days'),
+				endDate: moment(),
+				minDate: locale === 'en' ? '01/01/2012' : '01/01/2012',
+				maxDate: locale === 'en' ? '12/31/2015' : '12/31/2015',
+				dateLimit: {
+					days: 60
+				},
+				showDropdowns: true,
+				showWeekNumbers: true,
+				timePicker: false,
+				timePickerIncrement: 1,
+				timePicker12Hour: true,
+				ranges: getDateRangePresetLabels(locale),
+				opens: 'left',
+				buttonClasses: ['btn btn-default'],
+				applyClass: 'btn-small btn-primary',
+				cancelClass: 'btn-small',
+				format: dateRangeFormat,
+				separator: ' to ',
+				locale: getDateRangeLocaleConfig(locale)
 			};
 			
-			$('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+			$('#reportrange span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 			$('#reportrange').daterangepicker(optionSet1, cb);
 			$('#reportrange').on('show.daterangepicker', function() {
-			  console.log("show event fired");
+				intranetDebugLog("show event fired");
 			});
 			$('#reportrange').on('hide.daterangepicker', function() {
-			  console.log("hide event fired");
+				intranetDebugLog("hide event fired");
 			});
 			$('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-			  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				intranetDebugLog("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 			});
 			$('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
-			  console.log("cancel event fired");
+				intranetDebugLog("cancel event fired");
 			});
 			$('#options1').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
 			});
 			$('#options2').click(function() {
-			  $('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
+				$('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
 			});
 			$('#destroy').click(function() {
-			  $('#reportrange').data('daterangepicker').remove();
+				$('#reportrange').data('daterangepicker').remove();
 			});
-   
+
 		}
-   	   
+	   
 	   function init_daterangepicker_right() {
-	      
+
 				if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-				console.log('init_daterangepicker_right');
-		  
+				intranetDebugLog('init_daterangepicker_right');
+				var locale = getPageLocale();
+				var dateRangeFormat = getDateRangeDefaultFormat(locale);
+				var dateDisplayFormat = getDateRangeDisplayFormat(locale);
+				getMomentLocale();
+
 				var cb = function(start, end, label) {
-				  console.log(start.toISOString(), end.toISOString(), label);
-				  $('#reportrange_right span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+				  intranetDebugLog(start.toISOString(), end.toISOString(), label);
+				  $('#reportrange_right span').html(start.format(dateDisplayFormat) + ' - ' + end.format(dateDisplayFormat));
 				};
 
 				var optionSet1 = {
@@ -1676,47 +1841,31 @@ if (typeof NProgress != 'undefined') {
 				  timePicker: false,
 				  timePickerIncrement: 1,
 				  timePicker12Hour: true,
-				  ranges: {
-					'Today': [moment(), moment()],
-					'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-					'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-				  },
+				  ranges: getDateRangePresetLabels(locale),
 				  opens: 'right',
 				  buttonClasses: ['btn btn-default'],
 				  applyClass: 'btn-small btn-primary',
 				  cancelClass: 'btn-small',
-				  format: 'MM/DD/YYYY',
+				  format: dateRangeFormat,
 				  separator: ' to ',
-				  locale: {
-					applyLabel: 'Submit',
-					cancelLabel: 'Clear',
-					fromLabel: 'From',
-					toLabel: 'To',
-					customRangeLabel: 'Custom',
-					daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-					monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-					firstDay: 1
-				  }
+				  locale: getDateRangeLocaleConfig(locale)
 				};
 
-				$('#reportrange_right span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+				$('#reportrange_right span').html(moment().subtract(29, 'days').format(dateDisplayFormat) + ' - ' + moment().format(dateDisplayFormat));
 
 				$('#reportrange_right').daterangepicker(optionSet1, cb);
 
 				$('#reportrange_right').on('show.daterangepicker', function() {
-				  console.log("show event fired");
+				  intranetDebugLog("show event fired");
 				});
 				$('#reportrange_right').on('hide.daterangepicker', function() {
-				  console.log("hide event fired");
+				  intranetDebugLog("hide event fired");
 				});
 				$('#reportrange_right').on('apply.daterangepicker', function(ev, picker) {
-				  console.log("apply event fired, start/end dates are " + picker.startDate.format('MMMM D, YYYY') + " to " + picker.endDate.format('MMMM D, YYYY'));
+				  intranetDebugLog("apply event fired, start/end dates are " + picker.startDate.format(dateDisplayFormat) + " to " + picker.endDate.format(dateDisplayFormat));
 				});
 				$('#reportrange_right').on('cancel.daterangepicker', function(ev, picker) {
-				  console.log("cancel event fired");
+				  intranetDebugLog("cancel event fired");
 				});
 
 				$('#options1').click(function() {
@@ -1736,31 +1885,43 @@ if (typeof NProgress != 'undefined') {
 	    function init_daterangepicker_single_call() {
 	      
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker_single_call');
+			intranetDebugLog('init_daterangepicker_single_call');
 		   
 			$('#single_cal1').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_1"
+			  singleClasses: "picker_1",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal2').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_2"
+			  singleClasses: "picker_2",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal3').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_3"
+			  singleClasses: "picker_3",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 			$('#single_cal4').daterangepicker({
 			  singleDatePicker: true,
-			  singleClasses: "picker_4"
+			  singleClasses: "picker_4",
+			  locale: {
+				format: getDateRangeDefaultFormat(getPageLocale()),
+			  }
 			}, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
   
   
@@ -1770,17 +1931,17 @@ if (typeof NProgress != 'undefined') {
 		function init_daterangepicker_reservation() {
 	      
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker_reservation');
+			intranetDebugLog('init_daterangepicker_reservation');
 		 
 			$('#reservation').daterangepicker(null, function(start, end, label) {
-			  console.log(start.toISOString(), end.toISOString(), label);
+			  intranetDebugLog(start.toISOString(), end.toISOString(), label);
 			});
 
 			$('#reservation-time').daterangepicker({
 			  timePicker: true,
 			  timePickerIncrement: 30,
 			  locale: {
-				format: 'MM/DD/YYYY h:mm A'
+				format: getDateTimeRangeFormat(getPageLocale())
 			  }
 			});
 	
@@ -1791,7 +1952,7 @@ if (typeof NProgress != 'undefined') {
 		function init_SmartWizard() {
 			
 			if( typeof ($.fn.smartWizard) === 'undefined'){ return; }
-			console.log('init_SmartWizard');
+			intranetDebugLog('init_SmartWizard');
 			
 			$('#wizard').smartWizard();
 
@@ -1811,10 +1972,15 @@ if (typeof NProgress != 'undefined') {
 	  function init_validator () {
 		 
 		if( typeof (validator) === 'undefined'){ return; }
-		console.log('init_validator'); 
+		intranetDebugLog('init_validator'); 
 	  
-	  // initialize the validator function
-      validator.message.date = 'not a real date';
+      // initialize the validator function
+      var locale = getPageLocale();
+      validator.message.date = {
+        ca: 'La data no és vàlida',
+        es: 'La fecha no es válida',
+        en: 'Not a real date'
+      }[locale] || 'Not a real date';
 
       // validate a field on "blur" event, a 'select' on 'change' event & a '.reuired' classed multifield on 'keyup':
       $('form')
@@ -1842,13 +2008,49 @@ if (typeof NProgress != 'undefined') {
 		});
 	  
 	  };
+
+	  function init_falta_baja_dates() {
+		var $baja = $('#baja_id');
+		var $desde = $('#desde_id');
+		var $hasta = $('#hasta_id');
+
+		if (!$baja.length || (!$desde.length && !$hasta.length)) {
+			return;
+		}
+
+		var toggleRequired = function($input, required) {
+			if (!$input.length) {
+				return;
+			}
+
+			if (required) {
+				$input.attr('required', 'required');
+			} else {
+				$input.removeAttr('required');
+			}
+
+			var fieldId = $input.attr('id');
+			if (fieldId) {
+				$('#field_' + fieldId).find('span.required').toggle(required);
+			}
+		};
+
+		var syncRequired = function() {
+			var required = !$baja.is(':checked');
+			toggleRequired($desde, required);
+			toggleRequired($hasta, required);
+		};
+
+		$baja.on('change', syncRequired);
+		syncRequired();
+	};
 	   
 	  	/* PNotify */
 			
 		function init_PNotify() {
 			
 			if( typeof (PNotify) === 'undefined'){ return; }
-			console.log('init_PNotify');
+			intranetDebugLog('init_PNotify');
 			
 			new PNotify({
 			  title: "PNotify",
@@ -1879,10 +2081,10 @@ if (typeof NProgress != 'undefined') {
 			
 		function init_CustomNotification() {
 			
-			console.log('run_customtabs');
+			intranetDebugLog('run_customtabs');
 			
 			if( typeof (CustomTabs) === 'undefined'){ return; }
-			console.log('init_CustomTabs');
+			intranetDebugLog('init_CustomTabs');
 			
 			var cnt = 10;
 
@@ -1937,7 +2139,7 @@ if (typeof NProgress != 'undefined') {
 			function init_EasyPieChart() {
 				
 				if( typeof ($.fn.easyPieChart) === 'undefined'){ return; }
-				console.log('init_EasyPieChart');
+				intranetDebugLog('init_EasyPieChart');
 				
 				$('.chart').easyPieChart({
 				  easing: 'easeOutElastic',
@@ -1957,48 +2159,18 @@ if (typeof NProgress != 'undefined') {
 				  chart.update(Math.random() * 200 - 100);
 				});
 
-				//hover and retain popover when on popover content
-				var originalLeave = $.fn.popover.Constructor.prototype.leave;
-				$.fn.popover.Constructor.prototype.leave = function(obj) {
-				  var self = obj instanceof this.constructor ?
-					obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type);
-				  var container, timeout;
-
-				  originalLeave.call(this, obj);
-
-				  if (obj.currentTarget) {
-					container = $(obj.currentTarget).siblings('.popover');
-					timeout = self.timeout;
-					container.one('mouseenter', function() {
-					  //We entered the actual popover – call off the dogs
-					  clearTimeout(timeout);
-					  //Let's monitor popover content instead
-					  container.one('mouseleave', function() {
-						$.fn.popover.Constructor.prototype.leave.call(self, self);
-					  });
-					});
-				  }
-				};
-
-				$('body').popover({
-				  selector: '[data-popover]',
-				  trigger: 'click hover',
-				  delay: {
-					show: 50,
-					hide: 400
-				  }
-				});
+					init_legacy_popover_hover_bridge();
 				
 			};
 	   
 		
 		function init_charts() {
 			
-				console.log('run_charts  typeof [' + typeof (Chart) + ']');
+				intranetDebugLog('run_charts  typeof [' + typeof (Chart) + ']');
 			
 				if( typeof (Chart) === 'undefined'){ return; }
 				
-				console.log('init_charts');
+				intranetDebugLog('init_charts');
 			
 				
 				Chart.defaults.global.legend = {
@@ -2400,7 +2572,7 @@ if (typeof NProgress != 'undefined') {
 		function init_compose() {
 		
 			if( typeof ($.fn.slideToggle) === 'undefined'){ return; }
-			console.log('init_compose');
+			intranetDebugLog('init_compose');
 		
 			$('#compose, .compose-close').click(function(){
 				$('.compose').slideToggle();
@@ -2413,7 +2585,7 @@ if (typeof NProgress != 'undefined') {
 		    function  init_calendar() {
 					
 				if( typeof ($.fn.fullCalendar) === 'undefined'){ return; }
-				console.log('init_calendar');
+				intranetDebugLog('init_calendar');
 					
 				var date = new Date(),
 					d = date.getDate(),
@@ -2515,10 +2687,10 @@ if (typeof NProgress != 'undefined') {
 			
 			function init_DataTables() {
 				
-				console.log('run_datatables');
+				intranetDebugLog('run_datatables');
 				
 				if( typeof ($.fn.DataTable) === 'undefined'){ return; }
-				console.log('init_DataTables');
+				intranetDebugLog('init_DataTables');
 				
 				var handleDataTableButtons = function() {
 				  if ($("#datatable-buttons").length) {
@@ -2551,7 +2723,7 @@ if (typeof NProgress != 'undefined') {
 				  }
 				};
 
-				TableManageButtons = function() {
+				var TableManageButtons = function() {
 				  "use strict";
 				  return {
 					init: function() {
@@ -2560,7 +2732,17 @@ if (typeof NProgress != 'undefined') {
 				  };
 				}();
 
-				$('#datatable').dataTable();
+				// Manté l'autoinit legacy per a pantalles sense grid específic, però
+				// evita conflictes amb models que ja gestionen DataTables des del seu
+				// propi fitxer `grid.js`.
+				var $legacyDatatable = $('#datatable');
+				var managedModels = ['Actividad', 'Comision', 'Menu', 'TipoActividad'];
+				var datatableModel = $legacyDatatable.attr('name');
+				var shouldSkipLegacyDatatable = datatableModel && managedModels.indexOf(datatableModel) !== -1;
+
+				if ($legacyDatatable.length && !shouldSkipLegacyDatatable && !$.fn.dataTable.isDataTable($legacyDatatable[0])) {
+				  $legacyDatatable.DataTable();
+				}
 
 				$('#datatable-keytable').DataTable({
 				  keys: true
@@ -2582,7 +2764,7 @@ if (typeof NProgress != 'undefined') {
 
 				var $datatable = $('#datatable-checkbox');
 
-				$datatable.dataTable({
+				$datatable.DataTable({
 				  'order': [[ 1, 'asc' ]],
 				  'columnDefs': [
 					{ orderable: false, targets: [0] }
@@ -2603,7 +2785,7 @@ if (typeof NProgress != 'undefined') {
 		function init_morris_charts() {
 			
 			if( typeof (Morris) === 'undefined'){ return; }
-			console.log('init_morris_charts');
+			intranetDebugLog('init_morris_charts');
 			
 			if ($('#graph_bar').length){ 
 			
@@ -2677,7 +2859,7 @@ if (typeof NProgress != 'undefined') {
 				  labels: ['Y', 'Z', 'A'],
 				  resize: true
 				}).on('click', function (i, row) {
-					console.log(i, row);
+					intranetDebugLog(i, row);
 				});
 
 			}
@@ -2763,7 +2945,7 @@ if (typeof NProgress != 'undefined') {
 		function init_echarts() {
 		
 				if( typeof (echarts) === 'undefined'){ return; }
-				console.log('init_echarts');
+				intranetDebugLog('init_echarts');
 			
 		
 				  var theme = {
@@ -5060,6 +5242,7 @@ if (typeof NProgress != 'undefined') {
 		init_morris_charts();
 		init_skycons();
 		init_select2();
+		init_falta_baja_dates();
 		init_validator();
 		init_DataTables();
 		init_chart_doughnut();

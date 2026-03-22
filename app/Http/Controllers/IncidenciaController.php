@@ -3,17 +3,18 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
-use Intranet\Entities\OrdenTrabajo;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Presentation\Crud\IncidenciaCrudSchema;
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -32,117 +33,66 @@ class IncidenciaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id','Xestado', 'DesCurta', 'Xespacio', 'XResponsable', 'Xtipo', 'fecha'];
+    protected $gridFields = IncidenciaCrudSchema::GRID_FIELDS;
     /**
      * @var string
      */
     protected $descriptionField = 'descripcion';
-    protected $formFields = [
-        'tipo' => ['type' => 'select'],
-        'espacio' => ['type' => 'select'],
-        'material' => ['type' => 'select'],
-        'descripcion' => ['type' => 'textarea'],
-        'imagen' => ['type' => 'file'],
-        'idProfesor' => ['type' => 'hidden'],
-        'prioridad' => ['type' => 'select'],
-        'observaciones' => ['type' => 'text'],
-        'fecha' => ['type' => 'date']
-    ];
+    protected $formFields = IncidenciaCrudSchema::FORM_FIELDS;
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return Incidencia
+     */
+    private function findIncidenciaOrFail($id): Incidencia
+    {
+        return $this->findModelOrFail(
+            Incidencia::class,
+            $id,
+            'Incidència no trobada',
+            ['incidencia_id' => $id]
+        );
+    }
 
     protected function search()
     {
         return Incidencia::with('Tipos')
             ->with('Responsables')
             ->with('Creador')
-            ->where('idProfesor', '=', AuthUser()->dni)
+            ->where('idProfesor', '=', $this->currentProfesorDni())
             ->get();
     }
-    /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function generarOrden($id)
-    {
-        $incidencia = Incidencia::findOrFail($id);
-        $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
-                ->where('estado', 0)
-                ->where('idProfesor', AuthUser()->dni)
-                ->get()
-                ->first();
-
-        if (!$orden) {
-            $orden = $this->generateOrder($incidencia);
-        }
-
-        $incidencia->orden = $orden->id;
-        $incidencia->save();
-        if ($incidencia->estado == 1) {
-            return $this->accept($id);
-        }
-        Session::put('pestana', $incidencia->estado);
-        return back();
-    }
-
-    /**
-     * @param $incidencia
-     */
-    protected function generateOrder(Incidencia $incidencia):OrdenTrabajo
-    {
-        $orden = new OrdenTrabajo();
-        $orden->idProfesor = AuthUser()->dni;
-        $orden->estado = 0;
-        $orden->tipo = $incidencia->tipo;
-        $orden->descripcion =
-            'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
-        $orden->save();
-        return $orden;
-    }
 
     /**
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function removeOrden($id)
-    {
-        $incidencia = Incidencia::findOrFail($id);
-        $incidencia->orden = null;
-        $incidencia->save();
-        return back();
-    }
-
-
-    /**
-     * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id=null)
     {
-        $elemento = Incidencia::findOrFail($id);
-        $formulario = new FormBuilder($elemento,
-            [
-            'espacio' => ['disabled' => 'disabled'],
-            'material' => ['disabled' => 'disabled'],
-            'descripcion' => ['type' => 'textarea'],
-            'imagen' => ['type' => 'file'],
-            'idProfesor' => ['type' => 'hidden'],
-            'tipo' => ['type' => 'select'],
-            'prioridad' => ['type' => 'select'],
-            'observaciones' => ['type' => 'text'],
-            'fecha' => ['type' => 'date']
-            ]
-        );
+        $elemento = $this->findIncidenciaOrFail($id);
+        $this->authorize('update', $elemento);
+
+        $formulario = new FormBuilder($elemento, IncidenciaCrudSchema::editFormFields());
         $modelo = $this->model;
         return view('intranet.edit', compact('formulario',   'modelo'));
     }
 
 
+    /**
+     * @param IncidenciaRequest $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(IncidenciaRequest $request)
     {
-        $new = new Incidencia();
-        $new->fillAll($request);
-        $this->storeImagen($new, $request);
-        Incidencia::putEstado($new->id, $this->init);
+        $this->authorize('create', Incidencia::class);
+        $request->merge(['idProfesor' => $this->currentProfesorDni()]);
+        $id = $this->persist($request);
+        $incidencia = $this->findIncidenciaOrFail($id);
+        $this->storeImagen($incidencia, $request);
+        Incidencia::putEstado($incidencia->id, $this->init);
         return $this->redirect();
     }
 
@@ -151,11 +101,20 @@ class IncidenciaController extends ModalController
      *  update (Request,$id) return redirect
      * guarda els valors del formulari
      */
+    /**
+     * @param IncidenciaRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(IncidenciaRequest $request, $id)
     {
-        $elemento =  Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
+        $this->authorize('update', $elemento);
+
         $tipo = $elemento->tipo;
-        $elemento->fillAll($request);
+        $this->persist($request, $id);
+        $elemento = $this->findIncidenciaOrFail($id);
         $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
@@ -181,7 +140,7 @@ class IncidenciaController extends ModalController
         $extension = strtolower($file->getClientOriginalExtension());
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
         if (!in_array($extension, $allowedExtensions, true)) {
-            Alert::danger(trans('messages.generic.invalidFileType'));
+            Alert::danger(__('messages.generic.invalidFileType'));
             return;
         }
 
@@ -198,6 +157,12 @@ class IncidenciaController extends ModalController
                     fclose($stream);
                 }
             } catch (\RuntimeException $e) {
+                report($e);
+                Log::warning('Error processant la imatge de la incidència.', [
+                    'incidencia_id' => $incidencia->id,
+                    'file' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage(),
+                ]);
                 Alert::danger($e->getMessage());
                 return;
             } finally {
@@ -220,25 +185,34 @@ class IncidenciaController extends ModalController
 
     protected function createWithDefaultValues($default = [])
     {
-        return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
+        return new Incidencia(['idProfesor' => $this->currentProfesorDni(), 'fecha' => Hoy('Y-m-d')]);
     }
 
     /*
      * show($id) retorna vista de detall
      */
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
     }
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function notify($id)
     {
-        $elemento = Incidencia::findOrFail($id);
+        $elemento = $this->findIncidenciaOrFail($id);
+        $this->authorize('update', $elemento);
+
         if ($elemento->responsable) {
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
             $enlace = "/incidencia/" . $id . "/edit";
@@ -259,6 +233,28 @@ class IncidenciaController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('incidencia.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('incidencia.notification', ['where' => ['estado', '<', '1']]));
 
+    }
+
+    public function destroy($id)
+    {
+        $elemento = $this->findIncidenciaOrFail($id);
+        $this->authorize('delete', $elemento);
+
+        if (!empty($elemento->imagen)) {
+            Storage::disk('public')->delete($elemento->imagen);
+        }
+
+        $elemento->delete();
+
+        return $this->redirect();
+    }
+
+    private function currentProfesorDni(): string
+    {
+        $user = AuthUser();
+        abort_unless(is_object($user) && isset($user->dni) && (string) $user->dni !== '', 403);
+
+        return (string) $user->dni;
     }
 
 

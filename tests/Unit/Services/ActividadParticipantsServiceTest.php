@@ -6,6 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Actividad;
 use Intranet\Services\School\ActividadParticipantsService;
 use Tests\TestCase;
 
@@ -156,6 +157,32 @@ class ActividadParticipantsServiceTest extends TestCase
         $service->addGroup(999999, 'G404');
     }
 
+    public function test_assign_initial_participants_assigna_coordinador_i_grup(): void
+    {
+        $actividadId = $this->seedActividad();
+        $this->seedProfesor('P600');
+
+        DB::table('grupos')->insert([
+            'codigo' => 'G600',
+            'nombre' => 'Grup 600',
+            'tutor' => 'P600',
+        ]);
+
+        $actividad = Actividad::findOrFail($actividadId);
+        (new ActividadParticipantsService())->assignInitialParticipants($actividad, 'P600');
+
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('idProfesor', 'P600')
+            ->where('coordinador', 1)
+            ->count());
+
+        $this->assertSame(1, DB::table('actividad_grupo')
+            ->where('idActividad', $actividadId)
+            ->where('idGrupo', 'G600')
+            ->count());
+    }
+
     private function seedActividad(): int
     {
         return (int) DB::table('actividades')->insertGetId([
@@ -183,6 +210,8 @@ class ActividadParticipantsServiceTest extends TestCase
 
         $schema->dropIfExists('actividad_grupo');
         $schema->dropIfExists('actividad_profesor');
+        $schema->dropIfExists('alumnos_grupos');
+        $schema->dropIfExists('alumnos');
         $schema->dropIfExists('grupos');
         $schema->dropIfExists('profesores');
         $schema->dropIfExists('actividades');
@@ -206,6 +235,16 @@ class ActividadParticipantsServiceTest extends TestCase
         $schema->create('grupos', function (Blueprint $table): void {
             $table->string('codigo')->primary();
             $table->string('nombre')->nullable();
+            $table->string('tutor')->nullable();
+        });
+
+        $schema->create('alumnos', function (Blueprint $table): void {
+            $table->string('nia')->primary();
+        });
+
+        $schema->create('alumnos_grupos', function (Blueprint $table): void {
+            $table->string('idAlumno');
+            $table->string('idGrupo');
         });
 
         $schema->create('actividad_profesor', function (Blueprint $table): void {

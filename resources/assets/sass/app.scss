@@ -13,3 +13,294 @@
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
+
+/* Compatibilitat visual temporal per a modals BS5 sobre CSS legacy BS3. */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header .btn-close {
+  margin-left: auto;
+  order: 2;
+}
+
+.modal-header .modal-title,
+.modal-header h4,
+.modal-header h5 {
+  order: 1;
+  margin-right: 0.75rem;
+}
+
+.btn-close {
+  box-sizing: content-box;
+  width: 1em;
+  height: 1em;
+  padding: 0.25em;
+  color: #000;
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  opacity: 0.5;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.btn-close::before {
+  content: "\00d7";
+  display: block;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  color: #000;
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+/* Ajust visual de la paginació de DataTables sobre tema legacy. */
+div.dt-container div.dt-paging ul.pagination {
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item {
+  margin: 0;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-link {
+  border-radius: 0.65rem;
+  border: 1px solid #d5dbe7;
+  background: #fff;
+  color: #52627a;
+  font-weight: 600;
+  padding: 0.55rem 0.9rem;
+  min-width: 2.75rem;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+div.dt-container div.dt-paging ul.pagination .page-link:hover {
+  background: #f5f9ff;
+  border-color: #9bbcf3;
+  color: #274c77;
+  box-shadow: 0 4px 12px rgba(39, 76, 119, 0.12);
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item.active .page-link {
+  background: #2d6cdf;
+  border-color: #2d6cdf;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(45, 108, 223, 0.22);
+}
+
+div.dt-container div.dt-paging ul.pagination .page-item.disabled .page-link {
+  background: #f3f4f7;
+  border-color: #dde2eb;
+  color: #9aa5b5;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* Ajustos visuals dels formularis de login legacy. */
+.login .login_content .login-actions {
+  width: min(100%, 22rem);
+  margin: 1rem auto 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.login .login_content .login-actions .btn {
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Recupera l'estil dels tickets tipus x-note en profile.documento sota Vite. */
+.bootdeys .documento-ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.bootdeys .documento-ticket-grid > .documento-ticket {
+  margin-top: 0;
+  width: auto;
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+@media (max-width: 991.98px) {
+  .bootdeys .documento-ticket-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .bootdeys .documento-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bootdeys .content-card {
+  margin-top: 30px;
+}
+
+.bootdeys .card-big-shadow {
+  position: relative;
+  height: 100%;
+}
+
+.bootdeys .card-big-shadow::before {
+  content: "";
+  position: absolute;
+  inset: 18px 16px -14px 16px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0) 70%);
+  filter: blur(10px);
+  z-index: 0;
+}
+
+.bootdeys .card.card-just-text {
+  display: flex;
+  height: 100%;
+  min-height: 100%;
+  position: relative;
+  z-index: 1;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 20px;
+  color: #252422;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.bootdeys .card.card-just-text .content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px 65px;
+  text-align: center;
+}
+
+.bootdeys .card .content {
+  padding: 20px 20px 10px;
+}
+
+.bootdeys .card .category,
+.bootdeys .card .label {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.bootdeys .card .description {
+  font-size: 16px;
+  color: #66615b;
+}
+
+.bootdeys .card .title,
+.bootdeys .card .stats,
+.bootdeys .card .category,
+.bootdeys .card .description,
+.bootdeys .card .content,
+.bootdeys .card .card-footer,
+.bootdeys .card small,
+.bootdeys .card .content a {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bootdeys .card[data-background="color"] .title,
+.bootdeys .card[data-background="color"] .stats,
+.bootdeys .card[data-background="color"] .category,
+.bootdeys .card[data-background="color"] .description,
+.bootdeys .card[data-background="color"] .content,
+.bootdeys .card[data-background="color"] .card-footer,
+.bootdeys .card[data-background="color"] small,
+.bootdeys .card[data-background="color"] .content a {
+  color: #fff;
+}
+
+.bootdeys .card[data-color="blue"] {
+  background: #b8d8d8;
+}
+
+.bootdeys .card[data-color="blue"] .description {
+  color: #506568;
+}
+
+.bootdeys .card[data-color="blue"] .category {
+  color: #7a9e9f;
+}
+
+.bootdeys .card[data-color="green"] {
+  background: #d5e5a3;
+}
+
+.bootdeys .card[data-color="green"] .description {
+  color: #60773d;
+}
+
+.bootdeys .card[data-color="green"] .category {
+  color: #92ac56;
+}
+
+.bootdeys .card[data-color="yellow"] {
+  background: #ffe28c;
+}
+
+.bootdeys .card[data-color="yellow"] .description {
+  color: #b25825;
+}
+
+.bootdeys .card[data-color="yellow"] .category {
+  color: #d88715;
+}
+
+.bootdeys .card[data-color="brown"] {
+  background: #d6c1ab;
+}
+
+.bootdeys .card[data-color="brown"] .description {
+  color: #75442e;
+}
+
+.bootdeys .card[data-color="brown"] .category {
+  color: #a47e65;
+}
+
+.bootdeys .card[data-color="purple"] {
+  background: #baa9ba;
+}
+
+.bootdeys .card[data-color="purple"] .description {
+  color: #3a283d;
+}
+
+.bootdeys .card[data-color="purple"] .category {
+  color: #5a283d;
+}
+
+.bootdeys .card[data-color="orange"] {
+  background: #ff8f5e;
+}
+
+.bootdeys .card[data-color="orange"] .description {
+  color: #772510;
+}
+
+.bootdeys .card[data-color="orange"] .category {
+  color: #e95e37;
+}
+
+.bootdeys .card a:hover .title {
+  transform: translateY(-1px);
+}

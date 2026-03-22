@@ -2,29 +2,28 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Projecte;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
- * Class EspacioController
+ * Class PanelProjecteController
  * @package Intranet\Http\Controllers
  */
 class PanelProjecteController extends ModalController
 {
+    private ?ProfesorService $profesorService = null;
+    private ?GrupoService $grupoService = null;
     const TUTOR = 'roles.rol.tutor';
     /**
      * @var string
@@ -49,53 +48,126 @@ class PanelProjecteController extends ModalController
      ];
     protected $parametresVista = ['modal' => ['defensa']];
 
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
 
+        return $this->profesorService;
+    }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function myTutorGroup()
+    {
+        return $this->grupos()->byTutorOrSubstitute(AuthUser()->dni, AuthUser()->sustituye_a);
+    }
+
+    /**
+     * Recupera els projectes del grup del tutor autenticat.
+     */
     public function search()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return collect();
+        }
         $alumnos = hazArray($miGrupo->Alumnos,'nia','nia');
         return Projecte::whereIn('idAlumne', $alumnos)->get();
     }
 
     public function store(ProyectoRequest $request)
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
-        $new = new Projecte();
+        $this->authorize('create', Projecte::class);
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
         $request->request->add(['grup' => $miGrupo->codigo,'estat'=>1]);
-        $new->fillAll($request);
+        $this->persist($request);
 
         return back();
     }
 
+    /**
+     * @param ProyectoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(ProyectoRequest $request, $id)
     {
-        Projecte::findOrFail($id)->fillAll($request);
+        $projecte = $this->findModelOrFail(
+            Projecte::class,
+            $id,
+            'Projecte no trobat',
+            ['projecte_id' => $id]
+        );
+        $this->authorize('update', $projecte);
+        $this->persist($request, (int) $id);
         return back();
     }
 
+    /**
+     * Valida una proposta de projecte.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
     public function check($id)
     {
-        $projecte = Projecte::findOrFail($id);
+        $projecte = $this->findModelOrFail(
+            Projecte::class,
+            $id,
+            'Projecte no trobat',
+            ['projecte_id' => $id]
+        );
+        $this->authorize('check', $projecte);
         $projecte->estat = 2;
         $projecte->save();
         return back();
     }
 
+    /**
+     * Elimina una proposta de projecte.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
     public function destroy($id)
     {
-        if ($elemento = Projecte::findOrFail($id)) {
+        $elemento = $this->findModelOrFail(
+            Projecte::class,
+            $id,
+            'Projecte no trobat',
+            ['projecte_id' => $id]
+        );
+        $this->authorize('delete', $elemento);
+        if ($elemento) {
             $elemento->delete();
         }
         return back();
     }
 
 
+    /**
+     * Envia per correu les propostes del grup de tutoria.
+     */
     public function send()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $this->authorize('send', Projecte::class);
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
@@ -106,7 +178,7 @@ class PanelProjecteController extends ModalController
         $zipPath = app(PdfService::class)->hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
 
         // Enviar el correo con el zip adjunto
-        $profesores = Profesor::Grupo($miGrupo->codigo)->get();
+        $profesores = $this->profesores()->byGrupo((string) $miGrupo->codigo);
         $professorsEmails = [];
         foreach ($profesores as $profesor) {
             $professorsEmails[] = $profesor->email;
@@ -125,11 +197,16 @@ class PanelProjecteController extends ModalController
     }
 
 
+    /**
+     * Genera l'acta de valoració de propostes del grup.
+     */
     public function acta()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $this->authorize('createActa', Projecte::class);
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
@@ -152,11 +229,16 @@ class PanelProjecteController extends ModalController
 
     }
 
+    /**
+     * Genera l'acta d'assignació de data/hora de defenses.
+     */
     public function actaE()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $this->authorize('createDefenseActa', Projecte::class);
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
@@ -183,7 +265,8 @@ class PanelProjecteController extends ModalController
 
     public function pdf($id)
     {
-        $elemento = Projecte::findOrFail($id);
+        $elemento = Projecte::findOrFail((int) $id);
+        $this->authorize('view', $elemento);
         $informe = 'pdf.propostaProjecte';
         $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();

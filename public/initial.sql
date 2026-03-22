@@ -25,6 +25,7 @@ SET time_zone = "+00:00";
 -- Bolcament de dades per a la taula `departamentos`
 --
 
+
 INSERT INTO `departamentos` (`id`, `cliteral`, `vliteral`, `depcurt`, `didactico`, `idProfesor`) VALUES
              (1, 'INGLES', 'ANGLES', 'Ang', 1, '052782223Y'),
              (2, 'SERVICIOS A LA COMUNIDAD', 'SERVEIS A LA COMUNITAT', 'SCo', 1, '021673101V'),
@@ -334,7 +335,7 @@ INSERT INTO `settings` (`id`, `collection`, `key`, `value`) VALUES
 --
 
 INSERT INTO `tipoincidencias` (`id`, `nombre`, `nom`, `idProfesor`, `tipus`) VALUES
-(8, 'Mantenimento instalaciones', 'Mantenimiento instal.lacions', '021666224V', 1),
-(9, 'Mantenimiento informático', 'Manteniment informàtic', '021637655Z', 1),
-(10, 'Intranet', 'Intranet', '021652470V', 2),
-(11, 'Sugerimientos, quejas y reclamaciones', 'Suggeriments, queixes i reclamacions', '029009695W', 2);
+(8, 'Mantenimento instalaciones', 'Mantenimiento instal.lacions', '099999999Z', 1),
+(9, 'Mantenimiento informático', 'Manteniment informàtic', '099999999Z', 1),
+(10, 'Intranet', 'Intranet', '099999999Z', 2),
+(11, 'Sugerimientos, quejas y reclamaciones', 'Suggeriments, queixes i reclamacions', '099999999Z', 2);

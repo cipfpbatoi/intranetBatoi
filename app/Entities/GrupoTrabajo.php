@@ -3,11 +3,13 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\GrupoCreated;
 
 
+/**
+ * Model de grup de treball.
+ */
 class GrupoTrabajo extends Model
 {
 
@@ -26,9 +28,10 @@ class GrupoTrabajo extends Model
     protected $inputTypes = [
         'objetivos' => ['type' => 'textarea'],
     ];
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => GrupoCreated::class,

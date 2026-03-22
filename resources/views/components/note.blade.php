@@ -1,4 +1,4 @@
-<div class="col-md-4 col-sm-6 content-card">
+<div class="col-md-4 col-sm-6 content-card documento-ticket">
 <div class="card-big-shadow">
     <div class="card card-just-text" data-background="color" data-color="{{$color}}" data-radius="none">
         <div class="content">

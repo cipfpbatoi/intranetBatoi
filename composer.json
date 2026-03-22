@@ -12,23 +12,21 @@
         "ext-gd": "*",
         "barryvdh/laravel-dompdf": "^3.0",
         "barryvdh/laravel-snappy": "^1.0.0",
+        "darkaonline/l5-swagger": "^9.0",
         "doctrine/dbal": "^3",
         "eluceo/ical": "^0.13.0",
         "fedeisas/laravel-mail-css-inliner": "^5.0",
         "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.4",
-        "h4cc/wkhtmltopdf-amd64": "^0.12.4",
-        "igomis/laravel-html": "*",
-        "jenssegers/date": "^4.0.0@beta",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^4.0",
+        "laravelcollective/html": "^6.4",
         "lcobucci/jwt": "^5.3",
         "livewire/livewire": "3.7.3",
-        "lsnepomuceno/laravel-a1-pdf-sign": "1.1.2",
         "maatwebsite/excel": "*",
-        "mikehaertl/php-pdftk": "^0.8.1",
         "php-webdriver/webdriver": "^1.13",
         "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",
@@ -45,10 +43,12 @@
         "fakerphp/faker": "*",
         "filp/whoops": "^2.0",
         "laravel/browser-kit-testing": "^7.0",
+        "laravel/dusk": "^8.3",
         "laravel/sail": "^1.21",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^8.0@beta",
-        "phpunit/phpunit": "^10.0",
+        "nunomaduro/termwind": "2.x-dev",
+        "phpunit/phpunit": "^11.0",
         "symfony/css-selector": "^6.2",
         "symfony/dom-crawler": "^6.2"
     },
@@ -90,6 +90,30 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
             "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
+        ],
+        "test:focus": [
+            "@php -d max_execution_time=300 artisan test --stop-on-failure --filter=Expediente"
+        ],
+        "test:quick": [
+            "@php -d max_execution_time=300 artisan test --stop-on-failure --filter=Expediente|Empresa|Comision"
+        ],
+        "test:full": [
+            "@php -d max_execution_time=1000 artisan test --stop-on-failure"
+        ],
+        "test:auth-migration": [
+            "@php artisan test --testsuite=Feature --filter=\"ApiAuthTokenExchangeFeatureTest|ApiColaboracionControllerFeatureTest|ApiDropZoneControllerFeatureTest|AuthProfesorLoginControllerFeatureTest\"",
+            "@php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
+        ],
+        "dusk:local": [
+            "Composer\\Config::disableProcessTimeout",
+            "XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local"
+        ],
+        "dusk:auth": [
+            "Composer\\Config::disableProcessTimeout",
+            "XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=\"ApiAuthCoexistenceTest|ApiPendingAuthFlowTest|ColaboracionBookInteractionTest|ComisionViewSmokeTest\""
+        ],
+        "docs:app:docblocks": [
+            "@php tools/docblocks/generate-docblocks-index.php"
         ]
     },
     "config": {

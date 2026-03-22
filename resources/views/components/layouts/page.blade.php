@@ -18,7 +18,7 @@
 
                     {{-- Alertes --}}
                     <div class="x_content">
-                        {!! Alert::render() !!}
+                        {!! \Intranet\Services\UI\AppAlert::render() !!}
                     </div>
 
                 </div>

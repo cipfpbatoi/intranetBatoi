@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 class SolicitudRequest extends FormRequest
 {
@@ -23,11 +24,6 @@ class SolicitudRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'fecha' => 'required',
-            'text1' => 'required',
-            'idAlumno' => 'required',
-            'idOrientador' => 'required'
-        ];
+        return SolicitudCrudSchema::RULES;
     }
 }

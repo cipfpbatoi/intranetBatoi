@@ -6,8 +6,9 @@ use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -33,6 +34,7 @@ class PanelDocAgrupadosController extends BaseController
      */
     public function index($grupo=null)
     {
+        Gate::authorize('viewAny', Documento::class);
         $this->iniPestanas($grupo);
         return parent::index();
      }
@@ -43,6 +45,7 @@ class PanelDocAgrupadosController extends BaseController
      */
     public function search()
     {
+        Gate::authorize('viewAny', Documento::class);
         return Documento::whereIn('rol', RolesUser(AuthUser()
             ->rol))
             ->whereIn('tipoDocumento',TipoDocumentoService::allDocuments())

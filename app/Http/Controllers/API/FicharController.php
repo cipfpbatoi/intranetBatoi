@@ -2,23 +2,53 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Services\HR\FitxatgeService;
 
-class FicharController extends ApiBaseController
+/**
+ * Endpoints API de fitxatge amb compatibilitat legacy i auth per header.
+ */
+class FicharController extends ApiResourceController
 {
 
     protected $model = 'Falta_profesor';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
 
+    /**
+     * Registra entrada/eixida de fitxatge.
+     *
+     * Compatibilitat:
+     * - Preferent: usuari autenticat amb `auth:api` (Bearer token).
+     * - Legacy: validació per parella `dni + api_token`.
+     */
     public function fichar(Request $request, FitxatgeService $fitxatgeService)
     {
-        $profesor = Profesor::find($request->dni);
+        /** @var Profesor|null $apiUser */
+        $apiUser = auth()->user();
+        $dni = (string) $request->input('dni', $apiUser?->dni ?? '');
+        $profesor = $this->profesores()->find($dni);
 
-        if (!$profesor || $request->api_token !== $profesor->api_token) {
+        if (!$profesor) {
+            return $this->sendResponse(['updated' => false], 'Profesor no identificat');
+        }
+
+        if ($apiUser !== null) {
+            if ((string) $apiUser->dni !== (string) $profesor->dni) {
+                return $this->sendResponse(['updated' => false], 'Accés no autoritzat per a eixe DNI');
+            }
+        } elseif ((string) $request->input('api_token', '') !== (string) $profesor->api_token) {
             return $this->sendResponse(['updated' => false], 'Profesor no identificat');
         }
 
@@ -34,10 +64,11 @@ class FicharController extends ApiBaseController
 
     public function entrefechas(Request $datos)
     {
-        $registros = Falta_profesor::where('dia', '>=', $datos->desde)
-                ->where('dia', '<=', $datos->hasta)
-                ->where('idProfesor', '=', $datos->profesor)
-                ->get();
+        $registros = app(FitxatgeService::class)->registrosEntreFechas(
+            (string) $datos->profesor,
+            (string) $datos->desde,
+            (string) $datos->hasta
+        );
         foreach ($registros as $registro) {
             if ($registro->salida != null) {
                 if (isset($dias[$registro->dia])) {

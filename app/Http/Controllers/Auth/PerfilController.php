@@ -5,8 +5,10 @@ namespace Intranet\Http\Controllers\Auth;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AuthPerfilUpdateRequest;
 use Intranet\Services\Media\ImageService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 
 
 abstract class PerfilController extends IntranetController
@@ -16,7 +18,7 @@ abstract class PerfilController extends IntranetController
 
     public function update(Request $request, $new)
     {
-        $this->validate($request, $new->getRules());
+        $this->validate($request, (new AuthPerfilUpdateRequest())->rules());
 
         if ($request->email) {
             $new->email = $request->email;
@@ -61,15 +63,20 @@ abstract class PerfilController extends IntranetController
                         } else {
                             Alert::info('Error en la modificació de la foto');
                         }
-                    } else {
-                        $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
-                        $new->foto = $nameFile;
-                        Alert::info('Foto nova guardada amb exit');
-                    }
-                } catch (\RuntimeException $e) {
-                    Alert::info($e->getMessage());
+                } else {
+                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
+                    $new->foto = $nameFile;
+                    Alert::info('Foto nova guardada amb exit');
                 }
-            } else {
+            } catch (\RuntimeException $e) {
+                report($e);
+                Log::error('Error actualitzant la foto de l\'usuari.', [
+                    'dni' => $new->dni ?? null,
+                    'error' => $e->getMessage(),
+                ]);
+                Alert::info($e->getMessage());
+            }
+        } else {
                 Alert::info('Formato no valido');
             }
         }

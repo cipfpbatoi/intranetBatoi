@@ -3,60 +3,50 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\PasswordRequest;
-use Intranet\Services\Signature\DigitalSignatureService;
-use Intranet\Services\Automation\SeleniumService;
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Str;
+use Intranet\Sao\Actions\SAOAction;
+use Intranet\Sao\Support\SaoRunner;
+use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
 use Throwable;
-use ReflectionMethod;
-use Exception;
 
+/**
+ * Orquestra l'execució d'accions SAO després de validar la contrasenya.
+ */
 class RedirectAfterAuthenticationController extends Controller
 {
+    private SaoRunner $saoRunner;
+
+    public function __construct(?SaoRunner $saoRunner = null)
+    {
+        $this->saoRunner = $saoRunner ?? app(SaoRunner::class);
+    }
+
     public function __invoke(PasswordRequest $request)
     {
-        $className = $this->resolveClassName($request->accion);
-
-        if (!class_exists($className)) {
-            throw new Exception("La classe $className no existeix.");
-        }
+        $className = SAOAction::class;
 
         $caps = method_exists($className, 'setFireFoxCapabilities')
             ? $className::setFireFoxCapabilities()
             : null;
 
-        $driver = null;
-
         try {
-            $driver = SeleniumService::loginSAO(authUser()->dni, $request->password, $caps);
-            return $this->executeAction($className, $driver, $request);
+            return $this->saoRunner->run(
+                $className,
+                (string) authUser()->dni,
+                (string) $request->password,
+                $request->toArray(),
+                $caps,
+                $request->file('file')
+            );
         } catch (Throwable $exception) {
+            report($exception);
+            Log::warning('Error en executar acció després d\'autenticació SAO.', [
+                'dni' => authUser()->dni ?? null,
+                'error' => $exception->getMessage(),
+            ]);
             Alert::info($exception->getMessage());
-        } finally {
-            if ($driver) {
-                $driver->close();
-            }
         }
         return back();
 
-    }
-
-    private function resolveClassName(string $action): string
-    {
-        return 'Intranet\\Sao\\' . Str::ucfirst($action);
-    }
-
-    private function executeAction(string $className, $driver, PasswordRequest $request)
-    {
-        $reflection = new ReflectionMethod($className, 'index');
-        $ds = new DigitalSignatureService();
-        $parameters = [$driver, $request->toArray()];
-
-        if ($request->hasFile('file')) {
-            $parameters[] = $request->file('file');
-        }
-        return $reflection->isStatic()
-            ? $className::index(...$parameters)
-            : (new $className($ds))->index(...$parameters);
     }
 }

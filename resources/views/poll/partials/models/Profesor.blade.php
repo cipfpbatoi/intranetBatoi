@@ -1,6 +1,6 @@
 @foreach ($poll->Plantilla->options as $question => $option)
  <div id="step-{{$question+1}}">
-    <h1 class="StepTitle">{{ $option->question }}</h1>
+    <h1 class="StepTitle">{{ $question + 1 }}. {{ $option->question }}</h1>
     @php  $profe=0; @endphp
     @foreach ($quests as $quest)
         @foreach ($quest['option2'] as $profesores)

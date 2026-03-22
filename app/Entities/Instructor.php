@@ -3,8 +3,11 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Centro;
+use Intranet\Presentation\Crud\InstructorCrudSchema;
 
 class Instructor extends Model
 {
@@ -15,20 +18,8 @@ class Instructor extends Model
     protected $primaryKey = 'dni';
     protected $keyType = 'string';
     protected $fillable = ['dni', 'email', 'name','surnames','telefono','departamento'];
-    protected $rules = [
-        'dni' => 'required|max:12',
-        'name' => 'required|max:60',
-        'surnames' => 'required|max:60',
-        'email' => 'required|email|max:60',
-        'telefono' => 'max:20'
-    ];
-    protected $inputTypes = [
-        'dni' => ['type' => 'card'],
-        'name' => ['type' => 'name'],
-        'surnames' => ['type' => 'name'],
-        'email' => ['type' => 'email'],
-        'telefono' => ['type' => 'number']
-    ];
+    protected $rules = InstructorCrudSchema::RULES;
+    protected $inputTypes = InstructorCrudSchema::INPUT_TYPES;
     
     public $timestamps = false;
     protected $dispatchesEvents = [
@@ -37,12 +28,12 @@ class Instructor extends Model
     ];
     
     
-    public function Fcts()
+    public function Fcts(): HasMany
     {
-        return $this->belongsTo(Fct::class, 'dni', 'idInstructor');
+        return $this->hasMany(Fct::class, 'idInstructor', 'dni');
     }
 
-    public function Centros()
+    public function Centros(): BelongsToMany
     {
         return $this->belongsToMany(Centro::class, 'centros_instructores', 'idInstructor', 'idCentro', 'dni', 'id');
     }
@@ -58,13 +49,15 @@ class Instructor extends Model
     }
     public function getXNcentrosAttribute()
     {
-        return $this->Centros->count()??0;
+        return $this->Centros->count();
     }
     public function getNfctsAttribute()
     {
-        return $this->relationLoaded('Fcts')
-            ? $this->Fcts->count()
-            : $this->Fcts()->count();
+        if ($this->relationLoaded('Fcts')) {
+            return $this->getRelation('Fcts')->count();
+        }
+
+        return $this->Fcts()->count();
     }
 
     

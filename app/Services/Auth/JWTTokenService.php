@@ -3,8 +3,8 @@
 namespace Intranet\Services\Auth;
 
 use DateTimeImmutable;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Profesor;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -12,16 +12,18 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 class JWTTokenService
 {
     protected $config;
+    private ProfesorService $profesorService;
 
     const EXPIRATION_DATE = '15 October';
 
-    public function __construct()
+    public function __construct(?ProfesorService $profesorService = null)
     {
         $this->config = Configuration::forAsymmetricSigner(
             new Sha256(),
             InMemory::file(config('jwt.private_key'), config('jwt.passphrase')),
             InMemory::file(config('jwt.public_key'))
         );
+        $this->profesorService = $profesorService ?? app(ProfesorService::class);
     }
 
     public function createTokenProgramacio($idModuleGrupo,$dni=null)
@@ -32,7 +34,7 @@ class JWTTokenService
             $user = authUser();
             $expiresAt = $now->modify('+' . config('jwt.expiry') . ' seconds');
         } else {
-            $user = Profesor::findOrFail($dni);
+            $user = $this->profesorService->findOrFail((string) $dni);
             $year = $now->format('Y');
             $expiresAt = new DateTimeImmutable(self::EXPIRATION_DATE . " $year");
         }

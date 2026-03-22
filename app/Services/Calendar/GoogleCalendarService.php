@@ -5,7 +5,7 @@ namespace Intranet\Services\Calendar;
 use DateTime;
 use Google_Client;
 use Google_Service_Calendar;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class GoogleCalendarService
 {

@@ -4,9 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\QueryException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\EspacioRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 
@@ -49,15 +51,77 @@ class EspacioController extends ModalController
 
     public function store(EspacioRequest $request)
     {
-        $new = new Espacio();
-        $new->fillAll($request);
+        $this->authorize('create', Espacio::class);
+        try {
+            $this->persist($request);
+        } catch (QueryException $e) {
+            if ($this->isDuplicateAulaQueryException($e)) {
+                return $this->duplicateAulaResponse();
+            }
+            throw $e;
+        }
         return $this->redirect();
     }
 
+    /**
+     * @param EspacioRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(EspacioRequest $request, $id)
     {
-        Espacio::findOrFail($id)->fillAll($request);
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('update', $espacio);
+        try {
+            $this->persist($request, $id);
+        } catch (QueryException $e) {
+            if ($this->isDuplicateAulaQueryException($e)) {
+                return $this->duplicateAulaResponse();
+            }
+            throw $e;
+        }
         return $this->redirect();
+    }
+
+    /**
+     * Detecta violació d'unicitat de la PK `espacios.aula`.
+     *
+     * @param QueryException $e
+     * @return bool
+     */
+    private function isDuplicateAulaQueryException(QueryException $e): bool
+    {
+        $message = strtolower((string) $e->getMessage());
+
+        return (string) $e->getCode() === '23000'
+            && str_contains($message, 'duplicate entry')
+            && str_contains($message, 'espacios.primary');
+    }
+
+    /**
+     * Genera resposta de validació per aula duplicada.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function duplicateAulaResponse()
+    {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['aula' => 'L\'aula ja existeix.']);
+    }
+
+    /**
+     * Elimina un espai amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('delete', $espacio);
+        return parent::destroy($id);
     }
 
     /**
@@ -88,9 +152,16 @@ class EspacioController extends ModalController
 
     }
 
+    /**
+     * @param int|string $id
+     * @param int $posicion
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function barcode($id, $posicion=1)
     {
-        $espacio = Espacio::findOrFail($id);
+        $espacio = $this->findModelOrFail(Espacio::class, $id, 'Espai no trobat', ['espacio_id' => $id]);
+        $this->authorize('printBarcode', $espacio);
         return $this->hazPdf(
             'pdf.inventario.lote',
             $espacio->Materiales,

@@ -2,9 +2,12 @@
 
 namespace Intranet\Http\Controllers\Core;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\Controller;
+use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Services\Document\DocumentPathService;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\UI\Panels\Panel;
@@ -195,7 +198,22 @@ abstract class ModalController extends Controller
         return redirect()->action($this->model . 'Controller@index');
     }
 
-
+    /**
+     * Persistix un model del controlador modal.
+     *
+     * Per defecte no valida res: la validació es delega a FormRequest
+     * o a la lògica específica del controlador fill.
+     *
+     * @param Request $request
+     * @param int|string|null $id
+     * @return mixed
+     */
+    protected function persist(Request $request, $id = null)
+    {
+        $modelClass = $this->resolveModelClass();
+        $elemento = $id ? $modelClass::findOrFail($id) : new $modelClass();
+        return $elemento->fillAll($request);
+    }
 
     /**
      * Crea una instància buida del model per al formulari modal.
@@ -220,7 +238,10 @@ abstract class ModalController extends Controller
         $elemento = $modelClass::find($id);
 
         if (!$elemento) {
-            return redirect()->back()->with('error', 'Element no trobat');
+            throw new NotFoundDomainException('Element no trobat', [
+                'model' => $this->model,
+                'id' => $id,
+            ]);
         }
 
         if ($elemento->fichero && method_exists($this, 'borrarFichero')) {
@@ -234,6 +255,30 @@ abstract class ModalController extends Controller
         $elemento->delete();
 
         return $this->redirect();
+    }
+
+    /**
+     * Retorna el document físic associat al registre.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function document($id)
+    {
+        $modelClass = $this->resolveModelClass();
+        $elemento = $modelClass::findOrFail($id);
+        $path = $elemento->fichero ? storage_path('app/' . $elemento->fichero) : null;
+        $pathService = new DocumentPathService();
+
+        if ($path && $response = $pathService->responseFromPath($path)) {
+            return $response;
+        }
+
+        throw new NotFoundDomainException(__("messages.generic.nodocument"), [
+            'model' => $this->model,
+            'id' => $id,
+            'path' => $path,
+        ]);
     }
 
 
@@ -279,6 +324,10 @@ abstract class ModalController extends Controller
         if (Session::get('redirect')) {
             return redirect()->action(Session::get('redirect'));
         } //variable session
+
+        if ($this->redirect) {
+            return redirect()->action($this->redirect);
+        }
 
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }

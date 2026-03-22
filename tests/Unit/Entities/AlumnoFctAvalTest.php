@@ -5,7 +5,7 @@ namespace Tests\Unit\Entities;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Tests\TestCase;
 
 class AlumnoFctAvalTest extends TestCase
@@ -30,9 +30,9 @@ class AlumnoFctAvalTest extends TestCase
             ['id' => 3, 'idAlumno' => 'A1', 'idFct' => 10, 'actas' => 3, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 40],
         ]);
 
-        $this->assertSame([1], AlumnoFctAval::query()->noAval()->pluck('id')->all());
-        $this->assertSame([2], AlumnoFctAval::query()->aval()->pluck('id')->all());
-        $this->assertSame([3], AlumnoFctAval::query()->pendiente()->pluck('id')->all());
+        $this->assertSame([1], AlumnoFct::query()->noAval()->pluck('id')->all());
+        $this->assertSame([2], AlumnoFct::query()->aval()->pluck('id')->all());
+        $this->assertSame([3], AlumnoFct::query()->pendiente()->pluck('id')->all());
     }
 
     public function test_scope_pendiente_notificar_filtra_per_calificacio_i_correu(): void
@@ -43,7 +43,7 @@ class AlumnoFctAvalTest extends TestCase
             ['id' => 13, 'idAlumno' => 'A2', 'idFct' => 10, 'actas' => 2, 'calificacion' => 0, 'correoAlumno' => 0, 'horas' => 20],
         ]);
 
-        $this->assertSame([11], AlumnoFctAval::query()->pendienteNotificar()->pluck('id')->all());
+        $this->assertSame([11], AlumnoFct::query()->pendienteNotificar()->pluck('id')->all());
     }
 
     public function test_horas_total_suma_totes_les_linies_no_notificades_del_alumne(): void
@@ -54,8 +54,8 @@ class AlumnoFctAvalTest extends TestCase
             ['id' => 23, 'idAlumno' => 'A3', 'idFct' => 12, 'actas' => 2, 'calificacion' => 1, 'correoAlumno' => 1, 'horas' => 50],
         ]);
 
-        $nonNotified = AlumnoFctAval::findOrFail(21);
-        $notified = AlumnoFctAval::findOrFail(23);
+        $nonNotified = AlumnoFct::findOrFail(21);
+        $notified = AlumnoFct::findOrFail(23);
 
         $this->assertSame(200, (int) $nonNotified->horasTotal);
         $this->assertSame(50, (int) $notified->horasTotal);

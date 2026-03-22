@@ -16,13 +16,15 @@
         <p style="text-align: right;margin: 1cm;">{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
         <p style="margin: 3cm;"></p>
         @foreach ($datosInforme['modulos'] as $modulo)
-            @foreach ($modulo->Profesores() as $idProfesor)
-                @php $profesor = \Intranet\Entities\Profesor::find($idProfesor)->first() @endphp
-                <div style="margin: 25px; float:left; width: 200px; height: 150px; text-align: center;">
-                    {{$profesor->shortName}}<br/>
-                    <i style="font-size: x-small">{{$modulo->Xmodulo}}</i>
-                    <br/>
-                </div>
+            @foreach (app(\Intranet\Services\School\ModuloGrupoService::class)->profesorIds($modulo) as $idProfesor)
+                @php $profesor = \Intranet\Entities\Profesor::find($idProfesor); @endphp
+                @if($profesor)
+                    <div style="margin: 25px; float:left; width: 200px; height: 150px; text-align: center;">
+                        {{$profesor->shortName}}<br/>
+                        <i style="font-size: x-small">{{$modulo->Xmodulo}}</i>
+                        <br/>
+                    </div>
+                @endif
             @endforeach
         @endforeach
     </div>

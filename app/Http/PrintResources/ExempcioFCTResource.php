@@ -3,7 +3,7 @@
 namespace Intranet\Http\PrintResources;
 
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 class ExempcioFCTResource extends PrintResource
 {
@@ -25,7 +25,7 @@ class ExempcioFCTResource extends PrintResource
         
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
         $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
         

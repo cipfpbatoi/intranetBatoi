@@ -2,22 +2,25 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 
 use DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoFctUpdateRequest;
+use Intranet\Http\Requests\FctConvalidacionStoreRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Entities\FctConvalidacion;
-use Intranet\Entities\Profesor;
 use Intranet\Http\PrintResources\A1ENResource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
@@ -33,29 +36,46 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\UI\FormBuilder;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
-
-class FctAlumnoController extends IntranetController
+/**
+ * Controlador de FCT per a alumnat.
+ */
+class FctAlumnoController extends ModalController
 {
     use Imprimir,DropZone;
+
+    private ?AlumnoFctService $alumnoFctService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
     protected $redirect = 'FctAlumnoController@index';
-    protected $gridFields = ['NomEdat', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
+    protected $gridFields = AlumnoFctCrudSchema::GRID_FIELDS;
+    protected $formFields = AlumnoFctCrudSchema::FORM_FIELDS;
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
-    protected $modal = true;
+    public function __construct(?AlumnoFctService $alumnoFctService = null)
+    {
+        parent::__construct();
+        $this->alumnoFctService = $alumnoFctService;
+    }
 
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
 
     public function search()
     {
-
-        return AlumnoFct::totesFcts()->get();
+        return $this->alumnoFcts()->totesFcts();
     }
 
     protected function iniBotones()
@@ -246,7 +266,7 @@ class FctAlumnoController extends IntranetController
 
     public function days($id)
     {
-        $alumnoFct = AlumnoFct::find($id);
+        $alumnoFct = $this->alumnoFcts()->find((int) $id);
 
         return view('fct.days',compact('alumnoFct'));
     }
@@ -263,18 +283,23 @@ class FctAlumnoController extends IntranetController
             ]
         );
         $modelo = $this->model;
-        return view($this->chooseView('create'), compact('formulario', 'modelo'));
+        return view('intranet.create', compact('formulario', 'modelo'));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function unlink($id)
     {
-        $elemento = AlumnoFct::find($id);
+        $elemento = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $elemento->idSao = null;
         $elemento->save();
         return redirect()->back();
     }
 
-    public function storeConvalidacion(Request $request)
+    public function storeConvalidacion(FctConvalidacionStoreRequest $request)
     {
         DB::transaction(function () use ($request) {
             $idAlumno = $request['idAlumno'];
@@ -284,7 +309,6 @@ class FctAlumnoController extends IntranetController
             $elemento = $elementos->first() ?? null;
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
-                $this->validateAll($request, $elemento);
                 $elemento->fillAll($request);
             }
 
@@ -305,67 +329,109 @@ class FctAlumnoController extends IntranetController
         return $this->redirect();
     }
 
-    public function show($id)
+    public function update(AlumnoFctUpdateRequest $request, $id)
     {
-        $fct = AlumnoFct::findOrFail($id);
-        return redirect("/fct/$fct->idFct/show");
+        $this->persist($request, $id);
+        return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function show($id)
+    {
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
+        return redirect()->route('fct.show', ['id' => $fct->idFct]);
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse|null
+     */
     public function pdf($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         if ($fct->asociacion === 1 || $fct->asociacion > 3) {
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
-            return response()->file(FDFPrepareService::exec(new ExempcioResource(AlumnoFct::find($id))));
+            return response()->file(FDFPrepareService::exec(new ExempcioResource($fct)));
         }
         if ($fct->asociacion == 3){
-            return response()->file(FDFPrepareService::exec(new AVIIIResource(AlumnoFct::find($id))));
+            return response()->file(FDFPrepareService::exec(new AVIIIResource($fct)));
         }
 
     }
 
+    /**
+     * @param int|string $id
+     * @param int|string $num
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function Signatura($id, $num)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         return response()->file($fct->routeFile($num));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function Valoratiu($id)
     {
-        return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
+        return response()->file(FDFPrepareService::exec(new A5Resource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AVI($id)
     {
-        return response()->file(FDFPrepareService::exec(new AVIResource(AlumnoFct::find($id))));
+        return response()->file(FDFPrepareService::exec(new AVIResource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AEng($id)
     {
 
-        $fct = AlumnoFct::find($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $nameFile = storage_path("tmp/AN_EN{$fct->Alumno->shorName}.zip");
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
         $zip = new \ZipArchive();
         $zip->open($nameFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $zip->addFile(FDFPrepareService::exec(new A1ENResource(AlumnoFct::find($id))), 'AIEN.pdf');
-        $zip->addFile(FDFPrepareService::exec(new A2ENResource(AlumnoFct::find($id))), 'AIIEN.pdf');
-        $zip->addFile(FDFPrepareService::exec(new A3ENResource(AlumnoFct::find($id))), 'AIIIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A1ENResource($fct)), 'AIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A2ENResource($fct)), 'AIIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A3ENResource($fct)), 'AIIIEN.pdf');
         $zip->close();
         return response()->download($nameFile);
     }
 
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function auth($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $folder = storage_path("tmp/auth$id/");
         $zipFile = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
@@ -394,16 +460,30 @@ class FctAlumnoController extends IntranetController
         return response()->download($zipFile);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function AutDual($id)
     {
-        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource(AlumnoFct::findOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]))));
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public static function preparePdf($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director = Profesor::find(config('avisos.director'));
+        try {
+            $fct = app(AlumnoFctService::class)->findOrFail((int) $id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('FCT d\'alumne no trobada', ['alumno_fct_id' => $id]);
+        }
+        $secretario = cargo('secretario');
+        $director = cargo('director');
         $dades = [
             'date' => FechaString($fct->hasta),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -436,17 +516,27 @@ class FctAlumnoController extends IntranetController
      * }
      */
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function pg0301($id)
     {
-        $fct = AlumnoFct::find($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $fct->pg0301 = $fct->pg0301 ? 0 : 1;
         $fct->save();
-        return redirect()->action('PanelPG0301Controller@indice', ['id' => $fct->Grup]);
+        return redirect()->route('fctcap.acta', ['grupo' => $fct->Grup]);
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function email($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $alumno = $fct->Alumno;
         Mail::to($alumno->email)
             ->bcc(authUser()->email)
@@ -463,8 +553,13 @@ class FctAlumnoController extends IntranetController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function importa($id){
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->wrapNotFound(fn () => $this->alumnoFcts()->findOrFail((int) $id), "FCT d'alumne no trobada", ['alumno_fct_id' => $id]);
         $dni = $fct->Alumno->dni;
         $annexos = Adjunto::where('route', 'like', "dual/$dni")->get();
         if ($annexos->isEmpty()){

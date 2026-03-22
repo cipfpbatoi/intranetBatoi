@@ -4,6 +4,9 @@ namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Validació per a l'alta d'ordres de reunió.
+ */
 class OrdenReunionStoreRequest extends FormRequest
 {
     /**
@@ -24,7 +27,7 @@ class OrdenReunionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'orden' => 'required|integer',
+            'orden' => 'required|integer|between:1,127',
             'descripcion' => 'required|max:120',
         ];
     }

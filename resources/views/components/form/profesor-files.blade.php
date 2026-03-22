@@ -10,7 +10,7 @@
                 <strong>Imatge</strong><br/>
                 <img
                         style="max-width: 50%"
-                        src="{{ asset_nocache('storage/fotos/' . $profesor->foto) }}"
+                        src="{{ profile_photo_url($profesor->foto) }}"
                         alt="foto"
                 />
                 <br/><br/>

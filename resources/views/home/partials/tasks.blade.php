@@ -6,7 +6,7 @@
                     {{$task->descripcion}}&nbsp;&nbsp;&nbsp;&nbsp;
                     <em class="fa fa-clipboard"></em>
                 </a>
-                <a href="/task/{{$task->id}}/check" title="Tasca revisada">
+                <a href="{{ route('task.check', ['id' => $task->id]) }}" title="Tasca revisada">
                     @if ($task->valid)
                         <em class="fa fa-check-square-o"></em>
                     @else

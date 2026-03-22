@@ -1,10 +1,12 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
+use Intranet\Http\Requests\OrdenTrabajoRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\StateService;
 
@@ -12,7 +14,7 @@ use Intranet\Services\General\StateService;
  * Class OrdenTrabajoController
  * @package Intranet\Http\Controllers
  */
-class OrdenTrabajoController extends IntranetController
+class OrdenTrabajoController extends ModalController
 {
 
     use Imprimir;
@@ -33,12 +35,6 @@ class OrdenTrabajoController extends IntranetController
      * @var string
      */
     protected $descriptionField = 'descripcion';
-    /**
-     * @var bool
-     */
-    protected $modal = true;
-
-
     /**
      *
      */
@@ -61,9 +57,22 @@ class OrdenTrabajoController extends IntranetController
         return parent::destroy($id);
     }
 
+    public function store(OrdenTrabajoRequest $request)
+    {
+        $this->persist($request);
+        return $this->redirect();
+    }
+
+    public function update(OrdenTrabajoRequest $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
     /**
      * @param $id
      * @param string $orientacion
+     * @throws NotFoundDomainException
      * @return mixed
      */
 
@@ -71,7 +80,12 @@ class OrdenTrabajoController extends IntranetController
 
     public function imprime($id, $orientacion = 'portrait')
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         $informe = 'pdf.' . strtolower($this->model);
         $pdf = self::hazPdf($informe, $incidencias,$elemento, $orientacion);
@@ -84,10 +98,16 @@ class OrdenTrabajoController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function resolve($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $elemento->estado = 2;
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         foreach ($incidencias as $incidencia){
@@ -100,10 +120,16 @@ class OrdenTrabajoController extends IntranetController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function open($id){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(
+            $this->class,
+            $id,
+            'Ordre de treball no trobada',
+            ['orden_trabajo_id' => $id]
+        );
         $elemento->estado = 0;
         $elemento->save();
         return back();

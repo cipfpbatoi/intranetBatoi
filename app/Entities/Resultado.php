@@ -3,14 +3,13 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Services\School\ModuloGrupoService;
 
+/**
+ * Model de resultats.
+ */
 class Resultado extends Model
 {
 
@@ -38,9 +37,10 @@ class Resultado extends Model
         'idProfesor' => ['type' => 'text'],
         
     ];
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => ActivityReport::class,
@@ -57,7 +57,7 @@ class Resultado extends Model
     public function getIdModuloGrupoOptions()
     {
         $todos = [];
-        foreach (Modulo_grupo::MisModulos() as $uno) {
+        foreach (app(ModuloGrupoService::class)->misModulos(authUser()->dni) as $uno) {
             $todos[$uno->id] = $uno->Grupo->nombre . ' - ' . $uno->ModuloCiclo->Modulo->literal;
         }
         return $todos;
@@ -96,7 +96,7 @@ class Resultado extends Model
     
     public function getModuloAttribute()
     {
-        return $this->ModuloGrupo->literal;
+        return $this->ModuloGrupo->literal ?? '';
     }
     public function getXEvaluacionAttribute()
     {
@@ -104,7 +104,7 @@ class Resultado extends Model
     }
     public function getXProfesorAttribute()
     {
-        return Profesor::find($this->idProfesor)->shortName;
+        return $this->Profesor->shortName ?? '';
     }
 
 }

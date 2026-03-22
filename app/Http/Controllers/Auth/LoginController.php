@@ -24,10 +24,10 @@ class LoginController extends Controller
     public function login()
     {
         if (isset(AuthUser()->codigo)) {
-            return redirect('/home');
+            return redirect()->route('home.profesor');
         }
         if (isset(AuthUser()->nia)) {
-            return redirect('/alumno/home');
+            return redirect()->route('home.alumno');
         }
         if (isPrivateAddress(getClientIpAddress())) {
             return view('login');

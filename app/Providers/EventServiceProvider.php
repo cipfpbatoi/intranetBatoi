@@ -2,12 +2,11 @@
 
 namespace Intranet\Providers;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Intranet\Entities\Activity;
-use Intranet\Events\EmailAnnexeIndividual;
-use Intranet\Listeners\ActualitzarBaseDeDadesDespresEmail;
 
+/**
+ * Registre d'esdeveniments de l'aplicacio.
+ */
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -21,9 +20,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Illuminate\Auth\Events\Logout' => [
             'Intranet\Listeners\UpdateLastLoggedAt',
-        ],
-        'Intranet\Events\ActividadCreated' => [
-            'Intranet\Listeners\ResponsableCreate',
         ],
         'Intranet\Events\FctCreated' => [
             'Intranet\Listeners\ColaboracionColabora',
@@ -39,18 +35,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Intranet\Events\ActivityReport' => [
             'Intranet\Listeners\RegisterActivity',
-        ],
-        'Intranet\Events\PreventAction' => [
-            'Intranet\Listeners\BlockAction',
-        ],
-        'Intranet\Events\FichaCreated' => [
-            'Intranet\Listeners\VeepCreated',
-        ],
-        'Intranet\Events\EmailSended' => [
-            'Intranet\Listeners\MarkSended',
-        ],
-        EmailAnnexeIndividual::class => [
-            ActualitzarBaseDeDadesDespresEmail::class,
         ],
     ];
 

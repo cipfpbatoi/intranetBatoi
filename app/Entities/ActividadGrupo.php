@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 
 class ActividadGrupo extends Model
 {
@@ -16,7 +17,7 @@ class ActividadGrupo extends Model
 
     public function scopeDepartamento($query, $dep)
     {
-        $grupos = Grupo::select('codigo')->Departamento($dep)->get()->toArray();
+        $grupos = app(GrupoService::class)->byDepartamento((int) $dep)->pluck('codigo')->all();
         return $query->distinct()->whereIn('idGrupo', $grupos);
     }
 

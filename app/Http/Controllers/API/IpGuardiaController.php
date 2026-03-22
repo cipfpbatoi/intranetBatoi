@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\IpGuardia;
 use DB;
 
-class IpGuardiaController extends ApiBaseController
+class IpGuardiaController extends ApiResourceController
 {
     protected $model = 'IpGuardia';
 

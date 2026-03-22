@@ -4,15 +4,17 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 use Intranet\Services\General\StateService;
 
+/**
+ * Model de programacio.
+ */
 class Programacion extends Model
 {
 
     use \Intranet\Entities\Concerns\BatoiModels;
     
-    public $fileField = 'idModulo';
+    public $fileField = 'idModuloCiclo';
     protected $table = "programaciones";
     protected $fillable = [
         'idModuloCiclo',
@@ -26,8 +28,10 @@ class Programacion extends Model
         'idModuloCiclo' => ['type' => 'select']
     ];
     
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
         'created' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
@@ -67,50 +71,82 @@ class Programacion extends Model
 
     public function getidModuloCicloOptions()
     {
-        $horas = Horario::select()
-                ->Profesor(authUser()->dni)
-                ->whereNotNull('idGrupo')
-                ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
-                ->distinct()
-                ->get();
-        $todos = [];
-        foreach ($horas as $hora) {
-            if (!$hora->Grupo) {
-                continue;
-            }
-            $mc = Modulo_ciclo::where('idModulo', $hora->modulo)
-                    ->where('idCiclo',$hora->Grupo->idCiclo)
-                    ->first();
-            if (!$mc) {
-                continue;
-            }
-            $todos[$mc->id] = $mc->Xmodulo.' - '.$mc->Xciclo;
+        $horas = Horario::query()
+            ->select('modulo', 'idGrupo')
+            ->Profesor(authUser()->dni)
+            ->whereNotNull('idGrupo')
+            ->whereNotNull('modulo')
+            ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
+            ->with('Grupo:codigo,idCiclo')
+            ->distinct()
+            ->get();
+
+        $pairs = $horas
+            ->filter(fn ($hora) => $hora->Grupo && $hora->Grupo->idCiclo)
+            ->map(fn ($hora) => [
+                'idModulo' => $hora->modulo,
+                'idCiclo' => $hora->Grupo->idCiclo,
+            ])
+            ->unique(fn (array $pair) => $pair['idModulo'] . '|' . $pair['idCiclo'])
+            ->values();
+
+        if ($pairs->isEmpty()) {
+            return [];
         }
-        return $todos;
+
+        $validKeys = $pairs
+            ->mapWithKeys(fn (array $pair) => [$pair['idModulo'] . '|' . $pair['idCiclo'] => true]);
+
+        return Modulo_ciclo::query()
+            ->whereIn('idModulo', $pairs->pluck('idModulo')->unique())
+            ->whereIn('idCiclo', $pairs->pluck('idCiclo')->unique())
+            ->with(['Modulo:codigo,literal', 'Ciclo:id,literal'])
+            ->get()
+            ->filter(fn ($mc) => isset($validKeys[$mc->idModulo . '|' . $mc->idCiclo]))
+            ->mapWithKeys(fn ($mc) => [$mc->id => $mc->Modulo->literal . ' - ' . $mc->Ciclo->literal])
+            ->all();
     }
 
     public function scopeMisProgramaciones($query,$dni = null)
     {
         $profesor = $dni??authUser()->dni;
-        $horas = Horario::select('modulo','idGrupo')
-                ->distinct()
-                ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
-                ->Profesor($profesor)
-                ->whereNotNull('modulo')
-                ->get();
-        $modulos = [];
-        foreach ($horas as $hora){
-            if (!$hora->Grupo) {
-                continue;
-            }
-            if ($mc = Modulo_ciclo::where('idModulo', $hora->modulo)
-                    ->where('idCiclo', $hora->Grupo->idCiclo)
-                    ->first()) {
-                $modulos[] = $mc->id;
-            }
+        $horas = Horario::query()
+            ->select('modulo', 'idGrupo')
+            ->distinct()
+            ->whereNotNull('idGrupo')
+            ->whereNotNull('modulo')
+            ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
+            ->Profesor($profesor)
+            ->with('Grupo:codigo,idCiclo')
+            ->get();
+
+        $pairs = $horas
+            ->filter(fn ($hora) => $hora->Grupo && $hora->Grupo->idCiclo)
+            ->map(fn ($hora) => [
+                'idModulo' => $hora->modulo,
+                'idCiclo' => $hora->Grupo->idCiclo,
+            ])
+            ->unique(fn (array $pair) => $pair['idModulo'] . '|' . $pair['idCiclo'])
+            ->values();
+
+        if ($pairs->isEmpty()) {
+            return $query->whereIn('idModuloCiclo', []);
         }
 
-        return $query->whereIn('idModuloCiclo', array_values(array_unique($modulos)));
+        $validKeys = $pairs
+            ->mapWithKeys(fn (array $pair) => [$pair['idModulo'] . '|' . $pair['idCiclo'] => true]);
+
+        $modulos = Modulo_ciclo::query()
+            ->whereIn('idModulo', $pairs->pluck('idModulo')->unique())
+            ->whereIn('idCiclo', $pairs->pluck('idCiclo')->unique())
+            ->get()
+            ->filter(fn ($mc) => isset($validKeys[$mc->idModulo . '|' . $mc->idCiclo]))
+            ->pluck('id')
+            ->unique()
+            ->values()
+            ->all();
+
+        return $query->whereIn('idModuloCiclo', $modulos);
     }
 
     public function scopeDepartamento($query, $departamento = null)
@@ -157,13 +193,13 @@ class Programacion extends Model
     public function getSituacionAttribute()
     {
         return isblankTrans('models.Programacion.' . $this->estado)
-            ? trans('messages.situations.' . $this->estado)
-            : trans('models.Programacion.' . $this->estado);
+            ? __('messages.situations.' . $this->estado)
+            : __('models.Programacion.' . $this->estado);
     }
 
     public static function resolve($id, $mensaje = null)
     {
-        $programacion = Programacion::find($id);
+        $programacion = Programacion::findOrFail($id);
         $staServ = new StateService($programacion);
         return $staServ->putEstado( config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }

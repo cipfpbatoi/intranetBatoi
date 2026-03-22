@@ -6,9 +6,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Intranet\Services\Notifications\NotificationService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -16,6 +18,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use function config;
 
+/**
+ * Gestor centralitzat d'excepcions de l'aplicació.
+ */
 class Handler extends ExceptionHandler
 {
     protected $dontReport = [
@@ -29,22 +34,47 @@ class Handler extends ExceptionHandler
 
     protected $dontFlash = ['password','password_confirmation'];
 
+    /**
+     * Reporta una excepció i registra-la en el log d'excepcions.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    public function report(Throwable $exception): void
+    {
+        $this->logException($exception);
+
+        parent::report($exception);
+    }
+
+    /**
+     * Renderitza la resposta HTTP per a una excepció.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function render($request, Throwable $exception)
     {
         // Envia avís només si el missatge és “informatiu” i no és SRF
         $msg = (string) $exception->getMessage();
         $isValidation = $exception instanceof ValidationException;
+        $isAuthorization = $exception instanceof AuthorizationException;
+        $statusCode = ($exception instanceof HttpExceptionInterface)
+            ? $exception->getStatusCode()
+            : null;
+        $isForbidden = $statusCode === 403;
+        $isNotFound = $exception instanceof ModelNotFoundException
+            || $exception instanceof NotFoundHttpException
+            || $statusCode === 404;
 
-        if (
-            !$isValidation &&
-            $msg !== 'The given data was invalid.' &&
-            $msg !== 'Unauthenticated.' &&
-            $msg !== '' &&
-            strpos($msg, 'SRF') === false &&   // <-- correcció important
-            !app()->environment('testing')
-        ) {
+        if ($this->shouldNotify($exception, $msg, $isValidation, $isAuthorization, $isForbidden, $isNotFound)) {
             // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
             app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
+        }
+
+        if ($exception instanceof IntranetException) {
+            return $this->renderIntranetException($request, $exception);
         }
 
         // Missatge visual per a errors de BD (en respostes HTML)
@@ -101,5 +131,196 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Determina si una excepció ha d'enviar avís al responsable.
+     *
+     * @param \Throwable $exception
+     * @param string $msg
+     * @param bool $isValidation
+     * @param bool $isAuthorization
+     * @param bool $isForbidden
+     * @param bool $isNotFound
+     * @return bool
+     */
+    private function shouldNotify(
+        Throwable $exception,
+        string $msg,
+        bool $isValidation,
+        bool $isAuthorization,
+        bool $isForbidden,
+        bool $isNotFound
+    ): bool {
+        if ($exception instanceof IntranetException && !$exception->shouldNotify()) {
+            return false;
+        }
+
+        if (
+            $isValidation ||
+            $isAuthorization ||
+            $isForbidden ||
+            $isNotFound ||
+            $msg === 'The given data was invalid.' ||
+            $msg === 'Unauthenticated.' ||
+            $msg === '' ||
+            strpos($msg, 'SRF') !== false ||
+            app()->environment('testing')
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Registra totes les excepcions en un canal dedicat.
+     * Compacta el log per a autenticació i errors NotFound de domini.
+     * Evita traça en avisos per reduir soroll en producció.
+     *
+     * @param \Throwable $exception
+     * @return void
+     */
+    private function logException(Throwable $exception): void
+    {
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        if ($exception instanceof ValidationException) {
+            $context = [
+                'exception' => get_class($exception),
+                'code' => $exception->getCode(),
+                'status' => 422,
+            ];
+
+            $errors = $exception->errors();
+            $firstField = $errors ? array_key_first($errors) : null;
+            $context['validation'] = [
+                'field' => $firstField,
+                'first_error' => $firstField ? ($errors[$firstField][0] ?? null) : null,
+                'field_count' => count($errors),
+            ];
+
+            if (!app()->runningInConsole()) {
+                $request = request();
+                $context['url'] = $request->fullUrl();
+                $context['method'] = $request->method();
+                $context['ip'] = $request->ip();
+                $context['route'] = optional($request->route())->getName();
+                $context['user_agent'] = (string) $request->header('User-Agent', '');
+                $context['referer'] = (string) $request->header('Referer', '');
+
+                $user = authUser();
+                $context['user'] = $user
+                    ? [
+                        'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
+                        'rol' => $user->rol ?? null,
+                        'email' => $user->email ?? null,
+                    ]
+                    : ['guest' => true];
+            }
+
+            Log::channel('exceptions')->info($exception->getMessage() ?: 'Validation error', $context);
+            return;
+        }
+
+        $statusCode = ($exception instanceof HttpExceptionInterface)
+            ? $exception->getStatusCode()
+            : null;
+        if ($exception instanceof TokenMismatchException) {
+            $statusCode = 419;
+        }
+        $level = ($statusCode !== null && $statusCode < 500) ? 'warning' : 'error';
+        $isUnauthenticated = $exception instanceof AuthenticationException;
+        $isNotFoundDomain = $exception instanceof NotFoundDomainException;
+        $isTokenMismatch = $exception instanceof TokenMismatchException;
+
+        if ($isUnauthenticated) {
+            $level = 'info';
+        }
+        if ($isTokenMismatch) {
+            $level = 'warning';
+        }
+
+        $context = [
+            'exception' => get_class($exception),
+            'code' => $exception->getCode(),
+            'status' => $statusCode,
+        ];
+
+        if (!$isUnauthenticated) {
+            $context['file'] = $exception->getFile();
+            $context['line'] = $exception->getLine();
+        }
+
+        $includeTrace = !$isUnauthenticated
+            && !$isNotFoundDomain
+            && ($level === 'error' || config('app.debug'));
+
+        if ($includeTrace) {
+            $context['trace'] = $exception->getTraceAsString();
+        }
+
+        if ($exception instanceof IntranetException) {
+            $context['context'] = $exception->getContext();
+        }
+
+        if (!app()->runningInConsole()) {
+            $request = request();
+            $context['url'] = $request->fullUrl();
+            $context['method'] = $request->method();
+            $context['ip'] = $request->ip();
+            $context['route'] = optional($request->route())->getName();
+            $context['user_agent'] = (string) $request->header('User-Agent', '');
+            $context['referer'] = (string) $request->header('Referer', '');
+
+            $user = authUser();
+            $context['user'] = $user
+                ? [
+                    'id' => $user->dni ?? $user->nia ?? $user->id ?? null,
+                    'rol' => $user->rol ?? null,
+                    'email' => $user->email ?? null,
+                ]
+                : ['guest' => true];
+        }
+
+        Log::channel('exceptions')->log($level, (string) $exception->getMessage(), $context);
+    }
+
+    /**
+     * Renderitza una excepció de domini amb resposta coherent.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param IntranetException $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function renderIntranetException($request, IntranetException $exception)
+    {
+        $status = $exception->getStatus();
+        $message = $exception->getUserMessage();
+
+        if ($exception instanceof NotFoundDomainException) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 404);
+            }
+
+            return response()->view('errors.404', [], 404);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+
+        $errorView = 'errors.'.$status;
+        if (view()->exists($errorView)) {
+            return response()->view($errorView, [
+                'exception' => $exception,
+                'response' => $message,
+            ], $status);
+        }
+
+        Alert::danger($message);
+        return redirect(url()->previous() ?: route('home'));
     }
 }

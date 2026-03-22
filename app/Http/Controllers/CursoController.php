@@ -3,17 +3,19 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\CursoCrudSchema;
 
 use DB;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\Curso;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CursoRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\General\GestorService;
-use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
+use Illuminate\Support\Carbon;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class CursoController
@@ -32,19 +34,27 @@ class CursoController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
-
+    protected $gridFields = CursoCrudSchema::GRID_FIELDS;
+    protected $formFields = CursoCrudSchema::FORM_FIELDS;
 
     public function store(CursoRequest $request)
     {
-        $new = new Curso();
-        $new->fillAll($request);
+        $this->authorize('create', Curso::class);
+        $this->persist($request);
         return $this->redirect();
     }
 
+    /**
+     * @param CursoRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(CursoRequest $request, $id)
     {
-        Curso::findOrFail($id)->fillAll($request);
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $curso);
+        $this->persist($request, $id);
         return $this->redirect();
     }
     /**
@@ -93,10 +103,13 @@ class CursoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function saveFile($id)
     {
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $curso);
         $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
             $gestor = new GestorService($elemento);
@@ -106,7 +119,7 @@ class CursoController extends ModalController
                 'tags' => 'Curs',
                 'fichero' => $elemento->fichero,
                 'supervisor' => AuthUser()->shortName,
-                'created_at' => new Date($elemento->fecha_fin),
+                'created_at' => new Carbon($elemento->fecha_fin),
                 'rol' => config('roles.rol.direccion')]);
             $elemento->archivada = 1;
             $elemento->save();
@@ -116,11 +129,12 @@ class CursoController extends ModalController
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return mixed
      */
     private function makeReport($id)
     {
-        $curso = Curso::find($id);
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         if ($curso->fichero == ''){
             $nomComplet = 'gestor/' . Curso() . '/' . $this->model. '/' .'Curso_' . $curso->id . '.pdf';
             $curso->fichero = $nomComplet;
@@ -135,29 +149,36 @@ class CursoController extends ModalController
 
     public function document($id)
     {
-        $elemento = Curso::findOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         if ($elemento->link) {
             return response()->file(storage_path('app/' . $elemento->fichero));
         }
-        Alert::danger(trans("messages.generic.nodocument"));
+        Alert::danger(__("messages.generic.nodocument"));
         return back();
     }
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return mixed
      */
     public function pdf($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
         $informe = 'pdf.' . strtolower($this->model);
         $pdf = self::hazPdf($informe, $elemento, null, 'portrait');
         return $pdf->stream();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function email($id)
     {
-        $curso = Curso::findOrFail($id);
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $curso);
         $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
         foreach ($curso->Asistentes as $alumno){
             $id = $alumno->pivot->id;
@@ -177,9 +198,15 @@ class CursoController extends ModalController
     * active ($id)
     * canvia la variable activo del elemento (alumnocurso,curso,menu)
     */
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function active($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('update', $elemento);
         if ($elemento->activo) {
             $elemento->activo = false;
         } else {
@@ -187,6 +214,19 @@ class CursoController extends ModalController
         }
         $elemento->save();
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un curs amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        $curso = $this->findModelOrFail(Curso::class, $id, 'Curs no trobat', ['curso_id' => $id]);
+        $this->authorize('delete', $curso);
+        return parent::destroy($id);
     }
     
 }

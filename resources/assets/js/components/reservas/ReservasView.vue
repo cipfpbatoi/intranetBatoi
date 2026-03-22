@@ -36,22 +36,29 @@
 
 <script>
 import axios from 'axios'
-const ruta='/api/reserva/';
+import { withApiAuth } from '../utils/api-auth';
+import ProfesSelect from './ProfesSelect.vue';
+import RecursosSelect from './RecursosSelect.vue';
+import HorasSelect from './HorasSelect.vue';
+import HorasTable from './HorasTable.vue';
+import FechaPicker from '../utils/FechaPicker.vue';
+const ruta='/api/reserva';
 
-const token=document.getElementById('_token').innerHTML;
 const rolDirecc=2;
-const esDirecc=((document.getElementById('rol').innerHTML%rolDirecc)==0);
-const idProfesor = document.getElementById('dni').innerHTML;
+const rolNode = document.getElementById('rol');
+const esDirecc=((Number(rolNode ? rolNode.innerHTML : 0)%rolDirecc)==0);
+const dniNode = document.getElementById('dni');
+const idProfesor = dniNode ? dniNode.innerHTML : '';
 
 const maxDiasReserva=30;
 
     export default {
         components: {
-          'profes-select': require('./ProfesSelect.vue'),
-          'recursos-select': require('./RecursosSelect.vue'),
-          'horas-select': require('./HorasSelect.vue'),
-          'horas-table': require('./HorasTable.vue'),
-          'fecha-picker': require('../utils/FechaPicker.vue'),
+          'profes-select': ProfesSelect,
+          'recursos-select': RecursosSelect,
+          'horas-select': HorasSelect,
+          'horas-table': HorasTable,
+          'fecha-picker': FechaPicker,
         },
         props: ['horas', 'espacios','profes'],
         data() {
@@ -70,15 +77,24 @@ const maxDiasReserva=30;
           },
         },
         methods: {
-          getReservas() {
+          async getReservas() {
             console.log('pido '+(this.fechaIni=='' || this.espacio=='0'));
             if (this.fechaIni=='' || this.espacio=='0') {
               this.reservas=[];
               return;
             }
-            axios.get(ruta+'idEspacio='+this.espacio+'&dia='+this.fechaIni+'?api_token='+token)
-              .then(resp=>this.reservas=resp.data.data)
-              .catch(resp=>console.error(resp));
+            const params = {
+              idEspacio: this.espacio,
+              dia: this.fechaIni,
+            };
+
+            try {
+              const resp = await axios.get(ruta, withApiAuth({ params }));
+              this.reservas = resp.data.data;
+            } catch (errorModern) {
+              console.error(errorModern);
+              this.reservas = [];
+            }
           },
           idTd(codigo) {
             return 'hora-'+codigo;

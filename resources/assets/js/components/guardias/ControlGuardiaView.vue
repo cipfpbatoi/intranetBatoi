@@ -26,10 +26,10 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 import ControlGuardiaItem from './ControlGuardiaItem.vue';
 import ControlNav from '../utils/ControlNav.vue';
-
-const token=document.getElementById('_token').innerHTML;
+import { withApiAuth } from '../utils/api-auth';
 
 export default {
   components: {
@@ -57,7 +57,11 @@ export default {
     getGuardias() {
       this.borraFichajes();
       this.msg='Esperando al servidor ...';
-      axios.get('/api/guardia/dia]'+this.sumaFecha(1)+'&dia['+this.sumaFecha(5)+'?api_token='+token)
+      const params = {
+        desde: this.sumaFecha(1),
+        hasta: this.sumaFecha(5),
+      };
+      axios.get('/api/guardia/range', withApiAuth({ params }))
       .then(resp=>{
         // Organizamos los datos en un objeto de horas->días->profes
         for (let i in resp.data.data) {

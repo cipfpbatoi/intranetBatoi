@@ -3,6 +3,7 @@
 namespace Intranet\Services\Notifications;
 
 use Illuminate\Support\Collection;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Profesor;
 
@@ -30,8 +31,9 @@ class ActividadNotificationService
         ?callable $adviseTeacherExecutor = null
     ) {
         $this->notificationService = $notificationService ?? app(NotificationService::class);
+        $profesorService = app(ProfesorService::class);
         $this->groupTeachersResolver = $groupTeachersResolver
-            ?? static fn (string $groupCode): Collection => Profesor::Grupo($groupCode)->get();
+            ?? fn (string $groupCode): Collection => $profesorService->byGrupo($groupCode);
         $this->adviseTeacherExecutor = $adviseTeacherExecutor
             ?? static fn (object $actividad, string $mensaje, string $dni, mixed $emisor): mixed
                 => app(AdviseTeacher::class)->advise($actividad, $mensaje, $dni, $emisor);

@@ -2,30 +2,35 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Poll\Vote;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
-use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\ModuloGrupoService;
+use Illuminate\Support\Carbon;
+use Intranet\Services\UI\AppAlert as Alert;
 
-
+/**
+ * Panell de llistat d'entregues de departament.
+ */
 class PanelListadoEntregasController extends BaseController
 {
     use Imprimir;
@@ -35,13 +40,25 @@ class PanelListadoEntregasController extends BaseController
     protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
 
+    /**
+     * Mostra el llistat d'entregues amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
+        return parent::index();
+    }
+
     public function search()
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         // Obtenim els mòduls rellevants
         $modulos = hazArray(
             Modulo_ciclo::whereIn(
                 'idModulo',
-                hazArray(Horario::distinct()->get(), 'modulo')
+                app(HorarioService::class)->distinctModulos()->filter()->values()->all()
             )->where(
                 'idDepartamento',
                 AuthUser()->departamento
@@ -91,6 +108,7 @@ class PanelListadoEntregasController extends BaseController
     
     public function hazInformeTrimestral(Request $request)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre, $request->proyectos);
 
         // cree reunio
@@ -138,7 +156,7 @@ class PanelListadoEntregasController extends BaseController
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
                         'tags' => TipoReunionService::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
-                        'created_at' => new Date($reunion->fecha),
+                        'created_at' => new Carbon($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
         });
@@ -147,6 +165,7 @@ class PanelListadoEntregasController extends BaseController
 
     public function modificaInformeTrimestral(Request $request)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
 
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre,$request->proyectos);
         $oR = OrdenReunion::where('idReunion', $request->reunion)
@@ -185,6 +204,7 @@ class PanelListadoEntregasController extends BaseController
     
     public function avisaTodos()
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
         {
             if ($modulo->seguimiento == 0) {
@@ -196,19 +216,27 @@ class PanelListadoEntregasController extends BaseController
     
     public function avisaFaltaEntrega($id)
     {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor) {
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
                 $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                         "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-                avisa($profesor['idProfesor'], $texto);
+                avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();
     }
     
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     protected function pdf($id)
     {
-        return response()->file(storage_path('app/' . Reunion::findOrFail($id)->fichero));
+        Gate::authorize('manageDepartmentReport', Reunion::class);
+        $reunion = $this->findModelOrFail(Reunion::class, $id, 'Reunió no trobada', ['reunion_id' => $id]);
+        return response()->file(storage_path('app/' . $reunion->fichero));
     }
     
     public static function existeInforme()
@@ -232,7 +260,7 @@ class PanelListadoEntregasController extends BaseController
                 ->get();
         $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
         $profesores = hazArray(
-            Profesor::where('departamento', $dep)->get(),
+            app(ProfesorService::class)->byDepartamento($dep),
             'dni',
             'dni'
         );

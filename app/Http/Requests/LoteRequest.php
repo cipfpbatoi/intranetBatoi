@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LoteRequest extends FormRequest
 {
@@ -23,8 +24,18 @@ class LoteRequest extends FormRequest
      */
     public function rules()
     {
+        $currentRegistre = $this->route('id') ?? $this->route('lote');
+
+        if (is_object($currentRegistre) && isset($currentRegistre->registre)) {
+            $currentRegistre = $currentRegistre->registre;
+        }
+
         return [
-            'registre' => 'required|alpha_dash|unique:lotes,registre',
+            'registre' => [
+                'required',
+                'alpha_dash',
+                Rule::unique('lotes', 'registre')->ignore($currentRegistre, 'registre'),
+            ],
         ];
     }
 }

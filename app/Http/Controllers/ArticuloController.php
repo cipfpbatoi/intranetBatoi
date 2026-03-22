@@ -3,12 +3,14 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Requests\ArticuloRequest;
 use Intranet\Entities\Articulo;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MaterialController
+ * Class ArticuloController
  * @package Intranet\Http\Controllers
  */
 class ArticuloController extends ModalController
@@ -30,26 +32,59 @@ class ArticuloController extends ModalController
 
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
     public function detalle($id)
     {
-        $article = Articulo::findOrFail($id);
+        try {
+            $article = Articulo::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
+        }
+        $this->authorize('view', $article);
         return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
     }
 
     public function store(ArticuloRequest $request)
     {
-        $newArt = new Articulo();
-        $newArt->fillAll($request);
+        $this->authorize('create', Articulo::class);
+        $this->persist($request);
         return $this->redirect();
     }
 
+    /**
+     * @param ArticuloRequest $request
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function update(ArticuloRequest $request, $id)
     {
-        Articulo::findOrFail($id)->fillAll($request);
+        try {
+            $this->authorize('update', Articulo::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
+        }
+        $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un article amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function destroy($id)
+    {
+        try {
+            $this->authorize('delete', Articulo::findOrFail((int) $id));
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Article no trobat', ['articulo_id' => $id], $e);
+        }
+        return parent::destroy($id);
     }
 
     protected function borrarFichero($fichero){

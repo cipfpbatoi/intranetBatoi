@@ -2,21 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Instructor\InstructorWorkflowService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
-use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
-use Intranet\Entities\Profesor;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Traits\Core\Imprimir;
-use Jenssegers\Date\Date;
-use Illuminate\Support\Collection;
-use Response;
-use Styde\Html\Facades\Alert;
+use Intranet\Presentation\Crud\InstructorCrudSchema;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
@@ -25,6 +24,7 @@ use Styde\Html\Facades\Alert;
  */
 class InstructorController extends IntranetController
 {
+    private ?InstructorWorkflowService $instructorWorkflowService = null;
 
     /**
      * @var string
@@ -41,13 +41,23 @@ class InstructorController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['dni', 'nombre','departamento','Nfcts','Xcentros','email','telefono'];
+    protected $gridFields = InstructorCrudSchema::GRID_FIELDS;
+    protected $formFields = InstructorCrudSchema::FORM_FIELDS;
     /**
      * @var bool
      */
     protected $modal = false;
     
     use Imprimir;
+
+    private function instructors(): InstructorWorkflowService
+    {
+        if ($this->instructorWorkflowService === null) {
+            $this->instructorWorkflowService = app(InstructorWorkflowService::class);
+        }
+
+        return $this->instructorWorkflowService;
+    }
 
     /**
      *
@@ -67,16 +77,7 @@ class InstructorController extends IntranetController
      */
     public function search()
     {
-        $instructores = [];
-       
-        foreach (Fct::misFcts()->get() as $fct) {
-            foreach ($fct->Colaboracion->Centro->Instructores??[] as $instructor) {
-                 
-                $instructores[] = $instructor->dni??'';
-            }
-        }
-         
-        return Instructor::whereIn('dni', $instructores)->get();
+        return $this->instructors()->searchForTutorFcts();
     }
 
     /**
@@ -85,7 +86,7 @@ class InstructorController extends IntranetController
      */
     public function show($id)
     {
-        $empresa = Instructor::find($id)->Centros->first()->idEmpresa;
+        $empresa = $this->instructors()->empresaIdFromInstructor($id);
         return redirect("empresa/$empresa/detalle");
     }
 
@@ -122,9 +123,21 @@ class InstructorController extends IntranetController
             parent::update($request, $id);
         } catch (\Illuminate\Database\QueryException $e) {
             if (($e->errorInfo[1] ?? null) === 1062) {
+                report($e);
+                Log::warning('Intent de dni duplicat en alta/actualització d\'instructor.', [
+                    'dni' => $request->dni,
+                    'centro_id' => $centro,
+                    'error' => $e->getMessage(),
+                ]);
                 Alert::danger("Ja existeix un instructor amb aquest DNI.");
                 return back()->withInput();
             }
+            report($e);
+            Log::error('Error de base de dades en actualitzar instructor.', [
+                'instructor_id' => $id,
+                'centro_id' => $centro,
+                'error' => $e->getMessage(),
+            ]);
             throw $e;
         }
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
@@ -135,10 +148,10 @@ class InstructorController extends IntranetController
         $colaboracion = Session::get('colaboracion')??null;
         if ($colaboracion) {
             Session::put('pestana', 4);
-            return redirect()->action('ColaboracionController@show', ['colaboracion'=> $colaboracion]);
+            return redirect()->route('colaboracion.show', ['colaboracion' => $colaboracion]);
         } else {
             Session::put('pestana', 2);
-            return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+            return redirect()->route('empresa.detalle', ['empresa' => $id]);
         }
     }
 
@@ -149,21 +162,13 @@ class InstructorController extends IntranetController
      */
     public function almacena(Request $request, $centro)
     {
-        DB::transaction(function () use ($request,$centro) {
-            $instructor = Instructor::find($request->dni);
-            if (!$instructor) {
-                if (!$request->dni) {
-                     $max = Instructor::where('dni', '>', 'EU0000000')->where('dni', '<', 'EU9999999')->max('dni');
-                     $max = (int) substr($max, 2) +1;
-                     $dni = 'EU'.str_pad($max, 7, '0', STR_PAD_LEFT);
-                     $request->merge(['dni' => $dni]);
-                }
-                parent::store($request);
-            }
-            $instructor = Instructor::find($request->dni);
-            $instructor->Centros()->syncWithoutDetaching($centro);
-        });
-        return $this->showEmpresa(Centro::find($centro)->idEmpresa);
+        $empresaId = $this->instructors()->upsertAndAttachToCentro(
+            $request,
+            $centro,
+            fn ($req) => parent::store($req)
+        );
+
+        return $this->showEmpresa($empresaId);
     }
 
     /**
@@ -173,27 +178,30 @@ class InstructorController extends IntranetController
      */
     public function delete($id, $centro)
     {
-        $instructor = Instructor::find($id);
-        $instructor->Centros()->detach($centro);
-        if ($instructor->Centros()->count() == 0) {
-            try {
-                parent::destroy($id);
-            } catch (\Exception $e) {
-            }
-        }
+        $empresaId = $this->instructors()->detachFromCentroAndDeleteIfOrphan(
+            $id,
+            $centro,
+            fn ($instructorId) => parent::destroy($instructorId)
+        );
 
-        return $this->showEmpresa(Centro::find($centro)->idEmpresa);
+        return $this->showEmpresa($empresaId);
     }
 
     /**
      * @param $id
      * @param $idCentro
+     * @throws NotFoundDomainException
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function copy($id, $idCentro)
     {
-        $instructor = Instructor::findOrFail($id);
-        $centro = Centro::findOrFail($idCentro);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
+        $centro = $this->findModelOrFail(Centro::class, $idCentro, 'Centre no trobat', ['centro_id' => $idCentro]);
         $posibles = hazArray($centro->Empresa->centros, 'id', ['nombre', 'direccion'], '-');
 
         return view('instructor.copy', compact('instructor', 'posibles', 'centro'));
@@ -207,26 +215,33 @@ class InstructorController extends IntranetController
      */
     public function toCopy(Request $request, $id, $idCentro)
     {
-        $instructor = Instructor::findOrFail($id);
-        $instructor->Centros()->attach($request->centro);
-        if ($request->accion == 'mou') {
-            $instructor->Centros()->detach($idCentro);
-        }
+        $empresaId = $this->instructors()->copyInstructorToCentro(
+            $id,
+            $idCentro,
+            $request->centro,
+            (string) $request->accion
+        );
 
-        return $this->showEmpresa(Centro::find($idCentro)->idEmpresa);
+        return $this->showEmpresa($empresaId);
     }
 
     /**
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
    public function pdf($id)
     {
-        $instructor = Instructor::findOrFail($id);
+        $instructor = $this->findModelOrFail(
+            Instructor::class,
+            $id,
+            'Instructor no trobat',
+            ['instructor_id' => $id]
+        );
 
         if ($instructor->surnames == '') {
             Alert::danger("Completa les dades de l'instructor");
-            return redirect("/instructor");
+            return redirect()->route('instructor.index');
         }
 
         // 🔒 Assegura Collection (mai null) i evita N+1 per a Colaboracion
@@ -234,14 +249,14 @@ class InstructorController extends IntranetController
 
         if ($fcts->isEmpty()) {
             Alert::danger("Aquest instructor no té cap FCT associada.");
-            return redirect("/instructor");
+            return redirect()->route('instructor.index');
         }
 
         // 🔒 Calcula la data posterior de forma segura
-        $fecha = $this->ultimaFecha($fcts) ?? new Date(); // fallback si totes tenen 'hasta' buit
+        $fecha = $this->instructors()->ultimaFecha($fcts) ?? new Carbon(); // fallback si totes tenen 'hasta' buit
 
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director   = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director   = cargo('director');
 
         $dades = [
             'date'         => FechaString($fecha, 'ca'),
@@ -265,32 +280,5 @@ class InstructorController extends IntranetController
 
         return $pdf->stream();
     }
-
-    /**
-     * Retorna la data més tardana de $fcts->hasta o null si no n'hi ha cap.
-     * Accepta Collection, array o null.
-     */
-    private function ultimaFecha($fcts): ?Date
-    {
-        $fcts = $fcts instanceof Collection ? $fcts : collect($fcts);
-
-        // Queda't només amb les FCT que tinguen 'hasta'
-        $conHasta = $fcts->filter(fn ($fct) => !empty($fct->hasta));
-
-        if ($conHasta->isEmpty()) {
-            return null;
-        }
-
-        // Inicialitza amb la primera 'hasta' vàlida
-        $primer = $conHasta->first();
-        $posterior = new Date($primer->hasta);
-
-        foreach ($conHasta as $fct) {
-            $posterior = FechaPosterior($fct->hasta, $posterior);
-        }
-
-        return $posterior;
-    }
-
 
 }

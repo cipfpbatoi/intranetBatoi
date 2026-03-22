@@ -2,15 +2,14 @@
 
 namespace Intranet\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Intranet\Entities\GrupoTrabajo;
 
+/**
+ * Event de grup creat.
+ */
 class GrupoCreated
 {
 
@@ -18,21 +17,17 @@ class GrupoCreated
         InteractsWithSockets,
         SerializesModels;
 
+    /**
+     * @var GrupoTrabajo
+     */
     public $grupo;
 
+    /**
+     * @param GrupoTrabajo $grupo
+     */
     public function __construct(GrupoTrabajo $grupo)
     {
         $this->grupo = $grupo;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
     }
 
 }

@@ -2,26 +2,75 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Poll\PollWorkflowService;
+use Intranet\Entities\Grupo;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Departamento;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Poll\Poll;
-use Intranet\Entities\Poll\Vote;
 use Intranet\Exports\PollResultsExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Response;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
-class   PollController extends IntranetController
+/**
+ * Controlador d'enquestes per a consultes i resultats.
+ */
+class PollController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
+    private ?PollWorkflowService $pollWorkflowService = null;
+
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','state'];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function polls(): PollWorkflowService
+    {
+        if ($this->pollWorkflowService === null) {
+            $this->pollWorkflowService = app(PollWorkflowService::class);
+        }
+
+        return $this->pollWorkflowService;
+    }
+
+    /**
+     * Retorna el curs (1 o 2) de l'usuari autenticat basant-se en el seu grup.
+     * Per a alumnes, el curs prové del seu grup assignat.
+     * Per a professors/tutors, prové del grup que tutoritzen.
+     * Retorna null si no es pot determinar el curs.
+     */
+    protected function getUserCurs(): ?int
+    {
+        $user = AuthUser();
+        if (isset($user->nia)) {
+            $grupo = $user->Grupo->first();
+            return $grupo ? (int) $grupo->curso : null;
+        }
+        $grupoCodi = $user->GrupoTutoria;
+        if ($grupoCodi) {
+            $grupo = Grupo::find($grupoCodi);
+            return $grupo ? (int) $grupo->curso : null;
+        }
+        return null;
+    }
 
     protected function iniBotones()
     {
@@ -38,22 +87,21 @@ class   PollController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('poll.show', ['img' =>'fa-eye']));
     }
 
-    private function userKey($poll):String
-    {
-        $key = $poll->keyUser;
-        if ($poll->anonymous) {
-            return hash('md5', AuthUser()->$key);
-        }
-        return AuthUser()->$key;
-    }
-
-
+    /**
+     * Prepara una enquesta per a l'usuari actual.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     protected function preparaEnquesta($id)
     {
-        $poll = Poll::find($id);
-        $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
+        $data = $this->polls()->prepareSurvey($id, AuthUser());
+        if (!$data) {
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
+        }
 
+        $poll = $data['poll'];
+        $quests = $data['quests'];
         if ($quests) {
             return view('poll.enquesta', compact('quests', 'poll'));
         }
@@ -63,200 +111,89 @@ class   PollController extends IntranetController
         return redirect('home');
     }
 
-    private function loadPreviousVotes($poll)
-    {
-        return hazArray(
-            Vote::where('user_id', '=', $this->userKey($poll))->where('idPoll', $poll->id)->get(),
-            'idOption1',
-            'idOption1'
-        );
-    }
-
+    /**
+     * Desa una enquesta contestada.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function guardaEnquesta(Request $request, $id)
     {
-        $poll = Poll::find($id);
-        $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
-
-        foreach ($poll->Plantilla->options as $question => $option) {
-            $i=0;
-            foreach ($quests??[] as $quest) {
-                if (isset($quest['option2'])) {
-                    foreach ($quest['option2']??[] as $profesores) {
-                        foreach ($profesores as $dni) {
-                            $i++;
-                            $field = 'option'.($question + 1).'_'.$i;
-                            $this->guardaVoto($poll, $option, $quest['option1']->id, $dni, $request->$field);
-                        }
-                    }
-                } else {
-
-                    $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
-                    $this->guardaVoto($poll, $option, $quest['option1']->id, null, $request->$field);
-                }
-            }
+        if (!$this->polls()->saveSurvey($request, $id, AuthUser())) {
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
+
         Alert::info('Enquesta emplenada amb exit');
         return redirect('home');
     }
 
-    private function guardaVoto($poll, $option, $option1, $option2, $value)
-    {
-        if ($value != '' && $value != '0') {
-            $vote = new Vote();
-            $vote->idPoll = $poll->id;
-            $vote->user_id = $poll->anonymous ? hash('md5', AuthUser()->id) : AuthUser()->id;
-            $vote->option_id = $option->id;
-            $vote->idOption1 = $option1;
-            $vote->idOption2 = $option2;
-            if ($option->scala == 0) {
-                $vote->text = $value;
-            } else {
-                $vote->value = voteValue($option2, $value);
-            }
-            $vote->save();
-        }
-    }
 
 
-
+    /**
+     * Mostra els vots de l'usuari per a una enquesta.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function lookAtMyVotes($id)
     {
-        $poll = Poll::find($id);
-        if (!$poll) {
-            Alert::danger("Enquesta no trobada");
+        $data = $this->polls()->myVotes($id);
+        if (!$data) {
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
+        }
+
+        if (!$data['myVotes']) {
+            Alert::info("L'enquesta no ha estat realitzada encara");
             return back();
         }
-        $modelo = $poll->modelo;
-        $myVotes = $modelo::loadVotes($id);
-        if ($myVotes) {
-            $myGroupsVotes = $modelo::loadGroupVotes($id);
-            $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
-            $options_text = $poll->Plantilla->options->where('scala', '=', 0);
-            $options = $poll->Plantilla->options;
-            return view(
-                'poll.show',
-                compact(
-                    'myVotes',
-                    'poll',
-                    'options_numeric',
-                    'options_text',
-                    'myGroupsVotes',
-                    'options'
-                )
-            );
-        }
-        Alert::info("L'enquesta no ha estat realitzada encara");
-        return back();
+
+        $poll = $data['poll'];
+        $myVotes = $data['myVotes'];
+        $myGroupsVotes = $data['myGroupsVotes'];
+        $options_numeric = $data['options_numeric'];
+        $options_text = $data['options_text'];
+        $options = $data['options'];
+
+        return view(
+            'poll.show',
+            compact(
+                'myVotes',
+                'poll',
+                'options_numeric',
+                'options_text',
+                'myGroupsVotes',
+                'options'
+            )
+        );
 
     }
 
 
 
+    /**
+     * Exporta els resultats d'una enquesta.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     */
     public function lookAtAllVotes($id)
     {
-        $poll = Poll::find($id);
-        $modelo = $poll->modelo;
-        $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
-        $allVotes = Vote::allNumericVotes($id)->get();
-        $option1 = $allVotes->GroupBy(['idOption1', 'option_id']);
-        $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
-        $this->initValues($votes, $options_numeric);
-        $votes['all'] = $allVotes->GroupBy('option_id');
-        $modelo::aggregate($votes, $option1, $option2);
-        $stats = [
-            'all' => [],
-            'grup' => [],
-            'cicle' => [],
-            'departament' => [],
-        ];
-        foreach ($votes['all'] as $optionId => $optionVote) {
-            $stats['all'][$optionId] = [
-                'avg' => round($optionVote->avg('value'), 1),
-                'count' => $optionVote->groupBy('user_id')->count(),
-            ];
+        $data = $this->polls()->allVotes($id, $this->grupos());
+        if (!$data) {
+            throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
-        foreach ($votes['grup'] as $nameGroup => $grupVotes) {
-            foreach ($grupVotes as $optionId => $optionVote) {
-                $stats['grup'][$nameGroup][$optionId] = [
-                    'avg' => round($optionVote->avg('value'), 1),
-                    'count' => $optionVote->groupBy('user_id')->count(),
-                ];
-            }
-        }
-        foreach ($votes['cicle'] as $nameGroup => $grupVotes) {
-            foreach ($grupVotes as $optionId => $optionVote) {
-                $stats['cicle'][$nameGroup][$optionId] = [
-                    'avg' => round($optionVote->avg('value'), 1),
-                    'count' => $optionVote->groupBy('user_id')->count(),
-                ];
-            }
-        }
-        foreach ($votes['departament'] as $nameGroup => $grupVotes) {
-            foreach ($grupVotes as $optionId => $optionVote) {
-                $stats['departament'][$nameGroup][$optionId] = [
-                    'avg' => round($optionVote->avg('value'), 1),
-                    'count' => $optionVote->groupBy('user_id')->count(),
-                ];
-            }
-        }
-        $hasVotes = [
-            'grup' => [],
-            'cicle' => [],
-            'departament' => [],
-        ];
-        foreach ($stats['grup'] as $nameGroup => $grupStats) {
-            $hasVotes['grup'][$nameGroup] = false;
-            foreach ($grupStats as $stat) {
-                if ($stat['count'] > 0) {
-                    $hasVotes['grup'][$nameGroup] = true;
-                    break;
-                }
-            }
-        }
-        foreach ($stats['cicle'] as $nameGroup => $grupStats) {
-            $hasVotes['cicle'][$nameGroup] = false;
-            foreach ($grupStats as $stat) {
-                if ($stat['count'] > 0) {
-                    $hasVotes['cicle'][$nameGroup] = true;
-                    break;
-                }
-            }
-        }
-        foreach ($stats['departament'] as $nameGroup => $grupStats) {
-            $hasVotes['departament'][$nameGroup] = false;
-            foreach ($grupStats as $stat) {
-                if ($stat['count'] > 0) {
-                    $hasVotes['departament'][$nameGroup] = true;
-                    break;
-                }
-            }
-        }
+
+        $poll = $data['poll'];
+        $votes = $data['votes'];
+        $options_numeric = $data['options_numeric'];
+        $hasVotes = $data['hasVotes'];
+        $stats = $data['stats'];
 
         return Excel::download(
             new PollResultsExport($poll, $votes, $options_numeric, $hasVotes, $stats),
             'resultats_enquesta.xlsx'
         );
         //return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));
-    }
-
-
-
-    private function initValues(&$votes, $options)
-    {
-        $grupos = Grupo::all();
-        $ciclos = Ciclo::all();
-        $departamentos = Departamento::all();
-        foreach ($options as $value) {
-            foreach ($grupos as $grupo) {
-                $votes['grup'][$grupo->codigo][$value->id] = collect();
-            }
-            foreach ($ciclos as $ciclo) {
-                $votes['cicle'][$ciclo->id][$value->id] = collect();
-            }
-            foreach ($departamentos as $departamento) {
-                $votes['departament'][$departamento->id][$value->id] = collect();
-            }
-        }
     }
 }

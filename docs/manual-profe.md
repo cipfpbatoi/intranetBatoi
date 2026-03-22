@@ -133,6 +133,7 @@ Ací és on podem trobar documents generals del centre com:
 * Justificants d'assistència per a l'alumnat o per als pares
 * Calendari escolar
 * Plànols del centre
+* [Esquema de la BBDD (HTML)](./bbdd-esquema.html)
 * ...
 
 Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professorat, Tutor/a, Cap de departament, …). A cada usuari només l'apareixeran les pestanyes referents al seu rol.

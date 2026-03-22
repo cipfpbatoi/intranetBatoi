@@ -121,6 +121,7 @@ La resta de documentación del Centre la trobem dins del [menú Documentació](.
 - [Informació de Centre](./manual-profe.html#informaci%C3%B3-de-centre): ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pla d’atenció sanitària, el Pla d’Emergències, el Reglament de Règim Intern (RRI), la PGA o els resums dels Consells Socials del Centre.
 - [Actes](./manual-profe.html#actes): ací estan les actes de la COCOPE, de les resunions de departament o del Claustre
 - [Projectes](./manual-profe.html#projectes): ací estan els projectes de fi de cicle presentats pels alumnes de les anteriors promocions
+- [Esquema de la BBDD](./bbdd-esquema.html): diagrama i relacions de la base de dades en format web
 
 ## Com fer el Seguiment de la programació
 Al final de cada avaluació hem de fer el seguiment de la programació en cadascun dels grups en que impartim classe. Haurem d'indicar el total d'alumnes matriculats, avaluats i aprovats  així com les unitats programades i impartides. També podem incloure comentaris.

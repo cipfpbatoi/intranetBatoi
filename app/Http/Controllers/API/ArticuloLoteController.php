@@ -3,13 +3,13 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Articulo;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\InventariableResource;
 
-class ArticuloLoteController extends ApiBaseController
+class ArticuloLoteController extends ApiResourceController
 {
 
     protected $model = 'ArticuloLote';
@@ -32,6 +32,12 @@ class ArticuloLoteController extends ApiBaseController
             $articuloLote->save();
             return $this->sendResponse(['created' => true], 'OK');
         } catch (Exception $e) {
+            report($e);
+            Log::error('Error creant un lot de material.', [
+                'lote_id' => $request->lote_id,
+                'articulo_id' => $request->articulo_id,
+                'error' => $e->getMessage(),
+            ]);
             return $this->sendError($e->getMessage());
         }
     }

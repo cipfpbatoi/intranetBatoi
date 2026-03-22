@@ -3,6 +3,7 @@
 namespace Intranet\Services\School;
 
 use Illuminate\Support\Facades\DB;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadProfesor;
 
@@ -16,6 +17,31 @@ use Intranet\Entities\ActividadProfesor;
  */
 class ActividadParticipantsService
 {
+    /**
+     * Assigna coordinador i grup per defecte en crear l'activitat.
+     *
+     * @param Actividad $actividad
+     * @param string|null $dni
+     * @return void
+     */
+    public function assignInitialParticipants(Actividad $actividad, ?string $dni = null): void
+    {
+        $dni = $dni ?? (authUser()?->dni);
+
+        if (!$dni) {
+            return;
+        }
+
+        $actividad->profesores()->syncWithoutDetaching([
+            $dni => ['coordinador' => 1],
+        ]);
+
+        $grupo = app(GrupoService::class)->largestByTutor((string) $dni);
+        if ($grupo) {
+            $actividad->grupos()->syncWithoutDetaching([$grupo->codigo]);
+        }
+    }
+
     /**
      * Afig un grup sense desassignar els existents.
      *

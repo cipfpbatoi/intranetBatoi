@@ -13,4 +13,8 @@ També hi ha una pàgina de [preguntes freqüents](./faqs.md) on podem trobar co
 
 ## Instal·lació i configuració
 En [aquest document](setup.md) es mostra com crear l'entorn de treball i com instal·lar i configurar l'aplicació.
+Per al desplegament amb contenidors de preproducció o producció, consulta també la [guia Docker de producció](docker-prod.md).
 
+## Documentació tècnica
+* [Esquema de la BBDD (Markdown)](bbdd-esquema.md)
+* [Esquema de la BBDD (HTML)](bbdd-esquema.html)

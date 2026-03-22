@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Expediente;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 
-class ExpedienteController extends ApiBaseController
+class ExpedienteController extends ApiResourceController
 {
 
     protected $model = 'Expediente';

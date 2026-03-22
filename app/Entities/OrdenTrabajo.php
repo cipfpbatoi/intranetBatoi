@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class OrdenTrabajo extends Model
 {
@@ -54,7 +54,7 @@ class OrdenTrabajo extends Model
     }
     public function getCreatedAtAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y H:i');
     }
     public function getXestadoAttribute()

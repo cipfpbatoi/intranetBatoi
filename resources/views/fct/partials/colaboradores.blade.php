@@ -1,6 +1,6 @@
     @php $horas = false;   @endphp
 
-    <form action='/fct/{!!$fct->id!!}/modificaHoras' method='post'>
+    <form action="{{ route('fct.modificarHoras', ['id' => $fct->id]) }}" method='post'>
         @csrf
         <ul class="messages fct">
             @foreach ($fct->Colaboradores->sortBy('surnames') as $instructor)
@@ -19,7 +19,7 @@
                     </div>
                     <div class="message_wrapper">
                         <h4 class="text-info">
-                            <a href='/fct/{!!$fct->id!!}/{!!$instructor->idInstructor!!}/instructorDelete'>
+                            <a href="{{ route('fct.instructor.delete', ['id' => $fct->id, 'dni' => $instructor->idInstructor]) }}">
                                 <em class="fa fa-trash"></em>
                             </a>
                             <em class="fa fa-user user-profile-icon"></em> {{$instructor->name}}
@@ -36,7 +36,11 @@
                            value="@lang('messages.generic.modificar') @lang('validation.attributes.horas')"/>
                 </div>
             @endif
-             <button type="button" class="btn btn-link" data-toggle="modal" data-target="#AddInstructor">
+             <button
+                 type="button"
+                 class="btn btn-link"
+                 onclick="if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') { window.intranetUiHelpers.showModal('AddInstructor'); } else if (window.bootstrap && window.bootstrap.Modal) { window.bootstrap.Modal.getOrCreateInstance(document.getElementById('AddInstructor')).show(); } return false;"
+             >
                  <em class="fa fa-plus"></em>@lang("messages.generic.anadir") @lang("models.modelos.Colaborador")
              </button>
         @endif
@@ -44,7 +48,4 @@
 
 @include('fct.partials.modalColaboradores')
 <x-ui.errors />
-
-
-
 

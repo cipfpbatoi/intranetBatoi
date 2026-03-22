@@ -1,0 +1,51 @@
+{
+  // ===============================
+  // EXCLUSIONES GENERALES
+  // ===============================
+  "files.watcherExclude": {
+    "**/vendor/**": true,
+    "**/node_modules/**": true,
+    "**/storage/**": true,
+    "**/bootstrap/cache/**": true,
+    "**/.git/**": true,
+    "**/public/storage/**": true
+  },
+
+  "files.exclude": {
+    "**/vendor": true,
+    "**/node_modules": true,
+    "**/storage": true
+  },
+
+  "search.exclude": {
+    "**/vendor/**": true,
+    "**/node_modules/**": true,
+    "**/storage/**": true,
+    "**/bootstrap/cache/**": true
+  },
+
+  // ===============================
+  // INTELEPHENSE (PHP)
+  // ===============================
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/.svn/**",
+    "**/.hg/**",
+    "**/CVS/**",
+    "**/vendor/**",
+    "**/node_modules/**",
+    "**/storage/**",
+    "**/bootstrap/cache/**"
+  ],
+
+  "intelephense.environment.phpVersion": "8.2.0",
+
+  // Si sigue consumiendo demasiada RAM, descomenta esta línea:
+  // "intelephense.diagnostics.enable": false,
+
+  // ===============================
+  // OPTIMIZACIÓN EXTRA
+  // ===============================
+  "editor.semanticHighlighting.enabled": false,
+  "search.followSymlinks": false
+}

@@ -1,3 +1,4 @@
+{{-- @deprecated Vista legacy de DUAL/FCTDUAL. Mantinguda temporalment per compatibilitat. --}}
 <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
  <div class="x_content">
     <table id='dataFct' class="table table-striped" data-page-length="25">
@@ -5,10 +6,10 @@
         <tr>
             @foreach ($panel->getRejilla() as $item)
             <th>
-                @if (strpos(trans("validation.attributes.$item"),'alidation.'))
+                @if (strpos(__("validation.attributes.$item"),'alidation.'))
                 {{ucwords($item)}}
                 @else
-                {{trans("validation.attributes.$item")}}
+                {{__("validation.attributes.$item")}}
                 @endif
             </th>
             @endforeach
@@ -21,10 +22,10 @@
         <tr>
             @foreach ($panel->getRejilla() as $item)
             <th>
-                @if (strpos(trans("validation.attributes.$item"),'alidation.'))
+                @if (strpos(__("validation.attributes.$item"),'alidation.'))
                 {{ucwords($item)}}
                 @else
-                {{trans("validation.attributes.$item")}}
+                {{__("validation.attributes.$item")}}
                 @endif
             </th>
             @endforeach

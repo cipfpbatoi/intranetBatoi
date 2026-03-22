@@ -3,13 +3,14 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Http\Request;
 use Intranet\Mail\MatriculaAlumne;
 
-class AlumnoReunionController extends ApiBaseController
+class AlumnoReunionController extends ApiResourceController
 {
 
     const NOPROMOCIONA = 3;
@@ -80,6 +81,12 @@ class AlumnoReunionController extends ApiBaseController
                         $aR, config('variables.fitxerMatricula'), $request->convocatoria));
                 return $this->sendResponse('OK', 'Email enviat');
             } catch (\Exception $e) {
+                report($e);
+                Log::error('Error enviant email de matrícula d\'alumne.', [
+                    'dni' => $request->dni,
+                    'id_reunio' => $aR->id,
+                    'error' => $e->getMessage(),
+                ]);
                 return $this->sendError('Error enviant email');
             }
         }

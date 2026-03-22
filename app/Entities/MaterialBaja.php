@@ -33,7 +33,7 @@ class MaterialBaja extends Model
 
     public function getDescripcionAttribute()
     {
-        return $this->Material->descripcion;
+        return $this->Material?->descripcion ?? '';
     }
 
     public function getSolicitanteAttribute()
@@ -43,16 +43,19 @@ class MaterialBaja extends Model
 
     public function getEspacioAttribute()
     {
-        return $this->Material->espacio;
+        return $this->Material?->espacio ?? '';
     }
 
     public function getFechaBajaAttribute()
     {
-        if ($this->Material->fechabaja < $this->created_at) {
-            return $this->Material->fechabaja;
-        } else {
-            return $this->created_at?$this->created_at->format('d/m/Y'):'No date';
+        $fechaBaja = $this->Material?->fechabaja;
+        $createdAt = $this->created_at;
+
+        if ($fechaBaja && $createdAt && $fechaBaja < $createdAt) {
+            return $fechaBaja;
         }
+
+        return $createdAt ? $createdAt->format('d/m/Y') : 'No date';
     }
 
     public function getStateAttribute()

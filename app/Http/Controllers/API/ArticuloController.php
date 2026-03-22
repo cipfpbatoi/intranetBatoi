@@ -7,10 +7,9 @@ use Intranet\Entities\Articulo;
 use Intranet\Entities\Lote;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
-class ArticuloController extends ApiBaseController
+class ArticuloController extends ApiResourceController
 {
 
     protected $model = 'Articulo';

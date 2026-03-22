@@ -25,7 +25,7 @@
         @lang("messages.buttons.cancel")
     </a>
 
-    {!! Form::submit(trans('messages.buttons.submit'), ['class' => 'btn btn-success', 'id' => 'submit']) !!}
+    {!! Form::submit(__('messages.buttons.submit'), ['class' => 'btn btn-success', 'id' => 'submit']) !!}
     {!! Form::close() !!}
 </div>
 

@@ -2,12 +2,10 @@
 
 namespace Tests\Unit\Services;
 
-use Intranet\Entities\Falta_itaca;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\School\ItacaService;
 use Mockery;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
 class ItacaServiceTest extends TestCase
@@ -26,25 +24,6 @@ class ItacaServiceTest extends TestCase
         $this->expectException(IntranetException::class);
 
         new ItacaService('00000000A', 'pass', $selenium, true);
-    }
-
-    public function test_process_falta_retorna_false_quan_hi_ha_excepcio()
-    {
-        $selenium = Mockery::mock('Intranet\\Services\\Automation\\SeleniumService');
-        $selenium->shouldReceive('getDriver')->andReturn(Mockery::mock(RemoteWebDriver::class));
-        $selenium->shouldReceive('fill')->andThrow(new \Exception('boom'));
-
-        Alert::shouldReceive('danger')->once();
-
-        $service = new ItacaService('00000000A', 'pass', $selenium, false);
-
-        $falta = new Falta_itaca();
-        $falta->idProfesor = '11111111A';
-        $falta->dia = '2025-03-01';
-        $falta->sesion_orden = 1;
-        $falta->setRelation('Profesor', (object) ['shortName' => 'Profe Prova']);
-
-        $this->assertFalse($service->processFalta($falta));
     }
 
     public function test_close_crida_quit()

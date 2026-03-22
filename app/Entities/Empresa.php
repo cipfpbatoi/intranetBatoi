@@ -3,7 +3,8 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Intranet\Application\Grupo\GrupoService;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
 
@@ -59,7 +60,10 @@ class Empresa extends Model
     
     public function scopeCiclo($query, $tutor)
     {
-        $ciclo = Grupo::QTutor($tutor)->first()->idCiclo;
+        $ciclo = app(GrupoService::class)->firstByTutor((string) $tutor)?->idCiclo;
+        if (!$ciclo) {
+            return $query->whereRaw('1 = 0');
+        }
         $centros = Colaboracion::select('idCentro')->Ciclo($ciclo)->get()->toArray();
         $empreses = Centro::select('idEmpresa')->distinct()->whereIn('id', $centros)->get()->toArray();
         return $query->whereIn('id', $empreses);
@@ -67,7 +71,7 @@ class Empresa extends Model
 
     public function scopeMenor($query, $fecha = null)
     {
-        $hoy = $fecha ? new Date($fecha) : new Date();
+        $hoy = $fecha ? new Carbon($fecha) : new Carbon();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
@@ -75,25 +79,24 @@ class Empresa extends Model
 
     public function getConveniNouAttribute()
     {
-        $file = storage_path('app/' . $this->fichero);
-        if (!$this->fichero || !file_exists($file)) {
+        $mtime = $this->convenioFileMtime();
+        if ($mtime === null) {
             return false;
-        } else {
-            return  date("Y-m-d", filemtime($file)) > "2023-08-31";
         }
+
+        return date("Y-m-d", $mtime) > "2023-08-31";
     }
 
     public function getConveniRenovatAttribute()
     {
-        if (!$this->fichero) {
+        $mtime = $this->convenioFileMtime();
+        if ($mtime === null) {
             return false;
         }
-        $file = storage_path('app/' . $this->fichero);
+        $date_file = date("Y-m-d", $mtime);
 
-        $date_file = date("Y-m-d", filemtime($file));
-
-        $date1 = new Date($date_file);
-        $date2 = new Date();
+        $date1 = new Carbon($date_file);
+        $date2 = new Carbon();
 
         $diferencia = $date2->diff($date1);
         return $diferencia->days < 120;
@@ -102,12 +105,16 @@ class Empresa extends Model
 
     public function getRenovatConveniAttribute()
     {
-        $file = storage_path('app/' . $this->fichero);
-        $date_intranet = date("Y-m-d", filemtime($file));
+        $mtime = $this->convenioFileMtime();
+        if ($mtime === null || !$this->data_signatura) {
+            return false;
+        }
+
+        $date_intranet = date("Y-m-d", $mtime);
         $date_sao = $this->data_signatura;
 
-        $date1 = new Date($date_intranet);
-        $date2 = new Date($date_sao);
+        $date1 = new Carbon($date_intranet);
+        $date2 = new Carbon($date_sao);
 
         $diferencia = $date1->diff($date2);
         return $diferencia->days > 90;
@@ -115,11 +122,11 @@ class Empresa extends Model
     }
     public function getConveniCaducatAttribute()
     {
-        $file = storage_path('app/' . $this->fichero);
-        if (!$this->fichero || !file_exists($file)) {
+        $mtime = $this->convenioFileMtime();
+        if ($mtime === null) {
             return true;
         }
-        return  date("Y-m-d", filemtime($file)) < "2024-01-01";
+        return date("Y-m-d", $mtime) < "2024-01-01";
      }
 
     public function getDataSignaturaAttribute($entrada)
@@ -127,7 +134,7 @@ class Empresa extends Model
         if (!$entrada) {
             return '';
         }
-        $fecha = new Date($entrada);
+        $fecha = new Carbon($entrada);
         return $fecha->format('d-m-Y');
     }
 
@@ -140,6 +147,22 @@ class Empresa extends Model
             }
         }
         return $cicles;
+    }
+
+    private function convenioFileMtime(): ?int
+    {
+        if (!$this->fichero) {
+            return null;
+        }
+
+        $file = storage_path('app/' . $this->fichero);
+        if (!is_file($file)) {
+            return null;
+        }
+
+        $mtime = @filemtime($file);
+
+        return $mtime === false ? null : $mtime;
     }
 
 }

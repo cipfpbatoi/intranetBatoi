@@ -2,7 +2,7 @@
 <ul class="nav navbar-right panel_toolbox">
     <li><a href="{{\Intranet\Services\UI\NavigationService::getPreviousUrl()}}?back=true"><i class='fa fa-reply'></i></a></li>
     <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i
                     class="fa fa-wrench"></i></a>
         <ul class="dropdown-menu" role="menu">
             <li><a href="{{ url('lang', ['ca']) }}">Valencià</a>
@@ -21,4 +21,3 @@
     @endif
 </ul>
 <div class="clearfix"></div>
-

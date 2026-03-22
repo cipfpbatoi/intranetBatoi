@@ -4,11 +4,14 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\Notifications\AdviseService;
-use Jenssegers\Date\Date;
-use Intranet\Events\PreventAction;
+use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use function authUser;
 
+/**
+ * Model d'incidencies.
+ */
 class Incidencia extends Model
 {
 
@@ -37,13 +40,11 @@ class Incidencia extends Model
 
     use \Intranet\Entities\Concerns\BatoiModels;
 
-    protected $inputTypes = [
-        'fecha' => ['type' => 'date'],
-        'imagen' => ['type' => 'file'],
-    ];
+    protected $inputTypes = IncidenciaCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'saving' => PreventAction::class,
         'deleted' => ActivityReport::class,
         'created' => ActivityReport::class,
     ];
@@ -100,7 +101,11 @@ class Incidencia extends Model
 
     public function getFechasolucionAttribute($salida)
     {
-        $fecha = new Date($salida);
+        if (empty($salida)) {
+            return '';
+        }
+
+        $fecha = new Carbon($salida);
         return $fecha->format('d-m-Y');
     }
 
@@ -112,7 +117,7 @@ class Incidencia extends Model
 
     public function getXcreadorAttribute()
     {
-        return $this->Creador->ShortName;
+        return $this->Creador->ShortName ?? '';
     }
 
     public function getXespacioAttribute()
@@ -127,7 +132,7 @@ class Incidencia extends Model
 
     public function getXtipoAttribute()
     {
-        return $this->Tipos->literal;
+        return $this->Tipos->literal ?? '';
     }
 
     public function getDesCurtaAttribute()
@@ -154,7 +159,12 @@ class Incidencia extends Model
 
     public function getSubTipoAttribute()
     {
-        return config('auxiliares.tipoIncidencia')[$this->Tipos->tipus];
+        $tipus = $this->Tipos->tipus ?? null;
+        if ($tipus === null) {
+            return '';
+        }
+
+        return config('auxiliares.tipoIncidencia')[$tipus] ?? '';
     }
 
 }

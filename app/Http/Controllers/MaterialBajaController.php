@@ -12,9 +12,10 @@ use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\MaterialBaja;
 use Intranet\Entities\TipoIncidencia;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MaterialController
+ * Class MaterialBajaController
  * @package Intranet\Http\Controllers
  */
 class MaterialBajaController extends ModalController
@@ -33,8 +34,6 @@ class MaterialBajaController extends ModalController
     /**
      * @var array
      */
-
-
 
     public function search()
     {
@@ -74,19 +73,51 @@ class MaterialBajaController extends ModalController
         );
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function delete($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
-        $material = Material::findOrFail($registro->idMaterial);
+        $registro = $this->findModelOrFail(
+            MaterialBaja::class,
+            $id,
+            'Registre de baixa no trobat',
+            ['material_baja_id' => $id]
+        );
+        $this->authorize('delete', $registro);
+        $material = $this->findModelOrFail(
+            Material::class,
+            $registro->idMaterial,
+            'Material no trobat',
+            ['material_id' => $registro->idMaterial]
+        );
         $material->delete();
         $registro->delete();
         return redirect()->back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function active($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
-        $material = Material::findOrFail($registro->idMaterial);
+        $registro = $this->findModelOrFail(
+            MaterialBaja::class,
+            $id,
+            'Registre de baixa no trobat',
+            ['material_baja_id' => $id]
+        );
+        $this->authorize('update', $registro);
+        $material = $this->findModelOrFail(
+            Material::class,
+            $registro->idMaterial,
+            'Material no trobat',
+            ['material_id' => $registro->idMaterial]
+        );
         $material->estado = 3;
         $material->save();
         $registro->estado = 1;
@@ -94,10 +125,26 @@ class MaterialBajaController extends ModalController
         return redirect()->back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function recover($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
-        $material = Material::findOrFail($registro->idMaterial);
+        $registro = $this->findModelOrFail(
+            MaterialBaja::class,
+            $id,
+            'Registre de baixa no trobat',
+            ['material_baja_id' => $id]
+        );
+        $this->authorize('recover', $registro);
+        $material = $this->findModelOrFail(
+            Material::class,
+            $registro->idMaterial,
+            'Material no trobat',
+            ['material_id' => $registro->idMaterial]
+        );
         $material->fechaBaja = null;
         $material->estado = 1;
         $material->save();

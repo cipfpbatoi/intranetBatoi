@@ -3,10 +3,12 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use InfyOm\Generator\Utils\ResponseUtil;
-use Response;
-use Exception;
 use Intranet\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class ApiResourceController extends Controller
 {
@@ -44,12 +46,20 @@ class ApiResourceController extends Controller
     {
         try {
             $class = $this->resolveClass();
-            $created = $class::create($request->all());
+            $payload = $this->validatedPayloadForStore($request);
+            $created = $class::create($payload);
 
             // Mantinc el teu format tradicional
             return $this->sendResponse(['created' => true, 'id' => $created->id], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -60,15 +70,23 @@ class ApiResourceController extends Controller
             $registro = $class::find($id);
 
             if (!$registro) {
-                return $this->sendError("Not found: {$class} #{$id}");
+                return $this->sendNotFound("Not found: {$class} #{$id}");
             }
 
-            $registro->update($request->all());
+            $payload = $this->validatedPayloadForUpdate($request);
+            $registro->update($payload);
             $registro->save();
 
             return $this->sendResponse(['updated' => true], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -78,7 +96,7 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
         return $this->hasResource()
@@ -92,10 +110,77 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
-        return $this->sendResponse($item);
+        return $this->sendResponse($this->buildEditPayload($item));
+    }
+
+    /**
+     * Construeix el payload d'edició en format canònic per al modal.
+     *
+     * Prioritza els camps definits en `inputTypes` del model per evitar
+     * accessors de presentació (`d-m-Y`, etc.) en respostes d'API `edit`.
+     *
+     * @param mixed $item
+     * @return array<string, mixed>
+     */
+    protected function buildEditPayload($item): array
+    {
+        $payload = [];
+        $rawAttributes = method_exists($item, 'getAttributes') ? $item->getAttributes() : [];
+        $inputTypes = method_exists($item, 'getInputTypes') ? $item->getInputTypes() : [];
+        $fillable = method_exists($item, 'getFillable') ? $item->getFillable() : [];
+        $primaryKey = method_exists($item, 'getKeyName') ? $item->getKeyName() : 'id';
+
+        if (method_exists($item, 'getKey')) {
+            $payload[$primaryKey] = $item->getKey();
+        }
+
+        $keys = !empty($fillable)
+            ? $fillable
+            : array_keys($rawAttributes);
+
+        if (!empty($inputTypes)) {
+            $keys = array_values(array_unique(array_merge($keys, array_keys($inputTypes))));
+        }
+
+        foreach ($keys as $key) {
+            if ($key === $primaryKey && array_key_exists($primaryKey, $payload)) {
+                continue;
+            }
+
+            $value = array_key_exists($key, $rawAttributes)
+                ? $rawAttributes[$key]
+                : $item->{$key};
+
+            $type = $inputTypes[$key]['type'] ?? null;
+            $payload[$key] = $this->normalizeEditValue($value, $type);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Dona format estable als valors de dates/hores per a formularis de modal.
+     *
+     * @param mixed $value
+     * @param string|null $type
+     * @return mixed
+     */
+    protected function normalizeEditValue($value, ?string $type = null)
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        return match ($type) {
+            'date' => Carbon::parse((string) $value)->format('Y-m-d'),
+            'datetime' => Carbon::parse((string) $value)->format('Y-m-d H:i'),
+            'time' => Carbon::parse((string) $value)->format('H:i'),
+            'checkbox' => (int) (bool) $value,
+            default => $value,
+        };
     }
    
     
@@ -129,15 +214,153 @@ class ApiResourceController extends Controller
         return $this->resource && class_exists($this->resource);
     }
 
- 
-    protected function sendResponse($result)
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForStore(Request $request): array
     {
-        return response()->json(['success'=>true,'data'=>$result]);
+        $rules = $this->storeRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
     }
 
-    protected function sendError($error, $code = 404)
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForUpdate(Request $request): array
     {
-        return response()->json(['success'=>false,'message'=>$error]);
+        $rules = $this->updateRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en create.
+     *
+     * @return array<string, mixed>
+     */
+    protected function storeRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en update.
+     *
+     * @return array<string, mixed>
+     */
+    protected function updateRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Permet limitar camps mutables per endpoint sense tocar el model.
+     * Retorna null per mantindre compatibilitat total.
+     *
+     * @return array<int, string>|null
+     */
+    protected function mutableFields(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function filterMutationPayload(Request $request): array
+    {
+        $fields = $this->mutableFields();
+        if ($fields === null) {
+            return $request->all();
+        }
+
+        return $request->only($fields);
+    }
+
+ 
+    protected function sendResponse($result, $message = null)
+    {
+        return $this->jsonUtf8Response(['success' => true, 'data' => $result]);
+    }
+
+    protected function sendError($error, $code = 400)
+    {
+        return $this->jsonUtf8Response([
+            'success' => false,
+            'message' => is_string($error) ? $error : 'Request error',
+        ], $code);
+    }
+
+    protected function sendNotFound(string $error = 'Not found')
+    {
+        return $this->sendError($error, 404);
+    }
+
+    protected function sendFail($error, $code = 400)
+    {
+        if (is_array($error)) {
+            $success = (bool) ($error['success'] ?? false);
+            $message = (string) ($error['message'] ?? 'Request error');
+            $payload = ['success' => $success, 'message' => $message];
+            if (array_key_exists('errors', $error)) {
+                $payload['errors'] = $error['errors'];
+            }
+
+            return $this->jsonUtf8Response($payload, $code);
+        }
+
+        return $this->sendError((string) $error, $code);
+    }
+
+    public function ApiUser(Request $request)
+    {
+        return $request->user('sanctum') ?? $request->user('api');
+    }
+
+    /**
+     * Marca resposta d'endpoint legacy per facilitar deprecació controlada.
+     */
+    protected function markLegacyUsage(
+        JsonResponse $response,
+        string $legacyContract,
+        ?string $replacementHint = null
+    ): JsonResponse {
+        $response->headers->set('Deprecation', 'true');
+        $response->headers->set('Sunset', 'Wed, 31 Dec 2026 23:59:59 GMT');
+        if ($replacementHint !== null && $replacementHint !== '') {
+            $response->headers->set('X-API-Replacement', $replacementHint);
+        }
+
+        Log::info('API legacy contract consumed', [
+            'contract' => $legacyContract,
+            'path' => request()->path(),
+            'query' => request()->query(),
+            'user' => auth()->guard('api')->id(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * Retorna JSON tolerant amb bytes invàlids i charset explícit UTF-8.
+     */
+    protected function jsonUtf8Response(array $payload, int $status = 200): JsonResponse
+    {
+        return response()->json(
+            $payload,
+            $status,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+        );
     }
 
 }

@@ -3,23 +3,29 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Exceptions\NotFoundDomainException;
 use DB;
 
-class CentroController extends ApiBaseController
+/**
+ * Controlador API per a operacions amb centres.
+ */
+class CentroController extends ApiResourceController
 {
 
     protected $model = 'Centro';
 
+    /**
+     * @param Request $request
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fusionar(Request $request)
     {
-
         if (isset($request->fusion) && count($request->fusion) > 1) {
             DB::transaction(function () use ($request) {
-                $centroQ = Centro::findOrFail($request->fusion[0]);
+                $centroQ = $this->findModelOrFail(Centro::class, $request->fusion[0], 'Centre no trobat', ['centro_id' => $request->fusion[0]]);
                 foreach ($request->fusion as $codiCentre) {
                     if ($codiCentre != $centroQ->id) {
                         $this->fusion($codiCentre, $centroQ);
@@ -56,11 +62,12 @@ class CentroController extends ApiBaseController
     /**
      * @param $codiCentre
      * @param $centroQ
+     * @throws NotFoundDomainException
      * @return mixed
      */
     private function fusionCenter($codiCentre, &$centroQ)
     {
-        $centro = Centro::findOrFail($codiCentre);
+        $centro = $this->findModelOrFail(Centro::class, $codiCentre, 'Centre no trobat', ['centro_id' => $codiCentre]);
         if ($centroQ->nombre == '') {
             $centroQ->nombre = $centro->nombre;
         }

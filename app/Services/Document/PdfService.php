@@ -6,7 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use Intranet\Services\Document\ZipService;
 use Illuminate\Support\Facades\Log;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use function config;
 use function env;
 use function fechaString;

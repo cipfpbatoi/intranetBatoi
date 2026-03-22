@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 
 class IncidenciaRequest extends FormRequest
 {
@@ -32,15 +33,6 @@ class IncidenciaRequest extends FormRequest
             }
         }
 
-        return [
-                'descripcion' => 'required',
-                'tipo' => 'required',
-                'idProfesor' => 'required',
-                'prioridad' => 'required',
-                'observaciones' => 'max:255',
-                'solucion' => 'max:255',
-                'fecha' => 'date',
-                'imagen' => $imagenRule,
-            ];
+        return IncidenciaCrudSchema::requestRules($imagenRule);
     }
 }

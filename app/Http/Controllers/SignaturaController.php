@@ -2,18 +2,21 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\SignaturaStoreRequest;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Mail\MyMail;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\AttachedFileService;
+use Intranet\Services\UI\AppAlert as Alert;
 
 
 
@@ -23,6 +26,8 @@ use Intranet\Services\Document\AttachedFileService;
  */
 class SignaturaController extends ModalController
 {
+    private ?AlumnoFctService $alumnoFctService = null;
+
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     /**
      * @var array
@@ -39,17 +44,27 @@ class SignaturaController extends ModalController
         'file' => ['type' => 'file'],
     ];
 
-    public function store(Request $request )
+    public function __construct(?AlumnoFctService $alumnoFctService = null)
     {
-        $request->validate([
-            'tipus' => 'required',
-            'fct' => 'required',
-            'file' => 'required|file|mimes:pdf|max:2048',
-        ]);
+        parent::__construct();
+        $this->alumnoFctService = $alumnoFctService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
+
+    public function store(SignaturaStoreRequest $request)
+    {
+        $this->authorize('create', Signatura::class);
         $file = $request->file('file');
         $tipus = $request->tipus;
         $idSao =  $request->fct ;
-        $fctAl = AlumnoFct::where('idSao',$idSao)->first();
         $path = storage_path('app/annexes/');
         $fileName = "{$tipus}_{$idSao}.pdf";
         $file->move($path, $fileName );
@@ -80,7 +95,7 @@ class SignaturaController extends ModalController
             )
         );
 
-        $this->panel->setBotonera(['create'],['delete','pdf','show']);
+        $this->panel->setBotonera(['create'],['delete','pdf']);
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -177,23 +192,35 @@ class SignaturaController extends ModalController
 
     protected function deleteAll()
     {
+        $this->authorize('manage', Signatura::class);
         $signatures = $this->search();
         foreach ($signatures as $signature){
+            $this->authorize('delete', $signature);
             $signature->delete();
         }
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+     * @throws NotFoundDomainException
+     */
     protected function pdf($id)
     {
-        $sig = Signatura::find($id);
+        $sig = Signatura::findOrFail((int) $id);
+        $this->authorize('view', $sig);
         if (!$sig || empty($sig->routeFile)) {
-            Alert::danger("No s'ha trobat el fitxer sol·licitat");
-            return back();
+            throw new NotFoundDomainException(
+                "No s'ha trobat el fitxer sol·licitat",
+                ['signatura_id' => $id]
+            );
         }
         if (!file_exists($sig->routeFile)) {
-            Alert::danger("L'arxiu no està disponible al servidor");
-            return back();
+            throw new NotFoundDomainException(
+                "L'arxiu no està disponible al servidor",
+                ['signatura_id' => $id, 'route' => $sig->routeFile]
+            );
         }
 
         return response()->file($sig->routeFile);
@@ -201,20 +228,22 @@ class SignaturaController extends ModalController
 
     public function destroy($id)
     {
-        if ($elemento = Signatura::find($id)) {
-            $fctAl = AlumnoFct::where('idSao',$elemento->idSao)->first();
-            $file = $fctAl->routeFile($elemento->tipus);
-            if (isset($file) && file_exists($file)){
-                unlink($file);
-            }
-            $elemento->delete();
+        $elemento = Signatura::findOrFail((int) $id);
+        $this->authorize('delete', $elemento);
+
+        $fctAl = $this->alumnoFcts()->firstByIdSao((string) $elemento->idSao);
+        $file = $fctAl?->routeFile($elemento->tipus);
+        if ($file && file_exists($file)){
+            unlink($file);
         }
+        $elemento->delete();
         return back();
     }
 
     public function sendUnique($id)
     {
-        $signatura = Signatura::find($id);
+        $signatura = Signatura::findOrFail((int) $id);
+        $this->authorize('update', $signatura);
         if ($signatura->sendTo < 2) {
             $signatura->sendTo += 2;
         }
@@ -230,14 +259,16 @@ class SignaturaController extends ModalController
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
             //per a marcar-lo com a enviat a l'instructor
-        session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+        session()->flash('email_action', 'annexe_individual');
         return $mail->render('/signatura');
     }
     public function sendMultiple(Request $request,$tipus)
     {
+        $this->authorize('manage', Signatura::class);
         if ($tipus === 'A3'){ //al alumno
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value === 'on' && $signatura = Signatura::find($key)) {
+                    $this->authorize('update', $signatura);
                     if (!$signatura->Alumno) {
                         Log::error("Signatura amb id $key no té Alumno relacionat.");
                         continue;
@@ -261,12 +292,16 @@ class SignaturaController extends ModalController
         if ($tipus === 'All'){ //a l'instructor
             if (count($request->toArray()) === 2){
                 $element = array_keys($request->except('_token'));
-                $alumnoFct = AlumnoFct::find(reset($element));
-                $signatures = [];
-                foreach ($alumnoFct->signatures as $signatura){
-                    $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                    $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
+                $alumnoFct = $this->alumnoFcts()->find((int) reset($element));
+                if ($alumnoFct === null) {
+                    return back();
                 }
+                $signatures = [];
+                    foreach ($alumnoFct->signatures as $signatura){
+                        $this->authorize('update', $signatura);
+                        $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
+                    }
                 $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                 $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                 $col = new Collection();
@@ -276,15 +311,19 @@ class SignaturaController extends ModalController
                     view($view),
                     ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
                     $signatures);
-                session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                session()->flash('email_action', 'annexe_individual');
                 return $mail->render('/signatura');
             }
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value === 'on') {
-                    $alumnoFct = AlumnoFct::find($key);
+                    $alumnoFct = $this->alumnoFcts()->find((int) $key);
+                    if ($alumnoFct === null) {
+                        continue;
+                    }
                     $signatures = [];
                     $a1 = false;
                     foreach ($alumnoFct->signatures as $signatura){
+                        $this->authorize('update', $signatura);
                         $signatures[$signatura->simpleRouteFile] = 'application/pdf';
                         if ($signatura->tipus === 'A1'){
                             $a1 = true;
@@ -299,7 +338,7 @@ class SignaturaController extends ModalController
                         $view,
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
-                    session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                    session()->flash('email_action', 'annexe_individual');
                     $mail->send();
                 }
             }
@@ -311,10 +350,11 @@ class SignaturaController extends ModalController
 
     public function upload(Request $request,$id)
     {
+        $signatura = Signatura::findOrFail((int) $id);
+        $this->authorize('update', $signatura);
         $request->validate([
             'file' => 'required|file|mimes:pdf|max:2048',
         ]);
-        $signatura = Signatura::find($id);
         $file = $request->file('file');
         $file->move($signatura->path, $signatura->fileName);
         if ($signatura->signed == 2){
@@ -326,10 +366,15 @@ class SignaturaController extends ModalController
     }
 
     public function a5(){
+        $this->authorize('manage', Signatura::class);
 
         $signatures = Signatura::where('tipus','A5')->where('idProfesor', authUser()->dni)->get();
         foreach ($signatures as $signature){
-            $alFct = AlumnoFct::where('idSao',$signature->idSao)->first();
+            $this->authorize('delete', $signature);
+            $alFct = $this->alumnoFcts()->firstByIdSao((string) $signature->idSao);
+            if ($alFct === null) {
+                continue;
+            }
             $path = 'alumnofctaval/'.$alFct->id;
             if (AttachedFileService::saveExistingFile($signature->routeFile, $path, authUser()->dni))
             {

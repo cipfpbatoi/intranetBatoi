@@ -6,13 +6,10 @@ namespace Intranet\Services\School;
 
 use Google\Service\AndroidPublisher\ActivateBasePlanRequest;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Hora;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Automation\SeleniumService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class ItacaService
 {
@@ -23,7 +20,11 @@ class ItacaService
         if ($selenium) {
             $this->ss = $selenium;
             if ($validateDriver && !$this->ss->getDriver()) {
-                throw new IntranetException("Error al iniciar la sessió a ITACA");
+                throw new IntranetException(
+                    "Error al iniciar la sessió a ITACA",
+                    500,
+                    "Error al iniciar la sessió a ITACA"
+                );
             }
             return;
         }
@@ -31,10 +32,21 @@ class ItacaService
         try {
             $this->ss = new SeleniumService($dni, $password);
             if (!$this->ss->getDriver()) {
-                throw new IntranetException("Error al iniciar la sessió a ITACA");
+                throw new IntranetException(
+                    "Error al iniciar la sessió a ITACA",
+                    500,
+                    "Error al iniciar la sessió a ITACA"
+                );
             }
         } catch (\Throwable $e) {
-            throw new IntranetException("Error al iniciar la sessió a ITACA");
+            throw new IntranetException(
+                "Error al iniciar la sessió a ITACA",
+                500,
+                "Error al iniciar la sessió a ITACA",
+                true,
+                [],
+                $e
+            );
         }
     }
 
@@ -56,49 +68,6 @@ class ItacaService
     {
         return true;
     }
-    public function processFalta(Falta_itaca $falta): bool
-    {
-        try {
-            $this->ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
-            $this->ss->waitAndClick("//button[contains(text(),'Buscar')]");
-            sleep(1);
-            $element = $this->ss->getDriver()->findElement(WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
-            (new WebDriverActions($this->ss->getDriver()))->contextClick($element)->perform();
-            $this->ss->waitAndClick("//span[contains(text(),'Faltas docente')]");
-            sleep(1);
-
-            $fechaActual = date('d/m/Y');
-            $this->ss->fill(WebDriverBy::xpath("//input[@value='$fechaActual']"), $falta->dia);
-            $this->ss->waitAndClick("//button[contains(text(),'Cambiar Fecha')]");
-            sleep(2);
-
-            $diaSemana = date('N', strtotime($falta->dia)) + 1;
-            $hora = Hora::find($falta->sesion_orden);
-            $textHora = $hora->hora_ini.' - '.$hora->hora_fin;
-            $expresionXPath = "//table//tr/td[$diaSemana]//div[starts-with(@title, '$textHora')]";
-            $this->ss->waitAndClick($expresionXPath);
-            sleep(1);
-            $this->ss->waitAndClick("//button[contains(text(),'Impartido por titular')]");
-            sleep(1);
-
-            $checkboxLabel = $this->ss->getDriver()->findElement(WebDriverBy::xpath('//label[contains(text(), "Clase impartida por el profesor titular.")]'));
-            $checkboxId = $checkboxLabel->getAttribute('for');
-            $checkbox = $this->ss->getDriver()->findElement(WebDriverBy::id($checkboxId));
-            if (!$checkbox->isSelected()) {
-                $checkbox->click();
-            }
-            $this->ss->waitAndClick("//button[contains(text(),'Guardar')]");
-            $this->ss->waitAndClick("//button[contains(text(),'Aceptar')]");
-            $this->ss->waitAndClick(WebDriverBy::className('z-icon-times'));
-
-            $falta->estado = 4;
-            $falta->save();
-            return true;
-        } catch (\Exception $e) {
-            Alert::danger("{$e->getMessage()} {$falta->Profesor->shortName} {$falta->dia} {$falta->sesion_orden}");
-            return false;
-        }
-    }
 
     private function closeNoticias()
     {
@@ -112,7 +81,10 @@ class ItacaService
                     try {
                         $element->click();
                         usleep(500000);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
+                        \Log::info('No s\'ha pogut tancar una finestra emergent.', [
+                            'exception' => $e->getMessage(),
+                        ]);
                         $remainingWindows[] = $element;
                     }
                 }
@@ -120,6 +92,10 @@ class ItacaService
                 $remainingWindows = [];
                 if (++$retryCount > 10) break;
             }
-        } catch (\Exception $e) {}
+        } catch (\Throwable $e) {
+            \Log::warning('Error en tancar les finestres emergents de SAO.', [
+                'exception' => $e->getMessage(),
+            ]);
+        }
     }
 }

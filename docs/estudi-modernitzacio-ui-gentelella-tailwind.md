@@ -1,0 +1,212 @@
+# Estudi realista: Gentelella, Tailwind i eliminació de `Form::` / `Field::`
+
+## 0) Checklist d'execució MIG (actualitzat 2026-03-08)
+
+- [x] MIG-01 Inventari de dependències Gentelella
+- [x] MIG-02 Mapatge de fitxers de build i layouts
+- [x] MIG-03 Mapatge de plugins crítics
+- [x] MIG-04 Definir stack frontend modular
+- [x] MIG-05 Refactor `webpack.mix.js`
+- [x] MIG-06 Ajustar layouts principals
+- [x] MIG-07 Revisar fonts, icons i recursos
+- [x] MIG-08 Adaptar vista login/auth
+- [x] MIG-09 Revisar topnav/sidebar
+- [x] MIG-10 Revisar components de formulari
+- [x] MIG-11 Revisar taules i grids
+- [x] MIG-12 Revisar calendaris i datepickers
+- [x] MIG-13 Validar `custom.js` i inicialitzacions legacy
+- [x] MIG-14 Retirar dependència Gentelella del build
+- [x] MIG-15 Neteja d'assets no utilitzats
+- [x] MIG-16 Actualitzar docs i checklist
+- [x] MIG-17 Proves visuals smoke tests (checklist en `docs/mig-17-smoke-tests.md`)
+- [x] MIG-18 Corregir regressions finals (fix de JS legacy en layout + grandària d'icones)
+- [x] MIG-19 Preparar PR final a Laravel12 (plantilla en `docs/mig-19-pr-final.md`)
+- [x] MIG-20 Full de ruta per actualitzar DataTables a versions recents
+
+## 1) Estat actual (foto real del codi)
+
+### Frontend/layout
+- El layout principal (`resources/views/layouts/intranet.blade.php`) carrega:
+  - `mix('css/components/app.css')`
+  - `mix('js/components/app.js')`
+  - `mix('js/ppIntranet.js')`
+- Hi ha acoblament directe a classes de Gentelella (`nav-md`, `main_container`, `left_col`, `right_col`, `x_panel`, `x_title`, `nav_menu`, etc.) en almenys **40 referències** en vistes.
+- El build actual ja no genera `gentelella.css/js`; compila únicament `components/app` i `ppIntranet`.
+
+### Versions i stack
+- `package.json` actual:
+  - `bootstrap: ^4.0.0`
+  - `vue: ^2.5.7`
+  - `laravel-mix: ^6.0.13`
+- No hi ha Tailwind instal·lat en el projecte.
+
+### Formularis (`Form::` / `Field::`)
+- Referències detectades:
+  - `Form::` -> **42**
+  - `Field::` -> **16**
+  - Total -> **58**
+- També hi ha dependència col·lateral de `Html::style/script/image` en vistes (aprox. **88** referències), que no és objectiu principal però condiciona la neteja final.
+
+## 2) Opcions estratègiques
+
+## Opció A. Mantindre Gentelella actual (mínim risc, mínim guany)
+- Què és:
+  - No canvi d’UI framework.
+  - Només sanejament i reducció de deute tècnic.
+- Pros:
+  - Risc funcional baix.
+  - Cost curt termini baix.
+- Contres:
+  - Manté stack legacy (jQuery-heavy, bootstrap antic, Mix + Vue2 antic).
+  - No resol modernització ni UX.
+- Cost estimat:
+  - 1-2 setmanes (neteja i estabilització).
+
+## Opció B. Actualitzar a Gentelella modern (v2.x) sense canviar a Tailwind
+- Què és:
+  - Migrar de Gentelella `^1.4.0` a línia moderna (bootstrap 5, estructura nova de build).
+  - Adaptar classes i JS personalitzat.
+- Pros:
+  - Menys canvi visual que un redisseny total.
+  - Millora de dependències i seguretat frontend.
+- Contres:
+  - No és “drop-in”; hi ha trencaments en CSS/JS i plugins.
+  - Continua sent plantilla externa amb estils/opinions pròpies.
+- Cost estimat:
+  - 4-8 setmanes segons cobertura de pantalles.
+
+## Opció C. Migrar a plantilla/base pròpia amb Tailwind
+- Què és:
+  - Construir layout i components amb Tailwind (i opcionalment component library).
+  - Retirar progressivament Gentelella, jQuery plugins i CSS legacy.
+- Pros:
+  - Control total de disseny i consistència.
+  - Millor mantenibilitat a mitjà/llarg termini.
+  - Modernització real (build i frontend).
+- Contres:
+  - Cost inicial major.
+  - Requereix pla per no parar evolutiu funcional.
+- Cost estimat:
+  - 8-14 setmanes (incremental per mòduls).
+
+## 3) Recomanació pragmàtica
+
+Recomanació realista: **estratègia híbrida en 2 tracks**.
+
+1. Track A (immediat): eliminar `Form::` i `Field::` (independent de la plantilla).
+2. Track B (UI): després decidir entre:
+   - B1: pujar a Gentelella modern per reduir risc de salt, o
+   - B2: anar directament a Tailwind si s’accepta major cost inicial.
+
+Açò redueix risc perquè el desacoblament de formularis és útil en qualsevol escenari.
+
+## 4) Pla per eliminar `Form::` i `Field::` (sense bloquejar l’app)
+
+## Fase 0. Congelar API legacy
+- Mantindre l’adapter actual de compatibilitat (`Field` propi) per no trencar.
+- Prohibir nous usos de `Form::` i `Field::` en codi nou.
+
+## Fase 1. Components Blade base
+- Crear/estandarditzar components:
+  - `x-form.form`, `x-form.input`, `x-form.textarea`, `x-form.select`, `x-form.checkbox`, `x-form.radio-group`, `x-form.file`.
+- Incloure gestió centralitzada de:
+  - `old()`, errors, labels, required, help text, classes.
+
+## Fase 2. Migració per volum (quick wins)
+- Convertir primer fitxers amb més pes:
+  - `resources/views/email/view.blade.php` (23 usos)
+  - `resources/views/extraescolares/partials/value.blade.php`
+  - `resources/views/themes/bootstrap/formodal.blade.php`
+  - `resources/views/components/form/dynamic-model-form.blade.php`
+- Després la resta de parcials menuts.
+
+## Fase 3. Retirada final
+- Quan `Form::/Field::` = 0:
+  - llevar alias de config,
+  - retirar dependències i wrappers innecessaris,
+  - executar regressió de formularis crítics.
+
+### Cost estimat del track `Form::/Field::`
+- 1-2 setmanes de treball efectiu (58 usos actuals).
+
+## 5) Pla UI: Gentelella modern o Tailwind
+
+## Si triem Gentelella modern (pas intermedi)
+- Migrar layout base i menú.
+- Adaptar JS de sidebar/topnav (`resources/assets/js/custom.js`) a la nova estructura.
+- Revisar plugins: DataTables, daterangepicker, wizard, dropzone, etc.
+- Benefici: menys xoc visual inicial.
+- Estat actual:
+  - Dependència `gentelella` retirada de `package.json`.
+  - Assets `public/css/gentelella.css` i `public/js/gentelella.js` eliminats.
+  - Mantindre esta opció només tindria sentit si es reintroduïx explícitament la plantilla.
+
+## Si triem Tailwind (objectiu final)
+- Preparar design tokens i components base (layout, cards, forms, tables, alerts).
+- Migració per mòduls:
+  - home + navegació
+  - pantalles CRUD comunes
+  - mòduls especials (gràfiques, calendari, dropzone, etc.)
+- Convivència temporal: Tailwind + CSS legacy per evitar big-bang.
+
+## 6) Riscos reals i mitigacions
+
+- Risc: regressions visuals en pàgines antigues.
+  - Mitigació: migració per mòdul + checklist visual + captures abans/després.
+- Risc: plugins jQuery sense equivalent directe.
+  - Mitigació: encapsular per pàgina; substituir només quan toque eixa pantalla.
+- Risc: allargar terminis per dependències ocultes.
+  - Mitigació: fer PoC de 2 pantalles representatives abans de comprometre calendari final.
+
+## 7) Proposta de calendari executable
+
+1. Setmana 1:
+   - tancar `Form::`/`Field::` en fitxers de més volum,
+   - definir components base de formulari.
+2. Setmana 2:
+   - deixar `Form::`/`Field::` a zero,
+   - QA de fluxos CRUD principals.
+3. Setmana 3:
+   - PoC UI (una pantalla amb Gentelella modern i una amb Tailwind) i decisió final.
+4. Setmanes següents:
+   - migració UI per mòduls segons opció triada.
+
+## 8) Fonts externes (estat de Gentelella)
+
+- Repositori oficial: https://github.com/ColorlibHQ/gentelella
+- Releases: https://github.com/ColorlibHQ/gentelella/releases
+- Web oficial: https://gentelella.com/
+
+## 9) MIG-20 (proposta): actualització de DataTables
+
+### Estat actual detectat
+- Hi ha inicialitzacions mixtes `dataTable()` i `DataTable()` en `resources/assets/js/custom.js`.
+- Existix codi legacy `fnDraw()` que no és l'API recomanada per DataTables modern.
+- El projecte continua depenent de jQuery i plugins clàssics al voltant de les taules.
+
+### Objectiu MIG-20
+- Estandarditzar codi propi a API moderna (`DataTable()` + `draw()`).
+- Mantindre compatibilitat funcional durant la transició.
+- Deixar el terreny preparat per pujar DataTables i extensions en un lot controlat.
+
+### Pas 1 (ja aplicat en codi)
+- Substituïda la redibuixada legacy `fnDraw()` per `DataTable().draw(false)` amb guardes.
+- Homogeneïtzades inicialitzacions bàsiques cap a `DataTable()`.
+
+### Inventari real (2026-03-08)
+- `package.json` no declara `datatables.net` ni extensions (`buttons`, `responsive`, `keytable`, `scroller`, `fixedHeader`).
+- No s'han detectat fitxers `datatables*.js/css` en `public/` ni inclusions directes en layouts Blade.
+- El comportament actual es basa en:
+  - codi d'inicialització en `resources/assets/js/custom.js`,
+  - i fallback null-object en `resources/assets/js/ppIntranet.js` quan DataTables no està disponible.
+
+### Implicació tècnica
+- Les taules no estan suportades per una dependència explícita i versionada de DataTables.
+- Abans de parlar de "pujar versió", primer cal incorporar DataTables com a dependència formal del projecte.
+- Dependències i integració npm ja incorporades; smoke test funcional validat.
+
+### Passos següents recomanats
+1. Afegir dependències npm explícites de DataTables core + extensions necessàries.
+2. Integrar imports JS/CSS en el pipeline actual (`resources/assets/js` / Mix).
+3. Fer smoke test específic de taules crítiques (ordenació, cerca, exportació, responsive, checkboxes).
+4. Tancar MIG-20 quan DataTables estiga versionat per npm i sense ús d'API antiga.

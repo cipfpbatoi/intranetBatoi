@@ -2,15 +2,14 @@
 
 namespace Intranet\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Intranet\Entities\Falta_profesor;
 
+/**
+ * Event de fitxatge creat.
+ */
 class FichaCreated
 {
 
@@ -18,21 +17,17 @@ class FichaCreated
         InteractsWithSockets,
         SerializesModels;
 
-    public $ficha;
-
-    public function __construct(Falta_profesor $ficha)
-    {
-        $this->ficha = $ficha;
-     }
+    /**
+     * @var Falta_profesor
+     */
+    public $fichaje;
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel|array
+     * @param Falta_profesor $fichaje
      */
-    public function broadcastOn()
+    public function __construct(Falta_profesor $fichaje)
     {
-        return new PrivateChannel('channel-name');
+        $this->fichaje = $fichaje;
     }
 
 }

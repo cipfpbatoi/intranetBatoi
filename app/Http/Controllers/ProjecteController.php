@@ -5,15 +5,17 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Projecte;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
- * Class EspacioController
+ * Class ProjecteController
  * @package Intranet\Http\Controllers
  */
 class ProjecteController extends ModalController
@@ -46,24 +48,31 @@ class ProjecteController extends ModalController
 
     public function store(ProyectoRequest $request)
     {
-        $new = new Projecte();
         $request->request->add(['idAlumne' => AuthUser()->nia]);
         $request->request->add(['estat' => 0]);
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(ProyectoRequest $request, $id)
     {
         $request->request->add(['idAlumne' => AuthUser()->nia]);
-
-        Projecte::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function email($id)
     {
-        $projecte = Projecte::findOrFail($id);
+        try {
+            $projecte = Projecte::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id], $e);
+        }
         $projecte->estat = 1;
         $projecte->save();
         $tutor = $projecte->Grupo->Tutor;
@@ -71,9 +80,18 @@ class ProjecteController extends ModalController
         return back();
     }
 
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function pdf($id)
     {
-        $elemento = Projecte::findOrFail($id);
+        try {
+            $elemento = Projecte::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Projecte no trobat', ['projecte_id' => $id], $e);
+        }
         $informe = 'pdf.propostaProjecte';
         $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();

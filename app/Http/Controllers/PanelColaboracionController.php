@@ -2,7 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Colaboracion\ColaboracionService;
+use Intranet\Application\Colaboracion\ColaboracionPreasignacionService;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Requests\ColaboracionRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -12,10 +16,12 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Activity;
+use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
+use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 /**
  * Class PanelColaboracionController
@@ -24,6 +30,10 @@ use Styde\Html\Facades\Alert;
 class PanelColaboracionController extends IntranetController
 {
     use Panel;
+
+    private ?GrupoService $grupoService = null;
+    private ?ColaboracionService $colaboracionService = null;
+    private ?ColaboracionPreasignacionService $preasignacionService = null;
 
     const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
@@ -37,6 +47,45 @@ class PanelColaboracionController extends IntranetController
     protected $model = 'Colaboracion';
 
     protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
+
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?ColaboracionService $colaboracionService = null,
+        ?ColaboracionPreasignacionService $preasignacionService = null
+    )
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+        $this->colaboracionService = $colaboracionService;
+        $this->preasignacionService = $preasignacionService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function colaboraciones(): ColaboracionService
+    {
+        if ($this->colaboracionService === null) {
+            $this->colaboracionService = app(ColaboracionService::class);
+        }
+
+        return $this->colaboracionService;
+    }
+
+    private function preasignaciones(): ColaboracionPreasignacionService
+    {
+        if ($this->preasignacionService === null) {
+            $this->preasignacionService = app(ColaboracionPreasignacionService::class);
+        }
+
+        return $this->preasignacionService;
+    }
 
 
     /**
@@ -162,91 +211,26 @@ class PanelColaboracionController extends IntranetController
     }*/
 
 
-public function search()
-{
-    // 1) Les teues col·laboracions
-    $meves = Colaboracion::query()
-        ->MiColaboracion()
-        ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Ciclo'])
-        ->get();
+    /**
+     * Carrega les col·laboracions del tutor i les relacionades per centre/departament.
+     *
+     * A cada col·laboració "meua" li adjunta:
+     * - `relacionadas`: col·laboracions del mateix centre i departament,
+     *   però d'un altre cicle.
+     * - `contactos`: activitats de seguiment associades a cada relacionada.
+     *
+     * @return \Illuminate\Support\Collection<int, \Intranet\Entities\Colaboracion>
+     */
+    public function search()
+    {
+        $colaboraciones = $this->colaboraciones()->panelListingByTutor((string) AuthUser()->dni);
+        $title = $this->colaboraciones()->resolvePanelTitle($colaboraciones);
+        if ($title !== null) {
+            $this->titulo = ['quien' => $title];
+        }
 
-    if ($meves->isEmpty()) {
-        return $meves;
+        return $colaboraciones;
     }
-    $this->titulo = ['quien' => optional($meves->first()->Ciclo)->literal];
-
-    // clau parella: centre|departament-del-cicle
-    $pairKey = fn($c) => $c->idCentro.'|'.optional($c->Ciclo)->departamento;
-
-    // parelles úniques (centre, departament del cicle)
-    $parelles = $meves->filter(fn($c) => optional($c->Ciclo)->departamento)
-        ->map(fn($c) => ['idCentro' => $c->idCentro, 'departamento' => $c->Ciclo->departamento])
-        ->unique(fn($p) => $p['idCentro'].'|'.$p['departamento'])
-        ->values();
-
-    // 2) Col·laboracions relacionades: mateix centre+dept (via Ciclo), però d’un altre cicle
-    $relacionades = Colaboracion::query()
-        ->with(['Ciclo', 'Propietario'])
-        ->whereNotIn('id', $meves->pluck('id'))
-        ->where(function ($q) use ($parelles) {
-            foreach ($parelles as $p) {
-                $q->orWhere(function ($qq) use ($p) {
-                    $qq->where('idCentro', $p['idCentro'])
-                       ->whereHas('Ciclo', function ($qh) use ($p) {
-                           $qh->where('departamento', $p['departamento']);
-                       });
-                });
-            }
-        })
-        ->get();
-
-    // filtre: d’un altre cicle
-    $relacionades = $relacionades->filter(function ($r) use ($meves) {
-        // si tens 'ciclo_id' en lloc de 'idCiclo', canvia-ho
-        $rIdCiclo = $r->idCiclo ?? $r->ciclo_id;
-        // hi ha almenys una "teva" en el mateix parell amb cicle diferent?
-        return $meves->contains(function ($c) use ($r, $rIdCiclo) {
-            $cIdCiclo = $c->idCiclo ?? $c->ciclo_id;
-            return $c->idCentro == $r->idCentro
-                && optional($c->Ciclo)->departamento === optional($r->Ciclo)->departamento
-                && $cIdCiclo !== $rIdCiclo;
-        });
-    })->values();
-
-    // 3) Tots els Activity d'eixes relacionades, d’una tacada, i agrupats
-    $relIds = $relacionades->pluck('id')->all();
-
-    $activitiesByColab = Activity::query()
-        ->modelo('Colaboracion')
-        ->notUpdate()
-        ->whereIn('model_id', $relIds)     // <-- CANVIA 'target_id' pel camp que realment usa el teu scope id($id)
-        ->orderBy('created_at')
-        ->get()
-        ->groupBy('model_id');             // <-- CANVIA igualment si cal
-
-    // Agrupem relacionades per parella centre|dept
-    $relacionadesPerParella = $relacionades->groupBy($pairKey);
-
-    // Enganxem a cada "teva" les relacionades + els seus contactes
-    $meves->each(function ($c) use ($pairKey, $relacionadesPerParella, $activitiesByColab) {
-        $llista = $relacionadesPerParella->get($pairKey($c), collect());
-
-        // assignem els contactes (activities) a cada relacionada
-        $llista->each(function ($rel) use ($activitiesByColab) {
-            $rel->contactos = $activitiesByColab->get($rel->id, collect());
-        });
-
-        $c->relacionadas = $llista->values();
-    });
-
-    // ordenació opcional
-    return $meves->sortBy(function ($c) {
-        return $c->empresa
-            ?? optional(optional($c->Centro)->Empresa)->nombre
-            ?? optional($c->Centro)->nombre
-            ?? '';
-    })->values();
-}
 
 
 
@@ -254,11 +238,20 @@ public function search()
     /**
      * @param  Request  $request
      * @param $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
 
     public function update(Request $request, $id)
     {
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
+        $this->authorize('update', $colaboracion);
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
@@ -271,6 +264,8 @@ public function search()
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Colaboracion::class);
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
@@ -279,7 +274,77 @@ public function search()
 
     private function showEmpresa($id)
     {
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $id]);
+    }
+
+    /**
+     * Guarda una preassignació provisional d'alumnat per a una col·laboració.
+     *
+     * @param Request $request
+     * @param int $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storePreasignacion(Request $request, int $id)
+    {
+        $colaboracion = $this->findModelOrFail(
+            Colaboracion::class,
+            $id,
+            'Col·laboració no trobada',
+            ['colaboracion_id' => $id]
+        );
+        $this->authorize('update', $colaboracion);
+
+        $this->validate($request, [
+            'idAlumno' => 'required|string',
+            'estado' => 'nullable|string',
+            'observaciones' => 'nullable|string',
+        ]);
+
+        try {
+            $this->preasignaciones()->create(
+                $colaboracion->id,
+                (string) $request->idAlumno,
+                (string) AuthUser()->dni,
+                (string) ($request->estado ?: 'proposta'),
+                $request->observaciones
+            );
+            Alert::success('Preassignació guardada correctament.');
+        } catch (RuntimeException $e) {
+            Alert::warning($e->getMessage());
+        }
+
+        Session::put('pestana', 3);
+        return back();
+    }
+
+    /**
+     * Descarta una preassignació existent des del panell del tutor.
+     *
+     * @param int $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function descartarPreasignacion(int $id)
+    {
+        $preasignacion = $this->wrapNotFound(
+            fn () => \Intranet\Entities\ColaboracionPreasignacion::query()
+                ->with('Colaboracion')
+                ->findOrFail($id),
+            'Preassignació no trobada',
+            ['preasignacion_id' => $id]
+        );
+        $this->authorize('update', $preasignacion->Colaboracion);
+
+        try {
+            $this->preasignaciones()->descartar($preasignacion->id);
+            Alert::success('Preassignació eliminada correctament.');
+        } catch (RuntimeException $e) {
+            Alert::warning($e->getMessage());
+        }
+
+        Session::put('pestana', 3);
+        return back();
     }
 
     /**
@@ -293,13 +358,15 @@ public function search()
         Session::put('pestana', 1);
         $copia = new Colaboracion();
         $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0
-            ? Grupo::QTutor($profesor)->first()->idCiclo
-            : Grupo::QTutor($profesor, true)->first()->idCiclo;
+        $grupoTutor = $this->grupos()->firstByTutor($profesor);
+        if (!$grupoTutor) {
+            return back()->withErrors('No s\'ha trobat grup de tutoria');
+        }
+        $copia->idCiclo = $grupoTutor->idCiclo;
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo
-        $validator = Validator::make($copia->toArray(), $copia->getRules());
+        $validator = Validator::make($copia->toArray(), ColaboracionCrudSchema::RULES);
         if ($validator->fails()) {
             return Redirect::back()->withInput()->withErrors($validator);
         }
@@ -320,6 +387,11 @@ public function search()
         try {
             parent::destroy($id);
         } catch (Exception $exception) {
+            report($exception);
+            Log::warning('Error en esborrar col·laboració.', [
+                'colaboracion_id' => $id,
+                'error' => $exception->getMessage(),
+            ]);
             Alert::danger("No es pot esborrar perquè hi ha valoracions
              fetes per a eixa col·laboració d'anys anteriors.");
         }

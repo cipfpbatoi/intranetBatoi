@@ -3,19 +3,40 @@
 namespace Intranet\Http\Controllers\Auth\Social;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
 use Auth;
 use Socialite;
 use Intranet\Http\Controllers\Controller;
+use Intranet\Services\Auth\ApiSessionTokenService;
 
 
 class SocialController extends Controller
 {
+    private ?ProfesorService $profesorService = null;
+    private ?ApiSessionTokenService $apiSessionTokenService = null;
 
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    private function apiSessionTokens(): ApiSessionTokenService
+    {
+        if ($this->apiSessionTokenService === null) {
+            $this->apiSessionTokenService = app(ApiSessionTokenService::class);
+        }
+
+        return $this->apiSessionTokenService;
     }
 
     public function getSocialAuth($token=null)
@@ -27,7 +48,7 @@ class SocialController extends Controller
             return Socialite::driver('google')->redirect();
         }
         else{
-            $profesor = Profesor::where('api_token',$token)->first();
+            $profesor = $this->profesores()->findByApiToken((string) $token);
             if ($profesor) {
                 return Socialite::driver('google')->with(["login_hint" => $profesor->email])->redirect();
             }
@@ -49,14 +70,15 @@ class SocialController extends Controller
 
     private function successloginProfesor($user){
         Auth::login($user);
+        $this->apiSessionTokens()->issueForProfesor($user, 'web-social-login');
         session(['lang' => AuthUser()->idioma]);
-        return redirect('/home');
+        return redirect()->route('home.profesor');
     }
 
     public function getSocialAuthCallback(Request $request)
     {
         if ($user = Socialite::driver('google')->user()) {
-            if ($the_user = Profesor::where('email', $user->email)->first()) {
+            if ($the_user = $this->profesores()->findByEmail((string) $user->email)) {
                 if (isPrivateAddress(getClientIpAddress())){
                     return $this->successloginProfesor($the_user);
                 }
@@ -66,7 +88,7 @@ class SocialController extends Controller
                 if (isPrivateAddress(getClientIpAddress())){
                     Auth::guard('alumno')->login($the_user);
                     session(['lang' => AuthUser()->idioma]);
-                    return redirect('/alumno/home');
+                    return redirect()->route('home.alumno');
                 }
                 else {
                     abort('401','Ho sentim però no et pots loguejar des de fora del centre');

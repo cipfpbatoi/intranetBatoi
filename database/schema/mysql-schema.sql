@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `actividad_grupo`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `actividad_grupo` (
   `idActividad` int unsigned NOT NULL,
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `idGrupo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`idActividad`,`idGrupo`),
   KEY `actividad_grupo_idgrupo_foreign` (`idGrupo`),
   CONSTRAINT `actividad_grupo_idactividad_foreign` FOREIGN KEY (`idActividad`) REFERENCES `actividades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -83,9 +83,13 @@ CREATE TABLE `actividades` (
   `image1` varchar(60) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `image2` varchar(60) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `image3` varchar(60) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `complementaria` tinyint(1) NOT NULL DEFAULT '1',
+  `tipo_actividad_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `actividades_iddocumento_foreign` (`idDocumento`),
-  CONSTRAINT `actividades_iddocumento_foreign` FOREIGN KEY (`idDocumento`) REFERENCES `documentos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  KEY `actividades_tipo_actividad_id_foreign` (`tipo_actividad_id`),
+  CONSTRAINT `actividades_iddocumento_foreign` FOREIGN KEY (`idDocumento`) REFERENCES `documentos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `actividades_tipo_actividad_id_foreign` FOREIGN KEY (`tipo_actividad_id`) REFERENCES `tipo_actividad` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `activities`;
@@ -134,6 +138,7 @@ CREATE TABLE `alumno_fcts` (
   `actas` tinyint(1) NOT NULL DEFAULT '0',
   `insercion` tinyint(1) NOT NULL DEFAULT '0',
   `horas` smallint DEFAULT NULL,
+  `valoracio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Valoració del tutor de l''empresa',
   `desde` date DEFAULT NULL,
   `hasta` date DEFAULT NULL,
   `correoAlumno` tinyint(1) NOT NULL DEFAULT '0',
@@ -145,12 +150,16 @@ CREATE TABLE `alumno_fcts` (
   `horas_diarias` tinyint NOT NULL DEFAULT '0',
   `actualizacion` date DEFAULT NULL,
   `autorizacion` tinyint(1) NOT NULL DEFAULT '0',
+  `flexible` tinyint(1) NOT NULL DEFAULT '0',
+  `idProfesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `alumno_fcts_idFct_idAlumno_unique` (`idFct`,`idAlumno`),
+  UNIQUE KEY `alumno_fcts_idfct_idsao_unique` (`idFct`,`idSao`),
   KEY `alumno_fcts_idAlumno_foreign` (`idAlumno`),
   KEY `alumno_fcts_idsao_index` (`idSao`),
-  CONSTRAINT `alumno_fcts_idalumno_foreign` FOREIGN KEY (`idAlumno`) REFERENCES `alumnos` (`nia`) ON UPDATE CASCADE,
-  CONSTRAINT `alumno_fcts_idfct_foreign` FOREIGN KEY (`idFct`) REFERENCES `fcts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `alumno_fcts_idprofesor_index` (`idProfesor`),
+  CONSTRAINT `alumno_fcts_idalumno_foreign` FOREIGN KEY (`idAlumno`) REFERENCES `alumnos` (`nia`),
+  CONSTRAINT `alumno_fcts_idfct_foreign` FOREIGN KEY (`idFct`) REFERENCES `fcts` (`id`),
+  CONSTRAINT `alumno_fcts_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `alumno_resultados`;
@@ -193,7 +202,7 @@ DROP TABLE IF EXISTS `alumnos`;
 CREATE TABLE `alumnos` (
   `nia` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `dni` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `nombre` varchar(25) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `nombre` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `apellido1` varchar(25) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `apellido2` varchar(25) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -221,6 +230,9 @@ CREATE TABLE `alumnos` (
   `baja` date DEFAULT NULL,
   `idioma` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'ca',
   `fol` tinyint NOT NULL DEFAULT '0',
+  `imageRightAccept` tinyint(1) NOT NULL DEFAULT '0',
+  `outOfSchoolActivityAccept` tinyint(1) NOT NULL DEFAULT '0',
+  `DA` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nia`),
   UNIQUE KEY `alumnos_dni_unique` (`dni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -248,7 +260,7 @@ DROP TABLE IF EXISTS `alumnos_grupos`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `alumnos_grupos` (
   `idAlumno` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `idGrupo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `subGrupo` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `posicion` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idAlumno`,`idGrupo`),
@@ -321,6 +333,46 @@ CREATE TABLE `autorizaciones` (
   KEY `autorizaciones_idalumno_foreign` (`idAlumno`),
   CONSTRAINT `autorizaciones_idactividad_foreign` FOREIGN KEY (`idActividad`) REFERENCES `actividades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `autorizaciones_idalumno_foreign` FOREIGN KEY (`idAlumno`) REFERENCES `alumnos` (`nia`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `bustia_violeta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bustia_violeta` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tipus` enum('violeta','convivencia') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'violeta',
+  `dni` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rol` enum('alumno','profesor') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `anonimo` tinyint(1) NOT NULL DEFAULT '0',
+  `autor_nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `categoria` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `finalitat` enum('parlar','escoltar','visibilitzar') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'escoltar',
+  `mensaje` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `estado` enum('nou','en_revisio','tancat') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'nou',
+  `dni_hash` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `bustia_violeta_dni_index` (`dni`),
+  KEY `bustia_violeta_rol_index` (`rol`),
+  KEY `bustia_violeta_estado_index` (`estado`),
+  KEY `bustia_violeta_dni_hash_index` (`dni_hash`),
+  KEY `bustia_violeta_tipus_index` (`tipus`),
+  KEY `bustia_violeta_finalitat_index` (`finalitat`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `calendari_escolar`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `calendari_escolar` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `data` date NOT NULL,
+  `tipus` enum('lectiu','no lectiu','festiu') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'lectiu',
+  `esdeveniment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `calendari_escolar_data_unique` (`data`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `centros`;
@@ -396,7 +448,7 @@ CREATE TABLE `colaboracion_votes` (
   KEY `colaboracion_votes_option_id_foreign` (`option_id`),
   KEY `colaboracion_votes_idcolaboracion_foreign` (`idColaboracion`),
   CONSTRAINT `colaboracion_votes_idcolaboracion_foreign` FOREIGN KEY (`idColaboracion`) REFERENCES `colaboraciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `colaboracion_votes_option_id_foreign` FOREIGN KEY (`option_id`) REFERENCES `options` (`id`)
+  CONSTRAINT `colaboracion_votes_option_id_foreign` FOREIGN KEY (`option_id`) REFERENCES `options` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `colaboraciones`;
@@ -406,7 +458,7 @@ CREATE TABLE `colaboraciones` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idCiclo` int NOT NULL,
   `contacto` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci DEFAULT NULL,
-  `tutor` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci DEFAULT NULL,
+  `tutor` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `telefono` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci DEFAULT NULL,
   `puestos` tinyint DEFAULT '1',
   `idCentro` int unsigned NOT NULL,
@@ -479,6 +531,50 @@ CREATE TABLE `comisiones` (
   CONSTRAINT `comisiones_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cotxe_accessos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cotxe_accessos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `matricula` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `autoritzat` tinyint(1) NOT NULL DEFAULT '0',
+  `porta_oberta` tinyint(1) NOT NULL DEFAULT '0',
+  `tipus` enum('entrada','eixida') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `device` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cotxes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cotxes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `matricula` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `marca` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idProfesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cotxes_matricula_idprofesor_unique` (`matricula`,`idProfesor`),
+  KEY `cotxes_idprofesor_foreign` (`idProfesor`),
+  CONSTRAINT `cotxes_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `counters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `counters` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `count` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `counters_name_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `cursos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -537,6 +633,7 @@ CREATE TABLE `documentos` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `enlace` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `detalle` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `activo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -566,6 +663,7 @@ CREATE TABLE `empresas` (
   `fichero` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `gerente` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `idSao` varchar(8) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `data_signatura` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `empresas_cif_unique` (`cif`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -596,6 +694,7 @@ CREATE TABLE `expedientes` (
   `tipo` tinyint NOT NULL DEFAULT '0',
   `explicacion` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `fecha` date NOT NULL,
+  `fechatramite` date DEFAULT NULL,
   `fechasolucion` date DEFAULT NULL,
   `estado` tinyint NOT NULL DEFAULT '0',
   `idModulo` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
@@ -644,6 +743,7 @@ CREATE TABLE `faltas` (
   `dia_completo` tinyint(1) DEFAULT NULL,
   `baja` tinyint(1) DEFAULT NULL,
   `idDocumento` int unsigned DEFAULT NULL,
+  `itaca` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `faltas_idprofesor_foreign` (`idProfesor`),
   KEY `faltas_iddocumento_foreign` (`idDocumento`),
@@ -661,7 +761,7 @@ CREATE TABLE `faltas_itaca` (
   `sesion_orden` tinyint NOT NULL,
   `estado` tinyint NOT NULL DEFAULT '0',
   `enCentro` tinyint(1) NOT NULL DEFAULT '0',
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `idGrupo` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `justificacion` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `idDocumento` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -689,6 +789,24 @@ CREATE TABLE `faltas_profesores` (
   CONSTRAINT `faltas_profesores_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `fct_days`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `fct_days` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `nia` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `colaboracion_id` int unsigned DEFAULT NULL,
+  `dia` date NOT NULL,
+  `hores_previstes` decimal(4,2) NOT NULL,
+  `hores_realitzades` decimal(4,2) NOT NULL DEFAULT '0.00',
+  `descripcio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fct_days_colaboracion_id_foreign` (`colaboracion_id`),
+  CONSTRAINT `fct_days_colaboracion_id_foreign` FOREIGN KEY (`colaboracion_id`) REFERENCES `colaboraciones` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `fcts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -699,11 +817,12 @@ CREATE TABLE `fcts` (
   `correoInstructor` tinyint(1) NOT NULL DEFAULT '0',
   `idInstructor` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `cotutor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `erasmus` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `fcts_idcolaboracion_foreign` (`idColaboracion`),
   KEY `instructor_fcts_idinstructor_foreign` (`idInstructor`),
   KEY `fcts_cotutor_foreign` (`cotutor`),
-  CONSTRAINT `fcts_cotutor_foreign` FOREIGN KEY (`cotutor`) REFERENCES `profesores` (`dni`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fcts_cotutor_foreign` FOREIGN KEY (`cotutor`) REFERENCES `profesores` (`dni`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fcts_idcolaboracion_foreign` FOREIGN KEY (`idColaboracion`) REFERENCES `colaboraciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fcts_idInstructor_foreing` FOREIGN KEY (`idInstructor`) REFERENCES `instructores` (`dni`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -712,7 +831,7 @@ DROP TABLE IF EXISTS `grupos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `grupos` (
-  `codigo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `codigo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `nombre` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `turno` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `tutor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
@@ -765,7 +884,7 @@ CREATE TABLE `horarios` (
   `sesion_orden` tinyint NOT NULL,
   `idProfesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `modulo` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `idGrupo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `aula` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `ocupacion` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -827,6 +946,16 @@ CREATE TABLE `instructores` (
   `colaborador` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`dni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ipGuardias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ipGuardias` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `codOcup` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `jobs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -953,7 +1082,6 @@ CREATE TABLE `modulo_ciclos` (
   `idModulo` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `idCiclo` int NOT NULL,
   `curso` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `enlace` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `idDepartamento` tinyint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `modulo_ciclos_idmodulo_idciclo_unique` (`idModulo`,`idCiclo`),
@@ -971,7 +1099,7 @@ DROP TABLE IF EXISTS `modulo_grupos`;
 CREATE TABLE `modulo_grupos` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idModuloCiclo` int unsigned NOT NULL,
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `idGrupo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `modulo_grupos_idmodulociclo_idgrupo_unique` (`idModuloCiclo`,`idGrupo`),
   KEY `modulo_grupos_idgrupo_foreign` (`idGrupo`),
@@ -1121,9 +1249,9 @@ CREATE TABLE `profesores` (
   `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `emailItaca` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `email` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `domicilio` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `movil1` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `movil2` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `domicilio` varchar(90) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `movil1` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `movil2` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `sexo` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `codigo_postal` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `departamento` tinyint DEFAULT NULL,
@@ -1164,28 +1292,50 @@ DROP TABLE IF EXISTS `programaciones`;
 CREATE TABLE `programaciones` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `fichero` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `anexos` tinyint NOT NULL DEFAULT '0',
   `estado` tinyint NOT NULL DEFAULT '0',
   `checkList` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `ciclo` varchar(80) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `criterios` tinyint NOT NULL DEFAULT '0',
   `metodologia` tinyint NOT NULL DEFAULT '0',
   `propuestas` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `idModuloCiclo` int unsigned DEFAULT NULL,
-  `curso` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `profesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `programaciones_idmodulociclo_foreign` (`idModuloCiclo`),
   CONSTRAINT `programaciones_idmodulociclo_foreign` FOREIGN KEY (`idModuloCiclo`) REFERENCES `modulo_ciclos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `projectes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `projectes` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `idAlumne` char(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `grup` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `estat` tinyint NOT NULL DEFAULT '0',
+  `titol` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `objectius` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `resultats` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `aplicacions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `recursos` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `observacions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `defensa` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `idProfesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `hora_defensa` time DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `projectes_idprofesor_index` (`idProfesor`),
+  CONSTRAINT `projectes_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `provincias`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `provincias` (
-  `id` varchar(2) NOT NULL,
+  `id` varchar(2) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `nombre` varchar(60) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -1252,6 +1402,17 @@ CREATE TABLE `reuniones` (
   KEY `reuniones_idprofesor_foreign` (`idProfesor`),
   CONSTRAINT `reuniones_idprofesor_foreign` FOREIGN KEY (`idProfesor`) REFERENCES `profesores` (`dni`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `settings` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `collection` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `signatures`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1330,6 +1491,23 @@ CREATE TABLE `tasks_profesores` (
   CONSTRAINT `tasks_profesores_id_task_foreign` FOREIGN KEY (`id_task`) REFERENCES `tasks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tipo_actividad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipo_actividad` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `cliteral` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `vliteral` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `justificacio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `departamento_id` tinyint DEFAULT NULL,
+  `fecha_aprobacion` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tipo_actividad_departamento_id_foreign` (`departamento_id`),
+  CONSTRAINT `tipo_actividad_departamento_id_foreign` FOREIGN KEY (`departamento_id`) REFERENCES `departamentos` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tipo_expedientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1378,7 +1556,7 @@ DROP TABLE IF EXISTS `tutorias_grupos`;
 CREATE TABLE `tutorias_grupos` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idTutoria` int unsigned NOT NULL,
-  `idGrupo` varchar(5) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `idGrupo` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `observaciones` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `fecha` date NOT NULL,
   PRIMARY KEY (`id`),
@@ -1419,144 +1597,178 @@ CREATE TABLE `votes` (
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-INSERT INTO `migrations` VALUES (1,'2022_03_15_172037_create_action_events_table',0);
-INSERT INTO `migrations` VALUES (2,'2022_03_15_172037_create_actividad_grupo_table',0);
-INSERT INTO `migrations` VALUES (3,'2022_03_15_172037_create_actividad_profesor_table',0);
-INSERT INTO `migrations` VALUES (4,'2022_03_15_172037_create_actividades_table',0);
-INSERT INTO `migrations` VALUES (5,'2022_03_15_172037_create_activities_table',0);
-INSERT INTO `migrations` VALUES (6,'2022_03_15_172037_create_adjuntos_table',0);
-INSERT INTO `migrations` VALUES (7,'2022_03_15_172037_create_alumno_fcts_table',0);
-INSERT INTO `migrations` VALUES (8,'2022_03_15_172037_create_alumno_resultados_table',0);
-INSERT INTO `migrations` VALUES (9,'2022_03_15_172037_create_alumno_reuniones_table',0);
-INSERT INTO `migrations` VALUES (10,'2022_03_15_172037_create_alumnos_table',0);
-INSERT INTO `migrations` VALUES (11,'2022_03_15_172037_create_alumnos_cursos_table',0);
-INSERT INTO `migrations` VALUES (12,'2022_03_15_172037_create_alumnos_grupos_table',0);
-INSERT INTO `migrations` VALUES (13,'2022_03_15_172037_create_alumnos_password_resets_table',0);
-INSERT INTO `migrations` VALUES (14,'2022_03_15_172037_create_articulos_table',0);
-INSERT INTO `migrations` VALUES (15,'2022_03_15_172037_create_articulos_lote_table',0);
-INSERT INTO `migrations` VALUES (16,'2022_03_15_172037_create_asistencias_table',0);
-INSERT INTO `migrations` VALUES (17,'2022_03_15_172037_create_autorizaciones_table',0);
-INSERT INTO `migrations` VALUES (18,'2022_03_15_172037_create_centros_table',0);
-INSERT INTO `migrations` VALUES (19,'2022_03_15_172037_create_centros_instructores_table',0);
-INSERT INTO `migrations` VALUES (20,'2022_03_15_172037_create_ciclos_table',0);
-INSERT INTO `migrations` VALUES (21,'2022_03_15_172037_create_colaboracion_votes_table',0);
-INSERT INTO `migrations` VALUES (22,'2022_03_15_172037_create_colaboraciones_table',0);
-INSERT INTO `migrations` VALUES (23,'2022_03_15_172037_create_colaboradores_table',0);
-INSERT INTO `migrations` VALUES (24,'2022_03_15_172037_create_comision_fcts_table',0);
-INSERT INTO `migrations` VALUES (25,'2022_03_15_172037_create_comisiones_table',0);
-INSERT INTO `migrations` VALUES (26,'2022_03_15_172037_create_cursos_table',0);
-INSERT INTO `migrations` VALUES (27,'2022_03_15_172037_create_departamentos_table',0);
-INSERT INTO `migrations` VALUES (28,'2022_03_15_172037_create_documentos_table',0);
-INSERT INTO `migrations` VALUES (29,'2022_03_15_172037_create_empresas_table',0);
-INSERT INTO `migrations` VALUES (30,'2022_03_15_172037_create_espacios_table',0);
-INSERT INTO `migrations` VALUES (31,'2022_03_15_172037_create_expedientes_table',0);
-INSERT INTO `migrations` VALUES (32,'2022_03_15_172037_create_failed_jobs_table',0);
-INSERT INTO `migrations` VALUES (33,'2022_03_15_172037_create_faltas_table',0);
-INSERT INTO `migrations` VALUES (34,'2022_03_15_172037_create_faltas_itaca_table',0);
-INSERT INTO `migrations` VALUES (35,'2022_03_15_172037_create_faltas_profesores_table',0);
-INSERT INTO `migrations` VALUES (36,'2022_03_15_172037_create_fcts_table',0);
-INSERT INTO `migrations` VALUES (37,'2022_03_15_172037_create_grupos_table',0);
-INSERT INTO `migrations` VALUES (38,'2022_03_15_172037_create_grupos_trabajo_table',0);
-INSERT INTO `migrations` VALUES (39,'2022_03_15_172037_create_guardias_table',0);
-INSERT INTO `migrations` VALUES (40,'2022_03_15_172037_create_horarios_table',0);
-INSERT INTO `migrations` VALUES (41,'2022_03_15_172037_create_horas_table',0);
-INSERT INTO `migrations` VALUES (42,'2022_03_15_172037_create_incidencias_table',0);
-INSERT INTO `migrations` VALUES (43,'2022_03_15_172037_create_instructores_table',0);
-INSERT INTO `migrations` VALUES (44,'2022_03_15_172037_create_jobs_table',0);
-INSERT INTO `migrations` VALUES (45,'2022_03_15_172037_create_lotes_table',0);
-INSERT INTO `migrations` VALUES (46,'2022_03_15_172037_create_materiales_table',0);
-INSERT INTO `migrations` VALUES (47,'2022_03_15_172037_create_menus_table',0);
-INSERT INTO `migrations` VALUES (48,'2022_03_15_172037_create_miembros_table',0);
-INSERT INTO `migrations` VALUES (49,'2022_03_15_172037_create_modulo_ciclos_table',0);
-INSERT INTO `migrations` VALUES (50,'2022_03_15_172037_create_modulo_grupos_table',0);
-INSERT INTO `migrations` VALUES (51,'2022_03_15_172037_create_modulos_table',0);
-INSERT INTO `migrations` VALUES (52,'2022_03_15_172037_create_municipios_table',0);
-INSERT INTO `migrations` VALUES (53,'2022_03_15_172037_create_notifications_table',0);
-INSERT INTO `migrations` VALUES (54,'2022_03_15_172037_create_ocupaciones_table',0);
-INSERT INTO `migrations` VALUES (55,'2022_03_15_172037_create_options_table',0);
-INSERT INTO `migrations` VALUES (56,'2022_03_15_172037_create_ordenes_reuniones_table',0);
-INSERT INTO `migrations` VALUES (57,'2022_03_15_172037_create_ordenes_trabajo_table',0);
-INSERT INTO `migrations` VALUES (58,'2022_03_15_172037_create_password_resets_table',0);
-INSERT INTO `migrations` VALUES (59,'2022_03_15_172037_create_polls_table',0);
-INSERT INTO `migrations` VALUES (60,'2022_03_15_172037_create_ppolls_table',0);
-INSERT INTO `migrations` VALUES (61,'2022_03_15_172037_create_profesores_table',0);
-INSERT INTO `migrations` VALUES (62,'2022_03_15_172037_create_profesores_password_resets_table',0);
-INSERT INTO `migrations` VALUES (63,'2022_03_15_172037_create_programaciones_table',0);
-INSERT INTO `migrations` VALUES (64,'2022_03_15_172037_create_provincias_table',0);
-INSERT INTO `migrations` VALUES (65,'2022_03_15_172037_create_reservas_table',0);
-INSERT INTO `migrations` VALUES (66,'2022_03_15_172037_create_resultados_table',0);
-INSERT INTO `migrations` VALUES (67,'2022_03_15_172037_create_reuniones_table',0);
-INSERT INTO `migrations` VALUES (68,'2022_03_15_172037_create_tasks_table',0);
-INSERT INTO `migrations` VALUES (69,'2022_03_15_172037_create_tasks_profesores_table',0);
-INSERT INTO `migrations` VALUES (70,'2022_03_15_172037_create_tipo_expedientes_table',0);
-INSERT INTO `migrations` VALUES (71,'2022_03_15_172037_create_tipoincidencias_table',0);
-INSERT INTO `migrations` VALUES (72,'2022_03_15_172037_create_tutorias_table',0);
-INSERT INTO `migrations` VALUES (73,'2022_03_15_172037_create_tutorias_grupos_table',0);
-INSERT INTO `migrations` VALUES (74,'2022_03_15_172037_create_votes_table',0);
-INSERT INTO `migrations` VALUES (75,'2022_03_15_172039_add_foreign_keys_to_actividad_grupo_table',0);
-INSERT INTO `migrations` VALUES (76,'2022_03_15_172039_add_foreign_keys_to_actividad_profesor_table',0);
-INSERT INTO `migrations` VALUES (77,'2022_03_15_172039_add_foreign_keys_to_actividades_table',0);
-INSERT INTO `migrations` VALUES (78,'2022_03_15_172039_add_foreign_keys_to_alumno_fcts_table',0);
-INSERT INTO `migrations` VALUES (79,'2022_03_15_172039_add_foreign_keys_to_alumno_resultados_table',0);
-INSERT INTO `migrations` VALUES (80,'2022_03_15_172039_add_foreign_keys_to_alumno_reuniones_table',0);
-INSERT INTO `migrations` VALUES (81,'2022_03_15_172039_add_foreign_keys_to_alumnos_cursos_table',0);
-INSERT INTO `migrations` VALUES (82,'2022_03_15_172039_add_foreign_keys_to_alumnos_grupos_table',0);
-INSERT INTO `migrations` VALUES (83,'2022_03_15_172039_add_foreign_keys_to_articulos_lote_table',0);
-INSERT INTO `migrations` VALUES (84,'2022_03_15_172039_add_foreign_keys_to_asistencias_table',0);
-INSERT INTO `migrations` VALUES (85,'2022_03_15_172039_add_foreign_keys_to_autorizaciones_table',0);
-INSERT INTO `migrations` VALUES (86,'2022_03_15_172039_add_foreign_keys_to_centros_table',0);
-INSERT INTO `migrations` VALUES (87,'2022_03_15_172039_add_foreign_keys_to_centros_instructores_table',0);
-INSERT INTO `migrations` VALUES (88,'2022_03_15_172039_add_foreign_keys_to_ciclos_table',0);
-INSERT INTO `migrations` VALUES (89,'2022_03_15_172039_add_foreign_keys_to_colaboracion_votes_table',0);
-INSERT INTO `migrations` VALUES (90,'2022_03_15_172039_add_foreign_keys_to_colaboraciones_table',0);
-INSERT INTO `migrations` VALUES (91,'2022_03_15_172039_add_foreign_keys_to_colaboradores_table',0);
-INSERT INTO `migrations` VALUES (92,'2022_03_15_172039_add_foreign_keys_to_comision_fcts_table',0);
-INSERT INTO `migrations` VALUES (93,'2022_03_15_172039_add_foreign_keys_to_comisiones_table',0);
-INSERT INTO `migrations` VALUES (94,'2022_03_15_172039_add_foreign_keys_to_espacios_table',0);
-INSERT INTO `migrations` VALUES (95,'2022_03_15_172039_add_foreign_keys_to_expedientes_table',0);
-INSERT INTO `migrations` VALUES (96,'2022_03_15_172039_add_foreign_keys_to_faltas_table',0);
-INSERT INTO `migrations` VALUES (97,'2022_03_15_172039_add_foreign_keys_to_faltas_itaca_table',0);
-INSERT INTO `migrations` VALUES (98,'2022_03_15_172039_add_foreign_keys_to_faltas_profesores_table',0);
-INSERT INTO `migrations` VALUES (99,'2022_03_15_172039_add_foreign_keys_to_fcts_table',0);
-INSERT INTO `migrations` VALUES (100,'2022_03_15_172039_add_foreign_keys_to_guardias_table',0);
-INSERT INTO `migrations` VALUES (101,'2022_03_15_172039_add_foreign_keys_to_incidencias_table',0);
-INSERT INTO `migrations` VALUES (102,'2022_03_15_172039_add_foreign_keys_to_materiales_table',0);
-INSERT INTO `migrations` VALUES (103,'2022_03_15_172039_add_foreign_keys_to_miembros_table',0);
-INSERT INTO `migrations` VALUES (104,'2022_03_15_172039_add_foreign_keys_to_modulo_ciclos_table',0);
-INSERT INTO `migrations` VALUES (105,'2022_03_15_172039_add_foreign_keys_to_modulo_grupos_table',0);
-INSERT INTO `migrations` VALUES (106,'2022_03_15_172039_add_foreign_keys_to_options_table',0);
-INSERT INTO `migrations` VALUES (107,'2022_03_15_172039_add_foreign_keys_to_ordenes_reuniones_table',0);
-INSERT INTO `migrations` VALUES (108,'2022_03_15_172039_add_foreign_keys_to_ordenes_trabajo_table',0);
-INSERT INTO `migrations` VALUES (109,'2022_03_15_172039_add_foreign_keys_to_polls_table',0);
-INSERT INTO `migrations` VALUES (110,'2022_03_15_172039_add_foreign_keys_to_programaciones_table',0);
-INSERT INTO `migrations` VALUES (111,'2022_03_15_172039_add_foreign_keys_to_reservas_table',0);
-INSERT INTO `migrations` VALUES (112,'2022_03_15_172039_add_foreign_keys_to_resultados_table',0);
-INSERT INTO `migrations` VALUES (113,'2022_03_15_172039_add_foreign_keys_to_reuniones_table',0);
-INSERT INTO `migrations` VALUES (114,'2022_03_15_172039_add_foreign_keys_to_tasks_profesores_table',0);
-INSERT INTO `migrations` VALUES (115,'2022_03_15_172039_add_foreign_keys_to_tipoincidencias_table',0);
-INSERT INTO `migrations` VALUES (116,'2022_03_15_172039_add_foreign_keys_to_tutorias_grupos_table',0);
-INSERT INTO `migrations` VALUES (117,'2022_03_15_172039_add_foreign_keys_to_votes_table',0);
-INSERT INTO `migrations` VALUES (118,'2022_04_12_111332_alter_lote_table',1);
-INSERT INTO `migrations` VALUES (119,'2022_04_28_111332_alter_fct_table',2);
-INSERT INTO `migrations` VALUES (120,'2022_04_28_111532_alter_fct_table_1',3);
-INSERT INTO `migrations` VALUES (121,'2022_05_17_111532_alter_espacios_table',4);
-INSERT INTO `migrations` VALUES (122,'2022_05_23_195731_create_solicitudes_table',5);
-INSERT INTO `migrations` VALUES (123,'2022_05_23_202039_add_foreign_keys_to_solicitudes_table',5);
-INSERT INTO `migrations` VALUES (124,'2022_07_05_111532_alter_profesores_table',6);
-INSERT INTO `migrations` VALUES (125,'2022_09_21_111532_alter_solicitudes_table',7);
-INSERT INTO `migrations` VALUES (126,'2022_10_18_111532_alter_comisiones_table',8);
-INSERT INTO `migrations` VALUES (127,'2022_10_21_111530_alter_alumno_fcts_table_1',9);
-INSERT INTO `migrations` VALUES (128,'2022_10_22_111532_alter_empresas_table',9);
-INSERT INTO `migrations` VALUES (129,'2022_10_31_111530_alter_alumno_fcts_table_2',10);
-INSERT INTO `migrations` VALUES (130,'2022_11_05_111532_alter_centros_table',10);
-INSERT INTO `migrations` VALUES (131,'2022_11_06_111532_alter_adjuntos_table',10);
-INSERT INTO `migrations` VALUES (132,'2022_11_18_111530_alter_alumno_fcts_table_3',11);
-INSERT INTO `migrations` VALUES (133,'2022_12_06_111530_alter_colaboraciones_table',12);
-INSERT INTO `migrations` VALUES (134,'2022_12_22_111530_alter_colaboradores_table',13);
-INSERT INTO `migrations` VALUES (135,'2023_01_03_195731_create_erasmus_table',14);
-INSERT INTO `migrations` VALUES (136,'2023_01_03_201532_alter_fct_table_2',14);
-INSERT INTO `migrations` VALUES (137,'2023_03_03_201532_alter_fct_table_3',15);
-INSERT INTO `migrations` VALUES (139,'2023_03_28_172037_create_materiales_baja_table',16);
-INSERT INTO `migrations` VALUES (140,'2023_04_17_172037_create_signatures_table',17);
-INSERT INTO `migrations` VALUES (143,'2022_12_18_111530_alter_instructores_table',18);
-INSERT INTO `migrations` VALUES (144,'2023_05_15_172037_create_settings_table',18);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (1,'2022_03_15_172037_create_action_events_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (2,'2022_03_15_172037_create_actividad_grupo_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (3,'2022_03_15_172037_create_actividad_profesor_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (4,'2022_03_15_172037_create_actividades_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (5,'2022_03_15_172037_create_activities_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (6,'2022_03_15_172037_create_adjuntos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (7,'2022_03_15_172037_create_alumno_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (8,'2022_03_15_172037_create_alumno_resultados_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (9,'2022_03_15_172037_create_alumno_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (10,'2022_03_15_172037_create_alumnos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (11,'2022_03_15_172037_create_alumnos_cursos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (12,'2022_03_15_172037_create_alumnos_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (13,'2022_03_15_172037_create_alumnos_password_resets_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (14,'2022_03_15_172037_create_articulos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (15,'2022_03_15_172037_create_articulos_lote_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (16,'2022_03_15_172037_create_asistencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (17,'2022_03_15_172037_create_autorizaciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (18,'2022_03_15_172037_create_centros_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (19,'2022_03_15_172037_create_centros_instructores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (20,'2022_03_15_172037_create_ciclos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (21,'2022_03_15_172037_create_colaboracion_votes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (22,'2022_03_15_172037_create_colaboraciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (23,'2022_03_15_172037_create_colaboradores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (24,'2022_03_15_172037_create_comision_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (25,'2022_03_15_172037_create_comisiones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (26,'2022_03_15_172037_create_cursos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (27,'2022_03_15_172037_create_departamentos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (28,'2022_03_15_172037_create_documentos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (29,'2022_03_15_172037_create_empresas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (30,'2022_03_15_172037_create_espacios_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (31,'2022_03_15_172037_create_expedientes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (32,'2022_03_15_172037_create_failed_jobs_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (33,'2022_03_15_172037_create_faltas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (34,'2022_03_15_172037_create_faltas_itaca_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (35,'2022_03_15_172037_create_faltas_profesores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (36,'2022_03_15_172037_create_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (37,'2022_03_15_172037_create_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (38,'2022_03_15_172037_create_grupos_trabajo_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (39,'2022_03_15_172037_create_guardias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (40,'2022_03_15_172037_create_horarios_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (41,'2022_03_15_172037_create_horas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (42,'2022_03_15_172037_create_incidencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (43,'2022_03_15_172037_create_instructores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (44,'2022_03_15_172037_create_jobs_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (45,'2022_03_15_172037_create_lotes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (46,'2022_03_15_172037_create_materiales_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (47,'2022_03_15_172037_create_menus_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (48,'2022_03_15_172037_create_miembros_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (49,'2022_03_15_172037_create_modulo_ciclos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (50,'2022_03_15_172037_create_modulo_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (51,'2022_03_15_172037_create_modulos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (52,'2022_03_15_172037_create_municipios_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (53,'2022_03_15_172037_create_notifications_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (54,'2022_03_15_172037_create_ocupaciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (55,'2022_03_15_172037_create_options_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (56,'2022_03_15_172037_create_ordenes_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (57,'2022_03_15_172037_create_ordenes_trabajo_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (58,'2022_03_15_172037_create_password_resets_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (59,'2022_03_15_172037_create_polls_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (60,'2022_03_15_172037_create_ppolls_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (61,'2022_03_15_172037_create_profesores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (62,'2022_03_15_172037_create_profesores_password_resets_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (63,'2022_03_15_172037_create_programaciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (64,'2022_03_15_172037_create_provincias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (65,'2022_03_15_172037_create_reservas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (66,'2022_03_15_172037_create_resultados_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (67,'2022_03_15_172037_create_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (68,'2022_03_15_172037_create_tasks_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (69,'2022_03_15_172037_create_tasks_profesores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (70,'2022_03_15_172037_create_tipo_expedientes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (71,'2022_03_15_172037_create_tipoincidencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (72,'2022_03_15_172037_create_tutorias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (73,'2022_03_15_172037_create_tutorias_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (74,'2022_03_15_172037_create_votes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (75,'2022_03_15_172039_add_foreign_keys_to_actividad_grupo_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (76,'2022_03_15_172039_add_foreign_keys_to_actividad_profesor_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (77,'2022_03_15_172039_add_foreign_keys_to_actividades_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (78,'2022_03_15_172039_add_foreign_keys_to_alumno_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (79,'2022_03_15_172039_add_foreign_keys_to_alumno_resultados_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (80,'2022_03_15_172039_add_foreign_keys_to_alumno_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (81,'2022_03_15_172039_add_foreign_keys_to_alumnos_cursos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (82,'2022_03_15_172039_add_foreign_keys_to_alumnos_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (83,'2022_03_15_172039_add_foreign_keys_to_articulos_lote_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (84,'2022_03_15_172039_add_foreign_keys_to_asistencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (85,'2022_03_15_172039_add_foreign_keys_to_autorizaciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (86,'2022_03_15_172039_add_foreign_keys_to_centros_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (87,'2022_03_15_172039_add_foreign_keys_to_centros_instructores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (88,'2022_03_15_172039_add_foreign_keys_to_ciclos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (89,'2022_03_15_172039_add_foreign_keys_to_colaboracion_votes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (90,'2022_03_15_172039_add_foreign_keys_to_colaboraciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (91,'2022_03_15_172039_add_foreign_keys_to_colaboradores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (92,'2022_03_15_172039_add_foreign_keys_to_comision_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (93,'2022_03_15_172039_add_foreign_keys_to_comisiones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (94,'2022_03_15_172039_add_foreign_keys_to_espacios_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (95,'2022_03_15_172039_add_foreign_keys_to_expedientes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (96,'2022_03_15_172039_add_foreign_keys_to_faltas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (97,'2022_03_15_172039_add_foreign_keys_to_faltas_itaca_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (98,'2022_03_15_172039_add_foreign_keys_to_faltas_profesores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (99,'2022_03_15_172039_add_foreign_keys_to_fcts_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (100,'2022_03_15_172039_add_foreign_keys_to_guardias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (101,'2022_03_15_172039_add_foreign_keys_to_incidencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (102,'2022_03_15_172039_add_foreign_keys_to_materiales_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (103,'2022_03_15_172039_add_foreign_keys_to_miembros_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (104,'2022_03_15_172039_add_foreign_keys_to_modulo_ciclos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (105,'2022_03_15_172039_add_foreign_keys_to_modulo_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (106,'2022_03_15_172039_add_foreign_keys_to_options_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (107,'2022_03_15_172039_add_foreign_keys_to_ordenes_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (108,'2022_03_15_172039_add_foreign_keys_to_ordenes_trabajo_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (109,'2022_03_15_172039_add_foreign_keys_to_polls_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (110,'2022_03_15_172039_add_foreign_keys_to_programaciones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (111,'2022_03_15_172039_add_foreign_keys_to_reservas_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (112,'2022_03_15_172039_add_foreign_keys_to_resultados_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (113,'2022_03_15_172039_add_foreign_keys_to_reuniones_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (114,'2022_03_15_172039_add_foreign_keys_to_tasks_profesores_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (115,'2022_03_15_172039_add_foreign_keys_to_tipoincidencias_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (116,'2022_03_15_172039_add_foreign_keys_to_tutorias_grupos_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (117,'2022_03_15_172039_add_foreign_keys_to_votes_table',0);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (118,'2022_04_12_111332_alter_lote_table',1);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (119,'2022_04_28_111332_alter_fct_table',2);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (120,'2022_04_28_111532_alter_fct_table_1',3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (121,'2022_05_17_111532_alter_espacios_table',4);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (122,'2022_05_23_195731_create_solicitudes_table',5);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (123,'2022_05_23_202039_add_foreign_keys_to_solicitudes_table',5);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (124,'2022_07_05_111532_alter_profesores_table',6);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (125,'2022_09_21_111532_alter_solicitudes_table',7);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (126,'2022_10_18_111532_alter_comisiones_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (127,'2022_10_21_111530_alter_alumno_fcts_table_1',9);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (128,'2022_10_22_111532_alter_empresas_table',9);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (129,'2022_10_31_111530_alter_alumno_fcts_table_2',10);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (130,'2022_11_05_111532_alter_centros_table',10);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (131,'2022_11_06_111532_alter_adjuntos_table',10);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (132,'2022_11_18_111530_alter_alumno_fcts_table_3',11);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (133,'2022_12_06_111530_alter_colaboraciones_table',12);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (134,'2022_12_22_111530_alter_colaboradores_table',13);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (135,'2023_01_03_195731_create_erasmus_table',14);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (136,'2023_01_03_201532_alter_fct_table_2',14);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (137,'2023_03_03_201532_alter_fct_table_3',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (139,'2023_03_28_172037_create_materiales_baja_table',16);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (140,'2023_04_17_172037_create_signatures_table',17);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (141,'2022_12_18_111530_alter_instructores_table',18);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (142,'2023_05_17_172037_create_settings_table',19);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (143,'2023_05_18_172037_create_ipguardias_table',19);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (144,'2023_10_05_123116_create_counters_table',20);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (145,'2023_10_11_204025_add_flexible_to_alumno_fcts_table',21);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (146,'2023_10_12_082527_modify_unique_constraints_on_alumno_fcts_table',21);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (147,'2023_10_13_204025_add_idProfesor_to_alumno_fcts_table',21);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (148,'2024_01_24_204025_add_signatura_to_empresas_table',22);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (149,'2024_03_05_204025_add_itaca_to_faltes_table',23);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (150,'2024_03_17_204025_add_actiu_to_documentos_table',24);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (151,'2024_03_17_204025_add_valoracio_to_alumnofct_table',25);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (152,'2024_03_17_204025_delete_fields_programacion_table',26);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (153,'2024_06_17_204025_delete_link_module_ciclo_table',26);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (154,'2024_07_17_204025_add_cessio_dades_to_alumno_table',27);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (155,'2024_08_17_172037_create_projectes_table',28);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (156,'2024_09_08_160516_update_codigo_in_grupos_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (157,'2024_09_08_160530_update_id_grupo_in_actividad_grupo_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (158,'2024_09_08_160531_update_id_grupo_in_alumnos_grupos_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (159,'2024_09_08_160531_update_id_grupo_in_modulo_grupos_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (160,'2024_09_08_160532_update_id_grupo_in_tutorias_grupos_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (161,'2024_09_08_172730_update_id_grupo_in_horarios_table',29);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (162,'2024_09_09_180337_add_complementaria_to_actividades_table',30);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (163,'2024_09_13_180337_add_erasmus_to_fcts_table',31);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (164,'2025_01_24_130019_add_id_profesor_and_hora_defensa_to_projectes_table',32);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (165,'2025_02_08_093810_create_fct_days_table',33);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (166,'2025_02_10_162720_create_calendari_escolar_table',33);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (167,'2025_05_03_114928_create_cotxes_table',34);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (168,'2025_06_05_150339_add_da_to_alumnos_table',35);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (169,'2025_06_29_194306_update_fct_days_table',36);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (172,'2025_07_04_111031_cotxe_accesos',37);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (173,'2025_07_04_121238_add_tipus_to_cotxe_accessos_table',37);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (174,'2025_07_24_173230_create_tipo_actividad_table',38);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (175,'2025_07_24_175046_add_tipo_actividad_id_to_actividades_table',38);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (176,'2025_10_01_155135_add_fecha_tramite_to_expedientes_table',39);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (178,'2025_10_02_123403_create_bustia_violeta_table copy',40);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (179,'2025_10_22_000001_add_tipus_to_bustia_violeta_table',40);

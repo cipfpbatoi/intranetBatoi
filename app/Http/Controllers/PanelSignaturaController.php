@@ -5,20 +5,21 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Services\Signature\DigitalSignatureService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class PanelExpedienteController
@@ -45,12 +46,23 @@ class PanelSignaturaController extends BaseController
      */
     protected $parametresVista = [ 'modal' => ['signaturaDirector']];
 
+    /**
+     * Mostra el panell de signatures de direcció amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
+        return parent::index();
+    }
 
     /**
      *
      */
     protected function iniBotones()
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         if (authUser()->dni === config('avisos.director') || authUser()->dni === config('avisos.errores')) {
             $this->panel->setBotonera([], ['pdf','delete']);
             $this->panel->setBoton(
@@ -68,6 +80,7 @@ class PanelSignaturaController extends BaseController
      */
     protected function search()
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         return Signatura::where(function ($query) {
             $query->where('tipus', 'like', 'A1%') // Canviat a 'like' i afegit '%'
             ->where('signed', 0);
@@ -82,6 +95,7 @@ class PanelSignaturaController extends BaseController
 
     public function sign(Request $request)
     {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
         $signatures = array_keys($request->toArray(), "on");
         $decrypt = $request['decrypt']??null;
         $passCert = $request['cert']??null;
@@ -96,7 +110,10 @@ class PanelSignaturaController extends BaseController
                     if ($signatura) {
                         $fileToSign = $signatura->routeFile;
                         if (!file_exists($fileToSign)) {
-                            throw new IntranetException("No s'ha trobat el PDF a signar: $fileToSign");
+                            throw new NotFoundDomainException(
+                                "No s'ha trobat el PDF a signar: $fileToSign",
+                                ['file' => $fileToSign]
+                            );
                         }
                         if (file_exists($file)) {
                             $x = config("signatures.files.{$signatura->tipus}.director.x");
@@ -133,10 +150,12 @@ class PanelSignaturaController extends BaseController
                     'intranetUser' => authUser()->fullName,
                 ]);
                 Alert::warning($exception->getMessage());
-                app(NotificationService::class)->send(
-                    config('avisos.errores'),
-                    $exception->getMessage()." : ".authUser()->fullName
-                );
+                if ($exception->shouldNotify()) {
+                    app(NotificationService::class)->send(
+                        config('avisos.errores'),
+                        $exception->getMessage()." : ".authUser()->fullName
+                    );
+                }
                 if (isset($file)) {
                     unlink($file);
                 }

@@ -14,11 +14,14 @@ class SolicitudResource extends JsonResource
      */
     public function toArray($request)
     {
+        $alumno = $this->Alumno;
+        $grupo = $alumno?->Grupo?->first();
+
         return [
-            'Alumne' => $this->Alumno->fullName??'',
-            'Grupo' => $this->Alumno->Grupo->first()->nombre??'',
-            'Email' => $this->Alumno->email,
-            'Edat' => $this->Alumno->edat,
+            'Alumne' => $alumno->fullName ?? '',
+            'Grupo' => $grupo->nombre ?? '',
+            'Email' => $alumno->email ?? '',
+            'Edat' => $alumno->edat ?? '',
             'Professor que fa la petició' => $this->Profesor->fullName??'',
             'Motius de la sol·licitut' => $this->text1,
             'Aspectes afectats per la situació' => $this->text2??'',
@@ -26,10 +29,9 @@ class SolicitudResource extends JsonResource
             'Data' => $this->fecha,
             'Orientador' => $this->Orientador->fullName??'',
             'Estat' => $this->situacion,
-            'Data Solució' => $this->fechaSolicion??'',
+            'Data Solució' => $this->fechaSolucion ?? '',
             'Solució' => $this->solucion,
         ];
     }
 }
-
 

@@ -2,11 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Http\Controllers\Core\BaseController;
 
-use Intranet\Entities\Empresa;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Empresa;
+use Illuminate\Support\Facades\Gate;
 
 
 /**
@@ -17,6 +19,7 @@ class PanelEmpresaSCController extends BaseController
 {
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     const ROLES_ROL_DUAL = 'roles.rol.dual';
+    private ?EmpresaService $empresaService = null;
 
     /**
      * @var string
@@ -35,13 +38,42 @@ class PanelEmpresaSCController extends BaseController
      */
     protected $vista = ['index' => 'empresa.indexSC'];
 
+    public function __construct(?EmpresaService $empresaService = null)
+    {
+        parent::__construct();
+        $this->empresaService = $empresaService;
+    }
+
+    protected function empreses(): EmpresaService
+    {
+        if ($this->empresaService === null) {
+            $this->empresaService = app(EmpresaService::class);
+        }
+
+        return $this->empresaService;
+    }
+
+    /**
+     * Mostra el panell d'empreses amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Empresa::class);
+        return parent::index();
+    }
 
     /**
      * @return mixed
      */
     public function search()
     {
-        return Empresa::whereNull('concierto')->get();
+        Gate::authorize('viewAny', Empresa::class);
+        return $this->empreses()->socialConcertList()->map(function (Empresa $empresa) {
+            $empresa->concierto = $empresa->concierto ?: 'Sense concert';
+            return $empresa;
+        });
     }
 
     /**
@@ -59,15 +91,13 @@ class PanelEmpresaSCController extends BaseController
        $this->panel->setBoton(
            'grid',
            new BotonImg(
-               'empresa.detalle',
-               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
+               'empresa.detalle'
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
-               'empresa.delete',
-               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
+               'empresa.delete'
            )
        );
     }

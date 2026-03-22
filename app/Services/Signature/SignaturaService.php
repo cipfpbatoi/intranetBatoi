@@ -2,13 +2,16 @@
 
 namespace Intranet\Services\Signature;
 
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 
 class SignaturaService
 {
     public static function exec($dni, $style='', $ratio=1, $notFound=null)
     {
-        $profesor = Profesor::find($dni);
+        $profesor = app(ProfesorService::class)->find((string) $dni);
+        if (!$profesor) {
+            return $notFound;
+        }
         $name = $profesor->foto;
         $x = $ratio * 260;
         $y = $ratio * 220;
@@ -23,7 +26,10 @@ class SignaturaService
 
     public static function peu($dni)
     {
-        $profesor = Profesor::find($dni);
+        $profesor = app(ProfesorService::class)->find((string) $dni);
+        if (!$profesor) {
+            return '';
+        }
         $name = $profesor->foto;
         if ($name && file_exists(storage_path().'/app/public/peus/'.$name)) {
             $ruta = public_path('/storage/peus/'.$name);
@@ -38,7 +44,10 @@ class SignaturaService
 
     public static function exists($dni)
     {
-        $profesor = Profesor::find($dni);
+        $profesor = app(ProfesorService::class)->find((string) $dni);
+        if (!$profesor) {
+            return false;
+        }
         $name = $profesor->foto;
         return file_exists(storage_path().'/app/public/peus/'.$name);
     }

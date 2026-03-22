@@ -10,9 +10,9 @@
                     <a  href="{{ $item['url'] }}" >
                     @endif
                     @if (isset($item['img']))
-                        {!! Html::image('img/'.$item['img'] ,$nombre,['data-toogle'=>'tooltip','title'=>trans('messages.menu.'.ucwords($nombre)),'class'=>'iconofit']) !!}
+                        {!! Html::image('img/'.$item['img'] ,$nombre,['data-toogle'=>'tooltip','title'=>__('messages.menu.'.ucwords($nombre)),'class'=>'iconofit']) !!}
                     @else
-                        {!! Html::image('img/'.$item['url'].'.png' ,$nombre,['data-toogle'=>'tooltip','title'=>trans('messages.menu.'.ucwords($nombre)),'class'=>'iconofit']) !!}
+                        {!! Html::image('img/'.$item['url'].'.png' ,$nombre,['data-toogle'=>'tooltip','title'=>__('messages.menu.'.ucwords($nombre)),'class'=>'iconofit']) !!}
                     @endif
                     </a>
                 </div>
@@ -22,4 +22,3 @@
     @section('titulo')
         PANEL DE CONTROL
     @endsection
-

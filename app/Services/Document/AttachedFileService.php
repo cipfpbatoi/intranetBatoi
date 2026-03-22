@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Intranet\Entities\Adjunto;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\AlumnoFct;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class AttachedFileService
 {

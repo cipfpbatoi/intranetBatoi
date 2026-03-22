@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 class AVIResource extends PrintResource
 {
@@ -23,7 +23,7 @@ class AVIResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         return [
             'ALUMNO' => "ALUMNO$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
             'CENTRE' => config('contacto.nombre').' '.config('contacto.codi') ,

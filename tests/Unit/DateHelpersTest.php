@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Cache;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class DateHelpersTest extends TestCase
@@ -34,7 +34,7 @@ class DateHelpersTest extends TestCase
     public function test_manana_i_mananadate_son_consistents(): void
     {
         $this->assertSame(date('Y-m-d', strtotime('+1 day')), manana());
-        $this->assertInstanceOf(Date::class, mananaDate());
+        $this->assertInstanceOf(Carbon::class, mananaDate());
         $this->assertSame(manana(), mananaDate()->toDateString());
     }
 

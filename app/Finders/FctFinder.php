@@ -2,7 +2,7 @@
 namespace Intranet\Finders;
 
 use Intranet\Entities\Fct;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 class FctFinder extends Finder
 {

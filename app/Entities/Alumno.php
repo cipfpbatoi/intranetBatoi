@@ -2,13 +2,14 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 
 class Alumno extends Authenticatable
 {
@@ -81,6 +82,14 @@ class Alumno extends Authenticatable
         return $this->hasMany(AlumnoFct::class, 'idAlumno', 'nia');
     }
 
+    /**
+     * Retorna les preassignacions provisionals d'este alumne.
+     */
+    public function Preasignaciones(): HasMany
+    {
+        return $this->hasMany(ColaboracionPreasignacion::class, 'idAlumno', 'nia');
+    }
+
     public function FctsColaboracion(int $colaboracion): BelongsToMany
     {
         return $this->Fcts()->wherePivot('idColaboracion', $colaboracion);
@@ -120,14 +129,14 @@ class Alumno extends Authenticatable
 
     public function scopeMenor(Builder $query, ?string $fecha = null): Builder
     {
-        $fechaLimite = ($fecha ? new Date($fecha) : new Date())->subYears(18)->toDateString();
+        $fechaLimite = ($fecha ? new Carbon($fecha) : new Carbon())->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $fechaLimite);
     }
 
     public function scopeMisAlumnos(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $grupos = app(GrupoService::class)->qTutor((string) $profesor)->pluck('codigo')->toArray();
         $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos);
     }
@@ -138,9 +147,11 @@ class Alumno extends Authenticatable
         $profesor = $profesor ?? authUser()->dni;
 
         // Subconsulta dels codis de grup on sóc tutor i NO són LFP
-        $codigosTutorNoLfp = Grupo::QTutor($profesor, $dual)
-            ->select('codigo')
-            ->where('codigo', 'not like', '%LFP%');
+        $codigosTutorNoLfp = app(GrupoService::class)
+            ->qTutor((string) $profesor)
+            ->where('codigo', 'not like', '%LFP%')
+            ->pluck('codigo')
+            ->all();
 
         // idAlumno de la taula pont per a eixos grups
         $subAlumnos = AlumnoGrupo::query()
@@ -185,7 +196,7 @@ class Alumno extends Authenticatable
 
     public function getFechaNacAttribute(?string $entrada): ?string
     {
-        return $entrada ? (new Date($entrada))->format('d-m-Y') : null;
+        return $entrada ? (new Carbon($entrada))->format('d-m-Y') : null;
     }
 
     public function getPoblacionAttribute(): string
@@ -195,20 +206,20 @@ class Alumno extends Authenticatable
 
     public function getEsMenorAttribute(): bool
     {
-        return $this->fecha_nac ? (new Date($this->fecha_nac))->gt((new Date())->subYears(18)) : false;
+        return $this->fecha_nac ? (new Carbon($this->fecha_nac))->gt((new Carbon())->subYears(18)) : false;
     }
 
     public function esMenorEdat($fecha)
     {
-        $dataNaixement = new \Jenssegers\Date\Date($this->fecha_nac);
-        $dataComparacio = new \Jenssegers\Date\Date($fecha);
+        $dataNaixement = new \Illuminate\Support\Carbon($this->fecha_nac);
+        $dataComparacio = new \Illuminate\Support\Carbon($fecha);
 
         return $dataNaixement->diffInYears($dataComparacio) < 18;
     }
 
     public function getEdatAttribute(): ?int
     {
-        return $this->fecha_nac ? (new Date($this->fecha_nac))->age : null;
+        return $this->fecha_nac ? (new Carbon($this->fecha_nac))->age : null;
     }
 
     public function getFullNameAttribute(): string
@@ -237,11 +248,6 @@ class Alumno extends Authenticatable
     | MÈTODES UTILS
     |--------------------------------------------------------------------------
     */
-    public function saveContact(string $contacto, string $email): void
-    {
-        $this->update(['email' => $email]);
-    }
-
     public function getIdiomaOptions(): array
     {
         return config('auxiliares.idiomas');
@@ -250,7 +256,7 @@ class Alumno extends Authenticatable
     public function scopeMisDA(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $grupos = app(GrupoService::class)->qTutor((string) $profesor)->pluck('codigo')->toArray();
         $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos)->where('DA',1);
     }

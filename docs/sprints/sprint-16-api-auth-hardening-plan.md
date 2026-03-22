@@ -1,0 +1,114 @@
+# Sprint 16 - Protegir endpoints API sense autenticació
+
+## Objectiu
+
+Auditar i protegir endpoints de l'API que ara mateix queden oberts sense autenticació o amb protecció inconsistent.
+
+## Diagnòstic inicial
+
+En [`routes/api.php`](/Users/igomis/Code/intranetBatoi/routes/api.php) hi ha un patró mixt:
+
+- molts endpoints correctament protegits amb `auth:api,sanctum`
+- alguns endpoints públics que poden ser legítims
+- alguns punts sensibles que, com a mínim, necessiten revisió
+
+Exemples visibles fora del grup autenticat:
+
+- `Route::resource('projecte', 'ProjecteController', ['except' => [ 'create']]);`
+- `Route::get('/convenio', 'EmpresaController@indexConvenio');`
+- `Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');`
+- `Route::get('server-time', 'GuardiaController@getServerTime');`
+- endpoints de porta/cotxe:
+  - `porta/obrir`
+  - `porta/obrir-automatica`
+  - `eventPortaSortida`
+  - `eventPorta`
+- `presencia/resumen-rango`
+- `auth/exchange`
+
+No tots són necessàriament vulnerables, però sí són candidats a revisió.
+
+## Criteri
+
+Només poden quedar públics els endpoints que complisquen alguna d'estes condicions:
+
+- són estrictament d'infraestructura o salut
+- el seu ús públic és deliberat i documentat
+- tenen una altra capa de validació forta equivalent a autenticació
+
+La resta s'ha de protegir.
+
+## Fases
+
+### Tall A - Inventari real
+
+- classificar cada endpoint API en:
+  - públic justificat
+  - protegit correcte
+  - obert dubtós
+  - obert incorrecte
+- documentar per què és públic o per què s'ha de tancar
+
+Inventari provisional:
+
+- tancats en este sprint:
+  - `projecte`
+  - `actividad/{actividad}/getFiles`
+  - `presencia/resumen-rango`
+  - `convenio`
+- públic justificat de moment:
+  - `auth/exchange`
+- públics pendents de tractament específic:
+  - `miIp`
+  - `server-time`
+  - `porta/obrir`
+  - `porta/obrir-automatica`
+  - `eventPortaSortida`
+  - `eventPorta`
+
+Observació:
+
+- els endpoints de porta/cotxe no semblen adequats per a `auth:sanctum` clàssic; probablement necessitaran token d'integració, signatura o allowlist d'IP.
+- conclusió provisional del bloc de porta:
+  - `porta/obrir` és només un endpoint manual de prova
+  - `eventPorta` i `eventPortaSortida` tenen sentit com a webhooks explícits d'entrada/eixida
+  - `porta/obrir-automatica` no té consum intern localitzat i és candidat a redundància o deprecació
+
+### Tall B - Enduriment mínim
+
+- afegir `auth:api,sanctum` als endpoints sensibles que ara estan oberts
+- revisar especialment:
+  - `projecte`
+  - `actividad/{actividad}/getFiles`
+  - `presencia/resumen-rango`
+  - endpoints de porta/cotxe si no tenen protecció externa prou clara
+
+### Tall C - Coherència d'autenticació
+
+- revisar si cal usar:
+  - `auth:api,sanctum`
+  - `auth:sanctum`
+  - o middleware propi
+- evitar barreges arbitràries
+- deixar clar el contracte d'autenticació de cada família d'endpoints
+
+Decisions provisionals de coherència:
+
+- `auth/exchange` es manté públic perquè és el pont deliberat de `api_token` legacy a Sanctum
+- `miIp` i `server-time` es mantenen públics com a endpoints d'infraestructura/diagnòstic
+- el bloc de porta queda fora d'este tall de coherència perquè necessita protecció d'integració, no autenticació d'usuari
+
+### Tall D - Proves de regressió
+
+- afegir proves que fallen si un endpoint sensible queda accessible sense auth
+- deixar explícites les excepcions públiques
+
+## Criteris d'acceptació
+
+- no queden endpoints sensibles accessibles sense autenticació
+- els endpoints públics queden justificats i documentats
+- les proves de regressió cobrixen almenys els punts més crítics
+
+## Referència
+
+- issue remot: `#115`

@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 class ConformidadAlumnadoGrupoResource extends PrintResource
 {
@@ -22,7 +22,7 @@ class ConformidadAlumnadoGrupoResource extends PrintResource
     public function toArray()
     {
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $data_actual = new \DateTime();
         $any_academic_inici = ($data_actual->format('m') < 6) ?
             $data_actual->format('Y') - 1 :

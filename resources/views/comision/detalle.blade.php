@@ -3,7 +3,7 @@
     <title></title>
 @endsection
 @section('content')
-    <h4 class="centrado">{{trans("models.modelos.Comision")}} de {{authUser()->ShortName}}
+    <h4 class="centrado">{{__("models.modelos.Comision")}} de {{authUser()->ShortName}}
         de {{fechaString($comision->desde)}}</h4>
 
 
@@ -26,8 +26,8 @@
                            onclick="return confirm('Segur que vols eliminar esta visita?');">
                             {!! Html::image(
                                     'img/delete.png',
-                                    trans("messages.buttons.delete"),
-                                    array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))
+                                    __("messages.buttons.delete"),
+                                    array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))
                                     )
                             !!}
                         </a>
@@ -55,7 +55,7 @@
                 <input type='hidden' name='idComision' value="{!!$comision->id!!}">
                 <tr>
                     <td>{{ Form::select('idFct',$allFcts,0,['id' => 'idFct']) }}</td>
-                    <td>{{ Form::text('hora_ini',hora($comision->desde),['class' => 'time']) }}</td>
+                    <td>{{ Form::time('hora_ini', hora($comision->desde), ['class' => 'form-control time']) }}</td>
                     <td>{{ Form::checkbox('aviso',1,true) }}</td>
                     <td>
                         <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita">

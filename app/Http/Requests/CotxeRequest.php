@@ -3,7 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Intranet\Presentation\Crud\CotxeCrudSchema;
 
 class CotxeRequest extends FormRequest
 {
@@ -23,19 +23,6 @@ class CotxeRequest extends FormRequest
     public function rules(): array
     {
         $cotxeId = $this->route('id'); // o $this->cotxe, depèn del nom a la ruta
-
-        return [
-            'matricula' => [
-                'required',
-                'string',
-                'max:8',
-                Rule::unique('cotxes')
-                    ->ignore($cotxeId)
-                    ->where(function ($query) {
-                    return $query->where('idProfesor', authUser()->dni) ;
-                }),
-            ],
-            'marca' => 'required|string|max:80',
-        ];
+        return CotxeCrudSchema::requestRules($cotxeId, (string) authUser()->dni);
     }
 }

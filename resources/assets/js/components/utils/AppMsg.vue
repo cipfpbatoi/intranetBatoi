@@ -1,7 +1,7 @@
 <template>
   <div class="x_content">
     <div :class="clases">
-      <button type="button" class="close" data-dismiss="alert" @click="close">×</button>
+      <button type="button" class="btn-close" aria-label="Close" @click="close"></button>
       <p>
         <strong>{{ msg }}</strong>
       </p>
@@ -15,7 +15,7 @@ export default {
   props: ['estate', 'msg'],
   computed: {
     clases() {
-      return 'alert alert-block alert-'+(this.estate=='ok'?'success':'danger')+' fade in';
+      return 'alert alert-'+(this.estate=='ok'?'success':'danger')+' alert-dismissible fade show';
     }
   },
   methods: {

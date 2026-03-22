@@ -287,7 +287,7 @@ class Panel
         $key = "models." . ucwords(strtolower($this->getModel())) . ".$que";
 
         return Lang::has($key)
-            ? trans($key, $this->titulo)
+            ? __($key, $this->titulo)
             : $this->getModel();
     }
 

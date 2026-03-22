@@ -140,7 +140,7 @@
                                         {{ $dayData['hores_previstes'] > 0 ? number_format($dayData['hores_previstes'], 1) : '--' }}
                                     </span>
 
-                                <input type="number" class="hidden border w-10 text-center text-xs bg-white text-black"
+                                <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" class="hidden border w-10 text-center text-xs bg-white text-black"
                                        value="{{ $dayData['hores_previstes'] }}"
                                        onchange="this.previousElementSibling.innerText = this.value;
                                                      this.classList.add('hidden');

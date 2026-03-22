@@ -65,7 +65,7 @@ use AuthenticatesUsers;
     public function logout()
     {
         Auth::guard('alumno')->logout();
-        return redirect('/login');
+        return redirect()->route('login');
     }
     public function plogin(Request $request)
     {

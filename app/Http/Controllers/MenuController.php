@@ -2,18 +2,19 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Menu\MenuService;
+use Intranet\Entities\Menu;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Menu;
-use Illuminate\Support\Facades\Session;
+use Intranet\Exceptions\NotFoundDomainException;
 
 /**
- * Class MenuController
- * @package Intranet\Http\Controllers
+ * Controlador de manteniment de menús.
  */
 class MenuController extends IntranetController
 {
+    private ?MenuService $menuService = null;
 
     /**
      * @var string
@@ -33,7 +34,7 @@ class MenuController extends IntranetController
         'url',
         'Xrol',
         'Xactivo',
-        'ajuda'
+        'Xajuda'
     ];
 
     /**
@@ -41,102 +42,113 @@ class MenuController extends IntranetController
      */
     protected function search()
     {
-        self::sort();
-        return Menu::all();
-    }
-
-    /**
-     *
-     */
-    private static function sort()
-    {
-        $anterior = '';
-        foreach (Menu::where('submenu', '')->orderBy('menu')->orderBy('orden')->get() as $menu) {
-            if ($anterior != $menu->menu) {$orden = 1;$anterior=$menu->menu; }
-            $menu->orden = $orden ++;
-            $menu->save();
-        }
-
-        foreach (Menu::where('submenu', '')->orderBy('menu')->orderBy('orden')->get() as $menu) {
-            $orden = 1;
-            foreach (Menu::where('submenu', $menu->nombre)->orderBy('orden')->get() as $submenu) {
-                $submenu->orden = $orden ++;
-                $submenu->save();
-            }
-        }
+        return $this->menus()->listForGrid();
     }
 
     public function realStore(Request $request, $id = null)
     {
-        $elemento = $id ? Menu::find($id) : new Menu;
-        $elemento->fillAll($request);
-        $elemento->save();
-        return redirect("/menu/$elemento->id/edit");
+        $elemento = $this->menus()->saveFromRequest($request, $id);
+        return redirect()->route('menu.edit', ['menu' => $elemento->id]);
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function copy($id)
     {
-        $elemento = Menu::find($id);
-        $copia = new Menu;
-        $copia->fill($elemento->toArray());
-        $copia->orden = Menu::where('menu', $elemento->menu)->where('submenu', $elemento->submenu)->max('orden') + 1;
-        $copia->activo = false;
-        $copia->save();
-        return redirect("/menu/$copia->id/edit");
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
+        $copia = $this->menus()->copy($id);
+        return redirect()->route('menu.edit', ['menu' => $copia->id]);
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function up($id)
     {
-        $elemento = Menu::find($id);
-        $inicial = $elemento->orden;
-        $orden = $elemento->orden;
-        $find = false;
-        while (!$find && $orden>1) {
-            $find = Menu::where('orden', --$orden)
-                ->where('menu', $elemento->menu)
-                ->where('submenu', $elemento->submenu)
-                ->first();
-        }
-        if ($find) {
-            $find->orden = $inicial;
-            $elemento->orden = $orden;
-            $find->save();
-            $elemento->save();
-        }
-        return redirect('/menu');
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
+        $this->menus()->moveUp($id);
+        return redirect()->route('menu.index');
     }
 
     /**
-     * @param $id
+     * @param int|string $id
+     * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function down($id)
     {
-        $elemento = Menu::find($id);
-        $inicial = $elemento->orden;
-        $orden = $elemento->orden;
-        $find = false;
-        while (!$find && $orden < 100) {
-            $find = Menu::where('orden', ++$orden)
-                ->where('menu', $elemento->menu)
-                ->where('submenu', $elemento->submenu)
-                ->first();
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
+        $this->menus()->moveDown($id);
+        return redirect()->route('menu.index');
+    }
+
+    /**
+     * Guarda un nou menú amb autorització explícita.
+     */
+    public function store(Request $request)
+    {
+        $this->authorize('create', Menu::class);
+        return parent::store($request);
+    }
+
+    /**
+     * Actualitza un menú amb autorització explícita.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     */
+    public function update(Request $request, $id)
+    {
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
+        return parent::update($request, $id);
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function active($id)
+    {
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('update', $menu);
+        $response = parent::active($id);
+        $this->menus()->clearCache();
+
+        return $response;
+    }
+
+    /**
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        $menu = $this->findModelOrFail(Menu::class, $id, 'Menú no trobat', ['menu_id' => $id]);
+        $this->authorize('delete', $menu);
+        $response = parent::destroy($id);
+        $this->menus()->clearCache();
+
+        return $response;
+    }
+
+    private function menus(): MenuService
+    {
+        if ($this->menuService === null) {
+            $this->menuService = app(MenuService::class);
         }
-        if ($find) {
-            $find->orden = $inicial;
-            $elemento->orden = $orden;
-            $find->save();
-            $elemento->save();
-        }
-        return redirect('/menu');
+
+        return $this->menuService;
     }
 
     /**
