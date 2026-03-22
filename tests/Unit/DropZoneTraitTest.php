@@ -84,7 +84,7 @@ class DropZoneTraitTest extends TestCase
     public function test_link_fa_abort_si_falta_class(): void
     {
         $this->expectException(HttpException::class);
-        $this->expectExceptionMessage("L'atribut 'class' no està definit");
+        $this->expectExceptionMessage("No s'ha pogut resoldre la classe del model en DropZone.");
 
         $controller = new DummyDropZoneWithoutClassController();
         $controller->link(1);
@@ -176,5 +176,5 @@ class DummyDropZoneWithoutClassController
 {
     use DropZone;
 
-    public string $model = 'Solicitud';
+    public string $model = 'ModelInexistent';
 }
