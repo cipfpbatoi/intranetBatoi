@@ -157,7 +157,7 @@ class SaoDocumentsAction
             if ($fctAl){
                 $empresa = $fctAl->Fct?->relatedCompany();
                 // Anexe 1
-                if ($fA1 || ($a1 && ($empresa?->ConveniCaducat || $empresa?->RenovatConveni))) {
+                if ($fA1 || ($a1 && ($empresa?->conveniCaducat || $empresa?->renovatConveni))) {
                     $signat = $this->a1DocumentService->download($fctAl, $driver);
                 }
                 // Anexe 2
