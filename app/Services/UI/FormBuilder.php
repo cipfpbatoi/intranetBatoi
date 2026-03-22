@@ -4,6 +4,12 @@ namespace Intranet\Services\UI;
 
 use Illuminate\View\View;
 
+/**
+ * Construeix la configuració de camps per als formularis dinàmics del projecte.
+ *
+ * Manté compatibilitat amb el sistema legacy de templates, però prioritza
+ * tipus HTML natius per a dates i hores quan el contracte del camp ja és clar.
+ */
 class FormBuilder
 {
 
@@ -102,6 +108,13 @@ class FormBuilder
             : ucwords($key);
     }
 
+    /**
+     * Resol el tipus final de control i el template visual a emprar.
+     *
+     * @param array<int|string, mixed> $parametres
+     * @param string $originalType
+     * @return string
+     */
     private function aspect(&$parametres, $originalType)
     {
         switch ($originalType) {
@@ -111,11 +124,17 @@ class FormBuilder
                 break;
             case 'name':
             case 'card':
-            case 'time':
-            case 'date':
-            case 'datetime':
                 $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
                 $finalType='text';
+                break;
+            case 'time':
+            case 'date':
+                $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
+                $finalType = $originalType;
+                break;
+            case 'datetime':
+                $parametres['template'] = 'themes/bootstrap/fields/datetime';
+                $finalType='datetimeLocal';
                 break;
             default:
                 $finalType = $originalType;
@@ -169,10 +188,15 @@ class FormBuilder
     }
 
     /**
-     * Conserva la classe funcional del tipus original encara que es renderitze com a text.
+     * Conserva la classe funcional del tipus declarat per a JS/CSS legacy residual.
      *
-     * Els camps `date/time/datetime` es pinten com a `text`, però el JS legacy
-     * depén de la classe CSS original per inicialitzar el datepicker.
+     * Encara que alguns camps ja es renderitzen com a inputs natius,
+     * la classe declarativa (`date/time/datetime`) continua sent útil
+     * en plantilles o scripts que inspeccionen el camp.
+     *
+     * @param string $declaredType
+     * @param string $renderType
+     * @return string
      */
     private function resolveCssInputClass(string $declaredType, string $renderType): string
     {

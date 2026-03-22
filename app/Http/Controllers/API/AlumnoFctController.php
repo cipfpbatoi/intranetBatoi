@@ -120,11 +120,11 @@ class AlumnoFctController extends ApiResourceController
 
         return $this->sendResponse([
             'id' => $registro->id,
-            'desde' => $registro->desde,
-            'hasta' => $registro->hasta,
+            'desde' => $this->normalizeEditValue($registro->getRawOriginal('desde'), 'date'),
+            'hasta' => $this->normalizeEditValue($registro->getRawOriginal('hasta'), 'date'),
             'beca' => $registro->beca,
-            'autorizacion' => $registro->autorizacion,
-            'flexible' => $registro->flexible,
+            'autorizacion' => $this->normalizeEditValue($registro->autorizacion, 'checkbox'),
+            'flexible' => $this->normalizeEditValue($registro->flexible, 'checkbox'),
             'valoracio' => $registro->valoracio,
         ], 'OK');
     }

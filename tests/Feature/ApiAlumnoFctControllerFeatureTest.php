@@ -133,8 +133,8 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('success', true);
         $response->assertJsonPath('data.id', 103);
-        $response->assertJsonPath('data.desde', '01-03-2026');
-        $response->assertJsonPath('data.hasta', '30-06-2026');
+        $response->assertJsonPath('data.desde', '2026-03-01');
+        $response->assertJsonPath('data.hasta', '2026-06-30');
         $response->assertJsonPath('data.beca', 1);
         $response->assertJsonPath('data.autorizacion', 1);
         $response->assertJsonPath('data.flexible', 0);
@@ -163,7 +163,7 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('success', true);
         $response->assertJsonPath('data.id', 104);
-        $response->assertJsonPath('data.desde', '01-04-2026');
+        $response->assertJsonPath('data.desde', '2026-04-01');
     }
 
     public function test_edit_accepta_sessio_web_stateful_sense_token_api(): void
@@ -192,7 +192,7 @@ class ApiAlumnoFctControllerFeatureTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('success', true);
         $response->assertJsonPath('data.id', 105);
-        $response->assertJsonPath('data.desde', '10-04-2026');
+        $response->assertJsonPath('data.desde', '2026-04-10');
     }
 
     private function createSchema(): void

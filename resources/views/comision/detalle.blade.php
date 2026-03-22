@@ -55,7 +55,7 @@
                 <input type='hidden' name='idComision' value="{!!$comision->id!!}">
                 <tr>
                     <td>{{ Form::select('idFct',$allFcts,0,['id' => 'idFct']) }}</td>
-                    <td>{{ Form::text('hora_ini',hora($comision->desde),['class' => 'time']) }}</td>
+                    <td>{{ Form::time('hora_ini', hora($comision->desde), ['class' => 'form-control time']) }}</td>
                     <td>{{ Form::checkbox('aviso',1,true) }}</td>
                     <td>
                         <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita">

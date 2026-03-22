@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -112,7 +113,74 @@ class ApiResourceController extends Controller
             return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
-        return $this->sendResponse($item);
+        return $this->sendResponse($this->buildEditPayload($item));
+    }
+
+    /**
+     * Construeix el payload d'edició en format canònic per al modal.
+     *
+     * Prioritza els camps definits en `inputTypes` del model per evitar
+     * accessors de presentació (`d-m-Y`, etc.) en respostes d'API `edit`.
+     *
+     * @param mixed $item
+     * @return array<string, mixed>
+     */
+    protected function buildEditPayload($item): array
+    {
+        $payload = [];
+        $rawAttributes = method_exists($item, 'getAttributes') ? $item->getAttributes() : [];
+        $inputTypes = method_exists($item, 'getInputTypes') ? $item->getInputTypes() : [];
+        $fillable = method_exists($item, 'getFillable') ? $item->getFillable() : [];
+        $primaryKey = method_exists($item, 'getKeyName') ? $item->getKeyName() : 'id';
+
+        if (method_exists($item, 'getKey')) {
+            $payload[$primaryKey] = $item->getKey();
+        }
+
+        $keys = !empty($fillable)
+            ? $fillable
+            : array_keys($rawAttributes);
+
+        if (!empty($inputTypes)) {
+            $keys = array_values(array_unique(array_merge($keys, array_keys($inputTypes))));
+        }
+
+        foreach ($keys as $key) {
+            if ($key === $primaryKey && array_key_exists($primaryKey, $payload)) {
+                continue;
+            }
+
+            $value = array_key_exists($key, $rawAttributes)
+                ? $rawAttributes[$key]
+                : $item->{$key};
+
+            $type = $inputTypes[$key]['type'] ?? null;
+            $payload[$key] = $this->normalizeEditValue($value, $type);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Dona format estable als valors de dates/hores per a formularis de modal.
+     *
+     * @param mixed $value
+     * @param string|null $type
+     * @return mixed
+     */
+    protected function normalizeEditValue($value, ?string $type = null)
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        return match ($type) {
+            'date' => Carbon::parse((string) $value)->format('Y-m-d'),
+            'datetime' => Carbon::parse((string) $value)->format('Y-m-d H:i'),
+            'time' => Carbon::parse((string) $value)->format('H:i'),
+            'checkbox' => (int) (bool) $value,
+            default => $value,
+        };
     }
    
     

@@ -326,40 +326,12 @@
     }
 
     function initDatePickers() {
-        var jq = window.$;
-        if (!jq || !jq.fn || typeof jq.fn.datetimepicker !== 'function') {
+        var datepickers = window.intranetDatepickers;
+        if (!datepickers || typeof datepickers.init !== 'function') {
             return;
         }
 
-        var metaLocale = document.querySelector('meta[name="app-locale"]');
-        var pageLocale = ((metaLocale ? metaLocale.getAttribute('content') : '') || document.documentElement.lang || 'es')
-            .toLowerCase()
-            .split('-')[0];
-        var pickerLocale = pageLocale === 'en' ? 'en' : (pageLocale === 'ca' ? 'ca' : 'es');
-        var dateFormat = pageLocale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
-        var dateTimeFormat = pageLocale === 'en' ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
-
-        if (typeof window.moment !== 'undefined' && typeof window.moment.locale === 'function') {
-            window.moment.locale(pickerLocale);
-        }
-
-        jq('input[type=text].datetime').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: dateTimeFormat,
-            stepping: 15
-        });
-        jq('input[type=text].time').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: 'HH:mm',
-            stepping: 15
-        });
-        jq('input[type=text].date').datetimepicker({
-            sideBySide: true,
-            locale: pickerLocale,
-            format: dateFormat
-        });
+        datepickers.init(document);
     }
 
     function hideInitialButtons() {

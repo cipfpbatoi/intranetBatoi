@@ -67,81 +67,60 @@
         }
     }
 
-    function normalizePickerValue(rawValue, field) {
+    function getPageLocale() {
+        return (((document.querySelector('meta[name="app-locale"]') || {}).content || document.documentElement.lang || 'es').toLowerCase()).split('-')[0];
+    }
+
+    function formatPickerDate(value) {
+        var pageLocale = getPageLocale();
+        var isEnglish = pageLocale === 'en';
+        var parts = value.split('-');
+
+        return isEnglish
+            ? parts[1] + '/' + parts[2] + '/' + parts[0]
+            : parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+
+    function getPickerValue(rawValue, field) {
         var value = trim(rawValue);
         if (!value) {
             return '';
         }
 
-        var pageLocale = (((document.querySelector('meta[name="app-locale"]') || {}).content || document.documentElement.lang || 'es').toLowerCase()).split('-')[0];
-        var isEnglish = pageLocale === 'en';
         var isDateTime = field.classList.contains('datetime');
         var isTime = field.classList.contains('time');
 
         if (isTime) {
-            return value;
+            return /^\d{2}:\d{2}$/.test(value) ? value : '';
         }
 
-        var parts;
         if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-            parts = value.split('-');
-            return isEnglish
-                ? parts[1] + '/' + parts[2] + '/' + parts[0]
-                : parts[2] + '/' + parts[1] + '/' + parts[0];
-        }
-
-        if (/^\d{2}-\d{2}-\d{4}$/.test(value)) {
-            parts = value.split('-');
-            return isEnglish
-                ? parts[1] + '/' + parts[0] + '/' + parts[2]
-                : parts[0] + '/' + parts[1] + '/' + parts[2];
+            return formatPickerDate(value);
         }
 
         if (isDateTime && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(value)) {
-            parts = value.split(' ');
-            var datePart = normalizePickerValue(parts[0], field);
-            return datePart ? datePart + ' ' + parts[1] : value;
+            var parts = value.split(' ');
+            var datePart = formatPickerDate(parts[0]);
+            return datePart ? datePart + ' ' + parts[1] : '';
         }
 
-        if (isDateTime && /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}/.test(value)) {
-            parts = value.split(' ');
-            var normalizedDate = normalizePickerValue(parts[0], field);
-            return normalizedDate ? normalizedDate + ' ' + parts[1] : value;
-        }
-
-        return value;
+        return '';
     }
 
-    function normalizeNativeInputValue(rawValue, field) {
+    function getNativeInputValue(rawValue, field) {
         var value = trim(rawValue);
         if (!value) {
             return '';
         }
 
         var type = (field.getAttribute('type') || '').toLowerCase();
-        var match;
 
         if (type === 'time') {
-            match = value.match(/^(\d{2}:\d{2})/);
-            return match ? match[1] : value;
+            return /^\d{2}:\d{2}$/.test(value) ? value : '';
         }
 
         if (type === 'date') {
-            if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-                return value;
-            }
-
-            match = value.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
-            if (match) {
-                return match[3] + '-' + match[2] + '-' + match[1];
-            }
-
-            match = value.match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})/);
-            if (match) {
-                return match[1] + '-' + match[2] + '-' + match[3];
-            }
-
-            return value;
+            return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : '';
         }
 
         if (type === 'datetime-local') {
@@ -149,20 +128,30 @@
                 return value;
             }
 
-            match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/);
+            var match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}:\d{2})$/);
             if (match) {
                 return match[1] + '-' + match[2] + '-' + match[3] + 'T' + match[4];
             }
 
-            match = value.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})[ T](\d{2}:\d{2})/);
-            if (match) {
-                return match[3] + '-' + match[2] + '-' + match[1] + 'T' + match[4];
-            }
-
-            return value;
+            return '';
         }
 
         return value;
+    }
+
+    function getPickerMomentFormat(field) {
+        var pageLocale = getPageLocale();
+        var isEnglish = pageLocale === 'en';
+
+        if (field.classList.contains('time')) {
+            return 'HH:mm';
+        }
+
+        if (field.classList.contains('datetime')) {
+            return isEnglish ? 'MM/DD/YYYY h:mm A' : 'DD/MM/YYYY HH:mm';
+        }
+
+        return isEnglish ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
     }
 
     function setInputValue(field, value) {
@@ -188,7 +177,7 @@
         }
 
         if (tagName === 'INPUT' && (nativeType === 'date' || nativeType === 'datetime-local' || nativeType === 'time')) {
-            field.value = normalizeNativeInputValue(value, field);
+            field.value = getNativeInputValue(value, field);
             field.dispatchEvent(new Event('input', { bubbles: true }));
             field.dispatchEvent(new Event('change', { bubbles: true }));
             return;
@@ -196,7 +185,7 @@
 
         var normalizedValue = value;
         if (field.classList.contains('date') || field.classList.contains('datetime') || field.classList.contains('time')) {
-            normalizedValue = normalizePickerValue(value, field);
+            normalizedValue = getPickerValue(value, field);
 
             if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.datetimepicker === 'function') {
                 var $field = window.jQuery(field);
@@ -205,14 +194,7 @@
                     if (!normalizedValue) {
                         pickerInstance.clear();
                     } else if (typeof window.moment === 'function') {
-                        pickerInstance.date(window.moment(normalizedValue, [
-                            'DD/MM/YYYY',
-                            'MM/DD/YYYY',
-                            'DD/MM/YYYY HH:mm',
-                            'MM/DD/YYYY HH:mm',
-                            'MM/DD/YYYY h:mm A',
-                            'HH:mm'
-                        ], true));
+                        pickerInstance.date(window.moment(normalizedValue, getPickerMomentFormat(field), true));
                     } else {
                         pickerInstance.date(normalizedValue);
                     }
