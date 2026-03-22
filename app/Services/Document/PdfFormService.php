@@ -225,7 +225,11 @@ class PdfFormService
             }
         }
 
-        return $configuredBinary;
+        throw new RuntimeException(sprintf(
+            'No s\'ha trobat cap binari pdftk executable. Configurat: "%s". Alternatives provades: [%s].',
+            $configuredBinary,
+            implode(', ', self::FALLBACK_PDFTK_BINARIES)
+        ));
     }
 
     /**
