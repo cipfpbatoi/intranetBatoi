@@ -116,7 +116,6 @@ class EloquentFctRepository implements FctRepositoryInterface
     public function empresaIdByFct(int|string $idFct): ?int
     {
         $fct = $this->find($idFct);
-        return $fct?->Colaboracion?->Centro?->idEmpresa;
+        return $fct?->relatedCenter()?->idEmpresa;
     }
 }
-

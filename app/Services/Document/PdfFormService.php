@@ -11,6 +11,11 @@ use Symfony\Component\Process\Process;
 class PdfFormService
 {
     private const DEFAULT_PDFTK_BINARY = '/usr/local/bin/pdftk';
+    private const FALLBACK_PDFTK_BINARIES = [
+        '/usr/local/bin/pdftk',
+        '/usr/bin/pdftk',
+        'pdftk',
+    ];
 
     /**
      * Emplena una plantilla PDF i desa el resultat en un fitxer.
@@ -209,7 +214,18 @@ class PdfFormService
      */
     private function binary(): string
     {
-        return (string) env('PDFTK_BINARY', self::DEFAULT_PDFTK_BINARY);
+        $configuredBinary = (string) env('PDFTK_BINARY', self::DEFAULT_PDFTK_BINARY);
+        if ($configuredBinary !== '' && ($configuredBinary === 'pdftk' || is_executable($configuredBinary))) {
+            return $configuredBinary;
+        }
+
+        foreach (self::FALLBACK_PDFTK_BINARIES as $binary) {
+            if ($binary === 'pdftk' || is_executable($binary)) {
+                return $binary;
+            }
+        }
+
+        return $configuredBinary;
     }
 
     /**

@@ -1,5 +1,9 @@
 @extends('layouts.pdf')
 @section('content')
+    @php
+        $primerFct = $todos->first()?->Fct;
+        $primerCicle = $primerFct?->relatedCycle();
+    @endphp
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" style="margin-bottom: 5px">
@@ -7,7 +11,7 @@
             <td style="text-align:left;width:23.283cm;padding-left: 5px;font-size: 0.8em">
                 <strong>Tutor: </strong><span>{{authUser()->FullName}}</span></td>
             <td style="text-align:left;width:23.2833cm;padding-left: 5px;font-size: 0.8em">
-                <strong>Cicle: </strong><span>{{$todos->first()->Fct->Colaboracion->Ciclo->ciclo??''}}</span></td>
+                <strong>Cicle: </strong><span>{{$primerCicle?->ciclo ?? ''}}</span></td>
         </tr>
     </table>
     <p><strong>SEGUIMENT MENSUAL</strong></p>
@@ -64,7 +68,7 @@
                 <tr>
                     <td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em ">
                         <strong>{{ $alumno->Alumno->FullName ?? 'Sense nom' }}</strong>
-                        ({{ $alumno->Fct?->Colaboracion?->Centro?->nombre ?? 'Sense centre' }})
+                        ({{ $alumno->Fct?->relatedCenter()?->nombre ?? 'Sense centre' }})
                     </td>
                     <td style="text-align:left;width:5.493cm; "></td>
                     <td></td>

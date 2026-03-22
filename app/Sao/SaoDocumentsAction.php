@@ -155,9 +155,9 @@ class SaoDocumentsAction
             }
             $fctAl = AlumnoFct::find($fct);
             if ($fctAl){
+                $empresa = $fctAl->Fct?->relatedCompany();
                 // Anexe 1
-                if ($fA1 || ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
-                    || $fctAl->Fct->Colaboracion->Centro->Empresa->RenovatConveni))) {
+                if ($fA1 || ($a1 && ($empresa?->ConveniCaducat || $empresa?->RenovatConveni))) {
                     $signat = $this->a1DocumentService->download($fctAl, $driver);
                 }
                 // Anexe 2

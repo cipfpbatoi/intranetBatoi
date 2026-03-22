@@ -117,7 +117,7 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.switch',
                 [
                     'roles' => config(self::ROLES_ROL_TUTOR),
-                    'class' => 'btn-warning switch',
+                    'class' => 'btn-warning switch colaboracion-preparation-action',
                     'icon' => 'fa-user',
                     'where' => ['tutor', '<>', AuthUser()->dni]
                 ]
@@ -129,7 +129,7 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.unauthorize',
                 [
                     'roles' => config(self::ROLES_ROL_TUTOR),
-                    'class' => 'btn-primary unauthorize estado',
+                    'class' => 'btn-primary unauthorize estado colaboracion-preparation-action',
                     'where' => [  'estado', '!=', '1']
                 ]
             )
@@ -140,7 +140,7 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.resolve',
                 [
                     'roles' => config(self::ROLES_ROL_TUTOR),
-                    'class' => 'btn-success resolve estado',
+                    'class' => 'btn-success resolve estado colaboracion-preparation-action',
                     'where' => [  'estado', '!=', '2']
                 ]
             )
@@ -151,7 +151,7 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.refuse',
                 [
                     'roles' => config(self::ROLES_ROL_TUTOR),
-                    'class' => 'btn-danger refuse estado',
+                    'class' => 'btn-danger refuse estado colaboracion-preparation-action',
                     'where' => [  'estado', '!=', '3']
                 ]
             )
@@ -162,7 +162,7 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.book',
                 [
                     'roles' => config(self::ROLES_ROL_TUTOR),
-                    'class' => 'btn-primary informe book',
+                    'class' => 'btn-primary informe book colaboracion-preparation-action',
                     'text' => '',
                     'title' => 'Contacte previ',
                     'icon' => 'fa-book'
@@ -174,7 +174,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.contacto",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-primary selecciona fct-bridge-action',
                     'icon' => 'fa fa-bell-o',
                     'data-url' => '/api/documentacionFCT/contacto'
                 ]
@@ -185,7 +185,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.revision",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-primary selecciona fct-bridge-action',
                     'icon' => 'fa fa-check',
                     'data-url' => '/api/documentacionFCT/revision'
                 ]

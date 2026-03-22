@@ -82,6 +82,36 @@ class ApiFctControllerFeatureTest extends TestCase
         ]);
     }
 
+    public function test_telefonico_amb_sanctum_fa_upsert_diari_sobre_fct(): void
+    {
+        $this->insertProfesor('PFCT02');
+        DB::table('fcts')->insert([
+            'id' => 40,
+            'idColaboracion' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $user = Profesor::on('sqlite')->findOrFail('PFCT02');
+        Sanctum::actingAs($user);
+
+        $response1 = $this->postJson('/api/fct/40/telefonico', ['explicacion' => 'Telefonada 1']);
+
+        $response1->assertOk();
+        $response1->assertJsonPath('success', true);
+        $this->assertSame(1, DB::table('activities')->where('action', 'phone')->where('model_id', 40)->count());
+
+        $response2 = $this->postJson('/api/fct/40/telefonico', ['explicacion' => 'Telefonada 2']);
+
+        $response2->assertOk();
+        $response2->assertJsonPath('success', true);
+        $this->assertSame(1, DB::table('activities')->where('action', 'phone')->where('model_id', 40)->count());
+        $this->assertSame(
+            'Telefonada 2',
+            DB::table('activities')->where('action', 'phone')->where('model_id', 40)->value('comentari')
+        );
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
@@ -122,6 +152,14 @@ class ApiFctControllerFeatureTest extends TestCase
                 $table->unsignedInteger('horas')->default(0);
                 $table->unsignedTinyInteger('pg0301')->default(0);
                 $table->unsignedTinyInteger('a56')->default(0);
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('fcts')) {
+            Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->unsignedInteger('idColaboracion')->nullable();
+                $table->timestamps();
             });
         }
     }

@@ -23,15 +23,19 @@ class AVIIBResource extends PrintResource
     {
         $director = cargo('director')->fullName;
         $secretario = cargo('secretario')->fullName;
+        $colaboracion = $this->elements->Colaboracion;
+        $empresa = $colaboracion?->Centro?->Empresa;
+        $ciclo = $colaboracion?->Ciclo;
+
         return [
             'SECRETARI' => $secretario,
             'DIRECTOR' => $director,
             'SECRETARIO' => $secretario,
             'CENTRE' => config('contacto.nombre'),
             'CODI' => config('contacto.codi'),
-            'EMPRESA' => $this->elements->Colaboracion->Centro->Empresa->nombre,
+            'EMPRESA' => $empresa?->nombre,
             'NIF' => $this->elements->Instructor->dni,
-            'ENSE 2' => $this->elements->Colaboracion->Ciclo->vliteral,
+            'ENSE 2' => $ciclo?->vliteral,
             'INSTRUCT' => $this->elements->Instructor->name,
             'INSTRUCT 2' => $this->elements->Instructor->surnames,
             'CURS' => curso(),
@@ -44,4 +48,3 @@ class AVIIBResource extends PrintResource
         ];
     }
 }
-

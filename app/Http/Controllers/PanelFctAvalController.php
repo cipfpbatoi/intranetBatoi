@@ -134,7 +134,7 @@ class PanelFctAvalController extends IntranetController
         $this->cachedElementos = $elementos->map(function (AlumnoFct $fct): AlumnoFct {
             $grupo = $this->resolveGrupoForFct($fct);
             $normativa = $this->resolveNormativa($fct, $grupo);
-            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? 0);
+            $cicloTipo = (int) ($fct->Fct?->relatedCycle()?->tipo ?? 0);
             $requiresProject = false;
             if ($normativa === 'LOE') {
                 $requiresProject = $grupo
@@ -214,7 +214,7 @@ class PanelFctAvalController extends IntranetController
      */
     private function resolveGrupoForFct(AlumnoFct $fct): ?Grupo
     {
-        $cicloId = $fct->Fct?->Colaboracion?->idCiclo;
+        $cicloId = $fct->Fct?->relatedCycle()?->id;
         if (!$cicloId) {
             return null;
         }
@@ -244,7 +244,7 @@ class PanelFctAvalController extends IntranetController
             }
         }
 
-        $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
+        $normativa = $fct->Fct?->relatedCycle()?->normativa;
         if (is_string($normativa) && trim($normativa) !== '') {
             return strtoupper($normativa);
         }

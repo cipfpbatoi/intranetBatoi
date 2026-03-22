@@ -4,7 +4,9 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-
+/**
+ * Registre diari de seguiment d'hores d'FCT.
+ */
 class FctDay extends Model
 {
     use \Intranet\Entities\Concerns\BatoiModels;
@@ -34,7 +36,7 @@ class FctDay extends Model
     
     public function getHorariAttribute()
     {
-        return $this->Colaboracion?->Centro?->horarios ?? null;
+        return $this->Colaboracion?->horari ?: null;
     }
 
     /**

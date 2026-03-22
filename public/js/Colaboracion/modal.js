@@ -39,8 +39,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var formFct = document.getElementById('formFct');
-
         document.addEventListener('click', function (event) {
             var showTrigger = event.target.closest('.js-colaboracion-show');
             if (showTrigger) {
@@ -76,18 +74,6 @@
 
                 return;
             }
-
-            var trigger = event.target.closest('.fa-plus');
-            if (!trigger || !formFct) {
-                return;
-            }
-
-            var fct = trigger.id;
-            if (!fct) {
-                return;
-            }
-
-            formFct.setAttribute('action', '/fct/' + fct + '/alumnoCreate');
         });
     });
 })();

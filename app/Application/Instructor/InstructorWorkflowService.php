@@ -11,6 +11,9 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Illuminate\Support\Carbon;
 
+/**
+ * Casos d'ús d'administració d'instructors vinculats al context d'FCT.
+ */
 class InstructorWorkflowService
 {
     public function searchForTutorFcts(): Collection
@@ -18,7 +21,7 @@ class InstructorWorkflowService
         $instructores = [];
 
         foreach (Fct::misFcts()->get() as $fct) {
-            foreach ($fct->Colaboracion->Centro->Instructores ?? [] as $instructor) {
+            foreach ($fct->relatedCenter()?->Instructores ?? [] as $instructor) {
                 $instructores[] = $instructor->dni ?? '';
             }
         }

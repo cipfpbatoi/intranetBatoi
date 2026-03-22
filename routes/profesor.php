@@ -292,7 +292,6 @@ Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'sho
 Route::get('/fct', ['as' => 'fct.index', 'uses' => 'PanelFctController@index']);
 Route::get('/fct/{id}/{alumno}/alumnoDelete', ['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);
 Route::post('/fct/{id}/alumnoCreate', ['as' => 'fct.alumno.create', 'uses' => 'FctController@nouAlumno']);
-Route::post('/fct/fctalumnoCreate', ['as' => 'fct.alumno.fct.create', 'uses' => 'FctController@nouFctAlumno']);
 Route::post('/fct/{id}/instructorCreate', ['as'=>'fct.instructor.create', 'uses'=>'FctController@nouInstructor']);
 Route::get(
     '/fct/{id}/{dni}/instructorDelete',
@@ -314,10 +313,7 @@ Route::get('/activity/{id}', ['as' => 'activity.web.show', 'uses' => 'API\\Activ
 Route::put('/activity/{id}', ['as' => 'activity.web.update', 'uses' => 'API\\ActivityController@update']);
 Route::delete('/activity/{id}', ['as' => 'activity.web.destroy', 'uses' => 'API\\ActivityController@destroy']);
 Route::get('/activity/{id}/move/{fct}', ['as' => 'activity.web.move', 'uses' => 'API\\ActivityController@move']);
-Route::post('/colaboracion/{id}/telefonico', ['as' => 'colaboracion.web.telefonico', 'uses' => 'API\\ColaboracionController@telefon']);
-Route::get('/colaboracion/instructores/{id}', ['as' => 'colaboracion.web.instructores', 'uses' => 'API\\ColaboracionController@instructores']);
-
-
+Route::post('/fct/{id}/telefonico', ['as' => 'fct.web.telefonico', 'uses' => 'API\\FctController@telefonico']);
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);

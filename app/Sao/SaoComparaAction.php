@@ -54,8 +54,8 @@ class SaoComparaAction
             foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 try {
                     $fct = $fctAl->Fct;
-                    $centro = $fct->Colaboracion->Centro;
-                    $empresa = $centro->Empresa;
+                    $centro = $fct->relatedCenter();
+                    $empresa = $fct->relatedCompany();
                     if (!isset($dades[$fct->id]['empresa']['idEmpresa'])) {
                         $driver->navigate()->to("$baseUrl/index.php?accion=10&idFct=$fctAl->idSao");
                         sleep(1);
@@ -184,9 +184,8 @@ class SaoComparaAction
         $field = $keyDescomposada[2];
         $idFct = $keyDescomposada[1];
         $tipo = $keyDescomposada[0];
-        $modelo = ($tipo == 'centro')?
-            Fct::find($idFct)->Colaboracion->Centro:
-            Fct::find($idFct)->Colaboracion->Centro->Empresa;
+        $fct = Fct::find($idFct);
+        $modelo = ($tipo == 'centro') ? $fct?->relatedCenter() : $fct?->relatedCompany();
         return array($modelo,$field,$idFct,$tipo);
 
     }

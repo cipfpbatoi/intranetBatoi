@@ -348,8 +348,13 @@ class AlumnoFct extends Model
 
     public function getGrupAttribute()
     {
+        $fctCycle = $this->Fct?->relatedCycle();
+        if ($fctCycle === null) {
+            return null;
+        }
+
         foreach ($this->Alumno->Grupo as $grupo) {
-            if ($grupo->Ciclo == $this->Fct->Colaboracion->Ciclo) {
+            if ((string) $grupo->idCiclo === (string) $fctCycle->getKey()) {
                 return $grupo->codigo;
             }
         }

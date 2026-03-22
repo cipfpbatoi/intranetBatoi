@@ -126,36 +126,6 @@ class ApiColaboracionControllerFeatureTest extends TestCase
         );
     }
 
-    public function test_telefon_fa_upsert_diari(): void
-    {
-        $this->insertProfesor('PA04', 'token-auth');
-
-        DB::table('fcts')->insert([
-            'id' => 40,
-            'idColaboracion' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $user = Profesor::on('sqlite')->findOrFail('PA04');
-        Sanctum::actingAs($user);
-
-        $response1 = $this->postJson('/api/colaboracion/40/telefonico', ['explicacion' => 'Telefonada 1']);
-        $response1->assertOk();
-        $response1->assertJsonPath('success', true);
-        $this->assertSame(1, DB::table('activities')->where('action', 'phone')->where('model_id', 40)->count());
-
-        $response2 = $this->postJson('/api/colaboracion/40/telefonico', ['explicacion' => 'Telefonada 2']);
-        $response2->assertOk();
-        $response2->assertJsonPath('success', true);
-
-        $this->assertSame(1, DB::table('activities')->where('action', 'phone')->where('model_id', 40)->count());
-        $this->assertSame(
-            'Telefonada 2',
-            DB::table('activities')->where('action', 'phone')->where('model_id', 40)->value('comentari')
-        );
-    }
-
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {

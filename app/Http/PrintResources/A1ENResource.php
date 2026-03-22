@@ -21,7 +21,7 @@ class A1ENResource extends PrintResource
      */
     public function toArray()
     {
-        $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
+        $empresa = $this->elements->Fct->relatedCompany();
         $director = cargo('director');
 
         return [

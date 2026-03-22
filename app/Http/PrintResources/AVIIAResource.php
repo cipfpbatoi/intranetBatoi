@@ -23,25 +23,28 @@ class AVIIAResource extends PrintResource
     {
         $director = cargo('director')->fullName;
         $secretario = cargo('secretario')->fullName;
+        $colaboracion = $this->elements->Colaboracion;
+        $centro = $colaboracion?->Centro;
+        $empresa = $centro?->Empresa;
+
         $dades_fct = [
             'SECRETARI' => $secretario,
             'DIRECTOR' => $director,
             'SECRETARIO' => $secretario,
             'CENTRE' => config('contacto.nombre'),
             'CODI' => config('contacto.codi'),
-            'EMPRESA' => $this->elements->Colaboracion->Centro->Empresa->nombre,
-            'NIF' => $this->elements->Colaboracion->Centro->Empresa->cif,
+            'EMPRESA' => $empresa?->nombre,
+            'NIF' => $empresa?->cif,
             'CURS' => curso(),
             'POBLACIÓN' => config('contacto.poblacion'),
             'DIA' => day(Hoy()),
             'MES' => month(Hoy()),
             'AÑO' => substr(year(Hoy()), 2,2),
-            'ADRES 1' => $this->elements->Colaboracion->Centro->direccion,
-            'LOCA 1' => $this->elements->Colaboracion->Centro->localidad,
+            'ADRES 1' => $centro?->direccion,
+            'LOCA 1' => $centro?->localidad,
             'NUM ALU 1' => $this->elements->AlFct->count(),
             'TOT HOR 1' => $this->elements->AlFct->sum('horas'),
         ];
         return $dades_fct;
     }
 }
-

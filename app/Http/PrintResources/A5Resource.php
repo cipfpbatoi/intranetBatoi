@@ -27,10 +27,10 @@ class A5Resource extends PrintResource
         $tutor = AuthUser();
         $grupo = app(GrupoService::class)->firstByTutor($tutor->dni);
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
-        $centro = $this->elements->Fct->Colaboracion->Centro;
-        $empresa = $centro->Empresa;
-        $instructor = $this->elements->Fct->instructor;
-        $idCiclo = $this->elements->Fct->Colaboracion->Ciclo->id;
+        $centro = $this->elements->Fct->relatedCenter();
+        $empresa = $this->elements->Fct->relatedCompany();
+        $instructor = $this->elements->Fct->Instructor;
+        $idCiclo = $this->elements->Fct->relatedCycle()?->id;
         $file = storage_path("app/public/Ciclos/$idCiclo.txt");
 
 

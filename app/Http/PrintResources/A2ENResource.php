@@ -22,12 +22,12 @@ class A2ENResource extends PrintResource
      */
     public function toArray()
     {
-        $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
+        $empresa = $this->elements->Fct->relatedCompany();
         $director = cargo('director');
         $tutor = AuthUser();
         $alumno = $this->elements->Alumno;
         $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
-        $instructor = $this->elements->Fct->instructor;
+        $instructor = $this->elements->Fct->Instructor;
 
         return [
             'Text Box 1' => config('contacto.nombre').' - '.config('contacto.codi'),

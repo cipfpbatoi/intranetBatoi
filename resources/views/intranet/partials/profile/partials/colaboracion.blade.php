@@ -20,10 +20,9 @@
     $preasignaciones = $elemento->preasignacionesPanel ?? collect();
     $preasignacionAlumnoOptions = $elemento->preasignacionAlumnoOptions ?? collect();
     $canPreassign = isset($pestana) && $pestana->getNombre() === 'colabora';
-    $activePreasignacionesCount = $preasignaciones
-        ->whereIn('estado', ['proposta', 'reservada'])
-        ->count();
-    $hasPreasignacionCapacity = $activePreasignacionesCount < max(1, (int) ($elemento->puestos ?? 1));
+    $activePreasignacionesCount = $elemento->activePreasignacionesCount($preasignaciones->filter->isActive()->count());
+    $availablePreasignacionSlots = $elemento->availablePreasignacionSlots($activePreasignacionesCount);
+    $hasPreasignacionCapacity = $elemento->hasPreasignacionCapacity($activePreasignacionesCount);
     $preasignacionBadgeClass = static function (string $estado): string {
         return match ($estado) {
             'reservada' => 'bg-success',
@@ -76,7 +75,7 @@
                         <button class="btn btn-default btn-xs" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#{{ $preasignacionesCollapseId }}" aria-expanded="false"
                                 aria-controls="{{ $preasignacionesCollapseId }}">
-                            Reserves ({{ $activePreasignacionesCount }}/{{ max(1, (int) ($elemento->puestos ?? 1)) }})
+                            Reserves ({{ $activePreasignacionesCount }}/{{ $activePreasignacionesCount + $availablePreasignacionSlots }})
                         </button>
                     @endif
                     @if($relacionadas->isNotEmpty())

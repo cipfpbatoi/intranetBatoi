@@ -23,6 +23,10 @@ class CertificatInstructorResource extends PrintResource
     {
         $secretario = cargo('secretario');
         $director = cargo('director');
+        $colaboracion = $this->getElements()->Colaboracion;
+        $ciclo = $colaboracion?->Ciclo;
+        $empresa = $colaboracion?->Centro?->Empresa;
+
         return [
             'untitled1' => $secretario->fullName,
             'untitled13' =>  $secretario->fullName,
@@ -34,11 +38,11 @@ class CertificatInstructorResource extends PrintResource
             'untitled18' => $this->getElements()->Instructor->contacto,
             'untitled8' => $this->getElements()->Instructor->dni,
             'untitled20' => $this->getElements()->Instructor->dni,
-            'untitled10' => $this->getElements()->Colaboracion->Ciclo->vliteral,
-            'untitled22' =>  $this->getElements()->Colaboracion->Ciclo->cliteral,
+            'untitled10' => $ciclo?->vliteral,
+            'untitled22' =>  $ciclo?->cliteral,
             'untitled12' => curso(),
             'untitled24' =>  curso(),
-            'untitled25' => $this->getElements()->Colaboracion->Centro->Empresa->nombre,
+            'untitled25' => $empresa?->nombre,
             'untitled26' => $this->getElements()->Alumnos->count(),
             'untitled27' => min(800, $this->getElements()->AlFct->sum('horas')),
             'untitled28' => config('contacto.poblacion'),
@@ -50,4 +54,3 @@ class CertificatInstructorResource extends PrintResource
         ];
     }
 }
-

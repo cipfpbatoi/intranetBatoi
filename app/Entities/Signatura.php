@@ -5,6 +5,9 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\School\SignaturaStatusService;
 
+/**
+ * Model de signatures documentals associades a una FCT d'alumnat.
+ */
 class Signatura extends Model
 {
 
@@ -74,7 +77,7 @@ class Signatura extends Model
 
     public function getCentreAttribute()
     {
-        return $this->Fct->Fct->Colaboracion->Centro->nombre ?? '';
+        return $this->Fct?->Fct?->relatedCenter()?->nombre ?? '';
     }
     public function getPathAttribute()
     {
@@ -97,11 +100,11 @@ class Signatura extends Model
 
     public function getEmailAttribute()
     {
-        return $this->Fct->Fct->Instructor->email ?? '';
+        return $this->Fct?->Fct?->Instructor?->email ?? '';
     }
     public function getContactoAttribute()
     {
-        return $this->Fct->Fct->Instructor->contacto ?? '';
+        return $this->Fct?->Fct?->Instructor?->contacto ?? '';
     }
 
     public function getSignAttribute()

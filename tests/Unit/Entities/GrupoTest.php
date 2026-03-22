@@ -7,6 +7,9 @@ namespace Tests\Unit\Entities;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Ciclo;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Tests\TestCase;
 
@@ -264,5 +267,43 @@ class GrupoTest extends TestCase
         $codigos = Grupo::query()->MiGrupoModulo('PZ', 'M01')->pluck('codigo')->all();
 
         $this->assertSame(['MG1'], $codigos);
+    }
+
+    public function test_fct_metrics_use_related_cycle_context(): void
+    {
+        $ciclo = new Ciclo();
+        $ciclo->setRawAttributes(['id' => 1, 'ciclo' => 'SMX'], true);
+        $grupo = new Grupo(['codigo' => 'G1']);
+        $grupo->setRelation('Ciclo', $ciclo);
+
+        $sameCycleFct = new Fct(['asociacion' => 1]);
+        $sameCycleFct->pivot = (object) ['calificacion' => 1, 'calProyecto' => 6, 'insercion' => 1];
+        $sameCycleFct->setRelation('Colaboracion', tap(new \Intranet\Entities\Colaboracion(), function ($colaboracion) use ($ciclo): void {
+            $colaboracion->setRelation('Ciclo', $ciclo);
+        }));
+
+        $otherCycle = new Ciclo();
+        $otherCycle->setRawAttributes(['id' => 2, 'ciclo' => 'ASIX'], true);
+        $otherCycleFct = new Fct(['asociacion' => 1]);
+        $otherCycleFct->pivot = (object) ['calificacion' => 1, 'calProyecto' => 6, 'insercion' => 1];
+        $otherCycleFct->setRelation('Colaboracion', tap(new \Intranet\Entities\Colaboracion(), function ($colaboracion) use ($otherCycle): void {
+            $colaboracion->setRelation('Ciclo', $otherCycle);
+        }));
+
+        $dualFct = new Fct(['asociacion' => 3]);
+        $dualFct->pivot = (object) ['calificacion' => 1, 'calProyecto' => 6, 'insercion' => 1];
+        $dualFct->setRelation('Colaboracion', tap(new \Intranet\Entities\Colaboracion(), function ($colaboracion) use ($ciclo): void {
+            $colaboracion->setRelation('Ciclo', $ciclo);
+        }));
+
+        $alumno = new Alumno(['nia' => 'A1']);
+        $alumno->setRelation('Fcts', collect([$sameCycleFct, $otherCycleFct, $dualFct]));
+        $grupo->setRelation('Alumnos', collect([$alumno]));
+
+        $this->assertSame(1, $grupo->AvalFct);
+        $this->assertSame(1, $grupo->AprobFct);
+        $this->assertSame(1, $grupo->AvalPro);
+        $this->assertSame(1, $grupo->AprobPro);
+        $this->assertSame(1, $grupo->Colocados);
     }
 }

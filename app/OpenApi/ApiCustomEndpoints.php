@@ -929,28 +929,6 @@ class ApiCustomEndpoints
     }
 
     /**
-     * Endpoint custom: GET /colaboracion/instructores/{id}
-     */
-    #[OA\Get(
-        path: '/colaboracion/instructores/{id}',
-        operationId: 'colaboracion_instructores_id_get',
-        summary: 'Llista instructors d una colaboracio',
-        tags: ['FCT'],
-
-        parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
-            new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-            new OA\Response(response: 422, description: 'Validacio incorrecta', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
-        ]
-    )]
-    public function colaboracion_instructores_id_get(): void
-    {
-    }
-
-    /**
      * Endpoint custom: GET /colaboracion/{colaboracion}/resolve
      */
     #[OA\Get(

@@ -23,6 +23,7 @@ class ColaboracionTest extends TestCase
 
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('activities');
+        $schema->dropIfExists('colaboracion_preasignaciones');
         $schema->dropIfExists('colaboraciones');
         $schema->dropIfExists('centros');
         $schema->dropIfExists('ciclos');
@@ -62,6 +63,16 @@ class ColaboracionTest extends TestCase
             $table->text('comentari')->nullable();
             $table->string('document')->nullable();
             $table->string('author_id')->nullable();
+            $table->timestamps();
+        });
+
+        $schema->create('colaboracion_preasignaciones', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('idColaboracion');
+            $table->string('idAlumno');
+            $table->string('idProfesor');
+            $table->string('estado', 20)->default('proposta');
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
@@ -136,5 +147,66 @@ class ColaboracionTest extends TestCase
         $this->assertSame('Desconeguda', $colaboracion->localidad);
         $this->assertSame('', $colaboracion->horari);
     }
-}
 
+    public function test_preasignacion_capacity_methods_compten_només_estats_actius(): void
+    {
+        DB::table('centros')->insert([
+            'id' => 10,
+            'idEmpresa' => 1,
+            'nombre' => 'A',
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            'id' => 60,
+            'idCentro' => 10,
+            'idCiclo' => 100,
+            'puestos' => 3,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('colaboracion_preasignaciones')->insert([
+            [
+                'idColaboracion' => 60,
+                'idAlumno' => 'ALU001',
+                'idProfesor' => 'PROF001',
+                'estado' => 'proposta',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idColaboracion' => 60,
+                'idAlumno' => 'ALU002',
+                'idProfesor' => 'PROF001',
+                'estado' => 'reservada',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idColaboracion' => 60,
+                'idAlumno' => 'ALU003',
+                'idProfesor' => 'PROF001',
+                'estado' => 'convertida',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $colaboracion = Colaboracion::query()->with('Preasignaciones')->findOrFail(60);
+
+        $this->assertSame(2, $colaboracion->activePreasignacionesCount());
+        $this->assertSame(1, $colaboracion->availablePreasignacionSlots());
+        $this->assertTrue($colaboracion->hasPreasignacionCapacity());
+    }
+
+    public function test_preasignacion_capacity_methods_respecten_minim_duna_placa(): void
+    {
+        $colaboracion = new Colaboracion([
+            'puestos' => 0,
+        ]);
+
+        $this->assertSame(1, $colaboracion->availablePreasignacionSlots());
+        $this->assertTrue($colaboracion->hasPreasignacionCapacity());
+        $this->assertFalse($colaboracion->hasPreasignacionCapacity(1));
+    }
+}
