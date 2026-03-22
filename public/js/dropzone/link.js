@@ -1,11 +1,13 @@
 function apiAuthOptions(extraData) {
     var bearerTokenMeta = document.querySelector('meta[name="user-bearer-token"]');
+    var legacyTokenNode = document.getElementById('_token');
     var bearerToken = ((bearerTokenMeta && bearerTokenMeta.getAttribute('content')) || "").trim();
+    var legacyToken = ((legacyTokenNode && legacyTokenNode.textContent) || "").trim();
     var data = extraData || {};
     var headers = {};
 
-    if (bearerToken) {
-        headers.Authorization = "Bearer " + bearerToken;
+    if (bearerToken || legacyToken) {
+        headers.Authorization = "Bearer " + (bearerToken || legacyToken);
     }
 
     return { headers: headers, data: data };
@@ -23,7 +25,8 @@ function fetchJson(url, options) {
     });
 }
 
-Dropzone.options.myDropzone = {
+function buildDropzoneOptions() {
+    return {
     autoProcessQueue: true,
     uploadMultiple: true,
     maxFilesize: 10,
@@ -34,7 +37,6 @@ Dropzone.options.myDropzone = {
     url: '/api/attachFile',
     acceptedFiles: 'application/pdf,application/x-pdf,application/vnd.oasis.opendocument.text,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.odt,.zip,.doc,.docx',
     previewsContainer: ".dropzone-previews",
-    disablePreviews: true,
     dictRemoveFileConfirmation: "Vas a esborrar el fitxer",
     headers: {
         'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content
@@ -78,16 +80,19 @@ Dropzone.options.myDropzone = {
                     myDropzone.emit("addedfile", mockFile);
                     if (!mockFile.referencesTo) {
                         var previewName = mockFile.file ? mockFile.file : mockFile.name;
-                        myDropzone.createThumbnailFromUrl(
-                            mockFile,
-                            '/storage/adjuntos/' + modelo + '/' + expediente + '/' + previewName
-                        );
+                        if (typeof myDropzone.createThumbnailFromUrl === 'function') {
+                            myDropzone.createThumbnailFromUrl(
+                                mockFile,
+                                '/storage/adjuntos/' + modelo + '/' + expediente + '/' + previewName
+                            );
+                        }
                     }
                     myDropzone.emit("success", mockFile);
                     myDropzone.files.push(mockFile);
                     myDropzone.emit("complete", mockFile);
                 });
         }).catch(function (error) {
+            console.error("Dropzone getAttached error", error);
             alert("No s'han pogut carregar els adjunts: " + error.message);
         });
 
@@ -97,6 +102,9 @@ Dropzone.options.myDropzone = {
                 return;
             } else {
                 myDropzone.processQueue();
+                if (!file.previewTemplate) {
+                    return;
+                }
                 var a = document.createElement('a');
                 a.setAttribute('style','float:right');
                 if (file.referencesTo) {
@@ -107,11 +115,7 @@ Dropzone.options.myDropzone = {
                         }
                     });
                 } else {
-                    if (file.file) {
-                        a.setAttribute('href', '/storage/adjuntos/' + modelo + '/' + expediente + '/' + file.file);
-                    } else {
-                        a.setAttribute('href', '/readFileByName/' + file.name);
-                    }
+                    a.setAttribute('href', file.downloadUrl || ('/readFileByName/' + file.name));
                 }
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
@@ -138,9 +142,12 @@ Dropzone.options.myDropzone = {
                 method: 'GET',
                 headers: auth.headers,
             }).catch(function (error) {
+                console.error("Dropzone removeAttached error", error);
                 alert("No s'ha pogut esborrar: " + error.message);
                 myDropzone.emit("addedfile", file);
-                myDropzone.createThumbnailFromUrl(file,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                if (typeof myDropzone.createThumbnailFromUrl === 'function') {
+                    myDropzone.createThumbnailFromUrl(file,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                }
                 myDropzone.emit("success", file);
                 myDropzone.files.push(file);
                 myDropzone.emit("complete", file);
@@ -148,9 +155,19 @@ Dropzone.options.myDropzone = {
 
         })
     },
-};
+    };
+}
 
 document.addEventListener('DOMContentLoaded', function () {
+    if (window.Dropzone && typeof window.Dropzone.autoDiscover !== 'undefined') {
+        window.Dropzone.autoDiscover = false;
+    }
+
+    var dropzoneElement = document.getElementById('myDropzone');
+    if (dropzoneElement && window.Dropzone) {
+        new window.Dropzone(dropzoneElement, buildDropzoneOptions());
+    }
+
     document.querySelectorAll('.message').forEach(function (messageLink) {
         messageLink.addEventListener('click', function (event) {
             event.preventDefault();

@@ -328,12 +328,11 @@ Route::get('/fct/{document}/noProyecto', ['as' => 'fct.noProyecto', 'uses' => 'P
 Route::get('/fct/{document}/nullProyecto', ['as' => 'fct.nullProyecto', 'uses' => 'PanelFctAvalController@nullProyecto']);
 Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses' => 'PanelFctAvalController@nuevoProyecto']);
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'PanelFctAvalController@demanarActa']);
-Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
-Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'DocumentoController@store']);
-Route::get('/fct/{dni}/upload', ['as' => 'qualitat.upload', 'uses' => 'DocumentoController@qualitatUpload']);
-Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
-Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
-Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
+Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'FctProjecteDocumentoController@create']);
+Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'FctProjecteDocumentoController@store']);
+Route::get('/fct/{dni}/upload', ['as' => 'qualitat.upload', 'uses' => 'FctQualitatDocumentoController@upload']);
+Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'FctQualitatDocumentoController@create']);
+Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'FctQualitatDocumentoController@store']);
 Route::get('/fct/{document}/insercio', ['as' => 'fct.insercio', 'uses' => 'PanelFctAvalController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
@@ -546,6 +545,7 @@ Route::post('/sao/importa', [Intranet\Sao\SaoImportaAction::class,'importa']);
 Route::post('/sao/compara', [Intranet\Sao\SaoComparaAction::class,'compara']);
 
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
+Route::get('/adjunto/{adjunto}/show', ['as'=>'adjunto.show','uses'=>'DocumentoController@showAttached']);
 
 Route::get('/signatura',['as' => 'signatura.index','uses' => 'SignaturaController@index']);
 Route::post('/signatura',['as' => 'signatura.post','uses' => 'SignaturaController@store']);
@@ -559,11 +559,11 @@ Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaControlle
 Route::resource('projectes' , 'PanelProjecteController',['except'=>['update','destroy','show']]);
 Route::put('/projectes/{id}/edit', ['as' => 'projectes.update', 'uses' => 'PanelProjecteController@update']);
 Route::get('/projectes/{id}/delete', ['as' => 'projectes.delete', 'uses' => 'PanelProjecteController@destroy']);
-Route::get('/projectes/{id}/pdf', ['as' => 'projectes.pdf', 'uses' => 'PanelProjecteController@pdf']);
+Route::get('/projectes/{id}/pdf', ['as' => 'projectes.pdf', 'uses' => 'ProjecteDocumentoController@pdf']);
 Route::get('/projectes/{id}/check', ['as' => 'projectes.check', 'uses' => 'PanelProjecteController@check']);
-Route::get('/projectes/actaP', ['as' => 'projectes.actaP', 'uses' => 'PanelProjecteController@acta']);
-Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'PanelProjecteController@send']);
-Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'PanelProjecteController@actaE']);
+Route::get('/projectes/actaP', ['as' => 'projectes.actaP', 'uses' => 'ProjecteDocumentoController@acta']);
+Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'ProjecteDocumentoController@send']);
+Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'ProjecteDocumentoController@actaE']);
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
 

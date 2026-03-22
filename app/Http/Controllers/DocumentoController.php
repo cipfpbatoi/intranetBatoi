@@ -3,66 +3,38 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
-use Intranet\Application\Documento\DocumentoFormService;
 use Intranet\Application\Documento\DocumentoLifecycleService;
-use Intranet\Application\Grupo\GrupoService;
-use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Documento\DocumentoPersistenceService;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Core\IntranetController;
-use Intranet\Http\Requests\DocumentoStoreRequest;
 use Illuminate\Http\Request;
 
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Presentation\Crud\DocumentoCrudSchema;
-use Intranet\Services\Document\TipoDocumentoService;
-use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
-use Intranet\Services\Document\CreateOrUpdateDocumentAction;
+use Intranet\Services\UI\FormBuilder;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\UI\AppAlert as Alert;
 
 /**
- * Controlador de gestió de documents i fluxos associats de FCT/qualitat.
+ * Controlador de gestió documental comuna.
  */
 class DocumentoController extends IntranetController
 {
-    private ?DocumentoFormService $documentoFormService = null;
-    private ?GrupoService $grupoService = null;
-    private ?AlumnoFctService $alumnoFctService = null;
     private ?DocumentoLifecycleService $documentoLifecycleService = null;
+    private ?DocumentoPersistenceService $documentoPersistenceService = null;
 
     protected $model = 'Documento';
     protected $formFields = DocumentoCrudSchema::FORM_FIELDS;
 
     public function __construct(
-        ?GrupoService $grupoService = null,
-        ?AlumnoFctService $alumnoFctService = null,
-        ?DocumentoLifecycleService $documentoLifecycleService = null
+        ?DocumentoLifecycleService $documentoLifecycleService = null,
+        ?DocumentoPersistenceService $documentoPersistenceService = null
     )
     {
         parent::__construct();
-        $this->grupoService = $grupoService;
-        $this->alumnoFctService = $alumnoFctService;
         $this->documentoLifecycleService = $documentoLifecycleService;
-    }
-
-    private function grupos(): GrupoService
-    {
-        if ($this->grupoService === null) {
-            $this->grupoService = app(GrupoService::class);
-        }
-
-        return $this->grupoService;
-    }
-
-    private function alumnoFcts(): AlumnoFctService
-    {
-        if ($this->alumnoFctService === null) {
-            $this->alumnoFctService = app(AlumnoFctService::class);
-        }
-
-        return $this->alumnoFctService;
+        $this->documentoPersistenceService = $documentoPersistenceService;
     }
 
     private function documentos(): DocumentoLifecycleService
@@ -74,13 +46,13 @@ class DocumentoController extends IntranetController
         return $this->documentoLifecycleService;
     }
 
-    private function forms(): DocumentoFormService
+    private function persistence(): DocumentoPersistenceService
     {
-        if ($this->documentoFormService === null) {
-            $this->documentoFormService = app(DocumentoFormService::class);
+        if ($this->documentoPersistenceService === null) {
+            $this->documentoPersistenceService = app(DocumentoPersistenceService::class);
         }
 
-        return $this->documentoFormService;
+        return $this->documentoPersistenceService;
     }
 
 
@@ -99,153 +71,9 @@ class DocumentoController extends IntranetController
     public function store(Request $request, $fct = null)
     {
         $this->authorize('create', Documento::class);
-        $this->validate($request, (new DocumentoStoreRequest())->rules());
-       
-        if ($request->filled('nota')) {
-            $this->forms()->updateNota($this->alumnoFcts(), (int) $fct, $request->nota);
-            if ($request->nota < 5) {
-                return $this->redirect();
-            }
-        }
-
-        $except = ['nota'];
-        $rol = TipoDocumentoService::rol($request->input('tipoDocumento'));
-        $cursoRequest = $request->input('curso')??curso();
-        $cleanRequest = $request->duplicate(
-            $request->except($except),
-            $request->files->all()
-        );
-
-        (new CreateOrUpdateDocumentAction())->fromRequest(
-            $cleanRequest,
-            [
-                'rol' => $rol,
-                'curso' => $cursoRequest,
-            ]
-        );
+        $this->persistence()->storeFromRequest($request);
 
         return $this->redirect();
-    }
-    protected function createWithDefaultValues($default=[])
-    {
-        return (new CreateOrUpdateDocumentAction())->build(
-            array_merge(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true], $default)
-        );
-     }
-
-    public function project($idFct)
-    {
-        $this->authorize('create', Documento::class);
-        if ($fct = $this->alumnoFcts()->findOrFail((int) $idFct)) {
-            $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
-            $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
-            $elemento = (new CreateOrUpdateDocumentAction())->build(
-                $this->forms()->projectDefaults($fct, $ciclo, AuthUser()->FullName)
-            );
-            $formulario = new FormBuilder(
-                $elemento,
-                DocumentoCrudSchema::projectFormFields()
-            );
-            $modelo = $this->model;
-            Session::put('redirect', 'PanelFctAvalController@index');
-            return view($this->chooseView('create'), compact('formulario', 'modelo'));
-        }
-        return back();
-
-    }
-
-    /**
-     * @param int|string $id
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     * @throws NotFoundDomainException
-     */
-    public function qualitatUpload($id)
-    {
-        $this->authorize('create', Documento::class);
-        $profesor = app(ProfesorService::class)->findOrFail((string) $id);
-
-        $documents = Adjunto::where('route', "profesor/$id")->get();
-        $grupo = $this->grupos()->firstByTutor((string) $id);
-        if (!$grupo) {
-            throw new NotFoundDomainException('No hi ha grup de tutoria assignat', ['profesor_id' => $id]);
-        }
-        $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
-            'curso' => Curso(),
-            'propietario' => $profesor->FullName,
-            'supervisor' => $profesor->FullName,
-            'activo' => true,
-            'tipoDocumento' => 'FCT',
-            'idDocumento' => null,
-            'ciclo' => $grupo->Ciclo->ciclo,
-            'grupo' => $grupo->nombre,
-            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
-            'descripcion' => "Documentació FCT Cicle " . $grupo->Ciclo->ciclo,
-        ]);
-
-        $zip = new \ZipArchive();
-        $path = "gestor/" . curso() . "/FCT/";
-        $zipFile = $path . $elemento->id . "_FCT.zip";
-        $elemento->fichero = $zipFile;
-
-        // Comprovar si el directori existeix, si no, crear-lo
-        $storagePath = storage_path('app/' . $path);
-        if (!file_exists($storagePath)) {
-            if (!mkdir($storagePath, 0777, true) && !is_dir($storagePath)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $storagePath));
-            }
-        }
-
-        $zip->open($storagePath . $elemento->id . "_FCT.zip", \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $problem = false;
-        $esborrar = [];
-        foreach ($documents as $document) {
-            $file = public_path("storage/adjuntos/{$document->route}/{$document->title}.{$document->extension}");
-            if (file_exists($file)) {
-                $zip->addFile($file, $document->name);
-                $esborrar[$document->id] = $file;
-            } else {
-                $problem = true;
-                Alert::danger("Problemes per a guardar el fitxer: $file");
-            }
-        }
-        if (!$problem) {
-            $zip->close();
-            $elemento->save();
-            foreach ($esborrar as $adjunto => $file) {
-                Adjunto::destroy($adjunto);
-                unlink($file);
-            }
-            return redirect()->route('alumnofct.index');
-        }
-        $elemento->delete();
-        return back();
-    }
-
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     * @throws NotFoundDomainException
-     */
-    public function qualitat()
-    {
-        $this->authorize('create', Documento::class);
-        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
-        if (!$grupo) {
-            throw new NotFoundDomainException(
-                'No hi ha grup de tutoria assignat',
-                ['profesor_id' => AuthUser()->dni]
-            );
-        }
-        $elemento = (new CreateOrUpdateDocumentAction())->build([
-            ...$this->forms()->qualitatDefaults($grupo, AuthUser()->FullName),
-        ]);
-        $formulario = new FormBuilder(
-            $elemento,
-            DocumentoCrudSchema::qualitatFormFields()
-        );
-        $modelo = $this->model;
-        Session::put('redirect', 'FctController@index');
-        return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
     public function edit($id = null)
@@ -276,11 +104,34 @@ class DocumentoController extends IntranetController
     public function readFile($name)
     {
         $adjunto = Adjunto::where('name', $name)->first();
-        if ($adjunto) {
-            return redirect("/storage/adjuntos/".$adjunto->route."/".$adjunto->title.".".$adjunto->extension);
-        } else {
+        if (!$adjunto) {
             return back();
         }
+
+        if (!is_file($adjunto->path)) {
+            return back()->withErrors("No s'ha trobat el fitxer adjunt.");
+        }
+
+        return response()->file($adjunto->path);
+    }
+
+    /**
+     * Mostra un adjunt resolt per identificador intern.
+     *
+     * @param int|string $id
+     */
+    public function showAttached($id)
+    {
+        $adjunto = Adjunto::find($id);
+        if (!$adjunto) {
+            return back();
+        }
+
+        if (!is_file($adjunto->path)) {
+            return back()->withErrors("No s'ha trobat el fitxer adjunt.");
+        }
+
+        return response()->file($adjunto->path);
     }
 
     

@@ -6,13 +6,9 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Support\Facades\Mail;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\Document\PdfService;
-use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Projecte;
-use Intranet\Entities\Reunion;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\ProyectoRequest;
 
@@ -156,122 +152,6 @@ class PanelProjecteController extends ModalController
         }
         return back();
     }
-
-
-    /**
-     * Envia per correu les propostes del grup de tutoria.
-     */
-    public function send()
-    {
-        $this->authorize('send', Projecte::class);
-        $miGrupo = $this->myTutorGroup();
-        if ($miGrupo === null) {
-            return back()->withErrors('No tens grup assignat');
-        }
-
-        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
-        $projectes = Projecte::whereIn('idAlumne', $alumnos)
-            ->where('estat', 1)
-            ->get();
-
-        // Usar hazZip para generar el zip
-        $zipPath = app(PdfService::class)->hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
-
-        // Enviar el correo con el zip adjunto
-        $profesores = $this->profesores()->byGrupo((string) $miGrupo->codigo);
-        $professorsEmails = [];
-        foreach ($profesores as $profesor) {
-            $professorsEmails[] = $profesor->email;
-        }
-
-        Mail::send('email.projectes', ['grupo' => $miGrupo], function($message) use ($zipPath, $professorsEmails) {
-            $message->to($professorsEmails)
-                ->subject('Projectes del grup')
-                ->attach($zipPath);
-        });
-
-        // Limpiar el archivo zip
-        unlink($zipPath);
-
-        return back()->with('success', 'Se ha enviado el correo con los proyectos del grupo.');
-    }
-
-
-    /**
-     * Genera l'acta de valoració de propostes del grup.
-     */
-    public function acta()
-    {
-        $this->authorize('createActa', Projecte::class);
-        $miGrupo = $this->myTutorGroup();
-        if ($miGrupo === null) {
-            return back()->withErrors('No tens grup assignat');
-        }
-
-        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
-        $projectes = Projecte::whereIn('idAlumne', $alumnos)
-            ->where('estat', 1)
-            ->get();
-
-
-        $acta = new Reunion(['tipo'=>11,'numero'=>0,'curso'=>curso(),'fecha'=>hoy(),'idProfesor'=>authUser()->dni,'descripcion'=>'Acta valoració propostes','objectivos'=>"Valorar les propostes que ha fet l'alumnat per al mòdul de Projecte",'idEspacio'=>'SalaProf' ]);
-        $acta->save();
-        foreach ($projectes as $key => $projecte) {
-            OrdenReunion::create([
-                'idReunion' => $acta->id,
-                'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => $projecte->titol.' (Tutor individual)',
-                'orden' => $key+1
-            ]);
-        }
-
-        return redirect()->route('reunion.edit', $acta->id);
-
-    }
-
-    /**
-     * Genera l'acta d'assignació de data/hora de defenses.
-     */
-    public function actaE()
-    {
-        $this->authorize('createDefenseActa', Projecte::class);
-        $miGrupo = $this->myTutorGroup();
-        if ($miGrupo === null) {
-            return back()->withErrors('No tens grup assignat');
-        }
-
-        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
-        $projectes = Projecte::whereIn('idAlumne', $alumnos)
-            ->orderBy('defensa')
-            ->orderBy('hora_defensa')
-            ->where('estat', 2)
-            ->get();
-
-
-        $acta = new Reunion(['tipo'=>12,'numero'=>0,'curso'=>curso(),'fecha'=>hoy(),'idProfesor'=>authUser()->dni,'descripcion'=>'Data Defensa del mòdul de projecte','objectivos'=>"Assignar dia i hora per a la defensa dels Projectes",'idEspacio'=>'SalaProf' ]);
-        $acta->save();
-        foreach ($projectes as $key => $projecte) {
-            OrdenReunion::create([
-                'idReunion' => $acta->id,
-                'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => '('.$projecte->titol.')'.$projecte->defensa.'('.$projecte->hora_defensa.')',
-                'orden' => $key+1
-            ]);
-        }
-
-        return redirect()->route('reunion.edit', $acta->id);
-
-    }
-
-    public function pdf($id)
-    {
-        $elemento = Projecte::findOrFail((int) $id);
-        $this->authorize('view', $elemento);
-        $informe = 'pdf.propostaProjecte';
-        $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
-        return $pdf->stream();
-    }
-
 
 
     protected function iniBotones()

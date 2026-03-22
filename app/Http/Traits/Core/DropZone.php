@@ -12,7 +12,11 @@ use Illuminate\Support\Facades\Log;
  *
  * Contracte esperat del controller que usa el trait:
  * - `protected string $model`: nom curt del model (ex. `Solicitud`).
- * - `protected string $class`: FQCN de l'entitat (ex. `Intranet\Entities\Solicitud`).
+ * - opcionalment `protected string $class`: FQCN de l'entitat.
+ *
+ * Si `$class` no està definit, el trait intenta resoldre:
+ * - `Intranet\Entities\{Model}`
+ * - o bé `{namespace}{Model}` si el controlador exposa `namespace`.
  */
 trait DropZone
 {
@@ -51,14 +55,17 @@ trait DropZone
             abort(500, "L'atribut 'model' no està definit en la classe que usa el trait DropZone.");
         }
 
-        if (!isset($this->class)) {
-            abort(500, "L'atribut 'class' no està definit en la classe que usa el trait DropZone.");
+        $class = null;
+        if (isset($this->class) && class_exists($this->class)) {
+            $class = $this->class;
+        } else {
+            $entityCandidate = 'Intranet\\Entities\\' . $this->model;
+            if (class_exists($entityCandidate)) {
+                $class = $entityCandidate;
+            }
         }
 
-        $class = null;
-        if (class_exists($this->class)) {
-            $class = $this->class;
-        } elseif (property_exists($this, 'namespace') && isset($this->namespace)) {
+        if ($class === null && property_exists($this, 'namespace') && isset($this->namespace)) {
             $candidate = $this->namespace . $this->model;
             if (class_exists($candidate)) {
                 $class = $candidate;

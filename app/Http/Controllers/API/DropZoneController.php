@@ -14,11 +14,13 @@ class DropZoneController extends ApiResourceController
         $files = Adjunto::getByPath($path)->get();
         $data = [];
         foreach ($files as $key => $attached) {
+            $data[$key]['id'] = $attached->id;
             $data[$key]['name'] = $attached->name;
-            $data[$key]['file'] = "$attached->title.$attached->extension";
+            $data[$key]['file'] = "{$attached->title}.{$attached->extension}";
             $data[$key]['extension'] = $attached->extension;
             $data[$key]['size'] = $attached->size;
             $data[$key]['accepted'] = true;
+            $data[$key]['downloadUrl'] = route('adjunto.show', ['adjunto' => $attached->id]);
             if (isset($attached->referencesTo)) {
                 $data[$key]['referencesTo'] = $attached->referencesTo;
             }
