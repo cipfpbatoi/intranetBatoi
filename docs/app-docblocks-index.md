@@ -53,6 +53,9 @@ Controlador API per a FCT d'alumnat.
   - **`show`**($id): \Illuminate\Http\JsonResponse
 
     /
+  - **`edit`**($id): \Illuminate\Http\JsonResponse
+
+    Retorna només els camps editables que necessita el modal d'edició.
 
 
 ### `app/Http/Controllers/API/AlumnoGrupoController.php`
@@ -285,11 +288,24 @@ Controlador API per a operacions amb centres.
 ### `app/Http/Controllers/API/DocumentacionFCTController.php`
 
 #### `Intranet\Http\Controllers\API\DocumentacionFCTController`
+Exposa opcions i dades auxiliars per a la documentació FCT.
+
+- Metodes:
+  - **`__construct`**(?FctDocumentOptionsService $fctDocumentOptionsService = null)
+  - **`options`**(): FctDocumentOptionsService
+
+#### `Intranet\Http\Controllers\API\fctDocumentOptionsService`
 - Metodes:
   - **`exec`**($documento)
   - **`signatura`**()
+
+    Retorna signatures disponibles per a documents estàndard d'FCT.
   - **`signaturaA1`**()
+
+    Retorna signatures específiques per a l'annex A1.
   - **`signaturaDirector`**()
+
+    Retorna signatures de direcció per als documents que les requerixen.
 
 
 ### `app/Http/Controllers/API/DocumentoController.php`
@@ -1774,52 +1790,30 @@ Renderitza la documentacio de doc-blocks de l'aplicacio.
 ### `app/Http/Controllers/DocumentoController.php`
 
 #### `Intranet\Http\Controllers\DocumentoController`
-Controlador de gestió de documents i fluxos associats de FCT/qualitat.
+Controlador de gestió documental comuna.
 
 - Metodes:
-  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null, ?DocumentoLifecycleService $documentoLifecycleService = null)
-  - **`grupos`**(): GrupoService
-
-#### `Intranet\Http\Controllers\grupoService`
-- Metodes:
-  - **`alumnoFcts`**(): AlumnoFctService
-
-#### `Intranet\Http\Controllers\alumnoFctService`
-- Metodes:
+  - **`__construct`**(?DocumentoLifecycleService $documentoLifecycleService = null, ?DocumentoPersistenceService $documentoPersistenceService = null)
   - **`documentos`**(): DocumentoLifecycleService
 
 #### `Intranet\Http\Controllers\documentoLifecycleService`
 - Metodes:
-  - **`forms`**(): DocumentoFormService
+  - **`persistence`**(): DocumentoPersistenceService
 
-#### `Intranet\Http\Controllers\documentoFormService`
+#### `Intranet\Http\Controllers\documentoPersistenceService`
 - Metodes:
   - **`redirect`**()
   - **`store`**(Request $request, $fct = null)
 
-#### `Intranet\Http\Controllers\validate`
-- Metodes:
-  - **`createWithDefaultValues`**($default=[])
-  - **`project`**($idFct)
-  - **`qualitatUpload`**($id): \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-
-    /
-
-#### `Intranet\Http\Controllers\app`
-- Metodes: cap
-
-#### `Intranet\Http\Controllers\findOrFail`
-- Metodes:
-  - **`qualitat`**(): \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-
-    /
-
-#### `Intranet\Http\Controllers\grupos`
+#### `Intranet\Http\Controllers\persistence`
 - Metodes:
   - **`edit`**($id = null)
   - **`show`**($id)
   - **`destroy`**($id)
   - **`readFile`**($name)
+  - **`showAttached`**($id)
+
+    Mostra un adjunt resolt per identificador intern.
 
 
 ### `app/Http/Controllers/EmpresaController.php`
@@ -2099,10 +2093,102 @@ Class FctController
 ### `app/Http/Controllers/FctMailController.php`
 
 #### `Intranet\Http\Controllers\FctMailController`
+Controlador web per a renderitzar documentació FCT sota demanda.
+
 - Metodes:
-  - **`__construct`**(FctMailService $fctMailService)
+  - **`__construct`**(?FctDocumentRenderService $fctDocumentRenderService = null)
+  - **`documents`**(): FctDocumentRenderService
+
+#### `Intranet\Http\Controllers\fctDocumentRenderService`
+- Metodes:
   - **`showMailById`**($id, $documento)
   - **`showMailByRequest`**(Request $request, $documento)
+
+    Renderitza un document FCT a partir dels paràmetres rebuts en la petició.
+
+
+### `app/Http/Controllers/FctProjecteDocumentoController.php`
+
+#### `Intranet\Http\Controllers\FctProjecteDocumentoController`
+Gestiona el formulari documental específic del projecte associat a FCT.
+
+- Metodes:
+  - **`__construct`**(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null, ?DocumentoFormService $documentoFormService = null, ?DocumentoPersistenceService $documentoPersistenceService = null)
+  - **`grupos`**(): GrupoService
+
+#### `Intranet\Http\Controllers\grupoService`
+- Metodes:
+  - **`alumnoFcts`**(): AlumnoFctService
+
+#### `Intranet\Http\Controllers\alumnoFctService`
+- Metodes:
+  - **`forms`**(): DocumentoFormService
+
+#### `Intranet\Http\Controllers\documentoFormService`
+- Metodes:
+  - **`persistence`**(): DocumentoPersistenceService
+
+#### `Intranet\Http\Controllers\documentoPersistenceService`
+- Metodes:
+  - **`create`**($default = [])
+
+    Mostra el formulari de document de projecte associat a una FCT avaluable.
+
+#### `Intranet\Http\Controllers\request`
+- Metodes:
+  - **`store`**(Request $request)
+
+    Persistix el document de projecte i actualitza la nota del projecte si cal.
+
+#### `Intranet\Http\Controllers\validate`
+- Metodes: cap
+
+
+### `app/Http/Controllers/FctQualitatDocumentoController.php`
+
+#### `Intranet\Http\Controllers\FctQualitatDocumentoController`
+Gestiona el flux específic de qualitat documental d'FCT.
+
+- Metodes:
+  - **`__construct`**(?GrupoService $grupoService = null, ?ProfesorService $profesorService = null, ?DocumentoFormService $documentoFormService = null, ?DocumentoPersistenceService $documentoPersistenceService = null, ?FctQualitatUploadService $fctQualitatUploadService = null)
+  - **`grupos`**(): GrupoService
+
+#### `Intranet\Http\Controllers\grupoService`
+- Metodes:
+  - **`profesores`**(): ProfesorService
+
+#### `Intranet\Http\Controllers\profesorService`
+- Metodes:
+  - **`forms`**(): DocumentoFormService
+
+#### `Intranet\Http\Controllers\documentoFormService`
+- Metodes:
+  - **`qualitatUploads`**(): FctQualitatUploadService
+
+#### `Intranet\Http\Controllers\fctQualitatUploadService`
+- Metodes:
+  - **`persistence`**(): DocumentoPersistenceService
+
+#### `Intranet\Http\Controllers\documentoPersistenceService`
+- Metodes:
+  - **`create`**()
+
+    Mostra el formulari de creació de documentació de qualitat FCT.
+
+#### `Intranet\Http\Controllers\grupos`
+- Metodes:
+  - **`upload`**($id)
+
+    Consolida en ZIP la documentació de qualitat FCT d'un tutor.
+
+#### `Intranet\Http\Controllers\profesores`
+- Metodes:
+  - **`store`**(Request $request)
+
+    Persistix el registre documental de qualitat FCT.
+
+#### `Intranet\Http\Controllers\persistence`
+- Metodes: cap
 
 
 ### `app/Http/Controllers/FicharController.php`
@@ -3164,6 +3250,15 @@ Class PanelFctAvalController
 
     Mostra les estadístiques FCT separant primer i segon curs.
 
+#### `Intranet\Http\Controllers\abort_unless`
+- Metodes:
+  - **`canManageProjectGrade`**(AlumnoFct $elemento): bool
+
+    Determina si l'usuari autenticat pot gestionar la nota de projecte.
+  - **`estadistiquesXlsx`**(): BinaryFileResponse
+
+    Exporta les estadístiques FCT a un fitxer Excel.
+
 
 ### `app/Http/Controllers/PanelFctController.php`
 
@@ -3542,21 +3637,11 @@ Class PanelProjecteController
 
 #### `Intranet\Http\Controllers\myTutorGroup`
 - Metodes:
-  - **`pdf`**($id)
+  - **`update`**(ProyectoRequest $request, $id): \Illuminate\Http\RedirectResponse
+
+    /
 
 #### `Intranet\Http\Controllers\authorize`
-- Metodes:
-  - **`send`**()
-
-    Envia per correu les propostes del grup de tutoria.
-
-#### `Intranet\Http\Controllers\hazZip`
-- Metodes:
-  - **`acta`**()
-
-    Genera l'acta de valoració de propostes del grup.
-
-#### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
   - **`iniBotones`**()
 
@@ -3805,6 +3890,37 @@ Class ProjecteController
 #### `Intranet\Http\Controllers\hazPdf`
 - Metodes:
   - **`iniBotones`**()
+
+
+### `app/Http/Controllers/ProjecteDocumentoController.php`
+
+#### `Intranet\Http\Controllers\ProjecteDocumentoController`
+Gestiona fluxos documentals específics del domini de projectes.
+
+- Metodes:
+  - **`__construct`**(?GrupoService $grupoService = null, ?ProfesorService $profesorService = null, ?ProjecteDocumentService $projecteDocumentService = null)
+  - **`grupos`**(): GrupoService
+
+#### `Intranet\Http\Controllers\grupoService`
+- Metodes:
+  - **`profesores`**(): ProfesorService
+
+#### `Intranet\Http\Controllers\profesorService`
+- Metodes:
+  - **`documents`**(): ProjecteDocumentService
+
+#### `Intranet\Http\Controllers\projecteDocumentService`
+- Metodes:
+  - **`myTutorGroup`**()
+  - **`projectsForTutorGroup`**(int $estat, ?callable $order = null)
+  - **`send`**()
+
+#### `Intranet\Http\Controllers\projectsForTutorGroup`
+- Metodes:
+  - **`pdf`**($id)
+
+#### `Intranet\Http\Controllers\hazPdf`
+- Metodes: cap
 
 
 ### `app/Http/Controllers/QualitatDocumentoController.php`
@@ -6749,6 +6865,36 @@ Servei de cicle de vida per a Documento.
   - **`mustDeleteFile`**(Documento $documento): bool
 
 
+### `app/Application/Documento/DocumentoPersistenceService.php`
+
+#### `Intranet\Application\Documento\DocumentoPersistenceService`
+Encapsula la persistència documental comuna fora dels controladors de domini.
+
+- Metodes:
+  - **`storeFromRequest`**(Request $request): Documento
+
+    Crea un document a partir d'un request HTTP.
+  - **`updateFromRequest`**(Request $request, Documento $document): Documento
+
+    Actualitza un document existent a partir d'un request HTTP.
+  - **`persist`**(Request $request, ?Documento $document = null): Documento
+
+    Normalitza i persistix un document, resolent defaults comuns.
+
+
+### `app/Application/Documento/FctQualitatUploadService.php`
+
+#### `Intranet\Application\Documento\FctQualitatUploadService`
+Orquestra la consolidació de documentació de qualitat FCT en un ZIP documental.
+
+- Metodes:
+  - **`createZipDocument`**(Profesor $profesor, Grupo $grupo, Collection $documents): ?Documento
+
+    Genera un document ZIP de qualitat FCT per al tutor indicat.
+  - **`ensureDirectoryExists`**(string $storagePath): void
+  - **`resolveAdjuntoPath`**(Adjunto $document): string
+
+
 ### `app/Application/Empresa/EmpresaService.php`
 
 #### `Intranet\Application\Empresa\EmpresaService`
@@ -6844,6 +6990,37 @@ Casos d'ús d'aplicació per al domini de faltes de professorat.
 
 #### `Intranet\Application\Fct\hazPdf`
 - Metodes: cap
+
+
+### `app/Application/Fct/FctDocumentOptionsService.php`
+
+#### `Intranet\Application\Fct\FctDocumentOptionsService`
+Resol les opcions seleccionables de documentació FCT a partir de la seua configuració.
+
+- Metodes:
+  - **`optionsFor`**(string $documento): AnonymousResourceCollection
+
+    Carrega les opcions de selecció per a un codi de document FCT.
+
+
+### `app/Application/Fct/FctDocumentRenderService.php`
+
+#### `Intranet\Application\Fct\FctDocumentRenderService`
+Orquestra el renderitzat o enviament de documentació FCT des de web.
+
+- Metodes:
+  - **`renderById`**(int $id, string $documento): mixed
+
+    Genera la resposta documental per a un únic element.
+  - **`renderByRequest`**($request, string $documento): mixed
+
+    Genera la resposta documental a partir d'una selecció de petició.
+  - **`renderFromFinder`**($finder): mixed
+
+    /
+  - **`makeDocumentService`**($finder): DocumentService
+
+    Crea el servei documental per al finder resolt.
 
 
 ### `app/Application/Fct/FctService.php`
@@ -7330,6 +7507,26 @@ Casos d'ús d'aplicació per al domini de professorat.
   - **`withSustituyeAssigned`**(): EloquentCollection
 
     /
+
+
+### `app/Application/Projecte/ProjecteDocumentService.php`
+
+#### `Intranet\Application\Projecte\ProjecteDocumentService`
+Orquestra la generació documental específica del domini de projectes.
+
+- Metodes:
+  - **`createProposalActa`**(Collection $projectes, string $tutorDni): Reunion
+
+    Crea l'acta de valoració de propostes.
+  - **`createDefenseActa`**(Collection $projectes, string $tutorDni): Reunion
+
+    Crea l'acta d'assignació de defensa.
+  - **`sendProjectsZip`**(Grupo $grupo, Collection $projectes, array $emails): void
+
+    Genera el ZIP i envia el correu amb els projectes del grup.
+
+#### `Intranet\Application\Projecte\hazZip`
+- Metodes: cap
 
 
 ### `app/Domain/AlumnoFct/AlumnoFctRepositoryInterface.php`
@@ -8226,21 +8423,6 @@ Accions post-enviament per a correus.
     /
 
 
-### `app/Services/Mail/FctMailService.php`
-
-#### `Intranet\Services\Mail\FctMailService`
-- Metodes:
-  - **`getMailById`**(int $id, string $documento): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
-
-    Obté un correu per ID.
-  - **`getMailByRequest`**($request, string $documento): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
-
-    Obté un correu a partir d'una petició.
-  - **`generateMail`**($finder): \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
-
-    Genera el correu a partir d'un Finder.
-
-
 ### `app/Services/Mail/MailSender.php`
 
 #### `Intranet\Services\Mail\MailSender`
@@ -8840,6 +9022,9 @@ Builder compatible amb `Field::*` per desacoblar Styde Html.
   - **`fillDefaultOptionsFromModel`**(): array
 
     /
+  - **`resolveCssInputClass`**(string $declaredType, string $renderType): string
+
+    Conserva la classe funcional del tipus original encara que es renderitze com a text.
 
 
 ### `app/Services/UI/NavigationService.php`
@@ -11297,6 +11482,9 @@ Marca ús legacy de `api_token` en query/body per facilitar retirada gradual.
   - **`toArray`**($request): array
 
     Transform the resource into an array.
+  - **`resolveAlumnoDisplay`**(): string
+
+    Retorna un identificador o nom d'alumne sense forçar relacions fràgils.
 
 
 ### `app/Http/Resources/ArticuloLoteResource.php`

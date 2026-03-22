@@ -100,6 +100,27 @@ El matís que queda és que `DocumentoController@store()` continua sent l'entrad
 - `php artisan test tests/Unit/Application/Documento/FctQualitatUploadServiceTest.php`
 - `php artisan test tests/Unit/Application/Fct/FctDocumentRenderServiceTest.php`
 - `php artisan test tests/Unit/Application/Projecte/ProjecteDocumentServiceTest.php`
+- `php artisan test tests/Unit/Entities/AlumnoFctAvalTest.php`
 
 Resultat actual:
-- `7` proves passades en la bateria curta del sprint
+- `10` proves passades en la bateria curta del sprint
+
+## Tancament
+
+- sprint resolt funcionalment
+- integrat directament sobre la branca [`Laravel12`](/Users/igomis/Code/intranetBatoi)
+- commits finals:
+  - `20f0b13f` `[MOD] Extrau fluxos documentals i repara dropzone #124`
+  - `d7fca356` `[FIX] Repara formularis de projecte i nota FCT #124`
+
+## Incidències resoltes durant el tancament
+
+- reparació del flux Dropzone d'FCT i qualitat:
+  - càrrega de la llibreria
+  - inicialització manual
+  - resolució d'adjunts per identificador intern
+  - recuperació de la compatibilitat del trait [`DropZone.php`](/Users/igomis/Code/intranetBatoi/app/Http/Traits/Core/DropZone.php)
+- correcció dels formularis específics que havien quedat amb signatures incompatibles després de l'extracció:
+  - [`FctProjecteDocumentoController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/FctProjecteDocumentoController.php)
+  - [`PanelFctAvalController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/PanelFctAvalController.php)
+- correcció de l'edició de `calProyecto` perquè no valide camps generals d'[`AlumnoFct`](/Users/igomis/Code/intranetBatoi/app/Entities/AlumnoFct.php) ni depenga d'una policy inexistent
