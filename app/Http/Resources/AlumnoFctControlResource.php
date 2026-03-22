@@ -3,6 +3,7 @@
 namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Intranet\Entities\AlumnoFct;
 
 class AlumnoFctControlResource extends JsonResource
 {
@@ -14,16 +15,19 @@ class AlumnoFctControlResource extends JsonResource
      */
     public function toArray($request)
     {
+        /** @var AlumnoFct $alumnoFct */
+        $alumnoFct = $this->resource;
+        $fct = $alumnoFct->Fct;
+
         return [
-            'id' => $this->id,
-            'centro' => $this->Fct->Colaboracion->Centro->nombre,
-            'nombre' => $this->Alumno->fullName,
-            'a56' => $this->a56,
-            'desde' => $this->desde,
-            'hasta' => $this->hasta,
-            'pg0301' => $this->pg0301,
+            'id' => $alumnoFct->id,
+            'centro' => $fct?->relatedCenter()?->nombre,
+            'nombre' => $alumnoFct->Alumno?->fullName,
+            'a56' => $alumnoFct->a56,
+            'desde' => $alumnoFct->desde,
+            'hasta' => $alumnoFct->hasta,
+            'pg0301' => $alumnoFct->pg0301,
         ];
     }
 }
-
 

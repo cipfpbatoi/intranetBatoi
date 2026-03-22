@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\Vote;
 use Illuminate\Support\Carbon;
@@ -131,6 +132,56 @@ class Fct extends Model
     public function tutor()
     {
         return $this->hasOneThrough(Profesor::class, Colaboracion::class, 'id', 'dni', 'idColaboracion', 'tutor');
+    }
+
+    /**
+     * Retorna la col·laboració vinculada si està disponible.
+     */
+    public function relatedColaboracion(): ?Colaboracion
+    {
+        return $this->Colaboracion;
+    }
+
+    /**
+     * Retorna el centre operatiu de la FCT.
+     */
+    public function relatedCenter(): ?Centro
+    {
+        return $this->relatedColaboracion()?->Centro;
+    }
+
+    /**
+     * Retorna l'empresa associada al centre de pràctiques.
+     */
+    public function relatedCompany(): ?Empresa
+    {
+        return $this->relatedCenter()?->Empresa;
+    }
+
+    /**
+     * Retorna el cicle que dona context acadèmic a la FCT.
+     */
+    public function relatedCycle(): ?Ciclo
+    {
+        return $this->relatedColaboracion()?->Ciclo;
+    }
+
+    /**
+     * Retorna el professorat tutor FCT del cicle associat.
+     *
+     * @return Collection<int, Profesor>
+     */
+    public function cycleTutors(): Collection
+    {
+        return $this->relatedCycle()?->TutoresFct ?? collect();
+    }
+
+    /**
+     * Indica si la FCT conserva el context mínim de col·laboració i centre.
+     */
+    public function hasOperationalContext(): bool
+    {
+        return $this->relatedColaboracion() !== null && $this->relatedCenter() !== null;
     }
     
     public function scopeCentro($query, $centro)
@@ -279,8 +330,8 @@ class Fct extends Model
     
     public function getCentroAttribute()
     {
-        if (isset($this->Colaboracion->Centro->nombre)) {
-            return $this->Colaboracion->Centro->nombre;
+        if (isset($this->relatedCenter()?->nombre)) {
+            return $this->relatedCenter()->nombre;
         }
 
         return 'Convalidada/Exent';
@@ -288,7 +339,7 @@ class Fct extends Model
 
     public function getCicloAttribute()
     {
-        return $this->Colaboracion->Ciclo->ciclo;
+        return $this->relatedCycle()?->ciclo;
     }
     public function getQuantsAttribute()
     {

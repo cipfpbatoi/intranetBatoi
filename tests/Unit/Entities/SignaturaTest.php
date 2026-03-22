@@ -5,6 +5,11 @@ namespace Tests\Unit\Entities;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Centro;
+use Intranet\Entities\Fct;
+use Intranet\Entities\Instructor;
 use Intranet\Entities\Signatura;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
@@ -98,6 +103,37 @@ class SignaturaTest extends TestCase
         $this->assertSame('', $sig->centre);
         $this->assertSame('', $sig->email);
         $this->assertSame('', $sig->contacto);
+    }
+
+    public function test_accessors_relacionals_usen_el_context_operatiu_de_fct(): void
+    {
+        $centro = new Centro();
+        $centro->nombre = 'Centre Prova';
+
+        $instructor = new Instructor();
+        $instructor->email = 'inst@example.test';
+        $instructor->name = 'PEPA';
+        $instructor->surnames = 'MARTI';
+
+        $colaboracion = new Colaboracion();
+        $colaboracion->setRelation('Centro', $centro);
+
+        $fct = new Fct();
+        $fct->setRelation('Colaboracion', $colaboracion);
+        $fct->setRelation('Instructor', $instructor);
+
+        $alumnoFct = new AlumnoFct();
+        $alumnoFct->setRelation('Fct', $fct);
+
+        $sig = new Signatura([
+            'tipus' => 'A1',
+            'idSao' => 10,
+        ]);
+        $sig->setRelation('Fct', $alumnoFct);
+
+        $this->assertSame('Centre Prova', $sig->centre);
+        $this->assertSame('inst@example.test', $sig->email);
+        $this->assertSame('Pepa Marti', $sig->contacto);
     }
 
     public function test_class_accessor_casos_principals(): void

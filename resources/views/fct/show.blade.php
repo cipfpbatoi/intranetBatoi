@@ -1,14 +1,22 @@
- <x-layouts.app title="FCT {{ $fct->Colaboracion?->Centro?->nombre ?? 'Sense centre' }} de {{ $fct->Colaboracion?->Ciclo?->ciclo ?? 'Sense cicle' }}">
+@php
+    $colaboracion = $fct->relatedColaboracion();
+    $centro = $fct->relatedCenter();
+    $empresa = $fct->relatedCompany();
+    $ciclo = $fct->relatedCycle();
+    $tutoresFct = $fct->cycleTutors();
+@endphp
+
+ <x-layouts.app title="FCT {{ $centro?->nombre ?? 'Sense centre' }} de {{ $ciclo?->ciclo ?? 'Sense cicle' }}">
 
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
-        @if (!$fct->Colaboracion || !$fct->Colaboracion->Centro)
+        @if (!$fct->hasOperationalContext())
             <div class="alert alert-warning">
                 Falta la col·laboració o el centre associat a esta FCT.
             </div>
         @else
         <h3>
-            <a href="{{ route('empresa.detalle', ['empresa' => $fct->Colaboracion->Centro->idEmpresa]) }}">
-                {{$fct->Colaboracion->Centro->nombre}}
+            <a href="{{ route('empresa.detalle', ['empresa' => $centro->idEmpresa]) }}">
+                {{$centro->nombre}}
             </a>
         </h3>
         <h5>ID : <div id="fct_id">{{$fct->id}}</div></h5>
@@ -22,24 +30,24 @@
             <h5><i class="fa fa-phone"></i> {{ $fct->Instructor->telefono}}</h5>
         @endif
         <hr/>
-        <h5>CIF : {{$fct->Colaboracion->Centro->Empresa->cif}}</h5>
-        <h5>@lang("validation.attributes.concierto") : {{$fct->Colaboracion->Centro->Empresa->concierto}}</h5>
+        <h5>CIF : {{$empresa?->cif}}</h5>
+        <h5>@lang("validation.attributes.concierto") : {{$empresa?->concierto}}</h5>
         <ul class="list-unstyled user_data">
             <li>
                 <i class="fa fa-map-marker"></i>
-                {{ $fct->Colaboracion->Centro->direccion }}, {{$fct->Colaboracion->Centro->localidad}}
+                {{ $centro->direccion }}, {{$centro->localidad}}
             </li>
             <li>
-                <i class="fa fa-user"></i> {{ $fct->Colaboracion->contacto }}
+                <i class="fa fa-user"></i> {{ $colaboracion?->contacto }}
             </li>
-            @if ($fct->Instructor->telefono != $fct->Colaboracion->telefono)
+            @if ($fct->Instructor->telefono != $colaboracion?->telefono)
                 <li>
-                    <i class="fa fa-phone"></i> {{ $fct->Colaboracion->telefono }}
+                    <i class="fa fa-phone"></i> {{ $colaboracion?->telefono }}
                 </li>
             @endif
-            @if ($fct->Instructor->email != $fct->Colaboracion->email)
+            @if ($fct->Instructor->email != $colaboracion?->email)
                 <li class="m-top-xs">
-                    <i class="fa fa-envelope"></i> {{ $fct->Colaboracion->email }}
+                    <i class="fa fa-envelope"></i> {{ $colaboracion?->email }}
                 </li>
             @endif
         </ul>
@@ -50,7 +58,7 @@
             @csrf
             <select name="cotutor" id="cotutor">
                 <option value="0">No hay cotutor</option>
-                @foreach ($fct->Colaboracion->Ciclo->TutoresFct as $tutor)
+                @foreach ($tutoresFct as $tutor)
                     <option value="{{$tutor->dni}}" {{($fct->cotutor==$tutor->dni)?'selected':''}}>
                         {{$tutor->fullName}}
                     </option>
@@ -59,8 +67,8 @@
             <input type="submit" value="Canvia" class="fa fa-user">
         </form>
         <hr/>
-        @php($conveniDate = $fct->Colaboracion->Centro->Empresa->data_signatura)
-        @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
+        @php($conveniDate = $empresa?->data_signatura)
+        @if ($empresa?->conveniNou)
             <em class="fa fa-file-pdf-o"> A1</em>
         @else
             <em class="fa fa-file-pdf-o text-danger"> A1</em>

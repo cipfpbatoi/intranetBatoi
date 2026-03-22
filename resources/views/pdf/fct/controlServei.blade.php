@@ -3,6 +3,10 @@
     @include('pdf.fct.partials.cabecera')
 @endsection
 @section('content')
+    @php
+        $primerFct = $todos->first()?->Fct;
+        $primerCicle = $primerFct?->relatedCycle();
+    @endphp
     <br/>
     <table border="1">
         <colgroup>
@@ -17,7 +21,7 @@
         </colgroup>
         <tr>
             <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i
-                cicle: {{authUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo ?? ''}}</td>
+                cicle: {{authUser()->FullName}} - {{ $primerCicle?->ciclo ?? ''}}</td>
         </tr>
         <tr>
             <td style="text-align:left;font-weight: bold;font-size: 0.8em ">ALUMNE I EMPRESA</td>
@@ -30,15 +34,19 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
         @foreach ($todos??[] as $fct)
-            @isset($fct->Fct->Colaboracion->Centro)
+            @php
+                $center = $fct->Fct?->relatedCenter();
+                $company = $fct->Fct?->relatedCompany();
+            @endphp
+            @isset($center)
                 <tr style="height: 50px">
                     <td style="text-align:left;font-size: 0.9em ">
-                            {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
+                            {{ $center->nombre ?? '' }} ({{ $fct->Alumno->fullName??'' }})
                     </td>
                     <td>
-                        {{ $fct->Fct->Colaboracion->Centro->Empresa->conveniRenovat
+                        {{ $company?->conveniRenovat
                                     ?'X'
-                                    :($fct->Fct->Colaboracion->Centro->Empresa->conveniCaducat?'!!':'O')
+                                    :($company?->conveniCaducat?'!!':'O')
                         }}
                     </td>
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>

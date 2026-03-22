@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
+use Intranet\Entities\Fct;
 
 class Grupo extends Model
 {
@@ -197,13 +198,27 @@ class Grupo extends Model
         return AlumnoGrupo::where('idGrupo', $this->codigo)->count();
     }
 
+    /**
+     * Determina si una FCT no dual pertany al mateix cicle que el grup.
+     */
+    private function isSameCycleNonDualFct(Fct $fct): bool
+    {
+        $fctCycleId = $fct->relatedCycle()?->getKey();
+        $grupoCycleId = $this->Ciclo?->getKey();
+
+        return !$fct->dual
+            && $fctCycleId !== null
+            && $grupoCycleId !== null
+            && (string) $fctCycleId === (string) $grupoCycleId;
+    }
+
     public function getAvalFctAttribute()
     {
         $todos = $this->Alumnos;
         $aprob = 0;
         foreach ($todos as $alumno){
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion)){
+                if ($this->isSameCycleNonDualFct($fct) && isset($fct->pivot->calificacion)){
                     $aprob++;
                 }
             }
@@ -235,7 +250,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno) {
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion) && $fct->pivot->calificacion == 1 )  {
+                if ($this->isSameCycleNonDualFct($fct) && isset($fct->pivot->calificacion) && $fct->pivot->calificacion == 1 )  {
                     $aprob++;
                 }
             }
@@ -251,7 +266,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno) {
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && $fct->pivot->calProyecto > 0) {
+                if ($this->isSameCycleNonDualFct($fct) && $fct->pivot->calProyecto > 0) {
                     $aprob++;
                 }
             }
@@ -266,7 +281,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno) {
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion) && $fct->pivot->calProyecto >= 5){
+                if ($this->isSameCycleNonDualFct($fct) && isset($fct->pivot->calificacion) && $fct->pivot->calProyecto >= 5){
                     $aprob++;
                 }
             }
@@ -283,7 +298,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno){
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->insercion) && $fct->pivot->insercion)    {
+                if ($this->isSameCycleNonDualFct($fct) && isset($fct->pivot->insercion) && $fct->pivot->insercion)    {
                         $aprob++;
                 }
             }

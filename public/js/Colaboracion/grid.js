@@ -334,6 +334,148 @@
         datepickers.init(document);
     }
 
+    function handleResolveAction(resolveBtn) {
+        var resolveCol = resolveBtn.closest('.well');
+        request('GET', '/api/colaboracion/' + resolveCol.id + '/resolve', {}, true).then(function () {
+            hideElement(resolveBtn);
+            showElement(findActionButton(resolveBtn, '.unauthorize'));
+            showElement(findActionButton(resolveBtn, '.refuse'));
+            setColaboracionBorder(resolveCol, '#1abb9c');
+            moveProfileToTab(resolveBtn, 'tab_colabora');
+        });
+    }
+
+    function handleRefuseAction(refuseBtn) {
+        var refuseCol = refuseBtn.closest('.well');
+        request('GET', '/api/colaboracion/' + refuseCol.id + '/refuse', {}, true).then(function () {
+            hideElement(refuseBtn);
+            showElement(findActionButton(refuseBtn, '.resolve'));
+            showElement(findActionButton(refuseBtn, '.unauthorize'));
+            setColaboracionBorder(refuseCol, '#90111a');
+            moveProfileToTab(refuseBtn, 'tab_pendiente');
+        });
+    }
+
+    function handleUnauthorizeAction(unauthorizeBtn) {
+        var unauthCol = unauthorizeBtn.closest('.well');
+        request('GET', '/api/colaboracion/' + unauthCol.id + '/unauthorize', {}, true).then(function () {
+            hideElement(unauthorizeBtn);
+            if (!findActionButton(unauthorizeBtn, '.switch')) {
+                showElement(findActionButton(unauthorizeBtn, '.resolve'));
+                showElement(findActionButton(unauthorizeBtn, '.refuse'));
+            }
+            setColaboracionBorder(unauthCol, '#00aeef');
+            moveProfileToTab(unauthorizeBtn, 'tab_pendiente');
+        });
+    }
+
+    function handleSwitchAction(switchBtn) {
+        var switchCol = switchBtn.closest('.well');
+        request('GET', '/api/colaboracion/' + switchCol.id + '/switch', {}, true).then(function (result) {
+            hideElement(switchBtn);
+            showElement(findActionButton(switchBtn, '.resolve'));
+            showElement(findActionButton(switchBtn, '.refuse'));
+            setColaboracionBorder(switchCol, '#00aeef');
+
+            var nameNode = switchCol.querySelector('.nombre');
+            if (nameNode && result && result.data) {
+                nameNode.textContent = [result.data.nombre, result.data.apellido1, result.data.apellido2].join(' ');
+            }
+            moveProfileToTab(switchBtn, 'tab_pendiente');
+        });
+    }
+
+    function handleBookAction(bookBtn) {
+        var profileBook = bookBtn.closest('.profile_view');
+        state.col = profileBook ? profileBook.id : null;
+        state.list = profileBook ? profileBook.querySelector('.listActivity') : null;
+        state.tipo = 'book';
+        openDialog();
+    }
+
+    function handleTelefonicoAction(telefonicoBtn) {
+        var profileTelefonico = telefonicoBtn.closest('.profile_view');
+        var fctNode = profileTelefonico ? profileTelefonico.querySelector('.fct') : null;
+        state.id = fctNode ? fctNode.id : null;
+        state.list = profileTelefonico ? profileTelefonico.querySelector('.listActivity') : null;
+        state.tipo = 'telefonico';
+        openDialog();
+    }
+
+    function submitPreparationActivity(explicacion) {
+        return request('POST', '/api/colaboracion/' + state.col + '/book', { explicacion: explicacion }, true)
+            .then(function (result) {
+                appendActivity(state.list, result.data.id, 'fa-book');
+                closeDialog();
+            })
+            .catch(function () {
+                window.console.log('Només es pot un per dia');
+                closeDialog();
+            });
+    }
+
+    function submitFctBridgeActivity(explicacion) {
+        return request('POST', '/api/fct/' + state.id + '/telefonico', { explicacion: explicacion }, true)
+            .then(function (result) {
+                appendActivity(state.list, result.data.id, 'fa-phone');
+                closeDialog();
+            })
+            .catch(function () {
+                window.console.log('Només es pot un per dia');
+                closeDialog();
+            });
+    }
+
+    function handlePreparationActions(event) {
+        var resolveBtn = event.target.closest('.resolve');
+        if (resolveBtn) {
+            event.preventDefault();
+            handleResolveAction(resolveBtn);
+            return true;
+        }
+
+        var refuseBtn = event.target.closest('.refuse');
+        if (refuseBtn) {
+            event.preventDefault();
+            handleRefuseAction(refuseBtn);
+            return true;
+        }
+
+        var unauthorizeBtn = event.target.closest('.unauthorize');
+        if (unauthorizeBtn) {
+            event.preventDefault();
+            handleUnauthorizeAction(unauthorizeBtn);
+            return true;
+        }
+
+        var switchBtn = event.target.closest('.switch');
+        if (switchBtn) {
+            event.preventDefault();
+            handleSwitchAction(switchBtn);
+            return true;
+        }
+
+        var bookBtn = event.target.closest('.book');
+        if (bookBtn) {
+            event.preventDefault();
+            handleBookAction(bookBtn);
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleFctBridgeActions(event) {
+        var telefonicoBtn = event.target.closest('.telefonico');
+        if (telefonicoBtn) {
+            event.preventDefault();
+            handleTelefonicoAction(telefonicoBtn);
+            return true;
+        }
+
+        return false;
+    }
+
     function hideInitialButtons() {
         var resolveInColabora = document.querySelectorAll('#tab_colabora .resolve');
         var unauthorizeInPendiente = document.querySelectorAll('#tab_pendiente .unauthorize');
@@ -353,89 +495,13 @@
         document.querySelectorAll('.fct').forEach(configureDropTarget);
 
         document.addEventListener('click', function (event) {
-            var resolveBtn = event.target.closest('.resolve');
-            if (resolveBtn) {
-                event.preventDefault();
-                var resolveCol = resolveBtn.closest('.well');
-                request('GET', '/api/colaboracion/' + resolveCol.id + '/resolve', {}, true).then(function () {
-                    hideElement(resolveBtn);
-                    showElement(findActionButton(resolveBtn, '.unauthorize'));
-                    showElement(findActionButton(resolveBtn, '.refuse'));
-                    setColaboracionBorder(resolveCol, '#1abb9c');
-                    moveProfileToTab(resolveBtn, 'tab_colabora');
-                });
+            // Accions de preparació: continuen dins del domini de col·laboració.
+            if (handlePreparationActions(event)) {
                 return;
             }
 
-            var refuseBtn = event.target.closest('.refuse');
-            if (refuseBtn) {
-                event.preventDefault();
-                var refuseCol = refuseBtn.closest('.well');
-                request('GET', '/api/colaboracion/' + refuseCol.id + '/refuse', {}, true).then(function () {
-                    hideElement(refuseBtn);
-                    showElement(findActionButton(refuseBtn, '.resolve'));
-                    showElement(findActionButton(refuseBtn, '.unauthorize'));
-                    setColaboracionBorder(refuseCol, '#90111a');
-                    moveProfileToTab(refuseBtn, 'tab_pendiente');
-                });
-                return;
-            }
-
-            var unauthorizeBtn = event.target.closest('.unauthorize');
-            if (unauthorizeBtn) {
-                event.preventDefault();
-                var unauthCol = unauthorizeBtn.closest('.well');
-                request('GET', '/api/colaboracion/' + unauthCol.id + '/unauthorize', {}, true).then(function () {
-                    hideElement(unauthorizeBtn);
-                    if (!findActionButton(unauthorizeBtn, '.switch')) {
-                        showElement(findActionButton(unauthorizeBtn, '.resolve'));
-                        showElement(findActionButton(unauthorizeBtn, '.refuse'));
-                    }
-                    setColaboracionBorder(unauthCol, '#00aeef');
-                    moveProfileToTab(unauthorizeBtn, 'tab_pendiente');
-                });
-                return;
-            }
-
-            var switchBtn = event.target.closest('.switch');
-            if (switchBtn) {
-                event.preventDefault();
-                var switchCol = switchBtn.closest('.well');
-                request('GET', '/api/colaboracion/' + switchCol.id + '/switch', {}, true).then(function (result) {
-                    hideElement(switchBtn);
-                    showElement(findActionButton(switchBtn, '.resolve'));
-                    showElement(findActionButton(switchBtn, '.refuse'));
-                    setColaboracionBorder(switchCol, '#00aeef');
-
-                    var nameNode = switchCol.querySelector('.nombre');
-                    if (nameNode && result && result.data) {
-                        nameNode.textContent = [result.data.nombre, result.data.apellido1, result.data.apellido2].join(' ');
-                    }
-                    moveProfileToTab(switchBtn, 'tab_pendiente');
-                });
-                return;
-            }
-
-            var telefonicoBtn = event.target.closest('.telefonico');
-            if (telefonicoBtn) {
-                event.preventDefault();
-                var profileTelefonico = telefonicoBtn.closest('.profile_view');
-                var fctNode = profileTelefonico ? profileTelefonico.querySelector('.fct') : null;
-                state.id = fctNode ? fctNode.id : null;
-                state.list = profileTelefonico ? profileTelefonico.querySelector('.listActivity') : null;
-                state.tipo = 'telefonico';
-                openDialog();
-                return;
-            }
-
-            var bookBtn = event.target.closest('.book');
-            if (bookBtn) {
-                event.preventDefault();
-                var profileBook = bookBtn.closest('.profile_view');
-                state.col = profileBook ? profileBook.id : null;
-                state.list = profileBook ? profileBook.querySelector('.listActivity') : null;
-                state.tipo = 'book';
-                openDialog();
+            // Accions pont: el panell les invoca, però ja operen sobre FCT.
+            if (handleFctBridgeActions(event)) {
                 return;
             }
 
@@ -476,42 +542,6 @@
                 return;
             }
 
-            var plusBtn = event.target.closest('.fa-plus');
-            if (plusBtn) {
-                var profilePlus = plusBtn.closest('.profile_view');
-                var profileId = profilePlus ? profilePlus.id : null;
-                if (!profileId) {
-                    return;
-                }
-
-                var formAddAlumno = document.getElementById('formAddAlumno');
-                var idColaboracion = document.getElementById('idColaboracion');
-                var instructorSelect = document.getElementById('idInstructor');
-
-                if (formAddAlumno) {
-                    formAddAlumno.setAttribute('action', '/fct/fctalumnoCreate');
-                }
-                if (idColaboracion) {
-                    idColaboracion.value = profileId;
-                }
-
-                request('GET', '/api/colaboracion/instructores/' + profileId, {}, true)
-                    .then(function (result) {
-                        if (!instructorSelect) {
-                            return;
-                        }
-                        instructorSelect.innerHTML = '';
-                        (result && result.data ? result.data : []).forEach(function (value) {
-                            var option = document.createElement('option');
-                            option.value = value.dni;
-                            option.textContent = value.name + ' ' + value.surnames;
-                            instructorSelect.appendChild(option);
-                        });
-                    })
-                    .catch(function () {
-                        window.console.log('La solicitud no se ha podido completar.');
-                    });
-            }
         });
 
         var formDialogo = document.getElementById('formDialogo');
@@ -521,28 +551,12 @@
                 var explicacion = formDialogo.explicacion ? formDialogo.explicacion.value : '';
 
                 if (state.tipo === 'book') {
-                    request('POST', '/api/colaboracion/' + state.col + '/book', { explicacion: explicacion }, true)
-                        .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-book');
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Només es pot un per dia');
-                            closeDialog();
-                        });
+                    submitPreparationActivity(explicacion);
                     return;
                 }
 
                 if (state.tipo === 'telefonico') {
-                    request('POST', '/api/colaboracion/' + state.id + '/telefonico', { explicacion: explicacion }, true)
-                        .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-phone');
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Només es pot un per dia');
-                            closeDialog();
-                        });
+                    submitFctBridgeActivity(explicacion);
                     return;
                 }
 

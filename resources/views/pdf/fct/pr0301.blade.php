@@ -1,5 +1,9 @@
 @extends('layouts.pdf')
 @section('content')
+    @php
+        $primerFct = $todos->first()?->Fct;
+        $primerCicle = $primerFct?->relatedCycle();
+    @endphp
     <body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1.5cm; margin-right:1.5cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
@@ -55,10 +59,11 @@
                 <td style="text-align:left;width:12.45cm;padding-left: 5px; "><strong>SIGNATURA ALUMNE/A</strong></td>
             </tr>
             @foreach ($todos as $alumno)
+                @php $center = $alumno->Fct?->relatedCenter(); @endphp
                 <tr style='height:40px'>
                     <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;"> {{ $alumno->Alumno->ShortName }}
                          </p></td>
-                    <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$alumno->Fct->Colaboracion->Centro->nombre}}</td>
+                    <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$center?->nombre}}</td>
                     <td style="text-align:left;width:0.838cm;padding-left: 5px;font-size: 0.9em;"></td>
                     <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->desde}}</td>
                     <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->hasta}}</td>
@@ -80,7 +85,7 @@
         </colgroup>
         <tr style="height:60px">
             <td style="padding:5px">Nom Tutor:<br/>Cicle:</td>
-            <td style="padding:5px">{{authUser()->FullName}}<br/>{{$todos->first()->Fct->Colaboracion->Ciclo->ciclo}}
+            <td style="padding:5px">{{authUser()->FullName}}<br/>{{$primerCicle?->ciclo}}
             </td>
             <td style="padding:5px">Signatura:<br/>Data</td>
             <td style="padding:5px"></td>

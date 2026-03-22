@@ -9,7 +9,10 @@ use PHPUnit\Framework\TestCase;
 use Mockery;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Signatura;
 
 class AlumnoFctTest extends TestCase
@@ -153,6 +156,31 @@ class AlumnoFctTest extends TestCase
         $this->assertSame($sigA1, $alumnoFct->a1);
         $this->assertSame($sigA2, $alumnoFct->a2);
         $this->assertSame($sigA3, $alumnoFct->a3);
+    }
+
+    #[Test]
+    public function get_grup_attribute_uses_related_cycle_context(): void
+    {
+        $cycle = new Ciclo();
+        $cycle->setRawAttributes(['id' => 3, 'ciclo' => 'SMX'], true);
+
+        $matchingGroup = new Grupo(['codigo' => 'G-MATCH', 'idCiclo' => 3]);
+        $otherGroup = new Grupo(['codigo' => 'G-OTHER', 'idCiclo' => 4]);
+
+        $alumno = new Alumno();
+        $alumno->setRelation('Grupo', new Collection([$otherGroup, $matchingGroup]));
+
+        $colaboracion = new Colaboracion();
+        $colaboracion->setRelation('Ciclo', $cycle);
+
+        $fct = new Fct();
+        $fct->setRelation('Colaboracion', $colaboracion);
+
+        $alumnoFct = new AlumnoFct();
+        $alumnoFct->setRelation('Alumno', $alumno);
+        $alumnoFct->setRelation('Fct', $fct);
+
+        $this->assertSame('G-MATCH', $alumnoFct->grup);
     }
 
     protected function tearDown(): void

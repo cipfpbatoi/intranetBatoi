@@ -1,6 +1,11 @@
 @extends('layouts.pdf')
 @section('content')
     @foreach ($todos as $alumnoFct)
+        @php
+            $fct = $alumnoFct->Fct;
+            $cycle = $fct?->relatedCycle();
+            $center = $fct?->relatedCenter();
+        @endphp
         <div class="page" style="font-size:large;line-height: 2em">
             @include('pdf.partials.cabecera')
             <br/>
@@ -27,11 +32,11 @@
                         l'alumna
                     @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong>
                     amb DNI núm. {{$alumnoFct->Alumno->dni}}, ha realitzat la Formació en Centres de Treball (FCT) del
-                    <strong>{{$alumnoFct->Fct->Colaboracion->Ciclo->Xtipo}}
-                        {{$alumnoFct->Fct->Colaboracion->Ciclo->vliteral}} </strong> en
-                    l'empresa {{$alumnoFct->Fct->Colaboracion->Centro->nombre}}, ubicada
-                    a {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de/d'
-                    {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, amb una duració total de {{$alumnoFct->horas}}
+                    <strong>{{$cycle?->Xtipo}}
+                        {{$cycle?->vliteral}} </strong> en
+                    l'empresa {{$center?->nombre}}, ubicada
+                    a {{$center?->direccion}} de/d'
+                    {{$center?->localidad}}, amb una duració total de {{$alumnoFct->horas}}
                     hores, fetes
                     en el curs lectiu {{curso()}} i ha obtingut una qualifació d'APTE.</p>
             </div>
@@ -44,11 +49,11 @@
                         la alumna
                     @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong>
                     con DNI núm. {{$alumnoFct->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del
-                    <strong>{{$alumnoFct->Fct->Colaboracion->Ciclo->Ctipo}}
-                        {{$alumnoFct->Fct->Colaboracion->Ciclo->cliteral}} </strong> en la
-                    empresa {{$alumnoFct->Fct->Colaboracion->Centro->nombre}}, ubicada
-                    en {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de
-                    {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, con una duración total
+                    <strong>{{$cycle?->Ctipo}}
+                        {{$cycle?->cliteral}} </strong> en la
+                    empresa {{$center?->nombre}}, ubicada
+                    en {{$center?->direccion}} de
+                    {{$center?->localidad}}, con una duración total
                     de {{$alumnoFct->horas}} horas, desempeñadas
                     en el curso lectivo {{curso()}}, obteniendo una calificación de APTO.</p>
             </div>

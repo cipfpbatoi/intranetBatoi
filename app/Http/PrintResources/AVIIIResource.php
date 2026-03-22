@@ -35,7 +35,7 @@ class AVIIIResource extends PrintResource
             'HORAS' => $this->elements->horas,
             'HORES 1'=> $this->elements->horas,
             'PERIODE 1' => $this->elements->desde . ' a ' . $this->elements->hasta,
-            'EMPRE 1' => $this->elements->Fct->Colaboracion->Centro->nombre,
+            'EMPRE 1' => $this->elements->Fct->relatedCenter()?->nombre,
             'POBLA' => config('contacto.poblacion'),
             'DIA' => day(Hoy()),
             'MES' => month(Hoy()),
@@ -45,4 +45,3 @@ class AVIIIResource extends PrintResource
         ];
     }
 }
-

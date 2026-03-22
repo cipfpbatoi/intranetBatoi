@@ -3,6 +3,7 @@
 namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Intranet\Entities\Fct;
 
 class SelectFctResource extends JsonResource
 {
@@ -14,18 +15,16 @@ class SelectFctResource extends JsonResource
      */
     public function toArray($request)
     {
-        $nom_centre = isset($this->Colaboracion->Centro->nombre) ?
-            $this->Colaboracion->Centro->nombre:
-            $this->Fct->Colaboracion->Centro->nombre;
-        $instructor = isset($this->Instructor->nombre) ?
-            $this->Instructor->nombre:
-            $this->Fct->Instructor->nombre;
+        /** @var Fct|null $fct */
+        $fct = $this->resource instanceof Fct ? $this->resource : $this->Fct;
+        $nom_centre = $fct?->relatedCenter()?->nombre;
+        $instructor = $this->Instructor?->nombre ?? $fct?->Instructor?->nombre;
+
         return [
             'id' => $this->id,
-            'texto' => "$instructor($nom_centre)",
+            'texto' => trim((string) $instructor) . '(' . trim((string) $nom_centre) . ')',
             'marked' => $this->marked
         ];
     }
 }
-
 

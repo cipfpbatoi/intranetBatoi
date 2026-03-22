@@ -245,9 +245,7 @@ class ColaboracionPreasignacionService
             ->whereIn('estado', ColaboracionPreasignacion::ACTIVE_STATES)
             ->count();
 
-        $puestos = max(1, (int) $colaboracion->puestos);
-
-        if ($activeCount >= $puestos) {
+        if (!$colaboracion->hasPreasignacionCapacity($activeCount)) {
             throw new RuntimeException('La col·laboració ja no té places lliures per a noves preassignacions.');
         }
     }

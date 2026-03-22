@@ -67,6 +67,15 @@ class Colaboracion extends Model
     {
         return $this->hasMany(ColaboracionPreasignacion::class, 'idColaboracion', 'id');
     }
+
+    /**
+     * Retorna només les reserves provisionals que encara ocupen capacitat.
+     */
+    public function ActivePreasignaciones(): HasMany
+    {
+        return $this->Preasignaciones()->whereIn('estado', ColaboracionPreasignacion::ACTIVE_STATES);
+    }
+
     public function votes()
     {
         return $this->hasMany(VoteAnt::class, 'idColaboracion', 'id');
@@ -164,6 +173,40 @@ class Colaboracion extends Model
             return 3;
         }
         return 1;
+    }
+
+    /**
+     * Indica quantes reserves actives hi ha actualment en la fase de preparació.
+     */
+    public function activePreasignacionesCount(?int $count = null): int
+    {
+        if ($count !== null) {
+            return max(0, $count);
+        }
+
+        if ($this->relationLoaded('Preasignaciones')) {
+            return $this->Preasignaciones
+                ->filter(static fn (ColaboracionPreasignacion $preasignacion): bool => $preasignacion->isActive())
+                ->count();
+        }
+
+        return $this->ActivePreasignaciones()->count();
+    }
+
+    /**
+     * Retorna quantes places queden lliures per a noves reserves provisionals.
+     */
+    public function availablePreasignacionSlots(?int $activeCount = null): int
+    {
+        return max(0, max(1, (int) $this->puestos) - $this->activePreasignacionesCount($activeCount));
+    }
+
+    /**
+     * Indica si encara es poden fer reserves en la fase de preparació.
+     */
+    public function hasPreasignacionCapacity(?int $activeCount = null): bool
+    {
+        return $this->availablePreasignacionSlots($activeCount) > 0;
     }
 
 

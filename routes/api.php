@@ -106,12 +106,11 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::post('horarioChange/{dni}', 'HorarioController@Change')->middleware('auth:api,sanctum');
    
     Route::post('/centro/fusionar', 'CentroController@fusionar')->middleware('auth:api,sanctum');
-    Route::get('colaboracion/instructores/{id}', 'ColaboracionController@instructores')->middleware('auth:api,sanctum');
     Route::get('/colaboracion/{colaboracion}/resolve', 'ColaboracionController@resolve')->middleware('auth:api,sanctum');
     Route::get('/colaboracion/{colaboracion}/refuse', 'ColaboracionController@refuse')->middleware('auth:api,sanctum');
     Route::get('/colaboracion/{colaboracion}/unauthorize', 'ColaboracionController@unauthorize')->middleware('auth:api,sanctum');
     Route::get('/colaboracion/{colaboracion}/switch', 'ColaboracionController@switch')->middleware('auth:api,sanctum');
-    Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon')->middleware('auth:api,sanctum');
+    Route::post('/fct/{fct}/telefonico', 'FctController@telefonico')->middleware('auth:api,sanctum');
     Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book')->middleware('auth:api,sanctum');
 
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec')->middleware('auth:api,sanctum');

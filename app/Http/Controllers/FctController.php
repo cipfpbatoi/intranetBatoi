@@ -285,23 +285,6 @@ class FctController extends IntranetController
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function nouFctAlumno(Request $request)
-    {
-        if (isset($request->idInstructor)) {
-            $this->store($request);
-        } else {
-            Alert::danger('No hi ha instructor.No puc generar la FCT');
-        }
-
-        return back();
-    }
-
-    /**
-     * @param $idFct
-     * @param Request $request
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function nouInstructor($idFct, ColaboradorRequest $request)
     {
         $this->authorize('update', $this->findFctOrFail($idFct));

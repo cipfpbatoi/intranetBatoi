@@ -40,7 +40,7 @@ class A1DocumentService
         $tmpDirectory = $this->downloadManager->tempDirectory();
         $doc = $fctAl->Fct->dual ? '201' : '101';
         $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
-        $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
+        $idSao = $fctAl->Fct->relatedCenter()?->idSao;
         $tmpFile = "$tmpDirectory$annexe.pdf";
         $saveFile = $fctAl->routeFile($annexe);
         $generatePdfUrl = (string) config('sao.urls.generate_pdf', 'https://foremp.edu.gva.es/inc/ajax/generar_pdf.php');

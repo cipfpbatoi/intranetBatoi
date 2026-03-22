@@ -14,19 +14,6 @@ class ColaboracionController extends ApiResourceController
 
     protected $model = 'Colaboracion';
 
-    public function instructores($id)
-    {
-        $colaboracion = Colaboracion::find($id);
-        if ($colaboracion === null) {
-            return $this->sendFail(['success' => false, 'message' => 'Colaboració no trobada.'], 404);
-        }
-
-        $data = isset($colaboracion->Centro)
-            ?$colaboracion->Centro->instructores->sortBy('surnames')
-            :[];
-        return $this->sendResponse($data, 'OK');
-    }
-
     public function resolve($id)
     {
         return $this->changeState($id, 'resolve');
@@ -67,19 +54,6 @@ class ColaboracionController extends ApiResourceController
         return $this->sendResponse($profesor, 'OK');
     }
 
-    public function telefon($id, Request $request)
-    {
-        $activity = $this->upsertDailyActivity(
-            'phone',
-            $id,
-            (string) $request->explicacion,
-            static fn (string $resourceId) => Fct::find($resourceId),
-            'Seguiment telefònic'
-        );
-
-        return $this->sendResponse($activity, 'OK');
-    }
-
     public function alumnat($id, Request $request)
     {
         $activity = Activity::record(
@@ -102,7 +76,6 @@ class ColaboracionController extends ApiResourceController
             static fn (string $resourceId) => Colaboracion::find($resourceId),
             'Contacte previ'
         );
-
         return $this->sendResponse($activity, 'OK');
     }
 

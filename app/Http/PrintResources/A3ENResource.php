@@ -26,9 +26,8 @@ class A3ENResource extends PrintResource
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
         $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
-        $centro = $this->elements->Fct->Colaboracion->Centro;
-        $empresa = $centro->Empresa;
-        $instructor = $this->elements->Fct->instructor;
+        $empresa = $this->elements->Fct->relatedCompany();
+        $instructor = $this->elements->Fct->Instructor;
 
         return [
             'Text Box 1' => $alumno->fullName." (NIA: $alumno->nia)",

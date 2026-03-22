@@ -1,6 +1,6 @@
 @php
-    $colaboracion = $fct->Colaboracion ?? null;
-    $centro = $colaboracion ? $colaboracion->Centro : null;
+    $colaboracion = $fct->relatedColaboracion();
+    $centro = $fct->relatedCenter();
 @endphp
 
 <ul class="messages colaboracion">
