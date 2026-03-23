@@ -61,6 +61,7 @@ Després del pilot inicial, s'ha ampliat també a:
 - [`TipoActividadController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/API/TipoActividadController.php)
 - [`TipoIncidenciaController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/API/TipoIncidenciaController.php)
 - [`TaskController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/API/TaskController.php)
+- [`IncidenciaController.php`](/Users/igomis/Code/intranetBatoi/app/Http/Controllers/API/IncidenciaController.php)
 
 ## Tall A. Contracte explícit per a edit()
 
@@ -73,6 +74,7 @@ Després del pilot inicial, s'ha ampliat també a:
   - [`TipoActividadEditResource.php`](/Users/igomis/Code/intranetBatoi/app/Http/Resources/TipoActividadEditResource.php)
   - [`TipoIncidenciaEditResource.php`](/Users/igomis/Code/intranetBatoi/app/Http/Resources/TipoIncidenciaEditResource.php)
   - [`TaskEditResource.php`](/Users/igomis/Code/intranetBatoi/app/Http/Resources/TaskEditResource.php)
+  - [`IncidenciaEditResource.php`](/Users/igomis/Code/intranetBatoi/app/Http/Resources/IncidenciaEditResource.php)
 - fer explícit en cada controlador si usa `editResource`
 
 ## Tall B. Coordinació en el controlador base
@@ -97,6 +99,7 @@ Després del pilot inicial, s'ha ampliat també a:
 - `Curso` també usa recurs específic per al payload d'edició
 - `TipoActividad` i `TipoIncidencia` també entren ja pel mateix patró
 - `Task` també queda cobert pel mateix patró
+- `Incidencia` també queda coberta i deixa d'entrar pel fallback genèric detectat en logs
 - el fallback genèric continua existint per a la resta de controladors API que encara no s'han migrat
 
 ## Validació
@@ -106,10 +109,11 @@ Després del pilot inicial, s'ha ampliat també a:
 - `php artisan test tests/Feature/ApiCursoEditResourceFeatureTest.php`
 - `php artisan test tests/Feature/ApiLegacyCatalogEditResourceFeatureTest.php`
 - `php artisan test tests/Feature/ApiTaskEditResourceFeatureTest.php`
+- `php artisan test tests/Feature/ApiIncidenciaEditResourceFeatureTest.php`
 
 Resultat actual:
-- `14` proves passades
-- `81` assertions
+- `15` proves passades
+- `93` assertions
 
 ## Següent tall natural
 
