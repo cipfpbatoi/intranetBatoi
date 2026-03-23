@@ -83,7 +83,9 @@ class MaterialController extends IntranetController
     }
 
     /**
-     * @param $id
+     * Crea una incidència associada al material i redirigeix a la seua edició.
+     *
+     * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -110,6 +112,42 @@ class MaterialController extends IntranetController
         $incidencia->save();
         Incidencia::putEstado($incidencia->id, 1);
         return redirect()->route('incidencia.edit', ['incidencium' => $incidencia->id]);
+    }
+
+    /**
+     * Elimina un material i torna, si és possible, a la pantalla d'origen.
+     *
+     * Açò evita que la baixa des d'un detall d'inventari envie sempre l'usuari
+     * a l'índex global de materials.
+     *
+     * @param int|string $id
+     * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        try {
+            $material = Material::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new NotFoundDomainException('Material no trobat', ['material_id' => $id], $e);
+        }
+
+        if ($material->fichero) {
+            $this->borrarFichero($material->fichero);
+        }
+
+        if (method_exists($this, 'deleteAttached')) {
+            $this->deleteAttached($id);
+        }
+
+        $material->delete();
+
+        $referer = (string) request()->headers->get('referer', '');
+        if ($referer !== '') {
+            return redirect()->back();
+        }
+
+        return $this->redirect();
     }
 
 
