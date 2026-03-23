@@ -29,3 +29,4 @@ yarn-error.log
 /public/js/ppIntranet.js
 /public/js/ppIntranet.js.LICENSE.txt
 /public/mix-manifest.json
+/tests/Browser/screenshots/failure-Tests_*
