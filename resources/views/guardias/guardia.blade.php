@@ -21,7 +21,7 @@
         <div class='form-group item'>
             <label for="dia" class="control-label col-md-3 col-sm-3 col-xs-12">@lang("validation.attributes.dia"): </label>
             <div class='col-md-6 col-xs-12 col-sm-6'>
-                <input type="text" class='form-control date col-md-7 col-xs-12' id="dia" name="dia">
+                <input type="text" class='form-control date col-md-7 col-xs-12' id="dia" name="dia" value="{{ hoy('d-m-Y') }}">
             </div>
         </div>
         <div class='form-group item'>
