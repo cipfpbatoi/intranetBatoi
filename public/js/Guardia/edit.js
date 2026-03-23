@@ -103,13 +103,28 @@ function apiRequest(method, url, extraData) {
 }
 
 function dateEspToISO(date) {
-    var arrFecha = (date || '').split('-');
-    arrFecha = arrFecha.map(function (dato) {
+    var raw = trim(date);
+    if (!raw) {
+        return '';
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+        return raw;
+    }
+
+    var normalized = raw.replace(/\//g, '-');
+    var arrFecha = normalized.split('-').map(function (dato) {
         return dato.length === 1 ? '0' + dato : dato;
     });
+
     if (arrFecha.length !== 3) {
         return '';
     }
+
+    if (arrFecha[0].length === 4) {
+        return arrFecha[0] + '-' + arrFecha[1] + '-' + arrFecha[2];
+    }
+
     return arrFecha[2] + '-' + arrFecha[1] + '-' + arrFecha[0];
 }
 
@@ -376,7 +391,9 @@ function initDateValue(serverDate, serverTime) {
 
     var ahora = new Date(serverDate + 'T' + serverTime);
     diaInput.setAttribute('maxDate', diaHoy);
-    diaInput.value = ahora.getDate() + '-' + (ahora.getMonth() + 1) + '-' + ahora.getFullYear();
+    diaInput.value = diaInput.type === 'date'
+        ? serverDate
+        : ahora.getDate() + '-' + (ahora.getMonth() + 1) + '-' + ahora.getFullYear();
     diaSelec = diaHoy;
     setSesion();
     return ahora;
