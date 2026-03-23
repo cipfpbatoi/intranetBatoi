@@ -7,6 +7,7 @@ use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Resources\AlumnoFctEditResource;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
 
@@ -118,15 +119,7 @@ class AlumnoFctController extends ApiResourceController
             ['alumno_fct_id' => $id]
         );
 
-        return $this->sendResponse([
-            'id' => $registro->id,
-            'desde' => $registro->desde,
-            'hasta' => $registro->hasta,
-            'beca' => $registro->beca,
-            'autorizacion' => $registro->autorizacion,
-            'flexible' => $registro->flexible,
-            'valoracio' => $registro->valoracio,
-        ], 'OK');
+        return $this->sendResponse(new AlumnoFctEditResource($registro), 'OK');
     }
 
 

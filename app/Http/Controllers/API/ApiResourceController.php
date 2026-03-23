@@ -11,11 +11,36 @@ use Throwable;
 
 class ApiResourceController extends Controller
 {
-
+    /**
+     * Espai de noms per resoldre models per nom curt.
+     *
+     * @var string
+     */
     protected $namespace = 'Intranet\\Entities\\';
+    /**
+     * Nom curt o FQCN del model del controlador.
+     *
+     * @var string|null
+     */
     protected $model;
+    /**
+     * FQCN resolt del model.
+     *
+     * @var class-string<\Illuminate\Database\Eloquent\Model>|null
+     */
     protected $class;
+    /**
+     * Recurs principal per a `show()`/`index()`.
+     *
+     * @var class-string<\Illuminate\Http\Resources\Json\JsonResource>|null
+     */
     protected $resource;
+    /**
+     * Recurs específic per al payload d'edició.
+     *
+     * @var class-string<\Illuminate\Http\Resources\Json\JsonResource>|null
+     */
+    protected $editResource;
     protected $guard='api';
 
     public function __construct()
@@ -112,6 +137,16 @@ class ApiResourceController extends Controller
             return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
+        if ($this->hasEditResource()) {
+            return $this->sendResponse(new $this->editResource($item));
+        }
+
+        if (!$this->allowGenericEditFallback()) {
+            abort(500, 'API misconfigured: edit fallback disabled in '.static::class);
+        }
+
+        $this->logLegacyEditFallback($class, $id);
+
         return $this->sendResponse($item);
     }
    
@@ -144,6 +179,37 @@ class ApiResourceController extends Controller
     protected function hasResource(): bool
     {
         return $this->resource && class_exists($this->resource);
+    }
+
+    protected function hasEditResource(): bool
+    {
+        return $this->editResource && class_exists($this->editResource);
+    }
+
+    /**
+     * Permet desactivar explícitament el fallback genèric d'`edit()`.
+     *
+     * Els controladors migrats progressivament a `JsonResource` poden
+     * sobrescriure este mètode quan vulguen forçar contracte explícit.
+     */
+    protected function allowGenericEditFallback(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Deixa rastre dels endpoints que encara depenen del fallback genèric.
+     *
+     * @param class-string<\Illuminate\Database\Eloquent\Model> $class
+     * @param int|string $id
+     */
+    protected function logLegacyEditFallback(string $class, $id): void
+    {
+        Log::notice('API edit using generic fallback payload', [
+            'controller' => static::class,
+            'model' => $class,
+            'id' => $id,
+        ]);
     }
 
     /**
