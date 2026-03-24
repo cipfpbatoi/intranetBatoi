@@ -14,6 +14,8 @@ return [
         'host' => env('DOMOTICA_HOST', 'http://172.16.10.74'),
         'user' => env('USER_DOMOTICA', 'api'),
         'pass' => env('PASS_DOMOTICA', ''),
+        'integration_token' => env('PARKING_INTEGRATION_TOKEN', env('PASS_DOMOTICA', '')),
+        'integration_allowlist' => array_filter(array_map('trim', explode(',', (string) env('PARKING_INTEGRATION_ALLOWLIST', '')))),
         'openSceneId' => (int) env('DOMOTICA_OPEN_SCENE_ID', 111),
     ],
     'authGoogle' => false,

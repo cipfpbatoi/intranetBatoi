@@ -15,10 +15,12 @@ use Illuminate\Http\Request;
 
 Route::get('miIp', 'IPController@miIP');
 Route::get('server-time', 'GuardiaController@getServerTime' );
-Route::get('porta/obrir', 'CotxeController@obrirTest');
-Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
-Route::post('eventPortaSortida', 'CotxeController@eventSortida');
-Route::post('eventPorta', 'CotxeController@eventEntrada');
+Route::get('porta/obrir', 'CotxeController@obrirTest')->middleware('parking.integration');
+Route::middleware('parking.integration:ip')->group(function () {
+    Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
+    Route::post('eventPortaSortida', 'CotxeController@eventSortida');
+    Route::post('eventPorta', 'CotxeController@eventEntrada');
+});
 Route::post('/auth/exchange', 'AuthTokenController@exchange');
 Route::get('/auth/me', 'AuthTokenController@me')->middleware('auth:sanctum');
 Route::post('/auth/logout', 'AuthTokenController@logout')->middleware('auth:sanctum');
