@@ -96,7 +96,19 @@ class FicharController extends IntranetController
 
     public function control()
     {
-        $profes = $this->profesores()->plantillaOrderedByDepartamento();
+        $profes = $this->profesores()
+            ->plantillaOrderedByDepartamento()
+            ->map(static function ($profesor): array {
+                return [
+                    'dni' => $profesor->dni,
+                    'nombre' => $profesor->nombre,
+                    'apellido1' => $profesor->apellido1,
+                    'apellido2' => $profesor->apellido2,
+                    'depcurt' => $profesor->Xdepartamento,
+                ];
+            })
+            ->values();
+
         return view('fichar.control', compact('profes'));
     }
 
