@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/assets/sass/app.scss',
                 'resources/assets/js/legacy-app.js',
                 'resources/assets/js/app.js',
+                'resources/assets/js/fichar-app.js',
                 'resources/assets/js/ppIntranet.js',
             ],
             refresh: true,

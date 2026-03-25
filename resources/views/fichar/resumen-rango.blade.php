@@ -11,3 +11,7 @@
   <control-resumen-rango-view :profes='@json($profes)'></control-resumen-rango-view>
 </div>
 @endsection
+
+@push('scripts')
+    @vite('resources/assets/js/fichar-app.js')
+@endpush

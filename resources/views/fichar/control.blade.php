@@ -6,4 +6,8 @@
     ></control-semana-view>
 </div>
 
+@push('scripts')
+    @vite('resources/assets/js/fichar-app.js')
+@endpush
+
 </x-layouts.app>
