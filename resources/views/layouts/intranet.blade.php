@@ -43,11 +43,14 @@
     $resolvedJsMode = in_array($sectionJsMode, ['legacy', 'hybrid', 'vite'], true)
         ? $sectionJsMode
         : 'hybrid';
+    $skipAppJs = View::hasSection('skip_app_js');
 @endphp
 
 @if ($resolvedJsMode === 'vite')
     @vite('resources/assets/js/legacy-app.js')
-    @vite('resources/assets/js/app.js')
+    @unless($skipAppJs)
+        @vite('resources/assets/js/app.js')
+    @endunless
     @unless(View::hasSection('skip_legacy_js'))
         @vite('resources/assets/js/ppIntranet.js')
     @endunless
@@ -61,7 +64,7 @@
             @vite('resources/assets/js/ppIntranet.js')
         @endif
     @endunless
-    @if ($resolvedJsMode === 'hybrid')
+    @if ($resolvedJsMode === 'hybrid' && !$skipAppJs)
         @vite('resources/assets/js/app.js')
     @endif
 @endif
