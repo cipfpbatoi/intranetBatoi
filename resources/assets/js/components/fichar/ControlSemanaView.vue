@@ -34,10 +34,41 @@ export default {
   components: {
     ControlNav
   },
-  props: ['profes'],
+  props: {
+    profes: {
+      type: [Array, Object],
+      default: () => []
+    }
+  },
   computed: {
+    profesList() {
+      if (Array.isArray(this.profes)) {
+        return this.profes;
+      }
+
+      if (typeof this.profes === 'string' && this.profes.trim() !== '') {
+        try {
+          const parsed = JSON.parse(this.profes);
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
+
+          if (parsed && typeof parsed === 'object') {
+            return Object.values(parsed);
+          }
+        } catch (error) {
+          return [];
+        }
+      }
+
+      if (this.profes && typeof this.profes === 'object') {
+        return Object.values(this.profes);
+      }
+
+      return [];
+    },
     profesAmbHores() {
-      return this.profes.filter((profe) => this.totalSegons(profe.dni) > 0);
+      return this.profesList;
     },
   },
   data() {
@@ -71,10 +102,12 @@ export default {
         })),
       ])
         .then(([respHoras, respEstados]) => {
-          this.fichajes = respHoras?.data?.data || {};
+          this.fichajes = this.extractHorasPayload(respHoras);
+
+          const estadosRows = this.extractResumenPayload(respEstados);
 
           const map = {};
-          (respEstados?.data || []).forEach(p => {
+          estadosRows.forEach(p => {
             map[p.dni] = p.days || {};
           });
           this.estados = map;
@@ -83,6 +116,28 @@ export default {
         .catch(error => {
           this.msg = 'ERROR del servidor '+(error.response?.status || '')+' ('+(error.response?.statusText || '')+')';
         });
+    },
+    extractHorasPayload(response) {
+      if (response?.data?.success && response?.data?.data && typeof response.data.data === 'object') {
+        return response.data.data;
+      }
+
+      if (response?.data && typeof response.data === 'object') {
+        return response.data;
+      }
+
+      return {};
+    },
+    extractResumenPayload(response) {
+      if (Array.isArray(response?.data)) {
+        return response.data;
+      }
+
+      if (response?.data?.success && Array.isArray(response.data.data)) {
+        return response.data.data;
+      }
+
+      return [];
     },
     setDia(cambio) {
       this.fecha.add(cambio, 'days');

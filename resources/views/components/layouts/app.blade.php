@@ -55,11 +55,14 @@
     $resolvedJsMode = in_array($jsMode ?? 'hybrid', ['legacy', 'hybrid', 'vite'], true)
         ? ($jsMode ?? 'hybrid')
         : 'hybrid';
+    $skipAppJs = !empty($skipAppJs);
 @endphp
 
 @if ($resolvedJsMode === 'vite')
     @vite('resources/assets/js/legacy-app.js')
-    @vite('resources/assets/js/app.js')
+    @unless($skipAppJs)
+        @vite('resources/assets/js/app.js')
+    @endunless
     @unless(!empty($skipLegacyJs))
         @vite('resources/assets/js/ppIntranet.js')
     @endunless
@@ -73,7 +76,7 @@
             @vite('resources/assets/js/ppIntranet.js')
         @endif
     @endunless
-    @if ($resolvedJsMode === 'hybrid')
+    @if ($resolvedJsMode === 'hybrid' && !$skipAppJs)
         @vite('resources/assets/js/app.js')
     @endif
 @endif
