@@ -1,12 +1,20 @@
 # Sprint 17 - Auditoria i migració de frontend legacy Vue 2
 
+## Nota d'estat
+
+Document històric. El seu diagnòstic ja no descriu l'estat actual del repositori:
+
+- `Vue 2` ja no forma part del codi executable.
+- `public/js/components/app.js` ja no es carrega als layouts.
+- `fichar` ja s'ha migrat a `Vue 3`.
+
 ## Objectiu
 
 Inventariar què queda realment en `Vue 2` i decidir per cada peça si convé migrar-la a `Vue 3`, a `Livewire` o eliminar-la com a residual.
 
-## Context actual
+## Context original
 
-La branca actual encara manté dependència directa de `Vue 2` en [`package.json`](/Users/igomis/Code/intranetBatoi/package.json):
+En el moment d'esta auditoria, la branca encara mantenia dependència directa de `Vue 2` en [`package.json`](/Users/igomis/Code/intranetBatoi/package.json):
 
 - `vue`
 - `vue-template-compiler`
@@ -22,7 +30,7 @@ L'entrypoint principal continua sent [`resources/assets/js/app.js`](/Users/igomi
 
 ## Inventari real detectat
 
-### 1. Nucli Vue 2 encara viu en producció
+### 1. Nucli Vue 2 detectat en aquell moment
 
 Components `.vue` detectats en [`resources/assets/js/components`](/Users/igomis/Code/intranetBatoi/resources/assets/js/components):
 
@@ -69,7 +77,7 @@ La segona passada confirma dos coses importants:
    - `control-semana-view`
    - `control-resumen-rango-view`
 
-Per tant, el bundle compilat legacy continua viu i encara és part del problema, encara que alguns punts de muntatge no siguen evidents en la cerca superficial.
+Per tant, en aquell moment el bundle compilat legacy continuava viu i era part del problema, encara que alguns punts de muntatge no foren evidents en la cerca superficial.
 
 A més, s'ha detectat que:
 
@@ -94,7 +102,7 @@ Este fitxer:
 
 Això no és només `Vue 2` legacy: és un tros molt més antic que convé considerar **residual** fins que es demostre el contrari.
 
-### 4. Mode híbrid de càrrega actual
+### 4. Mode híbrid de càrrega detectat
 
 Les plantilles base mantenen convivència entre:
 

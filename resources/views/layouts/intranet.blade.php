@@ -56,7 +56,6 @@
     @endunless
 @else
     @vite('resources/assets/js/legacy-app.js')
-    <script src="{{ asset('js/components/app.js') }}"></script>
     @unless(View::hasSection('skip_legacy_js'))
         @if ($resolvedJsMode === 'legacy')
             <script src="{{ asset('js/ppIntranet.js') }}"></script>

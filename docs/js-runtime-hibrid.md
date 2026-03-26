@@ -39,6 +39,11 @@ Mantindre estable la Intranet legacy basada en jQuery i, al mateix temps, permet
 2. En cada pantalla migrada, canviar `jsMode` a `vite`.
 3. Quan no quede cap pantalla en `legacy` o `hybrid`, eliminar:
    - càrrega de `public/js/app.js`
-   - càrrega de `public/js/components/app.js`
    - càrrega de `public/js/ppIntranet.js`
 4. Fer neteja final de fitxers legacy en `public/js`.
+
+## Estat actualitzat
+
+- La càrrega de `public/js/components/app.js` ja s'ha retirat dels layouts.
+- `Vue 2` ja no forma part del codi executable del projecte.
+- El runtime híbrid continua existint perquè encara conviuen `legacy-app.js`, `app.js` i `ppIntranet.js`.

@@ -1,12 +1,16 @@
 # Sprint 33 - Extracció del runtime de fichar
 
+## Nota d'estat
+
+Document històric completat. `fichar` ja està separat en [`resources/assets/js/fichar-app.js`](/Users/igomis/Code/intranetBatoi/resources/assets/js/fichar-app.js) i la migració posterior a `Vue 3` ja s'ha executat.
+
 ## Objectiu
 
 Separar `fichar` del bundle global `resources/assets/js/app.js` per deixar el mòdul preparat per a la migració posterior a `Vue 3`.
 
 ## Problema detectat
 
-El Sprint 30 definia `fichar` com a pilot de migració a `Vue 3`, però el runtime real continua sent:
+El Sprint 30 definia `fichar` com a pilot de migració a `Vue 3`, però en aquell moment el runtime real continuava sent:
 
 - `vue@2`
 - `@vitejs/plugin-vue2`
