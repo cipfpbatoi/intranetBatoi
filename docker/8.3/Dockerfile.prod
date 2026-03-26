@@ -37,7 +37,7 @@ RUN mkdir -p /var/www/html/bootstrap/cache \
     && chown -R sail:sail /var/www/html/bootstrap
 
 # Copy dependency manifests first to improve layer cache
-COPY --chown=sail:sail composer.json composer.lock package.json package-lock.json artisan ./
+COPY --chown=sail:sail composer.json composer.lock package.json artisan ./
 COPY --chown=sail:sail packages ./packages
 
 # Install PHP dependencies for production without executing application scripts yet
@@ -49,7 +49,7 @@ RUN gosu sail composer install \
     --no-scripts
 
 # Install frontend dependencies using the lockfile
-RUN gosu sail npm ci
+RUN gosu sail npm install
 
 # Copy the rest of the application and build assets
 COPY --chown=sail:sail . .

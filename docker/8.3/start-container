@@ -38,10 +38,15 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
 cd /var/www/html
 
-# Regenerar cache
-# exec gosu sail php artisan config:cache
-# exec gosu sail php artisan route:cache
-# exec gosu sail php artisan event:cache
+ # Tasques d'inicialització opcionals
+if [ "${LARAVEL_CACHE_ON_BOOT:-1}" = "1" ]; then
+  gosu sail php artisan config:cache
+  gosu sail php artisan event:cache
+fi
+
+if [ "${LARAVEL_MIGRATE_ON_BOOT:-1}" = "1" ]; then
+  gosu sail php artisan migrate --force
+fi
 
 # Executem el comando o supervisord
 if [ $# -gt 0 ]; then
