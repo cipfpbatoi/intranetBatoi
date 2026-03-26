@@ -4,15 +4,14 @@ Document de treball per planificar la migració de dependències legacy i la mod
 
 ## 1) Foto actual (resum)
 
-- Bundler: `laravel-mix` + `webpack` (correcte però legacy al projecte).
+- Bundler: `vite`.
 - Framework UI principal: Bootstrap 4 + Gentelella + jQuery.
-- Components SPA: Vue 2 (`resources/assets/js/app.js`).
+- Components SPA: Vue 3 en peces reactives puntuals (`resources/assets/js/fichar-app.js`).
 - Components nous: Livewire (ja hi ha mòduls en producció).
 - Legacy global: `resources/assets/js/ppIntranet.js` i `resources/assets/js/custom.js` (molt acoblats a jQuery/DataTables).
 
 ## 2) Paquets amb risc / sense manteniment clar
 
-- `vue@2.x` + `vue-template-compiler`: EOL.
 - `bootstrap@4.6`: línia antiga.
 - `popper.js@1`: legacy (Bootstrap 4).
 - `cross-env@5`: molt antiga.
@@ -26,7 +25,7 @@ Document de treball per planificar la migració de dependències legacy i la mod
 - Mantindre estabilitat de negoci ara.
 - Tallar errors globals del bundle legacy per pàgina (com ja s’ha fet en pantalles conflictives).
 - Migrar funcionalitat nova a Livewire.
-- Migrar components Vue 2 crítics a Vue 3 només on aporte valor clar.
+- Migrar components reactius puntuals a Vue 3 només on aporte valor clar.
 - Deixar Bootstrap 5 per una fase separada i controlada.
 
 ## 4) Backlog per fases
@@ -59,7 +58,7 @@ Impacte:
 - C4: Cobertura amb tests d’integració de fluxos crítics.
 
 Impacte:
-- Menys dependència de Vue 2 i més coherència de stack.
+- Menys dependència de jQuery legacy i més coherència de stack.
 
 ### Fase D - Bootstrap 5 (risc alt visual)
 

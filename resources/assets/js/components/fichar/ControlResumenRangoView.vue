@@ -77,254 +77,236 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import axios from 'axios'
+import { computed, onMounted, ref } from 'vue'
 import { withApiAuth } from '../utils/api-auth'
 
-export default {
-  name: 'ControlResumenRangoView',
-  props: {
-    // Professors per al combo (dni + nom), passats des de la vista Blade
-    profes: {
-      type: Array,
-      default: () => []
-    }
-  },
-  data() {
-    const { monday, friday } = this.currentWeek()
-    return {
-      desde: monday,
-      hasta: friday,
-      dni: '',
-      hideOk: false,
-      rows: [],
-      msg: '',
-      loading: false,
-    }
-  },
-  computed: {
-    daysList() {
-      const a = new Date(this.desde)
-      const b = new Date(this.hasta)
-      const out = []
-      if (isNaN(a) || isNaN(b)) return out
-      const d = new Date(a)
-      while (d <= b) {
-        out.push(this.formatIsoLocal(d))
-        d.setDate(d.getDate() + 1)
-      }
-      return out
-    },
-    filteredRows() {
-      let out = this.rows
-      if (this.dni) {
-        out = out.filter(r => r.dni === this.dni)
-      }
-      if (this.hideOk) {
-        out = out.filter(r => !this.isRowFullyOk(r))
-      }
-      return out
-    }
-  },
-  methods: {
-    currentWeek() {
-      const today = new Date()
-      const day = today.getDay() || 7 // dl=1..dg=7
-      const monday = new Date(today)
-      monday.setDate(today.getDate() - (day - 1))
-      const friday = new Date(monday)
-      friday.setDate(monday.getDate() + 4)
-      const fmt = d => this.formatIsoLocal(d)
-      return { monday: fmt(monday), friday: fmt(friday) }
-    },
+defineOptions({
+  name: 'ControlResumenRangoView'
+})
 
-    async fetchData() {
-      this.loading = true
-      this.msg = ''
-      try {
-        const resp = await axios.get(
-          '/api/presencia/resumen-rango',
-          withApiAuth({
-            timeout: 20000,
-            params: {
-              desde: this.desde,
-              hasta: this.hasta,
-              ...(this.dni ? { dni: this.dni } : {}),
-            },
-          })
-        )
+const props = defineProps({
+  profes: {
+    type: Array,
+    default: () => []
+  }
+})
 
-        if (Array.isArray(resp.data)) {
-          this.rows = resp.data
-          return
-        }
+const COLORS = {
+  OK: 'bg-g',
+  PARTIAL: 'bg-a',
+  ABSENT: 'bg-r',
+  JUSTIFIED: 'bg-y',
+  ACTIVITY: 'bg-b',
+  COMMISSION: 'bg-p',
+  OFF: 'bg-s',
+  NO_SALIDA: 'bg-r'
+}
 
-        // Compatibilitat per a respostes embolcallades tipus { success, data }
-        if (resp?.data?.success && Array.isArray(resp.data.data)) {
-          this.rows = resp.data.data
-          return
-        }
+function formatIsoLocal(date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
 
-        this.rows = []
-        this.msg = 'Resposta de servidor no vàlida.'
-      } catch (error) {
-        this.rows = []
-        const status = error?.response?.status
-        const detail = error?.response?.data?.message || error?.message || 'Error desconegut'
-        this.msg = `Error carregant dades${status ? ` (${status})` : ''}: ${detail}`
-      } finally {
-        this.loading = false
-      }
-    },
-
-    changeWeek(delta) {
-      const base = this.startOfWeek(new Date(this.desde))
-      base.setDate(base.getDate() + delta * 7)
-      const monday = base
-      const friday = new Date(monday)
-      friday.setDate(monday.getDate() + 4) // saltem dissabte/diumenge
-      const fmt = d => this.formatIsoLocal(d)
-      this.desde = fmt(monday)
-      this.hasta = fmt(friday)
-      this.fetchData()
-    },
-
-    formatIsoLocal(date) {
-      const y = date.getFullYear()
-      const m = String(date.getMonth() + 1).padStart(2, '0')
-      const d = String(date.getDate()).padStart(2, '0')
-      return `${y}-${m}-${d}`
-    },
-
-    startOfWeek(date) {
-      const d = new Date(date)
-      const day = d.getDay() || 7
-      d.setDate(d.getDate() - (day - 1))
-      return d
-    },
-
-    isRowFullyOk(row) {
-      if (!row.days) return false
-      const days = this.daysList
-      if (!days.length) return false
-      return days.every(d => {
-        const info = row.days[d]
-        if (!info) return false
-        return this.cellInfo(info).class === 'bg-g'
-      })
-    },
-
-    nomProf(p) {
-      return [p.apellido1, p.apellido2, p.nombre].filter(Boolean).join(' ')
-    },
-
-    nomRow(r) {
-      return [r.apellido1, r.apellido2, r.nombre].filter(Boolean).join(' ')
-    },
-
-    formatDia(s) {
-      const d = new Date(s + 'T00:00:00')
-      const wd = d.toLocaleDateString('ca-ES', { weekday: 'short' })
-      const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
-      return `${wd} ${dm}`
-    },
-
-    cellInfo(day) {
-      const status = day.status || ''
-
-      const COLORS = {
-        OK: 'bg-g',
-        PARTIAL: 'bg-a',
-        ABSENT: 'bg-r',
-        JUSTIFIED: 'bg-y',
-        ACTIVITY: 'bg-b',
-        COMMISSION: 'bg-p',
-        OFF: 'bg-s',
-        NO_SALIDA: 'bg-r'
-      }
-
-      // ---- ESTATS ESPECIALS SENSE % ----
-      if (status === 'NO_SALIDA') {
-        let label = 'No out'
-        if (day.first_entry) {
-          const hm = day.first_entry.slice(0, 5)
-          label = `${label} (${hm})`
-        }
-        return { label, class: COLORS.NO_SALIDA }
-      }
-
-      if (status === 'ABSENT') {
-        return { label: 'Abs', class: COLORS.ABSENT }
-      }
-
-      if (status === 'JUSTIFIED') {
-        return { label: 'Just', class: COLORS.JUSTIFIED }
-      }
-
-      if (status === 'ACTIVITY') {
-        return { label: 'Act', class: COLORS.ACTIVITY }
-      }
-
-      if (status === 'COMMISSION') {
-        return { label: 'Com', class: COLORS.COMMISSION }
-      }
-
-      if (status === 'OFF') {
-        return { label: 'Off', class: COLORS.OFF }
-      }
-
-      // ---- CÀLCUL GLOBAL PER A LA RESTA ----
-      const plannedDoc = day.planned_docencia_minutes || 0
-      const plannedAlt = day.planned_altres_minutes || 0
-      const coveredDoc = day.covered_docencia_minutes || 0
-      const coveredAlt = day.covered_altres_minutes || 0
-      const inCenter   = day.in_center_minutes || 0
-
-      const plannedTotal = plannedDoc + plannedAlt
-      if (!plannedTotal) {
-        return { label: '—', class: COLORS.OFF }
-      }
-
-      // ara el % es fa amb el temps AL CENTRE, no només amb el cobert
-      const percent = Math.round((inCenter * 100) / plannedTotal)
-
-      // < 90% -> parcial; distingim si falla lectiva o no lectiva
-      const missingDoc = coveredDoc < plannedDoc
-      const missingAlt = coveredAlt < plannedAlt
-
-      // si està per sota de 90%, mirem d'on ve el forat
-      if (percent < 90) {
-        if (missingDoc) {
-          // falla lectiva -> roig
-          return { label: `${percent}%`, class: COLORS.ABSENT }
-        }
-        if (missingAlt) {
-          // sols falla no lectiva -> ambre
-          return { label: `${percent}%`, class: COLORS.PARTIAL }
-        }
-        // per si de cas, fallback ambre
-        return { label: `${percent}%`, class: COLORS.PARTIAL }
-      }
-
-      // 90% - 110% -> OK en verd, mostrant %
-      if (percent >= 90 && percent <= 110) {
-        return { label: `OK`, class: COLORS.OK }
-      }
-
-      // > 110% -> mostrar % en verd (ha estat més temps del planificat)
-      if (percent > 110) {
-        return { label: `${percent}%`, class: COLORS.OK }
-      }
-
-      // fallback (no hauria d'arribar ací, però per seguretat)
-      return { label: `${percent}%`, class: COLORS.OK }
-    }
-
-  },
-  mounted() {
-    this.fetchData()
+function currentWeek() {
+  const today = new Date()
+  const day = today.getDay() || 7
+  const mondayDate = new Date(today)
+  mondayDate.setDate(today.getDate() - (day - 1))
+  const fridayDate = new Date(mondayDate)
+  fridayDate.setDate(mondayDate.getDate() + 4)
+  return {
+    monday: formatIsoLocal(mondayDate),
+    friday: formatIsoLocal(fridayDate)
   }
 }
+
+function startOfWeek(date) {
+  const d = new Date(date)
+  const day = d.getDay() || 7
+  d.setDate(d.getDate() - (day - 1))
+  return d
+}
+
+function nomProf(p) {
+  return [p.apellido1, p.apellido2, p.nombre].filter(Boolean).join(' ')
+}
+
+function nomRow(r) {
+  return [r.apellido1, r.apellido2, r.nombre].filter(Boolean).join(' ')
+}
+
+function formatDia(s) {
+  const d = new Date(s + 'T00:00:00')
+  const wd = d.toLocaleDateString('ca-ES', { weekday: 'short' })
+  const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
+  return `${wd} ${dm}`
+}
+
+function cellInfo(day) {
+  const status = day.status || ''
+
+  if (status === 'NO_SALIDA') {
+    let label = 'No out'
+    if (day.first_entry) {
+      const hm = day.first_entry.slice(0, 5)
+      label = `${label} (${hm})`
+    }
+    return { label, class: COLORS.NO_SALIDA }
+  }
+
+  if (status === 'ABSENT') {
+    return { label: 'Abs', class: COLORS.ABSENT }
+  }
+
+  if (status === 'JUSTIFIED') {
+    return { label: 'Just', class: COLORS.JUSTIFIED }
+  }
+
+  if (status === 'ACTIVITY') {
+    return { label: 'Act', class: COLORS.ACTIVITY }
+  }
+
+  if (status === 'COMMISSION') {
+    return { label: 'Com', class: COLORS.COMMISSION }
+  }
+
+  if (status === 'OFF') {
+    return { label: 'Off', class: COLORS.OFF }
+  }
+
+  const plannedDoc = day.planned_docencia_minutes || 0
+  const plannedAlt = day.planned_altres_minutes || 0
+  const coveredDoc = day.covered_docencia_minutes || 0
+  const coveredAlt = day.covered_altres_minutes || 0
+  const inCenter = day.in_center_minutes || 0
+
+  const plannedTotal = plannedDoc + plannedAlt
+  if (!plannedTotal) {
+    return { label: '—', class: COLORS.OFF }
+  }
+
+  const percent = Math.round((inCenter * 100) / plannedTotal)
+  const missingDoc = coveredDoc < plannedDoc
+  const missingAlt = coveredAlt < plannedAlt
+
+  if (percent < 90) {
+    if (missingDoc) {
+      return { label: `${percent}%`, class: COLORS.ABSENT }
+    }
+    if (missingAlt) {
+      return { label: `${percent}%`, class: COLORS.PARTIAL }
+    }
+    return { label: `${percent}%`, class: COLORS.PARTIAL }
+  }
+
+  if (percent >= 90 && percent <= 110) {
+    return { label: 'OK', class: COLORS.OK }
+  }
+
+  return { label: `${percent}%`, class: COLORS.OK }
+}
+
+const { monday, friday } = currentWeek()
+
+const desde = ref(monday)
+const hasta = ref(friday)
+const dni = ref('')
+const hideOk = ref(false)
+const rows = ref([])
+const msg = ref('')
+const loading = ref(false)
+
+const daysList = computed(() => {
+  const a = new Date(desde.value)
+  const b = new Date(hasta.value)
+  const out = []
+  if (isNaN(a) || isNaN(b)) return out
+  const d = new Date(a)
+  while (d <= b) {
+    out.push(formatIsoLocal(d))
+    d.setDate(d.getDate() + 1)
+  }
+  return out
+})
+
+function isRowFullyOk(row) {
+  if (!row.days) return false
+  const days = daysList.value
+  if (!days.length) return false
+  return days.every(d => {
+    const info = row.days[d]
+    if (!info) return false
+    return cellInfo(info).class === 'bg-g'
+  })
+}
+
+const filteredRows = computed(() => {
+  let out = rows.value
+  if (dni.value) {
+    out = out.filter(r => r.dni === dni.value)
+  }
+  if (hideOk.value) {
+    out = out.filter(r => !isRowFullyOk(r))
+  }
+  return out
+})
+
+async function fetchData() {
+  loading.value = true
+  msg.value = ''
+  try {
+    const resp = await axios.get(
+      '/api/presencia/resumen-rango',
+      withApiAuth({
+        timeout: 20000,
+        params: {
+          desde: desde.value,
+          hasta: hasta.value,
+          ...(dni.value ? { dni: dni.value } : {}),
+        },
+      })
+    )
+
+    if (Array.isArray(resp.data)) {
+      rows.value = resp.data
+      return
+    }
+
+    if (resp?.data?.success && Array.isArray(resp.data.data)) {
+      rows.value = resp.data.data
+      return
+    }
+
+    rows.value = []
+    msg.value = 'Resposta de servidor no vàlida.'
+  } catch (error) {
+    rows.value = []
+    const status = error?.response?.status
+    const detail = error?.response?.data?.message || error?.message || 'Error desconegut'
+    msg.value = `Error carregant dades${status ? ` (${status})` : ''}: ${detail}`
+  } finally {
+    loading.value = false
+  }
+}
+
+function changeWeek(delta) {
+  const base = startOfWeek(new Date(desde.value))
+  base.setDate(base.getDate() + delta * 7)
+  const mondayDate = base
+  const fridayDate = new Date(mondayDate)
+  fridayDate.setDate(mondayDate.getDate() + 4)
+  desde.value = formatIsoLocal(mondayDate)
+  hasta.value = formatIsoLocal(fridayDate)
+  fetchData()
+}
+
+onMounted(() => {
+  fetchData()
+})
 </script>
 
 <style scoped>

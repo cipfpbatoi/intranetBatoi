@@ -27,17 +27,17 @@
 
 ### Frontend/layout
 - El layout principal (`resources/views/layouts/intranet.blade.php`) carrega:
-  - `mix('css/components/app.css')`
-  - `mix('js/components/app.js')`
-  - `mix('js/ppIntranet.js')`
+  - `@vite('resources/assets/sass/app.scss')`
+  - `@vite('resources/assets/js/legacy-app.js')`
+  - `@vite('resources/assets/js/app.js')` o `@vite('resources/assets/js/ppIntranet.js')` segons el mode
 - Hi ha acoblament directe a classes de Gentelella (`nav-md`, `main_container`, `left_col`, `right_col`, `x_panel`, `x_title`, `nav_menu`, etc.) en almenys **40 referències** en vistes.
-- El build actual ja no genera `gentelella.css/js`; compila únicament `components/app` i `ppIntranet`.
+- El build actual ja no genera `gentelella.css/js`; compila entrades Vite i manté `ppIntranet` com a bundle legacy principal.
 
 ### Versions i stack
 - `package.json` actual:
-  - `bootstrap: ^4.0.0`
-  - `vue: ^2.5.7`
-  - `laravel-mix: ^6.0.13`
+  - `bootstrap: ^5.3.8`
+  - `vue: ^3.5.13`
+  - `vite: ^5`
 - No hi ha Tailwind instal·lat en el projecte.
 
 ### Formularis (`Form::` / `Field::`)

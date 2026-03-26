@@ -8,9 +8,11 @@
 @section('js_mode', 'vite')
 
 @section('content')
-<div id="app">
-  <control-resumen-rango-view :profes='@json($profes)'></control-resumen-rango-view>
-</div>
+<div
+    id="app"
+    data-page="resumenRango"
+    data-profes='@json($profes, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)'
+></div>
 @endsection
 
 @push('scripts')

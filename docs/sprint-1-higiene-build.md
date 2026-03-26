@@ -12,8 +12,8 @@ Estandarditzar l'entorn de compilacio frontend per reduir incidencies de build e
 - Node.js: `20.x` (`.nvmrc` fixat a `20`)
 - npm en contenidor Docker (`docker/8.3/Dockerfile`): `10.8.2`
 - npm en local: compatible amb Node 20 (preferible mantindre's en npm 10 per consistencia)
-- Bundler: `laravel-mix@^6`
-- Webpack: `^5`
+- Bundler actual: `vite`
+- Plugin Laravel: `laravel-vite-plugin`
 
 ## Comandaments oficials de build
 
@@ -34,24 +34,22 @@ npm run dev
 npm run production
 ```
 
-## Context del workaround de webpack
+## Context del build actual
 
-En `webpack.mix.js` es manté:
+El projecte ja compila amb Vite. Si reapareixen incidencies de build, cal revisar primer:
 
-- `output.hashFunction = 'sha256'`
-
-Motiu:
-- En alguns entorns Docker/Linux, el hash per defecte de webpack (`xxhash64` en alguns escenaris) ha provocat errors de compilacio.
-- `sha256` evita estos crashejos i estabilitza la compilacio.
+- `vite.config.mjs`
+- versions de Node i npm
+- compatibilitat de dependències frontend
 
 ## Checklist manual de validacio de compilacio i assets
 
 - [ ] `npm ci` finalitza sense errors.
-- [ ] `npm run dev` genera `public/js/components/app.js`.
-- [ ] `npm run dev` genera `public/css/components/app.css`.
-- [ ] `npm run dev` genera `public/js/ppIntranet.js`.
+- [ ] `npm run dev` alça Vite sense errors.
+- [ ] `npm run build` genera `public/build/manifest.json`.
+- [ ] `npm run build` genera els assets Vite esperats.
 - [ ] `npm run production` finalitza sense `segmentation fault`.
-- [ ] `public/mix-manifest.json` conté rutes coherents dels assets.
+- [ ] `public/build/manifest.json` conté rutes coherents dels assets.
 - [ ] L'aplicacio carrega sense errors JS critics en `login/reset password`.
 - [ ] L'aplicacio carrega sense errors JS critics en el layout intranet principal.
 - [ ] L'aplicacio carrega sense errors JS critics en una pàgina amb DataTables i una amb formulari.
