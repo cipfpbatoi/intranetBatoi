@@ -50,18 +50,24 @@
                 <th>@lang("validation.attributes.aviso")</th>
                 <th></th>
             </tr>
-            <form method="POST" class="agua" action="{{ route('comision.fct.create', ['comision' => $comision->id]) }}">
-                @csrf
-                <input type='hidden' name='idComision' value="{!!$comision->id!!}">
+            @if (empty($allFcts))
                 <tr>
-                    <td>{{ Form::select('idFct',$allFcts,0,['id' => 'idFct']) }}</td>
-                    <td>{{ Form::text('hora_ini',hora($comision->desde),['class' => 'time']) }}</td>
-                    <td>{{ Form::checkbox('aviso',1,true) }}</td>
-                    <td>
-                        <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita">
-                    </td>
+                    <td colspan="4" class="text-muted">No hi ha FCT disponibles per a afegir a esta comissió.</td>
                 </tr>
-            </form>
+            @else
+                <form method="POST" class="agua" action="{{ route('comision.fct.create', ['comision' => $comision->id]) }}">
+                    @csrf
+                    <input type='hidden' name='idComision' value="{!!$comision->id!!}">
+                    <tr>
+                        <td>{{ Form::select('idFct',$allFcts,null,['id' => 'idFct', 'placeholder' => 'Selecciona una empresa']) }}</td>
+                        <td>{{ Form::text('hora_ini',hora($comision->desde),['class' => 'time']) }}</td>
+                        <td>{{ Form::checkbox('aviso',1,true) }}</td>
+                        <td>
+                            <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita">
+                        </td>
+                    </tr>
+                </form>
+            @endif
         </table>
     </div>
 @endsection

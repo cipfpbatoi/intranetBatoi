@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -147,6 +148,26 @@ class ComisionControllerTest extends TestCase
             ->where('idComision', $comisionId)
             ->where('idFct', 1002)
             ->value('aviso'));
+    }
+
+    public function test_createfct_valida_que_idfct_existisca_i_no_guarda_zero(): void
+    {
+        $comisionId = $this->seedComision(1);
+        $controller = new DummyComisionController();
+
+        try {
+            $controller->createFct(new Request([
+                'hora_ini' => '09:00:00',
+                'aviso' => 'on',
+            ]), $comisionId);
+            $this->fail('S\'esperava una ValidationException per idFct absent.');
+        } catch (ValidationException $exception) {
+            $this->assertArrayHasKey('idFct', $exception->errors());
+        }
+
+        $this->assertSame(0, DB::table('comision_fcts')
+            ->where('idComision', $comisionId)
+            ->count());
     }
 
     public function test_createfct_llanca_excepcio_si_comissio_no_existix(): void

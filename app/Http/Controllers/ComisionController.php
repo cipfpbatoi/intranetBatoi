@@ -325,11 +325,16 @@ class ComisionController extends ModalController
     public function createFct(Request $request, $comisionId)
     {
         $this->authorize('manageFct', $this->findComisionOrFail($comisionId));
+        $validated = $this->validate($request, [
+            'idFct' => 'required|integer|min:1|exists:fcts,id',
+            'hora_ini' => 'required',
+        ]);
+
         $this->comisionService()->attachFct(
             (int) $comisionId,
-            (int) $request->idFct,
-            (string) $request->hora_ini,
-            isset($request->aviso)
+            (int) $validated['idFct'],
+            (string) $validated['hora_ini'],
+            $request->boolean('aviso')
         );
         return $this->detalle($comisionId);
     }
