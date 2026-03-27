@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('notification/{id}', 'NotificationController@leer')->middleware('auth:sanctum');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']])->middleware('auth:sanctum');
 
-    Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']])->middleware('auth:sanctum');
+    Route::resource('profesor', 'ProfesorController', ['except' => [ 'create', 'destroy']])->middleware('auth:sanctum');
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol')->middleware('auth:sanctum');
     Route::get('profesor/rol/{rol}', 'ProfesorController@getRol')->middleware('auth:sanctum');
     Route::get('ipGuardias', 'IpGuardiaController@arrayIps')->middleware('auth:sanctum');

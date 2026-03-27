@@ -1073,19 +1073,6 @@ class ApiResourceDocumentation
             new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
         ]
     )]
-    #[OA\Delete(
-        path: '/profesor/{id}',
-        operationId: 'profesorDestroy',
-        summary: 'Elimina un registre de profesor',
-        tags: ['Professorat'],
-        security: [['sanctum' => []]],
-        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
-        responses: [
-            new OA\Response(response: 200, description: 'Eliminat', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
-            new OA\Response(response: 404, description: 'No trobat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-            new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
-        ]
-    )]
     public function profesorResourceEndpoints(): void
     {
     }

@@ -2,7 +2,9 @@
     @foreach($fct->alFct as $alfct)
         @php
             $alumno = $alfct->Alumno;
-            $mio = in_array(authUser()->dni,$alfct->Tutor->Sustituidos);
+            $userDni = (string) (authUser()->dni ?? '');
+            $tutorFct = $alfct->Tutor;
+            $mio = $userDni !== '' && in_array($userDni, $tutorFct?->Sustituidos ?? [], true);
         @endphp
         @if ($mio)
             <li>
@@ -12,7 +14,7 @@
                                 class="fa fa-calendar-times-o"></i> {{$alfct->desde}}
                         - {{$alfct->hasta}} ({{$alfct->horas}})</h4>
                     <h4 class="text-info">
-                        Tutor: {{$alfct->Tutor->fullName??''}}
+                        Tutor: {{$tutorFct?->fullName ?? ''}}
 
                     </h4>
                     <h4>
@@ -58,4 +60,3 @@
         @endif
     @endforeach
 </ul>
-

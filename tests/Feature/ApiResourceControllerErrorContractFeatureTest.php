@@ -94,6 +94,21 @@ class ApiResourceControllerErrorContractFeatureTest extends TestCase
         $response->assertJsonPath('message', 'Internal server error');
     }
 
+    /**
+     * Verifica que l'API no expose el DELETE del recurs professor.
+     */
+    public function test_destroy_route_is_not_available_for_profesor_resource(): void
+    {
+        $this->insertProfesor('PRC04');
+        $user = Profesor::on('sqlite')->findOrFail('PRC04');
+        Sanctum::actingAs($user);
+
+        $response = $this->deleteJson('/api/profesor/PRC04');
+
+        $response->assertStatus(405);
+        $this->assertSame(1, DB::table('profesores')->where('dni', 'PRC04')->count());
+    }
+
     private function createSchema(): void
     {
         if (Schema::connection('sqlite')->hasTable('profesores')) {
