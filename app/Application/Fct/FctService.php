@@ -72,6 +72,7 @@ class FctService
             (int) $fct->id,
             (string) $request->idAlumno,
             [
+                'idProfesor' => (string) authUser()->dni,
                 'desde' => FechaInglesa($request->desde),
                 'hasta' => FechaInglesa($request->hasta),
                 'horas' => $request->horas,
@@ -86,6 +87,7 @@ class FctService
             $idFct,
             (string) $request->idAlumno,
             [
+                'idProfesor' => (string) authUser()->dni,
                 'calificacion' => 0,
                 'calProyecto' => 0,
                 'actas' => 0,
