@@ -12,11 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('alumno_fcts', function (Blueprint $table): void {
-            $table->dropForeign('alumno_fcts_idprofesor_foreign');
-        });
+        $foreignExists = DB::table('information_schema.TABLE_CONSTRAINTS')
+            ->where('CONSTRAINT_SCHEMA', DB::getDatabaseName())
+            ->where('TABLE_NAME', 'alumno_fcts')
+            ->where('CONSTRAINT_NAME', 'alumno_fcts_idprofesor_foreign')
+            ->exists();
 
-        DB::statement('ALTER TABLE alumno_fcts MODIFY idProfesor VARCHAR(10) NOT NULL');
+        if ($foreignExists) {
+            Schema::table('alumno_fcts', function (Blueprint $table): void {
+                $table->dropForeign('alumno_fcts_idprofesor_foreign');
+            });
+        }
+
+        DB::statement(
+            'ALTER TABLE alumno_fcts MODIFY idProfesor VARCHAR(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL'
+        );
 
         Schema::table('alumno_fcts', function (Blueprint $table): void {
             $table->foreign('idProfesor', 'alumno_fcts_idprofesor_foreign')
@@ -32,11 +42,21 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('alumno_fcts', function (Blueprint $table): void {
-            $table->dropForeign('alumno_fcts_idprofesor_foreign');
-        });
+        $foreignExists = DB::table('information_schema.TABLE_CONSTRAINTS')
+            ->where('CONSTRAINT_SCHEMA', DB::getDatabaseName())
+            ->where('TABLE_NAME', 'alumno_fcts')
+            ->where('CONSTRAINT_NAME', 'alumno_fcts_idprofesor_foreign')
+            ->exists();
 
-        DB::statement('ALTER TABLE alumno_fcts MODIFY idProfesor VARCHAR(10) NULL');
+        if ($foreignExists) {
+            Schema::table('alumno_fcts', function (Blueprint $table): void {
+                $table->dropForeign('alumno_fcts_idprofesor_foreign');
+            });
+        }
+
+        DB::statement(
+            'ALTER TABLE alumno_fcts MODIFY idProfesor VARCHAR(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NULL'
+        );
 
         Schema::table('alumno_fcts', function (Blueprint $table): void {
             $table->foreign('idProfesor', 'alumno_fcts_idprofesor_foreign')
