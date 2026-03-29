@@ -16,6 +16,8 @@
     $preasignacionesCollapseId = 'colaboracion-preasignaciones-' . $elemento->id;
     $preasignacionModalId = 'preasignacion_' . $elemento->id;
     $ultimContacte = $elemento->ultimaActividad ?? null;
+    $diesSenseContacte = $elemento->diesSenseContacte;
+    $fitxaBadges = $elemento->fitxaBadges ?? collect();
     $relacionadas = $elemento->relacionadas ?? collect();
     $preasignaciones = $elemento->preasignacionesPanel ?? collect();
     $preasignacionAlumnoOptions = $elemento->preasignacionAlumnoOptions ?? collect();
@@ -33,7 +35,17 @@
         };
     };
 @endphp
-<div class="col-md-4 col-sm-4 col-xs-12 profile_details">
+<div class="col-md-4 col-sm-4 col-xs-12 profile_details mis-colaboraciones-card"
+     data-target-tab="{{ $tabName ?? '' }}"
+     data-town="{{ $elemento->localidad }}"
+     data-company="{{ $elemento->Centro->nombre }}"
+     data-has-contact="{{ trim((string) ($elemento->contacto ?? '')) !== '' ? '1' : '0' }}"
+     data-has-phone="{{ trim((string) ($elemento->telefono ?? '')) !== '' ? '1' : '0' }}"
+     data-has-email="{{ trim((string) ($elemento->email ?? '')) !== '' ? '1' : '0' }}"
+     data-has-instructor="{{ !empty($elemento->hasInstructor) ? '1' : '0' }}"
+     data-conveni-pendent="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
+     data-days-without-contact="{{ $diesSenseContacte ?? '' }}"
+     data-priority-score="{{ (int) ($elemento->prioritatFitxa ?? 0) }}">
     <div id="{{$elemento->id}}" class="well profile_view"
          @if ($elemento->estado == 3) style='border-color: #90111a;border-width: medium' @endif
     >
@@ -46,14 +58,26 @@
                     <em class="fa fa-map-marker"></em> {{$elemento->localidad}}
                 </p>
                 <p class="mb-2">
-                    <span class="badge {{ $isMine ? 'bg-success' : 'bg-secondary' }}">
-                        {{ $isMine ? 'Meua' : 'Altre tutor' }}
-                    </span>
                     <span class="badge {{ $estadoBadgeClass }}">
                         {{ $estadoLabel }}
                     </span>
+                    <span class="badge {{ $elemento->estatFitxaClass ?? 'bg-secondary' }}">
+                        {{ $elemento->estatFitxaLabel ?? 'Fitxa' }}
+                    </span>
                 </p>
+
+                @if ($fitxaBadges->isNotEmpty())
+                    <p class="mb-2">
+                        @foreach ($fitxaBadges as $badge)
+                            <span class="badge {{ $badge['class'] }}" style="margin-bottom:.25rem;">
+                                <em class="fa {{ $badge['icon'] }}"></em> {{ $badge['label'] }}
+                            </span>
+                        @endforeach
+                    </p>
+                @endif
+
                 <ul class="list-unstyled">
+                    <li><em class="fa fa-user-secret"></em> {{ $elemento->profesor ?: 'Sense tutor assignat' }}</li>
                     <li><em class="fa fa-user"></em> {{$elemento->contacto ?: 'Sense contacte'}}</li>
                     <li><em class="fa fa-phone"></em> {{$elemento->telefono ?: 'Sense telèfon'}}</li>
                     <li><em class="fa fa-envelope"></em> {{$elemento->email ?: 'Sense email'}}</li>
@@ -63,6 +87,13 @@
                     <p class="small text-muted mb-2">
                         <strong>Últim contacte:</strong>
                         {{ $ultimContacte->created_at?->format('d/m/Y H:i') }}
+                        @if ($diesSenseContacte !== null)
+                            · fa {{ $diesSenseContacte }} dia(es)
+                        @endif
+                    </p>
+                @else
+                    <p class="small text-danger mb-2">
+                        <strong>Últim contacte:</strong> Sense cap contacte registrat
                     </p>
                 @endif
 
@@ -100,14 +131,17 @@
                                 @endif
                             </strong>
                         </li>
-                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
-                        <li><em class="fa fa-user-secret"></em> {{$elemento->profesor ?? 'No assignada'}}</li>
+                        <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
+                        <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios ?: 'Sense horari'}}</li>
+                        <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion ?: 'Sense adreça'}}</li>
                 @else
-                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
                         <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios}}</li>
                         <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion}}</li>
                         <li><em class="fa fa-folder"></em> {{$elemento->Centro->Empresa->actividad}}</li>
-                        <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
+                        @if (($elemento->Centro->Empresa->email ?? '') !== ($elemento->email ?? ''))
+                            <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
+                        @endif
+                        <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
                 @endisset
                     </ul>
                 </div>

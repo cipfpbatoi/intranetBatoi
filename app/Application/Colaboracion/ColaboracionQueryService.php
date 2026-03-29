@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Colaboracion;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Colaboracion;
@@ -20,7 +21,7 @@ class ColaboracionQueryService
     {
         return Colaboracion::query()
             ->MiColaboracion(null, $dni)
-            ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Ciclo'])
+            ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'Ciclo'])
             ->get();
     }
 
@@ -44,7 +45,7 @@ class ColaboracionQueryService
         }
 
         return Colaboracion::query()
-            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa'])
+            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores'])
             ->whereNotIn('id', $meves->pluck('id'))
             ->where(function ($query) use ($parelles): void {
                 foreach ($parelles as $pair) {
@@ -106,17 +107,119 @@ class ColaboracionQueryService
 
         $meves->each(function ($mine) use ($pairKey, $relacionadesPerParella, $activitiesByColab): void {
             $llista = $relacionadesPerParella->get($pairKey($mine), collect());
-            $mine->contactos = $activitiesByColab->get($mine->id, collect());
-            $mine->ultimaActividad = $mine->contactos->last();
+            $this->hydratePanelIndicators($mine, $activitiesByColab->get($mine->id, collect()));
 
             $llista->each(function ($related) use ($activitiesByColab): void {
-                $related->contactos = $activitiesByColab->get($related->id, collect());
-                $related->ultimaActividad = $related->contactos->last();
+                $this->hydratePanelIndicators($related, $activitiesByColab->get($related->id, collect()));
             });
 
             $mine->relacionadas = $llista->values();
         });
 
         return $meves;
+    }
+
+    /**
+     * Adjunta els indicadors de fitxa necessaris per al panell sense dispersar la lògica en la vista.
+     *
+     * @param Collection<int, Activity> $activities
+     */
+    private function hydratePanelIndicators(Colaboracion $colaboracion, Collection $activities): void
+    {
+        $colaboracion->contactos = $activities;
+        $colaboracion->ultimaActividad = $activities->last();
+        $colaboracion->ultima_actividad = $colaboracion->ultimaActividad?->created_at;
+        $colaboracion->diesSenseContacte = $this->daysSince($colaboracion->ultima_actividad);
+
+        $empresa = $colaboracion->Centro->Empresa ?? null;
+        $hasInstructor = ($colaboracion->Centro->instructores?->isNotEmpty()) ?? false;
+        $conveniTall = $this->annexICutoffDate();
+        $conveniData = $this->annexISignatureDate($empresa);
+        $conveniPendent = blank($empresa?->concierto)
+            || $conveniData === null
+            || $conveniData->lt($conveniTall);
+
+        $badges = collect();
+
+        if ($this->isBlankText($colaboracion->contacto ?? null)) {
+            $badges->push($this->panelBadge('Sense contacte', 'bg-danger', 'fa-user'));
+        }
+
+        if ($this->isBlankText($colaboracion->telefono ?? null)) {
+            $badges->push($this->panelBadge('Sense telèfon', 'bg-warning text-dark', 'fa-phone'));
+        }
+
+        if ($this->isBlankText($colaboracion->email ?? null)) {
+            $badges->push($this->panelBadge('Sense email', 'bg-warning text-dark', 'fa-envelope'));
+        }
+
+        if (!$hasInstructor) {
+            $badges->push($this->panelBadge('Sense instructor', 'bg-warning text-dark', 'fa-user-secret'));
+        }
+
+        if ($conveniPendent) {
+            $badges->push($this->panelBadge('Conveni pendent', 'bg-danger', 'fa-file-text-o'));
+        }
+
+        $prioritatFitxa = 0;
+        $prioritatFitxa += $this->isBlankText($colaboracion->contacto ?? null) ? 5 : 0;
+        $prioritatFitxa += !$hasInstructor ? 4 : 0;
+        $prioritatFitxa += $conveniPendent ? 4 : 0;
+        $prioritatFitxa += $this->isBlankText($colaboracion->email ?? null) ? 2 : 0;
+        $prioritatFitxa += $this->isBlankText($colaboracion->telefono ?? null) ? 2 : 0;
+
+        $colaboracion->hasInstructor = $hasInstructor;
+        $colaboracion->conveniPendent = $conveniPendent;
+        $colaboracion->prioritatFitxa = $prioritatFitxa;
+        $colaboracion->fitxaBadges = $badges;
+        $colaboracion->fitxaIncompleta = $badges->isNotEmpty();
+        $colaboracion->estatFitxaLabel = $badges->isEmpty() ? 'Fitxa al dia' : 'Cal revisar';
+        $colaboracion->estatFitxaClass = $badges->isEmpty() ? 'bg-success' : 'bg-warning text-dark';
+        $colaboracion->annexIData = $conveniData?->format('d-m-Y');
+        $colaboracion->annexITall = $conveniTall->format('d-m-Y');
+    }
+
+    /**
+     * Normalitza el format dels badges de qualitat de fitxa del panell.
+     *
+     * @return array{label:string,class:string,icon:string}
+     */
+    private function panelBadge(string $label, string $class, string $icon): array
+    {
+        return [
+            'label' => $label,
+            'class' => $class,
+            'icon' => $icon,
+        ];
+    }
+
+    private function isBlankText(?string $value): bool
+    {
+        return trim((string) $value) === '';
+    }
+
+    private function daysSince($dateTime): ?int
+    {
+        if ($dateTime === null) {
+            return null;
+        }
+
+        return (int) Carbon::parse($dateTime)->startOfDay()->diffInDays(Carbon::now()->startOfDay());
+    }
+
+    private function annexISignatureDate($empresa): ?Carbon
+    {
+        $rawDate = $empresa?->getRawOriginal('data_signatura');
+
+        if (!$rawDate) {
+            return null;
+        }
+
+        return Carbon::parse($rawDate)->startOfDay();
+    }
+
+    private function annexICutoffDate(): Carbon
+    {
+        return Carbon::create(2024, 1, 1)->startOfDay();
     }
 }
