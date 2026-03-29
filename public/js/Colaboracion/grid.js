@@ -5,7 +5,8 @@
         id: null,
         col: null,
         list: null,
-        tipo: null
+        tipo: null,
+        contactType: null
     };
 
     var MAX_RETRIES = 40;
@@ -268,6 +269,54 @@
         }
     }
 
+    function resetDialogForm() {
+        var formDialogo = document.getElementById('formDialogo');
+        if (!formDialogo) {
+            return;
+        }
+
+        formDialogo.reset();
+
+        ['explicacion', 'resultat', 'observacions', 'proxima_accio', 'data_prevista'].forEach(function (fieldName) {
+            if (formDialogo[fieldName]) {
+                formDialogo[fieldName].value = '';
+            }
+        });
+    }
+
+    function setContactType(contactType) {
+        var select = document.getElementById('contact_type');
+        if (select) {
+            select.value = contactType || 'telefonada';
+        }
+    }
+
+    function fillContactDialog(contact) {
+        var formDialogo = document.getElementById('formDialogo');
+        if (!formDialogo || !contact) {
+            return;
+        }
+
+        if (formDialogo.contact_type) {
+            formDialogo.contact_type.value = contact.contact_type || 'telefonada';
+        }
+        if (formDialogo.resultat) {
+            formDialogo.resultat.value = contact.resultat || '';
+        }
+        if (formDialogo.observacions) {
+            formDialogo.observacions.value = contact.observacions || '';
+        }
+        if (formDialogo.proxima_accio) {
+            formDialogo.proxima_accio.value = contact.proxima_accio || '';
+        }
+        if (formDialogo.data_prevista) {
+            formDialogo.data_prevista.value = contact.data_prevista || '';
+        }
+        if (formDialogo.explicacion) {
+            formDialogo.explicacion.value = contact.comentari || '';
+        }
+    }
+
     function appendActivity(list, activityId, iconClass) {
         if (!list) {
             return;
@@ -281,6 +330,39 @@
         list.insertAdjacentHTML('beforeend', html);
 
         var lastLink = document.getElementById(String(activityId));
+        if (lastLink) {
+            configureDraggable(lastLink);
+        }
+    }
+
+    function appendStructuredActivity(list, activity) {
+        if (!list || !activity) {
+            return;
+        }
+
+        var icon = 'book';
+        var label = activity.document || '';
+        var createdAt = activity.created_at || '';
+
+        if ((activity.action || '') === 'phone') {
+            icon = 'phone';
+        } else if ((activity.action || '') === 'email') {
+            icon = 'envelope';
+        } else if ((activity.action || '') === 'visita') {
+            icon = 'car';
+        } else if ((activity.action || '') === 'review') {
+            icon = 'users';
+        }
+
+        var html = "<small><a href='#' class='small dragable' id='" + activity.id
+            + "' draggable='draggable'><em class='fa "
+            + (activity.comentari ? 'fa-plus' : 'fa-minus')
+            + "'></em> " + createdAt + " <em class='fa fa-" + icon + "'></em> "
+            + label + "</a></small><br/>";
+
+        list.insertAdjacentHTML('beforeend', html);
+
+        var lastLink = document.getElementById(String(activity.id));
         if (lastLink) {
             configureDraggable(lastLink);
         }
@@ -448,10 +530,12 @@
             if (telefonicoBtn) {
                 event.preventDefault();
                 var profileTelefonico = telefonicoBtn.closest('.profile_view');
-                var fctNode = profileTelefonico ? profileTelefonico.querySelector('.fct') : null;
-                state.id = fctNode ? fctNode.id : null;
+                state.col = profileTelefonico ? profileTelefonico.id : null;
                 state.list = profileTelefonico ? profileTelefonico.querySelector('.listActivity') : null;
-                state.tipo = 'telefonico';
+                state.tipo = 'contacte';
+                state.contactType = 'telefonada';
+                resetDialogForm();
+                setContactType('telefonada');
                 openDialog();
                 return;
             }
@@ -462,7 +546,10 @@
                 var profileBook = bookBtn.closest('.profile_view');
                 state.col = profileBook ? profileBook.id : null;
                 state.list = profileBook ? profileBook.querySelector('.listActivity') : null;
-                state.tipo = 'book';
+                state.tipo = 'contacte';
+                state.contactType = 'seguiment';
+                resetDialogForm();
+                setContactType('seguiment');
                 openDialog();
                 return;
             }
@@ -472,17 +559,28 @@
                 event.preventDefault();
                 state.id = smallBtn.id;
                 state.tipo = 'seguimiento';
-                request('GET', '/api/activity/' + state.id, {}, true)
+                resetDialogForm();
+                request('GET', '/api/colaboracion/contact/' + state.id, {}, true)
                     .then(function (result) {
-                        var explicacion = document.querySelector('#dialogo #explicacion');
-                        if (explicacion && result && result.data) {
-                            explicacion.value = result.data.comentari || '';
+                        if (result && result.data) {
+                            fillContactDialog(result.data);
                         }
                     })
                     .catch(function () {
-                        window.console.log('Error al buscarr');
+                        return request('GET', '/api/activity/' + state.id, {}, true)
+                            .then(function (result) {
+                                var explicacion = document.querySelector('#dialogo #explicacion');
+                                if (explicacion && result && result.data) {
+                                    explicacion.value = result.data.comentari || '';
+                                }
+                            })
+                            .catch(function () {
+                                window.console.log('Error al carregar el contacte.');
+                            });
+                    })
+                    .finally(function () {
+                        openDialog();
                     });
-                openDialog();
                 return;
             }
 
@@ -547,6 +645,30 @@
             formDialogo.addEventListener('submit', function (event) {
                 event.preventDefault();
                 var explicacion = formDialogo.explicacion ? formDialogo.explicacion.value : '';
+                var contactType = formDialogo.contact_type ? formDialogo.contact_type.value : (state.contactType || 'telefonada');
+                var resultat = formDialogo.resultat ? formDialogo.resultat.value : '';
+                var observacions = formDialogo.observacions ? formDialogo.observacions.value : '';
+                var proximaAccio = formDialogo.proxima_accio ? formDialogo.proxima_accio.value : '';
+                var dataPrevista = formDialogo.data_prevista ? formDialogo.data_prevista.value : '';
+
+                if (state.tipo === 'contacte') {
+                    request('POST', '/api/colaboracion/' + state.col + '/contact', {
+                        contact_type: contactType,
+                        resultat: resultat,
+                        observacions: observacions,
+                        proxima_accio: proximaAccio,
+                        data_prevista: dataPrevista
+                    }, true)
+                        .then(function (result) {
+                            appendStructuredActivity(state.list, result.data);
+                            closeDialog();
+                        })
+                        .catch(function () {
+                            window.console.log('No s\'ha pogut guardar el contacte.');
+                            closeDialog();
+                        });
+                    return;
+                }
 
                 if (state.tipo === 'book') {
                     request('POST', '/api/colaboracion/' + state.col + '/book', { explicacion: explicacion }, true)
@@ -575,6 +697,24 @@
                 }
 
                 if (state.tipo === 'seguimiento') {
+                    if (formDialogo.contact_type) {
+                        request('PUT', '/api/colaboracion/contact/' + state.id, {
+                            contact_type: contactType,
+                            resultat: resultat,
+                            observacions: observacions,
+                            proxima_accio: proximaAccio,
+                            data_prevista: dataPrevista
+                        }, true)
+                            .then(function () {
+                                closeDialog();
+                            })
+                            .catch(function () {
+                                window.console.log('Error al modificar el contacte.');
+                                closeDialog();
+                            });
+                        return;
+                    }
+
                     request('PUT', '/api/activity/' + state.id, { comentari: explicacion }, true)
                         .then(function () {
                             closeDialog();

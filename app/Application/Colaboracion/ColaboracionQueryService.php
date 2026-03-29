@@ -8,12 +8,17 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Colaboracion;
+use Intranet\Application\Seguimiento\SeguimientoService;
 
 /**
  * Consultes de lectura per al domini de col·laboracions.
  */
 class ColaboracionQueryService
 {
+    public function __construct(private readonly SeguimientoService $seguimientoService)
+    {
+    }
+
     /**
      * @return Collection<int, Colaboracion>
      */
@@ -82,13 +87,8 @@ class ColaboracionQueryService
             return collect();
         }
 
-        return Activity::query()
-            ->modelo('Colaboracion')
-            ->notUpdate()
-            ->ids($colaboraciones->pluck('id')->all())
-            ->orderBy('created_at')
-            ->get()
-            ->groupBy('model_id');
+        return $this->seguimientoService
+            ->groupedActivitiesForColaboraciones($colaboraciones->pluck('id')->all());
     }
 
     /**

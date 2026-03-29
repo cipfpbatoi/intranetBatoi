@@ -35,6 +35,9 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual')->middleware('auth:api,sanctum');
     Route::get('fct/{id}/alFct', 'FctController@llist')->middleware('auth:api,sanctum');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento')->middleware('auth:api,sanctum');
+    Route::post('fct/{id}/telefonico', 'FctController@telefon')->middleware('auth:api,sanctum');
+    Route::get('fct/contact/{id}', 'FctController@showContact')->middleware('auth:api,sanctum');
+    Route::put('fct/contact/{id}', 'FctController@updateContact')->middleware('auth:api,sanctum');
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
     Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
@@ -113,6 +116,9 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::get('/colaboracion/{colaboracion}/switch', 'ColaboracionController@switch')->middleware('auth:api,sanctum');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon')->middleware('auth:api,sanctum');
     Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book')->middleware('auth:api,sanctum');
+    Route::post('/colaboracion/{colaboracion}/contact', 'ColaboracionController@contact')->middleware('auth:api,sanctum');
+    Route::get('/colaboracion/contact/{id}', 'ColaboracionController@showContact')->middleware('auth:api,sanctum');
+    Route::put('/colaboracion/contact/{id}', 'ColaboracionController@updateContact')->middleware('auth:api,sanctum');
 
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec')->middleware('auth:api,sanctum');
     Route::get('/signatura', 'DocumentacionFCTController@signatura')->middleware('auth:api,sanctum');

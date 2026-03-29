@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
@@ -136,12 +137,7 @@ class Colaboracion extends Model
 
     public function getAnotacioAttribute()
     {
-        return Activity::modelo('Colaboracion')
-            ->id($this->id)
-            ->where('action', 'book')
-            ->orderBy('created_at')
-            ->pluck('comentari')
-            ->implode("\n");
+        return app(SeguimientoService::class)->commentLogForColaboracion($this->id, 'book');
     }
     public function getProfesorAttribute()
     {

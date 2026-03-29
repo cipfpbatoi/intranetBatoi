@@ -164,8 +164,8 @@ class PanelColaboracionController extends IntranetController
                     'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe book',
                     'text' => '',
-                    'title' => 'Contacte previ',
-                    'icon' => 'fa-book'
+                    'title' => 'Contacte',
+                    'icon' => 'fa-comments'
                 ]
             )
         );
