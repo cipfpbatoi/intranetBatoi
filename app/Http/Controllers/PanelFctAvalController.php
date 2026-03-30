@@ -135,7 +135,7 @@ class PanelFctAvalController extends IntranetController
             $normativa = $this->resolveNormativa($fct, $grupo);
             $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? 0);
             $requiresProject = false;
-            if ($normativa === 'LOE') {
+            if ($normativa === 'LOE' || $normativa === 'LOGSE') {
                 $requiresProject = $grupo
                     ? (bool) $grupo->proyecto
                     : ($cicloTipo === 2);
@@ -162,6 +162,7 @@ class PanelFctAvalController extends IntranetController
         $elementos = $this->elementos();
         $hasLfp = $elementos->where('normativa', 'LFP')->isNotEmpty();
         $hasLoe = $elementos->where('normativa', 'LOE')->isNotEmpty();
+        $hasLogse = $elementos->where('normativa', 'LOGSE')->isNotEmpty();
 
         $available = [];
         if ($hasLfp) {
@@ -176,6 +177,13 @@ class PanelFctAvalController extends IntranetController
                 'name' => 'LOE',
                 'grid' => AlumnoFctAvalCrudSchema::GRID_FIELDS,
                 'filter' => ['normativa', 'LOE'],
+            ];
+        }
+        if ($hasLogse) {
+            $available[] = [
+                'name' => 'LOGSE',
+                'grid' => AlumnoFctAvalCrudSchema::GRID_FIELDS,
+                'filter' => ['normativa', 'LOGSE'],
             ];
         }
 
@@ -245,9 +253,7 @@ class PanelFctAvalController extends IntranetController
 
         $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
         if (is_string($normativa) && trim($normativa) !== '') {
-            $normativa = strtoupper($normativa);
-            // LOGSE és la llei anterior a LOE; s'avalua de la mateixa manera
-            return $normativa === 'LOGSE' ? 'LOE' : $normativa;
+            return strtoupper($normativa);
         }
 
         if ($grupo && str_contains((string) $grupo->codigo, 'LFP')) {
