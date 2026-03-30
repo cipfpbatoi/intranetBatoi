@@ -19,6 +19,9 @@ use Intranet\Http\Requests\TeacherImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Controlador d'importació individual de professorat i horaris.
+ */
 class TeacherImportController extends Seeder
 {
     use SharedImportFieldTransformers;
@@ -43,6 +46,9 @@ class TeacherImportController extends Seeder
     public function store(Request $request)
     {
         $this->authorizeImportManagement();
+        $request->merge([
+            'idProfesor' => $this->normalizeProfesorId((string) $request->input('idProfesor', '')),
+        ]);
         Validator::make($request->all(), (new TeacherImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
@@ -60,6 +66,9 @@ class TeacherImportController extends Seeder
     public function storeAsync(Request $request, mixed $validatedFile = null)
     {
         $this->authorizeImportManagement();
+        $request->merge([
+            'idProfesor' => $this->normalizeProfesorId((string) $request->input('idProfesor', '')),
+        ]);
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -108,16 +117,18 @@ class TeacherImportController extends Seeder
     public function run($fxml, Request $request)
     {
         $this->authorizeImportManagement(true);
+        $idProfesor = $this->normalizeProfesorId((string) $request->input('idProfesor', ''));
+        $request->merge(['idProfesor' => $idProfesor]);
         $execution = $this->executions();
 
         if ($request->horari) {
-            $execution->clearTeacherHorarios((string) $request->idProfesor, (bool) $request->lost);
+            $execution->clearTeacherHorarios($idProfesor, (bool) $request->lost);
         }
 
         $this->workflows()->executeXmlImportSimple(
             $fxml,
             $this->camposBdXml(),
-            $request->idProfesor,
+            $idProfesor,
             function ($xmltable, $table, $idProfesor) use ($execution, $request): void {
                 $execution->importTable(
                     $xmltable,
@@ -224,6 +235,23 @@ class TeacherImportController extends Seeder
         $mode = (string) $request->input('mode', 'full');
 
         return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
+    }
+
+    /**
+     * Normalitza el camp del professor per a tolerar espais residuals o text afegit.
+     */
+    private function normalizeProfesorId(string $idProfesor): string
+    {
+        $normalized = preg_replace('/\x{00A0}/u', ' ', $idProfesor) ?? $idProfesor;
+        $normalized = trim($normalized);
+
+        if ($normalized === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/u', $normalized);
+
+        return strtoupper((string) ($parts[0] ?? ''));
     }
 
     private function authorizeImportManagement(bool $allowConsole = false): void

@@ -196,6 +196,37 @@ XML;
         $this->assertSame('GUARDIA', $horaris[1]->ocupacion);
     }
 
+    public function test_run_importa_horaris_quan_id_profesor_te_espais_al_final(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0"?>
+<centro codigo="03012165" denominacion="CIPFP BATOI" curso="2025" fechaExportacion="09/09/2025 14:13:17" version="1.0">
+  <docentes/>
+  <horarios_grupo>
+    <horario_grupo dia_semana="L" sesion_orden="1" plantilla="10" docente="021648508B" contenido="M01" grupo="1CFSC" aula="A-213"/>
+  </horarios_grupo>
+  <horarios_ocupaciones>
+    <horario_ocupacion dia_semana="L" sesion_orden="2" plantilla="10" docente="021648508B" ocupacion="GUARDIA"/>
+  </horarios_ocupaciones>
+</centro>
+XML;
+
+        $this->xmlPath = storage_path('teacher_import_run_integration.xml');
+        file_put_contents($this->xmlPath, $xml);
+
+        $controller = app(TeacherImportController::class);
+        $request = Request::create('/teacherImport', 'POST', [
+            'idProfesor' => '021648508B ',
+            'horari' => false,
+            'lost' => false,
+        ]);
+
+        $controller->run($this->xmlPath, $request);
+
+        $horaris = DB::table('horarios')->where('idProfesor', '021648508B')->orderBy('sesion_orden')->get();
+        $this->assertCount(2, $horaris);
+    }
+
     public function test_run_no_importa_horaris_quan_id_profesor_no_coincidix(): void
     {
         $xml = <<<'XML'
