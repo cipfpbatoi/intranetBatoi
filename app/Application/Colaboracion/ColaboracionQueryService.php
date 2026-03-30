@@ -177,6 +177,8 @@ class ColaboracionQueryService
         $colaboracion->estatFitxaClass = $badges->isEmpty() ? 'bg-success' : 'bg-warning text-dark';
         $colaboracion->annexIData = $conveniData?->format('d-m-Y');
         $colaboracion->annexITall = $conveniTall->format('d-m-Y');
+        $colaboracion->proximaAccioText = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Pròxim pas: ');
+        $colaboracion->proximaAccioData = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Data prevista: ');
     }
 
     /**
@@ -216,6 +218,18 @@ class ColaboracionQueryService
         }
 
         return Carbon::parse($rawDate)->startOfDay();
+    }
+
+    private function extractStructuredLine(?string $comment, string $prefix): ?string
+    {
+        foreach (preg_split("/\\r\\n|\\r|\\n/", (string) $comment) ?: [] as $line) {
+            $trimmed = trim($line);
+            if (str_starts_with($trimmed, $prefix)) {
+                return trim(substr($trimmed, strlen($prefix)));
+            }
+        }
+
+        return null;
     }
 
     private function annexICutoffDate(): Carbon

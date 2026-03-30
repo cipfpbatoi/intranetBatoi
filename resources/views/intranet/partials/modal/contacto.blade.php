@@ -14,8 +14,8 @@
         </div>
 
         <div class="form-group">
-            <label class="control-label" for="resultat">Resultat</label>
-            <input id="resultat" name="resultat" type="text" class="form-control" placeholder="Ex. Contactat, pendent de resposta, visita acordada">
+            <label class="control-label" for="resultat">Resultat del contacte</label>
+            <select id="resultat" name="resultat" class="form-control"></select>
         </div>
 
         <div class="form-group">
@@ -25,7 +25,7 @@
 
         <div class="form-group">
             <label class="control-label" for="proxima_accio">Pròxim pas</label>
-            <input id="proxima_accio" name="proxima_accio" type="text" class="form-control" placeholder="Ex. Tornar a telefonar, enviar Annex I">
+            <input id="proxima_accio" name="proxima_accio" type="text" class="form-control" placeholder="Ex. Tornar a telefonar dimarts, enviar Annex I">
         </div>
 
         <div class="form-group">

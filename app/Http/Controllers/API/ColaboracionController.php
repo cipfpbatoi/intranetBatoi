@@ -334,6 +334,7 @@ class ColaboracionController extends ApiResourceController
             'data_prevista' => $parsedComment['data_prevista'],
             'document' => $document,
             'comentari' => $comment,
+            'created_at' => $activity?->created_at?->toISOString() ?? $seguimiento?->contacted_at?->toISOString(),
         ];
     }
 
