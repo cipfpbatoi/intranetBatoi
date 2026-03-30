@@ -114,6 +114,10 @@ class TeacherImportController extends Seeder
         return view('seeder.store', ['importRunId' => $importRun->id]);
     }
 
+    /**
+     * Executa la importació individual de professorat i, si cal, la
+     * substitució segura del seu horari.
+     */
     public function run($fxml, Request $request)
     {
         $this->authorizeImportManagement(true);
@@ -122,7 +126,7 @@ class TeacherImportController extends Seeder
         $execution = $this->executions();
 
         if ($request->horari) {
-            $execution->clearTeacherHorarios($idProfesor, (bool) $request->lost);
+            $execution->prepareTeacherHorarios($idProfesor, (bool) $request->lost);
         }
 
         $this->workflows()->executeXmlImportSimple(
@@ -141,6 +145,10 @@ class TeacherImportController extends Seeder
                 );
             }
         );
+
+        if ($request->horari) {
+            $execution->finalizeTeacherHorarios();
+        }
     }
 
     private function sacaCampos($atrxml, $llave, $func = 1)

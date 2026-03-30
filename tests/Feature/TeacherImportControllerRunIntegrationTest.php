@@ -257,7 +257,7 @@ XML;
         $this->assertSame(0, DB::table('horarios')->count());
     }
 
-    public function test_run_horari_true_lost_false_usa_plantilla_global_i_pot_bloquejar_import(): void
+    public function test_run_horari_true_lost_false_usa_la_plantilla_del_professor_en_import_individual(): void
     {
         DB::table('horarios')->insert([
             [
@@ -308,7 +308,10 @@ XML;
 
         $controller->run($this->xmlPath, $request);
 
-        $this->assertSame(0, DB::table('horarios')->where('idProfesor', '021648508B')->count());
+        $importat = DB::table('horarios')->where('idProfesor', '021648508B')->first();
+        $this->assertNotNull($importat);
+        $this->assertSame(10, (int) $importat->plantilla);
+        $this->assertSame('M01', $importat->modulo);
         $this->assertSame(1, DB::table('horarios')->where('idProfesor', '99999999Z')->count());
     }
 
@@ -368,6 +371,49 @@ XML;
         $this->assertSame(10, (int) $importat->plantilla);
         $this->assertSame('M01', $importat->modulo);
         $this->assertSame(1, DB::table('horarios')->where('idProfesor', '99999999Z')->count());
+    }
+
+    public function test_run_horari_true_preserva_l_horari_actual_si_el_fitxer_no_te_files_del_professor(): void
+    {
+        DB::table('horarios')->insert([
+            'idProfesor' => '021648508B',
+            'dia_semana' => 'L',
+            'sesion_orden' => 1,
+            'plantilla' => 5,
+            'modulo' => 'OLD1',
+            'idGrupo' => 'G1',
+            'aula' => 'A-101',
+            'ocupacion' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $xml = <<<'XML'
+<?xml version="1.0"?>
+<centro codigo="03012165" denominacion="CIPFP BATOI" curso="2025" fechaExportacion="09/09/2025 14:13:17" version="1.0">
+  <docentes/>
+  <horarios_grupo>
+    <horario_grupo dia_semana="L" sesion_orden="1" plantilla="10" docente="99999999Z" contenido="M99" grupo="9CFSC" aula="A-999"/>
+  </horarios_grupo>
+</centro>
+XML;
+
+        $this->xmlPath = storage_path('teacher_import_run_integration.xml');
+        file_put_contents($this->xmlPath, $xml);
+
+        $controller = app(TeacherImportController::class);
+        $request = Request::create('/teacherImport', 'POST', [
+            'idProfesor' => '021648508B',
+            'horari' => true,
+            'lost' => false,
+        ]);
+
+        $controller->run($this->xmlPath, $request);
+
+        $horaris = DB::table('horarios')->where('idProfesor', '021648508B')->get();
+        $this->assertCount(1, $horaris);
+        $this->assertSame('OLD1', $horaris[0]->modulo);
+        $this->assertSame(5, (int) $horaris[0]->plantilla);
     }
 
     private function createSchema(): void
