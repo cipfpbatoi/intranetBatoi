@@ -84,16 +84,38 @@
                 </ul>
 
                 @if ($ultimContacte)
-                    <p class="small text-muted mb-2">
+                    <p class="small text-muted mb-2 js-last-contact-row">
                         <strong>Últim contacte:</strong>
-                        {{ $ultimContacte->created_at?->format('d/m/Y H:i') }}
+                        <span class="js-last-contact-value">{{ $ultimContacte->created_at?->format('d/m/Y H:i') }}</span>
                         @if ($diesSenseContacte !== null)
-                            · fa {{ $diesSenseContacte }} dia(es)
+                            <span class="js-last-contact-days">· fa {{ $diesSenseContacte }} dia(es)</span>
+                        @else
+                            <span class="js-last-contact-days"></span>
                         @endif
                     </p>
                 @else
-                    <p class="small text-danger mb-2">
-                        <strong>Últim contacte:</strong> Sense cap contacte registrat
+                    <p class="small text-danger mb-2 js-last-contact-row">
+                        <strong>Últim contacte:</strong>
+                        <span class="js-last-contact-value">Sense cap contacte registrat</span>
+                        <span class="js-last-contact-days"></span>
+                    </p>
+                @endif
+
+                @if (!empty($elemento->proximaAccioText))
+                    <p class="small text-info mb-2 js-next-step-row">
+                        <strong>Pròxim pas:</strong>
+                        <span class="js-next-step-value">{{ $elemento->proximaAccioText }}</span>
+                        @if (!empty($elemento->proximaAccioData))
+                            <span class="js-next-step-date">· {{ $elemento->proximaAccioData }}</span>
+                        @else
+                            <span class="js-next-step-date"></span>
+                        @endif
+                    </p>
+                @else
+                    <p class="small text-info mb-2 js-next-step-row" style="display:none;">
+                        <strong>Pròxim pas:</strong>
+                        <span class="js-next-step-value"></span>
+                        <span class="js-next-step-date"></span>
                     </p>
                 @endif
 
@@ -199,7 +221,7 @@
                     <x-activity :activity="$contacto" />
                     <br/>
                 @empty
-                    <p class="small text-muted">Sense activitat recent</p>
+                    <p class="small text-muted js-empty-activity">Sense activitat recent</p>
                 @endforelse
             </div>
             @if($relacionadas->isNotEmpty())

@@ -9,6 +9,39 @@
         contactType: null
     };
 
+    var CONTACT_RESULTS = {
+        telefonada: [
+            'Contactat',
+            'No contesta',
+            'Pendent de resposta',
+            'Tornar a telefonar'
+        ],
+        correu: [
+            'Correu enviat',
+            'Resposta rebuda',
+            'Pendent de resposta',
+            'Cal reenviar'
+        ],
+        visita: [
+            'Visita acordada',
+            'Visita realitzada',
+            'Pendent de concretar',
+            'Visita ajornada'
+        ],
+        reunio: [
+            'Reunió acordada',
+            'Reunió realitzada',
+            'Pendent de convocar',
+            'Reunió ajornada'
+        ],
+        seguiment: [
+            'Seguiment fet',
+            'Pendent de resposta',
+            'Cal tornar a contactar',
+            'Tancat'
+        ]
+    };
+
     var MAX_RETRIES = 40;
     var RETRY_DELAY_MS = 250;
 
@@ -289,6 +322,42 @@
         if (select) {
             select.value = contactType || 'telefonada';
         }
+        setResultOptions(contactType || 'telefonada');
+    }
+
+    function setResultOptions(contactType, selectedValue) {
+        var select = document.getElementById('resultat');
+        var options = CONTACT_RESULTS[contactType] || [];
+        var resolvedSelectedValue = trim(selectedValue);
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '';
+
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Selecciona resultat';
+        placeholder.disabled = true;
+        placeholder.selected = resolvedSelectedValue === '';
+        select.appendChild(placeholder);
+
+        options.forEach(function (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            option.selected = value === resolvedSelectedValue;
+            select.appendChild(option);
+        });
+
+        if (resolvedSelectedValue !== '' && options.indexOf(resolvedSelectedValue) === -1) {
+            var customOption = document.createElement('option');
+            customOption.value = resolvedSelectedValue;
+            customOption.textContent = resolvedSelectedValue;
+            customOption.selected = true;
+            select.appendChild(customOption);
+        }
     }
 
     function fillContactDialog(contact) {
@@ -300,6 +369,7 @@
         if (formDialogo.contact_type) {
             formDialogo.contact_type.value = contact.contact_type || 'telefonada';
         }
+        setResultOptions(contact.contact_type || 'telefonada', contact.resultat || '');
         if (formDialogo.resultat) {
             formDialogo.resultat.value = contact.resultat || '';
         }
@@ -340,6 +410,11 @@
             return;
         }
 
+        var emptyState = list.querySelector('.js-empty-activity');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
         var icon = 'book';
         var label = activity.document || '';
         var createdAt = activity.created_at || '';
@@ -366,6 +441,67 @@
         if (lastLink) {
             configureDraggable(lastLink);
         }
+    }
+
+    function formatContactDate(dateValue) {
+        if (!dateValue) {
+            return '';
+        }
+
+        var date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+            return String(dateValue);
+        }
+
+        return date.toLocaleString('ca-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function updateCardLastContact(list, activity) {
+        var card = list ? list.closest('.profile_view') : null;
+        var row = card ? card.querySelector('.js-last-contact-row') : null;
+        var value = row ? row.querySelector('.js-last-contact-value') : null;
+        var days = row ? row.querySelector('.js-last-contact-days') : null;
+
+        if (!row || !value) {
+            return;
+        }
+
+        row.classList.remove('text-danger');
+        row.classList.add('text-muted');
+        value.textContent = formatContactDate(activity.created_at || new Date().toISOString());
+        if (days) {
+            days.textContent = '· fa 0 dia(es)';
+        }
+    }
+
+    function updateCardNextStep(list, activity) {
+        var card = list ? list.closest('.profile_view') : null;
+        var row = card ? card.querySelector('.js-next-step-row') : null;
+        var value = row ? row.querySelector('.js-next-step-value') : null;
+        var date = row ? row.querySelector('.js-next-step-date') : null;
+        var nextStep = trim(activity.proxima_accio);
+        var plannedDate = trim(activity.data_prevista);
+
+        if (!row || !value || !date) {
+            return;
+        }
+
+        if (nextStep === '') {
+            row.style.display = 'none';
+            value.textContent = '';
+            date.textContent = '';
+            return;
+        }
+
+        row.style.display = '';
+        value.textContent = nextStep;
+        date.textContent = plannedDate ? ('· ' + plannedDate) : '';
     }
 
     function configureDraggable(item) {
@@ -565,21 +701,10 @@
                         if (result && result.data) {
                             fillContactDialog(result.data);
                         }
+                        openDialog();
                     })
                     .catch(function () {
-                        return request('GET', '/api/activity/' + state.id, {}, true)
-                            .then(function (result) {
-                                var explicacion = document.querySelector('#dialogo #explicacion');
-                                if (explicacion && result && result.data) {
-                                    explicacion.value = result.data.comentari || '';
-                                }
-                            })
-                            .catch(function () {
-                                window.console.log('Error al carregar el contacte.');
-                            });
-                    })
-                    .finally(function () {
-                        openDialog();
+                        window.console.log('Error al carregar el contacte.');
                     });
                 return;
             }
@@ -642,9 +767,14 @@
 
         var formDialogo = document.getElementById('formDialogo');
         if (formDialogo) {
+            if (formDialogo.contact_type) {
+                formDialogo.contact_type.addEventListener('change', function () {
+                    setResultOptions(this.value || 'telefonada');
+                });
+            }
+
             formDialogo.addEventListener('submit', function (event) {
                 event.preventDefault();
-                var explicacion = formDialogo.explicacion ? formDialogo.explicacion.value : '';
                 var contactType = formDialogo.contact_type ? formDialogo.contact_type.value : (state.contactType || 'telefonada');
                 var resultat = formDialogo.resultat ? formDialogo.resultat.value : '';
                 var observacions = formDialogo.observacions ? formDialogo.observacions.value : '';
@@ -661,36 +791,12 @@
                     }, true)
                         .then(function (result) {
                             appendStructuredActivity(state.list, result.data);
+                            updateCardLastContact(state.list, result.data);
+                            updateCardNextStep(state.list, result.data);
                             closeDialog();
                         })
                         .catch(function () {
                             window.console.log('No s\'ha pogut guardar el contacte.');
-                            closeDialog();
-                        });
-                    return;
-                }
-
-                if (state.tipo === 'book') {
-                    request('POST', '/api/colaboracion/' + state.col + '/book', { explicacion: explicacion }, true)
-                        .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-book');
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Només es pot un per dia');
-                            closeDialog();
-                        });
-                    return;
-                }
-
-                if (state.tipo === 'telefonico') {
-                    request('POST', '/api/colaboracion/' + state.id + '/telefonico', { explicacion: explicacion }, true)
-                        .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-phone');
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Només es pot un per dia');
                             closeDialog();
                         });
                     return;
@@ -714,15 +820,6 @@
                             });
                         return;
                     }
-
-                    request('PUT', '/api/activity/' + state.id, { comentari: explicacion }, true)
-                        .then(function () {
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Error al modificar');
-                            closeDialog();
-                        });
                 }
             });
         }
