@@ -31,3 +31,6 @@ yarn-error.log
 /public/js/ppIntranet.js.LICENSE.txt
 /public/mix-manifest.json
 /tests/Browser/screenshots/failure-Tests_*
+
+# Claude Code (configuració local per programador)
+.claude/

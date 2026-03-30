@@ -4,10 +4,12 @@ on:
   pull_request:
     branches:
       - Laravel12
+      - Laravel13
       - master
   push:
     branches:
       - Laravel12
+      - Laravel13
 
 jobs:
   feature-tests:
