@@ -60,7 +60,7 @@ class RecipientResolver
         [$id, $contactInfo] = array_pad(explode('(', $element, 2), 2, null);
         $id = trim($id);
 
-        if (!is_numeric($id)) {
+        if ($id === '') {
             return null;
         }
 

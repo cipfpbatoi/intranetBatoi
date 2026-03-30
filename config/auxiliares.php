@@ -101,7 +101,11 @@ return [
         'Actividad'=>'Activitats',
         'Fct'=>'Fct x Tutor',
         'AlumnoFct'=> 'Fct x Alumno'],
-    'collectMailable' => ['InstructoresAll'=> 'Tots els instructors','AlumnosAll' => 'Alumnat'],
+    'collectMailable' => [
+        'InstructoresAll' => 'Tots els instructors',
+        'InstructoresInformatica' => 'Instructors d\'informàtica amb FCT (DAW, DAM i ASIX)',
+        'AlumnosAll' => 'Alumnat',
+    ],
 
     'notas' => [
         0=>'No Avaluat',
@@ -157,4 +161,3 @@ return [
         5 => 'Formación en empresa intensiva',
      ],
 ];
-
