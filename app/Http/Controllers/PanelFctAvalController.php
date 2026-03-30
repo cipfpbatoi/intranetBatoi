@@ -245,7 +245,9 @@ class PanelFctAvalController extends IntranetController
 
         $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
         if (is_string($normativa) && trim($normativa) !== '') {
-            return strtoupper($normativa);
+            $normativa = strtoupper($normativa);
+            // LOGSE és la llei anterior a LOE; s'avalua de la mateixa manera
+            return $normativa === 'LOGSE' ? 'LOE' : $normativa;
         }
 
         if ($grupo && str_contains((string) $grupo->codigo, 'LFP')) {
