@@ -552,7 +552,7 @@ class PanelFctAvalController extends IntranetController
      */
     private function setActaB(): void
     {
-        if ($this->elementos()->where('normativa', 'LOE')->isEmpty()) {
+        if ($this->elementos()->whereIn('normativa', ['LOE', 'LOGSE'])->isEmpty()) {
             return;
         }
 
