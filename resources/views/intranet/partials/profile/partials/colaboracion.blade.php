@@ -45,7 +45,9 @@
      data-has-instructor="{{ !empty($elemento->hasInstructor) ? '1' : '0' }}"
      data-conveni-pendent="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
      data-days-without-contact="{{ $diesSenseContacte ?? '' }}"
-     data-priority-score="{{ (int) ($elemento->prioritatFitxa ?? 0) }}">
+     data-priority-score="{{ (int) ($elemento->prioritatFitxa ?? 0) }}"
+     data-followup-status="{{ $elemento->seguimentEstatKey ?? 'sense_seguiment' }}"
+     data-followup-urgency="{{ $elemento->seguimentUrgenciaKey ?? 'cap' }}">
     <div id="{{$elemento->id}}" class="well profile_view"
          @if ($elemento->estado == 3) style='border-color: #90111a;border-width: medium' @endif
     >
@@ -64,6 +66,16 @@
                     <span class="badge {{ $elemento->estatFitxaClass ?? 'bg-secondary' }}">
                         {{ $elemento->estatFitxaLabel ?? 'Fitxa' }}
                     </span>
+                    <span class="badge {{ $elemento->seguimentEstatClass ?? 'bg-secondary' }} js-followup-status-badge">
+                        {{ $elemento->seguimentEstatLabel ?? 'Sense seguiment' }}
+                    </span>
+                    @if (!empty($elemento->seguimentUrgenciaLabel))
+                        <span class="badge {{ $elemento->seguimentUrgenciaClass ?? 'bg-secondary' }} js-followup-urgency-badge">
+                            {{ $elemento->seguimentUrgenciaLabel }}
+                        </span>
+                    @else
+                        <span class="badge js-followup-urgency-badge" style="display:none;"></span>
+                    @endif
                 </p>
 
                 @if ($fitxaBadges->isNotEmpty())

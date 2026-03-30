@@ -179,6 +179,20 @@ class ColaboracionQueryService
         $colaboracion->annexITall = $conveniTall->format('d-m-Y');
         $colaboracion->proximaAccioText = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Pròxim pas: ');
         $colaboracion->proximaAccioData = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Data prevista: ');
+
+        $seguiment = $this->resolveFollowUpState(
+            $colaboracion->ultimaActividad,
+            $colaboracion->proximaAccioText,
+            $colaboracion->proximaAccioData
+        );
+
+        $colaboracion->seguimentEstatKey = $seguiment['status_key'];
+        $colaboracion->seguimentEstatLabel = $seguiment['status_label'];
+        $colaboracion->seguimentEstatClass = $seguiment['status_class'];
+        $colaboracion->seguimentUrgenciaKey = $seguiment['urgency_key'];
+        $colaboracion->seguimentUrgenciaLabel = $seguiment['urgency_label'];
+        $colaboracion->seguimentUrgenciaClass = $seguiment['urgency_class'];
+        $colaboracion->teProximaAccio = !empty($colaboracion->proximaAccioText);
     }
 
     /**
@@ -235,5 +249,103 @@ class ColaboracionQueryService
     private function annexICutoffDate(): Carbon
     {
         return Carbon::create(2024, 1, 1)->startOfDay();
+    }
+
+    /**
+     * @return array{
+     *   status_key:string,
+     *   status_label:string,
+     *   status_class:string,
+     *   urgency_key:string,
+     *   urgency_label:?string,
+     *   urgency_class:string
+     * }
+     */
+    private function resolveFollowUpState(?Activity $ultimaActividad, ?string $proximaAccio, ?string $dataPrevista): array
+    {
+        $today = Carbon::today();
+        $plannedDate = $this->parsePlannedDate($dataPrevista);
+        $resultat = $this->normalizeResult($ultimaActividad?->document ?? '');
+
+        $statusKey = 'sense_seguiment';
+        $statusLabel = 'Sense seguiment';
+        $statusClass = 'bg-secondary';
+
+        if ($ultimaActividad !== null) {
+            $statusKey = 'tancat';
+            $statusLabel = 'Tancat';
+            $statusClass = 'bg-success';
+
+            if (str_contains($resultat, 'pendent de resposta')) {
+                $statusKey = 'pendent_resposta';
+                $statusLabel = 'Pendent de resposta';
+                $statusClass = 'bg-warning text-dark';
+            } elseif (!empty($proximaAccio)) {
+                $statusKey = 'en_curs';
+                $statusLabel = 'En curs';
+                $statusClass = 'bg-info text-dark';
+            } elseif (
+                str_contains($resultat, 'tancat')
+                || str_contains($resultat, 'seguiment fet')
+                || str_contains($resultat, 'resposta rebuda')
+                || str_contains($resultat, 'visita realitzada')
+                || str_contains($resultat, 'reunió realitzada')
+                || str_contains($resultat, 'contactat')
+            ) {
+                $statusKey = 'tancat';
+                $statusLabel = 'Tancat';
+                $statusClass = 'bg-success';
+            }
+        }
+
+        $urgencyKey = 'cap';
+        $urgencyLabel = null;
+        $urgencyClass = 'bg-secondary';
+
+        if ($plannedDate !== null) {
+            if ($plannedDate->lt($today)) {
+                $urgencyKey = 'vençut';
+                $urgencyLabel = 'Vençut';
+                $urgencyClass = 'bg-danger';
+            } elseif ($plannedDate->lte($today->copy()->addDays(7))) {
+                $urgencyKey = 'esta_setmana';
+                $urgencyLabel = 'Esta setmana';
+                $urgencyClass = 'bg-warning text-dark';
+            }
+        }
+
+        return [
+            'status_key' => $statusKey,
+            'status_label' => $statusLabel,
+            'status_class' => $statusClass,
+            'urgency_key' => $urgencyKey,
+            'urgency_label' => $urgencyLabel,
+            'urgency_class' => $urgencyClass,
+        ];
+    }
+
+    private function parsePlannedDate(?string $date): ?Carbon
+    {
+        if (trim((string) $date) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($date)->startOfDay();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function normalizeResult(string $document): string
+    {
+        return mb_strtolower($this->extractResultFromDocument($document));
+    }
+
+    private function extractResultFromDocument(string $document): string
+    {
+        $parts = explode('·', $document, 2);
+
+        return isset($parts[1]) ? trim($parts[1]) : trim($document);
     }
 }

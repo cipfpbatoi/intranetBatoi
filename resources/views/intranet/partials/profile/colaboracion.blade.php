@@ -14,7 +14,20 @@
     $filterId = 'mis-colaboraciones-town-filter-' . $tabName;
     $quickFilterId = 'mis-colaboraciones-quick-filters-' . $tabName;
     $sortId = 'mis-colaboraciones-sort-' . $tabName;
+    $seguimentSummary = [
+        'vençuts' => $elementos->where('seguimentUrgenciaKey', 'vençut')->count(),
+        'estaSetmana' => $elementos->where('seguimentUrgenciaKey', 'esta_setmana')->count(),
+        'pendentResposta' => $elementos->where('seguimentEstatKey', 'pendent_resposta')->count(),
+    ];
 @endphp
+
+<div class="col-xs-12 mb-3">
+    <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-danger">Vençuts: {{ $seguimentSummary['vençuts'] }}</span>
+        <span class="badge bg-warning text-dark">Esta setmana: {{ $seguimentSummary['estaSetmana'] }}</span>
+        <span class="badge bg-info text-dark">Pendents de resposta: {{ $seguimentSummary['pendentResposta'] }}</span>
+    </div>
+</div>
 
 <div class="col-xs-12 mb-3">
     <div class="d-flex flex-wrap align-items-end" style="gap: 12px;">
@@ -71,6 +84,18 @@
         <label class="btn btn-default btn-sm mb-1">
             <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-agreement">
             Conveni pendent
+        </label>
+        <label class="btn btn-default btn-sm mb-1">
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-response">
+            Esperant resposta
+        </label>
+        <label class="btn btn-default btn-sm mb-1">
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="overdue-followup">
+            Acció vençuda
+        </label>
+        <label class="btn btn-default btn-sm mb-1">
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="this-week-followup">
+            Acció esta setmana
         </label>
     </div>
 </div>
@@ -133,6 +158,12 @@
                             return card.getAttribute('data-has-instructor') !== '1';
                         case 'pending-agreement':
                             return card.getAttribute('data-conveni-pendent') === '1';
+                        case 'pending-response':
+                            return card.getAttribute('data-followup-status') === 'pendent_resposta';
+                        case 'overdue-followup':
+                            return card.getAttribute('data-followup-urgency') === 'vençut';
+                        case 'this-week-followup':
+                            return card.getAttribute('data-followup-urgency') === 'esta_setmana';
                         default:
                             return true;
                     }

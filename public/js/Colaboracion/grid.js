@@ -504,6 +504,126 @@
         date.textContent = plannedDate ? ('· ' + plannedDate) : '';
     }
 
+    function parseDateOnly(dateValue) {
+        if (!dateValue) {
+            return null;
+        }
+
+        var parsed = new Date(dateValue);
+        if (Number.isNaN(parsed.getTime())) {
+            return null;
+        }
+
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+    }
+
+    function resolveFollowupState(activity) {
+        var result = trim(activity.resultat).toLowerCase();
+        var nextStep = trim(activity.proxima_accio);
+        var plannedDate = parseDateOnly(activity.data_prevista);
+        var today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        var status = {
+            key: 'sense_seguiment',
+            label: 'Sense seguiment',
+            className: 'bg-secondary'
+        };
+        var urgency = {
+            key: 'cap',
+            label: '',
+            className: 'bg-secondary'
+        };
+
+        if (activity.created_at) {
+            status = {
+                key: 'tancat',
+                label: 'Tancat',
+                className: 'bg-success'
+            };
+
+            if (result.indexOf('pendent de resposta') !== -1) {
+                status = {
+                    key: 'pendent_resposta',
+                    label: 'Pendent de resposta',
+                    className: 'bg-warning text-dark'
+                };
+            } else if (nextStep !== '') {
+                status = {
+                    key: 'en_curs',
+                    label: 'En curs',
+                    className: 'bg-info text-dark'
+                };
+            } else if (
+                result.indexOf('tancat') !== -1
+                || result.indexOf('seguiment fet') !== -1
+                || result.indexOf('resposta rebuda') !== -1
+                || result.indexOf('visita realitzada') !== -1
+                || result.indexOf('reunió realitzada') !== -1
+                || result.indexOf('contactat') !== -1
+            ) {
+                status = {
+                    key: 'tancat',
+                    label: 'Tancat',
+                    className: 'bg-success'
+                };
+            }
+        }
+
+        if (plannedDate) {
+            var thisWeek = new Date(today);
+            thisWeek.setDate(thisWeek.getDate() + 7);
+
+            if (plannedDate < today) {
+                urgency = {
+                    key: 'vençut',
+                    label: 'Vençut',
+                    className: 'bg-danger'
+                };
+            } else if (plannedDate <= thisWeek) {
+                urgency = {
+                    key: 'esta_setmana',
+                    label: 'Esta setmana',
+                    className: 'bg-warning text-dark'
+                };
+            }
+        }
+
+        return {
+            status: status,
+            urgency: urgency
+        };
+    }
+
+    function updateCardFollowupBadges(list, activity) {
+        var card = list ? list.closest('.mis-colaboraciones-card') : null;
+        var statusBadge = card ? card.querySelector('.js-followup-status-badge') : null;
+        var urgencyBadge = card ? card.querySelector('.js-followup-urgency-badge') : null;
+        var state = resolveFollowupState(activity);
+
+        if (!card || !statusBadge || !urgencyBadge) {
+            return;
+        }
+
+        card.setAttribute('data-followup-status', state.status.key);
+        card.setAttribute('data-followup-urgency', state.urgency.key);
+
+        statusBadge.className = 'badge ' + state.status.className + ' js-followup-status-badge';
+        statusBadge.textContent = state.status.label;
+
+        if (state.urgency.label) {
+            urgencyBadge.style.display = '';
+            urgencyBadge.className = 'badge ' + state.urgency.className + ' js-followup-urgency-badge';
+            urgencyBadge.textContent = state.urgency.label;
+        } else {
+            urgencyBadge.style.display = 'none';
+            urgencyBadge.className = 'badge js-followup-urgency-badge';
+            urgencyBadge.textContent = '';
+        }
+    }
+
     function configureDraggable(item) {
         if (!item) {
             return;
@@ -793,6 +913,7 @@
                             appendStructuredActivity(state.list, result.data);
                             updateCardLastContact(state.list, result.data);
                             updateCardNextStep(state.list, result.data);
+                            updateCardFollowupBadges(state.list, result.data);
                             closeDialog();
                         })
                         .catch(function () {
