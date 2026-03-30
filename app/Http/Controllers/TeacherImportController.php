@@ -4,7 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -57,6 +59,10 @@ class TeacherImportController extends Seeder
         }
 
         $mode = $this->resolveImportMode($request);
+        Log::info('TeacherImportController@store', $this->importLogContext($request, [
+            'mode' => $mode,
+            'has_file' => $file !== null,
+        ]));
         if ($mode === 'create_only') {
             return $this->executeSyncImport($file, $request);
         }
@@ -77,11 +83,21 @@ class TeacherImportController extends Seeder
         }
 
         $mode = $this->resolveImportMode($request);
+        $hasImportRunsTable = Schema::hasTable('import_runs');
+        Log::info('TeacherImportController@storeAsync', $this->importLogContext($request, [
+            'mode' => $mode,
+            'has_import_runs_table' => $hasImportRunsTable,
+            'queue_default' => (string) config('queue.default', 'sync'),
+            'jobs_table_exists' => Schema::hasTable((string) config('queue.connections.database.table', 'jobs')),
+        ]));
+
         if ($mode === 'create_only') {
             return $this->executeSyncImport($file, $request);
         }
 
-        if (!Schema::hasTable('import_runs')) {
+        if (!$hasImportRunsTable) {
+            Log::warning('TeacherImportController falls back to sync because import_runs table is not visible.', $this->importLogContext($request));
+            Alert::warning("No existeix la taula import_runs. L'import s'executarà en mode sincrònic i no quedarà registrat en l'historial.");
             return $this->executeSyncImport($file, $request);
         }
 
@@ -104,14 +120,27 @@ class TeacherImportController extends Seeder
             'progress' => 0,
             'message' => 'Importació professorat en cua',
         ]);
+        Log::info('TeacherImportController created import run.', $this->importLogContext($request, [
+            'import_run_id' => $importRun->id,
+            'stored_path' => $storedPath,
+        ]));
 
-        if (config('queue.default') === 'database' && !Schema::hasTable((string) config('queue.connections.database.table', 'jobs'))) {
+        $dispatchSync = $this->shouldDispatchImportSync();
+        if ($dispatchSync) {
             RunImportJob::dispatchSync($importRun->id);
         } else {
             RunImportJob::dispatch($importRun->id);
         }
+        Log::info('TeacherImportController dispatched import job.', $this->importLogContext($request, [
+            'import_run_id' => $importRun->id,
+            'dispatch_sync' => $dispatchSync,
+        ]));
 
-        Alert::info('Importació professorat encolada. ID: ' . $importRun->id);
+        if ($dispatchSync) {
+            Alert::info('Importació professorat executada en esta petició. ID: ' . $importRun->id);
+        } else {
+            Alert::info('Importació professorat encolada. ID: ' . $importRun->id);
+        }
 
         return view('seeder.store', ['importRunId' => $importRun->id]);
     }
@@ -238,6 +267,12 @@ class TeacherImportController extends Seeder
 
     private function executeSyncImport(mixed $file, Request $request)
     {
+        Log::info('TeacherImportController executing sync import.', $this->importLogContext($request, [
+            'mode' => $this->resolveImportMode($request),
+            'idProfesor' => (string) $request->input('idProfesor', ''),
+            'horari' => (bool) $request->boolean('horari'),
+            'lost' => (bool) $request->boolean('lost'),
+        ]));
         $this->imports()->runWithExtendedTimeout(function ($importFile, $importRequest): void {
             $this->run($importFile, $importRequest);
         }, $file, $request);
@@ -278,6 +313,45 @@ class TeacherImportController extends Seeder
             'horari' => $request->boolean('horari'),
             'lost' => $request->boolean('lost'),
         ]);
+    }
+
+    /**
+     * En local, si la cua usa base de dades, executem el job al moment per a
+     * no dependre d'un worker separat que pot no existir en Docker.
+     */
+    private function shouldDispatchImportSync(): bool
+    {
+        $defaultQueue = (string) config('queue.default', 'sync');
+        if ($defaultQueue === 'sync') {
+            return true;
+        }
+
+        if ($defaultQueue !== 'database') {
+            return false;
+        }
+
+        $jobsTable = (string) config('queue.connections.database.table', 'jobs');
+        if (!Schema::hasTable($jobsTable)) {
+            return true;
+        }
+
+        return app()->environment('local');
+    }
+
+    /**
+     * @param array<string, mixed> $extra
+     * @return array<string, mixed>
+     */
+    private function importLogContext(Request $request, array $extra = []): array
+    {
+        return array_merge([
+            'request_mode' => (string) $request->input('mode', ''),
+            'request_id_profesor' => (string) $request->input('idProfesor', ''),
+            'request_horari' => $request->input('horari'),
+            'request_lost' => $request->input('lost'),
+            'database' => DB::connection()->getDatabaseName(),
+            'app_env' => app()->environment(),
+        ], $extra);
     }
 
     private function authorizeImportManagement(bool $allowConsole = false): void
