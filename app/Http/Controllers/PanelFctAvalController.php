@@ -520,10 +520,10 @@ class PanelFctAvalController extends IntranetController
         Gate::authorize('requestActa', Fct::class);
         $grupos = $this->grupos()
             ->qTutor(AuthUser()->dni)
-            ->filter(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto)
+            ->filter(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto || $grupo->Ciclo?->normativa === 'LOGSE')
             ->values();
         if ($grupos->isEmpty()) {
-            Alert::message('No tens grups amb projecte assignats', 'warning');
+            Alert::message('No tens grups per sol·licitar acta', 'warning');
             return back();
         }
 
@@ -557,13 +557,15 @@ class PanelFctAvalController extends IntranetController
         }
 
         $grupos = $this->grupos()->qTutor(AuthUser()->dni);
-        $grupoConProyecto = $grupos->first(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto);
+        $gruposConActa = $grupos->filter(
+            static fn (Grupo $grupo): bool => (bool) $grupo->proyecto || $grupo->Ciclo?->normativa === 'LOGSE'
+        );
 
-        if (!$grupoConProyecto) {
+        if ($gruposConActa->isEmpty()) {
             return;
         }
 
-        $pendiente = $grupos->first(static fn (Grupo $grupo): bool => (bool) ($grupo->proyecto && $grupo->acta_pendiente));
+        $pendiente = $gruposConActa->first(static fn (Grupo $grupo): bool => (bool) $grupo->acta_pendiente);
         if ($pendiente) {
             Alert::message("L'acta pendent esta en procés", 'info');
             return;
