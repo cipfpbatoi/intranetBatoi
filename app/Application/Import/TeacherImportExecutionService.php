@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Import;
 
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -29,6 +30,7 @@ class TeacherImportExecutionService
 
     private int $matchedHorarioRows = 0;
     private int $skippedHorarioRows = 0;
+    private ?string $statusMessage = null;
 
     public function __construct(
         private readonly HorarioService $horarioService,
@@ -45,11 +47,12 @@ class TeacherImportExecutionService
     public function prepareTeacherHorarios(string $idProfesor, bool $lost = false): void
     {
         $this->replaceTeacherHorarios = true;
-        $this->targetProfesor = $idProfesor;
+        $this->targetProfesor = $this->normalizeProfesorIdentifier($idProfesor);
         $this->pendingHorarios = [];
         $this->matchedHorarioRows = 0;
         $this->skippedHorarioRows = 0;
-        $this->plantilla = $this->resolveTeacherPlantilla($idProfesor, $lost);
+        $this->statusMessage = null;
+        $this->plantilla = $this->resolveTeacherPlantilla($this->targetProfesor, $lost);
     }
 
     /**
@@ -75,9 +78,27 @@ class TeacherImportExecutionService
                     $this->persistHorario($horario);
                 }
             });
+
+            $this->statusMessage = sprintf(
+                "Horari actualitzat per al professor %s (%d registres).",
+                $this->targetProfesor,
+                count($this->pendingHorarios)
+            );
+            Log::info($this->statusMessage, $this->horarioStatusContext());
         } finally {
             $this->resetHorarioReplacementState();
         }
+    }
+
+    /**
+     * Retorna l'últim missatge funcional generat pel procés d'horaris.
+     */
+    public function pullStatusMessage(): ?string
+    {
+        $message = $this->statusMessage;
+        $this->statusMessage = null;
+
+        return $message;
     }
 
     /**
@@ -156,9 +177,13 @@ class TeacherImportExecutionService
      */
     private function createRecordByClass(string $className, array $arrayDatos, string $idProfesor): mixed
     {
+        $normalizedProfesorId = $this->normalizeProfesorIdentifier($idProfesor);
+
         switch ($className) {
             case 'Horario':
-                if (($arrayDatos['idProfesor'] ?? null) !== $idProfesor) {
+                $arrayDatos['idProfesor'] = $this->normalizeProfesorIdentifier((string) ($arrayDatos['idProfesor'] ?? ''));
+
+                if (($arrayDatos['idProfesor'] ?? '') !== $normalizedProfesorId) {
                     return null;
                 }
 
@@ -171,7 +196,9 @@ class TeacherImportExecutionService
                 return null;
 
             case 'Profesor':
-                if (($arrayDatos['dni'] ?? null) === $idProfesor) {
+                $arrayDatos['dni'] = $this->normalizeProfesorIdentifier((string) ($arrayDatos['dni'] ?? ''));
+
+                if (($arrayDatos['dni'] ?? '') === $normalizedProfesorId) {
                     return $this->profesorService->create($arrayDatos);
                 }
                 return null;
@@ -274,14 +301,18 @@ class TeacherImportExecutionService
     private function warnEmptyHorarioReplacement(): void
     {
         if ($this->matchedHorarioRows === 0) {
-            Alert::warning("No s'han trobat horaris nous per al professor {$this->targetProfesor} en el fitxer.");
+            $this->statusMessage = "No s'han trobat horaris nous per al professor {$this->targetProfesor} en el fitxer.";
+            Alert::warning($this->statusMessage);
+            Log::warning($this->statusMessage, $this->horarioStatusContext());
             return;
         }
 
         if ($this->skippedHorarioRows > 0) {
+            $this->statusMessage = "No s'ha substituït l'horari del professor {$this->targetProfesor} perquè la plantilla importada és més antiga que l'actual.";
             Alert::warning(
-                "No s'ha substituït l'horari del professor {$this->targetProfesor} perquè la plantilla importada és més antiga que l'actual."
+                $this->statusMessage
             );
+            Log::warning($this->statusMessage, $this->horarioStatusContext());
         }
     }
 
@@ -293,5 +324,26 @@ class TeacherImportExecutionService
         $this->matchedHorarioRows = 0;
         $this->skippedHorarioRows = 0;
         $this->plantilla = 0;
+    }
+
+    private function normalizeProfesorIdentifier(?string $value): string
+    {
+        $normalized = preg_replace('/\x{00A0}/u', ' ', (string) $value) ?? (string) $value;
+
+        return strtoupper(trim($normalized));
+    }
+
+    /**
+     * @return array<string, int|string>
+     */
+    private function horarioStatusContext(): array
+    {
+        return [
+            'idProfesor' => $this->targetProfesor,
+            'matched_horario_rows' => $this->matchedHorarioRows,
+            'skipped_horario_rows' => $this->skippedHorarioRows,
+            'pending_horario_rows' => count($this->pendingHorarios),
+            'plantilla' => $this->plantilla,
+        ];
     }
 }

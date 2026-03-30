@@ -15,6 +15,9 @@ use Intranet\Http\Controllers\ImportController;
 use Intranet\Http\Controllers\TeacherImportController;
 use Throwable;
 
+/**
+ * Job encarregat d'executar imports en segon pla i persistir-ne l'estat.
+ */
 class RunImportJob implements ShouldQueue
 {
     use Dispatchable;
@@ -45,6 +48,7 @@ class RunImportJob implements ShouldQueue
         $importRun->save();
 
         try {
+            $finalMessage = 'Importació completada';
             $absolutePath = storage_path('app/' . ltrim((string) $importRun->file_path, '/'));
             if (!is_file($absolutePath)) {
                 throw new \RuntimeException("No existeix el fitxer d'importació: {$absolutePath}");
@@ -62,7 +66,10 @@ class RunImportJob implements ShouldQueue
                 }
             } elseif ($importRun->type === 'teacher') {
                 $controller = app(TeacherImportController::class);
-                $controller->run($absolutePath, $request);
+                $result = $controller->run($absolutePath, $request);
+                if (is_array($result) && !empty($result['message'])) {
+                    $finalMessage = (string) $result['message'];
+                }
             } else {
                 throw new \RuntimeException('Tipus d\'importació no suportat.');
             }
@@ -70,7 +77,7 @@ class RunImportJob implements ShouldQueue
             $importRun->status = 'done';
             $importRun->progress = 100;
             $importRun->finished_at = now();
-            $importRun->message = 'Importació completada';
+            $importRun->message = $finalMessage;
             $importRun->save();
         } catch (Throwable $e) {
             $importRun->status = 'failed';

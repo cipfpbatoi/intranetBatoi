@@ -8,8 +8,10 @@
             <option value="full">Complet (asíncron)</option>
             <option value="create_only">Només altes (sincrònic)</option>
         </select><br/>
-        <label>Importa horaris:</label> <input type='checkbox' id='horari' name='horari'/><br/>
-        <label>Recerca en Horaris Antics:</label><input type='checkbox' id='lost' name='lost'/><br/>
+        <input type='hidden' name='horari' value='0'/>
+        <label>Importa horaris:</label> <input type='checkbox' id='horari' name='horari' value='1'/><br/>
+        <input type='hidden' name='lost' value='0'/>
+        <label>Recerca en Horaris Antics:</label><input type='checkbox' id='lost' name='lost' value='1'/><br/>
         <label>Professor a importar:</label> <input type='text' id='idProfesor' name='idProfesor'/><br/>
         <label>Fitxer:</label><input type='file' id='fichero' name='fichero'/><br/>
         <input type='submit' value='Enviar'/>

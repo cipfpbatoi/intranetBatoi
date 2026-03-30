@@ -49,6 +49,7 @@ class TeacherImportController extends Seeder
         $request->merge([
             'idProfesor' => $this->normalizeProfesorId((string) $request->input('idProfesor', '')),
         ]);
+        $this->normalizeBooleanInputs($request);
         Validator::make($request->all(), (new TeacherImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
@@ -69,6 +70,7 @@ class TeacherImportController extends Seeder
         $request->merge([
             'idProfesor' => $this->normalizeProfesorId((string) $request->input('idProfesor', '')),
         ]);
+        $this->normalizeBooleanInputs($request);
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -123,6 +125,7 @@ class TeacherImportController extends Seeder
         $this->authorizeImportManagement(true);
         $idProfesor = $this->normalizeProfesorId((string) $request->input('idProfesor', ''));
         $request->merge(['idProfesor' => $idProfesor]);
+        $this->normalizeBooleanInputs($request);
         $execution = $this->executions();
 
         if ($request->horari) {
@@ -149,6 +152,10 @@ class TeacherImportController extends Seeder
         if ($request->horari) {
             $execution->finalizeTeacherHorarios();
         }
+
+        return [
+            'message' => $execution->pullStatusMessage(),
+        ];
     }
 
     private function sacaCampos($atrxml, $llave, $func = 1)
@@ -260,6 +267,17 @@ class TeacherImportController extends Seeder
         $parts = preg_split('/\s+/u', $normalized);
 
         return strtoupper((string) ($parts[0] ?? ''));
+    }
+
+    /**
+     * Normalitza els checkbox HTML a booleans reals abans de validar o executar.
+     */
+    private function normalizeBooleanInputs(Request $request): void
+    {
+        $request->merge([
+            'horari' => $request->boolean('horari'),
+            'lost' => $request->boolean('lost'),
+        ]);
     }
 
     private function authorizeImportManagement(bool $allowConsole = false): void

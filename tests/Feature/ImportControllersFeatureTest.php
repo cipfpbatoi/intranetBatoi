@@ -14,6 +14,9 @@ use Intranet\Http\Middleware\RoleMiddleware;
 use Intranet\Http\Middleware\VerifyCsrfToken;
 use Tests\TestCase;
 
+/**
+ * Proves de feature per als controladors d'importació.
+ */
 class ImportControllersFeatureTest extends TestCase
 {
     public function test_import_email_create_mostra_la_vista(): void
@@ -164,6 +167,35 @@ XML;
 
         $file = UploadedFile::fake()->createWithContent('teacher_import.xml', $xml);
         $request = Request::create('/teacherImport', 'POST', ['idProfesor' => '021648508B', 'horari' => false, 'mode' => 'create_only'], [], ['fichero' => $file]);
+
+        $view = $controller->store($request);
+
+        $this->assertInstanceOf(View::class, $view);
+        $this->assertSame('seeder.store', $view->name());
+    }
+
+    public function test_teacher_import_store_accepta_checkbox_html_per_a_horari_i_lost(): void
+    {
+        $controller = $this->partialMock(TeacherImportController::class, function ($mock): void {
+            $mock->shouldReceive('run')->once();
+        });
+
+        $xml = <<<'XML'
+<?xml version="1.0"?>
+<centro codigo="03012165" denominacion="CIPFP BATOI" curso="2025" fechaExportacion="09/09/2025 14:13:17" version="1.0">
+  <docentes>
+    <docente documento="021648508B" nombre="PROVA" apellido1="DOCENT" apellido2="TEST" sexo="H" cod_postal="03803" domicilio="Carrer prova" telefono1="600000000" telefono2=" " email1="docent@test.local" titular_sustituido=" " fecha_nac="01/01/1980" fecha_ingreso="01/09/2010" fecha_antiguedad="01/09/2010"/>
+  </docentes>
+</centro>
+XML;
+
+        $file = UploadedFile::fake()->createWithContent('teacher_import.xml', $xml);
+        $request = Request::create('/teacherImport', 'POST', [
+            'idProfesor' => '021648508B',
+            'horari' => 'on',
+            'lost' => 'on',
+            'mode' => 'create_only',
+        ], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 
