@@ -98,6 +98,23 @@ class ColaboracionQueryService
     }
 
     /**
+     * Hidrata una col·lecció arbitrària de col·laboracions amb els indicadors del panell.
+     *
+     * @param Collection<int, Colaboracion> $colaboraciones
+     * @return Collection<int, Colaboracion>
+     */
+    public function hydrateIndicators(Collection $colaboraciones): Collection
+    {
+        $activitiesByColab = $this->groupedActivitiesByColaboracion($colaboraciones);
+
+        $colaboraciones->each(function (Colaboracion $colaboracion) use ($activitiesByColab): void {
+            $this->hydratePanelIndicators($colaboracion, $activitiesByColab->get($colaboracion->id, collect()));
+        });
+
+        return $colaboraciones;
+    }
+
+    /**
      * @param Collection<int, Colaboracion> $meves
      * @param Collection<int, Colaboracion> $relacionades
      * @param Collection<string, Collection<int, Activity>> $activitiesByColab

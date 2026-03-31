@@ -1,11 +1,56 @@
 @php
-    $townGroups = $panel->getElementos($pestana)
+    $today = \Illuminate\Support\Carbon::today();
+    $currentCourseStart = $today->month >= 9
+        ? $today->copy()->startOfYear()->month(9)->day(1)
+        : $today->copy()->subYear()->startOfYear()->month(9)->day(1);
+    $elementos = $panel->getElementos($pestana);
+    $townGroups = $elementos
         ->sortBy([
             ['localidad', 'asc'],
             ['empresa', 'asc'],
         ])
         ->groupBy(fn ($elemento) => $elemento->localidad ?: 'Desconeguda');
     $townOptions = $townGroups->keys()->values();
+    $dashboardSummary = [
+        'total' => $elementos->count(),
+        'senseContacteCurs' => $elementos->filter(static function ($elemento) use ($currentCourseStart) {
+            $ultima = $elemento->ultimaActividad?->created_at;
+            return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
+        })->count(),
+        'fitxaIncompleta' => $elementos->where('fitxaIncompleta', true)->count(),
+        'preparades' => $elementos->where('estatPreparacioKey', 'preparada')->count(),
+        'ambAlumnat' => $elementos->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
+    ];
+    $byTutor = $elementos
+        ->groupBy(static fn ($elemento) => $elemento->profesor ?: 'Sense tutor assignat')
+        ->map(static function ($items, $label) use ($currentCourseStart) {
+            return [
+                'label' => $label,
+                'total' => $items->count(),
+                'senseContacteCurs' => $items->filter(static function ($elemento) use ($currentCourseStart) {
+                    $ultima = $elemento->ultimaActividad?->created_at;
+                    return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
+                })->count(),
+                'preparades' => $items->where('estatPreparacioKey', 'preparada')->count(),
+                'ambAlumnat' => $items->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
+            ];
+        })
+        ->sortByDesc('total');
+    $byCycle = $elementos
+        ->groupBy(static fn ($elemento) => optional($elemento->Ciclo)->literal ?? ('Cicle ' . ($elemento->idCiclo ?? '')))
+        ->map(static function ($items, $label) use ($currentCourseStart) {
+            return [
+                'label' => $label,
+                'total' => $items->count(),
+                'senseContacteCurs' => $items->filter(static function ($elemento) use ($currentCourseStart) {
+                    $ultima = $elemento->ultimaActividad?->created_at;
+                    return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
+                })->count(),
+                'preparades' => $items->where('estatPreparacioKey', 'preparada')->count(),
+                'ambAlumnat' => $items->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
+            ];
+        })
+        ->sortBy('label');
 
     $cyclePalette = [
         ['background' => '#e8f3ff', 'border' => '#78aee8', 'text' => '#144a75'],
@@ -56,6 +101,106 @@
         <a href="{{ route('colaboracion.mias') }}" class="btn btn-primary btn-sm">
             <em class="fa fa-user"></em> Vore misColaboraciones
         </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Total</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $dashboardSummary['total'] }}</div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Sense contacte este curs</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #7a4314;">{{ $dashboardSummary['senseContacteCurs'] }}</div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Fitxa incompleta</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #8a6d3b;">{{ $dashboardSummary['fitxaIncompleta'] }}</div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Preparades</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #1f7a1f;">{{ $dashboardSummary['preparades'] }}</div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Amb alumnat</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #144a75;">{{ $dashboardSummary['ambAlumnat'] }}</div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
+            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <div class="small text-muted">Sense preparar</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #a94442;">{{ $dashboardSummary['total'] - $dashboardSummary['preparades'] }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 col-sm-12">
+            <div class="rounded border bg-white p-3 h-100" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <h4 class="mb-3">Per tutor</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Tutor</th>
+                            <th>Total</th>
+                            <th>Sense contacte</th>
+                            <th>Preparades</th>
+                            <th>Amb alumnat</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($byTutor as $row)
+                            <tr>
+                                <td>{{ $row['label'] }}</td>
+                                <td>{{ $row['total'] }}</td>
+                                <td>{{ $row['senseContacteCurs'] }}</td>
+                                <td>{{ $row['preparades'] }}</td>
+                                <td>{{ $row['ambAlumnat'] }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <div class="rounded border bg-white p-3 h-100" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
+                <h4 class="mb-3">Per cicle</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Cicle</th>
+                            <th>Total</th>
+                            <th>Sense contacte</th>
+                            <th>Preparades</th>
+                            <th>Amb alumnat</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($byCycle as $row)
+                            <tr>
+                                <td>{{ $row['label'] }}</td>
+                                <td>{{ $row['total'] }}</td>
+                                <td>{{ $row['senseContacteCurs'] }}</td>
+                                <td>{{ $row['preparades'] }}</td>
+                                <td>{{ $row['ambAlumnat'] }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="mb-3">

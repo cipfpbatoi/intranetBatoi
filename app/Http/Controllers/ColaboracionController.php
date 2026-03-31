@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Colaboracion\ColaboracionQueryService;
 use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -47,7 +48,10 @@ class ColaboracionController extends ModalController
     /**
      * Inicialitza el controlador modal amb una vista pròpia per al llistat departamental.
      */
-    public function __construct(private readonly SeguimientoService $seguimientoService)
+    public function __construct(
+        private readonly SeguimientoService $seguimientoService,
+        private readonly ColaboracionQueryService $colaboracionQueryService
+    )
     {
         parent::__construct();
         $this->panel = new \Intranet\UI\Panels\Panel(
@@ -97,10 +101,12 @@ class ColaboracionController extends ModalController
             ->pluck('id')
             ->all();
 
-        return Colaboracion::query()
+        $colaboraciones = Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
-            ->with(['Centro.Empresa', 'Ciclo', 'Propietario'])
+            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario', 'fcts'])
             ->get();
+
+        return $this->colaboracionQueryService->hydrateIndicators($colaboraciones);
     }
 
     /**
