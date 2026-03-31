@@ -1,22 +1,11 @@
 services:
     laravel.prod:
-        build:
-            context: .
-            dockerfile: docker/8.3/Dockerfile.prod
-            args:
-                WWWUSER: "${WWWUSER:-${UID:-1000}}"
-                WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
-                NODE_VERSION: "${NODE_VERSION:-20}"
-                NPM_VERSION: "${NPM_VERSION:-11}"
-
         restart: unless-stopped
-
-        image: arturocandela/intranet:${IMAGE_TAG_PROD:-laravel13-prod}
+        image: arturocandela/intranet:${IMAGE_TAG_PROD:-latest-prod}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:
             - "80"
-        
         environment:
             WWWUSER: "${WWWUSER:-${UID:-1000}}"
             WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
@@ -28,13 +17,13 @@ services:
             - '/var/www/html/intranetBatoi/storage:/var/www/html/storage'
         networks:
             - sail
-        
         depends_on:
             - selenium
+        labels:
+            - "com.centurylinklabs.watchtower.enable=true"
+
     caddy:
-
         restart: unless-stopped
-
         image: caddy:2-alpine
         ports:
             - "80:80"
@@ -47,7 +36,7 @@ services:
             - laravel.prod
         networks:
             - sail
-    
+
     selenium:
         restart: unless-stopped
         image: selenium/standalone-firefox:latest
@@ -58,9 +47,24 @@ services:
         networks:
             - sail
         volumes:
-          - selenium-downloads:/home/seluser/Downloads
+            - selenium-downloads:/home/seluser/Downloads
         command: ["sh", "-lc", "chmod 0777 /home/seluser/Downloads && /opt/bin/entry_point.sh"]
-    
+
+    watchtower:
+        restart: unless-stopped
+        image: containrrr/watchtower:latest
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            WATCHTOWER_POLL_INTERVAL: "${WATCHTOWER_POLL_INTERVAL:-300}"
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            WATCHTOWER_INCLUDE_RESTARTING: "true"
+            REPO_USER: "${DOCKERHUB_USERNAME:-}"
+            REPO_PASS: "${DOCKERHUB_TOKEN:-}"
+        networks:
+            - sail
+
 networks:
     sail:
         driver: bridge
