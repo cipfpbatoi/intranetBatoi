@@ -42,6 +42,7 @@ class Activity extends Component
             'email'  => 'envelope',
             'visita' => 'car',
             'phone'  => 'phone',
+            'review' => 'users',
             'book'   => 'book',
             default  => null
         };

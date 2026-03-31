@@ -1,4 +1,41 @@
- <x-layouts.app title="FCT {{ $fct->Colaboracion?->Centro?->nombre ?? 'Sense centre' }} de {{ $fct->Colaboracion?->Ciclo?->ciclo ?? 'Sense cicle' }}">
+<x-layouts.app title="FCT {{ $fct->Colaboracion?->Centro?->nombre ?? 'Sense centre' }} de {{ $fct->Colaboracion?->Ciclo?->ciclo ?? 'Sense cicle' }}">
+    @php
+        $colaboracion = $fct->Colaboracion;
+        $softWarnings = collect();
+
+        if ($colaboracion) {
+            if (trim((string) ($colaboracion->contacto ?? '')) === '') {
+                $softWarnings->push('Falta contacte principal');
+            }
+            if (trim((string) ($colaboracion->telefono ?? '')) === '') {
+                $softWarnings->push('Falta telèfon');
+            }
+            if (trim((string) ($colaboracion->email ?? '')) === '') {
+                $softWarnings->push('Falta email');
+            }
+            if (($colaboracion->Centro->instructores->count() ?? 0) === 0) {
+                $softWarnings->push('Falta instructor');
+            }
+            if (empty($colaboracion->Centro->Empresa->fichero)) {
+                $softWarnings->push('Falta document d\'empresa');
+            }
+        }
+    @endphp
+
+    @if ($colaboracion)
+        <div class="col-xs-12">
+            <div class="alert alert-info" style="margin-bottom: 15px;">
+                <strong>Fitxa relacionada:</strong>
+                <a href="{{ route('colaboracion.show', ['colaboracion' => $colaboracion->id, 'return_to' => request()->fullUrl()]) }}">Anar a la col·laboració</a>
+                ·
+                <a href="{{ route('colaboracion.mias') }}">MisColaboraciones</a>
+                @if ($softWarnings->isNotEmpty())
+                    <br/>
+                    <span class="text-muted">Cal revisar:</span> {{ $softWarnings->join(' · ') }}
+                @endif
+            </div>
+        </div>
+    @endif
 
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         @if (!$fct->Colaboracion || !$fct->Colaboracion->Centro)

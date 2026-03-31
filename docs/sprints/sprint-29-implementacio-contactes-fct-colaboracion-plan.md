@@ -1,5 +1,13 @@
 # Sprint 29 - Implementació de contactes FCT i col·laboració
 
+## Estat actual
+
+Este sprint s'ha acabat executant i la convivència temporal ha quedat operativa.
+
+El tancament funcional s'ha documentat en:
+
+- [`docs/sprints/sprint-29-contactes-convivencia-closeout.md`](/Users/igomis/Code/intranetBatoi/docs/sprints/sprint-29-contactes-convivencia-closeout.md)
+
 ## Objectiu
 
 Executar, si finalment es decidix fer-ho, la substitució parcial del model actual basat en `activities` per un model de seguiments/contactes propi de domini.

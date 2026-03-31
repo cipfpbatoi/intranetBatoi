@@ -110,7 +110,7 @@ return array(
         'refuse' => 'Refuse',
         'renuncia' => 'Withdrawn',
         'expulsat' => 'Expelled',
-        'pendiente' => 'Pending',
+        'pendiente' => 'Assigned',
         'resta' => 'Unassigned',
         'colabora' => 'Collaborating',
         'fcts' => 'in FCT',

@@ -7,6 +7,7 @@ namespace Intranet\Application\Fct;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Domain\Fct\FctRepositoryInterface;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
@@ -16,7 +17,10 @@ use Intranet\Entities\Fct;
  */
 class FctService
 {
-    public function __construct(private readonly FctRepositoryInterface $fctRepository)
+    public function __construct(
+        private readonly FctRepositoryInterface $fctRepository,
+        private readonly SeguimientoService $seguimientoService
+    )
     {
     }
 
@@ -35,7 +39,50 @@ class FctService
      */
     public function panelListingByProfesor(string $dni): EloquentCollection
     {
-        return $this->fctRepository->panelListingByProfesor($dni);
+        $items = $this->fctRepository->panelListingByProfesor($dni);
+        $contactosByFct = $this->seguimientoService->groupedMailActivitiesForFcts($items->pluck('id')->all());
+
+        return $items->map(function (Fct $fct) use ($contactosByFct): Fct {
+            $fct->setRelation('Contactos', $contactosByFct->get((string) $fct->id, collect()));
+
+            return $fct;
+        });
+    }
+
+    /**
+     * Hidrata una FCT concreta amb els contactes combinats de convivència temporal.
+     */
+    public function hydrateContactos(Fct $fct): Fct
+    {
+        $contactos = $this->seguimientoService
+            ->groupedMailActivitiesForFcts([(string) $fct->id])
+            ->get((string) $fct->id, collect());
+
+        $fct->setRelation('Contactos', $contactos);
+        $this->hydrateAlumnoFctContactos($fct);
+
+        return $fct;
+    }
+
+    /**
+     * Hidrata els contactes de cada AlumnoFct d'una FCT per a la vista detallada.
+     */
+    public function hydrateAlumnoFctContactos(Fct $fct): Fct
+    {
+        $alumnoFcts = $fct->relationLoaded('AlFct')
+            ? $fct->AlFct
+            : $fct->AlFct()->with('Alumno')->get();
+
+        $contactosByAlumnoFct = $this->seguimientoService
+            ->groupedMailActivitiesForAlumnoFcts($alumnoFcts->pluck('id')->all());
+
+        $alumnoFcts->each(function ($alumnoFct) use ($contactosByAlumnoFct): void {
+            $alumnoFct->setRelation('Contactos', $contactosByAlumnoFct->get((string) $alumnoFct->id, collect()));
+        });
+
+        $fct->setRelation('AlFct', $alumnoFcts);
+
+        return $fct;
     }
 
     public function setInstructor(int|string $idFct, string $idInstructor): Fct

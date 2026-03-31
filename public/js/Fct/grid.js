@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             var todayPhone = getLastPhoneLink(list);
             if (todayPhone && todayPhone.id) {
-                apiRequest('GET', '/activity/' + todayPhone.id).then(function (result) {
+                apiRequest('GET', '/api/fct/contact/' + todayPhone.id).then(function (result) {
                     setModalText((result.data && result.data.comentari) || '');
                 }, function () {
                     console.log("No s'ha pogut carregar el comentari telefonic existent.");
@@ -152,41 +152,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        var plusIcon = event.target.closest('.profile_view .bottom .fa-plus');
-        if (plusIcon) {
-            if (plusIcon.closest('.listActivity')) {
-                return;
-            }
-            var card = plusIcon.closest('.profile_view');
-            var colaboracionId = card ? card.id : '';
-            var instructor = document.getElementById('idInstructor');
-            var formAddAlumno = document.getElementById('formAddAlumno');
-            var inputColaboracion = document.getElementById('idColaboracion');
-
-            if (formAddAlumno) {
-                formAddAlumno.setAttribute('action', '/fct/fctalumnoCreate');
-            }
-            if (inputColaboracion) {
-                inputColaboracion.value = colaboracionId;
-            }
-
-            apiRequest('GET', '/colaboracion/instructores/' + colaboracionId).then(function (result) {
-                if (!instructor) {
-                    return;
-                }
-                instructor.innerHTML = '';
-                (result.data || []).forEach(function (value) {
-                    var option = document.createElement('option');
-                    option.value = value.dni;
-                    option.textContent = (value.name || '') + ' ' + (value.surnames || '');
-                    instructor.appendChild(option);
-                });
-            }, function () {
-                console.log('La solicitud no se ha podido completar.');
-            });
-            return;
-        }
-
         var activityAnchor = event.target.closest('.listActivity a.small');
         if (activityAnchor) {
             event.preventDefault();
@@ -197,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.intranetUiHelpers.showModal('dialogo');
             }
 
-            apiRequest('GET', '/activity/' + id).then(function (result) {
+            apiRequest('GET', '/api/fct/contact/' + id).then(function (result) {
                 setModalText((result.data && result.data.comentari) || '');
             }, function () {
                 console.log('Error al buscar');
@@ -211,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             if (tipo === 'telefonico') {
                 var comentariTelefonic = this.explicacion.value;
-                apiRequest('POST', '/colaboracion/' + id + '/telefonico', { explicacion: comentariTelefonic }).then(function (result) {
+                apiRequest('POST', '/api/fct/' + id + '/telefonico', { explicacion: comentariTelefonic }).then(function (result) {
                     var targetId = String(result.data.id);
                     var existing = list ? list.querySelector("a.small[id='" + targetId + "']") : null;
                     if (existing) {
@@ -234,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (tipo === 'seguimiento') {
                 var comentariActualitzat = this.explicacion.value;
-                apiRequest('PUT', '/activity/' + id, { comentari: comentariActualitzat }).then(function () {
+                apiRequest('PUT', '/api/fct/contact/' + id, { explicacion: comentariActualitzat }).then(function () {
                     var link = document.getElementById(id);
                     var hasComment = trim(comentariActualitzat).length > 0;
                     toggleCommentIcon(link ? link.querySelector('em.fa') : null, hasComment);
