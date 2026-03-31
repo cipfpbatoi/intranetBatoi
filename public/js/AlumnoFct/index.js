@@ -15,6 +15,8 @@ $(function () {
             $buttons.hide();
             if (activeTab === '#tab_LOE') {
                 $('#tab_LOE').find('.fct-acta-btn').show();
+            } else if (activeTab === '#tab_LOGSE') {
+                $('#tab_LOGSE').find('.fct-acta-btn').show();
             }
         }
 
