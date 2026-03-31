@@ -51,6 +51,7 @@
      data-preparation-state="{{ $elemento->estatPreparacioKey ?? 'no_preparada' }}"
      data-preparation-rank="{{ (int) ($elemento->estatPreparacioRank ?? 0) }}"
      data-documentation-pending-count="{{ (int) ($elemento->documentacioPendentCount ?? 0) }}"
+     data-last-contact-id="{{ $ultimContacte?->id ?? '' }}"
      data-followup-status="{{ $elemento->seguimentEstatKey ?? 'sense_seguiment' }}"
      data-followup-urgency="{{ $elemento->seguimentUrgenciaKey ?? 'cap' }}">
     <div id="{{$elemento->id}}" class="well profile_view"
