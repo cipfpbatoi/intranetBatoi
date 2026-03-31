@@ -137,6 +137,10 @@ class Colaboracion extends Model
 
     public function getAnotacioAttribute()
     {
+        if ($this->id === null) {
+            return '';
+        }
+
         return app(SeguimientoService::class)->commentLogForColaboracion($this->id, 'book');
     }
     public function getProfesorAttribute()
