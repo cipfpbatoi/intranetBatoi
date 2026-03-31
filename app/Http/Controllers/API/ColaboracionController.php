@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Seguimiento;
 use Intranet\Services\General\StateService;
 
@@ -237,29 +238,42 @@ class ColaboracionController extends ApiResourceController
         return $this->sendResponse($colaboracion, 'OK');
     }
 
-    /**
-     * Manté compatibilitat amb els botons legacy, però ja registra un contacte nou cada vegada.
-     */
     private function recordLegacyContact(string|int $id, string $contactType, string $explicacion): Activity
     {
-        $colaboracion = Colaboracion::find($id);
-
         $mapping = self::CONTACT_TYPES[$contactType];
         $document = $mapping['document'];
+        $model = $contactType === 'telefonada'
+            ? Fct::find($id)
+            : Colaboracion::find($id);
+
         if ($contactType === 'seguiment') {
             $document = 'Contacte previ';
         }
 
-        $activity = Activity::record(
-            $mapping['action'],
-            $colaboracion,
-            $explicacion,
-            null,
-            $document
-        );
+        $activity = Activity::query()
+            ->where('action', $mapping['action'])
+            ->where('model_class', $model ? get_class($model) : null)
+            ->where('model_id', $model?->getKey())
+            ->where('created_at', '>', Hoy('Y-m-d'))
+            ->where('created_at', '<', manana('Y-m-d'))
+            ->first();
+
+        if ($activity === null) {
+            $activity = Activity::record(
+                $mapping['action'],
+                $model,
+                $explicacion,
+                null,
+                $document
+            );
+        } else {
+            $activity->comentari = $explicacion;
+            $activity->document = $document;
+            $activity->save();
+        }
 
         $this->seguimientoService->record(
-            $colaboracion,
+            $model ?? new Colaboracion(['id' => $id]),
             $mapping['action'],
             $document,
             $explicacion,

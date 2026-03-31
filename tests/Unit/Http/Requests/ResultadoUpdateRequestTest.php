@@ -109,6 +109,7 @@ class ResultadoUpdateRequestTest extends TestCase
     {
         $request = ResultadoUpdateRequest::create("/resultado/{$resultadoId}/edit", 'PUT', $payload);
         $route = new Route('PUT', '/resultado/{resultado}/edit', []);
+        $route->bind($request);
         $route->setParameter('resultado', $resultadoId);
         $request->setRouteResolver(static fn () => $route);
 

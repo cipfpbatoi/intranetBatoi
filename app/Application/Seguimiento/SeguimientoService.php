@@ -6,6 +6,7 @@ namespace Intranet\Application\Seguimiento;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Seguimiento;
 
@@ -35,6 +36,17 @@ class SeguimientoService
         ?string $comment = null,
         ?array $meta = null
     ): Seguimiento {
+        if (!$this->hasSeguimientosTable($model->getConnectionName())) {
+            return $this->buildTransientSeguimiento(
+                class_basename($model),
+                (string) $model->getKey(),
+                $contactType,
+                $title,
+                $comment,
+                $meta
+            );
+        }
+
         $seguimiento = new Seguimiento([
             'domain_type' => class_basename($model),
             'domain_id' => (string) $model->getKey(),
@@ -56,6 +68,10 @@ class SeguimientoService
      */
     public function findByActivityId(int|string $activityId): ?Seguimiento
     {
+        if (!$this->hasSeguimientosTable()) {
+            return null;
+        }
+
         return Seguimiento::query()
             ->where('meta->activity_id', (string) $activityId)
             ->first();
@@ -66,6 +82,20 @@ class SeguimientoService
      */
     public function syncFromActivity(Activity $activity): Seguimiento
     {
+        if (!$this->hasSeguimientosTable($activity->getConnectionName())) {
+            return $this->buildTransientSeguimiento(
+                class_basename((string) $activity->model_class),
+                (string) $activity->model_id,
+                (string) $activity->action,
+                (string) $activity->document,
+                $activity->comentari,
+                [
+                    'source' => 'activities',
+                    'activity_id' => (string) $activity->id,
+                ]
+            );
+        }
+
         $seguimiento = $this->findByActivityId((string) $activity->id)
             ?? new Seguimiento();
 
@@ -110,6 +140,10 @@ class SeguimientoService
             ->orderBy('created_at')
             ->get()
             ->groupBy(static fn (Activity $activity): string => (string) $activity->model_id);
+
+        if (!$this->hasSeguimientosTable()) {
+            return $ids->mapWithKeys(fn (string $id): array => [$id => $legacyByModel->get($id, collect())->values()]);
+        }
 
         $seguimientosByModel = Seguimiento::query()
             ->where('domain_type', 'Colaboracion')
@@ -232,6 +266,10 @@ class SeguimientoService
             ->get()
             ->groupBy(static fn (Activity $activity): string => (string) $activity->model_id);
 
+        if (!$this->hasSeguimientosTable()) {
+            return $ids->mapWithKeys(fn (string $id): array => [$id => $legacyByModel->get($id, collect())->values()]);
+        }
+
         $seguimientosByModel = Seguimiento::query()
             ->where('domain_type', $domainType)
             ->whereIn('domain_id', $ids->all())
@@ -261,5 +299,38 @@ class SeguimientoService
 
             return [$id => $merged];
         });
+    }
+
+    /**
+     * Indica si la taula de seguiments existeix en la connexió indicada.
+     */
+    private function hasSeguimientosTable(?string $connection = null): bool
+    {
+        return Schema::connection($connection ?? config('database.default'))->hasTable('seguimientos');
+    }
+
+    /**
+     * Construeix un seguiment efímer quan la persistència nova encara no està disponible.
+     *
+     * @param array<string, mixed>|null $meta
+     */
+    private function buildTransientSeguimiento(
+        string $domainType,
+        string $domainId,
+        string $contactType,
+        string $title,
+        ?string $comment = null,
+        ?array $meta = null
+    ): Seguimiento {
+        return new Seguimiento([
+            'domain_type' => $domainType,
+            'domain_id' => $domainId,
+            'contact_type' => $contactType,
+            'title' => $title,
+            'comment' => $comment,
+            'author_id' => auth()->user()?->dni,
+            'contacted_at' => now(),
+            'meta' => $meta,
+        ]);
     }
 }
