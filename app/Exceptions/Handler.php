@@ -69,8 +69,10 @@ class Handler extends ExceptionHandler
             || $statusCode === 404;
 
         if ($this->shouldNotify($exception, $msg, $isValidation, $isAuthorization, $isForbidden, $isNotFound)) {
-            // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
-            app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
+            app(NotificationService::class)->send(
+                config('avisos.errores'),
+                $this->buildNotificationSummary($exception)
+            );
         }
 
         if ($exception instanceof IntranetException) {
@@ -171,6 +173,29 @@ class Handler extends ExceptionHandler
         }
 
         return true;
+    }
+
+    /**
+     * Genera un resum curt i estable per a la notificació interna.
+     *
+     * @param \Throwable $exception
+     * @return string
+     */
+    private function buildNotificationSummary(Throwable $exception): string
+    {
+        $summary = class_basename($exception);
+        $message = preg_replace('/\s+/', ' ', trim((string) $exception->getMessage())) ?: 'Sense missatge';
+        $summary .= ': ' . $message;
+        $summary .= ' [' . basename($exception->getFile()) . ':' . $exception->getLine() . ']';
+
+        if (!app()->runningInConsole()) {
+            $route = optional(request()->route())->getName();
+            if ($route) {
+                $summary .= ' route=' . $route;
+            }
+        }
+
+        return mb_substr($summary, 0, 1000);
     }
 
     /**

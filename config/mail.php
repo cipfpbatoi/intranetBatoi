@@ -101,6 +101,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Estimated Maximum Message Size
+    |--------------------------------------------------------------------------
+    |
+    | Conservative upper bound used before SMTP send to avoid provider
+    | rejections caused by attachments or embedded content that bloat the
+    | final MIME message.
+    |
+    */
+
+    'max_message_bytes' => env('MAIL_MAX_MESSAGE_BYTES', 18 * 1024 * 1024),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown MyMail Settings
     |--------------------------------------------------------------------------
     |
@@ -119,4 +132,3 @@ return [
 //    ],
 
 ];
-
