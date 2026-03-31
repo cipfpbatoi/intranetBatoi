@@ -19,6 +19,7 @@
     $diesSenseContacte = $elemento->diesSenseContacte;
     $fitxaBadges = $elemento->fitxaBadges ?? collect();
     $relacionadas = $elemento->relacionadas ?? collect();
+    $relatedHasContacts = $relacionadas->contains(static fn ($rel) => ($rel->contactos ?? collect())->isNotEmpty());
     $preasignaciones = $elemento->preasignacionesPanel ?? collect();
     $preasignacionAlumnoOptions = $elemento->preasignacionAlumnoOptions ?? collect();
     $canPreassign = isset($pestana) && $pestana->getNombre() === 'colabora';
@@ -35,7 +36,7 @@
         };
     };
 @endphp
-<div class="col-md-4 col-sm-4 col-xs-12 profile_details mis-colaboraciones-card"
+<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 profile_details mis-colaboraciones-card"
      data-target-tab="{{ $tabName ?? '' }}"
      data-town="{{ $elemento->localidad }}"
      data-company="{{ $elemento->Centro->nombre }}"
@@ -152,7 +153,7 @@
                         </button>
                     @endif
                     @if($relacionadas->isNotEmpty())
-                        <button class="btn btn-default btn-xs" type="button" data-bs-toggle="collapse"
+                        <button class="btn btn-xs {{ $relatedHasContacts ? 'btn-info' : 'btn-default' }}" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#{{ $relatedCollapseId }}" aria-expanded="false"
                                 aria-controls="{{ $relatedCollapseId }}">
                             Altres cicles ({{ $relacionadas->count() }})
@@ -310,20 +311,41 @@
                                     <span class="badge bg-warning text-dark">Contactada</span>
                                 @endif
                                 <div class="mt-1">
-                                    @foreach ($rel->contactos as $act)
-                                        @if ($act->document === "Contacte previ")
-                                            <div class="text-muted"
-                                                 data-bs-toggle="tooltip"
-                                                 data-bs-placement="top"
-                                                 title=" {{ $act->comentari }}"
-                                                 style="cursor:pointer;" >
-                                                <em class="fa fa-commenting"></em>
-                                                {{ $act->created_at?->format('d/m/Y H:i') }} 
-                                                
+                                    @foreach ($rel->contactos->take(5) as $act)
+                                        @php
+                                            $comentariComplet = trim((string) $act->comentari);
+                                            $comentariCollapseId = 'related-contact-comment-' . $elemento->id . '-' . $rel->id . '-' . $act->id;
+                                        @endphp
+                                        <div class="text-muted" style="margin-bottom:.35rem;">
+                                            <div>
+                                                <em class="fa {{ $act->icon }}"></em>
+                                                {{ $act->created_at?->format('d/m/Y H:i') }}
+                                                @if (!empty($act->author))
+                                                    · {{ $act->author }}
+                                                @endif
+                                                @if ($comentariComplet !== '')
+                                                    · {{ \Illuminate\Support\Str::limit($comentariComplet, 70) }}
+                                                @endif
                                             </div>
-                                        @endif
+                                            @if ($comentariComplet !== '' && \Illuminate\Support\Str::length($comentariComplet) > 70)
+                                                <div>
+                                                    <button class="btn btn-link btn-xs" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#{{ $comentariCollapseId }}" aria-expanded="false"
+                                                            aria-controls="{{ $comentariCollapseId }}" style="padding:0;">
+                                                        Vore complet
+                                                    </button>
+                                                </div>
+                                                <div class="collapse" id="{{ $comentariCollapseId }}">
+                                                    <div class="well well-sm" style="margin-top:.25rem; margin-bottom:0;">
+                                                        {{ $comentariComplet }}
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     @endforeach
                                 </div>
+                            @else
+                                <div class="mt-1 text-muted">Sense contactes registrats en este cicle.</div>
                             @endif
                         </li>
                     @endforeach

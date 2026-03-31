@@ -10,7 +10,9 @@ use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 
-
+/**
+ * Model Eloquent de col·laboracions amb empreses.
+ */
 class Colaboracion extends Model
 {
 
@@ -152,17 +154,25 @@ class Colaboracion extends Model
         return $this->updated_at;
     }
 
+    /**
+     * Classifica la col·laboració en la pestanya del panell.
+     *
+     * 1 => No assignades
+     * 2 => Assignades
+     * 3 => Col·laboren
+     */
     public function getSituationAttribute()
     {
-        if ($this->tutor == '' && $this->estado == 1) {
-            return 1;
-        }
-        if ($this->estado == 1 || $this->estado == 3) {
-            return 2;
-        }
         if ($this->estado == 2) {
             return 3;
         }
+
+        $currentUserDni = authUser()->dni ?? null;
+
+        if ($currentUserDni !== null && (string) $this->tutor === (string) $currentUserDni) {
+            return 2;
+        }
+
         return 1;
     }
 

@@ -13,13 +13,12 @@
     $townOptions = $townGroups->keys()->values();
     $dashboardSummary = [
         'total' => $elementos->count(),
-        'senseContacteCurs' => $elementos->filter(static function ($elemento) use ($currentCourseStart) {
-            $ultima = $elemento->ultimaActividad?->created_at;
-            return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
-        })->count(),
-        'fitxaIncompleta' => $elementos->where('fitxaIncompleta', true)->count(),
-        'preparades' => $elementos->where('estatPreparacioKey', 'preparada')->count(),
-        'ambAlumnat' => $elementos->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
+        'pendents' => $elementos->where('estado', 1)->count(),
+        'colaboren' => $elementos->where('estado', 2)->count(),
+        'noColaboren' => $elementos->where('estado', 3)->count(),
+        'senseClassificar' => $elementos
+            ->reject(static fn ($elemento) => in_array((int) ($elemento->estado ?? 0), [1, 2, 3], true))
+            ->count(),
     ];
     $byTutor = $elementos
         ->groupBy(static fn ($elemento) => $elemento->profesor ?: 'Sense tutor assignat')
@@ -112,32 +111,32 @@
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
             <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Sense contacte este curs</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #7a4314;">{{ $dashboardSummary['senseContacteCurs'] }}</div>
+                <div class="small text-muted">Pendents</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #8a6d3b;">{{ $dashboardSummary['pendents'] }}</div>
             </div>
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
             <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Fitxa incompleta</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #8a6d3b;">{{ $dashboardSummary['fitxaIncompleta'] }}</div>
+                <div class="small text-muted">Col·laboren</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #1f7a1f;">{{ $dashboardSummary['colaboren'] }}</div>
             </div>
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
             <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Preparades</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #1f7a1f;">{{ $dashboardSummary['preparades'] }}</div>
+                <div class="small text-muted">No col·laboren</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #a94442;">{{ $dashboardSummary['noColaboren'] }}</div>
             </div>
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
             <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Amb alumnat</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #144a75;">{{ $dashboardSummary['ambAlumnat'] }}</div>
+                <div class="small text-muted">Sense classificar</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #144a75;">{{ $dashboardSummary['senseClassificar'] }}</div>
             </div>
         </div>
         <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
             <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Sense preparar</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #a94442;">{{ $dashboardSummary['total'] - $dashboardSummary['preparades'] }}</div>
+                <div class="small text-muted">Quadratura</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #555;">{{ $dashboardSummary['pendents'] + $dashboardSummary['colaboren'] + $dashboardSummary['noColaboren'] + $dashboardSummary['senseClassificar'] }}</div>
             </div>
         </div>
     </div>

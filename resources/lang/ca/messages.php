@@ -108,7 +108,7 @@ return array(
         'justify' => 'Justificar',
         'unauthorize' => 'Desautoritzar',
         'refuse' => 'Rebutjar',
-        'pendiente' => 'Pendents de Contestar',
+        'pendiente' => 'Assignades',
         'resta' => 'No assignades',
         'colabora' => 'Col·laboren',
         'fcts' => 'en FCT',

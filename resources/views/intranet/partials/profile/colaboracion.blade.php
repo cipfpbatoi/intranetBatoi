@@ -4,106 +4,223 @@
             <em class="fa fa-building"></em> Vore colaboraciones del departament
         </a>
     </div>
+    @push('styles')
+        <style>
+            .mis-colaboraciones-town-cards {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .mis-colaboraciones-town-cards .mis-colaboraciones-card {
+                float: none;
+            }
+
+            .mis-colaboraciones-summary-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .mis-colaboraciones-summary-card {
+                flex: 1 1 180px;
+                min-width: 0;
+            }
+
+            .mis-colaboraciones-summary-row.mis-colaboraciones-summary-row--four .mis-colaboraciones-summary-card {
+                flex-basis: calc(25% - 9px);
+                min-width: 0;
+            }
+
+            @media (min-width: 992px) {
+                .mis-colaboraciones-summary-row.mis-colaboraciones-summary-row--four {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 12px;
+                }
+            }
+
+            .mis-colaboraciones-summary-card .small.text-muted {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        </style>
+    @endpush
 @endonce
 
 @php
-    $today = \Illuminate\Support\Carbon::today();
-    $currentCourseStart = $today->month >= 9
-        ? $today->copy()->startOfYear()->month(9)->day(1)
-        : $today->copy()->subYear()->startOfYear()->month(9)->day(1);
     $elementos = $panel->getElementos($pestana)->sortBy('localidad')->values();
-    $localidadActual = null;
     $townOptions = $elementos->pluck('localidad')->filter()->unique()->values();
+    $groupedByTown = $elementos->groupBy(static fn ($item) => $item->localidad ?: 'Desconeguda');
     $tabName = $pestana->getNombre();
     $filterId = 'mis-colaboraciones-town-filter-' . $tabName;
     $quickFilterId = 'mis-colaboraciones-quick-filters-' . $tabName;
     $extraQuickFilterId = 'mis-colaboraciones-extra-quick-filters-' . $tabName;
-    $sortId = 'mis-colaboraciones-sort-' . $tabName;
-    $seguimentSummary = [
-        'vençuts' => $elementos->where('seguimentUrgenciaKey', 'vençut')->count(),
-        'estaSetmana' => $elementos->where('seguimentUrgenciaKey', 'esta_setmana')->count(),
-        'pendentResposta' => $elementos->where('seguimentEstatKey', 'pendent_resposta')->count(),
-    ];
-    $documentacioSummary = [
-        'noPreparades' => $elementos->where('estatPreparacioKey', 'no_preparada')->count(),
-        'senseDocument' => $elementos->where('teDocumentEmpresa', false)->count(),
-        'senseFct' => $elementos->filter(static fn ($item) => (int) ($item->fctsAssociadesCount ?? 0) === 0)->count(),
-        'pendents' => $elementos->filter(static fn ($item) => (int) ($item->documentacioPendentCount ?? 0) > 0)->count(),
-    ];
-    $allContacts = $elementos->flatMap(static fn ($item) => $item->contactos ?? collect())->filter();
-    $adopcioSummary = [
-        'ambContacteCurs' => $elementos->filter(static function ($item) use ($currentCourseStart) {
-            $ultima = $item->ultimaActividad?->created_at;
-            return $ultima !== null && \Illuminate\Support\Carbon::parse($ultima)->gte($currentCourseStart);
-        })->count(),
-        'senseMoviment' => $elementos->filter(static fn ($item) => $item->diesSenseContacte === null || (int) $item->diesSenseContacte >= 30)->count(),
-        'tutorsActius' => $allContacts
-            ->pluck('author_id')
-            ->filter()
-            ->unique()
-            ->count(),
-    ];
+    $summaryData = match ($tabName) {
+        'resta' => [
+            'type' => 'resta',
+            'total' => $elementos->count(),
+            'topTowns' => $groupedByTown
+                ->map(static fn ($items, $town) => ['town' => $town, 'count' => $items->count()])
+                ->sortByDesc('count')
+                ->values()
+                ->take(2),
+        ],
+        'pendiente' => [
+            'type' => 'pendiente',
+            'total' => $elementos->count(),
+            'noColaboren' => $elementos->where('estado', 3)->count(),
+            'contactades' => $elementos->filter(static fn ($item) => $item->ultimaActividad !== null)->count(),
+            'noContactades' => $elementos->filter(static fn ($item) => $item->ultimaActividad === null)->count(),
+        ],
+        'colabora' => [
+            'type' => 'colabora',
+            'total' => $elementos->count(),
+            'llocsTreball' => $elementos->sum(static fn ($item) => (int) ($item->puestos ?? 0)),
+            'fcts' => $elementos->sum(static fn ($item) => (int) ($item->fctsAssociadesCount ?? 0)),
+            'reservades' => $elementos->sum(static function ($item) {
+                $llocs = (int) ($item->puestos ?? 0);
+                $fcts = (int) ($item->fctsAssociadesCount ?? 0);
+                $preasignaciones = $item->preasignacionesPanel ?? collect();
+                $active = $preasignaciones->whereIn('estado', ['proposta', 'reservada'])->count();
+                $llocsDisponibles = max($llocs - $fcts, 0);
+
+                return min($active, $llocsDisponibles);
+            }),
+            'noAssignades' => $elementos->sum(static function ($item) {
+                $llocs = (int) ($item->puestos ?? 0);
+                $fcts = (int) ($item->fctsAssociadesCount ?? 0);
+                $preasignaciones = $item->preasignacionesPanel ?? collect();
+                $reservades = min(
+                    $preasignaciones->whereIn('estado', ['proposta', 'reservada'])->count(),
+                    max($llocs - $fcts, 0)
+                );
+
+                return max($llocs - $fcts - $reservades, 0);
+            }),
+        ],
+        default => [
+            'type' => 'generic',
+            'total' => $elementos->count(),
+        ],
+    };
 @endphp
 
+@if ($summaryData['type'] === 'resta')
+    <div class="row mb-3">
+        <div class="col-md-3 col-sm-6 col-xs-12 mb-3">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted" title="Total no assignades">Total no assignades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['total'] }}</div>
+            </div>
+        </div>
+        @foreach ($summaryData['topTowns'] as $topTown)
+            <div class="col-md-3 col-sm-6 col-xs-12 mb-3">
+                <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                    <div class="small text-muted" title="{{ $topTown['town'] }}">{{ $topTown['town'] }}</div>
+                    <div style="font-size: 1.75rem; font-weight: 700;">{{ $topTown['count'] }}</div>
+                </div>
+            </div>
+        @endforeach
+        @if ($summaryData['total'] > $summaryData['topTowns']->sum('count'))
+            <div class="col-md-3 col-sm-6 col-xs-12 mb-3">
+                <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                    <div class="small text-muted" title="Resta">Resta</div>
+                    <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['total'] - $summaryData['topTowns']->sum('count') }}</div>
+                </div>
+            </div>
+        @endif
+    </div>
+@else
+<div class="mb-3 mis-colaboraciones-summary-row">
+    @if ($summaryData['type'] === 'pendiente')
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">Total assignades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['contactades'] + $summaryData['noContactades'] + $summaryData['noColaboren'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">Contactades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['contactades'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">No contactades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['noContactades'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">No col·laboren</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['noColaboren'] }}</div>
+            </div>
+        </div>
+    @elseif ($summaryData['type'] === 'colabora')
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">Total</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['total'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">Llocs de treball</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['llocsTreball'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">FCT</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['fcts'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">Reservades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['reservades'] }}</div>
+            </div>
+        </div>
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">No assignades</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['noAssignades'] }}</div>
+            </div>
+        </div>
+    @else
+        <div class="mis-colaboraciones-summary-card">
+            <div class="rounded border p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);background:#fff;">
+                <div class="small text-muted">{{ $tabName }}</div>
+                <div style="font-size: 1.75rem; font-weight: 700;">{{ $summaryData['total'] }}</div>
+            </div>
+        </div>
+    @endif
+</div>
+@endif
+
 <div class="col-xs-12 mb-3">
-    <div class="d-flex flex-wrap align-items-center" style="gap: 8px 18px;">
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <strong class="small text-muted">Seguiment</strong>
-            <span class="badge bg-danger">Vençuts: {{ $seguimentSummary['vençuts'] }}</span>
-            <span class="badge bg-warning text-dark">Esta setmana: {{ $seguimentSummary['estaSetmana'] }}</span>
-            <span class="badge bg-info text-dark">Pendents de resposta: {{ $seguimentSummary['pendentResposta'] }}</span>
-        </div>
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <strong class="small text-muted">Documentació</strong>
-            <span class="badge bg-danger">No preparades: {{ $documentacioSummary['noPreparades'] }}</span>
-            <span class="badge bg-warning text-dark">Sense document: {{ $documentacioSummary['senseDocument'] }}</span>
-            <span class="badge bg-primary">Pendents documentals: {{ $documentacioSummary['pendents'] }}</span>
-            <span class="badge bg-secondary">Sense FCT: {{ $documentacioSummary['senseFct'] }}</span>
-        </div>
-        <div class="d-flex flex-wrap align-items-center gap-2">
-            <strong class="small text-muted">Adopció</strong>
-            <span class="badge bg-success">Amb contacte este curs: {{ $adopcioSummary['ambContacteCurs'] }}</span>
-            <span class="badge bg-secondary">Sense moviment: {{ $adopcioSummary['senseMoviment'] }}</span>
-            <span class="badge bg-info text-dark">Tutors actius: {{ $adopcioSummary['tutorsActius'] }}</span>
-        </div>
+    <div style="max-width: 420px;">
+        <label for="{{ $filterId }}" class="form-label fw-semibold">Filtrar per poble</label>
+        <input id="{{ $filterId }}"
+               class="form-control mis-colaboraciones-town-filter"
+               data-target-tab="{{ $tabName }}"
+               list="{{ $filterId }}-options"
+               type="search"
+               placeholder="Escriu part del poble">
+        <datalist id="{{ $filterId }}-options">
+            @foreach ($townOptions as $townOption)
+                <option value="{{ $townOption }}"></option>
+            @endforeach
+        </datalist>
     </div>
 </div>
 
-<div class="col-xs-12 mb-3">
-    <div class="d-flex flex-wrap align-items-end" style="gap: 12px;">
-        <div style="flex: 2 1 320px; min-width: 260px;">
-            <label for="{{ $filterId }}" class="form-label fw-semibold">Filtrar per poble</label>
-            <input id="{{ $filterId }}"
-                   class="form-control mis-colaboraciones-town-filter"
-                   data-target-tab="{{ $tabName }}"
-                   list="{{ $filterId }}-options"
-                   type="search"
-                   placeholder="Escriu part del poble">
-            <datalist id="{{ $filterId }}-options">
-                @foreach ($townOptions as $townOption)
-                    <option value="{{ $townOption }}"></option>
-                @endforeach
-            </datalist>
-        </div>
-
-        <div style="flex: 1 1 220px; min-width: 220px;">
-            <label for="{{ $sortId }}" class="form-label fw-semibold">Ordenar per</label>
-            <select id="{{ $sortId }}" class="form-control mis-colaboraciones-sort" data-target-tab="{{ $tabName }}">
-                <option value="locality">Poble</option>
-                <option value="priority">Prioritat</option>
-                <option value="preparation">Preparació</option>
-                <option value="stale">Desactualització</option>
-                <option value="company">Empresa</option>
-            </select>
-        </div>
-    </div>
-</div>
-
-<div class="col-xs-12 mb-3" id="{{ $quickFilterId }}">
-    <p class="fw-semibold mb-2">Filtres ràpids</p>
-    <div class="d-flex flex-wrap align-items-start" style="gap: 12px 24px;">
-        <div>
-            <p class="small text-muted mb-1"><strong>Fitxa</strong></p>
+@if ($tabName !== 'resta')
+    <div class="col-xs-12 mb-3" id="{{ $quickFilterId }}">
+        <p class="fw-semibold mb-2">Filtres ràpids</p>
+        @if ($tabName === 'pendiente')
             <div class="d-flex flex-wrap gap-2">
                 <label class="btn btn-default btn-sm mb-1">
                     <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-contact">
@@ -117,83 +234,103 @@
                     <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-phone">
                     Sense telèfon
                 </label>
-                <label class="btn btn-default btn-sm mb-1">
-                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-instructor">
-                    Sense instructor
-                </label>
-                <label class="btn btn-default btn-sm mb-1">
-                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="not-ready">
-                    No preparada
-                </label>
             </div>
-        </div>
-        <div>
-            <p class="small text-muted mb-1"><strong>Seguiment</strong></p>
+        @else
+            <div class="d-flex flex-wrap align-items-start" style="gap: 12px 24px;">
+                <div>
+                    <p class="small text-muted mb-1"><strong>Fitxa</strong></p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-contact">
+                            Sense contacte
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-email">
+                            Sense email
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-phone">
+                            Sense telèfon
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-instructor">
+                            Sense instructor
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="not-ready">
+                            No preparada
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p class="small text-muted mb-1"><strong>Seguiment</strong></p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="stale-contact">
+                            30+ dies sense contacte
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-response">
+                            Esperant resposta
+                        </label>
+                        <label class="btn btn-default btn-sm mb-1">
+                            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="overdue-followup">
+                            Acció vençuda
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p class="small text-muted mb-1"><strong>Documentació</strong></p>
+                    <button class="btn btn-default btn-sm mb-1" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#{{ $extraQuickFilterId }}" aria-expanded="false"
+                            aria-controls="{{ $extraQuickFilterId }}">
+                        Més filtres documentals
+                    </button>
+                </div>
+            </div>
+        @endif
+    </div>
+
+    @if ($tabName === 'colabora')
+        <div class="col-xs-12 mb-3 collapse" id="{{ $extraQuickFilterId }}">
             <div class="d-flex flex-wrap gap-2">
                 <label class="btn btn-default btn-sm mb-1">
-                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="stale-contact">
-                    30+ dies sense contacte
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-agreement">
+                    Conveni pendent
                 </label>
                 <label class="btn btn-default btn-sm mb-1">
-                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-response">
-                    Esperant resposta
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-company-document">
+                    Sense document empresa
                 </label>
                 <label class="btn btn-default btn-sm mb-1">
-                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="overdue-followup">
-                    Acció vençuda
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="without-fcts">
+                    Sense FCT associada
                 </label>
-            </div>
-        </div>
-        <div>
-            <p class="small text-muted mb-1"><strong>Documentació</strong></p>
-            <button class="btn btn-default btn-sm mb-1" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#{{ $extraQuickFilterId }}" aria-expanded="false"
-                    aria-controls="{{ $extraQuickFilterId }}">
-                Més filtres documentals
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="col-xs-12 mb-3 collapse" id="{{ $extraQuickFilterId }}">
-    <div class="d-flex flex-wrap gap-2">
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-agreement">
-            Conveni pendent
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-company-document">
-            Sense document empresa
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="without-fcts">
-            Sense FCT associada
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="documentation-pending">
-            Documentació pendent
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="this-week-followup">
-            Acció esta setmana
-        </label>
-    </div>
-</div>
-
-@foreach ($elementos as $elemento)
-    @php
-        $contactos = $elemento->contactos ?? collect();
-        $localidad = $elemento->localidad;
-    @endphp
-    @if ($localidadActual !== $localidad)
-        @php($localidadActual = $localidad)
-        <div class="col-xs-12 mis-colaboraciones-town-group" data-target-tab="{{ $tabName }}" data-town="{{ $localidadActual }}" style="margin-top: 8px; margin-bottom: 6px;">
-            <div style="padding: 6px 10px; border-left: 4px solid #1abb9c; background: #f7f9fb;">
-                <strong><em class="fa fa-map-marker"></em> {{ $localidadActual }}</strong>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="documentation-pending">
+                    Documentació pendent
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="this-week-followup">
+                    Acció esta setmana
+                </label>
             </div>
         </div>
     @endif
-    @include ('intranet.partials.profile.partials.colaboracion')
+@endif
+
+@foreach ($groupedByTown as $localidad => $items)
+    <div class="col-xs-12 mis-colaboraciones-town-group" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}" style="margin-top: 8px; margin-bottom: 6px;">
+        <div style="padding: 6px 10px; border-left: 4px solid #1abb9c; background: #f7f9fb;">
+            <strong><em class="fa fa-map-marker"></em> {{ $localidad }}</strong>
+        </div>
+    </div>
+    <div class="row mis-colaboraciones-town-cards" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}">
+        @foreach ($items as $elemento)
+            @php($contactos = $elemento->contactos ?? collect())
+            @include ('intranet.partials.profile.partials.colaboracion')
+        @endforeach
+    </div>
 @endforeach
 
 @once
@@ -257,48 +394,13 @@
                     }
                 };
 
-                var cardCompare = function (left, right, orderMode) {
+                var cardCompare = function (left, right) {
                     var leftTown = normalizeTown(left.getAttribute('data-town') || '');
                     var rightTown = normalizeTown(right.getAttribute('data-town') || '');
                     var leftCompany = (left.getAttribute('data-company') || '').toString();
                     var rightCompany = (right.getAttribute('data-company') || '').toString();
-                    var leftDays = parseNumber(left.getAttribute('data-days-without-contact'), 9999);
-                    var rightDays = parseNumber(right.getAttribute('data-days-without-contact'), 9999);
-                    var leftPriority = parseNumber(left.getAttribute('data-priority-score'), 0);
-                    var rightPriority = parseNumber(right.getAttribute('data-priority-score'), 0);
-                    var leftPreparation = parseNumber(left.getAttribute('data-preparation-rank'), 0);
-                    var rightPreparation = parseNumber(right.getAttribute('data-preparation-rank'), 0);
-
-                    if (orderMode === 'priority') {
-                        if (rightPriority !== leftPriority) {
-                            return rightPriority - leftPriority;
-                        }
-                        return compareText(leftCompany, rightCompany);
-                    }
-
-                    if (orderMode === 'preparation') {
-                        if (rightPreparation !== leftPreparation) {
-                            return rightPreparation - leftPreparation;
-                        }
-                        return compareText(leftCompany, rightCompany);
-                    }
-
-                    if (orderMode === 'stale') {
-                        if (rightDays !== leftDays) {
-                            return rightDays - leftDays;
-                        }
-                        return compareText(leftCompany, rightCompany);
-                    }
-
-                    if (orderMode === 'company') {
-                        var companyCompare = compareText(leftCompany, rightCompany);
-                        if (companyCompare !== 0) {
-                            return companyCompare;
-                        }
-                        return compareText(leftTown, rightTown);
-                    }
-
                     var townCompare = compareText(leftTown, rightTown);
+
                     if (townCompare !== 0) {
                         return townCompare;
                     }
@@ -310,59 +412,37 @@
                     var groups = Array.from(document.querySelectorAll('.mis-colaboraciones-town-group[data-target-tab="' + targetTab + '"]'));
 
                     return groups.map(function (group) {
-                        var cards = [];
-                        var next = group.nextElementSibling;
-
-                        while (next && !next.classList.contains('mis-colaboraciones-town-group')) {
-                            if (next.classList.contains('mis-colaboraciones-card')) {
-                                cards.push(next);
-                            }
-                            next = next.nextElementSibling;
-                        }
+                        var cardsContainer = group.nextElementSibling;
+                        var cards = cardsContainer
+                            ? Array.from(cardsContainer.querySelectorAll('.mis-colaboraciones-card'))
+                            : [];
 
                         return {
                             group: group,
+                            cardsContainer: cardsContainer,
                             cards: cards
                         };
                     });
                 };
 
-                var sortTownBlocks = function (blocks, orderMode) {
+                var sortTownBlocks = function (blocks) {
                     blocks.forEach(function (block) {
                         block.cards.sort(function (left, right) {
-                            return cardCompare(left, right, orderMode);
+                            return cardCompare(left, right);
                         });
                     });
 
-                    if (orderMode === 'locality') {
-                        blocks.sort(function (left, right) {
-                            return compareText(
-                                normalizeTown(left.group.getAttribute('data-town') || ''),
-                                normalizeTown(right.group.getAttribute('data-town') || '')
-                            );
-                        });
-                        return blocks;
-                    }
-
                     blocks.sort(function (left, right) {
-                        var leftVisibleCards = left.cards.filter(function (card) {
-                            return card.style.display !== 'none';
-                        });
-                        var rightVisibleCards = right.cards.filter(function (card) {
-                            return card.style.display !== 'none';
-                        });
-                        var leftAnchor = leftVisibleCards[0] || left.cards[0];
-                        var rightAnchor = rightVisibleCards[0] || right.cards[0];
-
-                        return cardCompare(leftAnchor, rightAnchor, orderMode);
+                        return compareText(
+                            normalizeTown(left.group.getAttribute('data-town') || ''),
+                            normalizeTown(right.group.getAttribute('data-town') || '')
+                        );
                     });
 
                     return blocks;
                 };
 
                 var applyOrderingForTab = function (targetTab) {
-                    var sortSelect = document.querySelector('.mis-colaboraciones-sort[data-target-tab="' + targetTab + '"]');
-                    var orderMode = sortSelect ? sortSelect.value : 'locality';
                     var blocks = collectTownBlocks(targetTab);
 
                     if (!blocks.length) {
@@ -371,60 +451,38 @@
 
                     var parent = blocks[0].group.parentElement;
 
-                    if (orderMode === 'locality') {
-                        sortTownBlocks(blocks, orderMode).forEach(function (block) {
-                            parent.appendChild(block.group);
+                    sortTownBlocks(blocks).forEach(function (block) {
+                        parent.appendChild(block.group);
+                        if (block.cardsContainer) {
+                            parent.appendChild(block.cardsContainer);
                             block.cards.forEach(function (card) {
-                                parent.appendChild(card);
+                                block.cardsContainer.appendChild(card);
                             });
-                        });
-
-                        return;
-                    }
-
-                    document.querySelectorAll('.mis-colaboraciones-town-group[data-target-tab="' + targetTab + '"]').forEach(function (group) {
-                        group.style.display = 'none';
+                        }
                     });
-
-                    blocks
-                        .reduce(function (allCards, block) {
-                            return allCards.concat(block.cards);
-                        }, [])
-                        .sort(function (left, right) {
-                            return cardCompare(left, right, orderMode);
-                        })
-                        .forEach(function (card) {
-                            parent.appendChild(card);
-                        });
                 };
 
                 var applyTownGroupVisibilityForTab = function (targetTab) {
-                    var sortSelect = document.querySelector('.mis-colaboraciones-sort[data-target-tab="' + targetTab + '"]');
-                    var orderMode = sortSelect ? sortSelect.value : 'locality';
-
-                    if (orderMode !== 'locality') {
-                        document.querySelectorAll('.mis-colaboraciones-town-group[data-target-tab="' + targetTab + '"]').forEach(function (group) {
-                            group.style.display = 'none';
-                        });
-
-                        return;
-                    }
-
                     document.querySelectorAll('.mis-colaboraciones-town-group[data-target-tab="' + targetTab + '"]').forEach(function (group) {
                         var groupTown = normalizeTown(group.getAttribute('data-town') || '');
                         var townFilter = document.querySelector('.mis-colaboraciones-town-filter[data-target-tab="' + targetTab + '"]');
                         var selectedTown = normalizeTown(townFilter ? townFilter.value : '');
                         var matchesTown = !selectedTown || groupTown.indexOf(selectedTown) !== -1;
                         var hasVisibleCards = false;
-                        var next = group.nextElementSibling;
+                        var cardsContainer = group.nextElementSibling;
+                        var cards = cardsContainer
+                            ? Array.from(cardsContainer.querySelectorAll('.mis-colaboraciones-card'))
+                            : [];
 
-                        while (next && !next.classList.contains('mis-colaboraciones-town-group')) {
-                            if (next.classList.contains('mis-colaboraciones-card') && next.style.display !== 'none') {
+                        cards.forEach(function (card) {
+                            if (card.style.display !== 'none') {
                                 hasVisibleCards = true;
                             }
-                            next = next.nextElementSibling;
-                        }
+                        });
 
+                        if (cardsContainer) {
+                            cardsContainer.style.display = matchesTown && hasVisibleCards ? 'flex' : 'none';
+                        }
                         group.style.display = matchesTown && hasVisibleCards ? '' : 'none';
                     });
                 };
@@ -469,14 +527,6 @@
 
                     filter.addEventListener('change', function () {
                         applyFiltersForTab(targetTab);
-                    });
-                });
-
-                document.querySelectorAll('.mis-colaboraciones-sort').forEach(function (sortSelect) {
-                    var targetTab = sortSelect.getAttribute('data-target-tab') || '';
-
-                    sortSelect.addEventListener('change', function () {
-                        applyOrderingForTab(targetTab);
                     });
                 });
             });
