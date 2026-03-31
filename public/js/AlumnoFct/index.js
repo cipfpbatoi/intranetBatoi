@@ -51,8 +51,8 @@
             button.style.display = 'none';
         });
 
-        if (activeTab === '#tab_LOE') {
-            document.querySelectorAll('#tab_LOE .fct-acta-btn').forEach(function (button) {
+        if (activeTab === '#tab_LOE' || activeTab === '#tab_LOGSE') {
+            document.querySelectorAll(activeTab + ' .fct-acta-btn').forEach(function (button) {
                 button.style.display = '';
             });
         }

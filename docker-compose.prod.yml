@@ -1,14 +1,11 @@
 services:
     laravel.prod:
-
         restart: unless-stopped
-        
-        image: arturocandela/intranet:${IMAGE_TAG_PROD:-laravel12-prod}
+        image: arturocandela/intranet:${IMAGE_TAG_PROD:-latest-prod}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:
             - "80"
-        
         environment:
             WWWUSER: "${WWWUSER:-${UID:-1000}}"
             WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
@@ -20,13 +17,19 @@ services:
             - '/var/www/html/intranetBatoi/storage:/var/www/html/storage'
         networks:
             - sail
-        
         depends_on:
             - selenium
+        healthcheck:
+            test: ["CMD-SHELL", "curl -sf http://localhost/up || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
+        labels:
+            - "com.centurylinklabs.watchtower.enable=true"
+
     caddy:
-
         restart: unless-stopped
-
         image: caddy:2-alpine
         ports:
             - "80:80"
@@ -39,7 +42,7 @@ services:
             - laravel.prod
         networks:
             - sail
-    
+
     selenium:
         restart: unless-stopped
         image: selenium/standalone-firefox:latest
@@ -50,9 +53,24 @@ services:
         networks:
             - sail
         volumes:
-          - selenium-downloads:/home/seluser/Downloads
+            - selenium-downloads:/home/seluser/Downloads
         command: ["sh", "-lc", "chmod 0777 /home/seluser/Downloads && /opt/bin/entry_point.sh"]
-    
+
+    watchtower:
+        restart: unless-stopped
+        image: containrrr/watchtower:latest
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            WATCHTOWER_POLL_INTERVAL: "${WATCHTOWER_POLL_INTERVAL:-300}"
+            WATCHTOWER_CLEANUP: "true"
+            WATCHTOWER_LABEL_ENABLE: "true"
+            WATCHTOWER_INCLUDE_RESTARTING: "true"
+            REPO_USER: "${DOCKERHUB_USERNAME:-}"
+            REPO_PASS: "${DOCKERHUB_TOKEN:-}"
+        networks:
+            - sail
+
 networks:
     sail:
         driver: bridge

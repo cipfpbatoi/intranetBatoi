@@ -91,4 +91,17 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', config('contacto.host.email')),
         'name' => env('MAIL_FROM_NAME', 'Intranet'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Estimated Maximum Message Size
+    |--------------------------------------------------------------------------
+    |
+    | Conservative upper bound used before SMTP send to avoid provider
+    | rejections caused by attachments or embedded content that bloat the
+    | final MIME message.
+    |
+    */
+
+    'max_message_bytes' => env('MAIL_MAX_MESSAGE_BYTES', 18 * 1024 * 1024),
 ];

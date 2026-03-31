@@ -126,6 +126,6 @@ RUN dpkg -i /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 
 RUN chmod +x /usr/local/bin/start-container
 
-EXPOSE 8000
+EXPOSE 80
 
 ENTRYPOINT ["start-container"]

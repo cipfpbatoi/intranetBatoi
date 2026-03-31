@@ -4,10 +4,12 @@ on:
   pull_request:
     branches:
       - Laravel12
+      - Laravel13
       - master
   push:
     branches:
       - Laravel12
+      - Laravel13
 
 jobs:
   build-assets:
@@ -22,7 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: npm
 
       - name: Setup npm
         run: npm install -g npm@11.11.0

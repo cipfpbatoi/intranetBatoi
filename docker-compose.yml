@@ -1,7 +1,14 @@
 services:
     laravel.test:
-        
-        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel12-dev}
+        build:
+            context: ./docker/8.3
+            dockerfile: Dockerfile
+            args:
+                WWWUSER: "${WWWUSER:-${UID:-1000}}"
+                WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
+                NODE_VERSION: "${NODE_VERSION:-20}"
+                NPM_VERSION: "${NPM_VERSION:-11}"
+        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel13-dev}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:
