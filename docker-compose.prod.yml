@@ -19,6 +19,12 @@ services:
             - sail
         depends_on:
             - selenium
+        healthcheck:
+            test: ["CMD-SHELL", "curl -sf http://localhost/up || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
         labels:
             - "com.centurylinklabs.watchtower.enable=true"
 

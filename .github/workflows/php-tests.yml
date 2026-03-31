@@ -3,12 +3,11 @@ name: PHP Tests
 on:
   pull_request:
     branches:
-      - Laravel12
+      - main
       - Laravel13
-      - master
   push:
     branches:
-      - Laravel12
+      - main
       - Laravel13
 
 jobs:
