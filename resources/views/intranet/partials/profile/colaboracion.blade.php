@@ -13,19 +13,36 @@
     $tabName = $pestana->getNombre();
     $filterId = 'mis-colaboraciones-town-filter-' . $tabName;
     $quickFilterId = 'mis-colaboraciones-quick-filters-' . $tabName;
+    $extraQuickFilterId = 'mis-colaboraciones-extra-quick-filters-' . $tabName;
     $sortId = 'mis-colaboraciones-sort-' . $tabName;
     $seguimentSummary = [
         'vençuts' => $elementos->where('seguimentUrgenciaKey', 'vençut')->count(),
         'estaSetmana' => $elementos->where('seguimentUrgenciaKey', 'esta_setmana')->count(),
         'pendentResposta' => $elementos->where('seguimentEstatKey', 'pendent_resposta')->count(),
     ];
+    $documentacioSummary = [
+        'noPreparades' => $elementos->where('estatPreparacioKey', 'no_preparada')->count(),
+        'senseDocument' => $elementos->where('teDocumentEmpresa', false)->count(),
+        'senseFct' => $elementos->filter(static fn ($item) => (int) ($item->fctsAssociadesCount ?? 0) === 0)->count(),
+        'pendents' => $elementos->filter(static fn ($item) => (int) ($item->documentacioPendentCount ?? 0) > 0)->count(),
+    ];
 @endphp
 
 <div class="col-xs-12 mb-3">
-    <div class="d-flex flex-wrap gap-2">
-        <span class="badge bg-danger">Vençuts: {{ $seguimentSummary['vençuts'] }}</span>
-        <span class="badge bg-warning text-dark">Esta setmana: {{ $seguimentSummary['estaSetmana'] }}</span>
-        <span class="badge bg-info text-dark">Pendents de resposta: {{ $seguimentSummary['pendentResposta'] }}</span>
+    <div class="d-flex flex-wrap align-items-center" style="gap: 8px 18px;">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <strong class="small text-muted">Seguiment</strong>
+            <span class="badge bg-danger">Vençuts: {{ $seguimentSummary['vençuts'] }}</span>
+            <span class="badge bg-warning text-dark">Esta setmana: {{ $seguimentSummary['estaSetmana'] }}</span>
+            <span class="badge bg-info text-dark">Pendents de resposta: {{ $seguimentSummary['pendentResposta'] }}</span>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <strong class="small text-muted">Documentació</strong>
+            <span class="badge bg-danger">No preparades: {{ $documentacioSummary['noPreparades'] }}</span>
+            <span class="badge bg-warning text-dark">Sense document: {{ $documentacioSummary['senseDocument'] }}</span>
+            <span class="badge bg-primary">Pendents documentals: {{ $documentacioSummary['pendents'] }}</span>
+            <span class="badge bg-secondary">Sense FCT: {{ $documentacioSummary['senseFct'] }}</span>
+        </div>
     </div>
 </div>
 
@@ -51,6 +68,7 @@
             <select id="{{ $sortId }}" class="form-control mis-colaboraciones-sort" data-target-tab="{{ $tabName }}">
                 <option value="locality">Poble</option>
                 <option value="priority">Prioritat</option>
+                <option value="preparation">Preparació</option>
                 <option value="stale">Desactualització</option>
                 <option value="company">Empresa</option>
             </select>
@@ -60,38 +78,77 @@
 
 <div class="col-xs-12 mb-3" id="{{ $quickFilterId }}">
     <p class="fw-semibold mb-2">Filtres ràpids</p>
+    <div class="d-flex flex-wrap align-items-start" style="gap: 12px 24px;">
+        <div>
+            <p class="small text-muted mb-1"><strong>Fitxa</strong></p>
+            <div class="d-flex flex-wrap gap-2">
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-contact">
+                    Sense contacte
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-email">
+                    Sense email
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-phone">
+                    Sense telèfon
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-instructor">
+                    Sense instructor
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="not-ready">
+                    No preparada
+                </label>
+            </div>
+        </div>
+        <div>
+            <p class="small text-muted mb-1"><strong>Seguiment</strong></p>
+            <div class="d-flex flex-wrap gap-2">
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="stale-contact">
+                    30+ dies sense contacte
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-response">
+                    Esperant resposta
+                </label>
+                <label class="btn btn-default btn-sm mb-1">
+                    <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="overdue-followup">
+                    Acció vençuda
+                </label>
+            </div>
+        </div>
+        <div>
+            <p class="small text-muted mb-1"><strong>Documentació</strong></p>
+            <button class="btn btn-default btn-sm mb-1" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#{{ $extraQuickFilterId }}" aria-expanded="false"
+                    aria-controls="{{ $extraQuickFilterId }}">
+                Més filtres documentals
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12 mb-3 collapse" id="{{ $extraQuickFilterId }}">
     <div class="d-flex flex-wrap gap-2">
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-contact">
-            Sense contacte
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="stale-contact">
-            30+ dies sense contacte
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-email">
-            Sense email
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-phone">
-            Sense telèfon
-        </label>
-        <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-instructor">
-            Sense instructor
-        </label>
         <label class="btn btn-default btn-sm mb-1">
             <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-agreement">
             Conveni pendent
         </label>
         <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="pending-response">
-            Esperant resposta
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="missing-company-document">
+            Sense document empresa
         </label>
         <label class="btn btn-default btn-sm mb-1">
-            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="overdue-followup">
-            Acció vençuda
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="without-fcts">
+            Sense FCT associada
+        </label>
+        <label class="btn btn-default btn-sm mb-1">
+            <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="documentation-pending">
+            Documentació pendent
         </label>
         <label class="btn btn-default btn-sm mb-1">
             <input type="checkbox" class="mis-colaboraciones-quick-filter" data-target-tab="{{ $tabName }}" data-filter="this-week-followup">
@@ -158,6 +215,14 @@
                             return card.getAttribute('data-has-instructor') !== '1';
                         case 'pending-agreement':
                             return card.getAttribute('data-conveni-pendent') === '1';
+                        case 'missing-company-document':
+                            return card.getAttribute('data-has-company-document') !== '1';
+                        case 'without-fcts':
+                            return card.getAttribute('data-has-fcts') !== '1';
+                        case 'not-ready':
+                            return card.getAttribute('data-preparation-state') === 'no_preparada';
+                        case 'documentation-pending':
+                            return parseNumber(card.getAttribute('data-documentation-pending-count'), 0) > 0;
                         case 'pending-response':
                             return card.getAttribute('data-followup-status') === 'pendent_resposta';
                         case 'overdue-followup':
@@ -178,10 +243,19 @@
                     var rightDays = parseNumber(right.getAttribute('data-days-without-contact'), 9999);
                     var leftPriority = parseNumber(left.getAttribute('data-priority-score'), 0);
                     var rightPriority = parseNumber(right.getAttribute('data-priority-score'), 0);
+                    var leftPreparation = parseNumber(left.getAttribute('data-preparation-rank'), 0);
+                    var rightPreparation = parseNumber(right.getAttribute('data-preparation-rank'), 0);
 
                     if (orderMode === 'priority') {
                         if (rightPriority !== leftPriority) {
                             return rightPriority - leftPriority;
+                        }
+                        return compareText(leftCompany, rightCompany);
+                    }
+
+                    if (orderMode === 'preparation') {
+                        if (rightPreparation !== leftPreparation) {
+                            return rightPreparation - leftPreparation;
                         }
                         return compareText(leftCompany, rightCompany);
                     }

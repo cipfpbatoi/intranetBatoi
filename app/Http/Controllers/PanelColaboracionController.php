@@ -174,7 +174,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.contacto",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-default selecciona',
                     'icon' => 'fa fa-bell-o',
                     'data-url' => '/api/documentacionFCT/contacto'
                 ]
@@ -185,7 +185,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.revision",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-default selecciona',
                     'icon' => 'fa fa-check',
                     'data-url' => '/api/documentacionFCT/revision'
                 ]

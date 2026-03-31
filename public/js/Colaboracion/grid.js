@@ -38,7 +38,7 @@
             'Seguiment fet',
             'Pendent de resposta',
             'Cal tornar a contactar',
-            'Tancat'
+            'Seguiment tancat'
         ]
     };
 
@@ -540,7 +540,7 @@
         if (activity.created_at) {
             status = {
                 key: 'tancat',
-                label: 'Tancat',
+                label: 'Seguiment tancat',
                 className: 'bg-success'
             };
 
@@ -566,7 +566,7 @@
             ) {
                 status = {
                     key: 'tancat',
-                    label: 'Tancat',
+                    label: 'Seguiment tancat',
                     className: 'bg-success'
                 };
             }

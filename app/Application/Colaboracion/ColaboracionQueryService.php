@@ -26,7 +26,10 @@ class ColaboracionQueryService
     {
         return Colaboracion::query()
             ->MiColaboracion(null, $dni)
-            ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'Ciclo'])
+            ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'Ciclo', 'fcts' => function ($query): void {
+                $query->orderByDesc('id')->with('Instructor');
+            }])
+            ->withCount('fcts')
             ->get();
     }
 
@@ -50,7 +53,10 @@ class ColaboracionQueryService
         }
 
         return Colaboracion::query()
-            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores'])
+            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'fcts' => function ($query): void {
+                $query->orderByDesc('id')->with('Instructor');
+            }])
+            ->withCount('fcts')
             ->whereNotIn('id', $meves->pluck('id'))
             ->where(function ($query) use ($parelles): void {
                 foreach ($parelles as $pair) {
@@ -180,6 +186,34 @@ class ColaboracionQueryService
         $colaboracion->proximaAccioText = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Pròxim pas: ');
         $colaboracion->proximaAccioData = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Data prevista: ');
 
+        $fcts = $colaboracion->fcts ?? collect();
+        $ultimaFct = $fcts->first();
+        $teDocumentEmpresa = !blank($empresa?->fichero);
+        $documentacioPendent = collect();
+
+        if (!$teDocumentEmpresa) {
+            $documentacioPendent->push('Sense document d\'empresa');
+        }
+
+        if ($conveniPendent) {
+            $documentacioPendent->push('Conveni o Annex I pendent');
+        }
+
+        if (!$hasInstructor) {
+            $documentacioPendent->push('Falta instructor');
+        }
+
+        $criterisPreparacio = [
+            !$this->isBlankText($colaboracion->contacto ?? null),
+            !$this->isBlankText($colaboracion->telefono ?? null),
+            !$this->isBlankText($colaboracion->email ?? null),
+            $hasInstructor,
+            !$conveniPendent,
+        ];
+
+        $criterisPreparats = collect($criterisPreparacio)->filter()->count();
+        $estatPreparacio = $this->resolvePreparationState($criterisPreparats, count($criterisPreparacio));
+
         $seguiment = $this->resolveFollowUpState(
             $colaboracion->ultimaActividad,
             $colaboracion->proximaAccioText,
@@ -193,6 +227,23 @@ class ColaboracionQueryService
         $colaboracion->seguimentUrgenciaLabel = $seguiment['urgency_label'];
         $colaboracion->seguimentUrgenciaClass = $seguiment['urgency_class'];
         $colaboracion->teProximaAccio = !empty($colaboracion->proximaAccioText);
+        $colaboracion->teDocumentEmpresa = $teDocumentEmpresa;
+        $colaboracion->documentacioPendentItems = $documentacioPendent;
+        $colaboracion->documentacioPendentLabel = $documentacioPendent->isEmpty()
+            ? 'Documentació al dia'
+            : $documentacioPendent->join(', ');
+        $colaboracion->fctsAssociadesCount = (int) ($colaboracion->fcts_count ?? $fcts->count());
+        $colaboracion->ultimaFct = $ultimaFct;
+        $colaboracion->ultimaFctId = $ultimaFct?->id;
+        $colaboracion->estatPreparacioKey = $estatPreparacio['key'];
+        $colaboracion->estatPreparacioLabel = $estatPreparacio['label'];
+        $colaboracion->estatPreparacioClass = $estatPreparacio['class'];
+        $colaboracion->estatPreparacioRank = match ($estatPreparacio['key']) {
+            'no_preparada' => 2,
+            'parcial' => 1,
+            default => 0,
+        };
+        $colaboracion->documentacioPendentCount = $documentacioPendent->count();
     }
 
     /**
@@ -252,6 +303,36 @@ class ColaboracionQueryService
     }
 
     /**
+     * Resol l'estat global de preparació documental i operativa de la col·laboració.
+     *
+     * @return array{key:string,label:string,class:string}
+     */
+    private function resolvePreparationState(int $completedCriteria, int $totalCriteria): array
+    {
+        if ($completedCriteria >= $totalCriteria) {
+            return [
+                'key' => 'preparada',
+                'label' => 'Preparada',
+                'class' => 'bg-success',
+            ];
+        }
+
+        if ($completedCriteria >= 3) {
+            return [
+                'key' => 'parcial',
+                'label' => 'Parcialment preparada',
+                'class' => 'bg-warning text-dark',
+            ];
+        }
+
+        return [
+            'key' => 'no_preparada',
+            'label' => 'No preparada',
+            'class' => 'bg-danger',
+        ];
+    }
+
+    /**
      * @return array{
      *   status_key:string,
      *   status_label:string,
@@ -273,7 +354,7 @@ class ColaboracionQueryService
 
         if ($ultimaActividad !== null) {
             $statusKey = 'tancat';
-            $statusLabel = 'Tancat';
+            $statusLabel = 'Seguiment tancat';
             $statusClass = 'bg-success';
 
             if (str_contains($resultat, 'pendent de resposta')) {
@@ -293,7 +374,7 @@ class ColaboracionQueryService
                 || str_contains($resultat, 'contactat')
             ) {
                 $statusKey = 'tancat';
-                $statusLabel = 'Tancat';
+                $statusLabel = 'Seguiment tancat';
                 $statusClass = 'bg-success';
             }
         }

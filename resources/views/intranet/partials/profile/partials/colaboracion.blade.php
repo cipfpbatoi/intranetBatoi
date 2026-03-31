@@ -44,8 +44,13 @@
      data-has-email="{{ trim((string) ($elemento->email ?? '')) !== '' ? '1' : '0' }}"
      data-has-instructor="{{ !empty($elemento->hasInstructor) ? '1' : '0' }}"
      data-conveni-pendent="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
+     data-has-company-document="{{ !empty($elemento->teDocumentEmpresa) ? '1' : '0' }}"
+     data-has-fcts="{{ !empty($elemento->fctsAssociadesCount) ? '1' : '0' }}"
      data-days-without-contact="{{ $diesSenseContacte ?? '' }}"
      data-priority-score="{{ (int) ($elemento->prioritatFitxa ?? 0) }}"
+     data-preparation-state="{{ $elemento->estatPreparacioKey ?? 'no_preparada' }}"
+     data-preparation-rank="{{ (int) ($elemento->estatPreparacioRank ?? 0) }}"
+     data-documentation-pending-count="{{ (int) ($elemento->documentacioPendentCount ?? 0) }}"
      data-followup-status="{{ $elemento->seguimentEstatKey ?? 'sense_seguiment' }}"
      data-followup-urgency="{{ $elemento->seguimentUrgenciaKey ?? 'cap' }}">
     <div id="{{$elemento->id}}" class="well profile_view"
@@ -93,6 +98,7 @@
                     <li><em class="fa fa-user"></em> {{$elemento->contacto ?: 'Sense contacte'}}</li>
                     <li><em class="fa fa-phone"></em> {{$elemento->telefono ?: 'Sense telèfon'}}</li>
                     <li><em class="fa fa-envelope"></em> {{$elemento->email ?: 'Sense email'}}</li>
+                    <li><em class="fa fa-briefcase"></em> {{ (int) ($elemento->puestos ?? 0) }} lloc(s) · {{ (int) ($elemento->fctsAssociadesCount ?? 0) }} FCT associada(es)</li>
                 </ul>
 
                 @if ($ultimContacte)
@@ -155,6 +161,32 @@
 
                 <div class="collapse" id="{{ $collapseId }}">
                     <ul class="list-unstyled">
+                        <li>
+                            <em class="fa fa-check-square-o"></em>
+                            Preparació: <strong>{{ $elemento->estatPreparacioLabel ?? 'Sense valorar' }}</strong>
+                        </li>
+                        <li>
+                            <em class="fa fa-files-o"></em>
+                            Estat documental:
+                            @if (($elemento->documentacioPendentItems ?? collect())->isNotEmpty())
+                                <strong>{{ ($elemento->documentacioPendentItems ?? collect())->count() }} pendent(s)</strong>
+                            @else
+                                <strong>Al dia</strong>
+                            @endif
+                        </li>
+                        <li>
+                            <em class="fa fa-sitemap"></em>
+                            FCT associades: {{ (int) ($elemento->fctsAssociadesCount ?? 0) }}
+                            @if (!empty($elemento->ultimaFctId))
+                                · última #{{ $elemento->ultimaFctId }}
+                            @endif
+                        </li>
+                        @if (($elemento->documentacioPendentItems ?? collect())->isNotEmpty())
+                            <li>
+                                <em class="fa fa-angle-right"></em>
+                                {{ ($elemento->documentacioPendentItems ?? collect())->join(' · ') }}
+                            </li>
+                        @endif
                 @isset (authUser()->emailItaca)
                         <li>Conveni: <strong>
                                 {{$elemento->Centro->Empresa->concierto}}
@@ -168,6 +200,7 @@
                         <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
                         <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios ?: 'Sense horari'}}</li>
                         <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion ?: 'Sense adreça'}}</li>
+                        <li><em class="fa fa-file-pdf-o"></em> Document empresa: {{ !empty($elemento->teDocumentEmpresa) ? 'Disponible' : 'Pendent' }}</li>
                 @else
                         <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios}}</li>
                         <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion}}</li>
@@ -176,8 +209,26 @@
                             <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
                         @endif
                         <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
+                        <li><em class="fa fa-file-pdf-o"></em> Document empresa: {{ !empty($elemento->teDocumentEmpresa) ? 'Disponible' : 'Pendent' }}</li>
                 @endisset
                     </ul>
+                    <p class="mb-0" style="margin-top:.75rem">
+                        <a href="{{ route('empresa.detalle', ['empresa' => $elemento->Centro->idEmpresa]) }}" class="btn btn-default btn-xs">
+                            <em class="fa fa-building"></em> Empresa
+                        </a>
+                        @if (!empty($elemento->teDocumentEmpresa))
+                            <a href="{{ route('empresa.document', ['empresa' => $elemento->Centro->idEmpresa]) }}"
+                               class="btn btn-default btn-xs"
+                               target="_blank">
+                                <em class="fa fa-file-pdf-o"></em> Document
+                            </a>
+                        @endif
+                        @if (!empty($elemento->ultimaFctId))
+                            <a href="{{ route('fct.show', ['id' => $elemento->ultimaFctId]) }}" class="btn btn-default btn-xs">
+                                <em class="fa fa-graduation-cap"></em> Última FCT
+                            </a>
+                        @endif
+                    </p>
                 </div>
 
                 <div class="collapse" id="{{ $preasignacionesCollapseId }}">
