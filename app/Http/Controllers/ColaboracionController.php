@@ -183,12 +183,15 @@ class ColaboracionController extends ModalController
         ]);
 
         $ultimContacte = $this->seguimientoService->latestActivityForColaboracion($elemento->id);
+        $returnUrl = $request->filled('return_to')
+            ? (string) $request->query('return_to')
+            : url()->previous();
 
         if ($request->boolean('modal') || $request->ajax()) {
             return view('colaboracion.partials.show', compact('elemento', 'ultimContacte'));
         }
 
-        return view('colaboracion.show', compact('elemento', 'ultimContacte'));
+        return view('colaboracion.show', compact('elemento', 'ultimContacte', 'returnUrl'));
     }
 
     public function printAnexeIV($colaboracion)

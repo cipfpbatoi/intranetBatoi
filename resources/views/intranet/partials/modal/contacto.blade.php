@@ -14,6 +14,21 @@
         </div>
 
         <div class="form-group">
+            <label class="control-label" for="contact_template">Plantilla ràpida</label>
+            <select id="contact_template" name="contact_template" class="form-control">
+                <option value="">Sense plantilla</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button id="reuse_last_contact"
+                    type="button"
+                    class="btn btn-default btn-sm">
+                Reutilitzar últim contacte
+            </button>
+        </div>
+
+        <div class="form-group">
             <label class="control-label" for="resultat">Resultat del contacte</label>
             <select id="resultat" name="resultat" class="form-control"></select>
         </div>

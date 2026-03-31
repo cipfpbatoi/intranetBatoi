@@ -60,6 +60,12 @@
                  class="collapse"
                  aria-labelledby="headingOne{{$colaboracion->id}}">
                 <div class="card-body">
+                    <p class="mb-2">
+                        <a href="{{ route('colaboracion.show', ['colaboracion' => $colaboracion->id, 'return_to' => request()->fullUrl()]) }}"
+                           class="btn btn-default btn-xs">
+                            <em class="fa fa-comments"></em> Obrir fitxa de col·laboració
+                        </a>
+                    </p>
                     <em class="fa fa-user user-profile-icon"></em> {!! $colaboracion->contacto !!}
                     <em class="fa fa-phone user-profile-icon"></em> {{$colaboracion->telefono}}
                     <em class="fa fa-envelope user-profile-icon"></em> {{$colaboracion->email}}

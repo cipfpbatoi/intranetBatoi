@@ -7,6 +7,10 @@
 @endonce
 
 @php
+    $today = \Illuminate\Support\Carbon::today();
+    $currentCourseStart = $today->month >= 9
+        ? $today->copy()->startOfYear()->month(9)->day(1)
+        : $today->copy()->subYear()->startOfYear()->month(9)->day(1);
     $elementos = $panel->getElementos($pestana)->sortBy('localidad')->values();
     $localidadActual = null;
     $townOptions = $elementos->pluck('localidad')->filter()->unique()->values();
@@ -26,6 +30,19 @@
         'senseFct' => $elementos->filter(static fn ($item) => (int) ($item->fctsAssociadesCount ?? 0) === 0)->count(),
         'pendents' => $elementos->filter(static fn ($item) => (int) ($item->documentacioPendentCount ?? 0) > 0)->count(),
     ];
+    $allContacts = $elementos->flatMap(static fn ($item) => $item->contactos ?? collect())->filter();
+    $adopcioSummary = [
+        'ambContacteCurs' => $elementos->filter(static function ($item) use ($currentCourseStart) {
+            $ultima = $item->ultimaActividad?->created_at;
+            return $ultima !== null && \Illuminate\Support\Carbon::parse($ultima)->gte($currentCourseStart);
+        })->count(),
+        'senseMoviment' => $elementos->filter(static fn ($item) => $item->diesSenseContacte === null || (int) $item->diesSenseContacte >= 30)->count(),
+        'tutorsActius' => $allContacts
+            ->pluck('author_id')
+            ->filter()
+            ->unique()
+            ->count(),
+    ];
 @endphp
 
 <div class="col-xs-12 mb-3">
@@ -42,6 +59,12 @@
             <span class="badge bg-warning text-dark">Sense document: {{ $documentacioSummary['senseDocument'] }}</span>
             <span class="badge bg-primary">Pendents documentals: {{ $documentacioSummary['pendents'] }}</span>
             <span class="badge bg-secondary">Sense FCT: {{ $documentacioSummary['senseFct'] }}</span>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <strong class="small text-muted">Adopció</strong>
+            <span class="badge bg-success">Amb contacte este curs: {{ $adopcioSummary['ambContacteCurs'] }}</span>
+            <span class="badge bg-secondary">Sense moviment: {{ $adopcioSummary['senseMoviment'] }}</span>
+            <span class="badge bg-info text-dark">Tutors actius: {{ $adopcioSummary['tutorsActius'] }}</span>
         </div>
     </div>
 </div>

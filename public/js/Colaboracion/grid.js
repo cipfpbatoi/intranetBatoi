@@ -42,6 +42,75 @@
         ]
     };
 
+    var CONTACT_TEMPLATES = {
+        telefonada: [
+            {
+                label: 'Telefonada de seguiment',
+                resultat: 'Contactat',
+                observacions: 'Telefonada de seguiment per a revisar disponibilitat i necessitats actuals.',
+                proxima_accio: 'Enviar resum del parlat',
+                data_prevista: ''
+            },
+            {
+                label: 'No contesta',
+                resultat: 'No contesta',
+                observacions: 'No s\'ha pogut contactar telefònicament.',
+                proxima_accio: 'Tornar a telefonar',
+                data_prevista: ''
+            }
+        ],
+        correu: [
+            {
+                label: 'Correu inicial',
+                resultat: 'Correu enviat',
+                observacions: 'S\'ha enviat correu amb proposta o informació inicial.',
+                proxima_accio: 'Esperar resposta',
+                data_prevista: ''
+            },
+            {
+                label: 'Reenviament',
+                resultat: 'Cal reenviar',
+                observacions: 'Es reenviarà la informació perquè no hi ha resposta o falta completar dades.',
+                proxima_accio: 'Reenviar correu',
+                data_prevista: ''
+            }
+        ],
+        visita: [
+            {
+                label: 'Preparar visita',
+                resultat: 'Visita acordada',
+                observacions: 'S\'ha acordat una visita per a revisar la col·laboració.',
+                proxima_accio: 'Preparar visita',
+                data_prevista: ''
+            }
+        ],
+        reunio: [
+            {
+                label: 'Convocar reunió',
+                resultat: 'Reunió acordada',
+                observacions: 'S\'ha acordat una reunió per a concretar necessitats i seguiment.',
+                proxima_accio: 'Preparar reunió',
+                data_prevista: ''
+            }
+        ],
+        seguiment: [
+            {
+                label: 'Seguiment obert',
+                resultat: 'Pendent de resposta',
+                observacions: 'Seguiment obert pendent de resposta de l\'empresa.',
+                proxima_accio: 'Revisar resposta',
+                data_prevista: ''
+            },
+            {
+                label: 'Seguiment tancat',
+                resultat: 'Seguiment tancat',
+                observacions: 'Seguiment tancat sense accions addicionals pendents.',
+                proxima_accio: '',
+                data_prevista: ''
+            }
+        ]
+    };
+
     var MAX_RETRIES = 40;
     var RETRY_DELAY_MS = 250;
 
@@ -315,6 +384,9 @@
                 formDialogo[fieldName].value = '';
             }
         });
+        if (formDialogo.contact_template) {
+            formDialogo.contact_template.value = '';
+        }
     }
 
     function setContactType(contactType) {
@@ -323,6 +395,55 @@
             select.value = contactType || 'telefonada';
         }
         setResultOptions(contactType || 'telefonada');
+        setTemplateOptions(contactType || 'telefonada');
+    }
+
+    function setTemplateOptions(contactType) {
+        var select = document.getElementById('contact_template');
+        var templates = CONTACT_TEMPLATES[contactType] || [];
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '';
+
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Sense plantilla';
+        placeholder.selected = true;
+        select.appendChild(placeholder);
+
+        templates.forEach(function (template, index) {
+            var option = document.createElement('option');
+            option.value = String(index);
+            option.textContent = template.label;
+            select.appendChild(option);
+        });
+    }
+
+    function applyTemplate(contactType, templateIndex) {
+        var formDialogo = document.getElementById('formDialogo');
+        var templates = CONTACT_TEMPLATES[contactType] || [];
+        var template = templates[templateIndex];
+
+        if (!formDialogo || !template) {
+            return;
+        }
+
+        setResultOptions(contactType, template.resultat || '');
+        if (formDialogo.resultat) {
+            formDialogo.resultat.value = template.resultat || '';
+        }
+        if (formDialogo.observacions) {
+            formDialogo.observacions.value = template.observacions || '';
+        }
+        if (formDialogo.proxima_accio) {
+            formDialogo.proxima_accio.value = template.proxima_accio || '';
+        }
+        if (formDialogo.data_prevista) {
+            formDialogo.data_prevista.value = template.data_prevista || '';
+        }
     }
 
     function setResultOptions(contactType, selectedValue) {
@@ -370,6 +491,7 @@
             formDialogo.contact_type.value = contact.contact_type || 'telefonada';
         }
         setResultOptions(contact.contact_type || 'telefonada', contact.resultat || '');
+        setTemplateOptions(contact.contact_type || 'telefonada');
         if (formDialogo.resultat) {
             formDialogo.resultat.value = contact.resultat || '';
         }
@@ -385,6 +507,31 @@
         if (formDialogo.explicacion) {
             formDialogo.explicacion.value = contact.comentari || '';
         }
+    }
+
+    function loadLastContactIntoDialog() {
+        var profile = state.list ? state.list.closest('.mis-colaboraciones-card') : null;
+        var lastContactId = profile ? trim(profile.getAttribute('data-last-contact-id')) : '';
+
+        if (!lastContactId) {
+            window.alert('No hi ha cap contacte previ per a reutilitzar.');
+            return;
+        }
+
+        request('GET', '/api/colaboracion/contact/' + lastContactId, {}, true)
+            .then(function (result) {
+                if (!result || !result.data) {
+                    return;
+                }
+
+                if (state.tipo === 'contacte') {
+                    setContactType(result.data.contact_type || 'telefonada');
+                }
+                fillContactDialog(result.data);
+            })
+            .catch(function () {
+                window.alert('No s\'ha pogut carregar l\'últim contacte.');
+            });
     }
 
     function appendActivity(list, activityId, iconClass) {
@@ -890,6 +1037,26 @@
             if (formDialogo.contact_type) {
                 formDialogo.contact_type.addEventListener('change', function () {
                     setResultOptions(this.value || 'telefonada');
+                    setTemplateOptions(this.value || 'telefonada');
+                });
+            }
+
+            if (formDialogo.contact_template) {
+                formDialogo.contact_template.addEventListener('change', function () {
+                    if (this.value === '') {
+                        return;
+                    }
+                    applyTemplate(
+                        formDialogo.contact_type ? formDialogo.contact_type.value : 'telefonada',
+                        parseInt(this.value, 10)
+                    );
+                });
+            }
+
+            var reuseLastContactButton = document.getElementById('reuse_last_contact');
+            if (reuseLastContactButton) {
+                reuseLastContactButton.addEventListener('click', function () {
+                    loadLastContactIntoDialog();
                 });
             }
 
