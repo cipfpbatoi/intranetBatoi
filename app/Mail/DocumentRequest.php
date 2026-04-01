@@ -57,13 +57,13 @@ class DocumentRequest extends Mailable
     public function build()
     {
         $vista =  $this->from(
-            $this->mail->from??$this->mail['from'],
-            $this->mail->fromPerson??$this->mail['fromPerson']
+            $this->mail->from,
+            $this->mail->fromPerson
         )->replyTo(
-            $this->mail->from??$this->mail['from'],
-            $this->mail->fromPerson??$this->mail['fromPerson']
+            $this->mail->from,
+            $this->mail->fromPerson
         )->subject(
-            $this->mail->subject??$this->mail['subject']
+            $this->mail->subject
         )->view($this->view);
 
 

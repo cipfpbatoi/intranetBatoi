@@ -167,7 +167,7 @@ class Handler extends ExceptionHandler
             $msg === 'Unauthenticated.' ||
             $msg === '' ||
             strpos($msg, 'SRF') !== false ||
-            app()->environment('testing')
+            $this->isTestingEnvironment()
         ) {
             return false;
         }
@@ -183,19 +183,21 @@ class Handler extends ExceptionHandler
      */
     private function buildNotificationSummary(Throwable $exception): string
     {
-        $summary = class_basename($exception);
         $message = preg_replace('/\s+/', ' ', trim((string) $exception->getMessage())) ?: 'Sense missatge';
-        $summary .= ': ' . $message;
-        $summary .= ' [' . basename($exception->getFile()) . ':' . $exception->getLine() . ']';
+        $prefix = class_basename($exception) . ': ';
+        $suffix = ' [' . basename($exception->getFile()) . ':' . $exception->getLine() . ']';
 
         if (!app()->runningInConsole()) {
             $route = optional(request()->route())->getName();
             if ($route) {
-                $summary .= ' route=' . $route;
+                $suffix .= ' route=' . $route;
             }
         }
 
-        return mb_substr($summary, 0, 1000);
+        $maxMessageLength = max(0, 1000 - mb_strlen($prefix . $suffix));
+        $truncatedMessage = mb_substr($message, 0, $maxMessageLength);
+
+        return $prefix . $truncatedMessage . $suffix;
     }
 
     /**
@@ -208,7 +210,7 @@ class Handler extends ExceptionHandler
      */
     private function logException(Throwable $exception): void
     {
-        if (app()->environment('testing')) {
+        if ($this->isTestingEnvironment()) {
             return;
         }
 
@@ -311,6 +313,16 @@ class Handler extends ExceptionHandler
         }
 
         Log::channel('exceptions')->log($level, (string) $exception->getMessage(), $context);
+    }
+
+    /**
+     * Determina de forma segura si l'aplicació s'està executant en testing.
+     *
+     * @return bool
+     */
+    private function isTestingEnvironment(): bool
+    {
+        return (string) env('APP_ENV', $_ENV['APP_ENV'] ?? '') === 'testing';
     }
 
     /**

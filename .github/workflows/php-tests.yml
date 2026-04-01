@@ -43,6 +43,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Prepare testing environment
+        run: |
+          cp .env.testing.example .env.testing
+          sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));')|" .env.testing
+
       - name: Setup npm
         run: npm install -g npm@11.11.0
 
@@ -83,6 +88,11 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare testing environment
+        run: |
+          cp .env.testing.example .env.testing
+          sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));')|" .env.testing
 
       - name: Run Unit test suite
         env:
