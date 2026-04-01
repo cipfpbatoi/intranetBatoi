@@ -4,6 +4,7 @@ namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Intranet\Entities\Actividad;
+use Intranet\Entities\CalendariEscolar;
 use Intranet\Application\Comision\ComisionService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
@@ -14,7 +15,9 @@ use Illuminate\Support\Carbon;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 
-
+/**
+ * Envia avisos diaris de fitxatge i guàrdies pendents.
+ */
 class NotifyDailyFaults extends Command
 {
     private ComisionService $comisionService;
@@ -45,9 +48,9 @@ class NotifyDailyFaults extends Command
 
 
     /**
-     * Execute the console command.
+     * Executa la notificació diària de fitxatges pendents.
      *
-     * @return mixed
+     * @return int
      */
     public function handle(): int
     {
@@ -56,17 +59,25 @@ class NotifyDailyFaults extends Command
                 return self::SUCCESS;
             }
 
+            $dia = hoy();
+
+            if (CalendariEscolar::esNoLectiuOFestiu($dia)) {
+                return self::SUCCESS;
+            }
+
+            $dataFormatada = Carbon::parse($dia)->format('d-m-Y');
+
             $guardias = hazArray(
-                Guardia::where('dia', hoy())->where('realizada', -1)->get(),
+                Guardia::where('dia', $dia)->where('realizada', -1)->get(),
                 'idProfesor',
                 'idProfesor'
             );
-            $profesores = $this->noHanFichado(hoy());
+            $profesores = $this->noHanFichado($dia);
             foreach ($profesores as $profesor) {
-                avisa($profesor, 'No has fitxat hui dia ' . hoy('d-m-Y'), '#', 'Sistema');
+                avisa($profesor, 'No has fitxat hui dia '.$dataFormatada, '#', 'Sistema');
             }
             foreach ($guardias as $guardia) {
-                avisa($guardia, 'No has fixtat la guàrdia  hui dia ' . hoy('d-m-Y'), '#', 'Sistema');
+                avisa($guardia, 'No has fixtat la guàrdia  hui dia '.$dataFormatada, '#', 'Sistema');
             }
 
             return self::SUCCESS;
@@ -80,14 +91,17 @@ class NotifyDailyFaults extends Command
         }
     }
 
-    private function noHanFichado($dia)
+    /**
+     * Retorna els DNI del professorat que no ha fitxat i no té justificació.
+     *
+     * @param string $dia
+     * @return array<string, string>
+     */
+    private function noHanFichado($dia): array
     {
-
-
         // mira qui no ha fitxat
         $noHanFichado = [];
         $this->profeSinFichar($dia, $noHanFichado);
-
 
         // comprova que no estigues d'activitat
         $this->profesoresEnActividad($dia, $noHanFichado);
@@ -102,10 +116,10 @@ class NotifyDailyFaults extends Command
     }
 
     /**
-     * @param $profesores
-     * @param $dia
-     * @param  array  $noHanFichado
-     * @param $profesor
+     * Detecta el professorat que té horari lectiu però cap fitxatge en el dia.
+     *
+     * @param string $dia
+     * @param array<string, string> $noHanFichado
      * @return void
      */
     private function profeSinFichar($dia, array &$noHanFichado): void
@@ -120,8 +134,10 @@ class NotifyDailyFaults extends Command
     }
 
     /**
-     * @param $dia
-     * @param  array  $noHanFichado
+     * Exclou del llistat el professorat que està d'activitat fora del centre.
+     *
+     * @param string $dia
+     * @param array<string, string> $noHanFichado
      * @return void
      */
     private function profesoresEnActividad($dia, array &$noHanFichado): void
@@ -137,8 +153,10 @@ class NotifyDailyFaults extends Command
     }
 
     /**
-     * @param $dia
-     * @param  array  $noHanFichado
+     * Exclou del llistat el professorat amb comissió de serveis.
+     *
+     * @param string $dia
+     * @param array<string, string> $noHanFichado
      * @return void
      */
     private function profesoresDeComision($dia, array &$noHanFichado): void
@@ -152,8 +170,10 @@ class NotifyDailyFaults extends Command
     }
 
     /**
-     * @param $dia
-     * @param  array  $noHanFichado
+     * Exclou del llistat el professorat amb falta registrada.
+     *
+     * @param string $dia
+     * @param array<string, string> $noHanFichado
      * @return void
      */
     private function profesoresDeBaja($dia, array &$noHanFichado): void
