@@ -15,7 +15,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Console\Commands\NotifyDailyFaults;
 use Intranet\Entities\Profesor;
 use Intranet\Notifications\mensajePanel;
-use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
 use Mockery;
 use Tests\TestCase;
 
@@ -47,7 +47,7 @@ class NotifyDailyFaultsTest extends TestCase
      */
     protected function tearDown(): void
     {
-        Date::setTestNow();
+        Carbon::setTestNow();
         Mockery::close();
 
         parent::tearDown();
@@ -58,7 +58,7 @@ class NotifyDailyFaultsTest extends TestCase
      */
     public function test_handle_no_envia_avisos_en_dia_no_lectiu(): void
     {
-        Date::setTestNow('2026-04-01 21:30:00');
+        Carbon::setTestNow('2026-04-01 21:30:00');
         Notification::fake();
 
         DB::table('calendari_escolar')->insert([
@@ -91,7 +91,7 @@ class NotifyDailyFaultsTest extends TestCase
      */
     public function test_handle_no_envia_avisos_en_dia_festiu(): void
     {
-        Date::setTestNow('2026-04-01 21:30:00');
+        Carbon::setTestNow('2026-04-01 21:30:00');
         Notification::fake();
 
         DB::table('calendari_escolar')->insert([
@@ -124,7 +124,7 @@ class NotifyDailyFaultsTest extends TestCase
      */
     public function test_handle_envia_avis_professor_en_dia_lectiu_si_no_ha_fitxat(): void
     {
-        Date::setTestNow('2026-04-01 21:30:00');
+        Carbon::setTestNow('2026-04-01 21:30:00');
         Notification::fake();
 
         DB::table('calendari_escolar')->insert([
