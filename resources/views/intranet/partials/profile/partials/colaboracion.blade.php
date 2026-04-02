@@ -16,7 +16,10 @@
     $preasignacionesCollapseId = 'colaboracion-preasignaciones-' . $elemento->id;
     $preasignacionModalId = 'preasignacion_' . $elemento->id;
     $ultimContacte = $elemento->ultimaActividad ?? null;
+    $diesSenseContacte = $elemento->diesSenseContacte;
+    $fitxaBadges = $elemento->fitxaBadges ?? collect();
     $relacionadas = $elemento->relacionadas ?? collect();
+    $relatedHasContacts = $relacionadas->contains(static fn ($rel) => ($rel->contactos ?? collect())->isNotEmpty());
     $preasignaciones = $elemento->preasignacionesPanel ?? collect();
     $preasignacionAlumnoOptions = $elemento->preasignacionAlumnoOptions ?? collect();
     $canPreassign = isset($pestana) && $pestana->getNombre() === 'colabora';
@@ -33,7 +36,25 @@
         };
     };
 @endphp
-<div class="col-md-4 col-sm-4 col-xs-12 profile_details">
+<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 profile_details mis-colaboraciones-card"
+     data-target-tab="{{ $tabName ?? '' }}"
+     data-town="{{ $elemento->localidad }}"
+     data-company="{{ $elemento->Centro->nombre }}"
+     data-has-contact="{{ trim((string) ($elemento->contacto ?? '')) !== '' ? '1' : '0' }}"
+     data-has-phone="{{ trim((string) ($elemento->telefono ?? '')) !== '' ? '1' : '0' }}"
+     data-has-email="{{ trim((string) ($elemento->email ?? '')) !== '' ? '1' : '0' }}"
+     data-has-instructor="{{ !empty($elemento->hasInstructor) ? '1' : '0' }}"
+     data-conveni-pendent="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
+     data-has-company-document="{{ !empty($elemento->teDocumentEmpresa) ? '1' : '0' }}"
+     data-has-fcts="{{ !empty($elemento->fctsAssociadesCount) ? '1' : '0' }}"
+     data-days-without-contact="{{ $diesSenseContacte ?? '' }}"
+     data-priority-score="{{ (int) ($elemento->prioritatFitxa ?? 0) }}"
+     data-preparation-state="{{ $elemento->estatPreparacioKey ?? 'no_preparada' }}"
+     data-preparation-rank="{{ (int) ($elemento->estatPreparacioRank ?? 0) }}"
+     data-documentation-pending-count="{{ (int) ($elemento->documentacioPendentCount ?? 0) }}"
+     data-last-contact-id="{{ $ultimContacte?->id ?? '' }}"
+     data-followup-status="{{ $elemento->seguimentEstatKey ?? 'sense_seguiment' }}"
+     data-followup-urgency="{{ $elemento->seguimentUrgenciaKey ?? 'cap' }}">
     <div id="{{$elemento->id}}" class="well profile_view"
          @if ($elemento->estado == 3) style='border-color: #90111a;border-width: medium' @endif
     >
@@ -46,23 +67,75 @@
                     <em class="fa fa-map-marker"></em> {{$elemento->localidad}}
                 </p>
                 <p class="mb-2">
-                    <span class="badge {{ $isMine ? 'bg-success' : 'bg-secondary' }}">
-                        {{ $isMine ? 'Meua' : 'Altre tutor' }}
-                    </span>
                     <span class="badge {{ $estadoBadgeClass }}">
                         {{ $estadoLabel }}
                     </span>
+                    <span class="badge {{ $elemento->estatFitxaClass ?? 'bg-secondary' }}">
+                        {{ $elemento->estatFitxaLabel ?? 'Fitxa' }}
+                    </span>
+                    <span class="badge {{ $elemento->seguimentEstatClass ?? 'bg-secondary' }} js-followup-status-badge">
+                        {{ $elemento->seguimentEstatLabel ?? 'Sense seguiment' }}
+                    </span>
+                    @if (!empty($elemento->seguimentUrgenciaLabel))
+                        <span class="badge {{ $elemento->seguimentUrgenciaClass ?? 'bg-secondary' }} js-followup-urgency-badge">
+                            {{ $elemento->seguimentUrgenciaLabel }}
+                        </span>
+                    @else
+                        <span class="badge js-followup-urgency-badge" style="display:none;"></span>
+                    @endif
                 </p>
+
+                @if ($fitxaBadges->isNotEmpty())
+                    <p class="mb-2">
+                        @foreach ($fitxaBadges as $badge)
+                            <span class="badge {{ $badge['class'] }}" style="margin-bottom:.25rem;">
+                                <em class="fa {{ $badge['icon'] }}"></em> {{ $badge['label'] }}
+                            </span>
+                        @endforeach
+                    </p>
+                @endif
+
                 <ul class="list-unstyled">
+                    <li><em class="fa fa-user-secret"></em> {{ $elemento->profesor ?: 'Sense tutor assignat' }}</li>
                     <li><em class="fa fa-user"></em> {{$elemento->contacto ?: 'Sense contacte'}}</li>
                     <li><em class="fa fa-phone"></em> {{$elemento->telefono ?: 'Sense telèfon'}}</li>
                     <li><em class="fa fa-envelope"></em> {{$elemento->email ?: 'Sense email'}}</li>
+                    <li><em class="fa fa-briefcase"></em> {{ (int) ($elemento->puestos ?? 0) }} lloc(s) · {{ (int) ($elemento->fctsAssociadesCount ?? 0) }} FCT associada(es)</li>
                 </ul>
 
                 @if ($ultimContacte)
-                    <p class="small text-muted mb-2">
+                    <p class="small text-muted mb-2 js-last-contact-row">
                         <strong>Últim contacte:</strong>
-                        {{ $ultimContacte->created_at?->format('d/m/Y H:i') }}
+                        <span class="js-last-contact-value">{{ $ultimContacte->created_at?->format('d/m/Y H:i') }}</span>
+                        @if ($diesSenseContacte !== null)
+                            <span class="js-last-contact-days">· fa {{ $diesSenseContacte }} dia(es)</span>
+                        @else
+                            <span class="js-last-contact-days"></span>
+                        @endif
+                    </p>
+                @else
+                    <p class="small text-danger mb-2 js-last-contact-row">
+                        <strong>Últim contacte:</strong>
+                        <span class="js-last-contact-value">Sense cap contacte registrat</span>
+                        <span class="js-last-contact-days"></span>
+                    </p>
+                @endif
+
+                @if (!empty($elemento->proximaAccioText))
+                    <p class="small text-info mb-2 js-next-step-row">
+                        <strong>Pròxim pas:</strong>
+                        <span class="js-next-step-value">{{ $elemento->proximaAccioText }}</span>
+                        @if (!empty($elemento->proximaAccioData))
+                            <span class="js-next-step-date">· {{ $elemento->proximaAccioData }}</span>
+                        @else
+                            <span class="js-next-step-date"></span>
+                        @endif
+                    </p>
+                @else
+                    <p class="small text-info mb-2 js-next-step-row" style="display:none;">
+                        <strong>Pròxim pas:</strong>
+                        <span class="js-next-step-value"></span>
+                        <span class="js-next-step-date"></span>
                     </p>
                 @endif
 
@@ -80,7 +153,7 @@
                         </button>
                     @endif
                     @if($relacionadas->isNotEmpty())
-                        <button class="btn btn-default btn-xs" type="button" data-bs-toggle="collapse"
+                        <button class="btn btn-xs {{ $relatedHasContacts ? 'btn-info' : 'btn-default' }}" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#{{ $relatedCollapseId }}" aria-expanded="false"
                                 aria-controls="{{ $relatedCollapseId }}">
                             Altres cicles ({{ $relacionadas->count() }})
@@ -90,6 +163,32 @@
 
                 <div class="collapse" id="{{ $collapseId }}">
                     <ul class="list-unstyled">
+                        <li>
+                            <em class="fa fa-check-square-o"></em>
+                            Preparació: <strong>{{ $elemento->estatPreparacioLabel ?? 'Sense valorar' }}</strong>
+                        </li>
+                        <li>
+                            <em class="fa fa-files-o"></em>
+                            Estat documental:
+                            @if (($elemento->documentacioPendentItems ?? collect())->isNotEmpty())
+                                <strong>{{ ($elemento->documentacioPendentItems ?? collect())->count() }} pendent(s)</strong>
+                            @else
+                                <strong>Al dia</strong>
+                            @endif
+                        </li>
+                        <li>
+                            <em class="fa fa-sitemap"></em>
+                            FCT associades: {{ (int) ($elemento->fctsAssociadesCount ?? 0) }}
+                            @if (!empty($elemento->ultimaFctId))
+                                · última #{{ $elemento->ultimaFctId }}
+                            @endif
+                        </li>
+                        @if (($elemento->documentacioPendentItems ?? collect())->isNotEmpty())
+                            <li>
+                                <em class="fa fa-angle-right"></em>
+                                {{ ($elemento->documentacioPendentItems ?? collect())->join(' · ') }}
+                            </li>
+                        @endif
                 @isset (authUser()->emailItaca)
                         <li>Conveni: <strong>
                                 {{$elemento->Centro->Empresa->concierto}}
@@ -100,16 +199,38 @@
                                 @endif
                             </strong>
                         </li>
-                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
-                        <li><em class="fa fa-user-secret"></em> {{$elemento->profesor ?? 'No assignada'}}</li>
+                        <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
+                        <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios ?: 'Sense horari'}}</li>
+                        <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion ?: 'Sense adreça'}}</li>
+                        <li><em class="fa fa-file-pdf-o"></em> Document empresa: {{ !empty($elemento->teDocumentEmpresa) ? 'Disponible' : 'Pendent' }}</li>
                 @else
-                        <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
                         <li><em class="fa fa-clock-o"></em> {{$elemento->Centro->horarios}}</li>
                         <li><em class="fa fa-map-marker"></em> {{$elemento->Centro->direccion}}</li>
                         <li><em class="fa fa-folder"></em> {{$elemento->Centro->Empresa->actividad}}</li>
-                        <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
+                        @if (($elemento->Centro->Empresa->email ?? '') !== ($elemento->email ?? ''))
+                            <li><em class="fa fa-envelope"></em> {{$elemento->Centro->Empresa->email}}</li>
+                        @endif
+                        <li><em class="fa fa-calendar"></em> Annex I: {{ $elemento->annexIData ?: 'Sense data' }}</li>
+                        <li><em class="fa fa-file-pdf-o"></em> Document empresa: {{ !empty($elemento->teDocumentEmpresa) ? 'Disponible' : 'Pendent' }}</li>
                 @endisset
                     </ul>
+                    <p class="mb-0" style="margin-top:.75rem">
+                        <a href="{{ route('empresa.detalle', ['empresa' => $elemento->Centro->idEmpresa]) }}" class="btn btn-default btn-xs">
+                            <em class="fa fa-building"></em> Empresa
+                        </a>
+                        @if (!empty($elemento->teDocumentEmpresa))
+                            <a href="{{ route('empresa.document', ['empresa' => $elemento->Centro->idEmpresa]) }}"
+                               class="btn btn-default btn-xs"
+                               target="_blank">
+                                <em class="fa fa-file-pdf-o"></em> Document
+                            </a>
+                        @endif
+                        @if (!empty($elemento->ultimaFctId))
+                            <a href="{{ route('fct.show', ['id' => $elemento->ultimaFctId]) }}" class="btn btn-default btn-xs">
+                                <em class="fa fa-graduation-cap"></em> Última FCT
+                            </a>
+                        @endif
+                    </p>
                 </div>
 
                 <div class="collapse" id="{{ $preasignacionesCollapseId }}">
@@ -165,7 +286,7 @@
                     <x-activity :activity="$contacto" />
                     <br/>
                 @empty
-                    <p class="small text-muted">Sense activitat recent</p>
+                    <p class="small text-muted js-empty-activity">Sense activitat recent</p>
                 @endforelse
             </div>
             @if($relacionadas->isNotEmpty())
@@ -190,20 +311,41 @@
                                     <span class="badge bg-warning text-dark">Contactada</span>
                                 @endif
                                 <div class="mt-1">
-                                    @foreach ($rel->contactos as $act)
-                                        @if ($act->document === "Contacte previ")
-                                            <div class="text-muted"
-                                                 data-bs-toggle="tooltip"
-                                                 data-bs-placement="top"
-                                                 title=" {{ $act->comentari }}"
-                                                 style="cursor:pointer;" >
-                                                <em class="fa fa-commenting"></em>
-                                                {{ $act->created_at?->format('d/m/Y H:i') }} 
-                                                
+                                    @foreach ($rel->contactos->take(5) as $act)
+                                        @php
+                                            $comentariComplet = trim((string) $act->comentari);
+                                            $comentariCollapseId = 'related-contact-comment-' . $elemento->id . '-' . $rel->id . '-' . $act->id;
+                                        @endphp
+                                        <div class="text-muted" style="margin-bottom:.35rem;">
+                                            <div>
+                                                <em class="fa {{ $act->icon }}"></em>
+                                                {{ $act->created_at?->format('d/m/Y H:i') }}
+                                                @if (!empty($act->author))
+                                                    · {{ $act->author }}
+                                                @endif
+                                                @if ($comentariComplet !== '')
+                                                    · {{ \Illuminate\Support\Str::limit($comentariComplet, 70) }}
+                                                @endif
                                             </div>
-                                        @endif
+                                            @if ($comentariComplet !== '' && \Illuminate\Support\Str::length($comentariComplet) > 70)
+                                                <div>
+                                                    <button class="btn btn-link btn-xs" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#{{ $comentariCollapseId }}" aria-expanded="false"
+                                                            aria-controls="{{ $comentariCollapseId }}" style="padding:0;">
+                                                        Vore complet
+                                                    </button>
+                                                </div>
+                                                <div class="collapse" id="{{ $comentariCollapseId }}">
+                                                    <div class="well well-sm" style="margin-top:.25rem; margin-bottom:0;">
+                                                        {{ $comentariComplet }}
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     @endforeach
                                 </div>
+                            @else
+                                <div class="mt-1 text-muted">Sense contactes registrats en este cicle.</div>
                             @endif
                         </li>
                     @endforeach

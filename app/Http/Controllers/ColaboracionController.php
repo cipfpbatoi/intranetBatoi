@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Colaboracion\ColaboracionQueryService;
+use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\UI\Botones\BotonImg;
@@ -46,7 +48,10 @@ class ColaboracionController extends ModalController
     /**
      * Inicialitza el controlador modal amb una vista pròpia per al llistat departamental.
      */
-    public function __construct()
+    public function __construct(
+        private readonly SeguimientoService $seguimientoService,
+        private readonly ColaboracionQueryService $colaboracionQueryService
+    )
     {
         parent::__construct();
         $this->panel = new \Intranet\UI\Panels\Panel(
@@ -96,10 +101,12 @@ class ColaboracionController extends ModalController
             ->pluck('id')
             ->all();
 
-        return Colaboracion::query()
+        $colaboraciones = Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
-            ->with(['Centro.Empresa', 'Ciclo', 'Propietario'])
+            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario', 'fcts'])
             ->get();
+
+        return $this->colaboracionQueryService->hydrateIndicators($colaboraciones);
     }
 
     /**
@@ -125,7 +132,14 @@ class ColaboracionController extends ModalController
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
         if ($request->anotacio != '') {
-            Activity::record('book',  $colaboracion, $request->anotacio, null, 'Contacte previ');
+            $activity = Activity::record('book',  $colaboracion, $request->anotacio, null, 'Contacte previ');
+            $this->seguimientoService->record(
+                $colaboracion,
+                'book',
+                'Contacte previ',
+                $request->anotacio,
+                ['source' => 'activities', 'activity_id' => $activity->id]
+            );
         }
         return $this->redirect();
     }
@@ -174,18 +188,16 @@ class ColaboracionController extends ModalController
             'Propietario',
         ]);
 
-        $ultimContacte = Activity::query()
-            ->modelo('Colaboracion')
-            ->id($elemento->id)
-            ->notUpdate()
-            ->latest('created_at')
-            ->first();
+        $ultimContacte = $this->seguimientoService->latestActivityForColaboracion($elemento->id);
+        $returnUrl = $request->filled('return_to')
+            ? (string) $request->query('return_to')
+            : url()->previous();
 
         if ($request->boolean('modal') || $request->ajax()) {
             return view('colaboracion.partials.show', compact('elemento', 'ultimContacte'));
         }
 
-        return view('colaboracion.show', compact('elemento', 'ultimContacte'));
+        return view('colaboracion.show', compact('elemento', 'ultimContacte', 'returnUrl'));
     }
 
     public function printAnexeIV($colaboracion)

@@ -164,8 +164,8 @@ class PanelColaboracionController extends IntranetController
                     'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe book',
                     'text' => '',
-                    'title' => 'Contacte previ',
-                    'icon' => 'fa-book'
+                    'title' => 'Contacte',
+                    'icon' => 'fa-comments'
                 ]
             )
         );
@@ -174,7 +174,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.contacto",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-default selecciona',
                     'icon' => 'fa fa-bell-o',
                     'data-url' => '/api/documentacionFCT/contacto'
                 ]
@@ -185,7 +185,7 @@ class PanelColaboracionController extends IntranetController
             new BotonBasico(
                 "colaboracion.revision",
                 [
-                    'class' => 'btn-primary selecciona',
+                    'class' => 'btn-default selecciona',
                     'icon' => 'fa fa-check',
                     'data-url' => '/api/documentacionFCT/revision'
                 ]

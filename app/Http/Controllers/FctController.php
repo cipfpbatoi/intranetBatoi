@@ -236,7 +236,7 @@ class FctController extends IntranetController
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         Session::put('pestana', 1);
-        $fct = $this->findFctOrFail($id);
+        $fct = $this->fcts()->hydrateContactos($this->findFctOrFail($id));
         $this->authorize('update', $fct);
         $instructores = $fct->Colaboradores->pluck('dni');
 

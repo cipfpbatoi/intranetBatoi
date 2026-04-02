@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 
+use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Entities\Activity;
 use Intranet\Exceptions\NotFoundDomainException;
 
@@ -11,9 +12,12 @@ use Intranet\Exceptions\NotFoundDomainException;
  */
 class ActivityController extends ApiResourceController
 {
-
     protected $model = 'Activity';
-    
+
+    public function __construct(private readonly SeguimientoService $seguimientoService)
+    {
+        parent::__construct();
+    }
 
     /**
      * @param int|string $id
@@ -43,10 +47,25 @@ class ActivityController extends ApiResourceController
             $activity2->created_at = $activity->created_at;
             $activity2->updated_at = $activity->updated_at;
             $activity2->document = $activity->document;
+            $activity2->comentari = null;
             $activity2->save();
+
+            $this->syncSeguimientoMirror($activity2);
+
             return $this->sendResponse(['id'=>$activity2->id], 'OK');
         }
 
+    }
 
+    /**
+     * Manté el mirall en `seguimientos` per als dominis ja migrats.
+     */
+    private function syncSeguimientoMirror(Activity $activity): void
+    {
+        if (!in_array(class_basename((string) $activity->model_class), ['Colaboracion', 'Fct', 'AlumnoFct'], true)) {
+            return;
+        }
+
+        $this->seguimientoService->syncFromActivity($activity);
     }
 }

@@ -5,7 +5,110 @@
         id: null,
         col: null,
         list: null,
-        tipo: null
+        tipo: null,
+        contactType: null
+    };
+
+    var CONTACT_RESULTS = {
+        telefonada: [
+            'Contactat',
+            'No contesta',
+            'Pendent de resposta',
+            'Tornar a telefonar'
+        ],
+        correu: [
+            'Correu enviat',
+            'Resposta rebuda',
+            'Pendent de resposta',
+            'Cal reenviar'
+        ],
+        visita: [
+            'Visita acordada',
+            'Visita realitzada',
+            'Pendent de concretar',
+            'Visita ajornada'
+        ],
+        reunio: [
+            'Reunió acordada',
+            'Reunió realitzada',
+            'Pendent de convocar',
+            'Reunió ajornada'
+        ],
+        seguiment: [
+            'Seguiment fet',
+            'Pendent de resposta',
+            'Cal tornar a contactar',
+            'Seguiment tancat'
+        ]
+    };
+
+    var CONTACT_TEMPLATES = {
+        telefonada: [
+            {
+                label: 'Telefonada de seguiment',
+                resultat: 'Contactat',
+                observacions: 'Telefonada de seguiment per a revisar disponibilitat i necessitats actuals.',
+                proxima_accio: 'Enviar resum del parlat',
+                data_prevista: ''
+            },
+            {
+                label: 'No contesta',
+                resultat: 'No contesta',
+                observacions: 'No s\'ha pogut contactar telefònicament.',
+                proxima_accio: 'Tornar a telefonar',
+                data_prevista: ''
+            }
+        ],
+        correu: [
+            {
+                label: 'Correu inicial',
+                resultat: 'Correu enviat',
+                observacions: 'S\'ha enviat correu amb proposta o informació inicial.',
+                proxima_accio: 'Esperar resposta',
+                data_prevista: ''
+            },
+            {
+                label: 'Reenviament',
+                resultat: 'Cal reenviar',
+                observacions: 'Es reenviarà la informació perquè no hi ha resposta o falta completar dades.',
+                proxima_accio: 'Reenviar correu',
+                data_prevista: ''
+            }
+        ],
+        visita: [
+            {
+                label: 'Preparar visita',
+                resultat: 'Visita acordada',
+                observacions: 'S\'ha acordat una visita per a revisar la col·laboració.',
+                proxima_accio: 'Preparar visita',
+                data_prevista: ''
+            }
+        ],
+        reunio: [
+            {
+                label: 'Convocar reunió',
+                resultat: 'Reunió acordada',
+                observacions: 'S\'ha acordat una reunió per a concretar necessitats i seguiment.',
+                proxima_accio: 'Preparar reunió',
+                data_prevista: ''
+            }
+        ],
+        seguiment: [
+            {
+                label: 'Seguiment obert',
+                resultat: 'Pendent de resposta',
+                observacions: 'Seguiment obert pendent de resposta de l\'empresa.',
+                proxima_accio: 'Revisar resposta',
+                data_prevista: ''
+            },
+            {
+                label: 'Seguiment tancat',
+                resultat: 'Seguiment tancat',
+                observacions: 'Seguiment tancat sense accions addicionals pendents.',
+                proxima_accio: '',
+                data_prevista: ''
+            }
+        ]
     };
 
     var MAX_RETRIES = 40;
@@ -268,6 +371,169 @@
         }
     }
 
+    function resetDialogForm() {
+        var formDialogo = document.getElementById('formDialogo');
+        if (!formDialogo) {
+            return;
+        }
+
+        formDialogo.reset();
+
+        ['explicacion', 'resultat', 'observacions', 'proxima_accio', 'data_prevista'].forEach(function (fieldName) {
+            if (formDialogo[fieldName]) {
+                formDialogo[fieldName].value = '';
+            }
+        });
+        if (formDialogo.contact_template) {
+            formDialogo.contact_template.value = '';
+        }
+    }
+
+    function setContactType(contactType) {
+        var select = document.getElementById('contact_type');
+        if (select) {
+            select.value = contactType || 'telefonada';
+        }
+        setResultOptions(contactType || 'telefonada');
+        setTemplateOptions(contactType || 'telefonada');
+    }
+
+    function setTemplateOptions(contactType) {
+        var select = document.getElementById('contact_template');
+        var templates = CONTACT_TEMPLATES[contactType] || [];
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '';
+
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Sense plantilla';
+        placeholder.selected = true;
+        select.appendChild(placeholder);
+
+        templates.forEach(function (template, index) {
+            var option = document.createElement('option');
+            option.value = String(index);
+            option.textContent = template.label;
+            select.appendChild(option);
+        });
+    }
+
+    function applyTemplate(contactType, templateIndex) {
+        var formDialogo = document.getElementById('formDialogo');
+        var templates = CONTACT_TEMPLATES[contactType] || [];
+        var template = templates[templateIndex];
+
+        if (!formDialogo || !template) {
+            return;
+        }
+
+        setResultOptions(contactType, template.resultat || '');
+        if (formDialogo.resultat) {
+            formDialogo.resultat.value = template.resultat || '';
+        }
+        if (formDialogo.observacions) {
+            formDialogo.observacions.value = template.observacions || '';
+        }
+        if (formDialogo.proxima_accio) {
+            formDialogo.proxima_accio.value = template.proxima_accio || '';
+        }
+        if (formDialogo.data_prevista) {
+            formDialogo.data_prevista.value = template.data_prevista || '';
+        }
+    }
+
+    function setResultOptions(contactType, selectedValue) {
+        var select = document.getElementById('resultat');
+        var options = CONTACT_RESULTS[contactType] || [];
+        var resolvedSelectedValue = trim(selectedValue);
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '';
+
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Selecciona resultat';
+        placeholder.disabled = true;
+        placeholder.selected = resolvedSelectedValue === '';
+        select.appendChild(placeholder);
+
+        options.forEach(function (value) {
+            var option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            option.selected = value === resolvedSelectedValue;
+            select.appendChild(option);
+        });
+
+        if (resolvedSelectedValue !== '' && options.indexOf(resolvedSelectedValue) === -1) {
+            var customOption = document.createElement('option');
+            customOption.value = resolvedSelectedValue;
+            customOption.textContent = resolvedSelectedValue;
+            customOption.selected = true;
+            select.appendChild(customOption);
+        }
+    }
+
+    function fillContactDialog(contact) {
+        var formDialogo = document.getElementById('formDialogo');
+        if (!formDialogo || !contact) {
+            return;
+        }
+
+        if (formDialogo.contact_type) {
+            formDialogo.contact_type.value = contact.contact_type || 'telefonada';
+        }
+        setResultOptions(contact.contact_type || 'telefonada', contact.resultat || '');
+        setTemplateOptions(contact.contact_type || 'telefonada');
+        if (formDialogo.resultat) {
+            formDialogo.resultat.value = contact.resultat || '';
+        }
+        if (formDialogo.observacions) {
+            formDialogo.observacions.value = contact.observacions || '';
+        }
+        if (formDialogo.proxima_accio) {
+            formDialogo.proxima_accio.value = contact.proxima_accio || '';
+        }
+        if (formDialogo.data_prevista) {
+            formDialogo.data_prevista.value = contact.data_prevista || '';
+        }
+        if (formDialogo.explicacion) {
+            formDialogo.explicacion.value = contact.comentari || '';
+        }
+    }
+
+    function loadLastContactIntoDialog() {
+        var profile = state.list ? state.list.closest('.mis-colaboraciones-card') : null;
+        var lastContactId = profile ? trim(profile.getAttribute('data-last-contact-id')) : '';
+
+        if (!lastContactId) {
+            window.alert('No hi ha cap contacte previ per a reutilitzar.');
+            return;
+        }
+
+        request('GET', '/api/colaboracion/contact/' + lastContactId, {}, true)
+            .then(function (result) {
+                if (!result || !result.data) {
+                    return;
+                }
+
+                if (state.tipo === 'contacte') {
+                    setContactType(result.data.contact_type || 'telefonada');
+                }
+                fillContactDialog(result.data);
+            })
+            .catch(function () {
+                window.alert('No s\'ha pogut carregar l\'últim contacte.');
+            });
+    }
+
     function appendActivity(list, activityId, iconClass) {
         if (!list) {
             return;
@@ -283,6 +549,225 @@
         var lastLink = document.getElementById(String(activityId));
         if (lastLink) {
             configureDraggable(lastLink);
+        }
+    }
+
+    function appendStructuredActivity(list, activity) {
+        if (!list || !activity) {
+            return;
+        }
+
+        var emptyState = list.querySelector('.js-empty-activity');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        var icon = 'book';
+        var label = activity.document || '';
+        var createdAt = activity.created_at || '';
+
+        if ((activity.action || '') === 'phone') {
+            icon = 'phone';
+        } else if ((activity.action || '') === 'email') {
+            icon = 'envelope';
+        } else if ((activity.action || '') === 'visita') {
+            icon = 'car';
+        } else if ((activity.action || '') === 'review') {
+            icon = 'users';
+        }
+
+        var html = "<small><a href='#' class='small dragable' id='" + activity.id
+            + "' draggable='draggable'><em class='fa "
+            + (activity.comentari ? 'fa-plus' : 'fa-minus')
+            + "'></em> " + createdAt + " <em class='fa fa-" + icon + "'></em> "
+            + label + "</a></small><br/>";
+
+        list.insertAdjacentHTML('beforeend', html);
+
+        var lastLink = document.getElementById(String(activity.id));
+        if (lastLink) {
+            configureDraggable(lastLink);
+        }
+    }
+
+    function formatContactDate(dateValue) {
+        if (!dateValue) {
+            return '';
+        }
+
+        var date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+            return String(dateValue);
+        }
+
+        return date.toLocaleString('ca-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function updateCardLastContact(list, activity) {
+        var card = list ? list.closest('.profile_view') : null;
+        var row = card ? card.querySelector('.js-last-contact-row') : null;
+        var value = row ? row.querySelector('.js-last-contact-value') : null;
+        var days = row ? row.querySelector('.js-last-contact-days') : null;
+
+        if (!row || !value) {
+            return;
+        }
+
+        row.classList.remove('text-danger');
+        row.classList.add('text-muted');
+        value.textContent = formatContactDate(activity.created_at || new Date().toISOString());
+        if (days) {
+            days.textContent = '· fa 0 dia(es)';
+        }
+    }
+
+    function updateCardNextStep(list, activity) {
+        var card = list ? list.closest('.profile_view') : null;
+        var row = card ? card.querySelector('.js-next-step-row') : null;
+        var value = row ? row.querySelector('.js-next-step-value') : null;
+        var date = row ? row.querySelector('.js-next-step-date') : null;
+        var nextStep = trim(activity.proxima_accio);
+        var plannedDate = trim(activity.data_prevista);
+
+        if (!row || !value || !date) {
+            return;
+        }
+
+        if (nextStep === '') {
+            row.style.display = 'none';
+            value.textContent = '';
+            date.textContent = '';
+            return;
+        }
+
+        row.style.display = '';
+        value.textContent = nextStep;
+        date.textContent = plannedDate ? ('· ' + plannedDate) : '';
+    }
+
+    function parseDateOnly(dateValue) {
+        if (!dateValue) {
+            return null;
+        }
+
+        var parsed = new Date(dateValue);
+        if (Number.isNaN(parsed.getTime())) {
+            return null;
+        }
+
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+    }
+
+    function resolveFollowupState(activity) {
+        var result = trim(activity.resultat).toLowerCase();
+        var nextStep = trim(activity.proxima_accio);
+        var plannedDate = parseDateOnly(activity.data_prevista);
+        var today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        var status = {
+            key: 'sense_seguiment',
+            label: 'Sense seguiment',
+            className: 'bg-secondary'
+        };
+        var urgency = {
+            key: 'cap',
+            label: '',
+            className: 'bg-secondary'
+        };
+
+        if (activity.created_at) {
+            status = {
+                key: 'tancat',
+                label: 'Seguiment tancat',
+                className: 'bg-success'
+            };
+
+            if (result.indexOf('pendent de resposta') !== -1) {
+                status = {
+                    key: 'pendent_resposta',
+                    label: 'Pendent de resposta',
+                    className: 'bg-warning text-dark'
+                };
+            } else if (nextStep !== '') {
+                status = {
+                    key: 'en_curs',
+                    label: 'En curs',
+                    className: 'bg-info text-dark'
+                };
+            } else if (
+                result.indexOf('tancat') !== -1
+                || result.indexOf('seguiment fet') !== -1
+                || result.indexOf('resposta rebuda') !== -1
+                || result.indexOf('visita realitzada') !== -1
+                || result.indexOf('reunió realitzada') !== -1
+                || result.indexOf('contactat') !== -1
+            ) {
+                status = {
+                    key: 'tancat',
+                    label: 'Seguiment tancat',
+                    className: 'bg-success'
+                };
+            }
+        }
+
+        if (plannedDate) {
+            var thisWeek = new Date(today);
+            thisWeek.setDate(thisWeek.getDate() + 7);
+
+            if (plannedDate < today) {
+                urgency = {
+                    key: 'vençut',
+                    label: 'Vençut',
+                    className: 'bg-danger'
+                };
+            } else if (plannedDate <= thisWeek) {
+                urgency = {
+                    key: 'esta_setmana',
+                    label: 'Esta setmana',
+                    className: 'bg-warning text-dark'
+                };
+            }
+        }
+
+        return {
+            status: status,
+            urgency: urgency
+        };
+    }
+
+    function updateCardFollowupBadges(list, activity) {
+        var card = list ? list.closest('.mis-colaboraciones-card') : null;
+        var statusBadge = card ? card.querySelector('.js-followup-status-badge') : null;
+        var urgencyBadge = card ? card.querySelector('.js-followup-urgency-badge') : null;
+        var state = resolveFollowupState(activity);
+
+        if (!card || !statusBadge || !urgencyBadge) {
+            return;
+        }
+
+        card.setAttribute('data-followup-status', state.status.key);
+        card.setAttribute('data-followup-urgency', state.urgency.key);
+
+        statusBadge.className = 'badge ' + state.status.className + ' js-followup-status-badge';
+        statusBadge.textContent = state.status.label;
+
+        if (state.urgency.label) {
+            urgencyBadge.style.display = '';
+            urgencyBadge.className = 'badge ' + state.urgency.className + ' js-followup-urgency-badge';
+            urgencyBadge.textContent = state.urgency.label;
+        } else {
+            urgencyBadge.style.display = 'none';
+            urgencyBadge.className = 'badge js-followup-urgency-badge';
+            urgencyBadge.textContent = '';
         }
     }
 
@@ -448,10 +933,12 @@
             if (telefonicoBtn) {
                 event.preventDefault();
                 var profileTelefonico = telefonicoBtn.closest('.profile_view');
-                var fctNode = profileTelefonico ? profileTelefonico.querySelector('.fct') : null;
-                state.id = fctNode ? fctNode.id : null;
+                state.col = profileTelefonico ? profileTelefonico.id : null;
                 state.list = profileTelefonico ? profileTelefonico.querySelector('.listActivity') : null;
-                state.tipo = 'telefonico';
+                state.tipo = 'contacte';
+                state.contactType = 'telefonada';
+                resetDialogForm();
+                setContactType('telefonada');
                 openDialog();
                 return;
             }
@@ -462,7 +949,10 @@
                 var profileBook = bookBtn.closest('.profile_view');
                 state.col = profileBook ? profileBook.id : null;
                 state.list = profileBook ? profileBook.querySelector('.listActivity') : null;
-                state.tipo = 'book';
+                state.tipo = 'contacte';
+                state.contactType = 'seguiment';
+                resetDialogForm();
+                setContactType('seguiment');
                 openDialog();
                 return;
             }
@@ -472,17 +962,17 @@
                 event.preventDefault();
                 state.id = smallBtn.id;
                 state.tipo = 'seguimiento';
-                request('GET', '/api/activity/' + state.id, {}, true)
+                resetDialogForm();
+                request('GET', '/api/colaboracion/contact/' + state.id, {}, true)
                     .then(function (result) {
-                        var explicacion = document.querySelector('#dialogo #explicacion');
-                        if (explicacion && result && result.data) {
-                            explicacion.value = result.data.comentari || '';
+                        if (result && result.data) {
+                            fillContactDialog(result.data);
                         }
+                        openDialog();
                     })
                     .catch(function () {
-                        window.console.log('Error al buscarr');
+                        window.console.log('Error al carregar el contacte.');
                     });
-                openDialog();
                 return;
             }
 
@@ -544,45 +1034,80 @@
 
         var formDialogo = document.getElementById('formDialogo');
         if (formDialogo) {
+            if (formDialogo.contact_type) {
+                formDialogo.contact_type.addEventListener('change', function () {
+                    setResultOptions(this.value || 'telefonada');
+                    setTemplateOptions(this.value || 'telefonada');
+                });
+            }
+
+            if (formDialogo.contact_template) {
+                formDialogo.contact_template.addEventListener('change', function () {
+                    if (this.value === '') {
+                        return;
+                    }
+                    applyTemplate(
+                        formDialogo.contact_type ? formDialogo.contact_type.value : 'telefonada',
+                        parseInt(this.value, 10)
+                    );
+                });
+            }
+
+            var reuseLastContactButton = document.getElementById('reuse_last_contact');
+            if (reuseLastContactButton) {
+                reuseLastContactButton.addEventListener('click', function () {
+                    loadLastContactIntoDialog();
+                });
+            }
+
             formDialogo.addEventListener('submit', function (event) {
                 event.preventDefault();
-                var explicacion = formDialogo.explicacion ? formDialogo.explicacion.value : '';
+                var contactType = formDialogo.contact_type ? formDialogo.contact_type.value : (state.contactType || 'telefonada');
+                var resultat = formDialogo.resultat ? formDialogo.resultat.value : '';
+                var observacions = formDialogo.observacions ? formDialogo.observacions.value : '';
+                var proximaAccio = formDialogo.proxima_accio ? formDialogo.proxima_accio.value : '';
+                var dataPrevista = formDialogo.data_prevista ? formDialogo.data_prevista.value : '';
 
-                if (state.tipo === 'book') {
-                    request('POST', '/api/colaboracion/' + state.col + '/book', { explicacion: explicacion }, true)
+                if (state.tipo === 'contacte') {
+                    request('POST', '/api/colaboracion/' + state.col + '/contact', {
+                        contact_type: contactType,
+                        resultat: resultat,
+                        observacions: observacions,
+                        proxima_accio: proximaAccio,
+                        data_prevista: dataPrevista
+                    }, true)
                         .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-book');
+                            appendStructuredActivity(state.list, result.data);
+                            updateCardLastContact(state.list, result.data);
+                            updateCardNextStep(state.list, result.data);
+                            updateCardFollowupBadges(state.list, result.data);
                             closeDialog();
                         })
                         .catch(function () {
-                            window.console.log('Només es pot un per dia');
-                            closeDialog();
-                        });
-                    return;
-                }
-
-                if (state.tipo === 'telefonico') {
-                    request('POST', '/api/colaboracion/' + state.id + '/telefonico', { explicacion: explicacion }, true)
-                        .then(function (result) {
-                            appendActivity(state.list, result.data.id, 'fa-phone');
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Només es pot un per dia');
+                            window.console.log('No s\'ha pogut guardar el contacte.');
                             closeDialog();
                         });
                     return;
                 }
 
                 if (state.tipo === 'seguimiento') {
-                    request('PUT', '/api/activity/' + state.id, { comentari: explicacion }, true)
-                        .then(function () {
-                            closeDialog();
-                        })
-                        .catch(function () {
-                            window.console.log('Error al modificar');
-                            closeDialog();
-                        });
+                    if (formDialogo.contact_type) {
+                        request('PUT', '/api/colaboracion/contact/' + state.id, {
+                            contact_type: contactType,
+                            resultat: resultat,
+                            observacions: observacions,
+                            proxima_accio: proximaAccio,
+                            data_prevista: dataPrevista
+                        }, true)
+                            .then(function () {
+                                closeDialog();
+                            })
+                            .catch(function () {
+                                window.console.log('Error al modificar el contacte.');
+                                closeDialog();
+                            });
+                        return;
+                    }
                 }
             });
         }

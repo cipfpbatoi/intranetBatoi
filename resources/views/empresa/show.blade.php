@@ -4,6 +4,16 @@
 @endsection
 @php($centros = $elemento->centros->count())
 @section('content')
+    @if ($misColaboracionesIds->isNotEmpty())
+        <div class="col-xs-12">
+            <div class="alert alert-info" style="margin-bottom: 15px;">
+                <strong>Treball des de MisColaboraciones:</strong>
+                tens {{ $misColaboracionesIds->count() }} col·laboració(ns) teua(es) en esta empresa.
+                <a href="{{ route('colaboracion.mias') }}">Anar a MisColaboraciones</a>
+            </div>
+        </div>
+    @endif
+
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>

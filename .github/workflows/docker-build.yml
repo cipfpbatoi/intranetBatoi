@@ -5,10 +5,49 @@ on:
     workflows: ["PHP Tests"]
     branches:
       - main
+      - Laravel13
     types:
       - completed
 
 jobs:
+  build-dev:
+    name: Build dev image
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push dev image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./docker/8.3
+          file: ./docker/8.3/Dockerfile
+          push: true
+          tags: |
+            arturocandela/intranet:laravel13-dev
+            arturocandela/intranet:sha-${{ github.event.workflow_run.head_sha }}-dev
+          build-args: |
+            WWWUSER=1000
+            WWWGROUP=1000
+            NODE_VERSION=20
+            NPM_VERSION=11
+          cache-from: type=gha,scope=dev
+          cache-to: type=gha,mode=max,scope=dev
+
   build-prod:
     name: Build prod image
     runs-on: ubuntu-latest
@@ -37,10 +76,10 @@ jobs:
           file: ./docker/8.3/Dockerfile.prod
           push: true
           tags: |
-            arturocandela/intranet:latest-prod
-            arturocandela/intranet:sha-${{ github.event.workflow_run.head_sha }}
+            arturocandela/intranet:laravel13-prod
+            arturocandela/intranet:sha-${{ github.event.workflow_run.head_sha }}-prod
           build-args: |
             NODE_VERSION=20
             NPM_VERSION=11
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=prod
+          cache-to: type=gha,mode=max,scope=prod
