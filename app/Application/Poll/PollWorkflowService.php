@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Intranet\Application\Poll;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Departamento;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Option;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
@@ -26,10 +28,12 @@ class PollWorkflowService
 
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $options = $this->surveyOptions($poll, $user);
 
         return [
             'poll' => $poll,
             'quests' => $quests,
+            'options' => $options,
         ];
     }
 
@@ -42,8 +46,9 @@ class PollWorkflowService
 
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $options = $this->surveyOptions($poll, $user);
 
-        foreach ($poll->Plantilla->options as $question => $option) {
+        foreach ($options as $question => $option) {
             $i = 0;
             foreach ($quests ?? [] as $quest) {
                 if (isset($quest['option2'])) {
@@ -64,7 +69,7 @@ class PollWorkflowService
         return true;
     }
 
-    public function myVotes(int|string $id): ?array
+    public function myVotes(int|string $id, ?object $user = null): ?array
     {
         $poll = Poll::find($id);
         if (!$poll) {
@@ -73,7 +78,7 @@ class PollWorkflowService
 
         $modelo = $poll->modelo;
         $myVotes = $modelo::loadVotes($id);
-        $options = $poll->Plantilla->options;
+        $options = $this->surveyOptions($poll, $user);
 
         return [
             'poll' => $poll,
@@ -346,5 +351,66 @@ class PollWorkflowService
                 $votes['departament'][$departamento->id][$value->id] = collect();
             }
         }
+    }
+
+    /**
+     * Retorna les preguntes visibles per a l'usuari actual, reindexades
+     * perquè el wizard i els noms dels camps siguen consistents.
+     */
+    private function surveyOptions(Poll $poll, ?object $user = null): Collection
+    {
+        $options = $poll->Plantilla->options;
+
+        if (!$this->shouldFilterOptionsByCycle($user)) {
+            return $options->values();
+        }
+
+        $cycleId = $this->resolveUserCycleId($user);
+
+        return $options
+            ->filter(fn(Option $option): bool => $option->matchesCycle($cycleId))
+            ->values();
+    }
+
+    /**
+     * Indica si el qüestionari s'ha de filtrar per cicle del respondedor.
+     */
+    private function shouldFilterOptionsByCycle(?object $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return isset($user->nia) || !empty($user->GrupoTutoria ?? null);
+    }
+
+    /**
+     * Resol el cicle del respondedor a partir del seu grup o tutoria.
+     */
+    private function resolveUserCycleId(?object $user): ?int
+    {
+        if ($user === null) {
+            return null;
+        }
+
+        $grupos = $user->Grupo ?? null;
+        if (isset($user->nia) && $grupos && method_exists($grupos, 'first')) {
+            $grupo = $grupos->first();
+            if ($grupo?->idCiclo !== null) {
+                return (int) $grupo->idCiclo;
+            }
+
+            return null;
+        }
+
+        $grupoTutoria = $user->GrupoTutoria ?? null;
+        if ($grupoTutoria) {
+            $grupo = Grupo::find($grupoTutoria);
+            if ($grupo?->idCiclo !== null) {
+                return (int) $grupo->idCiclo;
+            }
+        }
+
+        return null;
     }
 }

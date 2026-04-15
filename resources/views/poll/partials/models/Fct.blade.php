@@ -1,4 +1,4 @@
-@foreach ($poll->Plantilla->options as $question => $option)
+@foreach ($options as $question => $option)
  <div id="step-{{$question+1}}">
     <h1 class="StepTitle">{{ $question + 1 }}. {{ $option->question }}</h1>
     @foreach ($quests as $quest)

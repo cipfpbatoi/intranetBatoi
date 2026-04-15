@@ -3,6 +3,7 @@
 namespace Intranet\Entities\Poll;
 
 use Intranet\Entities\Concerns\BatoiModels;
+use Intranet\Entities\Ciclo;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,16 +18,18 @@ class Option extends Model
 {
     use \Intranet\Entities\Concerns\BatoiModels;
 
-    protected $fillable = ['question', 'scala', 'ppoll_id', 'choices'];
+    protected $fillable = ['question', 'scala', 'ppoll_id', 'choices', 'idCiclo'];
     protected $rules = [
         'ppoll_id' => 'required',
         'question' => 'required',
         'scala' => 'nullable|numeric|between:0,10',
         'choices' => 'nullable|string',
+        'idCiclo' => 'nullable|exists:ciclos,id',
     ];
     protected $inputTypes = [
         'ppoll_id' => ['disabled' => 'disabled'],
         'choices' => ['type' => 'textarea'],
+        'idCiclo' => ['type' => 'select'],
     ];
     public $timestamps = false;
 
@@ -38,6 +41,16 @@ class Option extends Model
     public function poll()
     {
         return $this->belongsTo(Poll::class);
+    }
+
+    /**
+     * Retorna el cicle destinatari de la pregunta, si està restringida.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function Ciclo()
+    {
+        return $this->belongsTo(Ciclo::class, 'idCiclo', 'id');
     }
 
     /**
@@ -75,6 +88,14 @@ class Option extends Model
     }
 
     /**
+     * Determina si la pregunta aplica al cicle indicat.
+     */
+    public function matchesCycle(?int $cycleId): bool
+    {
+        return $this->idCiclo === null || (int) $this->idCiclo === $cycleId;
+    }
+
+    /**
      * Retorna el tipus lògic de la pregunta.
      */
     public function getKindAttribute(): string
@@ -100,6 +121,40 @@ class Option extends Model
             'select' => 'Selecció',
             default => 'Text lliure',
         };
+    }
+
+    /**
+     * Retorna una etiqueta amigable del cicle destinatari.
+     */
+    public function getTargetCycleLabelAttribute(): string
+    {
+        if ($this->idCiclo === null) {
+            return 'Tots els cicles';
+        }
+
+        return $this->Ciclo?->ciclo ?? 'Cicle ' . $this->idCiclo;
+    }
+
+    /**
+     * Retorna l'enunciat amb el cicle afegit quan la pregunta és específica.
+     */
+    public function getQuestionLabelAttribute(): string
+    {
+        if ($this->idCiclo === null) {
+            return (string) $this->question;
+        }
+
+        return sprintf('%s [%s]', $this->question, $this->target_cycle_label);
+    }
+
+    /**
+     * Retorna les opcions disponibles per al selector de cicle.
+     *
+     * @return array<int|string, string>
+     */
+    public function getIdCicloOptions(): array
+    {
+        return ['' => 'Tots els cicles'] + hazArray(Ciclo::orderBy('ciclo')->get(), 'id', 'ciclo');
     }
 
     /**

@@ -264,6 +264,7 @@ return array(
                 'nalumnes' => 'Nombre',
                 'Instructor' => 'Instructor',
                 'question' => 'Enunciat pregunta',
+                'idCiclo' => 'Cicle destinatari',
                 'kind' => 'Tipus de resposta',
                 'scala' => 'Escala valoració',
                 'choices' => 'Opcions de resposta',

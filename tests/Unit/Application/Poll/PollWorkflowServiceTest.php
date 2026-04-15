@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Poll\PollWorkflowService;
 use Tests\TestCase;
 
+/**
+ * Proves unitàries del workflow d'enquestes.
+ */
 class PollWorkflowServiceTest extends TestCase
 {
     use WithoutModelEvents;
@@ -67,6 +70,30 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame($ids['poll'], $result['poll']->id);
         $this->assertSame([['question' => 'ok']], $result['quests']);
         $this->assertSame([9 => 9], $model::$lastVotesInput);
+    }
+
+    public function test_prepare_survey_filtra_opcions_per_cicle_i_mante_les_comunes(): void
+    {
+        $ids = $this->seedPollBase(anonymous: 0);
+
+        DB::table('options')->insert([
+            ['id' => 4, 'question' => 'Q4', 'scala' => 0, 'choices' => "DAM1\nDAM2", 'idCiclo' => 8, 'ppoll_id' => $ids['ppoll']],
+            ['id' => 5, 'question' => 'Q5', 'scala' => 0, 'choices' => "ASIX1\nASIX2", 'idCiclo' => 9, 'ppoll_id' => $ids['ppoll']],
+        ]);
+
+        $service = new PollWorkflowService();
+        $result = $service->prepareSurvey(
+            $ids['poll'],
+            (object) [
+                'id' => 'AL1',
+                'dni' => 'DNI01',
+                'nia' => 'NIA01',
+                'Grupo' => collect([(object) ['idCiclo' => 8]]),
+            ]
+        );
+
+        $this->assertNotNull($result);
+        $this->assertSame([1, 2, 3, 4], $result['options']->pluck('id')->all());
     }
 
     public function test_save_survey_guarda_vot_numeric_i_text(): void
@@ -127,6 +154,60 @@ class PollWorkflowServiceTest extends TestCase
         );
     }
 
+    public function test_save_survey_reindexa_les_preguntes_filtrades_per_cicle(): void
+    {
+        $ids = $this->seedPollBase(anonymous: 0);
+
+        DB::table('options')->where('id', 2)->update(['idCiclo' => 9]);
+        DB::table('options')->where('id', 3)->update(['idCiclo' => 9]);
+        DB::table('options')->insert([
+            'id' => 4,
+            'question' => 'Q4',
+            'scala' => 0,
+            'choices' => "Optativa DAM 1\nOptativa DAM 2",
+            'idCiclo' => 8,
+            'ppoll_id' => $ids['ppoll'],
+        ]);
+
+        $request = Request::create('/poll', 'POST', [
+            'option1_7' => '5',
+            'option2_7' => 'Optativa DAM 2',
+        ]);
+
+        $service = new PollWorkflowService();
+        $saved = $service->saveSurvey(
+            $request,
+            $ids['poll'],
+            (object) [
+                'id' => 'AL1',
+                'dni' => 'DNI01',
+                'nia' => 'NIA01',
+                'Grupo' => collect([(object) ['idCiclo' => 8]]),
+            ]
+        );
+
+        $this->assertTrue($saved);
+        $this->assertNotNull(
+            DB::table('votes')
+                ->where('idPoll', $ids['poll'])
+                ->where('option_id', 1)
+                ->first()
+        );
+        $this->assertNotNull(
+            DB::table('votes')
+                ->where('idPoll', $ids['poll'])
+                ->where('option_id', 4)
+                ->where('text', 'Optativa DAM 2')
+                ->first()
+        );
+        $this->assertNull(
+            DB::table('votes')
+                ->where('idPoll', $ids['poll'])
+                ->whereIn('option_id', [2, 3])
+                ->first()
+        );
+    }
+
     public function test_my_votes_retorna_blocs_i_filtra_opcions_numeric_text(): void
     {
         $ids = $this->seedPollBase(anonymous: 0);
@@ -164,9 +245,9 @@ class PollWorkflowServiceTest extends TestCase
         ]);
 
         DB::table('options')->insert([
-            ['id' => 1, 'question' => 'Q1', 'scala' => 10, 'choices' => null, 'ppoll_id' => $idPPoll],
-            ['id' => 2, 'question' => 'Q2', 'scala' => 0, 'choices' => null, 'ppoll_id' => $idPPoll],
-            ['id' => 3, 'question' => 'Q3', 'scala' => 0, 'choices' => "Optativa1\nOptativa2\nOptativa3", 'ppoll_id' => $idPPoll],
+            ['id' => 1, 'question' => 'Q1', 'scala' => 10, 'choices' => null, 'idCiclo' => null, 'ppoll_id' => $idPPoll],
+            ['id' => 2, 'question' => 'Q2', 'scala' => 0, 'choices' => null, 'idCiclo' => null, 'ppoll_id' => $idPPoll],
+            ['id' => 3, 'question' => 'Q3', 'scala' => 0, 'choices' => "Optativa1\nOptativa2\nOptativa3", 'idCiclo' => null, 'ppoll_id' => $idPPoll],
         ]);
 
         return ['ppoll' => $idPPoll, 'poll' => $idPoll];
@@ -197,6 +278,7 @@ class PollWorkflowServiceTest extends TestCase
             $table->string('question')->nullable();
             $table->integer('scala')->default(0);
             $table->text('choices')->nullable();
+            $table->unsignedInteger('idCiclo')->nullable();
             $table->unsignedInteger('ppoll_id');
         });
 

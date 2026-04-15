@@ -9,7 +9,7 @@
                 <thead>
                 <tr>
                     <td>Enquesta</td>
-                    @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+                    @foreach ($options_numeric as $item) <th>{{$item->question_label}} </th> @endforeach
                 </tr>
                 </thead>
                 <tr>
@@ -37,11 +37,10 @@
                 <h2>Opcions seleccionades:</h2>
                 @foreach ($options_select as $selectOption)
                     @foreach ($moduloVotes->where('option_id', $selectOption->id) as $vote)
-                        <p><strong>{{$selectOption->question}}:</strong> {{$vote->text}}</p>
+                        <p><strong>{{$selectOption->question_label}}:</strong> {{$vote->text}}</p>
                     @endforeach
                 @endforeach
             @endif
         @endif
     @endforeach
 @endforeach
-
