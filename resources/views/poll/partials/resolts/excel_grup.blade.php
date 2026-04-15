@@ -28,3 +28,33 @@
     @endforeach
     </tbody>
 </table>
+
+@if ($options_select->count())
+    <table>
+        <thead>
+        <tr>
+            <th>Resultat Enquesta {{$poll->title}}</th>
+            <th>Opció</th>
+            <th>Recompte</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th colspan="3">Resultats de selecció per Grups</th>
+        </tr>
+        @foreach ($select_stats['grup'] as $nameGroup => $groupStats)
+            @if ($select_hasVotes['grup'][$nameGroup] ?? false)
+                @foreach ($options_select as $item)
+                    @foreach (($groupStats[$item->id] ?? []) as $choice => $count)
+                        <tr>
+                            <td>{{ \Intranet\Entities\Grupo::find($nameGroup)->nombre }} · {{ $item->question }}</td>
+                            <td>{{ $choice }}</td>
+                            <td>{{ $count }}</td>
+                        </tr>
+                    @endforeach
+                @endforeach
+            @endif
+        @endforeach
+        </tbody>
+    </table>
+@endif

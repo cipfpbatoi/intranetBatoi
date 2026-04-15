@@ -1160,6 +1160,7 @@ CREATE TABLE `options` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `scala` int NOT NULL DEFAULT '10',
+  `choices` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `ppoll_id` int unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `options_ppoll_id_foreign` (`ppoll_id`),

@@ -76,6 +76,7 @@ class PollWorkflowServiceTest extends TestCase
         $request = Request::create('/poll', 'POST', [
             'option1_7' => '5',
             'option2_7' => 'Molt bé',
+            'option3_7' => 'Optativa2',
         ]);
 
         $service = new PollWorkflowService();
@@ -92,12 +93,38 @@ class PollWorkflowServiceTest extends TestCase
             ->where('idPoll', $ids['poll'])
             ->where('option_id', 2)
             ->first();
+        $selectVote = DB::table('votes')
+            ->where('idPoll', $ids['poll'])
+            ->where('option_id', 3)
+            ->first();
 
         $this->assertNotNull($numericVote);
         $this->assertNotNull($textVote);
+        $this->assertNotNull($selectVote);
         $this->assertSame('PROF1', $numericVote->user_id);
         $this->assertSame(5, (int) $numericVote->value);
         $this->assertSame('Molt bé', $textVote->text);
+        $this->assertSame('Optativa2', $selectVote->text);
+    }
+
+    public function test_save_survey_ignora_valor_de_seleccio_no_permes(): void
+    {
+        $ids = $this->seedPollBase(anonymous: 0);
+
+        $request = Request::create('/poll', 'POST', [
+            'option3_7' => 'Opcio inventada',
+        ]);
+
+        $service = new PollWorkflowService();
+        $saved = $service->saveSurvey($request, $ids['poll'], (object) ['id' => 'PROF1', 'dni' => 'DNI01']);
+
+        $this->assertTrue($saved);
+        $this->assertNull(
+            DB::table('votes')
+                ->where('idPoll', $ids['poll'])
+                ->where('option_id', 3)
+                ->first()
+        );
     }
 
     public function test_my_votes_retorna_blocs_i_filtra_opcions_numeric_text(): void
@@ -116,7 +143,8 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame(['G1' => ['x']], $result['myGroupsVotes']);
         $this->assertCount(1, $result['options_numeric']);
         $this->assertCount(1, $result['options_text']);
-        $this->assertCount(2, $result['options']);
+        $this->assertCount(1, $result['options_select']);
+        $this->assertCount(3, $result['options']);
     }
 
     private function seedPollBase(int $anonymous): array
@@ -136,8 +164,9 @@ class PollWorkflowServiceTest extends TestCase
         ]);
 
         DB::table('options')->insert([
-            ['id' => 1, 'question' => 'Q1', 'scala' => 10, 'ppoll_id' => $idPPoll],
-            ['id' => 2, 'question' => 'Q2', 'scala' => 0, 'ppoll_id' => $idPPoll],
+            ['id' => 1, 'question' => 'Q1', 'scala' => 10, 'choices' => null, 'ppoll_id' => $idPPoll],
+            ['id' => 2, 'question' => 'Q2', 'scala' => 0, 'choices' => null, 'ppoll_id' => $idPPoll],
+            ['id' => 3, 'question' => 'Q3', 'scala' => 0, 'choices' => "Optativa1\nOptativa2\nOptativa3", 'ppoll_id' => $idPPoll],
         ]);
 
         return ['ppoll' => $idPPoll, 'poll' => $idPoll];
@@ -167,6 +196,7 @@ class PollWorkflowServiceTest extends TestCase
             $table->increments('id');
             $table->string('question')->nullable();
             $table->integer('scala')->default(0);
+            $table->text('choices')->nullable();
             $table->unsignedInteger('ppoll_id');
         });
 

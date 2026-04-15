@@ -33,8 +33,15 @@
             @foreach ($moduloVotes->whereIn('option_id',hazArray($options_text,'id')) as $votes)
                 <p>{{$votes->text}}</p>
             @endforeach
+            @if ($options_select->count())
+                <h2>Opcions seleccionades:</h2>
+                @foreach ($options_select as $selectOption)
+                    @foreach ($moduloVotes->where('option_id', $selectOption->id) as $vote)
+                        <p><strong>{{$selectOption->question}}:</strong> {{$vote->text}}</p>
+                    @endforeach
+                @endforeach
+            @endif
         @endif
     @endforeach
 @endforeach
-
 
