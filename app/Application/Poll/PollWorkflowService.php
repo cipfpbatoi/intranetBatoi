@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Departamento;
+use Intranet\Entities\Poll\Option;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
 
+/**
+ * Orquestra la preparació, persistència i explotació de respostes d'enquestes.
+ */
 class PollWorkflowService
 {
     public function prepareSurvey(int|string $id, object $user): ?array
@@ -69,14 +73,16 @@ class PollWorkflowService
 
         $modelo = $poll->modelo;
         $myVotes = $modelo::loadVotes($id);
+        $options = $poll->Plantilla->options;
 
         return [
             'poll' => $poll,
             'myVotes' => $myVotes,
             'myGroupsVotes' => $modelo::loadGroupVotes($id),
-            'options_numeric' => $poll->Plantilla->options->where('scala', '>', 0),
-            'options_text' => $poll->Plantilla->options->where('scala', '=', 0),
-            'options' => $poll->Plantilla->options,
+            'options_numeric' => $options->filter(fn(Option $option): bool => $option->isNumericType()),
+            'options_text' => $options->filter(fn(Option $option): bool => $option->isTextType()),
+            'options_select' => $options->filter(fn(Option $option): bool => $option->isSelectType()),
+            'options' => $options,
         ];
     }
 
@@ -88,7 +94,10 @@ class PollWorkflowService
         }
 
         $modelo = $poll->modelo;
-        $optionsNumeric = $poll->Plantilla->options->where('scala', '>', 0);
+        $options = $poll->Plantilla->options;
+        $optionsNumeric = $options->filter(fn(Option $option): bool => $option->isNumericType());
+        $optionsSelect = $options->filter(fn(Option $option): bool => $option->isSelectType());
+
         $allVotes = Vote::allNumericVotes($id)->get();
         $option1 = $allVotes->groupBy(['idOption1', 'option_id']);
         $option2 = $allVotes->groupBy(['idOption2', 'option_id']);
@@ -143,12 +152,63 @@ class PollWorkflowService
             }
         }
 
+        $selectVotes = [];
+        $this->initValues($selectVotes, $optionsSelect, $grupoService);
+        $selectStats = [
+            'all' => [],
+            'grup' => [],
+            'cicle' => [],
+            'departament' => [],
+        ];
+        $selectHasVotes = [
+            'grup' => [],
+            'cicle' => [],
+            'departament' => [],
+        ];
+
+        if ($optionsSelect->isNotEmpty()) {
+            $allSelectVotes = Vote::allSelectVotes($id)->get();
+            $selectVotes['all'] = $allSelectVotes->groupBy('option_id');
+            $modelo::aggregate(
+                $selectVotes,
+                $allSelectVotes->groupBy(['idOption1', 'option_id']),
+                $allSelectVotes->groupBy(['idOption2', 'option_id'])
+            );
+
+            foreach ($selectVotes['all'] as $optionId => $optionVote) {
+                $selectStats['all'][$optionId] = $this->countChoices($optionVote);
+            }
+
+            foreach (['grup', 'cicle', 'departament'] as $bucket) {
+                foreach ($selectVotes[$bucket] as $nameGroup => $groupVotes) {
+                    foreach ($groupVotes as $optionId => $optionVote) {
+                        $selectStats[$bucket][$nameGroup][$optionId] = $this->countChoices($optionVote);
+                    }
+                }
+            }
+
+            foreach (['grup', 'cicle', 'departament'] as $bucket) {
+                foreach ($selectStats[$bucket] as $nameGroup => $groupStats) {
+                    $selectHasVotes[$bucket][$nameGroup] = false;
+                    foreach ($groupStats as $counts) {
+                        if (array_sum($counts) > 0) {
+                            $selectHasVotes[$bucket][$nameGroup] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         return [
             'poll' => $poll,
             'votes' => $votes,
             'options_numeric' => $optionsNumeric,
+            'options_select' => $optionsSelect,
             'hasVotes' => $hasVotes,
             'stats' => $stats,
+            'selectStats' => $selectStats,
+            'selectHasVotes' => $selectHasVotes,
         ];
     }
 
@@ -181,7 +241,7 @@ class PollWorkflowService
         mixed $value,
         object $user
     ): void {
-        if ($value === '' || $value === '0') {
+        if ($this->shouldSkipVote($option, $value)) {
             return;
         }
 
@@ -192,13 +252,77 @@ class PollWorkflowService
         $vote->idOption1 = $option1;
         $vote->idOption2 = $option2;
 
-        if ((int) $option->scala === 0) {
-            $vote->text = $value;
-        } else {
+        if ($option->isNumericType()) {
             $vote->value = voteValue($option2, $value);
+        } else {
+            $vote->text = $option->isSelectType()
+                ? $this->normalizeSelectValue($option, $value)
+                : $value;
         }
 
         $vote->save();
+    }
+
+    /**
+     * Decideix si una resposta s'ha d'ignorar per estar buida o no ser vàlida.
+     */
+    private function shouldSkipVote(mixed $option, mixed $value): bool
+    {
+        if ($option->isNumericType()) {
+            return $value === '' || $value === '0' || $value === null;
+        }
+
+        if ($value === null || trim((string) $value) === '') {
+            return true;
+        }
+
+        if (!$option->isSelectType()) {
+            return false;
+        }
+
+        return $this->normalizeSelectValue($option, $value) === null;
+    }
+
+    /**
+     * Retorna la selecció només si forma part de les opcions configurades.
+     */
+    private function normalizeSelectValue(mixed $option, mixed $value): ?string
+    {
+        $selected = trim((string) $value);
+        if ($selected === '') {
+            return null;
+        }
+
+        foreach ($option->choice_values as $choice) {
+            if ($choice === $selected) {
+                return $selected;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Recompte de respostes per cada text seleccionat.
+     *
+     * @param iterable<mixed> $votes
+     * @return array<string, int>
+     */
+    private function countChoices(iterable $votes): array
+    {
+        $counts = [];
+
+        foreach ($votes as $vote) {
+            if (!isset($vote->text) || trim((string) $vote->text) === '') {
+                continue;
+            }
+
+            $counts[$vote->text] = ($counts[$vote->text] ?? 0) + 1;
+        }
+
+        ksort($counts);
+
+        return $counts;
     }
 
     private function initValues(array &$votes, mixed $options, GrupoService $grupoService): void
@@ -206,6 +330,10 @@ class PollWorkflowService
         $grupos = $grupoService->all();
         $ciclos = Ciclo::all();
         $departamentos = Departamento::all();
+
+        $votes['grup'] = $votes['grup'] ?? [];
+        $votes['cicle'] = $votes['cicle'] ?? [];
+        $votes['departament'] = $votes['departament'] ?? [];
 
         foreach ($options as $value) {
             foreach ($grupos as $grupo) {

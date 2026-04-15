@@ -153,6 +153,7 @@ class PollController extends IntranetController
         $myGroupsVotes = $data['myGroupsVotes'];
         $options_numeric = $data['options_numeric'];
         $options_text = $data['options_text'];
+        $options_select = $data['options_select'];
         $options = $data['options'];
 
         return view(
@@ -162,6 +163,7 @@ class PollController extends IntranetController
                 'poll',
                 'options_numeric',
                 'options_text',
+                'options_select',
                 'myGroupsVotes',
                 'options'
             )
@@ -187,11 +189,23 @@ class PollController extends IntranetController
         $poll = $data['poll'];
         $votes = $data['votes'];
         $options_numeric = $data['options_numeric'];
+        $options_select = $data['options_select'];
         $hasVotes = $data['hasVotes'];
         $stats = $data['stats'];
+        $selectStats = $data['selectStats'];
+        $selectHasVotes = $data['selectHasVotes'];
 
         return Excel::download(
-            new PollResultsExport($poll, $votes, $options_numeric, $hasVotes, $stats),
+            new PollResultsExport(
+                $poll,
+                $votes,
+                $options_numeric,
+                $options_select,
+                $hasVotes,
+                $stats,
+                $selectStats,
+                $selectHasVotes
+            ),
             'resultats_enquesta.xlsx'
         );
         //return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));

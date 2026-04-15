@@ -29,7 +29,9 @@
                     <thead>
                         <tr>
                             <th>@lang('validation.attributes.question')</th>
+                            <th>@lang('validation.attributes.kind')</th>
                             <th>@lang('validation.attributes.scala')</th>
+                            <th>@lang('validation.attributes.choices')</th>
                             <th>@lang('validation.attributes.operaciones')</th>
                         </tr>
                     </thead>
@@ -37,7 +39,9 @@
                         @foreach ($elemento->options as $option)
                         <tr>
                             <td>{{$option->question}}</td>
+                            <td>{{$option->display_type}}</td>
                             <td>{{$option->scala}}</td>
+                            <td>{{ count($option->choice_values) ? implode(', ', $option->choice_values) : '-' }}</td>
                             <td><a href="{{ route('option.destroy', ['id' => $option->id]) }}" class="delGrupo"><i class="fa fa-trash"></i></a></td>
                         </tr>
                         @endforeach
@@ -64,5 +68,20 @@
 {{trans("models.$modelo.show")}} {{$elemento->getKey()}}
 @endsection
 @section('scripts')
+<script>
+    $(function () {
+        const $kind = $('select[name="kind"]');
+        const $scala = $('#option-scala-wrapper');
+        const $choices = $('#option-choices-wrapper');
 
+        function refreshOptionFields() {
+            const kind = $kind.val();
+            $scala.toggle(kind === 'numeric');
+            $choices.toggle(kind === 'select');
+        }
+
+        refreshOptionFields();
+        $kind.on('change', refreshOptionFields);
+    });
+</script>
 @endsection
