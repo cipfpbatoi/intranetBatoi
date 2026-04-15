@@ -1161,7 +1161,7 @@ CREATE TABLE `options` (
   `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `scala` int NOT NULL DEFAULT '10',
   `choices` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `idCiclo` int unsigned DEFAULT NULL,
+  `idCiclo` int DEFAULT NULL,
   `ppoll_id` int unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `options_idciclo_foreign` (`idCiclo`),
