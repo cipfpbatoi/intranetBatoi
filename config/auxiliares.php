@@ -97,6 +97,7 @@ return [
     ],
     'reunionesControlables' => [2=>1, 5=>1, 6=>0, 7=>4, 9=>1],
     'modelsAvailablePoll' => [1=>'--',
+        'Alumno'=>'Alumnat',
         'Profesor'=>'Professorat',
         'Actividad'=>'Activitats',
         'Fct'=>'Fct x Tutor',
