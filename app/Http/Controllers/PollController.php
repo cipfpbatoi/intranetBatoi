@@ -72,6 +72,28 @@ class PollController extends IntranetController
         return null;
     }
 
+    /**
+     * Retorna el cicle de l'usuari autenticat basant-se en el seu grup.
+     * Per a alumnes, prové del grup assignat.
+     * Per a tutors, prové del grup de tutoria.
+     * Retorna null si no es pot determinar.
+     */
+    protected function getUserCicleId(): ?int
+    {
+        $user = AuthUser();
+        if (isset($user->nia)) {
+            $grupo = $user->Grupo->first();
+            return $grupo?->idCiclo !== null ? (int) $grupo->idCiclo : null;
+        }
+        $grupoCodi = $user->GrupoTutoria;
+        if ($grupoCodi) {
+            $grupo = Grupo::find($grupoCodi);
+            return $grupo?->idCiclo !== null ? (int) $grupo->idCiclo : null;
+        }
+
+        return null;
+    }
+
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("poll.create", inRol('qualitat')));
@@ -102,8 +124,15 @@ class PollController extends IntranetController
 
         $poll = $data['poll'];
         $quests = $data['quests'];
+        $options = $data['options'];
+
+        if ($options->isEmpty()) {
+            Alert::info("No tens preguntes disponibles per al teu cicle en esta enquesta");
+            return redirect('home');
+        }
+
         if ($quests) {
-            return view('poll.enquesta', compact('quests', 'poll'));
+            return view('poll.enquesta', compact('quests', 'poll', 'options'));
         }
 
 
@@ -138,7 +167,7 @@ class PollController extends IntranetController
      */
     public function lookAtMyVotes($id)
     {
-        $data = $this->polls()->myVotes($id);
+        $data = $this->polls()->myVotes($id, AuthUser());
         if (!$data) {
             throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }

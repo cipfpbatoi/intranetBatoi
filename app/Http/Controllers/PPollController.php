@@ -50,7 +50,9 @@ class PPollController extends ModalController
         $elemento = $this->findModelOrFail(PPoll::class, $id, 'Plantilla de poll no trobada', ['ppoll_id' => $id]);
         $this->authorize('view', $elemento);
         $modelo = $this->model;
-        return view('poll.masterslave', compact('elemento','modelo'));
+        $cicleOptions = (new Option())->getIdCicloOptions();
+
+        return view('poll.masterslave', compact('elemento', 'modelo', 'cicleOptions'));
     }
 
     public function store(PPollRequest $request)

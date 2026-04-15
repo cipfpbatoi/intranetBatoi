@@ -4,7 +4,7 @@
     <tr>
         <th>Resultat Enquesta {{$poll->title}}</th>
         @foreach ($options_numeric as $item)
-            <th>{{ $item->question }}</th>
+            <th>{{ $item->question_label }}</th>
         @endforeach
     </tr>
     </thead>
@@ -47,7 +47,7 @@
                 @foreach ($options_select as $item)
                     @foreach (($groupStats[$item->id] ?? []) as $choice => $count)
                         <tr>
-                            <td>{{ \Intranet\Entities\Departamento::find($nameGroup)->literal }} · {{ $item->question }}</td>
+                            <td>{{ \Intranet\Entities\Departamento::find($nameGroup)->literal }} · {{ $item->question_label }}</td>
                             <td>{{ $choice }}</td>
                             <td>{{ $count }}</td>
                         </tr>

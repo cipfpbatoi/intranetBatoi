@@ -12,6 +12,11 @@
                 <div class="modal-body">
                     @csrf
                     <input type='text' name='question' placeholder='@lang("validation.attributes.question")' value="{{ old('question') }}" class='form-control' />
+                    <select name="idCiclo" class="form-control">
+                        @foreach ($cicleOptions as $idCiclo => $label)
+                            <option value="{{ $idCiclo }}" @selected((string) old('idCiclo', '') === (string) $idCiclo)>{{ $label }}</option>
+                        @endforeach
+                    </select>
                     <select name="kind" class="form-control">
                         <option value="numeric" @selected(old('kind', 'numeric') === 'numeric')>Numèrica</option>
                         <option value="text" @selected(old('kind') === 'text')>Text lliure</option>

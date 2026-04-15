@@ -73,6 +73,7 @@ class OptionController extends ModalController
         return [
             'scala' => $kind === 'numeric' ? (int) $request->input('scala') : 0,
             'choices' => $kind === 'select' ? $this->normalizeChoices((string) $request->input('choices', '')) : null,
+            'idCiclo' => $request->filled('idCiclo') ? (int) $request->input('idCiclo') : null,
         ];
     }
 

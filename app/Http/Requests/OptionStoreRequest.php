@@ -22,6 +22,7 @@ class OptionStoreRequest extends FormRequest
             'kind' => 'required|in:numeric,text,select',
             'scala' => 'required_if:kind,numeric|nullable|numeric|between:1,10',
             'choices' => 'required_if:kind,select|nullable|string',
+            'idCiclo' => 'nullable|exists:ciclos,id',
         ];
     }
 }

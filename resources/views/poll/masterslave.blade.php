@@ -29,6 +29,7 @@
                     <thead>
                         <tr>
                             <th>@lang('validation.attributes.question')</th>
+                            <th>@lang('validation.attributes.idCiclo')</th>
                             <th>@lang('validation.attributes.kind')</th>
                             <th>@lang('validation.attributes.scala')</th>
                             <th>@lang('validation.attributes.choices')</th>
@@ -39,6 +40,7 @@
                         @foreach ($elemento->options as $option)
                         <tr>
                             <td>{{$option->question}}</td>
+                            <td>{{$option->target_cycle_label}}</td>
                             <td>{{$option->display_type}}</td>
                             <td>{{$option->scala}}</td>
                             <td>{{ count($option->choice_values) ? implode(', ', $option->choice_values) : '-' }}</td>
