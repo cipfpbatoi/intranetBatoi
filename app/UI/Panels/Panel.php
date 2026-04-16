@@ -307,9 +307,21 @@ class Panel
             return false;
         }
 
-        $user = Auth::user();
+        $user = function_exists('AuthUser') ? AuthUser() : Auth::user();
 
-        return isset($user->nia);
+        if (!$user) {
+            return false;
+        }
+
+        if (isset($user->nia)) {
+            return true;
+        }
+
+        if (isset($user->rol) && function_exists('esRol')) {
+            return esRol($user->rol, config('roles.rol.alumno'));
+        }
+
+        return false;
     }
 
     /**

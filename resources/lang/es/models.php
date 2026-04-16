@@ -490,6 +490,7 @@ return array(
         'Poll' => array(
             'show' => 'Muestra resultados',
             'index' => 'Mantenimento Encuestas',
+            'index_student' => 'Encuestas',
             'edit' => 'Editar Encuesta',
             'chart' => 'Ver resultados agregados',
             'do' => 'Contesta',
