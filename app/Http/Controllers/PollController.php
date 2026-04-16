@@ -125,6 +125,8 @@ class PollController extends IntranetController
         $poll = $data['poll'];
         $quests = $data['quests'];
         $options = $data['options'];
+        $hasPreviousVotes = $data['has_previous_votes'] ?? false;
+        $prefilledAnswers = $data['prefilled_answers'] ?? [];
 
         if ($options->isEmpty()) {
             Alert::info("No tens preguntes disponibles per al teu cicle en esta enquesta");
@@ -132,7 +134,7 @@ class PollController extends IntranetController
         }
 
         if ($quests) {
-            return view('poll.enquesta', compact('quests', 'poll', 'options'));
+            return view('poll.enquesta', compact('quests', 'poll', 'options', 'hasPreviousVotes', 'prefilledAnswers'));
         }
 
 

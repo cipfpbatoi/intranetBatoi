@@ -26,16 +26,20 @@ class PollWorkflowService
             return null;
         }
 
+        $existingVotes = $this->previousVotes($poll, $user);
         $modelo = $poll->modelo;
         $allowVoteUpdate = $this->canUpdateVote($poll, $user);
-        $previousVotes = $allowVoteUpdate ? [] : $this->loadPreviousVotes($poll, $user);
+        $previousVotes = $allowVoteUpdate ? [] : $this->groupPreviousVotesByOption1($existingVotes);
         $quests = $modelo::loadPoll($previousVotes);
         $options = $this->surveyOptions($poll, $user);
+        $prefilledAnswers = $this->buildPrefilledAnswers($existingVotes, $options, $quests);
 
         return [
             'poll' => $poll,
             'quests' => $quests,
             'options' => $options,
+            'has_previous_votes' => $existingVotes->isNotEmpty(),
+            'prefilled_answers' => $prefilledAnswers,
         ];
     }
 
@@ -52,7 +56,9 @@ class PollWorkflowService
         }
 
         $modelo = $poll->modelo;
-        $previousVotes = $allowVoteUpdate ? [] : $this->loadPreviousVotes($poll, $user);
+        $previousVotes = $allowVoteUpdate
+            ? []
+            : $this->groupPreviousVotesByOption1($this->previousVotes($poll, $user));
         $quests = $modelo::loadPoll($previousVotes);
         $options = $this->surveyOptions($poll, $user);
 
@@ -235,15 +241,22 @@ class PollWorkflowService
         return (string) $user->$key;
     }
 
-    private function loadPreviousVotes(Poll $poll, object $user): array
+    /**
+     * Retorna tots els vots previs del respondedor per a l'enquesta indicada.
+     */
+    private function previousVotes(Poll $poll, object $user): Collection
     {
-        return hazArray(
-            Vote::where('user_id', '=', $this->userKey($poll, $user))
-                ->where('idPoll', $poll->id)
-                ->get(),
-            'idOption1',
-            'idOption1'
-        );
+        return Vote::whereIn('user_id', $this->responseLookupIds($poll, $user))
+            ->where('idPoll', $poll->id)
+            ->get();
+    }
+
+    /**
+     * Converteix els vots previs al format esperat pels models històrics.
+     */
+    private function groupPreviousVotesByOption1(Collection $votes): array
+    {
+        return hazArray($votes, 'idOption1', 'idOption1');
     }
 
     private function saveVote(
@@ -440,7 +453,7 @@ class PollWorkflowService
     private function deletePreviousVotes(Poll $poll, object $user): void
     {
         Vote::where('idPoll', $poll->id)
-            ->where('user_id', $this->responseOwnerId($poll, $user))
+            ->whereIn('user_id', $this->responseLookupIds($poll, $user))
             ->delete();
     }
 
@@ -450,5 +463,77 @@ class PollWorkflowService
     private function responseOwnerId(Poll $poll, object $user): string
     {
         return $poll->anonymous ? hash('md5', (string) $user->id) : (string) $user->id;
+    }
+
+    /**
+     * Identificadors compatibles per llegir/esborrar vots antics i actuals.
+     *
+     * @return array<int, string>
+     */
+    private function responseLookupIds(Poll $poll, object $user): array
+    {
+        return array_values(array_unique([
+            $this->responseOwnerId($poll, $user),
+            $this->userKey($poll, $user),
+        ]));
+    }
+
+    /**
+     * Genera valors inicials del formulari a partir dels vots ja emesos.
+     *
+     * @param iterable<mixed>|null $quests
+     * @return array<string, mixed>
+     */
+    private function buildPrefilledAnswers(Collection $votes, Collection $options, ?iterable $quests = null): array
+    {
+        if (empty($quests) || $votes->isEmpty() || $options->isEmpty()) {
+            return [];
+        }
+
+        $valuesByKey = [];
+        foreach ($votes as $vote) {
+            $value = $vote->value ?? $vote->text;
+            $valuesByKey[$this->voteKey((int) $vote->option_id, $vote->idOption1, $vote->idOption2)] = $value;
+        }
+
+        $prefilled = [];
+        foreach ($options as $question => $option) {
+            $i = 0;
+            foreach ($quests as $quest) {
+                if (!isset($quest['option1'])) {
+                    continue;
+                }
+
+                if (isset($quest['option2'])) {
+                    foreach ($quest['option2'] ?? [] as $profesores) {
+                        foreach ($profesores as $dni) {
+                            $i++;
+                            $field = 'option' . ($question + 1) . '_' . $i;
+                            $key = $this->voteKey((int) $option->id, $quest['option1']->id, $dni);
+                            if (array_key_exists($key, $valuesByKey)) {
+                                $prefilled[$field] = $valuesByKey[$key];
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
+                $key = $this->voteKey((int) $option->id, $quest['option1']->id, null);
+                if (array_key_exists($key, $valuesByKey)) {
+                    $prefilled[$field] = $valuesByKey[$key];
+                }
+            }
+        }
+
+        return $prefilled;
+    }
+
+    /**
+     * Clau de cerca única per localitzar un vot segons context i pregunta.
+     */
+    private function voteKey(int $optionId, mixed $option1, mixed $option2): string
+    {
+        return $optionId . '|' . (string) $option1 . '|' . ($option2 !== null ? (string) $option2 : '');
     }
 }

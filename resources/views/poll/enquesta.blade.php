@@ -3,6 +3,11 @@
 <title>{{trans("models.Poll.show")}}</title>
 @endsection
 @section('content')
+    @if (!empty($hasPreviousVotes))
+        <div class="alert alert-warning" role="alert">
+            Ja s'ha votat anteriorment. Si envies esta enquesta, es modificaran les respostes guardades.
+        </div>
+    @endif
     <form method="post" action="/poll/{{$poll->id}}/do">
         @csrf
         <div id="wizard" class="form_wizard wizard_verticle">

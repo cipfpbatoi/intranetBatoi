@@ -253,6 +253,8 @@ class PollWorkflowServiceTest extends TestCase
         $result = $service->prepareSurvey($ids['poll'], (object) ['id' => 'AL1', 'dni' => 'DNI01']);
 
         $this->assertNotNull($result);
+        $this->assertTrue($result['has_previous_votes']);
+        $this->assertSame('Optativa1', $result['prefilled_answers']['option3_7'] ?? null);
         $this->assertSame([], self::TEST_MODEL::$lastVotesInput);
     }
 
