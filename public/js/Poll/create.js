@@ -1,5 +1,17 @@
 $(function () {
-    $('.buttonFinish').text('Enviar').val('Enviar');
+    var setFinishLabel = function () {
+        $('.buttonFinish').text('Enviar').val('Enviar');
+    };
+
+    setFinishLabel();
+    var relabelTries = 0;
+    var relabelInterval = setInterval(function () {
+        setFinishLabel();
+        relabelTries++;
+        if ($('.buttonFinish').length > 0 || relabelTries > 20) {
+            clearInterval(relabelInterval);
+        }
+    }, 100);
 
     $(".js-range-slider").ionRangeSlider({
         skin: "flat",
