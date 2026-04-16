@@ -34,22 +34,10 @@ $(function () {
     var relabelInterval = setInterval(function () {
         setFinishLabel();
         relabelTries++;
-        if ($('.buttonFinish').length > 0 || relabelTries > 20) {
+        if ($('.buttonFinish, .sw-btn-finish, [data-sw-btn="finish"]').length > 0 || relabelTries > 50) {
             clearInterval(relabelInterval);
         }
     }, 100);
-
-    if (window.MutationObserver) {
-        var observer = new MutationObserver(function () {
-            setFinishLabel();
-        });
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-            attributes: true
-        });
-    }
 
     $(".js-range-slider").ionRangeSlider({
         skin: "flat",
