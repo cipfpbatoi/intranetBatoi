@@ -22,7 +22,8 @@ $(function () {
             var $control = $(this);
             var text = $.trim($control.text());
             var value = $.trim($control.val() || '');
-            if (/^finish$/i.test(text) || /^finish$/i.test(value)) {
+            var title = $.trim($control.attr('title') || '');
+            if (/finish/i.test(text) || /finish/i.test(value) || /finish/i.test(title)) {
                 renameControl($control);
             }
         });
