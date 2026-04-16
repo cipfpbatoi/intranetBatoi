@@ -20,5 +20,5 @@
 {{$poll->title}}
 @endsection
 @section('scripts')
-<script src="{{ asset('js/Poll/create.js') }}?v={{ @filemtime(public_path('js/Poll/create.js')) ?: time() }}"></script>
+<script src="{{ asset('js/Poll/create.js') }}?v={{ file_exists(public_path('js/Poll/create.js')) ? filemtime(public_path('js/Poll/create.js')) : time() }}"></script>
 @endsection
