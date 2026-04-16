@@ -27,7 +27,9 @@ class PollWorkflowService
         }
 
         $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $allowVoteUpdate = $this->canUpdateVote($poll, $user);
+        $previousVotes = $allowVoteUpdate ? [] : $this->loadPreviousVotes($poll, $user);
+        $quests = $modelo::loadPoll($previousVotes);
         $options = $this->surveyOptions($poll, $user);
 
         return [
@@ -44,8 +46,14 @@ class PollWorkflowService
             return false;
         }
 
+        $allowVoteUpdate = $this->canUpdateVote($poll, $user);
+        if ($allowVoteUpdate) {
+            $this->deletePreviousVotes($poll, $user);
+        }
+
         $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $previousVotes = $allowVoteUpdate ? [] : $this->loadPreviousVotes($poll, $user);
+        $quests = $modelo::loadPoll($previousVotes);
         $options = $this->surveyOptions($poll, $user);
 
         foreach ($options as $question => $option) {
@@ -252,7 +260,7 @@ class PollWorkflowService
 
         $vote = new Vote();
         $vote->idPoll = $poll->id;
-        $vote->user_id = $poll->anonymous ? hash('md5', $user->id) : $user->id;
+        $vote->user_id = $this->responseOwnerId($poll, $user);
         $vote->option_id = $option->id;
         $vote->idOption1 = $option1;
         $vote->idOption2 = $option2;
@@ -412,5 +420,35 @@ class PollWorkflowService
         }
 
         return null;
+    }
+
+    /**
+     * Permet actualitzar respostes només en l'enquesta d'optatives activa.
+     */
+    private function canUpdateVote(Poll $poll, object $user): bool
+    {
+        if ($poll->state !== 'Activa') {
+            return false;
+        }
+
+        return (int) $poll->idPPoll === 7;
+    }
+
+    /**
+     * Elimina vots previs de l'usuari per a tornar a desar la resposta actualitzada.
+     */
+    private function deletePreviousVotes(Poll $poll, object $user): void
+    {
+        Vote::where('idPoll', $poll->id)
+            ->where('user_id', $this->responseOwnerId($poll, $user))
+            ->delete();
+    }
+
+    /**
+     * Identificador intern del respondedor, coherent amb el guardat de vots.
+     */
+    private function responseOwnerId(Poll $poll, object $user): string
+    {
+        return $poll->anonymous ? hash('md5', (string) $user->id) : (string) $user->id;
     }
 }

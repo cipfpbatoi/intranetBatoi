@@ -228,19 +228,132 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertCount(3, $result['options']);
     }
 
-    private function seedPollBase(int $anonymous): array
+    public function test_prepare_survey_permet_reobrir_optatives_activa_encara_que_hi_haja_vots_previs(): void
     {
-        $idPPoll = (int) DB::table('ppolls')->insertGetId([
-            'title' => 'Plantilla test',
-            'what' => 'WorkflowTestModel',
-            'anonymous' => $anonymous,
-            'remains' => 0,
+        $ids = $this->seedPollBase(
+            anonymous: 0,
+            pollStart: now()->subDay()->format('Y-m-d'),
+            pollEnd: now()->addDay()->format('Y-m-d'),
+            ppollId: 7
+        );
+
+        DB::table('votes')->insert([
+            'idPoll' => $ids['poll'],
+            'user_id' => 'AL1',
+            'option_id' => 3,
+            'idOption1' => 7,
+            'idOption2' => null,
+            'value' => null,
+            'text' => 'Optativa1',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
+
+        $service = new PollWorkflowService();
+        $result = $service->prepareSurvey($ids['poll'], (object) ['id' => 'AL1', 'dni' => 'DNI01']);
+
+        $this->assertNotNull($result);
+        $this->assertSame([], self::TEST_MODEL::$lastVotesInput);
+    }
+
+    public function test_save_survey_reemplaça_vot_previ_en_optatives_activa(): void
+    {
+        $ids = $this->seedPollBase(
+            anonymous: 0,
+            pollStart: now()->subDay()->format('Y-m-d'),
+            pollEnd: now()->addDay()->format('Y-m-d'),
+            ppollId: 7
+        );
+
+        DB::table('votes')->insert([
+            'idPoll' => $ids['poll'],
+            'user_id' => 'AL1',
+            'option_id' => 3,
+            'idOption1' => 7,
+            'idOption2' => null,
+            'value' => null,
+            'text' => 'Optativa1',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = Request::create('/poll', 'POST', [
+            'option3_7' => 'Optativa2',
+        ]);
+
+        $service = new PollWorkflowService();
+        $saved = $service->saveSurvey($request, $ids['poll'], (object) ['id' => 'AL1', 'dni' => 'DNI01']);
+
+        $this->assertTrue($saved);
+        $this->assertSame(
+            1,
+            DB::table('votes')->where('idPoll', $ids['poll'])->where('user_id', 'AL1')->where('option_id', 3)->count()
+        );
+        $this->assertSame(
+            'Optativa2',
+            DB::table('votes')->where('idPoll', $ids['poll'])->where('user_id', 'AL1')->where('option_id', 3)->value('text')
+        );
+    }
+
+    public function test_save_survey_no_reemplaça_vot_previ_si_no_es_optatives(): void
+    {
+        $ids = $this->seedPollBase(
+            anonymous: 0,
+            pollStart: now()->subDay()->format('Y-m-d'),
+            pollEnd: now()->addDay()->format('Y-m-d'),
+            ppollId: 8
+        );
+
+        DB::table('votes')->insert([
+            'idPoll' => $ids['poll'],
+            'user_id' => 'AL1',
+            'option_id' => 3,
+            'idOption1' => 7,
+            'idOption2' => null,
+            'value' => null,
+            'text' => 'Optativa1',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = Request::create('/poll', 'POST', [
+            'option3_7' => 'Optativa2',
+        ]);
+
+        $service = new PollWorkflowService();
+        $saved = $service->saveSurvey($request, $ids['poll'], (object) ['id' => 'AL1', 'dni' => 'DNI01']);
+
+        $this->assertTrue($saved);
+        $this->assertSame(
+            2,
+            DB::table('votes')->where('idPoll', $ids['poll'])->where('user_id', 'AL1')->where('option_id', 3)->count()
+        );
+    }
+
+    private function seedPollBase(int $anonymous, ?string $pollStart = null, ?string $pollEnd = null, ?int $ppollId = null): array
+    {
+        if ($ppollId !== null) {
+            DB::table('ppolls')->insert([
+                'id' => $ppollId,
+                'title' => 'Plantilla test',
+                'what' => 'WorkflowTestModel',
+                'anonymous' => $anonymous,
+                'remains' => 0,
+            ]);
+            $idPPoll = $ppollId;
+        } else {
+            $idPPoll = (int) DB::table('ppolls')->insertGetId([
+                'title' => 'Plantilla test',
+                'what' => 'WorkflowTestModel',
+                'anonymous' => $anonymous,
+                'remains' => 0,
+            ]);
+        }
 
         $idPoll = (int) DB::table('polls')->insertGetId([
             'title' => 'Poll test',
-            'desde' => '2026-02-01',
-            'hasta' => '2026-02-28',
+            'desde' => $pollStart ?? '2026-02-01',
+            'hasta' => $pollEnd ?? '2026-02-28',
             'idPPoll' => $idPPoll,
         ]);
 
