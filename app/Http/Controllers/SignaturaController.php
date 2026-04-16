@@ -59,17 +59,21 @@ class SignaturaController extends ModalController
         return $this->alumnoFctService;
     }
 
+    /**
+     * Registra una nova signatura manual i ajusta el tipus real de l'annex.
+     */
     public function store(SignaturaStoreRequest $request)
     {
         $this->authorize('create', Signatura::class);
         $file = $request->file('file');
-        $tipus = $request->tipus;
         $idSao =  $request->fct ;
+        $alumnoFct = $this->alumnoFcts()->firstByIdSao((string) $idSao);
+        $tipus = Signatura::normalizeTipusForAlumnoFct((string) $request->tipus, $alumnoFct);
         $path = storage_path('app/annexes/');
         $fileName = "{$tipus}_{$idSao}.pdf";
         $file->move($path, $fileName );
         $signatura = new Signatura([
-            'tipus' => $request->tipus,
+            'tipus' => $tipus,
             'idProfesor' => authUser()->dni,
             'idSao' => $idSao,
             'sendTo' => 0,
