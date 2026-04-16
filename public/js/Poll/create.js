@@ -1,13 +1,30 @@
 $(function () {
-    var setFinishLabel = function () {
-        $('.buttonFinish').each(function () {
-            var $button = $(this);
-            if ($button.is('input,button')) {
-                $button.val('Enviar').text('Enviar');
-                return;
-            }
+    var renameControl = function ($control) {
+        if ($control.is('input,button')) {
+            $control.val('Enviar').text('Enviar');
+            return;
+        }
 
-            $button.text('Enviar');
+        $control.text('Enviar');
+    };
+
+    var setFinishLabel = function () {
+        var $wizard = $('#wizard');
+        if ($wizard.length === 0) {
+            return;
+        }
+
+        $wizard.find('.buttonFinish, .sw-btn-finish, [data-sw-btn="finish"]').each(function () {
+            renameControl($(this));
+        });
+
+        $wizard.find('a, button, input[type="button"], input[type="submit"]').each(function () {
+            var $control = $(this);
+            var text = $.trim($control.text());
+            var value = $.trim($control.val() || '');
+            if (/^finish$/i.test(text) || /^finish$/i.test(value)) {
+                renameControl($control);
+            }
         });
     };
 
@@ -25,7 +42,12 @@ $(function () {
         var observer = new MutationObserver(function () {
             setFinishLabel();
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true
+        });
     }
 
     $(".js-range-slider").ionRangeSlider({
