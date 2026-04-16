@@ -501,6 +501,7 @@ return array(
         'Poll' => array(
             'show' => 'Mostra resultats',
             'index' => 'Manteniment Enquestes',
+            'index_student' => 'Enquestes',
             'edit' => 'Editar Enquesta',
             'chart' => 'Vore resultats agregats',
             'do' => 'Contesta',

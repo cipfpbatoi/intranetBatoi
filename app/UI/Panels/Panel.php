@@ -4,6 +4,7 @@ namespace Intranet\UI\Panels;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\View\View;
 use Intranet\UI\Botones\Boton;
@@ -284,11 +285,31 @@ class Panel
      */
     public function getTitulo(string $que = 'index'): string
     {
+        if ($this->isStudentPollIndexTitle($que)) {
+            return Lang::has('models.Poll.index_student')
+                ? trans('models.Poll.index_student')
+                : 'Enquestes';
+        }
+
         $key = "models." . ucwords(strtolower($this->getModel())) . ".$que";
 
         return Lang::has($key)
             ? trans($key, $this->titulo)
             : $this->getModel();
+    }
+
+    /**
+     * Indica si el títol correspon al llistat d'enquestes per a alumnat.
+     */
+    private function isStudentPollIndexTitle(string $que): bool
+    {
+        if ($que !== 'index' || strcasecmp($this->getModel(), 'Poll') !== 0) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        return isset($user->nia);
     }
 
     /**
