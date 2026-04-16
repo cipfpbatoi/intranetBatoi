@@ -1,6 +1,14 @@
 $(function () {
     var setFinishLabel = function () {
-        $('.buttonFinish').text('Enviar').val('Enviar');
+        $('.buttonFinish').each(function () {
+            var $button = $(this);
+            if ($button.is('input,button')) {
+                $button.val('Enviar').text('Enviar');
+                return;
+            }
+
+            $button.text('Enviar');
+        });
     };
 
     setFinishLabel();
@@ -12,6 +20,13 @@ $(function () {
             clearInterval(relabelInterval);
         }
     }, 100);
+
+    if (window.MutationObserver) {
+        var observer = new MutationObserver(function () {
+            setFinishLabel();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
 
     $(".js-range-slider").ionRangeSlider({
         skin: "flat",
