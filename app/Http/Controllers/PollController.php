@@ -235,7 +235,8 @@ class PollController extends IntranetController
                 $hasVotes,
                 $stats,
                 $selectStats,
-                $selectHasVotes
+                $selectHasVotes,
+                $data['student_select_groups'] ?? []
             ),
             'resultats_enquesta.xlsx'
         );

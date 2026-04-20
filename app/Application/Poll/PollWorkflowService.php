@@ -6,10 +6,12 @@ namespace Intranet\Application\Poll;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Intranet\Entities\Alumno as AlumnoEntity;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Poll\Alumno as AlumnoPoll;
 use Intranet\Entities\Poll\Option;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
@@ -219,6 +221,8 @@ class PollWorkflowService
             }
         }
 
+        $studentSelectGroups = $this->buildStudentSelectGroups($poll, $optionsSelect);
+
         return [
             'poll' => $poll,
             'votes' => $votes,
@@ -228,6 +232,7 @@ class PollWorkflowService
             'stats' => $stats,
             'selectStats' => $selectStats,
             'selectHasVotes' => $selectHasVotes,
+            'student_select_groups' => $studentSelectGroups,
         ];
     }
 
@@ -349,6 +354,100 @@ class PollWorkflowService
         ksort($counts);
 
         return $counts;
+    }
+
+    /**
+     * Prepara el detall de respostes de selecció per grup i alumne.
+     *
+     * Es fa servir per a exportar les optatives triades a un Excel amb una
+     * fulla per grup. Només aplica a enquestes genèriques d'alumnat.
+     *
+     * @param Collection<int, Option> $optionsSelect
+     * @return array<string, array<string, mixed>>
+     */
+    private function buildStudentSelectGroups(Poll $poll, Collection $optionsSelect): array
+    {
+        if ($optionsSelect->isEmpty() || $poll->modelo !== AlumnoPoll::class || $poll->anonymous) {
+            return [];
+        }
+
+        $studentsByVoteKey = [];
+        $groupSheets = [];
+
+        foreach (AlumnoEntity::with(['Grupo.Ciclo'])->get() as $student) {
+            $group = $student->Grupo->first();
+            if (!$group instanceof Grupo) {
+                continue;
+            }
+
+            $cycleId = $group->idCiclo !== null ? (int) $group->idCiclo : null;
+            $groupOptions = $optionsSelect
+                ->filter(fn(Option $option): bool => $option->matchesCycle($cycleId))
+                ->values();
+
+            if ($groupOptions->isEmpty()) {
+                continue;
+            }
+
+            $studentVoteKey = $this->studentVoteKey((string) $student->nia);
+            $studentsByVoteKey[$studentVoteKey] = [
+                'group_code' => (string) $group->codigo,
+                'student_name' => $student->fullName,
+            ];
+
+            if (!isset($groupSheets[$group->codigo])) {
+                $groupSheets[$group->codigo] = [
+                    'group' => $group,
+                    'options' => $groupOptions,
+                    'rows' => [],
+                ];
+            }
+
+            $groupSheets[$group->codigo]['rows'][$studentVoteKey] = [
+                'student_name' => $student->fullName,
+                'choices' => [],
+            ];
+        }
+
+        foreach (Vote::allSelectVotes($poll->id)->select(['idOption1', 'option_id', 'text'])->get() as $vote) {
+            $studentInfo = $studentsByVoteKey[(int) $vote->idOption1] ?? null;
+            if (!$studentInfo) {
+                continue;
+            }
+
+            $groupCode = $studentInfo['group_code'];
+            if (!isset($groupSheets[$groupCode]['rows'][(int) $vote->idOption1])) {
+                continue;
+            }
+
+            $groupSheets[$groupCode]['rows'][(int) $vote->idOption1]['choices'][(int) $vote->option_id] = (string) $vote->text;
+        }
+
+        foreach ($groupSheets as $groupCode => $sheet) {
+            uasort($sheet['rows'], static function (array $left, array $right): int {
+                return strcmp($left['student_name'], $right['student_name']);
+            });
+
+            $hasAnswers = false;
+            foreach ($sheet['rows'] as $row) {
+                if (!empty($row['choices'])) {
+                    $hasAnswers = true;
+                    break;
+                }
+            }
+
+            if (!$hasAnswers) {
+                unset($groupSheets[$groupCode]);
+                continue;
+            }
+
+            $sheet['rows'] = array_values($sheet['rows']);
+            $groupSheets[$groupCode] = $sheet;
+        }
+
+        ksort($groupSheets);
+
+        return $groupSheets;
     }
 
     private function initValues(array &$votes, mixed $options, GrupoService $grupoService): void
@@ -535,5 +634,13 @@ class PollWorkflowService
     private function voteKey(int $optionId, mixed $option1, mixed $option2): string
     {
         return $optionId . '|' . (string) $option1 . '|' . ($option2 !== null ? (string) $option2 : '');
+    }
+
+    /**
+     * Genera la clau numèrica estable que compartixen alumnat i respostes.
+     */
+    private function studentVoteKey(string $nia): int
+    {
+        return (int) sprintf('%u', crc32($nia));
     }
 }
