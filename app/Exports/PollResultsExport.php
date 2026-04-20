@@ -17,6 +17,7 @@ class PollResultsExport implements WithMultipleSheets
     private $stats;
     private $selectStats;
     private $selectHasVotes;
+    private $studentSelectGroups;
 
     public function __construct(
         $poll,
@@ -26,7 +27,8 @@ class PollResultsExport implements WithMultipleSheets
         $hasVotes,
         $stats,
         $selectStats,
-        $selectHasVotes
+        $selectHasVotes,
+        array $studentSelectGroups = []
     )
     {
         $this->poll = $poll;
@@ -37,6 +39,7 @@ class PollResultsExport implements WithMultipleSheets
         $this->stats = $stats;
         $this->selectStats = $selectStats;
         $this->selectHasVotes = $selectHasVotes;
+        $this->studentSelectGroups = $studentSelectGroups;
     }
 
     public function sheets(): array
@@ -52,10 +55,33 @@ class PollResultsExport implements WithMultipleSheets
             'select_hasVotes' => $this->selectHasVotes,
         ];
 
-        return [
+        $sheets = [
             new PollResultsSheet('poll.partials.resolts.excel_general', 'Resultats', $data),
             new PollResultsSheet('poll.partials.resolts.excel_departament', 'Departaments', $data),
             new PollResultsSheet('poll.partials.resolts.excel_grup', 'Grups', $data),
         ];
+
+        foreach ($this->studentSelectGroups as $sheetData) {
+            $sheets[] = new PollResultsSheet(
+                'poll.partials.resolts.excel_student_group',
+                $this->groupSheetTitle($sheetData),
+                ['sheet' => $sheetData]
+            );
+        }
+
+        return $sheets;
+    }
+
+    /**
+     * Genera el nom de la fulla "codi del grup + cicle".
+     *
+     * @param array<string, mixed> $sheetData
+     */
+    private function groupSheetTitle(array $sheetData): string
+    {
+        $group = $sheetData['group'];
+        $cycleName = $group->Ciclo?->ciclo ?? $group->idCiclo ?? '';
+
+        return trim($group->codigo . ' ' . $cycleName);
     }
 }

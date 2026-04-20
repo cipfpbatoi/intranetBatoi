@@ -6,10 +6,13 @@ namespace Tests\Unit\Application\Poll;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Poll\PollWorkflowService;
+use Intranet\Entities\Grupo;
 use Tests\TestCase;
 
 /**
@@ -228,7 +231,194 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertCount(3, $result['options']);
     }
 
-    private function seedPollBase(int $anonymous): array
+    public function test_all_votes_inclou_detall_de_seleccio_per_grup_i_alumne(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Informàtica',
+            'vliteral' => 'Informàtica',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'DAM',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            'codigo' => '1DAM',
+            'nombre' => '1DAM',
+            'idCiclo' => 8,
+            'curso' => 1,
+        ]);
+
+        DB::table('alumnos')->insert([
+            [
+                'nia' => 'NIA01',
+                'dni' => 'DNI01',
+                'nombre' => 'Ada',
+                'apellido1' => 'Lovelace',
+                'apellido2' => 'Test',
+                'email' => 'ada@test.local',
+            ],
+            [
+                'nia' => 'NIA02',
+                'dni' => 'DNI02',
+                'nombre' => 'Grace',
+                'apellido1' => 'Hopper',
+                'apellido2' => 'Test',
+                'email' => 'grace@test.local',
+            ],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => 'NIA01', 'idGrupo' => '1DAM'],
+            ['idAlumno' => 'NIA02', 'idGrupo' => '1DAM'],
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Plantilla optatives',
+            'what' => 'Alumno',
+            'anonymous' => 0,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Poll optatives',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+        ]);
+
+        DB::table('options')->insert([
+            'id' => 30,
+            'question' => 'Quina optativa vols?',
+            'scala' => 0,
+            'choices' => "Optativa A\nOptativa B",
+            'idCiclo' => 8,
+            'ppoll_id' => $idPPoll,
+        ]);
+
+        DB::table('votes')->insert([
+            'idPoll' => $idPoll,
+            'user_id' => 'NIA01',
+            'option_id' => 30,
+            'idOption1' => $this->studentVoteKey('NIA01'),
+            'idOption2' => null,
+            'value' => null,
+            'text' => 'Optativa B',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $grupo = new Grupo();
+        $grupo->codigo = '1DAM';
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertArrayHasKey('1DAM', $result['student_select_groups']);
+
+        $sheet = $result['student_select_groups']['1DAM'];
+        $this->assertSame('1DAM', $sheet['group']->codigo);
+        $this->assertCount(1, $sheet['options']);
+        $this->assertCount(2, $sheet['rows']);
+        $this->assertSame('Ada Lovelace Test', $sheet['rows'][0]['student_name']);
+        $this->assertSame('Optativa B', $sheet['rows'][0]['choices'][30]);
+        $this->assertSame('Grace Hopper Test', $sheet['rows'][1]['student_name']);
+        $this->assertSame([], $sheet['rows'][1]['choices']);
+    }
+
+    public function test_all_votes_no_inclou_detall_per_alumne_si_la_poll_es_anonima(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Informàtica',
+            'vliteral' => 'Informàtica',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'DAM',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            'codigo' => '1DAM',
+            'nombre' => '1DAM',
+            'idCiclo' => 8,
+            'curso' => 1,
+        ]);
+
+        DB::table('alumnos')->insert([
+            'nia' => 'NIA01',
+            'dni' => 'DNI01',
+            'nombre' => 'Ada',
+            'apellido1' => 'Lovelace',
+            'apellido2' => 'Test',
+            'email' => 'ada@test.local',
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            'idAlumno' => 'NIA01',
+            'idGrupo' => '1DAM',
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Plantilla optatives anonima',
+            'what' => 'Alumno',
+            'anonymous' => 1,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Poll optatives anonima',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+        ]);
+
+        DB::table('options')->insert([
+            'id' => 31,
+            'question' => 'Quina optativa vols?',
+            'scala' => 0,
+            'choices' => "Optativa A\nOptativa B",
+            'idCiclo' => 8,
+            'ppoll_id' => $idPPoll,
+        ]);
+
+        DB::table('votes')->insert([
+            'idPoll' => $idPoll,
+            'user_id' => md5('NIA01'),
+            'option_id' => 31,
+            'idOption1' => $this->studentVoteKey('NIA01'),
+            'idOption2' => null,
+            'value' => null,
+            'text' => 'Optativa B',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $grupo = new Grupo();
+        $grupo->codigo = '1DAM';
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertSame([], $result['student_select_groups']);
+    }
+
+    public function test_prepare_survey_permet_reobrir_optatives_activa_encara_que_hi_haja_vots_previs(): void
     {
         $idPPoll = (int) DB::table('ppolls')->insertGetId([
             'title' => 'Plantilla test',
@@ -293,6 +483,39 @@ class PollWorkflowServiceTest extends TestCase
             $table->text('text')->nullable();
             $table->timestamps();
         });
+
+        $schema->create('departamentos', function (Blueprint $table): void {
+            $table->unsignedInteger('id')->primary();
+            $table->string('cliteral')->nullable();
+            $table->string('vliteral')->nullable();
+        });
+
+        $schema->create('ciclos', function (Blueprint $table): void {
+            $table->unsignedInteger('id')->primary();
+            $table->string('ciclo')->nullable();
+            $table->unsignedInteger('departamento')->nullable();
+        });
+
+        $schema->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo')->primary();
+            $table->string('nombre')->nullable();
+            $table->unsignedInteger('idCiclo')->nullable();
+            $table->unsignedTinyInteger('curso')->default(1);
+        });
+
+        $schema->create('alumnos', function (Blueprint $table): void {
+            $table->string('nia')->primary();
+            $table->string('dni')->nullable();
+            $table->string('nombre')->nullable();
+            $table->string('apellido1')->nullable();
+            $table->string('apellido2')->nullable();
+            $table->string('email')->nullable();
+        });
+
+        $schema->create('alumnos_grupos', function (Blueprint $table): void {
+            $table->string('idAlumno');
+            $table->string('idGrupo');
+        });
     }
 
     private function ensureWorkflowTestModel(): void
@@ -349,5 +572,10 @@ PHP_EVAL);
         $model::$loadPollResponse = null;
         $model::$loadVotesResponse = null;
         $model::$loadGroupVotesResponse = null;
+    }
+
+    private function studentVoteKey(string $nia): int
+    {
+        return (int) sprintf('%u', crc32($nia));
     }
 }
