@@ -82,7 +82,8 @@ class OptionController extends ModalController
      */
     private function normalizeChoices(string $choices): ?string
     {
-        $lines = preg_split('/\r\n|\r|\n/', $choices) ?: [];
+        $lines = preg_split('/\r\n|\r|\n|\|/', $choices) ?: [];
+
         $clean = [];
 
         foreach ($lines as $line) {
