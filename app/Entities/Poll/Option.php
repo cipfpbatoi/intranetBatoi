@@ -169,7 +169,7 @@ class Option extends Model
             return [];
         }
 
-        $lines = preg_split('/\r\n|\r|\n/', $choices) ?: [];
+        $lines = $this->splitChoices((string) $choices);
         $clean = [];
 
         foreach ($lines as $line) {
@@ -182,5 +182,20 @@ class Option extends Model
         }
 
         return $clean;
+    }
+
+    /**
+     * Separa les opcions de selecció admetent formats antics.
+     *
+     * A banda de salts de línia, admet valors separats per `|`
+     * quan tot ve en una sola línia.
+     *
+     * @return array<int, string>
+     */
+    private function splitChoices(string $choices): array
+    {
+        $lines = preg_split('/\r\n|\r|\n|\|/', $choices) ?: [];
+
+        return $lines;
     }
 }
