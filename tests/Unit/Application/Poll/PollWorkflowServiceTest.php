@@ -418,6 +418,111 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame([], $result['student_select_groups']);
     }
 
+    public function test_all_votes_alumno_fct_agrupa_resultats_numerics_per_grup_del_respondedor(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Sanitat',
+            'vliteral' => 'Sanitat',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'Cures auxiliars',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => '1CAE', 'nombre' => '1CAE', 'idCiclo' => 8, 'curso' => 1],
+            ['codigo' => '1SMX', 'nombre' => '1SMX', 'idCiclo' => 8, 'curso' => 1],
+        ]);
+
+        DB::table('alumnos')->insert([
+            [
+                'nia' => 'NIA10',
+                'dni' => 'DNI10',
+                'nombre' => 'Ada',
+                'apellido1' => 'Lovelace',
+                'apellido2' => 'Test',
+                'email' => 'ada@test.local',
+            ],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            'idAlumno' => 'NIA10',
+            'idGrupo' => '1CAE',
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            'id' => 100,
+            'idCiclo' => 8,
+        ]);
+
+        DB::table('fcts')->insert([
+            'id' => 200,
+            'idColaboracion' => 100,
+        ]);
+
+        DB::table('alumno_fcts')->insert([
+            'idFct' => 200,
+            'idAlumno' => 'NIA10',
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Valoració FE alumnat',
+            'what' => 'AlumnoFct',
+            'anonymous' => 1,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Enquesta valoració FE Alumnat de 1er',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+        ]);
+
+        DB::table('options')->insert([
+            'id' => 40,
+            'question' => 'Valora l’empresa',
+            'scala' => 10,
+            'choices' => null,
+            'idCiclo' => null,
+            'ppoll_id' => $idPPoll,
+        ]);
+
+        DB::table('votes')->insert([
+            'idPoll' => $idPoll,
+            'user_id' => md5('NIA10'),
+            'option_id' => 40,
+            'idOption1' => 200,
+            'idOption2' => null,
+            'value' => 9,
+            'text' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $grupo1 = new Grupo();
+        $grupo1->codigo = '1CAE';
+        $grupo2 = new Grupo();
+        $grupo2->codigo = '1SMX';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo1, $grupo2]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertTrue($result['hasVotes']['grup']['1CAE']);
+        $this->assertFalse($result['hasVotes']['grup']['1SMX']);
+        $this->assertSame(9.0, $result['stats']['grup']['1CAE'][40]['avg']);
+        $this->assertSame(1, $result['stats']['grup']['1CAE'][40]['count']);
+    }
+
     public function test_prepare_survey_permet_reobrir_optatives_activa_encara_que_hi_haja_vots_previs(): void
     {
         $ids = $this->seedPollBase(
@@ -630,6 +735,30 @@ class PollWorkflowServiceTest extends TestCase
         $schema->create('alumnos_grupos', function (Blueprint $table): void {
             $table->string('idAlumno');
             $table->string('idGrupo');
+        });
+
+        $schema->create('colaboraciones', function (Blueprint $table): void {
+            $table->unsignedInteger('id')->primary();
+            $table->unsignedInteger('idCiclo')->nullable();
+        });
+
+        $schema->create('fcts', function (Blueprint $table): void {
+            $table->unsignedInteger('id')->primary();
+            $table->unsignedInteger('idColaboracion')->nullable();
+        });
+
+        $schema->create('alumno_fcts', function (Blueprint $table): void {
+            $table->unsignedInteger('idFct');
+            $table->string('idAlumno');
+            $table->unsignedTinyInteger('calificacion')->nullable();
+            $table->unsignedTinyInteger('calProyecto')->nullable();
+            $table->unsignedTinyInteger('actas')->nullable();
+            $table->unsignedTinyInteger('insercion')->nullable();
+            $table->unsignedInteger('horas')->nullable();
+            $table->date('desde')->nullable();
+            $table->date('hasta')->nullable();
+            $table->unsignedTinyInteger('correoAlumno')->nullable();
+            $table->string('pg0301')->nullable();
         });
     }
 

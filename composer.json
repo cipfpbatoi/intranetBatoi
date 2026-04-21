@@ -54,6 +54,7 @@
     "autoload": {
         "psr-4": {
             "Intranet\\": "app/",
+            "Jenssegers\\Date\\": "app/Legacy/Jenssegers/Date/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
