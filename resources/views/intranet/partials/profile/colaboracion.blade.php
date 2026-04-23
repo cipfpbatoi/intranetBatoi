@@ -7,12 +7,19 @@
     @push('styles')
         <style>
             .mis-colaboraciones-town-cards {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 16px;
+                margin-left: 0;
+                margin-right: 0;
             }
 
             .mis-colaboraciones-town-cards .mis-colaboraciones-card {
                 float: none;
+                width: auto;
+                max-width: none;
+                padding-left: 0;
+                padding-right: 0;
             }
 
             .mis-colaboraciones-summary-row {
