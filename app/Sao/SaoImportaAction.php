@@ -18,7 +18,6 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Illuminate\Support\Carbon;
-use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 
@@ -308,16 +307,17 @@ class SaoImportaAction
         $grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
+        $avisos = [];
         if (AuthUser()->dni === config('avisos.director')) {
             self::selectDirectorFct($driver);
         }
 
         try {
             try {
-                self::extractPage($driver, $dades,1);
+                self::extractPage($driver, $dades, $avisos, 1);
                 $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
                 sleep(1);
-                self::extractPage($driver, $dades,2);
+                self::extractPage($driver, $dades, $avisos, 2);
             } catch (Exception $e) {
                 report($e);
                 Log::warning('Error processant paginació de la importació SAO.', [
@@ -349,7 +349,7 @@ class SaoImportaAction
                             'id_sao' => $dades[$index]['idSao'] ?? null,
                             'error' => $e->getMessage(),
                         ]);
-                        Alert::info($e->getMessage());
+                        $avisos[] = $e->getMessage();
                     }
                 }
             }
@@ -363,8 +363,13 @@ class SaoImportaAction
                 ]);
             }
         }
+
+        if (count($dades) === 0 && count($avisos) === 0) {
+            $avisos[] = 'No hi ha cap FCT nova per importar des de SAO.';
+        }
+
         session(compact('dades'));
-        return view('sao.importa', compact('dades', 'ciclo'));
+        return view('sao.importa', compact('dades', 'ciclo', 'avisos'));
     }
 
 
@@ -647,7 +652,7 @@ class SaoImportaAction
      * @param  array  $dades
      * @return array
      */
-    private static function extractPage(RemoteWebDriver $driver, array &$dades,$page)
+    private static function extractPage(RemoteWebDriver $driver, array &$dades, array &$avisos, $page)
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
@@ -663,7 +668,7 @@ class SaoImportaAction
                         'row_index' => $key,
                         'error' => $e->getMessage(),
                     ]);
-                    Alert::info($e->getMessage());
+                    $avisos[] = $e->getMessage();
                 }
             }
         }
