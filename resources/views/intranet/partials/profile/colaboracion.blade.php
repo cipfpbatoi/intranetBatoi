@@ -8,9 +8,33 @@
         <style>
             .mis-colaboraciones-town-cards {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+                grid-template-columns: minmax(0, 1fr);
                 gap: 16px;
                 width: 100%;
+            }
+
+            @media (min-width: 768px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+            }
+
+            @media (min-width: 1600px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                }
+            }
+
+            @media (min-width: 2000px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(5, minmax(0, 1fr));
+                }
             }
 
             .mis-colaboraciones-town-cards .mis-colaboraciones-card {
