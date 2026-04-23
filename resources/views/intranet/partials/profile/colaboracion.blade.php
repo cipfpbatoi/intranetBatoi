@@ -8,18 +8,14 @@
         <style>
             .mis-colaboraciones-town-cards {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
                 gap: 16px;
-                margin-left: 0;
-                margin-right: 0;
+                width: 100%;
             }
 
             .mis-colaboraciones-town-cards .mis-colaboraciones-card {
-                float: none;
-                width: auto;
-                max-width: none;
-                padding-left: 0;
-                padding-right: 0;
+                min-width: 0;
+                width: 100%;
             }
 
             .mis-colaboraciones-summary-row {
@@ -332,7 +328,7 @@
             <strong><em class="fa fa-map-marker"></em> {{ $localidad }}</strong>
         </div>
     </div>
-    <div class="row mis-colaboraciones-town-cards" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}">
+    <div class="mis-colaboraciones-town-cards" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}">
         @foreach ($items as $elemento)
             @php($contactos = $elemento->contactos ?? collect())
             @include ('intranet.partials.profile.partials.colaboracion')
