@@ -10,15 +10,14 @@
                         {{  $title }}
                     </x-layouts.titlebar>
 
+                    {{-- Alertes --}}
+                    <div class="x_content">
+                        {!! \Intranet\Services\UI\AppAlert::render() !!}
+                    </div>
 
                     {{-- Contingut --}}
                     <div class="x_content">
                         {{ $slot }}
-                    </div>
-
-                    {{-- Alertes --}}
-                    <div class="x_content">
-                        {!! \Intranet\Services\UI\AppAlert::render() !!}
                     </div>
 
                 </div>

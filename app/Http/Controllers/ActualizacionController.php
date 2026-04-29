@@ -56,7 +56,7 @@ class ActualizacionController extends Controller
         if ($versionNueva > $versionActual) {
             AdministracionController::exe_actualizacion($versionActual);
             Storage::put(self::FITXER_VERSION, $versionNueva);
-            Alert::info('Actualització realitzada correctament');
+            Alert::success('Actualització realitzada correctament');
             Log::info('Actualització funcional executada.', [
                 'version_actual' => $versionActual,
                 'version_nova' => $versionNueva,
