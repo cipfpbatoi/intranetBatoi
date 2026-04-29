@@ -58,17 +58,6 @@
         });
     }
 
-    function initTableOrder() {
-        if (typeof window.DataTable !== 'function') {
-            return;
-        }
-
-        var table = new window.DataTable('#datatable');
-        if (table && typeof table.order === 'function') {
-            table.order([0, 'dsc']).draw();
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.del-notif').forEach(function (button) {
             button.addEventListener('click', function () {
@@ -87,7 +76,5 @@
                     });
             });
         });
-
-        initTableOrder();
     });
 })();
