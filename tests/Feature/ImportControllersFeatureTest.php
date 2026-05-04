@@ -125,6 +125,22 @@ XML;
         $this->assertSame('seeder.store', $view->name());
     }
 
+    public function test_import_store_accepta_xml_amb_mime_no_estandard(): void
+    {
+        $controller = $this->partialMock(ImportController::class, function ($mock): void {
+            $mock->shouldReceive('run')->once();
+            $mock->shouldNotReceive('asignarTutores');
+        });
+
+        $file = UploadedFile::fake()->create('import.xml', 4, 'text/plain');
+        $request = Request::create('/import', 'POST', ['primera' => 'off', 'mode' => 'create_only'], [], ['fichero' => $file]);
+
+        $view = $controller->store($request);
+
+        $this->assertInstanceOf(View::class, $view);
+        $this->assertSame('seeder.store', $view->name());
+    }
+
     public function test_teacher_import_store_falla_si_no_hi_ha_fitxer(): void
     {
         $response = $this->from('/teacherImport')
@@ -164,6 +180,25 @@ XML;
 
         $file = UploadedFile::fake()->createWithContent('teacher_import.xml', $xml);
         $request = Request::create('/teacherImport', 'POST', ['idProfesor' => '021648508B', 'horari' => false, 'mode' => 'create_only'], [], ['fichero' => $file]);
+
+        $view = $controller->store($request);
+
+        $this->assertInstanceOf(View::class, $view);
+        $this->assertSame('seeder.store', $view->name());
+    }
+
+    public function test_teacher_import_store_accepta_xml_amb_mime_no_estandard(): void
+    {
+        $controller = $this->partialMock(TeacherImportController::class, function ($mock): void {
+            $mock->shouldReceive('run')->once();
+        });
+
+        $file = UploadedFile::fake()->create('teacher_import.xml', 4, 'text/plain');
+        $request = Request::create('/teacherImport', 'POST', [
+            'idProfesor' => '021648508B',
+            'horari' => false,
+            'mode' => 'create_only',
+        ], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 
