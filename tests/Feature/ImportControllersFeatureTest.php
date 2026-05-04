@@ -55,6 +55,7 @@ class ImportControllersFeatureTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect('/import');
+        $response->assertSessionHasErrors('fichero');
     }
 
     public function test_import_store_falla_si_fitxer_no_es_xml(): void
@@ -149,6 +150,7 @@ XML;
 
         $response->assertStatus(302);
         $response->assertRedirect('/teacherImport');
+        $response->assertSessionHasErrors(['idProfesor', 'fichero']);
     }
 
     public function test_teacher_import_store_falla_si_fitxer_no_es_xml(): void

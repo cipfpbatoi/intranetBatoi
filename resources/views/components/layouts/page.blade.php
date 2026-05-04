@@ -13,6 +13,7 @@
                     {{-- Alertes --}}
                     <div class="x_content">
                         {!! \Intranet\Services\UI\AppAlert::render() !!}
+                        <x-ui.errors />
                     </div>
 
                     {{-- Contingut --}}
