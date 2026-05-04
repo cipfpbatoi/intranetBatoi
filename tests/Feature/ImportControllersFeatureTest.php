@@ -208,4 +208,26 @@ XML;
         $this->assertSame('seeder.store', $view->name());
     }
 
+    public function test_teacher_import_store_accepta_checkbox_html_per_a_horari_i_lost(): void
+    {
+        $controller = $this->partialMock(TeacherImportController::class, function ($mock): void {
+            $mock->shouldReceive('run')->once();
+        });
+
+        $file = UploadedFile::fake()->create('teacher_import.xml', 4, 'text/plain');
+        $request = Request::create('/teacherImport', 'POST', [
+            'idProfesor' => '021648508B',
+            'horari' => 'on',
+            'lost' => 'on',
+            'mode' => 'create_only',
+        ], [], ['fichero' => $file]);
+
+        $view = $controller->store($request);
+
+        $this->assertInstanceOf(View::class, $view);
+        $this->assertSame('seeder.store', $view->name());
+        $this->assertTrue($request->horari);
+        $this->assertTrue($request->lost);
+    }
+
 }
