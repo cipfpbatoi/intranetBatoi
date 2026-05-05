@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Jenssegers\Date\Date;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Notifications\MyResetPassword;
@@ -292,10 +294,137 @@ class Profesor extends Authenticatable
     {
         return optional(Falta_profesor::Hoy($this->dni)->get()->last())->salida ?? ' ';
     }
+
+    /**
+     * Retorna la primera franja d'horari del dia i indica el canvi temporal vigent.
+     *
+     * @return string
+     */
     public function getHorarioAttribute()
     {
-        $horario = Horario::Primera($this->dni)->orderBy('sesion_orden')->first();
-        return (isset($horario->desde))?$horario->desde." - ".$horario->hasta:'';
+        $horarios = Horario::Primera($this->dni)->orderBy('sesion_orden')->get();
+        $horario = $horarios->first();
+        $base = (isset($horario->desde)) ? $horario->desde . " - " . $horario->hasta : '';
+        $temporal = $this->horarioTemporalVigent($horarios, hoy());
+
+        if ($temporal === '') {
+            return $base;
+        }
+
+        return trim($base . ' (temporal: ' . $temporal . ')');
+    }
+
+    /**
+     * Calcula la primera franja del canvi temporal acceptat que està vigent en una data.
+     *
+     * @param \Illuminate\Support\Collection<int, Horario> $horarios
+     * @param string $date
+     * @return string
+     */
+    private function horarioTemporalVigent($horarios, string $date): string
+    {
+        $proposta = $this->propostaTemporalVigent($date);
+        if (!$proposta || empty($proposta['cambios']) || !is_array($proposta['cambios'])) {
+            return '';
+        }
+
+        $dia = nameDay($date);
+        $posicions = [];
+        $horarisById = [];
+        $horarisByCell = [];
+
+        foreach ($horarios as $horari) {
+            $id = (string) $horari->id;
+            $cell = $horari->sesion_orden . '-' . $horari->dia_semana;
+            $horarisById[$id] = $horari;
+            $horarisByCell[$cell] = $horari;
+            $posicions[$id] = [
+                'sesion' => (int) $horari->sesion_orden,
+                'dia' => (string) $horari->dia_semana,
+            ];
+        }
+
+        foreach ($proposta['cambios'] as $cambio) {
+            if (!isset($cambio['a'])) {
+                continue;
+            }
+
+            $horari = isset($cambio['id'])
+                ? ($horarisById[(string) $cambio['id']] ?? null)
+                : ($horarisByCell[(string) ($cambio['de'] ?? '')] ?? null);
+
+            if (!$horari) {
+                continue;
+            }
+
+            $parts = explode('-', (string) $cambio['a'], 2);
+            if (count($parts) < 2) {
+                continue;
+            }
+
+            $posicions[(string) $horari->id] = [
+                'sesion' => (int) $parts[0],
+                'dia' => (string) $parts[1],
+            ];
+        }
+
+        $sesiones = collect($posicions)
+            ->filter(static fn (array $posicio): bool => $posicio['dia'] === $dia)
+            ->pluck('sesion')
+            ->sort()
+            ->values();
+
+        if ($sesiones->isEmpty()) {
+            return '';
+        }
+
+        $hora = Hora::query()->where('codigo', $sesiones->first())->first();
+
+        return $hora ? $hora->hora_ini . ' - ' . $hora->hora_fin : '';
+    }
+
+    /**
+     * Obté l'última proposta acceptada que inclou la data indicada.
+     *
+     * @param string $date
+     * @return array<string, mixed>|null
+     */
+    private function propostaTemporalVigent(string $date): ?array
+    {
+        $disk = Storage::disk('local');
+        $dir = '/horarios/' . $this->dni;
+
+        if (!$disk->exists($dir)) {
+            return null;
+        }
+
+        $date = Carbon::parse($date)->startOfDay();
+        $candidates = [];
+
+        foreach ($disk->allFiles($dir) as $file) {
+            if (!str_ends_with($file, '.json')) {
+                continue;
+            }
+
+            $data = json_decode((string) $disk->get($file), true);
+            if (!is_array($data) || ($data['estado'] ?? null) !== 'Aceptado') {
+                continue;
+            }
+
+            $inicio = isset($data['fecha_inicio']) ? Carbon::parse($data['fecha_inicio'])->startOfDay() : null;
+            $fin = isset($data['fecha_fin']) ? Carbon::parse($data['fecha_fin'])->startOfDay() : null;
+            if (!$inicio || !$fin || $date->lt($inicio) || $date->gt($fin)) {
+                continue;
+            }
+
+            $candidates[] = $data;
+        }
+
+        usort($candidates, static function (array $a, array $b): int {
+            return strcmp((string) ($b['updated_at'] ?? ''), (string) ($a['updated_at'] ?? ''));
+        });
+
+        return $candidates[0] ?? null;
     }
     
     public function getFullNameAttribute()
