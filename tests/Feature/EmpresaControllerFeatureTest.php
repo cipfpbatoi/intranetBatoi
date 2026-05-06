@@ -71,7 +71,7 @@ class EmpresaControllerFeatureTest extends TestCase
 
     public function test_destroy_bloca_empresa_amb_fct_vinculades_i_mostra_alerta(): void
     {
-        $this->insertProfesor('EMP02', (int) config('roles.rol.jefe_practicas'));
+        $this->insertProfesor('EMP02', $this->capPractiquesRole());
         $empresaId = $this->insertEmpresa('Empresa Bloquejada');
         $centroId = $this->insertCentro($empresaId);
         $colaboracionId = $this->insertColaboracion($centroId);
@@ -85,13 +85,13 @@ class EmpresaControllerFeatureTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect(route('empresa.detalle', ['empresa' => $empresaId]));
-        $response->assertSessionHas('styde/alerts.0.message', "No es pot esborrar l'empresa perquè té FCT i alumnat vinculats. Elimina abans les FCT relacionades.");
+        $response->assertSessionHas('app_alerts.0.message', "No es pot esborrar l'empresa perquè té FCT i alumnat vinculats. Elimina abans les FCT relacionades.");
         $this->assertNotNull(DB::table('empresas')->where('id', $empresaId)->first());
     }
 
     public function test_destroy_esborra_empresa_si_no_te_fct_vinculades(): void
     {
-        $this->insertProfesor('EMP03', (int) config('roles.rol.jefe_practicas'));
+        $this->insertProfesor('EMP03', $this->capPractiquesRole());
         $empresaId = $this->insertEmpresa('Empresa Lliure');
 
         $usuario = Profesor::on('sqlite')->findOrFail('EMP03');
@@ -202,6 +202,17 @@ class EmpresaControllerFeatureTest extends TestCase
                 $table->timestamps();
             });
         }
+    }
+
+    /**
+     * Retorna el rol compost necessari per a passar el middleware de professor
+     * i la policy específica de cap de pràctiques.
+     *
+     * @return int
+     */
+    private function capPractiquesRole(): int
+    {
+        return (int) config('roles.rol.profesor') * (int) config('roles.rol.jefe_practicas');
     }
 
     /**

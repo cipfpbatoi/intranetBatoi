@@ -210,6 +210,30 @@ class GrupoTest extends TestCase
         $this->assertSame('', $grupo->xtutor);
     }
 
+    public function test_accessor_fct_control_resumeix_estat_precarregat(): void
+    {
+        $grupo = new Grupo();
+        $grupo->setAttribute('fct_control_status', [
+            'total' => 3,
+            'pg0301' => 3,
+            'a56' => 1,
+            'pg0301_complete' => true,
+            'a56_complete' => false,
+        ]);
+
+        $this->assertSame('A2-A3 revisats (3/3)', $grupo->FctControl);
+
+        $grupo->setAttribute('fct_control_status', [
+            'total' => 3,
+            'pg0301' => 3,
+            'a56' => 3,
+            'pg0301_complete' => true,
+            'a56_complete' => true,
+        ]);
+
+        $this->assertSame('A5/6 comprovats (3/3)', $grupo->FctControl);
+    }
+
     public function test_scope_matriculado_filtra_per_id_alumne(): void
     {
         DB::table('grupos')->insert([

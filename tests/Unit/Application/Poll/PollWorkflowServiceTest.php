@@ -523,7 +523,12 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame(1, $result['stats']['grup']['1CAE'][40]['count']);
     }
 
-    public function test_prepare_survey_permet_reobrir_optatives_activa_encara_que_hi_haja_vots_previs(): void
+    /**
+     * Crea una plantilla d'enquesta mínima per als tests del workflow.
+     *
+     * @return array{ppoll: int, poll: int}
+     */
+    private function seedPollBase(int $anonymous): array
     {
         $idPPoll = (int) DB::table('ppolls')->insertGetId([
             'title' => 'Plantilla test',

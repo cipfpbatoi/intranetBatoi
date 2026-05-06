@@ -254,6 +254,7 @@ return array(
                 'Ncentros' => 'Nombre',
                 'profesor' => 'Professorat',
                 'Calidad' => 'Qualitat',
+                'FctControl' => 'Control FCT',
                 'Matriculados' => 'Matriculats',
                 'Resfct' => 'Fct',
                 'Respro' => 'Projecte',

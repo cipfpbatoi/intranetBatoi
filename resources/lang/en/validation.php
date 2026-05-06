@@ -240,6 +240,7 @@ return [
                ,'Ncentros' =>'Name'
                ,'profesor' => 'Teacher'
                ,'Calidad' => 'Quality'
+               ,'FctControl' => 'FCT control'
                ,'Matriculados' => 'Enrolled students'
                ,'Resfct' => 'FCT'
                ,'Respro' => 'Project'
