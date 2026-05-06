@@ -1,20 +1,27 @@
 'use strict';
+
 var id;
+
 $(function() {
-	$("#datatable").on("click", ".fa-unlock", function(event) {
-		id=$(this).parents(".lineaGrupo").attr("id");
+	function showPasswordModal() {
+		if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
+			window.intranetUiHelpers.showModal('password');
+			return;
+		}
+
+		$('#password').modal('show');
+	}
+
+	$('#datatable').on('click', '[id^="deleteFile"], .fa-unlock', function(event) {
+		var unlockButton = $(this).closest('a');
+		var row = unlockButton.closest('.lineaGrupo, tr');
+
+		id = row.attr('id') || '';
 		event.preventDefault();
-		$(this).attr("data-toggle","modal").attr("data-target", "#password").attr("href","");
-	});
-	$("#formPassword").on("submit", function(){
-		$(this).attr("action","/reunion/"+id+"/deleteFile");
-	});
-	$('#datatable').on('draw.dt', function() {
-		$(".fa-unlock").off("click").on("click", function(event) {
-			id = $(this).closest("tr").attr("id");
-			event.preventDefault();
-			$(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
-		});
+		showPasswordModal();
 	});
 
-})
+	$('#formPassword').on('submit', function() {
+		$(this).attr('action', '/reunion/' + id + '/deleteFile');
+	});
+});
