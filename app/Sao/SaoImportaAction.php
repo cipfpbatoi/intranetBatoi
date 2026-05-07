@@ -18,6 +18,7 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
+use Intranet\Sao\Exceptions\SaoDuplicateFctException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -327,9 +328,12 @@ class SaoImportaAction
         try {
             try {
                 self::extractPage($driver, $dades, $avisos, 1);
-                $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
-                sleep(1);
-                self::extractPage($driver, $dades, $avisos, 2);
+                $paginationLinks = $driver->findElements(WebDriverBy::cssSelector("a.enlacePag"));
+                if (!empty($paginationLinks)) {
+                    $paginationLinks[0]->click();
+                    sleep(1);
+                    self::extractPage($driver, $dades, $avisos, 2);
+                }
             } catch (Exception $e) {
                 report($e);
                 Log::warning('Error processant paginació de la importació SAO.', [
@@ -546,7 +550,8 @@ class SaoImportaAction
 
     /**
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
-     * @return mixed|string
+     * @return string
+     * @throws SaoDuplicateFctException
      */
     private static function getIdSao(\Facebook\WebDriver\Remote\RemoteWebElement $tr)
     {
@@ -554,7 +559,7 @@ class SaoImportaAction
         $href = explode("'", $enlace->getAttribute('href'))[1];
         $fctAl = AlumnoFct::where('idSao', $href)->where('beca', 0)->get()->first();
         if ($fctAl) {
-            throw new \Exception("Fct del SAO $href ja donada d'alta");
+            throw new SaoDuplicateFctException("Fct del SAO $href ja donada d'alta");
         }
         return $href;
     }
@@ -755,9 +760,11 @@ class SaoImportaAction
     /**
      * @param  RemoteWebDriver  $driver
      * @param  array  $dades
-     * @return array
+     * @param  array  $avisos
+     * @param  int  $page
+     * @return void
      */
-    private static function extractPage(RemoteWebDriver $driver, array &$dades, array &$avisos, $page)
+    private static function extractPage(RemoteWebDriver $driver, array &$dades, array &$avisos, $page): void
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
@@ -766,6 +773,13 @@ class SaoImportaAction
                 try {
                     //dades de la linea
                     self::extractFromModal($dades, $key, $tr, $driver);
+                } catch (SaoDuplicateFctException $e) {
+                    unset($dades[$key]);
+                    Log::info('FCT del SAO ja importada, s\'omet de la importació.', [
+                        'row_index' => $key,
+                        'error' => $e->getMessage(),
+                    ]);
+                    $avisos[] = $e->getMessage();
                 } catch (Exception $e) {
                     unset($dades[$key]);
                     report($e);

@@ -99,7 +99,13 @@ class SyncSaoCompanyData extends Command
             return Command::FAILURE;
         } finally {
             if (isset($driver)) {
-                $driver->quit();
+                try {
+                    $driver->quit();
+                } catch (\Throwable $exception) {
+                    Log::channel('sao')->warning('No s\'ha pogut tancar la sessió Selenium de SAO.', [
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
             }
         }
     }
