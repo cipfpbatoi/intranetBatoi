@@ -48,6 +48,7 @@ class SaoAnnexes extends Command
             $action = new SaoAnnexesAction();
             $action->execute($driver, function () {
                 return AlumnoFct::whereNotNull('idSao')
+                    ->haEmpezado()
                     ->noHaAcabado()
                     ->where('beca', 0)
                     ->where('pg0301', 0)

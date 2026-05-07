@@ -50,10 +50,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('fct:Daily')->dailyAt('7:35');
         $schedule->command('fault:Daily')->dailyAt('21:30');
         $schedule->command('email:Daily')->dailyAt('21:45');
-        //$schedule->command('sao:annexes')->weekly()->mondays()->at('8:45');
+        $schedule->command('sao:annexes')->weekly()->mondays()->at('8:45');
         $schedule->command('sao:connect')->weekly()->tuesdays()->at('8:45');
-        //$schedule->command('sao:annexes')->weekly()->wednesdays()->at('8:45');
-        //$schedule->command('sao:annexes')->weekly()->thursdays()->at('8:45');
+        $schedule->command('sao:annexes')->weekly()->wednesdays()->at('8:45');
+        $schedule->command('sao:annexes')->weekly()->thursdays()->at('8:45');
         $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
         $schedule->command('sao:sync-company-data')->weekly()->fridays()->at('9:30');
         $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
