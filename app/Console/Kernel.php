@@ -12,6 +12,7 @@ use Intranet\Console\Commands\SendDailyEmails;
 use Intranet\Console\Commands\CreateDailyGuards;
 use Intranet\Console\Commands\NotifyDailyFaults;
 use Intranet\Console\Commands\SendFctEmails;
+use Intranet\Console\Commands\SyncSaoCompanyData;
 use Intranet\Console\Commands\UploadAnexes;
 
 /**
@@ -33,6 +34,7 @@ class Kernel extends ConsoleKernel
         SaoConnect::class,
         SaoAnnexes::class,
         AssignOrphanFctInstructors::class,
+        SyncSaoCompanyData::class,
         DeleteOldCotxeAccessos::class
     ];
 
@@ -53,6 +55,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('sao:annexes')->weekly()->wednesdays()->at('8:45');
         //$schedule->command('sao:annexes')->weekly()->thursdays()->at('8:45');
         $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
+        $schedule->command('sao:sync-company-data')->weekly()->fridays()->at('9:30');
         $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
     }
 
