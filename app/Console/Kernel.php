@@ -4,6 +4,7 @@ namespace Intranet\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Intranet\Console\Commands\AssignOrphanFctInstructors;
 use Intranet\Console\Commands\DeleteOldCotxeAccessos;
 use Intranet\Console\Commands\SaoAnnexes;
 use Intranet\Console\Commands\SaoConnect;
@@ -13,6 +14,9 @@ use Intranet\Console\Commands\NotifyDailyFaults;
 use Intranet\Console\Commands\SendFctEmails;
 use Intranet\Console\Commands\UploadAnexes;
 
+/**
+ * Kernel de consola de l'aplicació.
+ */
 class Kernel extends ConsoleKernel
 {
     /**
@@ -28,6 +32,7 @@ class Kernel extends ConsoleKernel
         UploadAnexes::class,
         SaoConnect::class,
         SaoAnnexes::class,
+        AssignOrphanFctInstructors::class,
         DeleteOldCotxeAccessos::class
     ];
 

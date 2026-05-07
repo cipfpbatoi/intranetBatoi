@@ -11,6 +11,7 @@ use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Domain\Fct\FctRepositoryInterface;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Instructor;
 
 /**
  * Casos d'ús d'aplicació per al domini FCT.
@@ -85,12 +86,18 @@ class FctService
         return $fct;
     }
 
+    /**
+     * Actualitza l'instructor principal d'una FCT i el vincula al centre si encara no té centre.
+     */
     public function setInstructor(int|string $idFct, string $idInstructor): Fct
     {
         $fct = $this->findOrFail($idFct);
         $fct->idInstructor = $idInstructor;
 
-        return $this->fctRepository->save($fct);
+        $saved = $this->fctRepository->save($fct);
+        $this->associateInstructorWithCentroIfOrphan($saved);
+
+        return $saved;
     }
 
     public function findBySignature(
@@ -105,12 +112,81 @@ class FctService
         );
     }
 
+    /**
+     * Crea una FCT des d'un request i vincula l'instructor orfe al centre de la col·laboració.
+     */
     public function createFromRequest(Request $request): Fct
     {
         $new = new Fct();
         $new->fillAll($request);
 
-        return $new->fresh();
+        $fct = $new->fresh();
+        $this->associateInstructorWithCentroIfOrphan($fct);
+
+        return $fct;
+    }
+
+    /**
+     * Associa als centres de les seues FCT els instructors que encara no tenen cap centre.
+     *
+     * @return array{instructors:int, assignments:int}
+     */
+    public function assignOrphanInstructorsToFctCentros(bool $dryRun = false): array
+    {
+        $instructors = Instructor::query()
+            ->whereDoesntHave('Centros')
+            ->whereHas('Fcts', function ($query): void {
+                $query->whereNotNull('idColaboracion')
+                    ->whereHas('Colaboracion', function ($subquery): void {
+                        $subquery->whereNotNull('idCentro');
+                    });
+            })
+            ->with(['Fcts.Colaboracion'])
+            ->get();
+
+        $assignments = 0;
+
+        foreach ($instructors as $instructor) {
+            $centroIds = $instructor->Fcts
+                ->pluck('Colaboracion.idCentro')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $assignments += count($centroIds);
+
+            if (!$dryRun && $centroIds !== []) {
+                $instructor->Centros()->syncWithoutDetaching($centroIds);
+            }
+        }
+
+        return [
+            'instructors' => $instructors->count(),
+            'assignments' => $assignments,
+        ];
+    }
+
+    /**
+     * Associa l'instructor de la FCT al centre de treball si encara no pertany a cap centre.
+     */
+    private function associateInstructorWithCentroIfOrphan(?Fct $fct): void
+    {
+        if ($fct === null || empty($fct->idInstructor)) {
+            return;
+        }
+
+        $centroId = $fct->Colaboracion?->idCentro;
+        if ($centroId === null) {
+            return;
+        }
+
+        $instructor = Instructor::find($fct->idInstructor);
+        if ($instructor === null || $instructor->Centros()->exists()) {
+            return;
+        }
+
+        $instructor->Centros()->syncWithoutDetaching($centroId);
     }
 
     public function attachAlumnoFromStoreRequest(Fct $fct, Request $request): void
