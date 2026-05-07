@@ -155,7 +155,8 @@ class SaoAnnexesAction
         return AlumnoFct::realFcts()
             ->where('beca', 0)
             ->whereNotNull('idSao')
-            ->activa()
+            ->whereNull('calificacion')
+            ->where('correoAlumno', 0)
             ->get();
 
     }

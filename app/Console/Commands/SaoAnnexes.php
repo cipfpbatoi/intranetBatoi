@@ -51,7 +51,8 @@ class SaoAnnexes extends Command
                     ->noHaAcabado()
                     ->where('beca', 0)
                     ->where('pg0301', 0)
-                    ->activa();
+                    ->whereNull('calificacion')
+                    ->where('correoAlumno', 0);
             });
 
             $driver = null;
