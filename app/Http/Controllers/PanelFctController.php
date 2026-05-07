@@ -79,6 +79,7 @@ class PanelFctController extends IntranetController
     {
         Gate::authorize('viewAny', Fct::class);
         $todos = $this->search();
+        Session::forget('pestana');
         $this->setTabs(
             [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",
