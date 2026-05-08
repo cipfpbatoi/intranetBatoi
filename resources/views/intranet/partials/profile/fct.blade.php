@@ -242,7 +242,6 @@
                         <p class="ratings">
                             {{ strtoupper($centro->localidad ?? '') }}<br/>
                         </p>
-                        <em class="btn-success btn btn-xs">{{ $alumnosCount }}</em>
                         <a href="{{ route('fct.show', ['id' => $fct->id]) }}" class="btn-success btn btn-xs" title="Mostrar Fct">
                             <i class="fa fa-eye"></i>
                         </a>
