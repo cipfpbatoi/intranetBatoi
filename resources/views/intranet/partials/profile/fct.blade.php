@@ -209,7 +209,7 @@
                                     </a>
                                 @endif
                                 @if ($emailContacto !== '' && $emailContacto !== $emailInstructor)
-                                    <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
+                                    <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finCentro']) }}"
                                        class="btn btn-default btn-xs"
                                        title="Enviar correu fi empresa al centre">
                                         <i class="fa fa-envelope"></i> Centre
