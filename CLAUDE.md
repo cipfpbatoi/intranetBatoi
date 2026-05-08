@@ -14,9 +14,9 @@ composer install
 
 # Frontend assets
 npm install
-npm run dev          # build once
-npm run watch        # rebuild on change
-npm run production   # minified bundles (NODE_OPTIONS=--openssl-legacy-provider)
+npm run dev          # dev server with HMR
+npm run build        # production build
+npm run production   # production build alias
 
 # Application
 php artisan serve
@@ -42,7 +42,7 @@ XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php
 - **PSR-12**, 4-space indent. Class names suffixed: `Controller`, `Job`, `Event`, `Policy`.
 - Every modified or newly created class must include/update PHPDoc blocks (`/** ... */`) for the class and all relevant methods/properties.
 - Blade layouts/components → `resources/views/layouts` and `resources/views/components`. Translatable strings → `resources/lang`.
-- JS/SCSS: keep modular inside `resources/assets`; align class names with Blade markup; add new Mix entry points in `webpack.mix.js` when needed.
+- JS/SCSS: keep modular inside `resources/assets`; align class names with Blade markup; add new Vite entry points in `vite.config.mjs` when needed.
 - Prefer extending code in `packages/` and `plugins/` over duplicating it elsewhere.
 - Language for all comments, views, and UI strings: **Valencià**.
 
@@ -114,6 +114,6 @@ Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Legacy token excha
 
 ### Frontend
 
-- Laravel Mix (`webpack.mix.js`): `resources/assets/js` + `resources/assets/sass` → `public/`.
-- Bootstrap 4 + Gentelella admin theme + Vue 2 (datepicker/select widgets) + Livewire 3.
+- Vite (`vite.config.mjs`): `resources/assets/js` + `resources/assets/sass` → `public/`.
+- Bootstrap 5 + Gentelella admin theme + Vue 3 (datepicker/select widgets) + Livewire 3.
 - Blade views: `resources/views/`; layouts: `resources/views/layouts`; partials: `resources/views/intranet/partials`.

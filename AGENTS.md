@@ -2,13 +2,13 @@
 
 ## Project Structure & Module Organization
 - `app/` contains domain logic; web routes are split by role in `routes/` (`public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`) and API routes in `routes/api.php` (JSON).
-- UI assets: `resources/views/` for Blade, `resources/assets/js` and `resources/assets/sass` compiled via Mix into `public/`.
+- UI assets: `resources/views/` for Blade, `resources/assets/js` and `resources/assets/sass` compiled via Vite into `public/`.
 - Data layers: `database/migrations` and `database/seeders`; runtime files in `storage/`; tests split into `tests/Feature` and `tests/Unit`.
 - Shared add-ons live in `packages/` and `plugins/`; prefer updating these before duplicating code.
 
 ## Build, Test, and Development Commands
 - `composer install` for PHP deps (copy `.env.example`, run `php artisan key:generate` after cloning).
-- Front-end setup with `npm install`; `npm run dev` builds once, `npm run watch` rebuilds on change, `npm run production` creates minified bundles.
+- Front-end setup with `npm install`; `npm run dev` starts the Vite dev server with HMR, `npm run build` creates a production build, and `npm run production` runs the same production build alias.
 - `php artisan serve` runs the app; `php artisan migrate --seed` prepares the DB.
 - Test with `phpunit` or `php artisan test`; use `--filter` to target cases.
 
@@ -16,7 +16,7 @@
 - PSR-12: 4-space indent, clear method names; suffix classes with `Controller`, `Job`, `Event`, `Policy` where applicable.
 - Every modified or newly created class must include/update `phpDoc` documentation blocks using standard PHPDoc nomenclature (`/** ... */`) for class and relevant methods/properties.
 - Prefer Blade layouts/components under `resources/views/layouts` and `resources/views/components`; keep strings in `resources/lang`.
-- Keep JS/SCSS modular inside `resources/assets`; align class names with Blade markup and add new Mix entry points in `webpack.mix.js` when needed.
+- Keep JS/SCSS modular inside `resources/assets`; align class names with Blade markup and add new Vite entry points in `vite.config.mjs` when needed.
 
 ## Testing Guidelines
 - PHPUnit configured in `phpunit.xml` with coverage aimed at `app/`. Create `*Test.php` files under `tests/Feature` for HTTP/integration and `tests/Unit` for pure logic.
