@@ -1,6 +1,30 @@
 
 Esta página mostra totes les empreses que han col.laborat amb el nostre cicle formatiu. 
 
+## Panell de seguiment de FCT
+
+El panell **FCT** mostra les pràctiques actives i finalitzades del tutor o cotutor. Està pensat per a treballar el seguiment diari sense haver d'entrar contínuament en la fitxa detallada.
+
+En la pestanya **Actius** apareixen les FCT obertes o pendents de tancar, amb els botons d'accions massives de correu i documentació. En la pestanya **Finalizats** es consulta l'històric i no apareixen els botons superiors d'acció massiva.
+
+Cada targeta correspon a una empresa o centre de treball amb una FCT:
+
+- **Ull**: obri la fitxa completa de la FCT.
+- **Nom del centre**: identifica l'empresa o centre de treball.
+- **Etiquetes**: mostren el nombre d'alumnes, seguiments registrats, estat del certificat i si és DUAL.
+- **Dades principals**: instructor, telèfon, correu, últim seguiment i avisos de dades pendents.
+
+Els botons de correu de la targeta permeten preparar missatges abans d'enviar-los:
+
+- **Instructor**: envia el correu de finalització de pràctiques a l'instructor.
+- **Centre**: envia el mateix tipus de correu al contacte del centre de treball.
+
+La columna **Empresa** mostra els contactes registrats amb l'instructor o el centre. En la franja inferior, el botó de **telèfon** registra una telefonada amb l'empresa i obri un modal per escriure el resum.
+
+La columna **Alumnat** mostra els contactes registrats amb alumnes de la FCT, amb data, nom curt de l'alumne i indicador **+** si hi ha resum o **-** si encara no n'hi ha. El botó blau amb icona de **persona** permet registrar un nou contacte amb alumnat seleccionant l'alumne i escrivint el resum. Els contactes amb **+** es poden editar i els contactes amb **-** es poden eliminar.
+
+Quan apareix una **bandera** en la columna d'alumnat, indica l'enviament de la informació relativa a l'inici de les pràctiques. Este registre és informatiu i no es pot editar ni eliminar des del panell.
+
 Tenim 4 pestanyes en la part superior:
 
 + **No assignades**. Ací estan les col·laboracions del cicle que encara no hem catalogat. Al principi estan totes.
