@@ -20,7 +20,7 @@ return new class extends Migration
                 $query->whereIn('url', ['/fct', 'fct'])
                     ->orWhere('nombre', 'fct');
             })
-            ->update(['ajuda' => 'manual-fct-gestio-contactes.md']);
+            ->update(['ajuda' => 'manual-fct-gestio-contactes.html']);
     }
 
     /**
@@ -29,7 +29,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::table('menus')
-            ->where('ajuda', 'manual-fct-gestio-contactes.md')
+            ->where('ajuda', 'manual-fct-gestio-contactes.html')
             ->update(['ajuda' => '']);
     }
 };
