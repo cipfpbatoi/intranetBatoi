@@ -11,8 +11,21 @@ use Livewire\Component;
 
 class FicharControlDia extends Component
 {
+    /**
+     * Data seleccionada en format ISO (Y-m-d).
+     */
     public string $fecha = '';
+
+    /**
+     * Data mostrada en format llegible per a la vista.
+     */
     public string $fechaEsp = '';
+
+    /**
+     * Files de la taula de control diari.
+     *
+     * @var array<int, array<string, mixed>>
+     */
     public array $rows = [];
 
     private ?ProfesorService $profesorService = null;
@@ -108,7 +121,7 @@ class FicharControlDia extends Component
                 'dni' => $dni,
                 'departamento' => (string) (optional($profesor->Departamento)->depcurt ?? ''),
                 'nom' => trim((string) $profesor->apellido1 . ' ' . (string) $profesor->apellido2 . ', ' . (string) $profesor->nombre),
-                'horario' => $horarioLabel,
+                'horario' => $this->formatHorarioLabel($horarioLabel),
                 'fichajes' => $fichajes[$dni] ?? [],
             ];
         }
@@ -153,5 +166,34 @@ class FicharControlDia extends Component
             ->orderBy('apellido1')
             ->orderBy('apellido2')
             ->get();
+    }
+
+    /**
+     * Reordena el text d'horari temporal al format demanat en control de fitxatges.
+     *
+     * Exemple d'entrada:
+     * - 18:55 - 19:50 (temporal: 14:55 - 15:50)
+     *
+     * Exemple d'eixida:
+     * - 14:55 - 15:50 - (itaca 18:55 - 19:50)
+     */
+    private function formatHorarioLabel(string $horarioLabel): string
+    {
+        $label = trim($horarioLabel);
+        if ($label === '') {
+            return '';
+        }
+
+        if (preg_match('/^(.*?)\s*\(\s*temporal\s*:\s*(.*?)\s*\)$/i', $label, $matches) !== 1) {
+            return $label;
+        }
+
+        $itaca = trim((string) ($matches[1] ?? ''));
+        $temporal = trim((string) ($matches[2] ?? ''));
+        if ($itaca === '' || $temporal === '') {
+            return $label;
+        }
+
+        return $temporal . ' - (itaca ' . $itaca . ')';
     }
 }
