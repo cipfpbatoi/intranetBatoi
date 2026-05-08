@@ -6,6 +6,8 @@ var list;
 var day;
 var month;
 var tipo;
+var studentContactList;
+var studentContactLink;
 
 function getApiAuth() {
     return window.intranetApiAuth || {};
@@ -104,8 +106,158 @@ function toggleCommentIcon(iconElement, hasComment) {
     iconElement.classList.toggle('fa-minus', !hasComment);
 }
 
+function buildOption(value, text, disabled, selected) {
+    var option = document.createElement('option');
+    option.value = value || '';
+    option.textContent = text || '';
+    option.disabled = !!disabled;
+    option.selected = !!selected;
+    return option;
+}
+
+function setAlumnoOptions(options) {
+    var select = document.getElementById('alumnoFct');
+    if (!select) {
+        return null;
+    }
+
+    select.innerHTML = '';
+    (options || []).forEach(function (item) {
+        select.appendChild(item);
+    });
+
+    return select;
+}
+
+function loadAlumnat(fctId) {
+    setAlumnoOptions([
+        buildOption('', 'Carregant alumnat...', true, true)
+    ]);
+
+    apiRequest('GET', '/fct/' + fctId + '/alFct')
+        .then(function (response) {
+            var fctAl = response.data || [];
+            var select = setAlumnoOptions([]);
+            if (!select) {
+                return;
+            }
+
+            if (!fctAl.length) {
+                setAlumnoOptions([
+                    buildOption('', 'Sense alumnat disponible', true, true)
+                ]);
+                return;
+            }
+
+            fctAl.forEach(function (alumne) {
+                var option = buildOption(alumne.id, alumne.nombre, false, false);
+                option.setAttribute('data-short-name', alumne.nombre_corto || alumne.nombre || '');
+                select.appendChild(option);
+            });
+        })
+        .catch(function () {
+            setAlumnoOptions([
+                buildOption('', 'No s\'ha pogut carregar l\'alumnat', true, true)
+            ]);
+        });
+}
+
+function appendStudentContact(contacte, alumnoFctName) {
+    if (!studentContactList) {
+        return;
+    }
+
+    var emptyText = studentContactList.querySelector('.text-muted');
+    if (emptyText) {
+        emptyText.remove();
+    }
+
+    var hasComment = trim(contacte.comentari).length > 0;
+    var icon = hasComment ? 'plus' : 'minus';
+    var createdAt = contacte.created_at ? new Date(contacte.created_at) : new Date();
+    var date = createdAt.getDate() + '/' + (createdAt.getMonth() + 1);
+    var html = "<small><a href='#' class='small' id='" + contacte.id + "' title='" +
+        escapeHtml(contacte.comentari || '') + "'>" +
+        "<em class='fa fa-" + icon + "'></em> " + date + " " +
+        escapeHtml(alumnoFctName || '') + "</a></small><br/>";
+
+    studentContactList.insertAdjacentHTML('beforeend', html);
+}
+
+function setAlumnoModalText(value) {
+    var form = document.getElementById('formDialogo_alumno');
+    if (form && form.explicacion) {
+        form.explicacion.value = value || '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function (event) {
+        var alumnatButton = event.target.closest('.alumnat');
+        if (alumnatButton) {
+            event.preventDefault();
+            id = alumnatButton.getAttribute('data-fct-id') || '';
+            tipo = 'alumnat-create';
+            studentContactLink = null;
+            var alumnatProfileView = alumnatButton.closest('.profile_view');
+            studentContactList = alumnatProfileView ? alumnatProfileView.querySelector('.studentActivityList') : null;
+            setAlumnoModalText('');
+            if (window.intranetUiHelpers) {
+                window.intranetUiHelpers.showModal('dialogo_alumno');
+            }
+            if (id) {
+                loadAlumnat(id);
+            }
+            return;
+        }
+
+        var studentMinusIcon = event.target.closest('.studentActivity a.small .fa-minus');
+        if (studentMinusIcon) {
+            event.preventDefault();
+            event.stopPropagation();
+            var studentActivityLink = studentMinusIcon.closest('a.small');
+            var studentActivityId = studentActivityLink ? studentActivityLink.id : '';
+            if (studentActivityId && confirm('Vas a esborrar este contacte amb alumnat')) {
+                apiRequest('DELETE', '/activity/' + studentActivityId).then(function () {
+                    var small = studentMinusIcon.closest('small');
+                    if (!small) {
+                        return;
+                    }
+                    var nextSibling = small.nextElementSibling;
+                    if (nextSibling && nextSibling.tagName === 'BR') {
+                        nextSibling.remove();
+                    }
+                    small.remove();
+                });
+            }
+            return;
+        }
+
+        var studentActivityAnchor = event.target.closest('.studentActivity a.small');
+        if (studentActivityAnchor) {
+            event.preventDefault();
+            id = studentActivityAnchor.id;
+            tipo = 'alumnat-edit';
+            studentContactLink = studentActivityAnchor;
+            studentContactList = studentActivityAnchor.closest('.studentActivityList');
+
+            var studentLabel = trim(studentActivityAnchor.textContent);
+            setAlumnoOptions([
+                buildOption('', studentLabel, true, true)
+            ]);
+            setAlumnoModalText('');
+            if (window.intranetUiHelpers) {
+                window.intranetUiHelpers.showModal('dialogo_alumno');
+            }
+
+            apiRequest('GET', '/activity/' + id).then(function (result) {
+                setAlumnoModalText((result.data && result.data.comentari) || '');
+            }, function () {
+                console.log("No s'ha pogut carregar el comentari de l'alumne.");
+            });
+            return;
+        }
+
         var telefonicButton = event.target.closest('.telefonico');
         if (telefonicButton) {
             event.preventDefault();
@@ -217,6 +369,59 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             }
+        });
+    }
+
+    var formDialogoAlumno = document.getElementById('formDialogo_alumno');
+    if (formDialogoAlumno) {
+        formDialogoAlumno.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            if (tipo === 'alumnat-edit') {
+                var comentariActualitzat = formDialogoAlumno.explicacion ? formDialogoAlumno.explicacion.value : '';
+                apiRequest('PUT', '/activity/' + id, { explicacion: comentariActualitzat }).then(function () {
+                    var hasComment = trim(comentariActualitzat).length > 0;
+                    toggleCommentIcon(studentContactLink ? studentContactLink.querySelector('em.fa') : null, hasComment);
+                    if (studentContactLink) {
+                        studentContactLink.setAttribute('title', comentariActualitzat);
+                        studentContactLink.setAttribute('data-original-title', comentariActualitzat);
+                    }
+                    if (window.intranetUiHelpers) {
+                        window.intranetUiHelpers.hideModal('dialogo_alumno');
+                    }
+                }, function () {
+                    console.log('Error al modificar el contacte amb alumnat');
+                    if (window.intranetUiHelpers) {
+                        window.intranetUiHelpers.hideModal('dialogo_alumno');
+                    }
+                });
+                return;
+            }
+
+            var alumnoFctSelect = formDialogoAlumno.alumnoFct;
+            if (!alumnoFctSelect || !alumnoFctSelect.value) {
+                return;
+            }
+
+            var alumnoFctId = alumnoFctSelect.value;
+            var selectedOption = alumnoFctSelect.options[alumnoFctSelect.selectedIndex];
+            var alumnoFctName = selectedOption
+                ? selectedOption.getAttribute('data-short-name') || selectedOption.text
+                : '';
+
+            apiRequest('POST', '/fct/' + alumnoFctId + '/alFct', {
+                explicacion: formDialogoAlumno.explicacion ? formDialogoAlumno.explicacion.value : ''
+            }).then(function (result) {
+                appendStudentContact(result.data, alumnoFctName);
+                if (window.intranetUiHelpers) {
+                    window.intranetUiHelpers.hideModal('dialogo_alumno');
+                }
+            }, function () {
+                console.log('Només es pot un per dia');
+                if (window.intranetUiHelpers) {
+                    window.intranetUiHelpers.hideModal('dialogo_alumno');
+                }
+            });
         });
     }
 

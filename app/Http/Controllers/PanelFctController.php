@@ -45,7 +45,10 @@ class PanelFctController extends IntranetController
      * @var array
      */
     protected $vista = ['show' => 'fct'];
-    protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
+    /**
+     * @var array<string, array<int, string>>
+     */
+    protected $parametresVista = ['modal' => ['contacto', 'contactoAl', 'seleccion']];
 
 
 

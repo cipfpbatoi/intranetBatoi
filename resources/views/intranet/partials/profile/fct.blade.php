@@ -51,14 +51,16 @@
             }
 
             .fct-card .profile_view .left,
-            .fct-card .profile_view .listActivity {
+            .fct-card .profile_view .listActivity,
+            .fct-card .profile_view .studentActivity {
                 width: 100%;
                 float: none;
                 padding-left: 0;
                 padding-right: 0;
             }
 
-            .fct-card .profile_view .listActivity {
+            .fct-card .profile_view .listActivity,
+            .fct-card .profile_view .studentActivity {
                 margin-top: 12px;
             }
 
@@ -88,6 +90,18 @@
                 margin: 0;
             }
 
+            .fct-card .fct-card-title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                justify-content: flex-start;
+                margin-top: 0;
+            }
+
+            .fct-card .fct-card-title .btn {
+                flex: 0 0 auto;
+            }
+
             .fct-card .fct-warning-list {
                 margin: 6px 0 0;
                 color: #8a6d3b;
@@ -101,11 +115,12 @@
                 }
 
                 .fct-card .profile_view .left {
-                    width: calc(60% - 8px);
+                    width: calc(42% - 11px);
                 }
 
-                .fct-card .profile_view .listActivity {
-                    width: calc(40% - 8px);
+                .fct-card .profile_view .listActivity,
+                .fct-card .profile_view .studentActivity {
+                    width: calc(29% - 11px);
                     margin-top: 0;
                 }
             }
@@ -127,6 +142,15 @@
             $emailInstructor = trim((string) ($instructor->email ?? ''));
             $telefonoContacto = trim((string) ($colaboracion->telefono ?? ''));
             $emailContacto = trim((string) ($colaboracion->email ?? ''));
+            $alumnoContactos = $fct->AlFct
+                ->flatMap(function ($alumnoFct) {
+                    return ($alumnoFct->Contactos ?? collect())->map(function ($contacto) use ($alumnoFct) {
+                        $contacto->alumno_short_name = $alumnoFct->Alumno->shortName ?? $alumnoFct->Alumno->fullName ?? '';
+                        return $contacto;
+                    });
+                })
+                ->sortBy('created_at')
+                ->values();
             $warnings = collect();
 
             if (!$centro) {
@@ -150,8 +174,11 @@
             <div id="fct-card-{{$fct->id}}" class="well profile_view">
                 <div id="{{$fct->id}}" class="col-sm-12 fct">
                     <div class="left col-md-6 col-xs-12">
-                        <h5>
-                            {{ $centro->nombre ?? 'Sense centre' }}
+                        <h5 class="fct-card-title">
+                            <a href="{{ route('fct.show', ['id' => $fct->id]) }}" class="btn-success btn btn-xs" title="Mostrar Fct">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <span>{{ $centro->nombre ?? 'Sense centre' }}</span>
                         </h5>
                         <div class="fct-operational-summary">
                             <span class="label label-success">
@@ -189,23 +216,13 @@
                                     <li class="text-warning">Encara no hi ha seguiments registrats</li>
                                 @endif
                         </ul>
-                        @if ($telefonoInstructor !== '' || $emailInstructor !== '' || $telefonoContacto !== '' || $emailContacto !== '')
+                        @if ($emailInstructor !== '' || $emailContacto !== '')
                             <div class="fct-contact-links">
-                                @if ($telefonoInstructor !== '')
-                                    <a href="tel:{{ preg_replace('/\s+/', '', $telefonoInstructor) }}" class="btn btn-default btn-xs">
-                                        <i class="fa fa-phone"></i> Instructor
-                                    </a>
-                                @endif
                                 @if ($emailInstructor !== '')
                                     <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
                                        class="btn btn-default btn-xs"
                                        title="Enviar correu fi empresa a l'instructor">
                                         <i class="fa fa-envelope"></i> Instructor
-                                    </a>
-                                @endif
-                                @if ($telefonoContacto !== '' && $telefonoContacto !== $telefonoInstructor)
-                                    <a href="tel:{{ preg_replace('/\s+/', '', $telefonoContacto) }}" class="btn btn-default btn-xs">
-                                        <i class="fa fa-phone"></i> Centre
                                     </a>
                                 @endif
                                 @if ($emailContacto !== '' && $emailContacto !== $emailInstructor)
@@ -229,6 +246,7 @@
                     </div>
                     @if ($fct->asociacion === 3) <h5>-DUAL-</h5> @endif
                     <div class="col-md-6 listActivity">
+                        <h5>Empresa</h5>
                         @isset (authUser()->emailItaca)
                             @forelse ($contactos as $contacto)
                                 <x-activity :activity="$contacto" />
@@ -238,20 +256,52 @@
                             @endforelse
                         @endisset
                     </div>
+                    <div class="col-md-6 studentActivity">
+                        <h5>Alumnat</h5>
+                        <div class="studentActivityList">
+                            @forelse ($alumnoContactos as $contacto)
+                                @php($isInicioPracticas = str_starts_with((string) $contacto->document, 'Informació relativa'))
+                                <small>
+                                    @if($isInicioPracticas)
+                                        {{ fechaCurta($contacto->created_at) }}
+                                        <em class="fa fa-flag"></em>
+                                        {{ $contacto->alumno_short_name }}
+                                    @else
+                                        <a href="#" class="small" id="{{ $contacto->id }}" title="{{ $contacto->comentari }}">
+                                            @if($contacto->comentari)
+                                                <em class="fa fa-plus"></em>
+                                            @else
+                                                <em class="fa fa-minus"></em>
+                                            @endif
+                                            {{ fechaCurta($contacto->created_at) }}
+                                            {{ $contacto->alumno_short_name }}
+                                        </a>
+                                    @endif
+                                </small><br/>
+                            @empty
+                                <span class="text-muted">Sense contactes amb alumnat.</span>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
                 <div class="col-xs-12 bottom text-center"
                      @if ($fct->asociacion === 3) style="background-color:orange"@endif
                 >
                     <div class="col-xs-12 col-sm-5 emphasis">
                         <p class="ratings">
-                            {{ strtoupper($centro->localidad ?? '') }}<br/>
+                            {{ strtoupper($centro->localidad ?? '') }}
+                            @foreach($panel->getBotones('fct') as $button)
+                                {!! $button->show($fct) !!}
+                            @endforeach
+                            <a href="#"
+                               class="btn btn-primary btn-xs alumnat"
+                               data-fct-id="{{ $fct->id }}"
+                               title="Registrar contacte amb alumnat">
+                                <i class="fa fa-user"></i>
+                            </a>
                         </p>
-                        <a href="{{ route('fct.show', ['id' => $fct->id]) }}" class="btn-success btn btn-xs" title="Mostrar Fct">
-                            <i class="fa fa-eye"></i>
-                        </a>
                     </div>
                     <div class="col-xs-12 col-sm-7 emphasis">
-                        <x-botones :panel="$panel" tipo="fct" :elemento="$fct"/>
                      </div>
                 </div>
             </div>

@@ -42,6 +42,13 @@ class FctService
     {
         $items = $this->fctRepository->panelListingByProfesor($dni);
         $contactosByFct = $this->seguimientoService->groupedMailActivitiesForFcts($items->pluck('id')->all());
+        $alumnoFcts = $items->pluck('AlFct')->flatten();
+        $contactosByAlumnoFct = $this->seguimientoService
+            ->groupedMailActivitiesForAlumnoFcts($alumnoFcts->pluck('id')->all());
+
+        $alumnoFcts->each(function ($alumnoFct) use ($contactosByAlumnoFct): void {
+            $alumnoFct->setRelation('Contactos', $contactosByAlumnoFct->get((string) $alumnoFct->id, collect()));
+        });
 
         return $items->map(function (Fct $fct) use ($contactosByFct): Fct {
             $fct->setRelation('Contactos', $contactosByFct->get((string) $fct->id, collect()));
