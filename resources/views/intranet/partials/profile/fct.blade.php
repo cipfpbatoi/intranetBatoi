@@ -197,7 +197,9 @@
                                     </a>
                                 @endif
                                 @if ($emailInstructor !== '')
-                                    <a href="mailto:{{ $emailInstructor }}" class="btn btn-default btn-xs">
+                                    <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
+                                       class="btn btn-default btn-xs"
+                                       title="Enviar correu fi empresa a l'instructor">
                                         <i class="fa fa-envelope"></i> Instructor
                                     </a>
                                 @endif
@@ -207,7 +209,9 @@
                                     </a>
                                 @endif
                                 @if ($emailContacto !== '' && $emailContacto !== $emailInstructor)
-                                    <a href="mailto:{{ $emailContacto }}" class="btn btn-default btn-xs">
+                                    <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
+                                       class="btn btn-default btn-xs"
+                                       title="Enviar correu fi empresa al centre">
                                         <i class="fa fa-envelope"></i> Centre
                                     </a>
                                 @endif
@@ -244,11 +248,6 @@
                         </p>
                         <a href="{{ route('fct.show', ['id' => $fct->id]) }}" class="btn-success btn btn-xs" title="Mostrar Fct">
                             <i class="fa fa-eye"></i>
-                        </a>
-                        <a href="{{ route('PanelColaboracion.colaboracion', ['id' => $fct->id, 'documento' => 'finEmpresa']) }}"
-                           class="btn-success btn btn-xs"
-                           title="Enviar Correu">
-                            <i class="fa fa-envelope-o"></i>
                         </a>
                     </div>
                     <div class="col-xs-12 col-sm-7 emphasis">
