@@ -311,6 +311,10 @@ class Profesor extends Authenticatable
             return $base;
         }
 
+        if (trim($temporal) === trim($base)) {
+            return $base;
+        }
+
         if ($base === '') {
             return $temporal;
         }

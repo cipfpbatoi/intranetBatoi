@@ -194,6 +194,10 @@ class FicharControlDia extends Component
             return $label;
         }
 
+        if ($itaca === $temporal) {
+            return $itaca;
+        }
+
         return $temporal . ' - (itaca ' . $itaca . ')';
     }
 }
