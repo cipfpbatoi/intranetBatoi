@@ -303,16 +303,29 @@ class Profesor extends Authenticatable
      */
     public function getHorarioAttribute()
     {
-        $horarios = Horario::Primera($this->dni)->orderBy('sesion_orden')->get();
-        $horario = $horarios->first();
-        $base = (isset($horario->desde)) ? $horario->desde . " - " . $horario->hasta : '';
-        $temporal = $this->horarioTemporalVigent($horarios, hoy());
+        return $this->horarioForDate(hoy());
+    }
 
-        if ($temporal === '') {
+    /**
+     * Retorna la franja horaria per a una data, prioritzant el temporal vigent.
+     *
+     * @param string $date
+     * @return string
+     */
+    public function horarioForDate(string $date): string
+    {
+        $horarios = Horario::Primera($this->dni, $date)->orderBy('sesion_orden')->get();
+        $base = '';
+        if ($horarios->isNotEmpty()) {
+            $base = $horarios->first()->desde . ' - ' . $horarios->last()->hasta;
+        }
+        $temporal = $this->horarioTemporalVigent($horarios, $date);
+
+        if ($temporal === '' || $temporal === $base) {
             return $base;
         }
 
-        return trim($base . ' (temporal: ' . $temporal . ')');
+        return $temporal . ' (Itaca --> ' . $base . ')';
     }
 
     /**
@@ -379,9 +392,14 @@ class Profesor extends Authenticatable
             return '';
         }
 
-        $hora = Hora::query()->where('codigo', $sesiones->first())->first();
+        $horaIni = Hora::query()->where('codigo', $sesiones->first())->first();
+        $horaFin = Hora::query()->where('codigo', $sesiones->last())->first();
 
-        return $hora ? $hora->hora_ini . ' - ' . $hora->hora_fin : '';
+        if (!$horaIni || !$horaFin) {
+            return '';
+        }
+
+        return $horaIni->hora_ini . ' - ' . $horaFin->hora_fin;
     }
 
     /**
