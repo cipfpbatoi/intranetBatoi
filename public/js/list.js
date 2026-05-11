@@ -1,4 +1,48 @@
 (function () {
+    function getDataTable() {
+        if (!$.fn || !$.fn.dataTable) {
+            return null;
+        }
+
+        if ($.fn.dataTable.isDataTable('#datatable')) {
+            return $('#datatable').DataTable();
+        }
+
+        if (!$('#datatable').length) {
+            return null;
+        }
+
+        return $('#datatable').DataTable({
+            language: {
+                url: '/json/cattable.json'
+            },
+            dom: 'Bfrtip',
+            deferRender: true,
+            responsive: true,
+            buttons: [
+                'print'
+            ],
+            columnDefs: [
+                { responsivePriority: 1, targets: -1 }
+            ]
+        });
+    }
+    function indexColumnaHorario(settings) {
+        if (!settings || !settings.nTHead) {
+            return -1;
+        }
+
+        var ths = settings.nTHead.querySelectorAll('th');
+        for (var i = 0; i < ths.length; i++) {
+            var text = (ths[i].textContent || '').trim().toLowerCase();
+            if (text === 'horario' || text === 'horari') {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     function horaEnMinuts(hora) {
         var parts = (hora || '').split(':');
         if (parts.length < 2) {
@@ -19,20 +63,10 @@
         return match ? match[1] : null;
     }
 
-    var table = $('#datatable').DataTable({
-        language: {
-            url: '/json/cattable.json'
-        },
-        dom: 'Bfrtip',
-        deferRender: true,
-        responsive: true,
-        buttons: [
-            'print'
-        ],
-        columnDefs: [
-            { responsivePriority: 1, targets: -1 }
-        ]
-    });
+    var table = getDataTable();
+    if (!table) {
+        return;
+    }
 
     if (!window.__turnoFiltroRegistrat) {
         window.__turnoFiltroRegistrat = true;
@@ -46,7 +80,12 @@
                 return true;
             }
 
-            var horario = data[2] || '';
+            var idxHorario = indexColumnaHorario(settings);
+            if (idxHorario < 0) {
+                return true;
+            }
+
+            var horario = data[idxHorario] || '';
             var hora = horaIniciHorario(horario);
             var minuts = horaEnMinuts(hora);
             if (minuts === null) {
@@ -66,12 +105,22 @@
         });
     }
 
-    $('#turnoFiltro').on('change', function () {
-        table.draw();
-    });
+    $(document)
+        .off('change.turnoFiltro', '#turnoFiltro')
+        .on('change.turnoFiltro', '#turnoFiltro', function () {
+            var activeTable = getDataTable();
+            if (activeTable) {
+                activeTable.draw();
+            }
+        });
 
-    $('#turnoFiltroReset').on('click', function () {
-        $('#turnoFiltro').val('todos');
-        table.draw();
-    });
+    $(document)
+        .off('click.turnoFiltro', '#turnoFiltroReset')
+        .on('click.turnoFiltro', '#turnoFiltroReset', function () {
+            $('#turnoFiltro').val('todos');
+            var activeTable = getDataTable();
+            if (activeTable) {
+                activeTable.draw();
+            }
+        });
 })();
