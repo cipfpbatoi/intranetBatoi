@@ -46,7 +46,7 @@
                 return true;
             }
 
-            var horario = data[3] || '';
+            var horario = data[2] || '';
             var hora = horaIniciHorario(horario);
             var minuts = horaEnMinuts(hora);
             if (minuts === null) {
