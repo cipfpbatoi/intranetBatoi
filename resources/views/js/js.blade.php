@@ -16,3 +16,6 @@
 <script src="{{ $versionedScript('/js/grid.js') }}" defer></script>
 @endif
 <script src="{{ $versionedScript('/js/delete.js') }}" defer></script>
+@if ($panel->getModel() === 'Falta_profesor')
+<script src="{{ $versionedScript('/js/list.js') }}" defer></script>
+@endif
