@@ -1,4 +1,6 @@
 (function () {
+    var FILTRE_TORN_KEY = '__turnoFiltroValor';
+
     function getDataTable() {
         if (!$.fn || !$.fn.dataTable) {
             return null;
@@ -63,6 +65,40 @@
         return match ? match[1] : null;
     }
 
+    function getTurnoFiltroValor() {
+        return (window[FILTRE_TORN_KEY] || 'todos').toLowerCase();
+    }
+
+    function setTurnoFiltroValor(valor) {
+        window[FILTRE_TORN_KEY] = valor;
+    }
+
+    function syncFiltroDesdeChecks() {
+        var mananaInput = document.getElementById('turnoFiltroManana');
+        var tardeInput = document.getElementById('turnoFiltroTarde');
+        var manana = !!(mananaInput && mananaInput.checked);
+        var tarde = !!(tardeInput && tardeInput.checked);
+
+        if (manana && !tarde) {
+            setTurnoFiltroValor('manana');
+            return;
+        }
+
+        if (!manana && tarde) {
+            setTurnoFiltroValor('tarde');
+            return;
+        }
+
+        setTurnoFiltroValor('todos');
+    }
+
+    function drawTurnoFiltro() {
+        var activeTable = getDataTable();
+        if (activeTable) {
+            activeTable.draw(false);
+        }
+    }
+
     var table = getDataTable();
     if (!table) {
         return;
@@ -75,7 +111,7 @@
                 return true;
             }
 
-            var filtro = ($('#turnoFiltro').val() || 'todos').toLowerCase();
+            var filtro = getTurnoFiltroValor();
             if (filtro === 'todos') {
                 return true;
             }
@@ -105,22 +141,34 @@
         });
     }
 
+    setTurnoFiltroValor('todos');
+
     $(document)
-        .off('change.turnoFiltro', '#turnoFiltro')
-        .on('change.turnoFiltro', '#turnoFiltro', function () {
-            var activeTable = getDataTable();
-            if (activeTable) {
-                activeTable.draw();
+        .off('change.turnoFiltro', '#turnoFiltroManana')
+        .on('change.turnoFiltro', '#turnoFiltroManana', function () {
+            if (this.checked) {
+                $('#turnoFiltroTarde').prop('checked', false);
             }
+            syncFiltroDesdeChecks();
+            drawTurnoFiltro();
+        });
+
+    $(document)
+        .off('change.turnoFiltro', '#turnoFiltroTarde')
+        .on('change.turnoFiltro', '#turnoFiltroTarde', function () {
+            if (this.checked) {
+                $('#turnoFiltroManana').prop('checked', false);
+            }
+            syncFiltroDesdeChecks();
+            drawTurnoFiltro();
         });
 
     $(document)
         .off('click.turnoFiltro', '#turnoFiltroReset')
         .on('click.turnoFiltro', '#turnoFiltroReset', function () {
-            $('#turnoFiltro').val('todos');
-            var activeTable = getDataTable();
-            if (activeTable) {
-                activeTable.draw();
-            }
+            $('#turnoFiltroManana').prop('checked', false);
+            $('#turnoFiltroTarde').prop('checked', false);
+            setTurnoFiltroValor('todos');
+            drawTurnoFiltro();
         });
 })();
