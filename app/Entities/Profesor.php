@@ -315,9 +315,13 @@ class Profesor extends Authenticatable
     public function horarioForDate(string $date): string
     {
         $horarios = Horario::Primera($this->dni, $date)->orderBy('sesion_orden')->get();
+        $dia = nameDay($date);
         $base = '';
         if ($horarios->isNotEmpty()) {
-            $base = $horarios->first()->desde . ' - ' . $horarios->last()->hasta;
+            $horaInicial = $this->horaInicialVisible($horarios, $dia);
+            if ($horaInicial !== null) {
+                $base = $horaInicial . ' - ' . $horarios->last()->hasta;
+            }
         }
         $temporal = $this->horarioTemporalVigent($horarios, $date);
 
@@ -392,7 +396,12 @@ class Profesor extends Authenticatable
             return '';
         }
 
-        $horaIni = Hora::query()->where('codigo', $sesiones->first())->first();
+        $sessioInicial = $this->sesioInicialVisible($sesiones->all(), $dia);
+        if ($sessioInicial === null) {
+            return '';
+        }
+
+        $horaIni = Hora::query()->where('codigo', $sessioInicial)->first();
         $horaFin = Hora::query()->where('codigo', $sesiones->last())->first();
 
         if (!$horaIni || !$horaFin) {
@@ -400,6 +409,68 @@ class Profesor extends Authenticatable
         }
 
         return $horaIni->hora_ini . ' - ' . $horaFin->hora_fin;
+    }
+
+    /**
+     * Retorna l'hora inicial visible d'un horari de dia.
+     *
+     * @param \Illuminate\Support\Collection<int, Horario> $horarios
+     * @param string $dia
+     * @return string|null
+     */
+    private function horaInicialVisible($horarios, string $dia): ?string
+    {
+        $sesions = $horarios->pluck('sesion_orden')->map(static fn ($value): int => (int) $value)->all();
+        $sessioInicial = $this->sesioInicialVisible($sesions, $dia);
+        if ($sessioInicial === null) {
+            return null;
+        }
+
+        $horaIni = Hora::query()->where('codigo', $sessioInicial)->first();
+
+        return $horaIni?->hora_ini;
+    }
+
+    /**
+     * Selecciona la primera sessió vàlida, ignorant dilluns i dimecres a les 13:45.
+     *
+     * @param array<int, int> $sesions
+     * @param string $dia
+     * @return int|null
+     */
+    private function sesioInicialVisible(array $sesions, string $dia): ?int
+    {
+        sort($sesions);
+        if (empty($sesions)) {
+            return null;
+        }
+
+        foreach ($sesions as $sesio) {
+            $hora = Hora::query()->where('codigo', $sesio)->first();
+            if (!$hora) {
+                continue;
+            }
+
+            if ($this->ignorarHoraInicial($dia, (string) $hora->hora_ini)) {
+                continue;
+            }
+
+            return $sesio;
+        }
+
+        return $sesions[0] ?? null;
+    }
+
+    /**
+     * Indica si la franja inicial s'ha d'ignorar per regla de negoci.
+     *
+     * @param string $dia
+     * @param string $horaIni
+     * @return bool
+     */
+    private function ignorarHoraInicial(string $dia, string $horaIni): bool
+    {
+        return in_array($dia, ['L', 'X'], true) && $horaIni === '13:45';
     }
 
     /**
