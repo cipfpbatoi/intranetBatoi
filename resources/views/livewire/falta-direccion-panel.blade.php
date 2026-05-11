@@ -83,16 +83,16 @@
                 <td>{{ $falta['motivo'] }}</td>
                 <td>{{ $falta['situacion'] }}</td>
                 <td>
-                    @if (in_array((int) $falta['estado'], [1, 2], true))
-                        <button
-                            type="button"
-                            class="btn btn-warning btn-xs"
-                            wire:click="editar({{ $falta['id'] }})"
-                            title="Editar"
-                        >
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                        </button>
+                    <button
+                        type="button"
+                        class="btn btn-warning btn-xs"
+                        wire:click="editar({{ $falta['id'] }})"
+                        title="Editar"
+                    >
+                        <i class="fa fa-edit" aria-hidden="true"></i>
+                    </button>
 
+                    @if (in_array((int) $falta['estado'], [1, 2], true))
                         <button
                             type="button"
                             class="btn btn-danger btn-xs"

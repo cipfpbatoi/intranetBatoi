@@ -217,11 +217,6 @@ class FaltaDireccionPanel extends Component
             return;
         }
 
-        if (!in_array((int) $falta->estado, [1, 2], true)) {
-            $this->error = 'Només es poden editar faltes sense autoritzar.';
-            return;
-        }
-
         $this->isEditing = true;
         $this->formFaltaId = (int) $falta->id;
         $this->formIdProfesor = (string) $falta->idProfesor;

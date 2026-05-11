@@ -160,6 +160,23 @@ class FaltaDireccionPanelTest extends TestCase
         );
     }
 
+    public function test_edita_una_falta_autoritzada(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('editar', 3)
+            ->assertSet('formFaltaId', 3)
+            ->set('formObservaciones', 'Autoritzada editada des de direccio')
+            ->call('guardar')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Falta actualitzada correctament.');
+
+        $this->assertSame(
+            'Autoritzada editada des de direccio',
+            DB::connection('sqlite')->table('faltas')->where('id', 3)->value('observaciones')
+        );
+    }
+
     private function actingAsDireccion(): bool
     {
         $this->actingAs($this->direccionUser(), 'profesor');
