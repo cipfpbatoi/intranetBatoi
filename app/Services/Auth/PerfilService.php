@@ -54,8 +54,10 @@ class PerfilService
             ->where('fueraCentro', '=', 1)
             ->get();
 
-        $comisiones = Cache::remember('comisionesHui', now()->addHours(6), fn () =>
+        $comisiones = Cache::remember('comisionesHuiHomeVisibles', now()->addHours(6), fn () =>
         $this->comisionService->withProfesorByDay(Hoy())
+            ->where('estado', '>', 0)
+            ->values()
         );
 
         return compact('horario', 'actividades', 'tasks', 'reuniones', 'faltas', 'hoyActividades', 'comisiones');

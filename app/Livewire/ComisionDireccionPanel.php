@@ -117,11 +117,13 @@ class ComisionDireccionPanel extends Component
     {
         $this->resetFeedback();
 
-        $result = $this->stateService()->accept($id);
-        if ($result === false) {
+        $comision = Comision::find($id);
+        if (!$comision || !$this->isPendingState((int) $comision->estado)) {
             $this->error = 'No s\'ha pogut autoritzar la comissió.';
             return;
         }
+
+        $this->comisions()->setEstado($id, 2);
 
         $this->message = 'Comissió autoritzada correctament.';
         $this->reloadComisiones();
@@ -175,11 +177,13 @@ class ComisionDireccionPanel extends Component
             return;
         }
 
-        $result = $this->stateService()->refuse($this->rebutjarId, $this->motiuRebutjar);
-        if ($result === false) {
+        $comision = Comision::find($this->rebutjarId);
+        if (!$comision || !$this->isPendingState((int) $comision->estado)) {
             $this->error = 'No s\'ha pogut rebutjar la comissió.';
             return;
         }
+
+        $this->comisions()->setEstado($this->rebutjarId, -1);
 
         $this->message = 'Comissió rebutjada correctament.';
         $this->cancelarRebutjar();
@@ -436,10 +440,10 @@ class ComisionDireccionPanel extends Component
             fn (Comision $comision): bool => (int) $comision->estado === 2
         );
         $this->pendingAuthorizationCount = $all->filter(
-            fn (Comision $comision): bool => (int) $comision->estado === 1
+            fn (Comision $comision): bool => $this->isPendingState((int) $comision->estado)
         )->count();
         $this->hasPendingAuthorization = $all->contains(
-            fn (Comision $comision): bool => (int) $comision->estado === 1
+            fn (Comision $comision): bool => $this->isPendingState((int) $comision->estado)
         );
         $this->selectedPayments = array_values(array_intersect(
             $this->selectedPayments,
@@ -464,7 +468,11 @@ class ComisionDireccionPanel extends Component
         }
 
         if ($this->filterEstat !== '') {
-            $query->where('estado', (int) $this->filterEstat);
+            if ((int) $this->filterEstat === 1) {
+                $query->whereIn('estado', [0, 1]);
+            } else {
+                $query->where('estado', (int) $this->filterEstat);
+            }
         }
 
         return $query;
@@ -477,6 +485,9 @@ class ComisionDireccionPanel extends Component
      */
     private function mapComision(Comision $comision): array
     {
+        $rawEstado = (int) $comision->estado;
+        $visibleEstado = $this->normalizeVisibleState($rawEstado);
+
         return [
             'id' => (int) $comision->id,
             'idProfesor' => (string) $comision->idProfesor,
@@ -495,10 +506,12 @@ class ComisionDireccionPanel extends Component
             'marca' => (string) ($comision->marca ?? ''),
             'matricula' => (string) ($comision->matricula ?? ''),
             'itinerario' => (string) ($comision->itinerario ?? ''),
-            'estado' => (int) $comision->estado,
-            'situacion' => (string) $comision->situacion,
-            'canEdit' => (int) $comision->estado < 3,
-            'canDelete' => (int) $comision->estado < 5,
+            'estado' => $visibleEstado,
+            'estadoOriginal' => $rawEstado,
+            'situacion' => $this->visibleStateLabel($visibleEstado),
+            'estadoComunicacion' => $this->communicationStateLabel($rawEstado),
+            'canEdit' => $rawEstado < 3,
+            'canDelete' => $rawEstado < 5,
             'hasDocument' => !empty($comision->idDocumento),
             'idDocumento' => $comision->idDocumento ? (int) $comision->idDocumento : null,
         ];
@@ -523,15 +536,56 @@ class ComisionDireccionPanel extends Component
             ->values()
             ->toArray();
 
-        $this->estatOptions = Comision::query()
-            ->where('estado', '>=', 0)
-            ->orderBy('estado')
-            ->get()
-            ->mapWithKeys(function (Comision $comision) {
-                $key = (string) $comision->estado;
-                return [$key => (string) $comision->situacion];
-            })
-            ->toArray();
+        $this->estatOptions = [
+            '1' => 'Pendents',
+            '2' => 'Autoritzades',
+            '3' => 'Registrades',
+            '4' => 'Pendent de cobrament',
+            '5' => 'Cobrada',
+        ];
+    }
+
+    /**
+     * Determina si l'estat forma part del bloc visible de pendents.
+     */
+    private function isPendingState(int $estado): bool
+    {
+        return in_array($estado, [0, 1], true);
+    }
+
+    /**
+     * Normalitza l'estat per a la capa de presentació.
+     */
+    private function normalizeVisibleState(int $estado): int
+    {
+        return $this->isPendingState($estado) ? 1 : $estado;
+    }
+
+    /**
+     * Retorna l'etiqueta visible d'estat al panell de Direcció.
+     */
+    private function visibleStateLabel(int $estado): string
+    {
+        return match ($estado) {
+            1 => 'Pendents',
+            2 => 'Autoritzades',
+            3 => 'Registrades',
+            4 => 'Pendent de cobrament',
+            5 => 'Cobrada',
+            default => (string) __('models.Comision.' . $estado),
+        };
+    }
+
+    /**
+     * Retorna si la comissió està comunicada dins del bloc de pendents.
+     */
+    private function communicationStateLabel(int $estado): ?string
+    {
+        return match ($estado) {
+            0 => 'No comunicada',
+            1 => 'Comunicada',
+            default => null,
+        };
     }
 
     /**
