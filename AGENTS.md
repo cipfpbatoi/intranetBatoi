@@ -2,8 +2,20 @@
 
 ## Project Structure & Module Organization
 - `app/` contains domain logic; web routes are split by role in `routes/` (`public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`) and API routes in `routes/api.php` (JSON).
+intrintr
+
+
+
+
+
 - UI assets: `resources/views/` for Blade, `resources/assets/js` and `resources/assets/sass` compiled via Vite into `public/`.
-- Data layers: `database/migrations` and `database/seeders`; runtime files in `storage/`; tests split into `tests/Feature` and `tests/Unit`.
+- Data layers: `database/migrations` and 
+
+
+
+
+
+às´çlFJWJÑDHFOHJÑ `database/seeders`; runtime files in `storage/`; tests split into `tests/Feature` and `tests/Unit`.
 - Shared add-ons live in `packages/` and `plugins/`; prefer updating these before duplicating code.
 
 ## Build, Test, and Development Commands
