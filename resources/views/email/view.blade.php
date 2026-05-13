@@ -1,7 +1,8 @@
 @extends('layouts.intranet')
 @section('content')
 
-    <form method="post" action="{{ route($action) }}" enctype="multipart/form-data">
+    <form method="post" action="{{ route($action) }}" enctype="multipart/form-data"
+          onsubmit="var area=document.getElementById('area'), content=document.getElementById('content'); if (area && content) { content.value = area.innerHTML; }">
         @csrf
         <input type="hidden" name="route" value="{{ $route }}">
         <input type="hidden" name="register" value="{{ $register }}">
@@ -102,7 +103,8 @@
             <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
         </div>
     </div>
-    <div id="area" class="editor-wrapper" contenteditable="{{ $editable ? 'true' : 'false' }}">{!! $contenido !!} </div>
+    <div id="area" class="editor-wrapper" contenteditable="{{ $editable ? 'true' : 'false' }}"
+         oninput="var content=document.getElementById('content'); if (content) { content.value = this.innerHTML; }">{!! $contenido !!} </div>
     <div class="form-group">
             <label for="file">Adjunt</label>
             <input type="file" name="file[]" multiple>

@@ -3,6 +3,10 @@ $(function(){
     var $content = $('#content');
     var $form = $area.closest('form');
 
+    if (!$area.length || !$content.length) {
+        return;
+    }
+
     $area.attr('contenteditable', true);
 
     function syncContent() {
