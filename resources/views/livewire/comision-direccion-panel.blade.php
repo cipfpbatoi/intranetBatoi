@@ -154,12 +154,7 @@
                 <td>{{ $comision['servicio'] }}</td>
                 <td>{{ $comision['desde'] }}</td>
                 <td>{{ number_format($comision['total'], 2, ',', '.') }} €</td>
-                <td>
-                    {{ $comision['situacion'] }}
-                    @if ($comision['estadoComunicacion'] !== null)
-                        <div class="text-muted small">{{ $comision['estadoComunicacion'] }}</div>
-                    @endif
-                </td>
+                <td>{{ $comision['situacion'] }}</td>
                 <td>
                     @if ((int) $comision['estado'] === 1)
                         <button type="button" class="btn btn-success btn-xs" wire:click="acceptar({{ $comision['id'] }})" title="Autoritzar">
@@ -376,12 +371,7 @@
                             <li><strong>Servei:</strong> {{ $selectedComision['servicio'] }}</li>
                             <li><strong>Des de:</strong> {{ $selectedComision['desde'] }}</li>
                             <li><strong>Fins:</strong> {{ $selectedComision['hasta'] }}</li>
-                            <li>
-                                <strong>Estat:</strong> {{ $selectedComision['situacion'] }}
-                                @if ($selectedComision['estadoComunicacion'] !== null)
-                                    <span class="text-muted">({{ $selectedComision['estadoComunicacion'] }})</span>
-                                @endif
-                            </li>
+                            <li><strong>Estat:</strong> {{ $selectedComision['situacion'] }}</li>
                             <li><strong>Total:</strong> {{ number_format($selectedComision['total'], 2, ',', '.') }} €</li>
                             <li><strong>Vehicle:</strong> {{ $selectedComision['medio'] }}</li>
                             <li><strong>Kilometratge:</strong> {{ $selectedComision['kilometraje'] }} km</li>

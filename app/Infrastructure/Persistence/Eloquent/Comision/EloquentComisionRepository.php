@@ -36,7 +36,7 @@ class EloquentComisionRepository implements ComisionRepositoryInterface
 
     public function pendingAuthorization(): EloquentCollection
     {
-        return Comision::whereIn('estado', [0, 1])->get();
+        return Comision::where('estado', 1)->get();
     }
 
     public function authorizationApiList(): EloquentCollection
@@ -58,7 +58,7 @@ class EloquentComisionRepository implements ComisionRepositoryInterface
 
     public function authorizeAllPending(): int
     {
-        return Comision::whereIn('estado', [0, 1])->update(['estado' => 2]);
+        return Comision::where('estado', 1)->update(['estado' => 2]);
     }
 
     public function prePayByProfesor(string $dni): EloquentCollection

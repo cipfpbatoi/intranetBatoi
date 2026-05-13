@@ -117,13 +117,11 @@ class ComisionDireccionPanel extends Component
     {
         $this->resetFeedback();
 
-        $comision = Comision::find($id);
-        if (!$comision || !$this->isPendingState((int) $comision->estado)) {
+        $result = $this->stateService()->accept($id);
+        if ($result === false) {
             $this->error = 'No s\'ha pogut autoritzar la comissió.';
             return;
         }
-
-        $this->comisions()->setEstado($id, 2);
 
         $this->message = 'Comissió autoritzada correctament.';
         $this->reloadComisiones();
@@ -177,13 +175,11 @@ class ComisionDireccionPanel extends Component
             return;
         }
 
-        $comision = Comision::find($this->rebutjarId);
-        if (!$comision || !$this->isPendingState((int) $comision->estado)) {
+        $result = $this->stateService()->refuse($this->rebutjarId, $this->motiuRebutjar);
+        if ($result === false) {
             $this->error = 'No s\'ha pogut rebutjar la comissió.';
             return;
         }
-
-        $this->comisions()->setEstado($this->rebutjarId, -1);
 
         $this->message = 'Comissió rebutjada correctament.';
         $this->cancelarRebutjar();
@@ -440,10 +436,10 @@ class ComisionDireccionPanel extends Component
             fn (Comision $comision): bool => (int) $comision->estado === 2
         );
         $this->pendingAuthorizationCount = $all->filter(
-            fn (Comision $comision): bool => $this->isPendingState((int) $comision->estado)
+            fn (Comision $comision): bool => (int) $comision->estado === 1
         )->count();
         $this->hasPendingAuthorization = $all->contains(
-            fn (Comision $comision): bool => $this->isPendingState((int) $comision->estado)
+            fn (Comision $comision): bool => (int) $comision->estado === 1
         );
         $this->selectedPayments = array_values(array_intersect(
             $this->selectedPayments,
@@ -460,7 +456,7 @@ class ComisionDireccionPanel extends Component
     {
         $query = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>=', 0)
+            ->where('estado', '>', 0)
             ->orderByDesc('desde');
 
         if ($this->filterProfessor !== '') {
@@ -468,11 +464,7 @@ class ComisionDireccionPanel extends Component
         }
 
         if ($this->filterEstat !== '') {
-            if ((int) $this->filterEstat === 1) {
-                $query->whereIn('estado', [0, 1]);
-            } else {
-                $query->where('estado', (int) $this->filterEstat);
-            }
+            $query->where('estado', (int) $this->filterEstat);
         }
 
         return $query;
@@ -485,9 +477,6 @@ class ComisionDireccionPanel extends Component
      */
     private function mapComision(Comision $comision): array
     {
-        $rawEstado = (int) $comision->estado;
-        $visibleEstado = $this->normalizeVisibleState($rawEstado);
-
         return [
             'id' => (int) $comision->id,
             'idProfesor' => (string) $comision->idProfesor,
@@ -506,12 +495,10 @@ class ComisionDireccionPanel extends Component
             'marca' => (string) ($comision->marca ?? ''),
             'matricula' => (string) ($comision->matricula ?? ''),
             'itinerario' => (string) ($comision->itinerario ?? ''),
-            'estado' => $visibleEstado,
-            'estadoOriginal' => $rawEstado,
-            'situacion' => $this->visibleStateLabel($visibleEstado),
-            'estadoComunicacion' => $this->communicationStateLabel($rawEstado),
-            'canEdit' => $rawEstado < 3,
-            'canDelete' => $rawEstado < 5,
+            'estado' => (int) $comision->estado,
+            'situacion' => (string) $comision->situacion,
+            'canEdit' => (int) $comision->estado < 3,
+            'canDelete' => (int) $comision->estado < 5,
             'hasDocument' => !empty($comision->idDocumento),
             'idDocumento' => $comision->idDocumento ? (int) $comision->idDocumento : null,
         ];
@@ -524,7 +511,7 @@ class ComisionDireccionPanel extends Component
     {
         $this->professorOptions = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>=', 0)
+            ->where('estado', '>', 0)
             ->orderBy('idProfesor')
             ->get()
             ->map(function (Comision $comision) {
@@ -543,49 +530,6 @@ class ComisionDireccionPanel extends Component
             '4' => 'Pendent de cobrament',
             '5' => 'Cobrada',
         ];
-    }
-
-    /**
-     * Determina si l'estat forma part del bloc visible de pendents.
-     */
-    private function isPendingState(int $estado): bool
-    {
-        return in_array($estado, [0, 1], true);
-    }
-
-    /**
-     * Normalitza l'estat per a la capa de presentació.
-     */
-    private function normalizeVisibleState(int $estado): int
-    {
-        return $this->isPendingState($estado) ? 1 : $estado;
-    }
-
-    /**
-     * Retorna l'etiqueta visible d'estat al panell de Direcció.
-     */
-    private function visibleStateLabel(int $estado): string
-    {
-        return match ($estado) {
-            1 => 'Pendents',
-            2 => 'Autoritzades',
-            3 => 'Registrades',
-            4 => 'Pendent de cobrament',
-            5 => 'Cobrada',
-            default => (string) __('models.Comision.' . $estado),
-        };
-    }
-
-    /**
-     * Retorna si la comissió està comunicada dins del bloc de pendents.
-     */
-    private function communicationStateLabel(int $estado): ?string
-    {
-        return match ($estado) {
-            0 => 'No comunicada',
-            1 => 'Comunicada',
-            default => null,
-        };
     }
 
     /**
