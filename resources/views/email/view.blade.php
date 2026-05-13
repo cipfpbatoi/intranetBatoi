@@ -102,7 +102,7 @@
             <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
         </div>
     </div>
-    <div id="area" class="editor-wrapper">{!! $contenido !!} </div>
+    <div id="area" class="editor-wrapper" contenteditable="{{ $editable ? 'true' : 'false' }}">{!! $contenido !!} </div>
     <div class="form-group">
             <label for="file">Adjunt</label>
             <input type="file" name="file[]" multiple>
