@@ -70,15 +70,14 @@ class SendFctEmails extends Command
                 ]);
             }
 
-            if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
+            if ($this->shouldSendInstructorCertificate($fct)) {
                 $this->correuInstructor($fct);
             }
         }
 
         $fcts = Fct::where('correoInstructor', 0)->get();
         foreach ($fcts as $fct) {
-            $first = $fct->AlFct->first();
-            if (isset($fct->Instructor->email) && $first->correoAlumno) {
+            if ($this->shouldSendInstructorCertificate($fct)) {
                 $this->correuInstructor($fct);
             }
         }
@@ -86,10 +85,48 @@ class SendFctEmails extends Command
     }
 
     /**
-     * @param $fct
-     * @return array
+     * Indica si la FCT compartida ja està preparada per enviar el certificat a l'instructor.
+     *
+     * @param Fct $fct
+     * @return bool
      */
-    private function correuInstructor($fct): int
+    private function shouldSendInstructorCertificate(Fct $fct): bool
+    {
+        if ((int) $fct->correoInstructor !== 0 || !isset($fct->Instructor->email)) {
+            return false;
+        }
+
+        $alumnos = $fct->AlFct()->get(['calificacion', 'correoAlumno']);
+        if ($alumnos->isEmpty()) {
+            return false;
+        }
+
+        $hasNotifiedApprovedStudent = false;
+
+        foreach ($alumnos as $alumno) {
+            if ($alumno->calificacion === null) {
+                return false;
+            }
+
+            if ((int) $alumno->calificacion === 1) {
+                if ((int) $alumno->correoAlumno !== 1) {
+                    return false;
+                }
+
+                $hasNotifiedApprovedStudent = true;
+            }
+        }
+
+        return $hasNotifiedApprovedStudent;
+    }
+
+    /**
+     * Envia a l'instructor l'avaluació i el certificat de les hores de FCT.
+     *
+     * @param Fct $fct
+     * @return int
+     */
+    private function correuInstructor(Fct $fct): int
     {
         try {
             $instructor = $fct->Instructor;
