@@ -1,6 +1,7 @@
 $(function(){
     var $area = $('#area');
     var $content = $('#content');
+    var $form = $area.closest('form');
 
     $area.attr('contenteditable', true);
 
@@ -9,6 +10,8 @@ $(function(){
     }
 
     $area.on('input keyup mouseup focusout paste', syncContent);
-    $area.closest('form').on('submit', syncContent);
+    $form.on('submit', syncContent);
+    $form.find(':submit').on('click', syncContent);
+    document.addEventListener('selectionchange', syncContent);
     syncContent();
 })

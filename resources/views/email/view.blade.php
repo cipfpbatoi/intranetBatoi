@@ -114,7 +114,7 @@
     Enviar correu
 @endsection
 @section('scripts')
-    {{ Html::script('js/MyMail/create.js') }}
+    {{ Html::script('js/MyMail/create.js?v=' . filemtime(public_path('js/MyMail/create.js'))) }}
     @if (!$editable)
         {{ Html::script('js/MyMail/block.js') }}
     @endif
