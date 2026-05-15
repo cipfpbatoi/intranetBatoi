@@ -9,7 +9,7 @@ return [
     ],
     'download' => [
         'directory' => env('SAO_DOWNLOAD_DIR', storage_path('tmp')),
-        'wait_seconds' => (int) env('SAO_DOWNLOAD_WAIT_SECONDS', 30),
+        'wait_seconds' => (int) env('SAO_DOWNLOAD_WAIT_SECONDS', 10),
     ],
     'navigation' => [
         'sleep_seconds' => (int) env('SAO_NAVIGATION_SLEEP_SECONDS', 1),
