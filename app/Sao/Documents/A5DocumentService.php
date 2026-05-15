@@ -52,6 +52,7 @@ class A5DocumentService
         $annexe = $fctAl->Fct->asociacion >= 3 ? 'A5DUAL' : 'A5';
         $idSao = $fctAl->idSao;
         $tmpFile = $tmpDirectory . $annexe . '.pdf';
+        $genericTmpFile = $tmpDirectory . 'A5.pdf';
         $tmp1File = $tmpDirectory . $annexe . '(1).pdf';
         $saveFile = $fctAl->routeFile($annexe);
         $x = config('signatures.files.' . $annexe . '.owner.x');
@@ -61,6 +62,11 @@ class A5DocumentService
         $fctUrlBase = (string) config('sao.urls.fct', 'https://foremp.edu.gva.es/index.php?accion=7&idFct=');
 
         try {
+            $candidateFiles = array_values(array_unique([$tmpFile, $genericTmpFile]));
+            foreach (array_merge($candidateFiles, [$tmp1File]) as $candidateFile) {
+                $this->downloadManager->unlinkIfExists($candidateFile);
+            }
+
             $driver->get($fctUrlBase . $idSao);
             sleep(1);
             $enlace = $driver->findElement(
@@ -73,10 +79,13 @@ class A5DocumentService
             $printButton = $driver->findElement(WebDriverBy::xpath("//button[contains(.,'Imprimir documento')]"));
             $printButton->click();
             sleep(1);
-            $this->downloadManager->waitForFile($tmpFile, (int) config('sao.download.wait_seconds', 10));
+            $downloadedFile = $this->downloadManager->waitForAnyFile(
+                $candidateFiles,
+                (int) config('sao.download.wait_seconds', 10)
+            );
 
             $pdf = new FPDI();
-            $pageCount = $pdf->setSourceFile($tmpFile);
+            $pageCount = $pdf->setSourceFile($downloadedFile);
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
                 $tplIdx = $pdf->importPage($pageNo);
                 $size = $pdf->getTemplateSize($tplIdx);
@@ -128,6 +137,9 @@ class A5DocumentService
                 }
             }
             $this->downloadManager->unlinkIfExists($tmpFile);
+            if ($genericTmpFile !== $tmpFile) {
+                $this->downloadManager->unlinkIfExists($genericTmpFile);
+            }
             $this->navigator->backToMain($driver);
         }
 
