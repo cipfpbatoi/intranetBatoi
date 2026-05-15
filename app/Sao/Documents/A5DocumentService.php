@@ -56,6 +56,7 @@ class A5DocumentService
         $saveFile = $fctAl->routeFile($annexe);
         $x = config('signatures.files.' . $annexe . '.owner.x');
         $y = config('signatures.files.' . $annexe . '.owner.y');
+        $page = config('signatures.files.' . $annexe . '.owner.page');
         $error = false;
         $fctUrlBase = (string) config('sao.urls.fct', 'https://foremp.edu.gva.es/index.php?accion=7&idFct=');
 
@@ -117,7 +118,8 @@ class A5DocumentService
                         $x,
                         $y,
                         $certPath,
-                        $certPassword
+                        $certPassword,
+                        is_numeric($page) ? (int) $page : null
                     );
                     Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
                 } else {

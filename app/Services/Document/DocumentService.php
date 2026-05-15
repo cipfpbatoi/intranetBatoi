@@ -234,6 +234,7 @@ class DocumentService
             try {
                 $x = config("signatures.files.".$this->document->route.".owner.x");
                 $y = config("signatures.files.".$this->document->route.".owner.y");
+                $page = config("signatures.files.".$this->document->route.".owner.page");
                 $file = DigitalSignatureService::decryptCertificateUser(
                     $this->finder->getRequest()->decrypt,
                     authUser()
@@ -247,7 +248,8 @@ class DocumentService
                     $x,
                     $y,
                     $file,
-                    $passCert
+                    $passCert,
+                    is_numeric($page) ? (int) $page : null
                 );
 
                 return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
