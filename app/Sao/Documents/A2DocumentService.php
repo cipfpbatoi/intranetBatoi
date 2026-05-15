@@ -54,6 +54,7 @@ class A2DocumentService
         $saveFile = $fctAl->routeFile($annexe);
         $x = config('signatures.files.' . $annexe . '.owner.x');
         $y = config('signatures.files.' . $annexe . '.owner.y');
+        $page = config('signatures.files.' . $annexe . '.owner.page');
         $ad = (string) config('sao.urls.generate_pdf', 'https://foremp.edu.gva.es/inc/ajax/generar_pdf.php')
             . '?doc=' . $annexeNum . '&centro=59&idFct=' . $fctAl->idSao;
 
@@ -78,7 +79,8 @@ class A2DocumentService
                         $x,
                         $y,
                         $certPath,
-                        $certPassword
+                        $certPassword,
+                        is_numeric($page) ? (int) $page : null
                     );
                     Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
                 } else {
