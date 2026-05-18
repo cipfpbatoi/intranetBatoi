@@ -172,6 +172,17 @@ class Grupo extends Model
             && (int) ($ciclo?->tipo ?? 0) === 2);
     }
 
+    /**
+     * Determina si el grup pot sol·licitar acta d'avaluació FCT.
+     */
+    public function getPuedeSolicitarActaAttribute(): bool
+    {
+        $normativa = strtoupper((string) ($this->Ciclo?->normativa ?? ''));
+
+        return (int) $this->curso === 2
+            && in_array($normativa, ['LOE', 'LOGSE'], true);
+    }
+
     public function getXcicloAttribute()
     {
         return $this->Ciclo->ciclo ?? $this->idCiclo;

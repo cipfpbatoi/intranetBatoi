@@ -202,6 +202,51 @@ class GrupoTest extends TestCase
         $this->assertFalse($grupo->proyecto);
     }
 
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_loe_grau_mitja_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 1]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_loe_grau_superior_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 2]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_logse_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOGSE', 'tipo' => 1]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_false_per_lfp(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LFP', 'tipo' => 2]);
+
+        $this->assertFalse($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_false_fora_de_segon_curs(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 1;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 1]);
+
+        $this->assertFalse($grupo->puede_solicitar_acta);
+    }
+
     public function test_accessor_xtutor_retorna_buit_si_no_hi_ha_tutor(): void
     {
         $grupo = new Grupo();
