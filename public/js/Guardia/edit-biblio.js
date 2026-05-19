@@ -240,9 +240,11 @@ function cambiaHora() {
     }
 
     if (parseInt(horaSelect.value, 10) > 0) {
-        apiRequest('GET', 'api/guardia/idProfesor=' + trim(dni.textContent)
-            + '&dia=' + diaIso
-            + '&hora=' + horaSelect.value).then(function (res) {
+        apiRequest('GET', '/api/guardia', {
+            idProfesor: trim(dni.textContent),
+            dia: diaIso,
+            hora: horaSelect.value
+        }).then(function (res) {
             idGuardia = 0;
             var data = res.data || [];
             if (data.length) {
