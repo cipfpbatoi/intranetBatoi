@@ -21,8 +21,7 @@ use Intranet\Services\UI\AppAlert as Alert;
 
 
 /**
- * Class PanelExpedienteController
- * @package Intranet\Http\Controllers
+ * Gestiona el panell de signatures de documentació FCT.
  */
 class SignaturaController extends ModalController
 {
@@ -256,7 +255,7 @@ class SignaturaController extends ModalController
         $signatura->contact = $signatura->Fct->Fct->Instructor->nombre;
         $col = new Collection();
         $col->push($signatura);
-        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
+        $view = $this->mailViewForInstructorSignatures($col);
         $mail = new MyMail(
             $col,
             view($view),
@@ -266,6 +265,10 @@ class SignaturaController extends ModalController
         session()->flash('email_action', 'annexe_individual');
         return $mail->render('/signatura');
     }
+
+    /**
+     * Envia signatures seleccionades a alumnat o instructors.
+     */
     public function sendMultiple(Request $request,$tipus)
     {
         $this->authorize('manage', Signatura::class);
@@ -300,12 +303,12 @@ class SignaturaController extends ModalController
                 if ($alumnoFct === null) {
                     return back();
                 }
-                $signatures = [];
-                    foreach ($alumnoFct->signatures as $signatura){
-                        $this->authorize('update', $signatura);
-                        $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
-                    }
+                $selectedSignatures = $this->signaturesPendingForInstructor($alumnoFct);
+                $signatures = $this->attachmentsForSignatures($selectedSignatures);
+                foreach ($selectedSignatures as $signatura) {
+                    $this->authorize('update', $signatura);
+                }
+                $view = $this->mailViewForInstructorSignatures($selectedSignatures);
                 $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                 $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                 $col = new Collection();
@@ -313,7 +316,7 @@ class SignaturaController extends ModalController
                 $mail = new MyMail(
                     $col,
                     view($view),
-                    ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
+                    ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                     $signatures);
                 session()->flash('email_action', 'annexe_individual');
                 return $mail->render('/signatura');
@@ -324,16 +327,15 @@ class SignaturaController extends ModalController
                     if ($alumnoFct === null) {
                         continue;
                     }
-                    $signatures = [];
-                    $a1 = false;
-                    foreach ($alumnoFct->signatures as $signatura){
+                    $selectedSignatures = $this->signaturesPendingForInstructor($alumnoFct);
+                    $signatures = $this->attachmentsForSignatures($selectedSignatures);
+                    $a1 = $selectedSignatures->contains(function ($signatura) {
+                        return $this->isAnnexOne((string) $signatura->tipus);
+                    });
+                    foreach ($selectedSignatures as $signatura) {
                         $this->authorize('update', $signatura);
-                        $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                        if ($signatura->tipus === 'A1'){
-                            $a1 = true;
-                        }
-                        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
                     }
+                    $view = $this->mailViewForInstructorSignatures($selectedSignatures);
                     $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                     $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                     $alumnoFct->annexe = $a1;
@@ -349,6 +351,61 @@ class SignaturaController extends ModalController
             return back();
         }
 
+    }
+
+    /**
+     * Retorna les signatures que encara cal enviar a l'instructor.
+     *
+     * Si no queda cap pendent, es mantenen totes per permetre reenviaments manuals.
+     */
+    private function signaturesPendingForInstructor($alumnoFct)
+    {
+        $pending = $alumnoFct->signatures->filter(function ($signatura) {
+            return (int) $signatura->sendTo < 2;
+        });
+
+        return $pending->isNotEmpty() ? $pending->values() : $alumnoFct->signatures;
+    }
+
+    /**
+     * Construeix el mapa d'adjunts per a les signatures indicades.
+     */
+    private function attachmentsForSignatures($signatures): array
+    {
+        $attachments = [];
+        foreach ($signatures as $signatura) {
+            $attachments[$signatura->simpleRouteFile] = 'application/pdf';
+        }
+
+        return $attachments;
+    }
+
+    /**
+     * Tria la plantilla segons els annexos que s'envien a l'instructor.
+     */
+    private function mailViewForInstructorSignatures($signatures): string
+    {
+        $onlyAnnexFive = $signatures->isNotEmpty() && $signatures->every(function ($signatura) {
+            return $this->isAnnexFive((string) $signatura->tipus);
+        });
+
+        return $onlyAnnexFive ? 'email.fct.a5' : 'email.fct.anexes';
+    }
+
+    /**
+     * Determina si el tipus correspon a l'annex I, incloent variants duals.
+     */
+    private function isAnnexOne(string $tipus): bool
+    {
+        return substr($tipus, 0, 2) === 'A1';
+    }
+
+    /**
+     * Determina si el tipus correspon a l'annex V, incloent variants duals.
+     */
+    private function isAnnexFive(string $tipus): bool
+    {
+        return substr($tipus, 0, 2) === 'A5';
     }
 
 
