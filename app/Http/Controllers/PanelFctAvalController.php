@@ -34,7 +34,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
