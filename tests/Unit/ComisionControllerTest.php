@@ -250,7 +250,7 @@ class ComisionControllerTest extends TestCase
         ], $data['allFcts']);
     }
 
-    public function test_ini_mostra_boto_en_estat_zero_si_la_comissio_encara_no_ha_acabat(): void
+    public function test_ini_mostra_boto_en_estat_zero_si_la_comissio_encara_no_ha_acabat_en_grid_i_profile(): void
     {
         config(['app.url' => 'http://intranet.test']);
         config(['iconos.init' => 'fa-envelope']);
@@ -275,11 +275,16 @@ class ComisionControllerTest extends TestCase
                 return $this->id;
             }
         };
-        $html = $controller->renderGridButtons($elemento);
+        $gridHtml = $controller->renderButtons($elemento, 'grid');
+        $profileHtml = $controller->renderButtons($elemento, 'profile');
 
         $this->assertTrue(
-            Str::contains($html, '/comision/77/init'),
-            'El botó d\'enviament ha d\'estar disponible mentre la comissió no haja finalitzat.'
+            Str::contains($gridHtml, ['/comision/77/init', 'Enviar']),
+            'El botó d\'enviament ha d\'estar disponible en el grid mentre la comissió no haja finalitzat.'
+        );
+        $this->assertTrue(
+            Str::contains($profileHtml, ['/comision/77/init', 'Enviar']),
+            'El botó d\'enviament ha d\'estar disponible en el mosaic mentre la comissió no haja finalitzat.'
         );
     }
 
@@ -432,12 +437,12 @@ class RealComisionController extends ComisionController
 
 class ButtonPanelComisionController extends ComisionController
 {
-    public function renderGridButtons(object $elemento): string
+    public function renderButtons(object $elemento, string $tipo): string
     {
         parent::__construct();
         $this->iniBotones();
 
-        return collect($this->panel->getBotones('grid'))
+        return collect($this->panel->getBotones($tipo))
             ->map(fn ($button): string => $button->render($elemento))
             ->implode('');
     }
