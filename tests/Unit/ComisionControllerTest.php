@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Intranet\Http\Controllers\ComisionController;
 use Intranet\Entities\Profesor;
@@ -250,39 +249,6 @@ class ComisionControllerTest extends TestCase
         ], $data['allFcts']);
     }
 
-    public function test_ini_mostra_boto_en_estat_zero_si_la_comissio_encara_no_ha_acabat(): void
-    {
-        config(['app.url' => 'http://intranet.test']);
-        config(['iconos.init' => 'fa-envelope']);
-
-        $controller = new ButtonPanelComisionController();
-        $elemento = new class () {
-            public int $id = 77;
-            public int $estado = 0;
-            public int $fct = 0;
-            public int $total = 0;
-            public string $desde;
-            public string $hasta;
-
-            public function __construct()
-            {
-                $this->desde = hoy().' 08:00';
-                $this->hasta = dentro(1).' 12:00';
-            }
-
-            public function getKey(): int
-            {
-                return $this->id;
-            }
-        };
-        $html = $controller->renderGridButtons($elemento);
-
-        $this->assertTrue(
-            Str::contains($html, '/comision/77/init'),
-            'El botó d\'enviament ha d\'estar disponible mentre la comissió no haja finalitzat.'
-        );
-    }
-
     private function seedComision(int $estado): int
     {
         return (int) DB::table('comisiones')->insertGetId([
@@ -427,18 +393,5 @@ class RealComisionController extends ComisionController
     public function __construct()
     {
         // Evitem inicialització de panel/UI en proves unitàries.
-    }
-}
-
-class ButtonPanelComisionController extends ComisionController
-{
-    public function renderGridButtons(object $elemento): string
-    {
-        parent::__construct();
-        $this->iniBotones();
-
-        return collect($this->panel->getBotones('grid'))
-            ->map(fn ($button): string => $button->render($elemento))
-            ->implode('');
     }
 }

@@ -163,7 +163,7 @@ class ComisionController extends ModalController
              ['class'=>'confirm','where' => ['estado', '>=', '2', 'estado', '<', '4']]
          );
          $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3','total','>',0]]);
-         $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0','hasta','posterior',Hoy()]]);
+         $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0','desde','posterior',Hoy()]]);
          $this->panel->setBothBoton(
              'comision.notification',
              ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]
