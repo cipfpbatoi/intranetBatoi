@@ -58,7 +58,7 @@ class ComisionDireccionPanelTest extends TestCase
 
         $component
             ->assertSee('Imprimir Comissions autoritzades (1)')
-            ->assertSee('Autoritzar comissions pendents (1)')
+            ->assertSee('Autoritzar comissions pendents (2)')
             ->assertSee('Imprimir pagaments seleccionats (0/1)')
             ->assertSee('Maria Garcia Lopez')
             ->assertSee('Joan Soler Perez');
@@ -66,7 +66,7 @@ class ComisionDireccionPanelTest extends TestCase
         $comisiones = $component->get('comisiones');
         $pendingPayments = $component->get('pendingPayments');
 
-        $this->assertCount(4, $comisiones);
+        $this->assertCount(5, $comisiones);
         $this->assertCount(1, $pendingPayments);
         $this->assertSame('CM200', $pendingPayments[0]['dni']);
         $this->assertTrue((bool) $comisiones[0]['hasDocument']);
@@ -81,8 +81,8 @@ class ComisionDireccionPanelTest extends TestCase
         $component->set('filterProfessor', 'Maria');
 
         $comisiones = $component->get('comisiones');
-        $this->assertCount(2, $comisiones);
-        $this->assertSame(['CM100', 'CM100'], array_column($comisiones, 'idProfesor'));
+        $this->assertCount(3, $comisiones);
+        $this->assertSame(['CM100', 'CM100', 'CM100'], array_column($comisiones, 'idProfesor'));
 
         $component->set('filterEstat', '2');
 
@@ -95,6 +95,12 @@ class ComisionDireccionPanelTest extends TestCase
     {
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(ComisionDireccionPanel::class);
+
+        $component->call('acceptar', 5)
+            ->assertSet('error', '')
+            ->assertSet('message', 'Comissió autoritzada correctament.');
+
+        $this->assertSame(2, (int) DB::connection('sqlite')->table('comisiones')->where('id', 5)->value('estado'));
 
         $component->call('acceptar', 1)
             ->assertSet('error', '')
@@ -122,9 +128,10 @@ class ComisionDireccionPanelTest extends TestCase
 
         $component->call('autoritzarPendents')
             ->assertSet('error', '')
-            ->assertSet('message', 'S\'ha autoritzat 1 comissió pendent.');
+            ->assertSet('message', 'S\'han autoritzat 2 comissions pendents.');
 
         $this->assertSame(2, (int) DB::connection('sqlite')->table('comisiones')->where('id', 1)->value('estado'));
+        $this->assertSame(2, (int) DB::connection('sqlite')->table('comisiones')->where('id', 5)->value('estado'));
     }
 
     public function test_no_es_pot_esborrar_una_comissio_cobrada(): void
@@ -356,6 +363,22 @@ class ComisionDireccionPanelTest extends TestCase
                 'medio' => 0,
                 'estado' => 5,
                 'idDocumento' => 3004,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 5,
+                'idProfesor' => 'CM100',
+                'idDocumento' => null,
+                'desde' => '2026-03-09 09:00:00',
+                'hasta' => '2026-03-09 12:00:00',
+                'servicio' => 'Visita empresa 0',
+                'kilometraje' => 5,
+                'gastos' => 0,
+                'comida' => 0,
+                'alojamiento' => 0,
+                'medio' => 0,
+                'estado' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

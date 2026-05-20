@@ -117,8 +117,17 @@ class ComisionDireccionPanel extends Component
     {
         $this->resetFeedback();
 
-        $result = $this->stateService()->accept($id);
-        if ($result === false) {
+        $comision = Comision::find($id);
+        if (!$comision) {
+            $this->error = 'No s\'ha trobat la comissió.';
+            return;
+        }
+
+        $result = (int) $comision->estado === 0
+            ? $this->comisions()->setEstado($id, 2)
+            : $this->stateService()->accept($id);
+
+        if ($result === false || $result === null) {
             $this->error = 'No s\'ha pogut autoritzar la comissió.';
             return;
         }
@@ -360,7 +369,10 @@ class ComisionDireccionPanel extends Component
     {
         $this->resetFeedback();
 
-        $updated = $this->comisions()->authorizeAllPending();
+        $updated = Comision::query()
+            ->whereIn('estado', [0, 1])
+            ->update(['estado' => 2]);
+
         if ($updated === 0) {
             $this->error = 'No hi ha comissions pendents per autoritzar.';
             return;
@@ -436,10 +448,10 @@ class ComisionDireccionPanel extends Component
             fn (Comision $comision): bool => (int) $comision->estado === 2
         );
         $this->pendingAuthorizationCount = $all->filter(
-            fn (Comision $comision): bool => (int) $comision->estado === 1
+            fn (Comision $comision): bool => in_array((int) $comision->estado, [0, 1], true)
         )->count();
         $this->hasPendingAuthorization = $all->contains(
-            fn (Comision $comision): bool => (int) $comision->estado === 1
+            fn (Comision $comision): bool => in_array((int) $comision->estado, [0, 1], true)
         );
         $this->selectedPayments = array_values(array_intersect(
             $this->selectedPayments,
@@ -456,7 +468,7 @@ class ComisionDireccionPanel extends Component
     {
         $query = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>', 0)
+            ->where('estado', '>=', 0)
             ->orderByDesc('desde');
 
         if ($this->filterProfessor !== '') {
@@ -511,7 +523,7 @@ class ComisionDireccionPanel extends Component
     {
         $this->professorOptions = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>', 0)
+            ->where('estado', '>=', 0)
             ->orderBy('idProfesor')
             ->get()
             ->map(function (Comision $comision) {
@@ -524,6 +536,7 @@ class ComisionDireccionPanel extends Component
             ->toArray();
 
         $this->estatOptions = [
+            '0' => 'No autoritzada/comunicada',
             '1' => 'Pendents',
             '2' => 'Autoritzades',
             '3' => 'Registrades',

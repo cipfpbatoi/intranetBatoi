@@ -156,7 +156,7 @@
                 <td>{{ number_format($comision['total'], 2, ',', '.') }} €</td>
                 <td>{{ $comision['situacion'] }}</td>
                 <td>
-                    @if ((int) $comision['estado'] === 1)
+                    @if (in_array((int) $comision['estado'], [0, 1], true))
                         <button type="button" class="btn btn-success btn-xs" wire:click="acceptar({{ $comision['id'] }})" title="Autoritzar">
                             <i class="fa fa-check" aria-hidden="true"></i>
                         </button>
@@ -168,7 +168,7 @@
                         </button>
                     @endif
 
-                    @if ((int) $comision['estado'] === 1)
+                    @if (in_array((int) $comision['estado'], [0, 1], true))
                         <button type="button" class="btn btn-danger btn-xs" wire:click="obrirRebutjar({{ $comision['id'] }})" title="Rebutjar">
                             <i class="fa fa-times" aria-hidden="true"></i>
                         </button>
