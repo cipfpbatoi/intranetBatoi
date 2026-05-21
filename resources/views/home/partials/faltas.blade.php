@@ -6,7 +6,7 @@
                 $motiu = mb_strtolower((string) $falta->motivo);
                 $esMalaltia = str_contains($motiu, 'enfermedad') || str_contains($motiu, 'malaltia');
 
-                if ((int) $falta->estado > 0 && !$esMalaltia) {
+                if (!$esMalaltia) {
                     $image = 'actividad.png';
                 }
             @endphp
