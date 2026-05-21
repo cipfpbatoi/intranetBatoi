@@ -6,7 +6,8 @@
                 $motiu = mb_strtolower(\Illuminate\Support\Str::ascii((string) $falta->motivo));
                 $esMalaltia = str_contains($motiu, 'enfermedad')
                     || str_contains($motiu, 'malaltia')
-                    || str_contains($motiu, 'medico');
+                    || str_contains($motiu, 'medico')
+                    || str_contains($motiu, 'medica');
 
                 if (!$esMalaltia) {
                     $image = 'actividad.png';
