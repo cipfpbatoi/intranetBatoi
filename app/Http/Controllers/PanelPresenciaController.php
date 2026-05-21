@@ -70,7 +70,6 @@ class PanelPresenciaController extends BaseController
         Gate::authorize('manageAttendance', Profesor::class);
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $dia = $this->diaSeleccionat($dia);
-        $dnisIncidencia = $this->dnisConIncidenciaDia($dia);
         $fdia = new Carbon($dia);
         $this->panel->dia = $fdia->toDateString();
         $this->panel->anterior = $fdia->subDay()->toDateString();
@@ -78,16 +77,7 @@ class PanelPresenciaController extends BaseController
         $this->panel->setBoton('grid', new BotonImg('fichar.delete', [], 'direccion', $this->panel->dia));
         $this->panel->setBoton('grid', new BotonImg('fichar.email', [], 'direccion', $this->panel->dia));
 
-        $profesores = self::profesores()->byDnis(array_values(self::noHanFichado($dia)))
-            ->map(static function ($profesor) use ($dnisIncidencia) {
-                if (in_array((string) $profesor->dni, $dnisIncidencia, true)) {
-                    $profesor->class = trim(((string) ($profesor->class ?? '')) . ' text-danger');
-                }
-
-                return $profesor;
-            });
-
-        return $this->grid($profesores);
+        return $this->grid(self::profesores()->byDnis(array_values(self::noHanFichado($dia))));
     }
 
     /**
@@ -202,39 +192,33 @@ class PanelPresenciaController extends BaseController
             }
         }
 
-        return $noHanFichado;
-    }
-
-    /**
-     * Retorna els DNIs amb incidència visual al panell de presència.
-     *
-     * Inclou comissions, absències i activitats fora del centre.
-     *
-     * @param string $dia Data de consulta.
-     * @return array<int, string>
-     */
-    private function dnisConIncidenciaDia(string $dia): array
-    {
-        $dnis = [];
-
-        $actividades = Actividad::Dia($dia)->where('fueraCentro', '=', 1)->with('profesores:dni')->get();
+        // comprova que no estigues d'activitat
+        $actividades = Actividad::Dia($dia)->where('fueraCentro','=',1)->get();
         foreach ($actividades as $actividad) {
             foreach ($actividad->profesores as $profesor) {
-                $dnis[] = (string) $profesor->dni;
+                if (in_array($profesor->dni, $noHanFichado)) {
+                    unset($noHanFichado[$profesor->dni]);
+                }
             }
         }
 
+        // comprova que no està de comissió
         $comisiones = self::comisions()->byDay($dia);
         foreach ($comisiones as $comision) {
-            $dnis[] = (string) $comision->idProfesor;
+            if (in_array($comision->idProfesor, $noHanFichado)) {
+                unset($noHanFichado[$comision->idProfesor]);
+            }
         }
 
-        $faltas = Falta::Dia($dia)->pluck('idProfesor')->all();
-        foreach ($faltas as $dni) {
-            $dnis[] = (string) $dni;
+        // compova que no tinga falta
+        $faltas = Falta::Dia($dia)->get();
+        foreach ($faltas as $falta) {
+            if (in_array($falta->idProfesor, $noHanFichado)) {
+                unset($noHanFichado[$falta->idProfesor]);
+            }
         }
 
-        return array_values(array_unique($dnis));
+        return $noHanFichado;
     }
     
 }

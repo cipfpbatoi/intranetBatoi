@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Actividad;
+use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Intranet\Http\Controllers\Core\IntranetController;
 
@@ -70,7 +71,7 @@ class FicharController extends IntranetController
     }
 
     /**
-     * Retorna els DNIs amb absència o activitat extraescolar en un dia.
+     * Retorna els DNIs amb absència, comissió o activitat extraescolar en un dia.
      *
      * @param string $dia
      * @return array<int, string>
@@ -96,7 +97,13 @@ class FicharController extends IntranetController
             }
         }
 
-        return array_values(array_unique(array_merge($dnisFalta, $dnisActivitat)));
+        $dnisComissio = Comision::query()
+            ->Dia($dia)
+            ->pluck('idProfesor')
+            ->map(static fn ($dni): string => (string) $dni)
+            ->all();
+
+        return array_values(array_unique(array_merge($dnisFalta, $dnisActivitat, $dnisComissio)));
     }
 
 
