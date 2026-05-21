@@ -168,6 +168,7 @@ class PanelPresenciaController extends BaseController
     {
         Gate::authorize('manageAttendance', Profesor::class);
         $fitxatgeService->fitxaDiaManual($usuario, $dia);
+        Alert::success('Fitxatge registrat manualment.');
         return back();
     }
 
@@ -196,8 +197,9 @@ class PanelPresenciaController extends BaseController
         $actividades = Actividad::Dia($dia)->where('fueraCentro','=',1)->get();
         foreach ($actividades as $actividad) {
             foreach ($actividad->profesores as $profesor) {
-                if (in_array($profesor->dni, $noHanFichado)) {
-                    unset($noHanFichado[$profesor->dni]);
+                $dni = (string) $profesor->dni;
+                if (isset($noHanFichado[$dni])) {
+                    unset($noHanFichado[$dni]);
                 }
             }
         }
@@ -205,16 +207,18 @@ class PanelPresenciaController extends BaseController
         // comprova que no està de comissió
         $comisiones = self::comisions()->byDay($dia);
         foreach ($comisiones as $comision) {
-            if (in_array($comision->idProfesor, $noHanFichado)) {
-                unset($noHanFichado[$comision->idProfesor]);
+            $dni = (string) $comision->idProfesor;
+            if (isset($noHanFichado[$dni])) {
+                unset($noHanFichado[$dni]);
             }
         }
 
         // compova que no tinga falta
         $faltas = Falta::Dia($dia)->get();
         foreach ($faltas as $falta) {
-            if (in_array($falta->idProfesor, $noHanFichado)) {
-                unset($noHanFichado[$falta->idProfesor]);
+            $dni = (string) $falta->idProfesor;
+            if (isset($noHanFichado[$dni])) {
+                unset($noHanFichado[$dni]);
             }
         }
 
