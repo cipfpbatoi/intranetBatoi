@@ -159,7 +159,7 @@ class FicharController extends IntranetController
 
         $etiquetes = $badges === [] ? '' : ' ' . implode(' ', $badges);
 
-        return '<span class="text-danger">' . e($nom) . '</span>' . $etiquetes;
+        return e($nom) . $etiquetes;
     }
 
 
