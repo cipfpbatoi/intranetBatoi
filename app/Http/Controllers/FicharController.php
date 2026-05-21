@@ -148,7 +148,7 @@ class FicharController extends IntranetController
         $badges = [];
 
         if ($incidencia['falta']) {
-            $badges[] = '<span class="label label-danger">Absència</span>';
+            $badges[] = '<span class="label label-info">Absència</span>';
         }
         if ($incidencia['activitat']) {
             $badges[] = '<span class="label label-info">Activitat</span>';
