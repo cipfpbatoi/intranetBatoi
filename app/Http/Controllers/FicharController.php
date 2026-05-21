@@ -63,7 +63,7 @@ class FicharController extends IntranetController
 
         return $this->profesores()->activos()->map(function ($profesor) use ($incidencies) {
             if (in_array((string) $profesor->dni, $incidencies, true)) {
-                $profesor->FullName = '<span class="text-danger">' . e((string) $profesor->FullName) . '</span>';
+                $profesor->class = trim(((string) ($profesor->class ?? '')) . ' danger');
             }
 
             return $profesor;
