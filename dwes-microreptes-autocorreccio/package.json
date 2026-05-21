@@ -1,0 +1,16 @@
+{
+  "name": "dwes-microreptes-autocorreccio",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Repositori central per a microreptes DWES, rubriques i autocorreccio assistida.",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-config.mjs",
+    "list:challenges": "node scripts/list-challenges.mjs",
+    "resolve:challenge": "node scripts/resolve-active-challenge.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

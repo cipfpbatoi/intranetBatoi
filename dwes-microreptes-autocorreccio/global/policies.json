@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "language": "ca-ES-valencia",
+  "scoring_mode": "provisional_over_10",
+  "teacher_review_required_above": 8.5,
+  "teacher_review_required_if_flags": true,
+  "require_readme": true,
+  "require_ai_log_when_configured": true,
+  "require_test_or_manual_proof": true,
+  "max_auto_score_without_teacher_review": 8
+}

@@ -1,0 +1,23 @@
+{
+  "groups": {
+    "2DAW-A": {
+      "challenge_id": "mr02-formularis-estat"
+    },
+    "2DAW-B": {
+      "challenge_id": "mr01-fonaments-servidor"
+    },
+    "2DAW-C": {
+      "challenge_id": "mr03-validacio-errors"
+    }
+  },
+  "students": {
+    "cipfpbatoi/dwes-ana-marti": {
+      "challenge_id": "mr03-validacio-errors",
+      "reason": "Adaptació individual per recuperació"
+    },
+    "cipfpbatoi/dwes-joan-ferrer": {
+      "challenge_id": "mr01-fonaments-servidor",
+      "reason": "Incorporació tardana al grup"
+    }
+  }
+}

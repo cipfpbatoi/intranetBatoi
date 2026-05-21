@@ -1,0 +1,40 @@
+name: Dry run autograde
+
+on:
+  workflow_dispatch:
+    inputs:
+      student:
+        description: "Repositori o identificador de l'alumne"
+        required: true
+        default: "cipfpbatoi/dwes-ana-marti"
+      group:
+        description: "Grup docent"
+        required: true
+        default: "2DAW-A"
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
+      - name: Resolve active challenge
+        id: resolve
+        run: |
+          CHALLENGE_ID="$(node scripts/resolve-active-challenge.mjs --student "${{ inputs.student }}" --group "${{ inputs.group }}")"
+          echo "challenge_id=${CHALLENGE_ID}" >> "$GITHUB_OUTPUT"
+      - run: npm run list:challenges
+      - name: Dry run summary
+        run: |
+          echo "student=${{ inputs.student }}"
+          echo "group=${{ inputs.group }}"
+          echo "challenge=${{ steps.resolve.outputs.challenge_id }}"
+          echo "Dry run completat. Encara no es fan crides a OpenAI."

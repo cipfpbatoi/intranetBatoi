@@ -1,0 +1,25 @@
+{
+  "student": "cipfpbatoi/dwes-ana-marti",
+  "group": "2DAW-A",
+  "repo": "cipfpbatoi/dwes-ana-marti",
+  "challenge_id": "mr03-validacio-errors",
+  "commit": "abc1234def5678",
+  "changed_files": [
+    "src/Validator.php",
+    "README.md",
+    "evidence/validacio.md"
+  ],
+  "repo_signals": {
+    "readme_present": true,
+    "ai_log_present": true,
+    "declared_runtime": "php",
+    "framework_detected": null
+  },
+  "test_results": {
+    "status": "not_configured",
+    "summary": "Encara no hi ha tests automàtics per a este microrepte.",
+    "passed": 0,
+    "failed": 0
+  },
+  "rubric_id": "rubric-mr03-validacio-errors"
+}

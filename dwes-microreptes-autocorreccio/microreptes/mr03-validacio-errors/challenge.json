@@ -1,0 +1,11 @@
+{
+  "challenge_id": "mr03-validacio-errors",
+  "title": "Validació i errors",
+  "summary": "Validar dades d'entrada i retornar errors comprensibles.",
+  "pedagogical_goal": "Treballar validació defensiva i tractament d'errors.",
+  "relevant_paths": ["src/", "public/", "README.md", "evidence/"],
+  "required_evidence": ["Regles de validació", "Resposta a dades invàlides", "Prova de cas vàlid i invàlid"],
+  "ai_log_required": true,
+  "expected_signals": ["Validació explícita", "Errors comprensibles", "Proves vàlides i invàlides"],
+  "recommended_test_strategy": "Executar cas vàlid i invàlid i comprovar la resposta."
+}
