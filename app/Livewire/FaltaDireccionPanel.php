@@ -280,7 +280,7 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
-     * Esborra una falta només si encara no està autoritzada.
+     * Esborra una falta només si està no enviada o pendent de tramitació.
      */
     public function esborrar(int $id): void
     {
@@ -292,7 +292,7 @@ class FaltaDireccionPanel extends Component
             return;
         }
 
-        if (!in_array((int) $falta->estado, [1, 2], true)) {
+        if (!in_array((int) $falta->estado, [0, 1, 2], true)) {
             $this->error = 'Només es poden esborrar faltes sense autoritzar.';
             return;
         }

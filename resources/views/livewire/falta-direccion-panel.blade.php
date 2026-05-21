@@ -92,7 +92,7 @@
                         <i class="fa fa-edit" aria-hidden="true"></i>
                     </button>
 
-                    @if (in_array((int) $falta['estado'], [1, 2], true))
+                    @if (in_array((int) $falta['estado'], [0, 1, 2], true))
                         <button
                             type="button"
                             class="btn btn-danger btn-xs"

@@ -104,8 +104,10 @@ class FaltaDireccionPanelTest extends TestCase
         $this->assertSame(2, $faltes[0]['estado']);
     }
 
-    public function test_esborrar_permet_estat_1_o_2_i_rebutja_autoritzades(): void
+    public function test_esborrar_permet_estat_0_1_o_2_i_rebutja_autoritzades(): void
     {
+        DB::connection('sqlite')->table('faltas')->where('id', 1)->update(['estado' => 0]);
+
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(FaltaDireccionPanel::class);
 
