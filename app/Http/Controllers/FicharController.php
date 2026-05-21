@@ -59,11 +59,13 @@ class FicharController extends IntranetController
     
     public function search()
     {
-        $incidencies = $this->dnisAmbIncidenciaDia(Hoy());
+        $incidencies = $this->incidenciesPerDni(Hoy());
 
         return $this->profesores()->activos()->map(function ($profesor) use ($incidencies) {
-            if (in_array((string) $profesor->dni, $incidencies, true)) {
-                $profesor->class = trim(((string) ($profesor->class ?? '')) . ' danger');
+            $dni = (string) $profesor->dni;
+
+            if (isset($incidencies[$dni])) {
+                $profesor->FullName = $this->renderNomAmbIncidencies((string) $profesor->FullName, $incidencies[$dni]);
             }
 
             return $profesor;
@@ -71,20 +73,25 @@ class FicharController extends IntranetController
     }
 
     /**
-     * Retorna els DNIs amb absència, comissió o activitat extraescolar en un dia.
+     * Retorna un mapa de professorat amb incidències classificades per tipus.
      *
      * @param string $dia
-     * @return array<int, string>
+     * @return array<string, array{falta: bool, activitat: bool, comissio: bool}>
      */
-    private function dnisAmbIncidenciaDia(string $dia): array
+    private function incidenciesPerDni(string $dia): array
     {
+        $incidencies = [];
+
         $dnisFalta = Falta::query()
             ->Dia($dia)
             ->pluck('idProfesor')
             ->map(static fn ($dni): string => (string) $dni)
             ->all();
 
-        $dnisActivitat = [];
+        foreach ($dnisFalta as $dni) {
+            $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'falta');
+        }
+
         $activitats = Actividad::query()
             ->Dia($dia)
             ->where('fueraCentro', '=', 1)
@@ -93,7 +100,8 @@ class FicharController extends IntranetController
 
         foreach ($activitats as $activitat) {
             foreach ($activitat->profesores as $profesor) {
-                $dnisActivitat[] = (string) $profesor->dni;
+                $dni = (string) $profesor->dni;
+                $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'activitat');
             }
         }
 
@@ -103,7 +111,55 @@ class FicharController extends IntranetController
             ->map(static fn ($dni): string => (string) $dni)
             ->all();
 
-        return array_values(array_unique(array_merge($dnisFalta, $dnisActivitat, $dnisComissio)));
+        foreach ($dnisComissio as $dni) {
+            $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'comissio');
+        }
+
+        return $incidencies;
+    }
+
+    /**
+     * Fusiona una incidència individual en l'estat acumulat d'un professor.
+     *
+     * @param array{falta: bool, activitat: bool, comissio: bool}|null $actual
+     * @param string $tipus
+     * @return array{falta: bool, activitat: bool, comissio: bool}
+     */
+    private function mergeIncidencia(?array $actual, string $tipus): array
+    {
+        $actual = $actual ?? ['falta' => false, 'activitat' => false, 'comissio' => false];
+
+        if (array_key_exists($tipus, $actual)) {
+            $actual[$tipus] = true;
+        }
+
+        return $actual;
+    }
+
+    /**
+     * Renderitza el nom amb etiqueta de tipus d'incidència.
+     *
+     * @param string $nom
+     * @param array{falta: bool, activitat: bool, comissio: bool} $incidencia
+     * @return string
+     */
+    private function renderNomAmbIncidencies(string $nom, array $incidencia): string
+    {
+        $badges = [];
+
+        if ($incidencia['falta']) {
+            $badges[] = '<span class="label label-danger">Absència</span>';
+        }
+        if ($incidencia['activitat']) {
+            $badges[] = '<span class="label label-info">Activitat</span>';
+        }
+        if ($incidencia['comissio']) {
+            $badges[] = '<span class="label label-warning">Comissió</span>';
+        }
+
+        $etiquetes = $badges === [] ? '' : ' ' . implode(' ', $badges);
+
+        return '<span class="text-danger">' . e($nom) . '</span>' . $etiquetes;
     }
 
 
