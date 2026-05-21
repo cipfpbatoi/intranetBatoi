@@ -11,7 +11,12 @@
                 }
             @endphp
             <x-llist image="{{ $image }}" date="{{ $falta->dia_completo ? 'HUI' : $falta->hora_ini . ' - ' . $falta->hora_fin }}">
-                <h4 class="heading">{{ $falta->profesor->fullName }}</h4>
+                <h4 class="heading">
+                    {{ $falta->profesor->fullName }}
+                    @if ((int) $falta->estado === 0)
+                        <span class="text-danger">({{ $falta->situacion }})</span>
+                    @endif
+                </h4>
                 <br />
             </x-llist>
         @endif
