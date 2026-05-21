@@ -37,6 +37,7 @@ class FaltaDireccionPanel extends Component
 
     public string $error = '';
     public string $message = '';
+    public bool $isDireccion = false;
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
     public bool $showFormModal = false;
@@ -62,6 +63,7 @@ class FaltaDireccionPanel extends Component
      */
     public function mount(): void
     {
+        $this->isDireccion = AuthUser() ? esRol(AuthUser()->rol, config('roles.rol.direccion')) : false;
         $this->loadFilterOptions();
         $this->resetForm();
         $this->reloadFaltes();
@@ -294,6 +296,11 @@ class FaltaDireccionPanel extends Component
 
         if (!in_array((int) $falta->estado, [0, 1, 2], true)) {
             $this->error = 'Només es poden esborrar faltes sense autoritzar.';
+            return;
+        }
+
+        if ((int) $falta->estado === 0 && !$this->isDireccion) {
+            $this->error = 'No tens permisos per esborrar faltes no enviades.';
             return;
         }
 
