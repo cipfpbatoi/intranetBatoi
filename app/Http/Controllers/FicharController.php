@@ -65,7 +65,7 @@ class FicharController extends IntranetController
             $dni = (string) $profesor->dni;
 
             if (isset($incidencies[$dni])) {
-                $profesor->FullName = $this->renderNomAmbIncidencies((string) $profesor->FullName, $incidencies[$dni]);
+                $profesor->incidenciaFullName = $this->renderNomAmbIncidencies((string) $profesor->FullName, $incidencies[$dni]);
             }
 
             return $profesor;
