@@ -4,7 +4,9 @@
             @php
                 $image = 'ill.png';
                 $motiu = mb_strtolower((string) $falta->motivo);
-                $esMalaltia = str_contains($motiu, 'enfermedad') || str_contains($motiu, 'malaltia');
+                $esMalaltia = str_contains($motiu, 'enfermedad')
+                    || str_contains($motiu, 'malaltia')
+                    || str_contains($motiu, 'medico');
 
                 if (!$esMalaltia) {
                     $image = 'actividad.png';
