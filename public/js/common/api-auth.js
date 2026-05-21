@@ -10,27 +10,9 @@
         return trim(meta ? meta.getAttribute('content') : '');
     }
 
-    function getLegacyToken() {
-        var legacyToken = '';
-
-        document.querySelectorAll('#_token').forEach(function (tokenElem) {
-            if (legacyToken) {
-                return;
-            }
-
-            var candidate = trim(tokenElem.textContent || tokenElem.value || '');
-            if (candidate) {
-                legacyToken = candidate;
-            }
-        });
-
-        return legacyToken;
-    }
-
     function apiAuthOptions(extraData) {
         var bearerToken = getMetaContent('user-bearer-token');
         var csrfToken = getMetaContent('csrf-token');
-        var legacyToken = getLegacyToken();
         var data = extraData ? Object.assign({}, extraData) : {};
         var headers = {};
 
@@ -40,10 +22,6 @@
 
         if (bearerToken) {
             headers.Authorization = 'Bearer ' + bearerToken;
-        }
-
-        if (!bearerToken && legacyToken) {
-            data.api_token = legacyToken;
         }
 
         return { headers: headers, data: data };
