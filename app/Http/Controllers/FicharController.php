@@ -4,6 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Entities\Actividad;
+use Intranet\Entities\Falta;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -56,7 +58,45 @@ class FicharController extends IntranetController
     
     public function search()
     {
-        return $this->profesores()->activos();
+        $incidencies = $this->dnisAmbIncidenciaDia(Hoy());
+
+        return $this->profesores()->activos()->map(function ($profesor) use ($incidencies) {
+            if (in_array((string) $profesor->dni, $incidencies, true)) {
+                $profesor->FullName = '<span class="text-danger">' . e((string) $profesor->FullName) . '</span>';
+            }
+
+            return $profesor;
+        });
+    }
+
+    /**
+     * Retorna els DNIs amb absència o activitat extraescolar en un dia.
+     *
+     * @param string $dia
+     * @return array<int, string>
+     */
+    private function dnisAmbIncidenciaDia(string $dia): array
+    {
+        $dnisFalta = Falta::query()
+            ->Dia($dia)
+            ->pluck('idProfesor')
+            ->map(static fn ($dni): string => (string) $dni)
+            ->all();
+
+        $dnisActivitat = [];
+        $activitats = Actividad::query()
+            ->Dia($dia)
+            ->where('fueraCentro', '=', 1)
+            ->with('profesores:dni')
+            ->get();
+
+        foreach ($activitats as $activitat) {
+            foreach ($activitat->profesores as $profesor) {
+                $dnisActivitat[] = (string) $profesor->dni;
+            }
+        }
+
+        return array_values(array_unique(array_merge($dnisFalta, $dnisActivitat)));
     }
 
 

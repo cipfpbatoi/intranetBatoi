@@ -13,8 +13,8 @@
             <x-llist image="{{ $image }}" date="{{ $falta->dia_completo ? 'HUI' : $falta->hora_ini . ' - ' . $falta->hora_fin }}">
                 <h4 class="heading">
                     {{ $falta->profesor->fullName }}
-                    @if ((int) $falta->estado === 0)
-                        <span class="text-danger">({{ $falta->situacion }})</span>
+                    @if ((int) $falta->estado === 0 && authUser() && esRol(authUser()->rol, config('roles.rol.direccion')))
+                        <span class="text-danger"> -</span>
                     @endif
                 </h4>
                 <br />
