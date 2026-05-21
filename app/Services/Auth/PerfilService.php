@@ -44,7 +44,7 @@ class PerfilService
 
         $reuniones = Reunion::with('profesores')->next()->orderBy('fecha')->get();
 
-        $faltas = Falta::select('idProfesor', 'dia_completo', 'hora_ini', 'hora_fin')
+        $faltas = Falta::select('idProfesor', 'dia_completo', 'hora_ini', 'hora_fin', 'estado', 'motivos', 'desde')
             ->with('profesor')
             ->Dia(Hoy())
             ->get();
