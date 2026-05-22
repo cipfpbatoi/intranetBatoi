@@ -16,7 +16,7 @@
             <div id="rol" class="hidden">{{ $user->rol }}</div>
 
             <div class="profile_pic">
-                <a href="{{ route('profesor.index') }}">
+                <a href="{{ url('/') }}">
                     <img src="{{ asset('/storage/fotos/' . $user->foto) }}" alt="FotoUsuari" class="img-circle profile_img">
                 </a>
             </div>
