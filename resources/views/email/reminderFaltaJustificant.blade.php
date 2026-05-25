@@ -11,6 +11,10 @@
         </p>
 
         <p>
+            Necessitem este justificant per poder justificar correctament la teua absència davant la Conselleria d'Educació.
+        </p>
+
+        <p>
             Per favor, adjunta el justificant corresponent en la intranet al més prompte possible.
         </p>
 
