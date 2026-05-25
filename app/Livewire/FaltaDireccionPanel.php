@@ -4,9 +4,11 @@ namespace Intranet\Livewire;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Profesor;
+use Intranet\Mail\ReminderFaltaJustificant;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
@@ -193,6 +195,36 @@ class FaltaDireccionPanel extends Component
         $this->faltas()->alta($id);
         $this->message = 'S\\\'ha tramitat l\\\'alta correctament.';
         $this->reloadFaltes();
+    }
+
+    /**
+     * Envia un recordatori al professorat perquè adjunte el justificant.
+     */
+    public function enviarRecordatoriJustificant(int $id): void
+    {
+        $this->resetFeedback();
+
+        $falta = Falta::with('Profesor')->find($id);
+        if (!$falta) {
+            $this->error = 'No s\'ha trobat la falta.';
+            return;
+        }
+
+        if ((int) $falta->estado !== 1) {
+            $this->error = 'Només es pot enviar el recordatori en faltes sense justificant.';
+            return;
+        }
+
+        $email = trim((string) ($falta->Profesor->email ?? ''));
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->error = 'El professorat no té un correu electrònic vàlid.';
+            return;
+        }
+
+        Mail::to($email, $falta->Profesor->fullName ?? $falta->idProfesor)
+            ->send(new ReminderFaltaJustificant($falta));
+
+        $this->message = 'Recordatori enviat a ' . $email . '.';
     }
 
     /**

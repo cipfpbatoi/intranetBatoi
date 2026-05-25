@@ -6,7 +6,9 @@ namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Mail\ReminderFaltaJustificant;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\FaltaDireccionPanel;
 use Livewire\Livewire;
@@ -177,6 +179,42 @@ class FaltaDireccionPanelTest extends TestCase
             'Autoritzada editada des de direccio',
             DB::connection('sqlite')->table('faltas')->where('id', 3)->value('observaciones')
         );
+    }
+
+    public function test_mostra_boto_recordatori_només_en_estat_sense_justificant(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertSeeHtml('wire:click="enviarRecordatoriJustificant(1)"')
+            ->assertDontSeeHtml('wire:click="enviarRecordatoriJustificant(2)"')
+            ->assertDontSeeHtml('wire:click="enviarRecordatoriJustificant(3)"');
+    }
+
+    public function test_envia_recordatori_quan_la_falta_està_en_estat_1(): void
+    {
+        Mail::fake();
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('enviarRecordatoriJustificant', 1)
+            ->assertSet('error', '')
+            ->assertSet('message', 'Recordatori enviat a pf100@test.local.');
+
+        Mail::assertSent(ReminderFaltaJustificant::class, function (ReminderFaltaJustificant $mail) {
+            return $mail->hasTo('pf100@test.local') && (int) $mail->falta->id === 1;
+        });
+    }
+
+    public function test_no_envia_recordatori_si_l_estat_no_es_1(): void
+    {
+        Mail::fake();
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('enviarRecordatoriJustificant', 2)
+            ->assertSet('error', 'Només es pot enviar el recordatori en faltes sense justificant.');
+
+        Mail::assertNothingSent();
     }
 
     private function actingAsDireccion(): bool

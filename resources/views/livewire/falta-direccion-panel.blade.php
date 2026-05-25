@@ -128,6 +128,17 @@
                         </a>
                     @endif
 
+                    @if ((int) $falta['estado'] === 1)
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-xs"
+                            wire:click="enviarRecordatoriJustificant({{ $falta['id'] }})"
+                            title="Enviar recordatori de justificant"
+                        >
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </button>
+                    @endif
+
                     @if ((int) $falta['estado'] === 5)
                         <button type="button" class="btn btn-primary btn-xs" wire:click="alta({{ $falta['id'] }})">
                             Alta
