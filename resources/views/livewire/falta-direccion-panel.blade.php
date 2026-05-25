@@ -131,7 +131,7 @@
                     @if ((int) $falta['estado'] === 1)
                         <button
                             type="button"
-                            class="btn btn-secondary btn-xs"
+                            class="btn btn-info btn-xs"
                             wire:click="enviarRecordatoriJustificant({{ $falta['id'] }})"
                             wire:loading.attr="disabled"
                             wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"
@@ -142,7 +142,6 @@
                             </span>
                             <span wire:loading wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})">
                                 <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-                                Enviant...
                             </span>
                         </button>
                     @endif
