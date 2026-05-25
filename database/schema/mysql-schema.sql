@@ -522,7 +522,7 @@ CREATE TABLE `comisiones` (
   `fct` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `itinerario` varchar(254) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `itinerario` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `idDocumento` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `comisiones_idprofesor_foreign` (`idProfesor`),
