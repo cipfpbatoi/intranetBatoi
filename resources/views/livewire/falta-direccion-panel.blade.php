@@ -137,12 +137,8 @@
                             wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"
                             title="Enviar recordatori de justificant"
                         >
-                            <span wire:loading.remove wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})">
-                                <i class="fa fa-envelope" aria-hidden="true"></i>
-                            </span>
-                            <span wire:loading wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})">
-                                <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-                            </span>
+                            <i class="fa fa-envelope" aria-hidden="true" wire:loading.remove wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
+                            <i class="fa fa-spinner fa-spin" aria-hidden="true" wire:loading wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
                         </button>
                     @endif
 
