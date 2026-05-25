@@ -30,7 +30,7 @@ class ValoracionRequest extends FormRequest
             'desenvolupament' => 'required|string',
             'valoracio' => 'required|string',
             'aspectes' => 'required|string',
-            'dades' => 'required|string',
+            'dades' => 'nullable|string',
         ];
     }
 
