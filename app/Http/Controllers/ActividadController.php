@@ -27,6 +27,7 @@ use Intranet\Services\General\StateService;
 use Intranet\Services\School\ActividadParticipantsService;
 use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
+use Throwable;
 
 /**
  * Controlador d'activitats extraescolars i complementàries.
@@ -109,14 +110,20 @@ class ActividadController extends ModalController
             ['actividad_id' => $request->idActividad]
         );
         $this->authorize('update', $actividad);
-        $actividad->desenvolupament = $request->desenvolupament;
-        $actividad->valoracio = $request->valoracio;
-        $actividad->dades = $request->dades;
-        $actividad->aspectes = $request->aspectes;
-        $actividad->recomanada = isset($request->recomanada)?1:0;
-        $actividad->estado = 4;
+        try {
+            $actividad->desenvolupament = $request->desenvolupament;
+            $actividad->valoracio = $request->valoracio;
+            $actividad->dades = $request->dades;
+            $actividad->aspectes = $request->aspectes;
+            $actividad->recomanada = isset($request->recomanada) ? 1 : 0;
+            $actividad->estado = 4;
 
-        $actividad->save();
+            $actividad->save();
+            Alert::success('Valoracio guardada correctament.');
+        } catch (Throwable $exception) {
+            Alert::danger('No s\'ha pogut guardar la valoracio. Torna-ho a intentar.');
+        }
+
         return back();
     }
 

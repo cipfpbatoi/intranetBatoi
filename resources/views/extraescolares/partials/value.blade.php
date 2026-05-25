@@ -1,4 +1,14 @@
 <div class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST"  enctype="multipart/form-data"
           action="{{route('actividad.valoracion.post')}}">
         @csrf
@@ -29,8 +39,7 @@
         <input type='hidden' id="estado" name='estado' value="4">
         <input type='hidden' id="idActividad" name='idActividad' value="{!!$Actividad->id!!}">
         <input id="submit" class="btn btn-info"
-               type="submit" value="@lang("messages.buttons.value")
-               @lang("models.modelos.Actividad") ">
+               type="submit" value="Guardar Valoració">
         <a href="{{ route('actividad.index') }}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
 </div>
