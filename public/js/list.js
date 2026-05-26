@@ -73,6 +73,23 @@
         window[FILTRE_TORN_KEY] = valor;
     }
 
+    function getTurnoInicialDesdeChecks() {
+        var mananaInput = document.getElementById('turnoFiltroManana');
+        var tardeInput = document.getElementById('turnoFiltroTarde');
+        var manana = !!(mananaInput && mananaInput.checked);
+        var tarde = !!(tardeInput && tardeInput.checked);
+
+        if (manana && !tarde) {
+            return 'manana';
+        }
+
+        if (!manana && tarde) {
+            return 'tarde';
+        }
+
+        return 'todos';
+    }
+
     function syncFiltroDesdeChecks() {
         var mananaInput = document.getElementById('turnoFiltroManana');
         var tardeInput = document.getElementById('turnoFiltroTarde');
@@ -98,6 +115,8 @@
             activeTable.draw(false);
         }
     }
+
+    setTurnoFiltroValor(getTurnoInicialDesdeChecks());
 
     var table = getDataTable();
     if (!table) {
@@ -142,7 +161,6 @@
     }
 
     syncFiltroDesdeChecks();
-    drawTurnoFiltro();
 
     $(document)
         .off('change.turnoFiltro', '#turnoFiltroManana')
