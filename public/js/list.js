@@ -141,7 +141,8 @@
         });
     }
 
-    setTurnoFiltroValor('todos');
+    syncFiltroDesdeChecks();
+    drawTurnoFiltro();
 
     $(document)
         .off('change.turnoFiltro', '#turnoFiltroManana')
