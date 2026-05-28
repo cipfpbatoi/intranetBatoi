@@ -134,6 +134,8 @@ return array(
                 'comentarios' => 'Comentaris',
                 'descripcion' => 'Descripció',
                 'objetivos' => 'Objectius',
+                'tipus_activitat' => "Tipus d'activitat",
+                'ubicacio_activitat' => 'Ubicació i transport',
                 'desde' => "Data d'inici",
                 'hasta' => 'Data de fin',
                 'medio' => 'Mitjà de Locomoció',
