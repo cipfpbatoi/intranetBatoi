@@ -3,7 +3,11 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
+/**
+ * Valida l'alta i edició d'activitats complementàries i extraescolars.
+ */
 class ActividadRequest extends FormRequest
 {
     /**
@@ -27,6 +31,12 @@ class ActividadRequest extends FormRequest
             'name' => 'required|between:1,75',
             'desde' => 'required|date',
             'hasta' => 'required|date|after:desde',
+            'tipus_activitat' => ['required', Rule::in(['complementaria', 'extraescolar'])],
+            'ubicacio_activitat' => ['required', Rule::in([
+                'centre',
+                'exterior_transport',
+                'exterior_sense_transport',
+            ])],
         ];
     }
 }

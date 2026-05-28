@@ -120,6 +120,8 @@ return [
                ,'comentarios' =>'Comments'
                ,'descripcion' =>'Description'
                ,'objetivos' =>'Objectives'
+               ,'tipus_activitat' =>'Activity type'
+               ,'ubicacio_activitat' =>'Location and transport'
                ,'desde' =>'Starting date'
                ,'hasta' =>'End date'
                ,'medio' =>'Means of transport'

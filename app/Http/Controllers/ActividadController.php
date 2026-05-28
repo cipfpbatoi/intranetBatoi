@@ -66,6 +66,7 @@ class ActividadController extends ModalController
     public function store(ActividadRequest $request)
     {
         $this->authorize('create', Actividad::class);
+        $this->normalizeActivityClassification($request);
         $id = $this->persist($request);
         $actividad = $this->findModelOrFail(
             Actividad::class,
@@ -92,6 +93,7 @@ class ActividadController extends ModalController
             ['actividad_id' => $id]
         );
         $this->authorize('update', $actividad);
+        $this->normalizeActivityClassification($request);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -199,6 +201,39 @@ class ActividadController extends ModalController
     private function participantsService(): ActividadParticipantsService
     {
         return app(ActividadParticipantsService::class);
+    }
+
+    /**
+     * Tradueix els selectors del formulari als camps legacy de persistència.
+     *
+     * Els camps interns són checkboxes en el model, de manera que els valors
+     * falsos s'han d'eliminar del request perquè `manageCheckBox()` els
+     * normalitze a 0.
+     */
+    private function normalizeActivityClassification(ActividadRequest $request): void
+    {
+        $this->setCheckboxRequestValue(
+            $request,
+            'complementaria',
+            $request->input('tipus_activitat') === 'complementaria'
+        );
+
+        $ubicacio = (string) $request->input('ubicacio_activitat');
+        $this->setCheckboxRequestValue($request, 'fueraCentro', $ubicacio !== 'centre');
+        $this->setCheckboxRequestValue($request, 'transport', $ubicacio === 'exterior_transport');
+    }
+
+    /**
+     * Ajusta la presència d'un checkbox en el request segons el valor lògic.
+     */
+    private function setCheckboxRequestValue(ActividadRequest $request, string $field, bool $enabled): void
+    {
+        if ($enabled) {
+            $request->merge([$field => '1']);
+            return;
+        }
+
+        $request->request->remove($field);
     }
 
     private function grupos(): GrupoService
