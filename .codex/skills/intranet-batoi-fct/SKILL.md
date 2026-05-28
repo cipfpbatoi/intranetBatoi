@@ -1,25 +1,25 @@
 ---
 name: intranet-batoi-fct
-description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when Codex is asked to modify, debug, test, review, or explain FCT features, including alumnado FCT, empresas, centros, instructores, colaboraciones, anexos/annexos, SAO downloads, SignaturaController, /signatura, document PDFs, FCT emails, Annex I/II/III/V, acts, qualifications, or Selenium automation for FCT documents.
+description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when the agent is asked to modify, debug, test, review, or explain FCT features, including alumnado FCT, empresas, centros, instructores, colaboraciones, anexos/annexos, SAO downloads, SignaturaController, /signatura, document PDFs, FCT emails, Annex I/II/III/V, acts, qualifications, or Selenium automation for FCT documents.
 ---
 
 # Intranet Batoi FCT
 
 ## Workflow
 
-1. Read `AGENTS.md` and, if needed, also use `intranet-batoi-general`.
-2. Identify whether the request is about FCT data, document generation, SAO downloads, signatures, email text, or evaluation/acts.
-3. Start from the route:
-   - Professor routes: `routes/profesor.php`.
-   - Shared signatura upload/PDF routes: `routes/todos.php`.
-   - API documentation/signature routes: `routes/api.php`.
-   - Direcció signature routes: `routes/direccion.php`.
-4. Trace controller, model relations, services, views, and mail templates before editing.
-5. Preserve existing send/signature state semantics unless the user explicitly asks to change workflow behaviour.
-6. For text sent to instructors, make obligations explicit: who signs, what document, and whether it must be returned.
+1. Llig `AGENTS.md` i, si cal, també la skill `intranet-batoi-general` (o directament `docs/agents/conventions.md`).
+2. Identifica si la petició és sobre dades FCT, generació de documents, descàrregues SAO, signatures, text d'email, o avaluació/actes.
+3. Comença per la ruta:
+   - Rutes de professor: `routes/profesor.php`.
+   - Signatura compartida (pujada/PDF): `routes/todos.php`.
+   - Documentació/signatura API: `routes/api.php`.
+   - Direcció signatura: `routes/direccion.php`.
+4. Traça controlador, relacions de model, serveis, vistes i plantilles de correu abans d'editar.
+5. Preserva la semàntica existent de `sendTo`/`signed` llevat que l'usuari demane explícitament canviar el workflow.
+6. Per al text a instructors, fes explícit qui signa, quin document i si l'han de retornar.
 
-## References
+## Referències compartides (`docs/agents/fct/`)
 
-- For FCT routes, controllers, entities, documents, and emails, read `references/fct-map.md`.
-- For `/signatura`, Annex I/II/III/V, `sendTo`, `signed`, and mail selection, read `references/signatures.md`.
-- For SAO/Selenium FCT downloads, read `references/sao-selenium.md`.
+- Rutes FCT, controladors, entitats, documents i correus: [`docs/agents/fct/fct-map.md`](../../../docs/agents/fct/fct-map.md).
+- `/signatura`, Annex I/II/III/V, `sendTo`, `signed`, selecció de plantilla: [`docs/agents/fct/signatures.md`](../../../docs/agents/fct/signatures.md).
+- Descàrregues SAO i Selenium: [`docs/agents/fct/sao-selenium.md`](../../../docs/agents/fct/sao-selenium.md).

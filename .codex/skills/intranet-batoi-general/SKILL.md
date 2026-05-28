@@ -1,21 +1,23 @@
 ---
 name: intranet-batoi-general
-description: Orientació general per treballar en el projecte intranetBatoi. Use when Codex is asked to modify, debug, test, review, document, commit, or explain code in this Laravel intranet, especially tasks involving project structure, routes by role, alerts, Blade views, local conventions, PHPUnit/Dusk, Docker, commits, or Valencià language expectations.
+description: Orientació general per treballar en el projecte intranetBatoi. Use when the agent is asked to modify, debug, test, review, document, commit, or explain code in this Laravel intranet, especially tasks involving project structure, routes by role, alerts, Blade views, local conventions, PHPUnit/Dusk, Docker, commits, or Valencià language expectations.
 ---
 
 # Intranet Batoi General
 
 ## Workflow
 
-1. Read `AGENTS.md` first and follow its repository rules.
-2. Inspect the relevant route file before changing a controller or view.
-3. Prefer existing domain services, finders, policies, presenters, UI helpers, and Blade partials over new abstractions.
-4. Keep user-facing text in Valencià unless the existing template is explicitly bilingual.
-5. Use `Intranet\Services\UI\AppAlert as Alert` for alerts; avoid reintroducing `Styde\Html\Facades\Alert`.
-6. Add or update PHPDoc in modified/new PHP classes and relevant methods/properties.
-7. Run the narrowest meaningful checks available. If PHP is unavailable locally, say so clearly.
+1. Llig `AGENTS.md` primer i segueix les seues regles de repositori (és la font autoritzada compartida per a tots els agents).
+2. Inspecciona el fitxer de ruta rellevant abans de canviar un controlador o vista.
+3. Prefereix serveis de domini, finders, policies, presenters, helpers UI i partials Blade existents per damunt d'abstraccions noves.
+4. Mantén el text d'usuari en Valencià llevat que la plantilla existent ja siga bilingüe.
+5. Usa `Intranet\Services\UI\AppAlert as Alert` per a alertes; no reintroduïsques `Styde\Html\Facades\Alert`.
+6. Afig o actualitza PHPDoc en classes PHP modificades/noves i mètodes/propietats rellevants.
+7. Executa les comprovacions més acotades que tinguen sentit. Si PHP no està disponible localment, indica-ho clarament.
 
-## References
+## Referències compartides (`docs/agents/`)
 
-- For repository layout, commands, coding rules, alerts, language, and commit expectations, read `references/conventions.md`.
-- For test and Docker/Selenium notes, read `references/testing-docker.md`.
+> Aquests fitxers viuen a `docs/agents/` i són la font de veritat per a qualsevol agent (Codex, Claude, etc.). Aquesta skill només és un punt d'entrada amb metadades per a Codex.
+
+- Estructura de repo, alertes, llenguatge i convencions de commit: [`docs/agents/conventions.md`](../../../docs/agents/conventions.md).
+- Tests i notes Docker/Selenium: [`docs/agents/testing-docker.md`](../../../docs/agents/testing-docker.md).
