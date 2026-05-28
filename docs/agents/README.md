@@ -42,3 +42,7 @@ Les especificacions BDD (Given/When/Then) viuen a [`specs/`](../../specs/). Cada
 ## Flux OpenSpec
 
 Procediment per a implementar funcionalitats amb aprovació humana en tres passos (`propose → apply → archive`). Documentació: [`openspec.md`](openspec.md).
+
+## Pipeline IA revisora ≠ generadora
+
+La IA que escriu el codi no pot revisar-lo amb objectivitat. Documentació del workflow de revisió creuada: [`ia-review-pipeline.md`](ia-review-pipeline.md).

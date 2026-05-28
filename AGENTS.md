@@ -138,6 +138,13 @@ Especificacions BDD (Given/When/Then) per domini. Tecnologia-agnòstiques: defin
 - [`specs/guardies.md`](specs/guardies.md) — Guàrdies: presència, panell `donde`, extraescolars, comissions.
 - [`specs/horaris.md`](specs/horaris.md) — Horaris: canvi temporal, flux proposta JSON, bulk apply.
 
+## Pipeline de revisió
+
+La IA que genera el codi no el revisa. Usar agents de motors diferents com a revisor independent. Documentació: [`docs/agents/ia-review-pipeline.md`](docs/agents/ia-review-pipeline.md).
+
+- Slash command revisor: `/ia-review [domini]` (`.claude/commands/ia-review.md`)
+- Checklist manual: [`prompts/review-checklist.md`](prompts/review-checklist.md)
+
 ## Prompts reutilitzables (`prompts/`)
 
 Plantilles per a tasques repetides (regla de les 3 vegades). Índex: [`prompts/README.md`](prompts/README.md).
