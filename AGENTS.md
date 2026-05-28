@@ -2,6 +2,26 @@
 
 > **Font autoritzada compartida.** Aquest fitxer és la guia única per a qualsevol agent (Codex, Claude, Cursor, etc.). El coneixement de domini i les referències detallades viuen a [`docs/agents/`](docs/agents/) i s'enllacen al final.
 
+## Pre-flight Checklist
+
+Completa estos passos **abans d'escriure codi**. Si en falta algun, retorna `Status: need_input` i indica exactament què manca.
+
+- [ ] Llegir este fitxer (`AGENTS.md`) complet.
+- [ ] Identificar el domini afectat i llegir el doc corresponent de [`docs/agents/`](docs/agents/).
+  - FCT → [`docs/agents/fct/fct-map.md`](docs/agents/fct/fct-map.md)
+  - Activitats → [`docs/agents/activitats/activitats-map.md`](docs/agents/activitats/activitats-map.md)
+- [ ] Confirmar el bounded context: quin model/servei/controlador és el punt d'entrada.
+- [ ] Si existeix un `spec.md` per al domini a [`specs/`](specs/), llegir-lo abans d'implementar.
+
+## Execution Rules
+
+- Detecta l'stack aplicable (PHP/Laravel, Blade, Livewire, API Sanctum). Si és ambigu, fes **una sola pregunta** concreta; no suposies.
+- Prioritza `docs/agents/` sobre el codi llegat quan hi haja conflicte de patrons.
+- Si hi ha un `spec.md` per al domini, implementa estrictament el que descriu; no afegisques comportament no especificat.
+- **Regla de les 3 vegades**: si una norma apareix en >3 prompts, pertany ací (AGENTS.md) o a `docs/agents/<domini>.md`.
+- **Menys és més**: proporciona la informació mínima vital per a la tasca; no bolques tot el context.
+- No implementes res fora de l'abast: sense refactors no sol·licitats, sense noves funcionalitats adjacents.
+
 ## Project Structure & Module Organization
 - `app/` contains domain logic; web routes are split by role in `routes/` (`public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`) and API routes in `routes/api.php` (JSON).
 - UI assets: `resources/views/` for Blade, `resources/assets/js` and `resources/assets/sass` compiled via Mix into `public/`.
@@ -97,7 +117,7 @@ Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Intercanvi de toke
 
 ## Domain Knowledge Index (`docs/agents/`)
 
-Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant abans de tocar el seu àrea:
+Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant abans de tocar el seu àrea. Índex complet: [`docs/agents/README.md`](docs/agents/README.md).
 
 - [`docs/agents/conventions.md`](docs/agents/conventions.md) — convencions generals del repo (resum operatiu).
 - [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) — execució de tests, scripts Composer, Selenium/Docker.
@@ -108,4 +128,15 @@ Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant 
 - **Activitats** (complementàries/extraescolars):
   - [`docs/agents/activitats/activitats-map.md`](docs/agents/activitats/activitats-map.md) — rutes, fitxers clau, camps llegats, coordinador, PDFs.
 
-> Per a Codex, aquestes fonts s'invoquen via les skills de `.codex/skills/` (`intranet-batoi-general`, `intranet-batoi-fct`, `intranet-batoi-activitats`), que són embolcalls lleugers cap als fitxers anteriors. Altres agents (Claude, Cursor, etc.) poden llegir-los directament.
+## Specs de comportament (`specs/`)
+
+Especificacions BDD (Given/When/Then) per domini. Tecnologia-agnòstiques: defineixen **què** ha de passar, no com. Llig la spec del domini afectat abans d'implementar.
+
+- [`specs/fct.md`](specs/fct.md) — FCT: signatures, enviament d'annexos, PDF, autorització.
+- [`specs/activitats.md`](specs/activitats.md) — Activitats: creació, tipus/ubicació, coordinador, PDF.
+
+## Prompts reutilitzables (`prompts/`)
+
+Plantilles per a tasques repetides (regla de les 3 vegades). Índex: [`prompts/README.md`](prompts/README.md).
+
+> Per a Codex, les fonts de domini s'invoquen via les skills de `.codex/skills/` (`intranet-batoi-general`, `intranet-batoi-fct`, `intranet-batoi-activitats`). Altres agents (Claude, Cursor, etc.) poden llegir-los directament.
