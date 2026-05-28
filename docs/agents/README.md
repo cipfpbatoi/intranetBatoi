@@ -35,6 +35,9 @@ Les especificacions BDD (Given/When/Then) viuen a [`specs/`](../../specs/). Cada
 |---|---|
 | [`specs/fct.md`](../../specs/fct.md) | FCT: annexos, signatura, expedients |
 | [`specs/activitats.md`](../../specs/activitats.md) | Activitats: creació, visites, PDF |
+| [`specs/comisions.md`](../../specs/comisions.md) | Comissions: estats, FCTs associades, PDF |
+| [`specs/guardies.md`](../../specs/guardies.md) | Guàrdies: presència, panell donde, coincidències |
+| [`specs/horaris.md`](../../specs/horaris.md) | Horaris: canvi temporal, proposta JSON, bulk apply |
 
 ## Flux OpenSpec
 
