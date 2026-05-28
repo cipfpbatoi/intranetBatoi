@@ -1,20 +1,24 @@
 # Documentació del projecte
-Ací es troba la documentación del projecte d'Intranet del CIP FP Batoi.
 
-## Manuals d'usuari
-Els manuals estan organitzats per rols. Tenim el manual del professor i a més manuals específics per a les accions que només poden fer els tutors, els cap de departament, ...:
-* [Manual del Professor](manual-profe.md)
-* [Manual del Tutor](manual-tutor.md)
-* [Manual del Tutor de pràctiques](manual-fct.md)
-* [Manual del Cap de departament](manual-cap.md)
-* [Manual de l'Equip directiu](manual-dir.md)
+Intranet del CIP FP Batoi. Documentació organitzada per tipus (alta cohesió, baix acoblament).
 
-També hi ha una pàgina de [preguntes freqüents](./faqs.md) on podem trobar com fer les accions més comuns de la intranet.
+## Estructura
 
-## Instal·lació i configuració
-En [aquest document](setup.md) es mostra com crear l'entorn de treball i com instal·lar i configurar l'aplicació.
-Per al desplegament amb contenidors de preproducció o producció, consulta també la [guia Docker de producció](docker-prod.md).
+| Carpeta | Contingut |
+|---|---|
+| [`agents/`](agents/README.md) | Coneixement de domini per a agents d'IA (Codex, Claude, Cursor…) |
+| [`architecture/`](architecture/) | Esquemes de BD, inventari de codi, fluxos tècnics, API |
+| [`governance/`](governance/) | FAQs, deute tècnic, convencions, seguretat |
+| [`operations/`](operations/) | Setup, desplegament, Docker, Dusk |
+| [`manuals/`](manuals/) | Manuals d'usuari per rol |
+| [`archive/`](archive/) | Sprints tancats, migracions, estudis històrics |
+| [`incidencies/`](incidencies/) | Incidències actives |
 
-## Documentació tècnica
-* [Esquema de la BBDD (Markdown)](bbdd-esquema.md)
-* [Esquema de la BBDD (HTML)](bbdd-esquema.html)
+## Accés ràpid
+
+- [Manual del Professor](manuals/manual-profe.md)
+- [Manual del Tutor de pràctiques](manuals/manual-fct.md)
+- [Preguntes freqüents](governance/faqs.md)
+- [Setup i instal·lació](operations/setup.md)
+- [Esquema de la BD](architecture/bbdd-esquema.md)
+- [Desplegament Docker](operations/docker-prod.md)
