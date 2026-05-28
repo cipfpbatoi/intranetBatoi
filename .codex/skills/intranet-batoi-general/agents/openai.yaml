@@ -1,0 +1,4 @@
+interface:
+  display_name: "Intranet Batoi General"
+  short_description: "Convencions generals de la intranet."
+  default_prompt: "Usa aquest skill per orientar-te en una tasca general del projecte intranetBatoi."

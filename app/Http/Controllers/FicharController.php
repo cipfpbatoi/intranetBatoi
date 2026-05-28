@@ -4,6 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Entities\Actividad;
+use Intranet\Entities\Comision;
+use Intranet\Entities\Falta;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -56,7 +59,107 @@ class FicharController extends IntranetController
     
     public function search()
     {
-        return $this->profesores()->activos();
+        $incidencies = $this->incidenciesPerDni(Hoy());
+
+        return $this->profesores()->activos()->map(function ($profesor) use ($incidencies) {
+            $dni = (string) $profesor->dni;
+
+            if (isset($incidencies[$dni])) {
+                $profesor->incidenciaFullName = $this->renderNomAmbIncidencies((string) $profesor->FullName, $incidencies[$dni]);
+            }
+
+            return $profesor;
+        });
+    }
+
+    /**
+     * Retorna un mapa de professorat amb incidències classificades per tipus.
+     *
+     * @param string $dia
+     * @return array<string, array{falta: bool, activitat: bool, comissio: bool}>
+     */
+    private function incidenciesPerDni(string $dia): array
+    {
+        $incidencies = [];
+
+        $dnisFalta = Falta::query()
+            ->Dia($dia)
+            ->pluck('idProfesor')
+            ->map(static fn ($dni): string => (string) $dni)
+            ->all();
+
+        foreach ($dnisFalta as $dni) {
+            $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'falta');
+        }
+
+        $activitats = Actividad::query()
+            ->Dia($dia)
+            ->where('fueraCentro', '=', 1)
+            ->with('profesores:dni')
+            ->get();
+
+        foreach ($activitats as $activitat) {
+            foreach ($activitat->profesores as $profesor) {
+                $dni = (string) $profesor->dni;
+                $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'activitat');
+            }
+        }
+
+        $dnisComissio = Comision::query()
+            ->Dia($dia)
+            ->pluck('idProfesor')
+            ->map(static fn ($dni): string => (string) $dni)
+            ->all();
+
+        foreach ($dnisComissio as $dni) {
+            $incidencies[$dni] = $this->mergeIncidencia($incidencies[$dni] ?? null, 'comissio');
+        }
+
+        return $incidencies;
+    }
+
+    /**
+     * Fusiona una incidència individual en l'estat acumulat d'un professor.
+     *
+     * @param array{falta: bool, activitat: bool, comissio: bool}|null $actual
+     * @param string $tipus
+     * @return array{falta: bool, activitat: bool, comissio: bool}
+     */
+    private function mergeIncidencia(?array $actual, string $tipus): array
+    {
+        $actual = $actual ?? ['falta' => false, 'activitat' => false, 'comissio' => false];
+
+        if (array_key_exists($tipus, $actual)) {
+            $actual[$tipus] = true;
+        }
+
+        return $actual;
+    }
+
+    /**
+     * Renderitza el nom amb etiqueta de tipus d'incidència.
+     *
+     * @param string $nom
+     * @param array{falta: bool, activitat: bool, comissio: bool} $incidencia
+     * @return string
+     */
+    private function renderNomAmbIncidencies(string $nom, array $incidencia): string
+    {
+        $badges = [];
+
+        if ($incidencia['falta']) {
+            $badges[] = '<span class="label label-info">Absència</span>';
+        }
+        if ($incidencia['activitat']) {
+            $badges[] = '<span class="label label-info">Activitat</span>';
+        }
+        if ($incidencia['comissio']) {
+            $badges[] = '<span class="label label-warning">Comissió</span>';
+        }
+
+        $etiquetes = $badges === [] ? '' : ' ' . implode(' ', $badges);
+
+        return e($nom) . $etiquetes;
     }
 
 

@@ -1,9 +1,21 @@
+@php
+    $versionedScript = static function (string $path): string {
+        $absolutePath = public_path(ltrim($path, '/'));
+        $version = file_exists($absolutePath) ? filemtime($absolutePath) : time();
+
+        return asset(ltrim($path, '/')) . '?v=' . $version;
+    };
+    $modelGridPath = '/js/' . $panel->getModel() . '/grid.js';
+@endphp
 @include('js.tablesjs')
-{{ Html::script("/js/common/ui-helpers.js") }}
-{{ Html::script("/js/common/data-table.js") }}
-@if (file_exists('js/'.$panel->getModel().'/grid.js'))
-{{ HTML::script('/js/'.$panel->getModel().'/grid.js') }}
+<script src="{{ $versionedScript('/js/common/ui-helpers.js') }}" defer></script>
+<script src="{{ $versionedScript('/js/common/data-table.js') }}" defer></script>
+@if (file_exists(public_path(ltrim($modelGridPath, '/'))))
+<script src="{{ $versionedScript($modelGridPath) }}" defer></script>
 @else
-{{ HTML::script('/js/grid.js') }}
+<script src="{{ $versionedScript('/js/grid.js') }}" defer></script>
 @endif
-{{ HTML::script('/js/delete.js') }}
+<script src="{{ $versionedScript('/js/delete.js') }}" defer></script>
+@if ($panel->getModel() === 'Falta_profesor')
+<script src="{{ $versionedScript('/js/list.js') }}" defer></script>
+@endif

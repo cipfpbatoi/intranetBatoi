@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Fct;
 
+/**
+ * Resposta individual d'una enquesta.
+ */
 class Vote extends Model
 {
     protected $table = 'votes';
@@ -45,7 +48,10 @@ class Vote extends Model
         return hazArray(Poll::find($id)->Plantilla->options,'id');
     }
     private function optionsNumericPoll($id){
-        return hazArray(Poll::find($id)->Plantilla->options->where('scala','>',0),'id');
+        return hazArray(
+            Poll::find($id)->Plantilla->options->filter(fn(Option $option): bool => $option->isNumericType()),
+            'id'
+        );
     }
     public function scopeMyVotes($query,$id,$modulo){
         return $query->where('idOption2', authUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
@@ -63,6 +69,15 @@ class Vote extends Model
     public function scopeAllNumericVotes($query,$id){
         return $query->where('idPoll', $id)
             ->whereIn('option_id', $this->optionsNumericPoll($id));
+    }
+    public function scopeAllSelectVotes($query, $id)
+    {
+        $options = Poll::find($id)->Plantilla->options
+            ->filter(fn(Option $option): bool => $option->isSelectType());
+
+        return $query->where('idPoll', $id)
+            ->whereIn('option_id', hazArray($options, 'id'))
+            ->whereNotNull('text');
     }
     public function getGrupoAttribute(){
         return $this->ModuloGrupo->Grupo->literal;

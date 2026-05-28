@@ -82,6 +82,7 @@ class DocumentService
             Alert::danger('No hi ha cap destinatari');
             return back();
         }
+        $this->applyRecipientOverride();
         $attached = isset($this->document->email['attached'])?$this->document->email['attached']:null;
 
         if (!$editable) {
@@ -100,6 +101,28 @@ class DocumentService
         return $mail->render($this->document->route??'misColaboraciones');
 
 
+    }
+
+    /**
+     * Sobreescriu destinatari i contacte dels elements quan el document ho declara.
+     *
+     * @return void
+     */
+    private function applyRecipientOverride(): void
+    {
+        $recipient = $this->document->recipient ?? null;
+        if (!is_array($recipient)) {
+            return;
+        }
+
+        foreach ($this->elements as $element) {
+            if (isset($recipient['mail'])) {
+                $element->mail = data_get($element, $recipient['mail']);
+            }
+            if (isset($recipient['contact'])) {
+                $element->contact = data_get($element, $recipient['contact']);
+            }
+        }
     }
 
     /**
@@ -211,6 +234,7 @@ class DocumentService
             try {
                 $x = config("signatures.files.".$this->document->route.".owner.x");
                 $y = config("signatures.files.".$this->document->route.".owner.y");
+                $page = config("signatures.files.".$this->document->route.".owner.page");
                 $file = DigitalSignatureService::decryptCertificateUser(
                     $this->finder->getRequest()->decrypt,
                     authUser()
@@ -224,7 +248,8 @@ class DocumentService
                     $x,
                     $y,
                     $file,
-                    $passCert
+                    $passCert,
+                    is_numeric($page) ? (int) $page : null
                 );
 
                 return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));

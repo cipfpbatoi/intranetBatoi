@@ -1,20 +1,31 @@
+@php
+    $versionedScript = static function (string $path): string {
+        $absolutePath = public_path(ltrim($path, '/'));
+        $version = file_exists($absolutePath) ? filemtime($absolutePath) : time();
+
+        return asset(ltrim($path, '/')) . '?v=' . $version;
+    };
+    $modelGridPath = '/js/' . $panel->getModel() . '/grid.js';
+    $modelModalPath = '/js/' . $panel->getModel() . '/modal.js';
+    $modelCreatePath = '/js/' . $panel->getModel() . '/create.js';
+@endphp
 @include('js.tablesjs')
-{{ Html::script("/js/common/ui-helpers.js") }}
-{{ Html::script("/js/common/api-auth.js") }}
-{{ Html::script("/js/common/data-table.js") }}
-@if (file_exists('js/'.$panel->getModel().'/grid.js'))
-    {{ HTML::script('/js/'.$panel->getModel().'/grid.js') }}
+<script src="{{ $versionedScript('/js/common/ui-helpers.js') }}" defer></script>
+<script src="{{ $versionedScript('/js/common/api-auth.js') }}" defer></script>
+<script src="{{ $versionedScript('/js/common/data-table.js') }}" defer></script>
+@if (file_exists(public_path(ltrim($modelGridPath, '/'))))
+    <script src="{{ $versionedScript($modelGridPath) }}" defer></script>
 @else
-    {{ HTML::script('/js/grid.js') }}
+    <script src="{{ $versionedScript('/js/grid.js') }}" defer></script>
 @endif
 
-@if (file_exists('js/'.$panel->getModel().'/modal.js'))
-    {{ HTML::script('/js/'.$panel->getModel().'/modal.js') }}
+@if (file_exists(public_path(ltrim($modelModalPath, '/'))))
+    <script src="{{ $versionedScript($modelModalPath) }}" defer></script>
 @else
-    @if (file_exists('js/'.$panel->getModel().'/create.js'))
-        {{ HTML::script('/js/'.$panel->getModel().'/create.js') }}
+    @if (file_exists(public_path(ltrim($modelCreatePath, '/'))))
+        <script src="{{ $versionedScript($modelCreatePath) }}" defer></script>
     @endif
 @endif
-{{ HTML::script('/js/delete.js') }}
-{{ HTML::script('/js/indexModal.js') }}
-{{ Html::script("/js/datepicker.js") }}
+<script src="{{ $versionedScript('/js/delete.js') }}" defer></script>
+<script src="{{ $versionedScript('/js/indexModal.js') }}" defer></script>
+<script src="{{ $versionedScript('/js/datepicker.js') }}" defer></script>

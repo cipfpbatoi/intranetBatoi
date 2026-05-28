@@ -111,6 +111,28 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
     /**
      * {@inheritdoc}
      */
+    public function controlStatsByGrupoEsFct(string $grupo): array
+    {
+        $query = AlumnoFct::query()
+            ->Grupo($grupo)
+            ->esFct();
+
+        $total = (clone $query)->count();
+        $pg0301 = (clone $query)->where('pg0301', '>', 0)->count();
+        $a56 = (clone $query)->where('a56', '>', 0)->count();
+
+        return [
+            'total' => $total,
+            'pg0301' => $pg0301,
+            'a56' => $a56,
+            'pg0301_complete' => $total > 0 && $pg0301 === $total,
+            'a56_complete' => $total > 0 && $a56 === $total,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function reassignProfesor(string $fromDni, string $toDni): int
     {
         return AlumnoFct::query()

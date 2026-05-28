@@ -5,6 +5,9 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
 
+/**
+ * Model Eloquent de centres de treball d'una empresa.
+ */
 class Centro extends Model
 {
 
@@ -16,6 +19,8 @@ class Centro extends Model
         'nombre',
         'direccion',
         'localidad',
+        'telefono',
+        'email',
         'horarios',
         'observaciones',
         'idioma',

@@ -11,6 +11,5 @@
 {{$panel->getTitulo('list')}}
 @endsection
 @section('scripts')
-{{ Html::script('/js/list.js') }}
+{{ Html::script('/js/list.js', ['defer' => true]) }}
 @endsection
-

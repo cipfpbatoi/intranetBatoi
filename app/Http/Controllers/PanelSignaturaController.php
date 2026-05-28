@@ -116,15 +116,21 @@ class PanelSignaturaController extends BaseController
                             );
                         }
                         if (file_exists($file)) {
-                            $x = config("signatures.files.{$signatura->tipus}.director.x");
-                            $y = config("signatures.files.{$signatura->tipus}.director.y");
+                            $effectiveTipus = Signatura::normalizeTipusForAlumnoFct(
+                                (string) $signatura->tipus,
+                                $signatura->Fct
+                            );
+                            $x = config("signatures.files.{$effectiveTipus}.director.x");
+                            $y = config("signatures.files.{$effectiveTipus}.director.y");
+                            $page = config("signatures.files.{$effectiveTipus}.director.page");
                             DigitalSignatureService::sign(
                                 $fileToSign,
                                 $fileToSign,
                                 $x,
                                 $y,
                                 $file,
-                                $passCert
+                                $passCert,
+                                is_numeric($page) ? (int) $page : null
                             );
                             $signatura->signed += 3;
                             $signatura->save();

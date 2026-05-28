@@ -96,17 +96,34 @@ class IntranetControllerTest extends TestCase
 
         $publicRelative = 'intranet-controller-public.txt';
         $storageRelative = 'intranet-controller-storage.txt';
+        $originalPublicPath = public_path();
+        $testPublicPath = storage_path('framework/testing-public');
+        if (!is_dir($testPublicPath)) {
+            mkdir($testPublicPath, 0775, true);
+        }
+
+        app()->usePublicPath($testPublicPath);
         $publicPath = public_path($publicRelative);
         $storagePath = storage_path('app/' . $storageRelative);
 
-        file_put_contents($publicPath, 'public');
-        file_put_contents($storagePath, 'storage');
+        try {
+            file_put_contents($publicPath, 'public');
+            file_put_contents($storagePath, 'storage');
 
-        $controller->exposeBorrarFichero($publicRelative);
-        $controller->exposeBorrarFichero($storageRelative);
+            $controller->exposeBorrarFichero($publicRelative);
+            $controller->exposeBorrarFichero($storageRelative);
 
-        $this->assertFileDoesNotExist($publicPath);
-        $this->assertFileDoesNotExist($storagePath);
+            $this->assertFileDoesNotExist($publicPath);
+            $this->assertFileDoesNotExist($storagePath);
+        } finally {
+            app()->usePublicPath($originalPublicPath);
+            if (is_file($publicPath)) {
+                unlink($publicPath);
+            }
+            if (is_file($storagePath)) {
+                unlink($storagePath);
+            }
+        }
     }
 
     private function createSchema(): void

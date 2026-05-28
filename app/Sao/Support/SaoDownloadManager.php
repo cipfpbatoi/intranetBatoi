@@ -14,9 +14,11 @@ class SaoDownloadManager
      */
     public function tempDirectory(): string
     {
-        return config('variables.shareDirectory')
+        $directory = config('variables.shareDirectory')
             ?? config('sao.download.directory')
             ?? storage_path('tmp/');
+
+        return rtrim((string) $directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -33,6 +35,32 @@ class SaoDownloadManager
             if (time() - $startTime > $timeoutSeconds) {
                 throw new \RuntimeException("Timeout waiting for file: $filePath");
             }
+            sleep(1);
+        }
+    }
+
+    /**
+     * Espera a que aparega qualsevol dels fitxers indicats.
+     *
+     * @param array<int, string> $filePaths
+     * @param int $timeoutSeconds
+     * @return string
+     */
+    public function waitForAnyFile(array $filePaths, int $timeoutSeconds): string
+    {
+        $startTime = time();
+
+        while (true) {
+            foreach ($filePaths as $filePath) {
+                if (file_exists($filePath)) {
+                    return $filePath;
+                }
+            }
+
+            if (time() - $startTime > $timeoutSeconds) {
+                throw new \RuntimeException('Timeout waiting for file: ' . implode(', ', $filePaths));
+            }
+
             sleep(1);
         }
     }

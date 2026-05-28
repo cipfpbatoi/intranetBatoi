@@ -6,7 +6,9 @@ namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Mail\ReminderFaltaJustificant;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\FaltaDireccionPanel;
 use Livewire\Livewire;
@@ -104,8 +106,10 @@ class FaltaDireccionPanelTest extends TestCase
         $this->assertSame(2, $faltes[0]['estado']);
     }
 
-    public function test_esborrar_permet_estat_1_o_2_i_rebutja_autoritzades(): void
+    public function test_esborrar_permet_estat_0_1_o_2_i_rebutja_autoritzades(): void
     {
+        DB::connection('sqlite')->table('faltas')->where('id', 1)->update(['estado' => 0]);
+
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(FaltaDireccionPanel::class);
 
@@ -158,6 +162,59 @@ class FaltaDireccionPanelTest extends TestCase
             'Editada des de Livewire',
             DB::connection('sqlite')->table('faltas')->where('id', 2)->value('observaciones')
         );
+    }
+
+    public function test_edita_una_falta_autoritzada(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('editar', 3)
+            ->assertSet('formFaltaId', 3)
+            ->set('formObservaciones', 'Autoritzada editada des de direccio')
+            ->call('guardar')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Falta actualitzada correctament.');
+
+        $this->assertSame(
+            'Autoritzada editada des de direccio',
+            DB::connection('sqlite')->table('faltas')->where('id', 3)->value('observaciones')
+        );
+    }
+
+    public function test_mostra_boto_recordatori_només_en_estat_sense_justificant(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertSeeHtml('wire:click="enviarRecordatoriJustificant(1)"')
+            ->assertDontSeeHtml('wire:click="enviarRecordatoriJustificant(2)"')
+            ->assertDontSeeHtml('wire:click="enviarRecordatoriJustificant(3)"');
+    }
+
+    public function test_envia_recordatori_quan_la_falta_està_en_estat_1(): void
+    {
+        Mail::fake();
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('enviarRecordatoriJustificant', 1)
+            ->assertSet('error', '')
+            ->assertSet('message', 'Recordatori enviat a pf100@test.local.');
+
+        Mail::assertSent(ReminderFaltaJustificant::class, function (ReminderFaltaJustificant $mail) {
+            return $mail->hasTo('pf100@test.local') && (int) $mail->falta->id === 1;
+        });
+    }
+
+    public function test_no_envia_recordatori_si_l_estat_no_es_1(): void
+    {
+        Mail::fake();
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('enviarRecordatoriJustificant', 2)
+            ->assertSet('error', 'Només es pot enviar el recordatori en faltes sense justificant.');
+
+        Mail::assertNothingSent();
     }
 
     private function actingAsDireccion(): bool

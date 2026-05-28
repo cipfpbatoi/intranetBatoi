@@ -42,14 +42,16 @@ class ImportService
      * Executa una importació amb timeout ampliat.
      *
      * @param callable(UploadedFile, Request): void $runner
+     * @return void
      */
     public function runWithExtendedTimeout(callable $runner, UploadedFile $file, Request $request): void
     {
+        $previousMaxExecutionTime = ini_get('max_execution_time');
         ini_set('max_execution_time', '500');
         try {
             $runner($file, $request);
         } finally {
-            ini_set('max_execution_time', '30');
+            ini_set('max_execution_time', (string) $previousMaxExecutionTime);
         }
     }
 
