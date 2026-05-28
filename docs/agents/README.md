@@ -35,3 +35,7 @@ Les especificacions BDD (Given/When/Then) viuen a [`specs/`](../../specs/). Cada
 |---|---|
 | [`specs/fct.md`](../../specs/fct.md) | FCT: annexos, signatura, expedients |
 | [`specs/activitats.md`](../../specs/activitats.md) | Activitats: creació, visites, PDF |
+
+## Flux OpenSpec
+
+Procediment per a implementar funcionalitats amb aprovació humana en tres passos (`propose → apply → archive`). Documentació: [`openspec.md`](openspec.md).
