@@ -1,5 +1,4 @@
 <?php
-
 namespace Intranet\Sao;
 
 use Exception;
@@ -11,86 +10,44 @@ use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Document\AttachedFileService;
 use Intranet\Entities\Signatura;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 
 /**
  * Acció SAO per descarregar i enllaçar annexos.
  */
 class SaoAnnexesAction
 {
-    /**
-     * Driver Selenium autenticat en SAO.
-     *
-     * @var RemoteWebDriver
-     */
     private RemoteWebDriver $driver;
 
-    /**
-     * Consulta opcional per acotar les FCT a processar.
-     *
-     * @var callable|null
-     */
     private $queryCallback = null;
 
-    /**
-     * Comptadors de l'última execució.
-     *
-     * @var array<string, int>
-     */
-    private array $summary = [
-        'processed' => 0,
-        'skipped' => 0,
-        'downloaded' => 0,
-        'errors' => 0,
-    ];
-
-    /**
-     * Crea l'acció de descàrrega d'annexos SAO.
-     *
-     * @param mixed $digitalSignatureService Servei legacy no usat en aquesta acció.
-     */
-    public function __construct($digitalSignatureService = null)
+    public function __construct( $digitalSignatureService = null)
     {
 
     }
 
-    /**
-     * Executa la descàrrega d'annexos amb una consulta opcional.
-     *
-     * @param RemoteWebDriver $driver
-     * @param callable|null $queryCallback
-     * @return mixed
-     */
     public function execute($driver, ?callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
         return $this->index($driver);
     }
 
-    /**
-     * Executa el procés i torna a la pantalla anterior.
-     *
-     * @param RemoteWebDriver $driver
-     * @return mixed
-     */
     public function index($driver)
     {
         $this->driver = $driver;
         try {
             $this->processFcts();
-        } catch (Throwable $e) {
-            $this->summary['errors']++;
+        } catch (Exception $e) {
             report($e);
-            Log::channel('sao')->error('Error en l\'acció de descàrrega d\'annexos SAO.', [
+            Log::error('Error en l\'acció de descàrrega d\'annexos SAO.', [
                 'error' => $e->getMessage(),
             ]);
             AlertLogger::error($e->getMessage());
-            $this->publishSummary();
         } finally {
             try {
                 $this->driver->quit();
             } catch (Throwable $quitException) {
-                Log::channel('sao')->warning('No s\'ha pogut tancar el driver de SAO en annexos.', [
+                report($quitException);
+                Log::warning('No s\'ha pogut tancar el driver de SAO en annexos.', [
                     'error' => $quitException->getMessage(),
                 ]);
             }
@@ -98,54 +55,25 @@ class SaoAnnexesAction
         return back();
     }
 
-    /**
-     * Retorna els comptadors de l'última execució.
-     *
-     * @return array<string, int>
-     */
-    public function summary(): array
+    private function processFcts()
     {
-        return $this->summary;
-    }
-
-    /**
-     * Processa totes les FCT candidates i publica un resum observable.
-     *
-     * @return void
-     */
-    private function processFcts(): void
-    {
-        foreach ($this->getValidFcts() as $fct) {
-            $this->summary['processed']++;
-
-            if ($this->isAnnexDownloaded($fct)) {
-                $this->summary['skipped']++;
-                continue;
-            }
-
-            try {
-                $this->downloadAnnex($fct);
-                $this->summary['downloaded']++;
-            } catch (Throwable $e) {
-                $this->summary['errors']++;
-                report($e);
-                Log::channel('sao')->warning('Error descarregant annex d\'una FCT en SAO.', [
-                    'fct_id' => $fct->id ?? null,
-                    'alumne' => $fct->Alumno->fullName ?? null,
-                    'error' => $e->getMessage(),
-                ]);
-                AlertLogger::error("Error en descarregar annexes de {$fct->Alumno->fullName}: " . $e->getMessage());
+         foreach ($this->getValidFcts() as $fct) {
+            if (!$this->isAnnexDownloaded($fct)) {
+                try {
+                    $this->downloadAnnex($fct);
+                } catch (Exception $e) {
+                    report($e);
+                    Log::warning('Error descarregant annex d\'una FCT en SAO.', [
+                        'fct_id' => $fct->id ?? null,
+                        'alumne' => $fct->Alumno->fullName ?? null,
+                        'error' => $e->getMessage(),
+                    ]);
+                    AlertLogger::error("Error en descarregar annexes de {$fct->Alumno->fullName}: " .$e->getMessage());
+                }
             }
         }
-
-        $this->publishSummary();
     }
 
-    /**
-     * Obté les FCT candidates a revisar.
-     *
-     * @return \Illuminate\Support\Collection
-     */
     private function getValidFcts()
     {
         if ($this->queryCallback) {
@@ -155,18 +83,11 @@ class SaoAnnexesAction
         return AlumnoFct::realFcts()
             ->where('beca', 0)
             ->whereNotNull('idSao')
-            ->whereNull('calificacion')
-            ->where('correoAlumno', 0)
+            ->activa()
             ->get();
 
     }
 
-    /**
-     * Determina si la FCT ja té annexos SAO descarregats.
-     *
-     * @param AlumnoFct $fct
-     * @return bool
-     */
     private function isAnnexDownloaded($fct): bool
     {
         return Adjunto::where('size', 1024)
@@ -175,14 +96,7 @@ class SaoAnnexesAction
     }
 
 
-    /**
-     * Descarrega i registra l'annex d'una FCT.
-     *
-     * @param AlumnoFct $fct
-     * @return void
-     * @throws Exception
-     */
-    private function downloadAnnex($fct): void
+    private function downloadAnnex($fct)
     {
 
         AlertLogger::info("Intentant descarregar annexes per a {$fct->Alumno->fullName}");
@@ -220,21 +134,13 @@ class SaoAnnexesAction
         $downloadLink = rtrim($baseUrl, '/') . '/' . ltrim($cut[1], '/');
         $this->saveAnnex($name, $downloadLink, $fct);
         $this->deleteSignatures($fct);
-        $this->closePopup();
+        $this->closePopup( );
 
         AlertLogger::info("Annex descarregat correctament per a {$fct->Alumno->fullName}");
     }
 
 
-    /**
-     * Guarda l'enllaç de l'annex descarregat.
-     *
-     * @param string $name
-     * @param string $downloadLink
-     * @param AlumnoFct $fct
-     * @return void
-     */
-    private function saveAnnex($name, $downloadLink, $fct): void
+    private function saveAnnex($name, $downloadLink, $fct)
     {
         $dniTutor = $fct->Alumno->tutor[0]['dni']  ?? null;
 
@@ -248,13 +154,7 @@ class SaoAnnexesAction
         );
     }
 
-    /**
-     * Elimina signatures pendents associades a la FCT descarregada.
-     *
-     * @param AlumnoFct $fct
-     * @return void
-     */
-    private function deleteSignatures($fct): void
+    private function deleteSignatures($fct)
     {
         foreach (Signatura::where('idSao', $fct->idSao)->get() as $signatura) {
             $signatura->deleteFile();
@@ -262,40 +162,10 @@ class SaoAnnexesAction
         }
     }
 
-    /**
-     * Tanca la finestra de descàrrega de SAO.
-     *
-     * @return void
-     */
-    private function closePopup(): void
+    private function closePopup( )
     {
         $this->driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
         sleep(1);
-    }
-
-    /**
-     * Escriu i mostra el resum de l'execució.
-     *
-     * @return void
-     */
-    private function publishSummary(): void
-    {
-        $message = sprintf(
-            'Annexos SAO: %d FCT revisades, %d descarregats, %d ja existien, %d errors.',
-            $this->summary['processed'],
-            $this->summary['downloaded'],
-            $this->summary['skipped'],
-            $this->summary['errors']
-        );
-
-        Log::channel('sao')->info($message, $this->summary);
-
-        if ($this->summary['errors'] > 0) {
-            AlertLogger::warning($message);
-            return;
-        }
-
-        AlertLogger::info($message);
     }
 
 }

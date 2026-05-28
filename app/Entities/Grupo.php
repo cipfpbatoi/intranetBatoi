@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 
-/**
- * Model de grup docent amb accessors de resum acadèmic i FCT.
- */
 class Grupo extends Model
 {
 
@@ -172,17 +169,6 @@ class Grupo extends Model
             && (int) ($ciclo?->tipo ?? 0) === 2);
     }
 
-    /**
-     * Determina si el grup pot sol·licitar acta d'avaluació FCT.
-     */
-    public function getPuedeSolicitarActaAttribute(): bool
-    {
-        $normativa = strtoupper((string) ($this->Ciclo?->normativa ?? ''));
-
-        return (int) $this->curso === 2
-            && in_array($normativa, ['LOE', 'LOGSE'], true);
-    }
-
     public function getXcicloAttribute()
     {
         return $this->Ciclo->ciclo ?? $this->idCiclo;
@@ -204,32 +190,6 @@ class Grupo extends Model
     public function getCalidadAttribute()
     {
         return (Documento::where('tipoDocumento', 'FCT')->where('grupo', $this->nombre)->where('curso', curso())->count()) ? 'O' : 'X';
-    }
-
-    /**
-     * Retorna el resum de validació documental FCT preparat pel panell de control.
-     */
-    public function getFctControlAttribute()
-    {
-        $status = $this->getAttribute('fct_control_status');
-
-        if (!is_array($status) || (int) ($status['total'] ?? 0) === 0) {
-            return '';
-        }
-
-        $total = (int) $status['total'];
-        $pg0301 = (int) $status['pg0301'];
-        $a56 = (int) $status['a56'];
-
-        if (($status['a56_complete'] ?? false) === true) {
-            return "A5/6 comprovats ($a56/$total)";
-        }
-
-        if (($status['pg0301_complete'] ?? false) === true) {
-            return "A2-A3 revisats ($pg0301/$total)";
-        }
-
-        return "Pendent A2-A3 $pg0301/$total · A5/6 $a56/$total";
     }
 
     public function getMatriculadosAttribute()

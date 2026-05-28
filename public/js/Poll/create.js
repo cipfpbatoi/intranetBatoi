@@ -68,16 +68,5 @@
                 syncTargetVisibility(input);
             });
         });
-
-        // Fallback per a enquestes quan el plugin SmartWizard antic no està carregat
-        // i, per tant, no injecta el botó final d'enviament.
-        window.setTimeout(function () {
-            var fallbackSubmit = document.getElementById('poll-submit-fallback');
-            var wizardActionBar = document.querySelector('#wizard .actionBar');
-
-            if (fallbackSubmit && !wizardActionBar) {
-                fallbackSubmit.style.display = '';
-            }
-        }, 0);
     });
 })();

@@ -5,4 +5,4 @@
     <label class="control-label" for="desde">Data:</label>
     <input type='text' id="fecha" name="fecha" class="form-control date" value="{{hoy('d/m/Y')}}" />
 </x-modal>
-<script src="/js/datepicker.js" defer></script>
+<script src="/js/datepicker.js"></script>

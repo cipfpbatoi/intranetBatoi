@@ -31,7 +31,7 @@
         if (bearerToken) {
             headers.Authorization = 'Bearer ' + bearerToken;
         }
-        if (!bearerToken && legacyToken) {
+        if (legacyToken) {
             data.api_token = legacyToken;
         }
 

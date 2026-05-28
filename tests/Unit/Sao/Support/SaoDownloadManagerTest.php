@@ -38,35 +38,6 @@ class SaoDownloadManagerTest extends TestCase
     }
 
     /**
-     * Verifica que el directori temporal sempre acaba amb separador.
-     */
-    public function test_temp_directory_adds_trailing_separator(): void
-    {
-        config(['variables.shareDirectory' => null]);
-        config(['sao.download.directory' => '/tmp/sao-config']);
-
-        $manager = new SaoDownloadManager();
-
-        $this->assertSame('/tmp/sao-config/', $manager->tempDirectory());
-    }
-
-    /**
-     * Verifica que waitForAnyFile retorna el primer fitxer existent.
-     */
-    public function test_wait_for_any_file_returns_existing_candidate(): void
-    {
-        $manager = new SaoDownloadManager();
-        $filePath = tempnam(sys_get_temp_dir(), 'sao-download-');
-
-        $this->assertSame(
-            $filePath,
-            $manager->waitForAnyFile(['/tmp/non-existing-sao-file.pdf', $filePath], 1)
-        );
-
-        unlink($filePath);
-    }
-
-    /**
      * Verifica que waitForFile llança timeout quan no apareix fitxer.
      */
     public function test_wait_for_file_throws_timeout_exception(): void
@@ -91,3 +62,4 @@ class SaoDownloadManagerTest extends TestCase
         $this->assertTrue(true);
     }
 }
+

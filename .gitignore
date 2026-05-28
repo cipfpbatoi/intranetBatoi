@@ -38,4 +38,3 @@ yarn-error.log
 
 # Claude Code (configuració local per programador)
 .claude/
-schedule.log

@@ -3,6 +3,6 @@
          message='{{ __("messages.buttons.confirmar")}}'>
         <table id="tableA3"></table>
 </x-modal>
-{{ Html::script("/js/common/api-auth.js", ['defer' => true]) }}
-{{ Html::script("/js/selDoc.js", ['defer' => true]) }}
-{{ Html::script("/js/taulaCheck.js", ['defer' => true]) }}
+{{ Html::script("/js/common/api-auth.js") }}
+{{ Html::script("/js/selDoc.js") }}
+{{ Html::script("/js/taulaCheck.js") }}

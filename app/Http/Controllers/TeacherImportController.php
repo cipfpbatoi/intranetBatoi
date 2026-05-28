@@ -43,7 +43,6 @@ class TeacherImportController extends Seeder
     public function store(Request $request)
     {
         $this->authorizeImportManagement();
-        $this->normalizeBooleanInputs($request);
         Validator::make($request->all(), (new TeacherImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
@@ -61,7 +60,6 @@ class TeacherImportController extends Seeder
     public function storeAsync(Request $request, mixed $validatedFile = null)
     {
         $this->authorizeImportManagement();
-        $this->normalizeBooleanInputs($request);
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -226,17 +224,6 @@ class TeacherImportController extends Seeder
         $mode = (string) $request->input('mode', 'full');
 
         return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
-    }
-
-    /**
-     * Normalitza els checkbox HTML a booleans reals abans de validar o executar.
-     */
-    private function normalizeBooleanInputs(Request $request): void
-    {
-        $request->merge([
-            'horari' => $request->boolean('horari'),
-            'lost' => $request->boolean('lost'),
-        ]);
     }
 
     private function authorizeImportManagement(bool $allowConsole = false): void

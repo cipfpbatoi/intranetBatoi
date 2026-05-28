@@ -6,8 +6,8 @@
     {{ $formulario->render('post') }}
      @push('scripts')
         @if ($hasCustomScript)
-            <script src="{{ asset($modeloCreateScript) }}" defer></script>
+            <script src="{{ asset($modeloCreateScript) }}"></script>
         @endif
-        <script src="{{ asset('js/datepicker.js') }}" defer></script>
+        <script src="{{ asset('js/datepicker.js') }}"></script>
     @endpush
 </x-layouts.app>

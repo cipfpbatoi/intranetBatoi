@@ -55,7 +55,6 @@ class ImportControllersFeatureTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect('/import');
-        $response->assertSessionHasErrors('fichero');
     }
 
     public function test_import_store_falla_si_fitxer_no_es_xml(): void
@@ -126,22 +125,6 @@ XML;
         $this->assertSame('seeder.store', $view->name());
     }
 
-    public function test_import_store_accepta_xml_amb_mime_no_estandard(): void
-    {
-        $controller = $this->partialMock(ImportController::class, function ($mock): void {
-            $mock->shouldReceive('run')->once();
-            $mock->shouldNotReceive('asignarTutores');
-        });
-
-        $file = UploadedFile::fake()->create('import.xml', 4, 'text/plain');
-        $request = Request::create('/import', 'POST', ['primera' => 'off', 'mode' => 'create_only'], [], ['fichero' => $file]);
-
-        $view = $controller->store($request);
-
-        $this->assertInstanceOf(View::class, $view);
-        $this->assertSame('seeder.store', $view->name());
-    }
-
     public function test_teacher_import_store_falla_si_no_hi_ha_fitxer(): void
     {
         $response = $this->from('/teacherImport')
@@ -150,7 +133,6 @@ XML;
 
         $response->assertStatus(302);
         $response->assertRedirect('/teacherImport');
-        $response->assertSessionHasErrors(['idProfesor', 'fichero']);
     }
 
     public function test_teacher_import_store_falla_si_fitxer_no_es_xml(): void
@@ -187,47 +169,6 @@ XML;
 
         $this->assertInstanceOf(View::class, $view);
         $this->assertSame('seeder.store', $view->name());
-    }
-
-    public function test_teacher_import_store_accepta_xml_amb_mime_no_estandard(): void
-    {
-        $controller = $this->partialMock(TeacherImportController::class, function ($mock): void {
-            $mock->shouldReceive('run')->once();
-        });
-
-        $file = UploadedFile::fake()->create('teacher_import.xml', 4, 'text/plain');
-        $request = Request::create('/teacherImport', 'POST', [
-            'idProfesor' => '021648508B',
-            'horari' => false,
-            'mode' => 'create_only',
-        ], [], ['fichero' => $file]);
-
-        $view = $controller->store($request);
-
-        $this->assertInstanceOf(View::class, $view);
-        $this->assertSame('seeder.store', $view->name());
-    }
-
-    public function test_teacher_import_store_accepta_checkbox_html_per_a_horari_i_lost(): void
-    {
-        $controller = $this->partialMock(TeacherImportController::class, function ($mock): void {
-            $mock->shouldReceive('run')->once();
-        });
-
-        $file = UploadedFile::fake()->create('teacher_import.xml', 4, 'text/plain');
-        $request = Request::create('/teacherImport', 'POST', [
-            'idProfesor' => '021648508B',
-            'horari' => 'on',
-            'lost' => 'on',
-            'mode' => 'create_only',
-        ], [], ['fichero' => $file]);
-
-        $view = $controller->store($request);
-
-        $this->assertInstanceOf(View::class, $view);
-        $this->assertSame('seeder.store', $view->name());
-        $this->assertTrue($request->horari);
-        $this->assertTrue($request->lost);
     }
 
 }

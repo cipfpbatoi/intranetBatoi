@@ -17,11 +17,6 @@ use Intranet\Events\ActivityReport;
  */
 class Actividad extends Model
 {
-    private const TIPUS_COMPLEMENTARIA = 'complementaria';
-    private const TIPUS_EXTRAESCOLAR = 'extraescolar';
-    private const UBICACIO_CENTRE = 'centre';
-    private const UBICACIO_EXTERIOR_TRANSPORT = 'exterior_transport';
-    private const UBICACIO_EXTERIOR_SENSE_TRANSPORT = 'exterior_sense_transport';
 
     use \Intranet\Entities\Concerns\BatoiModels;
 
@@ -248,55 +243,6 @@ class Actividad extends Model
     public function getRecomendadaAttribute()
     {
         return $this->recomanada?'Sí':'No';
-    }
-
-    /**
-     * Valor virtual per al selector de tipus d'activitat del formulari.
-     */
-    public function getTipusActivitatAttribute(): string
-    {
-        return $this->complementaria ? self::TIPUS_COMPLEMENTARIA : self::TIPUS_EXTRAESCOLAR;
-    }
-
-    /**
-     * Opcions del selector que separa activitat complementària i extraescolar.
-     *
-     * @return array<string, string>
-     */
-    public function getTipusActivitatOptions(): array
-    {
-        return [
-            self::TIPUS_COMPLEMENTARIA => 'Complementària',
-            self::TIPUS_EXTRAESCOLAR => 'Extraescolar',
-        ];
-    }
-
-    /**
-     * Valor virtual per al selector d'ubicació i transport del formulari.
-     */
-    public function getUbicacioActivitatAttribute(): string
-    {
-        if (!$this->fueraCentro) {
-            return self::UBICACIO_CENTRE;
-        }
-
-        return $this->transport
-            ? self::UBICACIO_EXTERIOR_TRANSPORT
-            : self::UBICACIO_EXTERIOR_SENSE_TRANSPORT;
-    }
-
-    /**
-     * Opcions del selector que separa ubicació i necessitat de transport.
-     *
-     * @return array<string, string>
-     */
-    public function getUbicacioActivitatOptions(): array
-    {
-        return [
-            self::UBICACIO_CENTRE => 'Dins del centre',
-            self::UBICACIO_EXTERIOR_TRANSPORT => 'Fora del centre amb transport',
-            self::UBICACIO_EXTERIOR_SENSE_TRANSPORT => 'Fora del centre sense transport',
-        ];
     }
 
     /**

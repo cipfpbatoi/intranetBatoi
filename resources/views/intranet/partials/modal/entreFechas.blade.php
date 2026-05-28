@@ -6,4 +6,4 @@
     <label class="control-label" for="hasta">@lang("messages.generic.hasta"):</label>
     <input type='text' id="hasta" name="hasta" class="form-control date" value="{{hoy('d/m/Y')}}" />
 </x-modal>
-<script src="/js/datepicker.js" defer></script>
+<script src="/js/datepicker.js"></script>

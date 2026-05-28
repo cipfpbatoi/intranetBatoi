@@ -3,14 +3,12 @@
 namespace Intranet\Livewire;
 
 use Carbon\Carbon;
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Profesor;
 use Livewire\Component;
 
-/**
- * Component Livewire del control diari de fitxatges.
- */
 class FicharControlDia extends Component
 {
     public string $fecha = '';
@@ -18,6 +16,7 @@ class FicharControlDia extends Component
     public array $rows = [];
 
     private ?ProfesorService $profesorService = null;
+    private ?HorarioService $horarioService = null;
 
     public function mount(): void
     {
@@ -64,6 +63,15 @@ class FicharControlDia extends Component
         return $this->profesorService;
     }
 
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
     private function refreshData(): void
     {
         $this->fechaEsp = Carbon::parse($this->fecha)
@@ -89,12 +97,18 @@ class FicharControlDia extends Component
 
         $rows = [];
         foreach ($profesores as $profesor) {
+            $horario = $this->horarios()->primeraByProfesorAndDateOrdered((string) $profesor->dni, $this->fecha);
+            $horarioLabel = '';
+            if (isset($horario->first()->desde)) {
+                $horarioLabel = $horario->first()->desde . ' - ' . $horario->last()->hasta;
+            }
+
             $dni = (string) $profesor->dni;
             $rows[] = [
                 'dni' => $dni,
                 'departamento' => (string) (optional($profesor->Departamento)->depcurt ?? ''),
                 'nom' => trim((string) $profesor->apellido1 . ' ' . (string) $profesor->apellido2 . ', ' . (string) $profesor->nombre),
-                'horario' => (string) $profesor->horarioForDate($this->fecha),
+                'horario' => $horarioLabel,
                 'fichajes' => $fichajes[$dni] ?? [],
             ];
         }

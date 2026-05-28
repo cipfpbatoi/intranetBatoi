@@ -11,7 +11,6 @@ use Intranet\Exceptions\CertException;
 use Intranet\Sao\Documents\A1DocumentService;
 use Intranet\Sao\Documents\A2DocumentService;
 use Intranet\Sao\Documents\A5DocumentService;
-use Intranet\Sao\Support\SaoDownloadManager;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AppAlert as Alert;
@@ -41,21 +40,16 @@ class SaoDocumentsAction
         $this->a5DocumentService = $a5DocumentService ?? new A5DocumentService($digitalSignatureService);
     }
 
-    /**
-     * Configura Firefox perquè descarregue els PDF de SAO al directori compartit.
-     *
-     * @return DesiredCapabilities
-     */
+    
     public static function setFireFoxCapabilities()
     {
 
         $profile = new FirefoxProfile();
-        $downloadManager = new SaoDownloadManager();
         
         $profile->setPreference('browser.download.folderList', 2);
         $profile->setPreference(
             'browser.download.dir',
-            $downloadManager->tempDirectory()
+            config('sao.download.directory', storage_path('tmp'))
         );
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);

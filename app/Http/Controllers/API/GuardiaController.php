@@ -5,34 +5,10 @@ namespace Intranet\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Intranet\Entities\Guardia;
 
-/**
- * Controlador API per a consultes i actualitzacions de guardies.
- */
 class GuardiaController extends ApiResourceController
 {
     protected $model = 'Guardia';
 
-    /**
-     * Llista guardies i permet filtrar pel contracte modern de query-string.
-     */
-    public function index()
-    {
-        $request = request();
-        $query = Guardia::query();
-
-        foreach (['idProfesor', 'dia', 'hora'] as $field) {
-            $value = $request->query($field);
-            if ($value !== null && $value !== '') {
-                $query->where($field, $value);
-            }
-        }
-
-        return $this->sendResponse($query->get());
-    }
-
-    /**
-     * Mostra una guardia o manté compatibilitat temporal amb filtres legacy en path.
-     */
     public function show($id)
     {
         $cadena = (string) $id;

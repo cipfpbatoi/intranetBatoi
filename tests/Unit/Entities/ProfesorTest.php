@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
 
@@ -23,12 +21,8 @@ class ProfesorTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
 
-        Storage::fake('local');
-
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('faltas_profesores');
-        $schema->dropIfExists('horarios');
-        $schema->dropIfExists('horas');
         $schema->dropIfExists('miembros');
         $schema->dropIfExists('profesores');
 
@@ -74,33 +68,6 @@ class ProfesorTest extends TestCase
             $table->string('salida')->nullable();
             $table->timestamps();
         });
-
-        $schema->create('horas', function (Blueprint $table): void {
-            $table->unsignedInteger('codigo')->primary();
-            $table->string('turno')->nullable();
-            $table->string('hora_ini')->nullable();
-            $table->string('hora_fin')->nullable();
-        });
-
-        $schema->create('horarios', function (Blueprint $table): void {
-            $table->increments('id');
-            $table->string('idProfesor', 10);
-            $table->string('modulo')->nullable();
-            $table->string('idGrupo')->nullable();
-            $table->string('ocupacion')->nullable();
-            $table->string('aula')->nullable();
-            $table->string('dia_semana');
-            $table->unsignedInteger('sesion_orden');
-            $table->string('plantilla')->nullable();
-            $table->timestamps();
-        });
-    }
-
-    protected function tearDown(): void
-    {
-        Carbon::setTestNow();
-
-        parent::tearDown();
     }
 
     public function test_scope_grupo_t_només_torna_professorat_actiu_del_grup(): void
@@ -146,60 +113,5 @@ class ProfesorTest extends TestCase
         $this->assertSame(' ', $profesor->entrada);
         $this->assertSame(' ', $profesor->salida);
         $this->assertSame('', $profesor->fileName);
-    }
-
-    public function test_horario_mostra_primera_franja_temporal_acceptada_i_vigent(): void
-    {
-        Carbon::setTestNow('2026-05-04 10:00:00');
-
-        DB::table('profesores')->insert([
-            'dni' => 'PT',
-            'activo' => 1,
-            'nombre' => 'Anna',
-            'apellido1' => 'Boto',
-            'apellido2' => 'Ibor',
-        ]);
-        DB::table('horas')->insert([
-            [
-                'codigo' => 1,
-                'turno' => 'M',
-                'hora_ini' => '08:00',
-                'hora_fin' => '09:00',
-            ],
-            [
-                'codigo' => 2,
-                'turno' => 'M',
-                'hora_ini' => '09:00',
-                'hora_fin' => '10:00',
-            ],
-        ]);
-
-        $horarioId = DB::table('horarios')->insertGetId([
-            'idProfesor' => 'PT',
-            'dia_semana' => 'L',
-            'sesion_orden' => 2,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        Storage::disk('local')->put('/horarios/PT/proposta.json', json_encode([
-            'id' => 'proposta',
-            'dni' => 'PT',
-            'estado' => 'Aceptado',
-            'fecha_inicio' => '2026-05-01',
-            'fecha_fin' => '2026-05-08',
-            'updated_at' => '2026-05-03 12:00:00',
-            'cambios' => [
-                [
-                    'id' => (string) $horarioId,
-                    'de' => '2-L',
-                    'a' => '1-L',
-                ],
-            ],
-        ]));
-
-        $profesor = Profesor::query()->findOrFail('PT');
-
-        $this->assertSame('09:00 - 10:00 (temporal: 08:00 - 09:00)', $profesor->horario);
     }
 }

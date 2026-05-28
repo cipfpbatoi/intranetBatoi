@@ -34,7 +34,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
-use Intranet\Services\UI\AppAlert as Alert;
+use Styde\Html\Facades\Alert;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
@@ -515,7 +515,7 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Demana acta d'avaluació per als grups LOE/LOGSE de segon curs.
+     * Demana acta d'avaluació per als grups LOE amb projecte.
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -524,7 +524,7 @@ class PanelFctAvalController extends IntranetController
         Gate::authorize('requestActa', Fct::class);
         $grupos = $this->grupos()
             ->qTutor(AuthUser()->dni)
-            ->filter(static fn (Grupo $grupo): bool => (bool) $grupo->puede_solicitar_acta)
+            ->filter(static fn (Grupo $grupo): bool => (bool) $grupo->proyecto || $grupo->Ciclo?->normativa === 'LOGSE')
             ->values();
         if ($grupos->isEmpty()) {
             Alert::message('No tens grups per sol·licitar acta', 'warning');
@@ -550,7 +550,7 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Configura el botó d'acta per a grups LOE/LOGSE de segon curs.
+     * Configura el botó d'acta per a grups LOE amb projecte.
      *
      * @return void
      */
@@ -562,7 +562,7 @@ class PanelFctAvalController extends IntranetController
 
         $grupos = $this->grupos()->qTutor(AuthUser()->dni);
         $gruposConActa = $grupos->filter(
-            static fn (Grupo $grupo): bool => (bool) $grupo->puede_solicitar_acta
+            static fn (Grupo $grupo): bool => (bool) $grupo->proyecto || $grupo->Ciclo?->normativa === 'LOGSE'
         );
 
         if ($gruposConActa->isEmpty()) {

@@ -15,3 +15,4 @@ return [
         'sleep_seconds' => (int) env('SAO_NAVIGATION_SLEEP_SECONDS', 1),
     ],
 ];
+

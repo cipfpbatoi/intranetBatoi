@@ -1,25 +1,8 @@
 <ul class="messages">
     @foreach ($faltas as $falta)
         @if ($falta->profesor->activo)
-            @php
-                $image = 'ill.png';
-                $motiu = mb_strtolower(\Illuminate\Support\Str::ascii((string) $falta->motivo));
-                $esMalaltia = str_contains($motiu, 'enfermedad')
-                    || str_contains($motiu, 'malaltia')
-                    || str_contains($motiu, 'medico')
-                    || str_contains($motiu, 'medica');
-
-                if (!$esMalaltia) {
-                    $image = 'actividad.png';
-                }
-            @endphp
-            <x-llist image="{{ $image }}" date="{{ $falta->dia_completo ? 'HUI' : $falta->hora_ini . ' - ' . $falta->hora_fin }}">
-                <h4 class="heading">
-                    {{ $falta->profesor->fullName }}
-                    @if ((int) $falta->estado === 0 && authUser() && esRol(authUser()->rol, config('roles.rol.direccion')))
-                        <span class="text-danger"> -</span>
-                    @endif
-                </h4>
+            <x-llist image="ill.png" date="{{ $falta->dia_completo ? 'HUI' : $falta->hora_ini . ' - ' . $falta->hora_fin }}">
+                <h4 class="heading">{{ $falta->profesor->fullName }}</h4>
                 <br />
             </x-llist>
         @endif

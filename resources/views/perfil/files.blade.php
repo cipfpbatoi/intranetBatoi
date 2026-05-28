@@ -2,6 +2,6 @@
     <x-form.profesor-files :profesor="$profesor" />
 
     @push('scripts')
-        {{ Html::script("/js/profesor/files.js", ['defer' => true]) }}
+        {{ Html::script("/js/profesor/files.js") }}
     @endpush
 </x-layouts.app>

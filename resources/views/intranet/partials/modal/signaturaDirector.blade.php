@@ -16,4 +16,4 @@
     <x-ui.errors />
 
 </x-modal>
-{{ Html::script("/js/taulaCheck.js", ['defer' => true]) }}
+{{ Html::script("/js/taulaCheck.js") }}

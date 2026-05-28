@@ -9,7 +9,6 @@
     </testsuite>
   </testsuites>
   <php>
-    <ini name="max_execution_time" value="0"/>
     <env name="APP_ENV" value="testing"/>
     <env name="APP_CONFIG_CACHE" value="/tmp/intranetBatoi-testing-config.php"/>
     <env name="LOG_CHANNEL" value="stack"/>

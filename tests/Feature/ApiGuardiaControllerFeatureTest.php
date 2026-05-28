@@ -108,43 +108,6 @@ class ApiGuardiaControllerFeatureTest extends TestCase
         $response->assertJsonPath('message', 'Falten paràmetres: desde i hasta');
     }
 
-    public function test_index_filtra_guardia_per_professor_dia_i_hora(): void
-    {
-        $this->insertProfesor('PGU03');
-        $user = Profesor::on('sqlite')->findOrFail('PGU03');
-        Sanctum::actingAs($user);
-
-        DB::table('guardias')->insert([
-            [
-                'idProfesor' => 'PGU03',
-                'dia' => '2026-05-19',
-                'hora' => 1,
-                'realizada' => 1,
-                'observaciones' => 'Coincideix',
-                'obs_personal' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'idProfesor' => 'PGU03',
-                'dia' => '2026-05-19',
-                'hora' => 2,
-                'realizada' => 0,
-                'observaciones' => 'Altra hora',
-                'obs_personal' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-
-        $response = $this->getJson('/api/guardia?idProfesor=PGU03&dia=2026-05-19&hora=1');
-
-        $response->assertOk();
-        $response->assertJsonPath('success', true);
-        $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.observaciones', 'Coincideix');
-    }
-
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {

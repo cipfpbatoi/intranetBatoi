@@ -523,13 +523,15 @@ class ComisionDireccionPanel extends Component
             ->values()
             ->toArray();
 
-        $this->estatOptions = [
-            '1' => 'Pendents',
-            '2' => 'Autoritzades',
-            '3' => 'Registrades',
-            '4' => 'Pendent de cobrament',
-            '5' => 'Cobrada',
-        ];
+        $this->estatOptions = Comision::query()
+            ->where('estado', '>', 0)
+            ->orderBy('estado')
+            ->get()
+            ->mapWithKeys(function (Comision $comision) {
+                $key = (string) $comision->estado;
+                return [$key => (string) $comision->situacion];
+            })
+            ->toArray();
     }
 
     /**

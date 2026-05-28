@@ -72,28 +72,6 @@ class PollController extends IntranetController
         return null;
     }
 
-    /**
-     * Retorna el cicle de l'usuari autenticat basant-se en el seu grup.
-     * Per a alumnes, prové del grup assignat.
-     * Per a tutors, prové del grup de tutoria.
-     * Retorna null si no es pot determinar.
-     */
-    protected function getUserCicleId(): ?int
-    {
-        $user = AuthUser();
-        if (isset($user->nia)) {
-            $grupo = $user->Grupo->first();
-            return $grupo?->idCiclo !== null ? (int) $grupo->idCiclo : null;
-        }
-        $grupoCodi = $user->GrupoTutoria;
-        if ($grupoCodi) {
-            $grupo = Grupo::find($grupoCodi);
-            return $grupo?->idCiclo !== null ? (int) $grupo->idCiclo : null;
-        }
-
-        return null;
-    }
-
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("poll.create", inRol('qualitat')));
@@ -124,15 +102,8 @@ class PollController extends IntranetController
 
         $poll = $data['poll'];
         $quests = $data['quests'];
-        $options = $data['options'];
-
-        if ($options->isEmpty()) {
-            Alert::info("No tens preguntes disponibles per al teu cicle en esta enquesta");
-            return redirect('home');
-        }
-
         if ($quests) {
-            return view('poll.enquesta', compact('quests', 'poll', 'options'));
+            return view('poll.enquesta', compact('quests', 'poll'));
         }
 
 
@@ -167,7 +138,7 @@ class PollController extends IntranetController
      */
     public function lookAtMyVotes($id)
     {
-        $data = $this->polls()->myVotes($id, AuthUser());
+        $data = $this->polls()->myVotes($id);
         if (!$data) {
             throw new NotFoundDomainException('Enquesta no trobada', ['poll_id' => $id]);
         }
@@ -182,7 +153,6 @@ class PollController extends IntranetController
         $myGroupsVotes = $data['myGroupsVotes'];
         $options_numeric = $data['options_numeric'];
         $options_text = $data['options_text'];
-        $options_select = $data['options_select'];
         $options = $data['options'];
 
         return view(
@@ -192,7 +162,6 @@ class PollController extends IntranetController
                 'poll',
                 'options_numeric',
                 'options_text',
-                'options_select',
                 'myGroupsVotes',
                 'options'
             )
@@ -218,24 +187,11 @@ class PollController extends IntranetController
         $poll = $data['poll'];
         $votes = $data['votes'];
         $options_numeric = $data['options_numeric'];
-        $options_select = $data['options_select'];
         $hasVotes = $data['hasVotes'];
         $stats = $data['stats'];
-        $selectStats = $data['selectStats'];
-        $selectHasVotes = $data['selectHasVotes'];
 
         return Excel::download(
-            new PollResultsExport(
-                $poll,
-                $votes,
-                $options_numeric,
-                $options_select,
-                $hasVotes,
-                $stats,
-                $selectStats,
-                $selectHasVotes,
-                $data['student_select_groups'] ?? []
-            ),
+            new PollResultsExport($poll, $votes, $options_numeric, $hasVotes, $stats),
             'resultats_enquesta.xlsx'
         );
         //return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));

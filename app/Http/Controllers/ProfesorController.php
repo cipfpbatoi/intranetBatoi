@@ -48,7 +48,7 @@ use Autorizacion,
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
     protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol','fecha_baja','Substitut'];
     protected $perfil = 'profesor';
-    protected $parametresVista = ['modal' => ['detalle','aviso','baja']];
+    protected $parametresVista = ['modal' => ['detalle','aviso']];
 
     private ?ProfesorService $profesorService = null;
     private ?HorarioService $horarioService = null;
@@ -261,35 +261,6 @@ use Autorizacion,
         return back();
     }
 
-    /**
-     * Dona de baixa un professor actiu amb data indicada.
-     *
-     * @param Request $request
-     * @param int|string $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function desactivar(Request $request, $id)
-    {
-        $this->validate($request, [
-            'fecha_baja' => 'required|date',
-        ]);
-
-        $profesor = $this->profesores()->findOrFail((string) $id);
-
-        if ((int) $profesor->activo === 0) {
-            Alert::info('Ja esta de baixa');
-            return back();
-        }
-
-        $profesor->activo = 0;
-        $profesor->fecha_baja = $request->input('fecha_baja');
-        $profesor->sustituye_a = ' ';
-        $profesor->save();
-
-        Alert::info('Professor desactivat correctament');
-        return back();
-    }
-
     
 
     public function carnet($profesor)
@@ -330,7 +301,6 @@ use Autorizacion,
     {
         $this->panel->setBoton('grid', new BotonImg('profesor.horario'));
         $this->panel->setBoton('grid', new BotonImg('profesor.edit', inRol('direccion')));
-        $this->panel->setBoton('grid', new BotonImg('profesor.desactivar', ['img' => 'fa-user-times', 'roles' => config('roles.rol.direccion'), 'class' => 'baja-profesor', 'where' => ['activo', '==', 1]]));
         $this->panel->setBoton('grid', new BotonImg('profesor.carnet',inRol('direccion')));
         $this->panel->setBoton('grid', new BotonImg('profesor.muestra', inRol('direccion')));
         $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th', 'roles' => config('roles.rol.direccion')

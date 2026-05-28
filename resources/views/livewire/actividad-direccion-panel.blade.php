@@ -176,9 +176,7 @@
                             <li><strong>Fins:</strong> {{ $selectedActividad['hasta'] }}</li>
                             <li><strong>Tipus:</strong> {{ $selectedActividad['tipo'] }}</li>
                             <li><strong>Estat:</strong> {{ $selectedActividad['situacion'] }}</li>
-                            @if ($selectedActividad['tipo'] === 'Complementària')
-                                <li><strong>Justificació RA:</strong> {{ $selectedActividad['justificacioRa'] !== '' ? $selectedActividad['justificacioRa'] : '-' }}</li>
-                            @endif
+                            <li><strong>Justificació RA:</strong> {{ $selectedActividad['justificacioRa'] !== '' ? $selectedActividad['justificacioRa'] : '-' }}</li>
                             <li><strong>Objectius:</strong> {{ $selectedActividad['objetivos'] !== '' ? $selectedActividad['objetivos'] : '-' }}</li>
                         </ul>
 

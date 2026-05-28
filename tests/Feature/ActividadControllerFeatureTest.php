@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
 
-/**
- * Proves de fluxos HTTP d'activitats complementàries i extraescolars.
- */
 class ActividadControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -171,78 +168,6 @@ class ActividadControllerFeatureTest extends TestCase
         ], 'sqlite');
     }
 
-    public function test_update_normalitza_tipus_i_ubicacio_dins_del_centre(): void
-    {
-        $actividadId = $this->insertActividad();
-        $this->insertProfesor('P660', 'Julia');
-        $this->authenticateAsProfesor('P660');
-        $this->insertCoordinador($actividadId, 'P660');
-
-        $response = $this->withoutMiddleware()->put(
-            route('actividad.update', ['actividad' => $actividadId]),
-            $this->actividadPayload([
-                'tipus_activitat' => 'complementaria',
-                'ubicacio_activitat' => 'centre',
-            ])
-        );
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('actividades', [
-            'id' => $actividadId,
-            'complementaria' => 1,
-            'fueraCentro' => 0,
-            'transport' => 0,
-        ], 'sqlite');
-    }
-
-    public function test_update_normalitza_extraescolar_exterior_amb_transport(): void
-    {
-        $actividadId = $this->insertActividad();
-        $this->insertProfesor('P661', 'Laura');
-        $this->authenticateAsProfesor('P661');
-        $this->insertCoordinador($actividadId, 'P661');
-
-        $response = $this->withoutMiddleware()->put(
-            route('actividad.update', ['actividad' => $actividadId]),
-            $this->actividadPayload([
-                'tipus_activitat' => 'extraescolar',
-                'ubicacio_activitat' => 'exterior_transport',
-            ])
-        );
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('actividades', [
-            'id' => $actividadId,
-            'complementaria' => 0,
-            'fueraCentro' => 1,
-            'transport' => 1,
-        ], 'sqlite');
-    }
-
-    public function test_update_normalitza_exterior_sense_transport(): void
-    {
-        $actividadId = $this->insertActividad();
-        $this->insertProfesor('P662', 'Maria');
-        $this->authenticateAsProfesor('P662');
-        $this->insertCoordinador($actividadId, 'P662');
-
-        $response = $this->withoutMiddleware()->put(
-            route('actividad.update', ['actividad' => $actividadId]),
-            $this->actividadPayload([
-                'tipus_activitat' => 'complementaria',
-                'ubicacio_activitat' => 'exterior_sense_transport',
-            ])
-        );
-
-        $response->assertRedirect();
-        $this->assertDatabaseHas('actividades', [
-            'id' => $actividadId,
-            'complementaria' => 1,
-            'fueraCentro' => 1,
-            'transport' => 0,
-        ], 'sqlite');
-    }
-
     public function test_ruta_detalle_amb_middleware_redirigeix_a_login_si_no_autenticat(): void
     {
         $actividadId = $this->insertActividad();
@@ -314,13 +239,6 @@ class ActividadControllerFeatureTest extends TestCase
                 $table->tinyInteger('extraescolar')->default(1);
                 $table->tinyInteger('complementaria')->default(1);
                 $table->tinyInteger('fueraCentro')->default(0);
-                $table->tinyInteger('transport')->default(0);
-                $table->text('descripcion')->nullable();
-                $table->text('objetivos')->nullable();
-                $table->text('comentarios')->nullable();
-                $table->tinyInteger('poll')->default(0);
-                $table->tinyInteger('recomanada')->default(1);
-                $table->timestamps();
             });
         }
 
@@ -422,34 +340,7 @@ class ActividadControllerFeatureTest extends TestCase
             'extraescolar' => 1,
             'complementaria' => 1,
             'fueraCentro' => 0,
-            'transport' => 0,
             'estado' => 0,
-        ]);
-    }
-
-    private function actividadPayload(array $overrides = []): array
-    {
-        return array_merge([
-            'name' => 'Activitat actualitzada',
-            'desde' => '2026-06-01 09:00',
-            'hasta' => '2026-06-01 12:00',
-            'tipus_activitat' => 'complementaria',
-            'ubicacio_activitat' => 'centre',
-            'extraescolar' => 1,
-            'poll' => 0,
-            'recomanada' => 1,
-            'descripcion' => 'Descripcio',
-            'objetivos' => 'Objectius',
-            'comentarios' => 'Comentaris',
-        ], $overrides);
-    }
-
-    private function insertCoordinador(int $actividadId, string $dni): void
-    {
-        DB::table('actividad_profesor')->insert([
-            'idActividad' => $actividadId,
-            'idProfesor' => $dni,
-            'coordinador' => 1,
         ]);
     }
 

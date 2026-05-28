@@ -18,30 +18,10 @@ use Intranet\Services\HR\FitxatgeService;
 use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
 
-/**
- * Controlador del panell de presència per a revisar fitxatges pendents.
- */
 class PanelPresenciaController extends BaseController
 {
-    /**
-     * Model associat al panell.
-     *
-     * @var string
-     */
     protected $model = 'Profesor';
-
-    /**
-     * Camps visibles en el llistat de professorat pendent de fitxar.
-     *
-     * @var array<int, string>
-     */
     protected $gridFields = ['Xdepartamento', 'NameFull', 'email'];
-
-    /**
-     * Vistes específiques del panell.
-     *
-     * @var array<string, string>
-     */
     protected $vista = ['index' => 'llist.ausencia'];
 
     private static function comisions(): ComisionService
@@ -59,68 +39,22 @@ class PanelPresenciaController extends BaseController
         return app(HorarioService::class);
     }
     
-    /**
-     * Mostra el llistat de professorat que no ha fitxat en un dia concret.
-     *
-     * @param string|null $dia Data rebuda com a paràmetre de ruta.
-     * @return \Illuminate\Contracts\View\View
-     */
+    
     public function indice($dia = null)
     {
         Gate::authorize('manageAttendance', Profesor::class);
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $dia = $this->diaSeleccionat($dia);
+        $dia = $dia ? $dia : Hoy();
         $fdia = new Carbon($dia);
         $this->panel->dia = $fdia->toDateString();
         $this->panel->anterior = $fdia->subDay()->toDateString();
         $this->panel->posterior = $fdia->addDays(2)->toDateString();
         $this->panel->setBoton('grid', new BotonImg('fichar.delete', [], 'direccion', $this->panel->dia));
         $this->panel->setBoton('grid', new BotonImg('fichar.email', [], 'direccion', $this->panel->dia));
-
+        
         return $this->grid(self::profesores()->byDnis(array_values(self::noHanFichado($dia))));
     }
 
-    /**
-     * Resol la data de consulta prioritzant la ruta i acceptant `?dia=YYYY-MM-DD`.
-     *
-     * @param string|null $dia Data rebuda per la ruta.
-     * @return string
-     */
-    protected function diaSeleccionat(?string $dia): string
-    {
-        $candidata = $dia ?: request()->query('dia');
-
-        if (is_string($candidata) && $this->esDiaValid($candidata)) {
-            return $candidata;
-        }
-
-        return Hoy();
-    }
-
-    /**
-     * Comprova que la data tinga format ISO i represente un dia real.
-     *
-     * @param string $dia
-     * @return bool
-     */
-    private function esDiaValid(string $dia): bool
-    {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dia)) {
-            return false;
-        }
-
-        [$any, $mes, $jorn] = array_map('intval', explode('-', $dia));
-
-        return checkdate($mes, $jorn, $any);
-    }
-
-    /**
-     * Envia un avís al professorat que té fitxatge pendent.
-     *
-     * @param string $usuario DNI del professorat.
-     * @param string $dia Data del fitxatge pendent.
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function email($usuario, $dia)
     {
         Gate::authorize('manageAttendance', Profesor::class);
@@ -156,28 +90,14 @@ class PanelPresenciaController extends BaseController
         return back();
     }
 
-    /**
-     * Registra manualment el fitxatge d'un professor per al dia indicat.
-     *
-     * @param string $usuario DNI del professorat.
-     * @param string $dia Data a regularitzar.
-     * @param \Intranet\Services\HR\FitxatgeService $fitxatgeService Servei de fitxatge.
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function deleteDia($usuario, $dia, FitxatgeService $fitxatgeService)
     {
         Gate::authorize('manageAttendance', Profesor::class);
         $fitxatgeService->fitxaDiaManual($usuario, $dia);
-        Alert::success('Fitxatge registrat manualment.');
         return back();
     }
 
-    /**
-     * Calcula el professorat actiu que no ha fitxat i no té justificació registrada.
-     *
-     * @param string $dia Data de consulta.
-     * @return array<string, string>
-     */
     public static function noHanFichado($dia)
     {
         $fitxatgeService = app(FitxatgeService::class);
@@ -193,13 +113,13 @@ class PanelPresenciaController extends BaseController
             }
         }
 
+
         // comprova que no estigues d'activitat
         $actividades = Actividad::Dia($dia)->where('fueraCentro','=',1)->get();
         foreach ($actividades as $actividad) {
             foreach ($actividad->profesores as $profesor) {
-                $dni = (string) $profesor->dni;
-                if (isset($noHanFichado[$dni])) {
-                    unset($noHanFichado[$dni]);
+                if (in_array($profesor->dni, $noHanFichado)) {
+                    unset($noHanFichado[$profesor->dni]);
                 }
             }
         }
@@ -207,21 +127,19 @@ class PanelPresenciaController extends BaseController
         // comprova que no està de comissió
         $comisiones = self::comisions()->byDay($dia);
         foreach ($comisiones as $comision) {
-            $dni = (string) $comision->idProfesor;
-            if (isset($noHanFichado[$dni])) {
-                unset($noHanFichado[$dni]);
+            if (in_array($comision->idProfesor, $noHanFichado)) {
+                unset($noHanFichado[$comision->idProfesor]);
             }
         }
 
         // compova que no tinga falta
         $faltas = Falta::Dia($dia)->get();
         foreach ($faltas as $falta) {
-            $dni = (string) $falta->idProfesor;
-            if (isset($noHanFichado[$dni])) {
-                unset($noHanFichado[$dni]);
+            if (in_array($falta->idProfesor, $noHanFichado)) {
+                unset($noHanFichado[$falta->idProfesor]);
             }
         }
-
+        
         return $noHanFichado;
     }
     

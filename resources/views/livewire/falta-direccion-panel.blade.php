@@ -83,16 +83,16 @@
                 <td>{{ $falta['motivo'] }}</td>
                 <td>{{ $falta['situacion'] }}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn btn-warning btn-xs"
-                        wire:click="editar({{ $falta['id'] }})"
-                        title="Editar"
-                    >
-                        <i class="fa fa-edit" aria-hidden="true"></i>
-                    </button>
+                    @if (in_array((int) $falta['estado'], [1, 2], true))
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-xs"
+                            wire:click="editar({{ $falta['id'] }})"
+                            title="Editar"
+                        >
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                        </button>
 
-                    @if (in_array((int) $falta['estado'], [1, 2], true) || ((int) $falta['estado'] === 0 && $isDireccion))
                         <button
                             type="button"
                             class="btn btn-danger btn-xs"
@@ -126,20 +126,6 @@
                         >
                             <i class="fa fa-file-text-o" aria-hidden="true"></i>
                         </a>
-                    @endif
-
-                    @if ((int) $falta['estado'] === 1)
-                        <button
-                            type="button"
-                            class="btn btn-info btn-xs"
-                            wire:click="enviarRecordatoriJustificant({{ $falta['id'] }})"
-                            wire:loading.attr="disabled"
-                            wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"
-                            title="Enviar recordatori de justificant"
-                        >
-                            <i class="fa fa-envelope" aria-hidden="true" wire:loading.remove wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
-                            <i class="fa fa-spinner fa-spin" aria-hidden="true" wire:loading wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
-                        </button>
                     @endif
 
                     @if ((int) $falta['estado'] === 5)

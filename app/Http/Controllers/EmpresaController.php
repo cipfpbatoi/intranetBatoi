@@ -2,15 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Database\QueryException;
 use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
-use Intranet\Entities\Fct;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
@@ -138,50 +135,6 @@ class EmpresaController extends IntranetController
         return redirect()->route('empresa.detalle', ['empresa' => $elemento->id]);
     }
 
-    /**
-     * Esborra una empresa si no té FCT vinculades.
-     *
-     * Es bloqueja l'operació abans d'arribar a l'error de clau forana per a
-     * mostrar un missatge entenedor i mantindre la fitxa intacta.
-     *
-     * @param int|string $id
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($id)
-    {
-        $empresa = $this->findModelOrFail(Empresa::class, $id, 'Empresa no trobada', ['empresa_id' => $id]);
-        $this->authorize('delete', $empresa);
-
-        $fctCount = $this->linkedFctsQuery($empresa)->count();
-        if ($fctCount > 0) {
-            $alumnoFctCount = AlumnoFct::query()
-                ->whereIn('idFct', $this->linkedFctsQuery($empresa)->select('id'))
-                ->count();
-
-            Alert::danger($alumnoFctCount > 0
-                ? "No es pot esborrar l'empresa perquè té FCT i alumnat vinculats. Elimina abans les FCT relacionades."
-                : "No es pot esborrar l'empresa perquè té FCT vinculades. Elimina abans les FCT relacionades.");
-
-            return redirect()->route('empresa.detalle', ['empresa' => $empresa->id]);
-        }
-
-        try {
-            $deleted = $empresa->delete();
-        } catch (QueryException $exception) {
-            report($exception);
-            Alert::danger("No s'ha pogut esborrar l'empresa perquè encara té dades relacionades.");
-
-            return redirect()->route('empresa.detalle', ['empresa' => $empresa->id]);
-        }
-
-        if ($deleted && $empresa->fichero) {
-            $this->borrarFichero($empresa->fichero);
-        }
-
-        return $this->redirect();
-    }
-
     /*
      * document ($id)
      * torna el fitxer de un model
@@ -207,22 +160,4 @@ class EmpresaController extends IntranetController
         return response()->file(FDFPrepareService::exec(new A1Resource(Empresa::find($id))));
     }
 
-    /**
-     * Construeix la consulta de FCT vinculades a una empresa.
-     *
-     * @param Empresa $empresa
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function linkedFctsQuery(Empresa $empresa)
-    {
-        return Fct::query()->whereIn('idColaboracion', function ($query) use ($empresa) {
-            $query->select('id')
-                ->from('colaboraciones')
-                ->whereIn('idCentro', function ($subquery) use ($empresa) {
-                    $subquery->select('id')
-                        ->from('centros')
-                        ->where('idEmpresa', (int) $empresa->id);
-                });
-        });
-    }
 }

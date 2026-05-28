@@ -30,7 +30,7 @@ var fecha = new Date('2017-10-17');
         if (bearerToken) {
             options.headers.Authorization = 'Bearer ' + bearerToken;
         }
-        if (!bearerToken && legacyToken) {
+        if (legacyToken) {
             options.data.api_token = legacyToken;
         }
 

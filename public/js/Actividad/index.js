@@ -29,6 +29,26 @@ document.addEventListener('DOMContentLoaded', function () {
         explicacion.focus();
     }
 
+    var complementaria = document.getElementById('complementaria_id');
+    if (!complementaria) {
+        return;
+    }
+
+    complementaria.addEventListener('change', function () {
+        var label = document.querySelector('#field_descripcion_id label');
+        var descripcion = document.getElementById('descripcion_id');
+        if (!label || !descripcion) {
+            return;
+        }
+
+        if (complementaria.checked) {
+            label.textContent = 'Justificació RA';
+            descripcion.setAttribute('placeholder', 'Justificació RA');
+        } else {
+            label.textContent = "Descripció d'activitat";
+            descripcion.setAttribute('placeholder', "Descripció d'activitat");
+        }
+    });
 });
 
 function getToken() {

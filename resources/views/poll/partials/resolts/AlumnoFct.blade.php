@@ -3,7 +3,7 @@
     <thead>
     <tr>
         <td>Enquesta</td>
-        @foreach ($options as $item) <th>{{$item->question_label}} </th> @endforeach
+        @foreach ($options as $item) <th>{{$item->question}} </th> @endforeach
     </tr>
     </thead>
     @foreach ($myVotes as $fct => $fctVotes)

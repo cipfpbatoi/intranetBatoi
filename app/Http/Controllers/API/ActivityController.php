@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers\API;
 
 
-use Illuminate\Http\Request;
 use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Entities\Activity;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -56,74 +55,6 @@ class ActivityController extends ApiResourceController
             return $this->sendResponse(['id'=>$activity2->id], 'OK');
         }
 
-    }
-
-    /**
-     * Mostra una activitat amb el format JSON esperat pels modals de contacte.
-     *
-     * @param int|string $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
-    {
-        $activity = Activity::find($id);
-        if ($activity === null) {
-            return $this->sendNotFound('Activitat no trobada');
-        }
-
-        return $this->sendResponse([
-            'id' => (string) $activity->id,
-            'comentari' => $activity->comentari,
-            'document' => $activity->document,
-            'action' => $activity->action,
-        ], 'OK');
-    }
-
-    /**
-     * Actualitza el comentari d'una activitat i sincronitza el mirall de seguiment.
-     *
-     * @param Request $request
-     * @param int|string $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(Request $request, $id)
-    {
-        $activity = Activity::find($id);
-        if ($activity === null) {
-            return $this->sendNotFound('Activitat no trobada');
-        }
-
-        $activity->comentari = (string) $request->input('explicacion', $request->input('comentari', ''));
-        $activity->save();
-        $this->syncSeguimientoMirror($activity);
-
-        return $this->sendResponse([
-            'id' => (string) $activity->id,
-            'comentari' => $activity->comentari,
-        ], 'OK');
-    }
-
-    /**
-     * Elimina una activitat i, si existeix, el seu seguiment mirall.
-     *
-     * @param int|string $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id)
-    {
-        $activity = Activity::find($id);
-        if ($activity === null) {
-            return $this->sendNotFound('Activitat no trobada');
-        }
-
-        $seguimiento = $this->seguimientoService->findByActivityId((string) $activity->id);
-        if ($seguimiento !== null) {
-            $seguimiento->delete();
-        }
-
-        $activity->delete();
-
-        return $this->sendResponse(['deleted' => true], 'OK');
     }
 
     /**

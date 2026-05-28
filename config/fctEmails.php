@@ -59,23 +59,6 @@ return [
         'fcts' => 1,
         'unique' => 1,
     ],
-    'finCentro' => [
-        'email' => [
-            'subject' => "Finalització de pràctiques",
-            'toPeople' => 'Centre',
-            'editable' => true,
-            'register' => "Seguiment Pràctiques de FCT",
-        ],
-        'modelo' => 'Fct',
-        'template' =>'email.fct.finish',
-        'route' => 'fct',
-        'fcts' => 1,
-        'unique' => 1,
-        'recipient' => [
-            'mail' => 'Colaboracion.email',
-            'contact' => 'Colaboracion.contacto',
-        ],
-    ],
     'inicioAlumno' => [
         'email' => [
             'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",

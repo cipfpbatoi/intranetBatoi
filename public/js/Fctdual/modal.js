@@ -30,7 +30,7 @@
         if (bearerToken) {
             headers.Authorization = 'Bearer ' + bearerToken;
         }
-        if (!bearerToken && legacyToken) {
+        if (legacyToken) {
             data.api_token = legacyToken;
         }
 
@@ -122,7 +122,7 @@
         var payload = { id: idFct };
         payload[isA56 ? 'a56' : 'pg0301'] = checkedValue;
 
-        requestJson('/api/alumnofct/' + idFct, 'PUT', payload).then(function () {
+        requestJson('/api/alumnoFct/' + idFct, 'PUT', payload).then(function () {
             if (!isA56) {
                 updateNextCheckboxState(target, checkedValue);
             }
@@ -146,7 +146,7 @@
             return;
         }
 
-        requestJson('/api/alumnofct/' + id, 'GET').then(function (res) {
+        requestJson('/api/alumnoFct/' + id, 'GET').then(function (res) {
             var explicacion = document.getElementById('explicacion');
             if (explicacion && res && res.data) {
                 explicacion.textContent = 'Revisió Documentació Fct Alumne ' + res.data.alumno + ' :';

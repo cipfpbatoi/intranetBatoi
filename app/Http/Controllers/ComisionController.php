@@ -284,20 +284,6 @@ class ComisionController extends ModalController
     }
 
     /**
-     * Redirigix les cridades GET accidentals de createFct al detall.
-     *
-     * @param int|string $comisionId
-     * @throws NotFoundDomainException
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function createFctRedirect($comisionId)
-    {
-        $this->authorize('manageFct', $this->findComisionOrFail($comisionId));
-
-        return redirect()->route('comision.detalle', ['comision' => $comisionId]);
-    }
-
-    /**
      * @param Request $request
      * @param int|string $comisionId
      * @throws NotFoundDomainException

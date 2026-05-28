@@ -37,12 +37,6 @@ class EloquentFctRepository implements FctRepositoryInterface
             ->first();
     }
 
-    /**
-     * Recupera les FCT visibles en el panell del professor amb les relacions que necessita la targeta.
-     *
-     * @param string $dni
-     * @return EloquentCollection<int, Fct>
-     */
     public function panelListingByProfesor(string $dni): EloquentCollection
     {
         /** @var EloquentCollection<int, Fct> $items */
@@ -53,14 +47,6 @@ class EloquentFctRepository implements FctRepositoryInterface
                 $query->misFcts($dni)->orWhere('cotutor', $dni);
             })
             ->has('AlFct')
-            ->with([
-                'AlFct.Alumno',
-                'Alumnos',
-                'Colaboracion.Centro.Empresa',
-                'Colaboracion.Ciclo',
-                'Colaboradores',
-                'Instructor',
-            ])
             ->get();
 
         return $items->sortBy('centro')->values();
@@ -133,3 +119,4 @@ class EloquentFctRepository implements FctRepositoryInterface
         return $fct?->Colaboracion?->Centro?->idEmpresa;
     }
 }
+

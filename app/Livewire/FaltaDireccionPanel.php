@@ -4,11 +4,9 @@ namespace Intranet\Livewire;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Profesor;
-use Intranet\Mail\ReminderFaltaJustificant;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
@@ -39,7 +37,6 @@ class FaltaDireccionPanel extends Component
 
     public string $error = '';
     public string $message = '';
-    public bool $isDireccion = false;
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
     public bool $showFormModal = false;
@@ -65,7 +62,6 @@ class FaltaDireccionPanel extends Component
      */
     public function mount(): void
     {
-        $this->isDireccion = AuthUser() ? esRol(AuthUser()->rol, config('roles.rol.direccion')) : false;
         $this->loadFilterOptions();
         $this->resetForm();
         $this->reloadFaltes();
@@ -198,36 +194,6 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
-     * Envia un recordatori al professorat perquè adjunte el justificant.
-     */
-    public function enviarRecordatoriJustificant(int $id): void
-    {
-        $this->resetFeedback();
-
-        $falta = Falta::with('Profesor')->find($id);
-        if (!$falta) {
-            $this->error = 'No s\'ha trobat la falta.';
-            return;
-        }
-
-        if ((int) $falta->estado !== 1) {
-            $this->error = 'Només es pot enviar el recordatori en faltes sense justificant.';
-            return;
-        }
-
-        $email = trim((string) ($falta->Profesor->email ?? ''));
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->error = 'El professorat no té un correu electrònic vàlid.';
-            return;
-        }
-
-        Mail::to($email, $falta->Profesor->fullName ?? $falta->idProfesor)
-            ->send(new ReminderFaltaJustificant($falta));
-
-        $this->message = 'Recordatori enviat a ' . $email . '.';
-    }
-
-    /**
      * Obri el modal en mode creació.
      */
     public function crear(): void
@@ -248,6 +214,11 @@ class FaltaDireccionPanel extends Component
         $falta = Falta::find($id);
         if (!$falta) {
             $this->error = 'No s\\\'ha trobat la falta.';
+            return;
+        }
+
+        if (!in_array((int) $falta->estado, [1, 2], true)) {
+            $this->error = 'Només es poden editar faltes sense autoritzar.';
             return;
         }
 
@@ -314,7 +285,7 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
-     * Esborra una falta només si està no enviada o pendent de tramitació.
+     * Esborra una falta només si encara no està autoritzada.
      */
     public function esborrar(int $id): void
     {
@@ -326,13 +297,8 @@ class FaltaDireccionPanel extends Component
             return;
         }
 
-        if (!in_array((int) $falta->estado, [0, 1, 2], true)) {
+        if (!in_array((int) $falta->estado, [1, 2], true)) {
             $this->error = 'Només es poden esborrar faltes sense autoritzar.';
-            return;
-        }
-
-        if ((int) $falta->estado === 0 && !$this->isDireccion) {
-            $this->error = 'No tens permisos per esborrar faltes no enviades.';
             return;
         }
 

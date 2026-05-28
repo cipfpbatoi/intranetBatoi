@@ -8,7 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverSelect;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Intranet\Application\Empresa\SaoCompanyDataUpdater;
 use Illuminate\Http\Request;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoFct;
@@ -18,8 +17,8 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
-use Intranet\Sao\Exceptions\SaoDuplicateFctException;
 use Illuminate\Support\Carbon;
+use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 
@@ -183,16 +182,8 @@ class SaoImportaAction
 
         // Comprovar si ja hem processat aquesta empresa
         if (isset($empresesVisitades[$idEmpresa])) {
-            $cached = $empresesVisitades[$idEmpresa];
-            $nameCentre = $dada['centre']['name'] ?? null;
-            $cached['centre'] = [
-                'idSao' => $nameCentre ? ($cached['centres'][$nameCentre] ?? null) : null,
-                'name' => $nameCentre,
-            ];
-            unset($cached['centres']);
-
             // Fusió profunda per conservar les dades aniuades
-            return self::deepMerge($dada, $cached);
+            return self::deepMerge($dada, $empresesVisitades[$idEmpresa]);
         }
 
         // Si no està a la memòria cau, navegar i obtenir dades
@@ -208,14 +199,12 @@ class SaoImportaAction
         // Obtenir idSao
         $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
         $idSao = null;
-        $centresSao = [];
         foreach ($table2 as $index2 => $trinside) {
             if ($index2) {
                 $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
-                $rowIdSao = substr($trinside->getAttribute('id'), 13);
-                $centresSao[$td] = $rowIdSao;
                 if ($td == ($dada['centre']['name'] ?? '')) {
-                    $idSao = $rowIdSao;
+                    $idSao = substr($trinside->getAttribute('id'), 13);
+                    break;
                 }
             }
         }
@@ -225,7 +214,6 @@ class SaoImportaAction
             'concierto' => $concierto,
             'data_conveni' => $date->format('Y-m-d'),
             'cif' => $cif,
-            'centres' => $centresSao,
             'centre' => [
                 'idSao' => $idSao,
                 'name' => $dada['centre']['name'] ?? null // Assegurem que 'name' no es perdi
@@ -320,20 +308,16 @@ class SaoImportaAction
         $grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
-        $avisos = [];
         if (AuthUser()->dni === config('avisos.director')) {
             self::selectDirectorFct($driver);
         }
 
         try {
             try {
-                self::extractPage($driver, $dades, $avisos, 1);
-                $paginationLinks = $driver->findElements(WebDriverBy::cssSelector("a.enlacePag"));
-                if (!empty($paginationLinks)) {
-                    $paginationLinks[0]->click();
-                    sleep(1);
-                    self::extractPage($driver, $dades, $avisos, 2);
-                }
+                self::extractPage($driver, $dades,1);
+                $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+                sleep(1);
+                self::extractPage($driver, $dades,2);
             } catch (Exception $e) {
                 report($e);
                 Log::warning('Error processant paginació de la importació SAO.', [
@@ -346,22 +330,6 @@ class SaoImportaAction
                 foreach ($dades as $index => $dada) {
                     try {
                         $dades[$index] = self::extractFromEdit($dada, $driver);
-                        try {
-                            $saoData = (new SaoCompanyDataReader())->readFromFct(
-                                $driver,
-                                $dades[$index]['idSao'],
-                                $dades[$index]['centre']['idSao'] ?? null
-                            );
-                            $dades[$index] = self::deepMerge($dades[$index], $saoData);
-                        } catch (\Throwable $dataException) {
-                            report($dataException);
-                            Log::warning('No s\'han pogut completar dades empresa/centre des de SAO.', [
-                                'id_sao' => $dades[$index]['idSao'] ?? null,
-                                'error' => $dataException->getMessage(),
-                            ]);
-                            $avisos[] = 'No s\'han pogut completar dades empresa/centre per a SAO '
-                                . ($dades[$index]['idSao'] ?? '');
-                        }
                         $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
 
                         if ($empresa) { //Si hi ha empresa
@@ -374,7 +342,6 @@ class SaoImportaAction
                                 $empresa->concierto = $dades[$index]['concierto'];
                                 $empresa->save();
                             }
-                            self::fillMissingEmpresa($empresa, $dades[$index]);
                         }
                     } catch (Exception $e) {
                         report($e);
@@ -382,7 +349,7 @@ class SaoImportaAction
                             'id_sao' => $dades[$index]['idSao'] ?? null,
                             'error' => $e->getMessage(),
                         ]);
-                        $avisos[] = $e->getMessage();
+                        Alert::info($e->getMessage());
                     }
                 }
             }
@@ -396,13 +363,8 @@ class SaoImportaAction
                 ]);
             }
         }
-
-        if (count($dades) === 0 && count($avisos) === 0) {
-            $avisos[] = 'No hi ha cap FCT nova per importar des de SAO.';
-        }
-
         session(compact('dades'));
-        return view('sao.importa', compact('dades', 'ciclo', 'avisos'));
+        return view('sao.importa', compact('dades', 'ciclo'));
     }
 
 
@@ -437,20 +399,13 @@ class SaoImportaAction
         $idCentro = $dades['centre']['id']??null;
 
         if ($idCentro) {
-            $centro = Centro::find($idCentro);
-            if ($centro) {
-                self::fillMissingCentro($centro, $dades);
-            }
-
-            return $centro;
+            return Centro::find($idCentro);
         } else {
             $idSao = $dades['centre']['idSao']??null;
             if ($idSao) {
                 $centro = Centro::where('idSao', $idSao)->first();
                 if ($centro) {
                     $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
-                    self::fillMissingEmpresa($centro->Empresa, $dades);
-                    self::fillMissingCentro($centro, $dades);
                     return $centro;
                 }
             }
@@ -461,23 +416,19 @@ class SaoImportaAction
                 [
                     'cif' => $dades['cif'],
                     'concierto' => $dades['concierto'],
-                    'nombre' => self::field($dades, 'empresa', 'nombre') ?? $dades['nameEmpresa'],
+                    'nombre' => $dades['nameEmpresa'],
                     'idSao' => $dades['idEmpresa'],
-                    'email' => self::field($dades, 'empresa', 'email') ?? $dades['centre']['email'],
-                    'localidad' => self::field($dades, 'empresa', 'localidad') ?? $dades['centre']['localidad'],
-                    'telefono' => self::field($dades, 'empresa', 'telefono') ?? $dades['centre']['telefon'],
+                    'email' => $dades['centre']['email'],
+                    'localidad' => $dades['centre']['localidad'],
+                    'telefono' => $dades['centre']['telefon'],
                     'europa' =>  $dades['erasmus']==='No'?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
-                    'direccion' => self::field($dades, 'empresa', 'direccion') ?? '',
-                    'gerente' => self::field($dades, 'empresa', 'gerente'),
-                    'actividad' => self::field($dades, 'empresa', 'actividad'),
+                    'direccion' => '',
                     'data_signatura' => $dades['data_conveni'],
                 ]
             );
             $empresa->save();
-        } else {
-            self::fillMissingEmpresa($empresa, $dades);
         }
 
         $centro = new Centro(
@@ -487,9 +438,6 @@ class SaoImportaAction
                 'email' =>  $dades['centre']['email'],
                 'telefono' => $dades['centre']['telefon'],
                 'nombre' =>  $dades['centre']['name'],
-                'direccion' => self::field($dades, 'centre', 'direccion') ?? '',
-                'codiPostal' => self::field($dades, 'centre', 'codiPostal'),
-                'horarios' => self::field($dades, 'centre', 'horarios'),
                 'observaciones' => 'Creada automàticament',
                 'idSao' => $dades['centre']['idSao']
             ]
@@ -550,8 +498,7 @@ class SaoImportaAction
 
     /**
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
-     * @return string
-     * @throws SaoDuplicateFctException
+     * @return mixed|string
      */
     private static function getIdSao(\Facebook\WebDriver\Remote\RemoteWebElement $tr)
     {
@@ -559,7 +506,7 @@ class SaoImportaAction
         $href = explode("'", $enlace->getAttribute('href'))[1];
         $fctAl = AlumnoFct::where('idSao', $href)->where('beca', 0)->get()->first();
         if ($fctAl) {
-            throw new SaoDuplicateFctException("Fct del SAO $href ja donada d'alta");
+            throw new \Exception("Fct del SAO $href ja donada d'alta");
         }
         return $href;
     }
@@ -638,68 +585,6 @@ class SaoImportaAction
     }
 
     /**
-     * Ompli camps buits d'empresa amb dades SAO.
-     */
-    private static function fillMissingEmpresa(Empresa $empresa, array $dades): void
-    {
-        app(SaoCompanyDataUpdater::class)->fillMissingEmpresa($empresa, self::empresaData($dades));
-    }
-
-    /**
-     * Ompli camps buits de centre amb dades SAO.
-     */
-    private static function fillMissingCentro(Centro $centro, array $dades): void
-    {
-        app(SaoCompanyDataUpdater::class)->fillMissingCentro($centro, self::centroData($dades));
-    }
-
-    /**
-     * Normalitza dades d'empresa procedents de diferents pantalles SAO.
-     *
-     * @return array<string, mixed>
-     */
-    private static function empresaData(array $dades): array
-    {
-        return array_filter([
-            'idSao' => $dades['idEmpresa'] ?? self::field($dades, 'empresa', 'idSao'),
-            'concierto' => $dades['concierto'] ?? self::field($dades, 'empresa', 'concierto'),
-            'cif' => $dades['cif'] ?? self::field($dades, 'empresa', 'cif'),
-            'nombre' => self::field($dades, 'empresa', 'nombre') ?? ($dades['nameEmpresa'] ?? null),
-            'direccion' => self::field($dades, 'empresa', 'direccion'),
-            'localidad' => self::field($dades, 'empresa', 'localidad'),
-            'telefono' => self::field($dades, 'empresa', 'telefono'),
-            'gerente' => self::field($dades, 'empresa', 'gerente'),
-            'actividad' => self::field($dades, 'empresa', 'actividad'),
-            'email' => self::field($dades, 'empresa', 'email'),
-            'data_signatura' => $dades['data_conveni'] ?? null,
-        ], static fn ($value) => $value !== null && $value !== '');
-    }
-
-    /**
-     * Normalitza dades de centre procedents de diferents pantalles SAO.
-     *
-     * @return array<string, mixed>
-     */
-    private static function centroData(array $dades): array
-    {
-        return array_filter([
-            'idSao' => self::field($dades, 'centre', 'idSao'),
-            'nombre' => self::field($dades, 'centre', 'nombre') ?? self::field($dades, 'centre', 'name'),
-            'direccion' => self::field($dades, 'centre', 'direccion'),
-            'localidad' => self::field($dades, 'centre', 'localidad'),
-            'telefono' => self::field($dades, 'centre', 'telefono') ?? self::field($dades, 'centre', 'telefon'),
-            'email' => self::field($dades, 'centre', 'email'),
-            'horarios' => self::field($dades, 'centre', 'horarios'),
-            'codiPostal' => self::field($dades, 'centre', 'codiPostal'),
-        ], static fn ($value) => $value !== null && $value !== '');
-    }
-
-    private static function field(array $dades, string $group, string $field): mixed
-    {
-        return $dades[$group][$field] ?? null;
-    }
-
-    /**
      * @param $id
      * @param $dni
      * @param $idColaboracion
@@ -760,11 +645,9 @@ class SaoImportaAction
     /**
      * @param  RemoteWebDriver  $driver
      * @param  array  $dades
-     * @param  array  $avisos
-     * @param  int  $page
-     * @return void
+     * @return array
      */
-    private static function extractPage(RemoteWebDriver $driver, array &$dades, array &$avisos, $page): void
+    private static function extractPage(RemoteWebDriver $driver, array &$dades,$page)
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
@@ -773,13 +656,6 @@ class SaoImportaAction
                 try {
                     //dades de la linea
                     self::extractFromModal($dades, $key, $tr, $driver);
-                } catch (SaoDuplicateFctException $e) {
-                    unset($dades[$key]);
-                    Log::info('FCT del SAO ja importada, s\'omet de la importació.', [
-                        'row_index' => $key,
-                        'error' => $e->getMessage(),
-                    ]);
-                    $avisos[] = $e->getMessage();
                 } catch (Exception $e) {
                     unset($dades[$key]);
                     report($e);
@@ -787,7 +663,7 @@ class SaoImportaAction
                         'row_index' => $key,
                         'error' => $e->getMessage(),
                     ]);
-                    $avisos[] = $e->getMessage();
+                    Alert::info($e->getMessage());
                 }
             }
         }

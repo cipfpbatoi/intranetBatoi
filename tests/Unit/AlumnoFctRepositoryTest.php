@@ -90,25 +90,6 @@ class AlumnoFctRepositoryTest extends TestCase
         $this->assertSame([2], $esDual);
     }
 
-    public function test_control_stats_by_grupo_es_fct_resumeix_pg0301_i_a56(): void
-    {
-        DB::table('alumno_fcts')->where('id', 1)->update(['pg0301' => 1, 'a56' => 0]);
-        DB::table('alumno_fcts')->where('id', 3)->update(['pg0301' => 1, 'a56' => 1]);
-
-        $repo = $this->app->make(AlumnoFctRepositoryInterface::class);
-
-        $g1 = $repo->controlStatsByGrupoEsFct('G1');
-        $this->assertSame(1, $g1['total']);
-        $this->assertSame(1, $g1['pg0301']);
-        $this->assertSame(0, $g1['a56']);
-        $this->assertTrue($g1['pg0301_complete']);
-        $this->assertFalse($g1['a56_complete']);
-
-        DB::table('alumno_fcts')->where('id', 1)->update(['a56' => 1]);
-        $g1Completed = $repo->controlStatsByGrupoEsFct('G1');
-        $this->assertTrue($g1Completed['a56_complete']);
-    }
-
     public function test_reassign_profesor_actualitza_registres(): void
     {
         $repo = $this->app->make(AlumnoFctRepositoryInterface::class);
@@ -175,7 +156,6 @@ class AlumnoFctRepositoryTest extends TestCase
             $table->unsignedInteger('idFct');
             $table->string('idProfesor')->nullable();
             $table->string('idSao')->nullable();
-            $table->unsignedTinyInteger('pg0301')->default(0);
             $table->unsignedTinyInteger('a56')->default(0);
             $table->unsignedTinyInteger('actas')->default(0);
         });

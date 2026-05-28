@@ -11,8 +11,6 @@
 - Front-end setup with `npm install`; `npm run dev` builds once, `npm run watch` rebuilds on change, `npm run production` creates minified bundles.
 - `php artisan serve` runs the app; `php artisan migrate --seed` prepares the DB.
 - Test with `phpunit` or `php artisan test`; use `--filter` to target cases.
-- If local PHP is unavailable, run tests inside Docker with `docker compose exec -T laravel.test php artisan test` (for example `docker compose exec -T laravel.test php artisan test --filter=ApiGuardiaControllerFeatureTest`).
-- Use `docker compose ps` to confirm the project containers are running before Docker-based validation; prefer the `laravel.test` service for PHP/Laravel commands.
 
 ## Coding Style & Naming Conventions
 - PSR-12: 4-space indent, clear method names; suffix classes with `Controller`, `Job`, `Event`, `Policy` where applicable.

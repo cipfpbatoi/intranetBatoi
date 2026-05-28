@@ -5,45 +5,29 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Headers;
 
 
 /**
- * Mailable genèric per enviar una vista amb dades de document.
+ * Class DocumentRequest
+ * @package Intranet\Services\Mail
  */
 class DocumentRequest extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Dades de configuració del correu.
-     *
-     * @var array<string, mixed>|object
+     * @var
      */
     public $mail;
-
     /**
-     * Vista Blade del cos del correu.
-     *
-     * @var string
+     * @var
      */
     public $view;
-
-    /**
-     * Element passat a la vista.
-     *
-     * @var mixed
-     */
     public $elemento;
 
     /**
-     * Fitxers adjunts opcionals.
-     *
-     * @var mixed
-     */
-    public $attach;
-
-    /**
-     * Crea una nova instància del missatge.
+     * Create a new message instance.
      *
      * @return void
      */
@@ -73,13 +57,13 @@ class DocumentRequest extends Mailable
     public function build()
     {
         $vista =  $this->from(
-            $this->mailValue('from'),
-            $this->mailValue('fromPerson')
+            $this->mail->from,
+            $this->mail->fromPerson
         )->replyTo(
-            $this->mailValue('from'),
-            $this->mailValue('fromPerson')
+            $this->mail->from,
+            $this->mail->fromPerson
         )->subject(
-            $this->mailValue('subject')
+            $this->mail->subject
         )->view($this->view);
 
 
@@ -97,20 +81,5 @@ class DocumentRequest extends Mailable
             }
         }
         return $vista;
-    }
-
-    /**
-     * Llig una propietat de configuració tant si arriba com objecte com si arriba com array.
-     *
-     * @param string $key
-     * @return mixed
-     */
-    private function mailValue(string $key): mixed
-    {
-        if (is_array($this->mail)) {
-            return $this->mail[$key] ?? null;
-        }
-
-        return $this->mail->{$key} ?? null;
     }
 }

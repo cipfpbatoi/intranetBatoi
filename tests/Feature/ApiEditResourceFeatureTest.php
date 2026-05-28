@@ -81,8 +81,6 @@ class ApiEditResourceFeatureTest extends TestCase
         $response->assertJsonPath('data.name', 'Visita a empresa');
         $response->assertJsonPath('data.desde', '20-03-2026 09:15');
         $response->assertJsonPath('data.hasta', '20-03-2026 14:00');
-        $response->assertJsonPath('data.tipus_activitat', 'complementaria');
-        $response->assertJsonPath('data.ubicacio_activitat', 'exterior_sense_transport');
         $response->assertJsonPath('data.descripcion', 'Descripcio');
     }
 

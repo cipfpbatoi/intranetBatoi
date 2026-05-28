@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use setasign\Fpdi\Fpdi;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Throwable;
 
 class DigitalSignatureService
@@ -186,38 +185,16 @@ class DigitalSignatureService
     }
 
 
-    /**
-     * Signa un PDF amb signatura visible.
-     *
-     * @param string $file
-     * @param string $newFile
-     * @param float|int|null $coordx
-     * @param float|int|null $coordy
-     * @param string $certPath
-     * @param string $certPassword
-     * @param int|null $page
-     */
-    public static function sign($file, $newFile, $coordx, $coordy, $certPath, $certPassword, ?int $page = null): void
+    public static function sign($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
-        (new self())->signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword, $page);
+        (new self())->signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
     }
 
-    /**
-     * Signa un PDF amb signatura visible.
-     *
-     * @param string $file
-     * @param string $newFile
-     * @param float|int|null $coordx
-     * @param float|int|null $coordy
-     * @param string $certPath
-     * @param string $certPassword
-     * @param int|null $page
-     */
-    public function signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword, ?int $page = null): void
+    public function signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
         try {
             // 1️⃣ Primer intent normal
-            $this->signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword, $page);
+            $this->signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
             return;
 
         } catch (Throwable $th) {
@@ -235,7 +212,7 @@ class DigitalSignatureService
                 try {
                     // Normalitzem el PDF i tornem a intentar
                     $normalized = $this->normalizePdf($file);
-                    $this->signWithJSignPdf($normalized, $newFile, $coordx, $coordy, $certPath, $certPassword, $page);
+                    $this->signWithJSignPdf($normalized, $newFile, $coordx, $coordy, $certPath, $certPassword);
                     return;
 
                 } catch (Throwable $e2) {
@@ -274,18 +251,7 @@ class DigitalSignatureService
         }
     }
 
-    /**
-     * Executa la firma visible via JSignPdf.
-     *
-     * @param string $file
-     * @param string $newFile
-     * @param float|int|null $coordx
-     * @param float|int|null $coordy
-     * @param string $certPath
-     * @param string $certPassword
-     * @param int|null $page
-     */
-    private function signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword, ?int $page = null): void
+    private function signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
         if (!is_string($file) || $file === '' || !file_exists($file)) {
             throw new IntranetException("No s'ha trobat el PDF d'entrada per a signar.");
@@ -309,7 +275,7 @@ class DigitalSignatureService
         $coordy = (float) ($coordy ?? 50);
         $width = (float) ($config['width'] ?? 200);
         $height = (float) ($config['height'] ?? 70);
-        $page = $this->resolveSignaturePage($file, $page, (int) ($config['page'] ?? 1));
+        $page = $this->getLastPageNumber($file, (int) ($config['page'] ?? 1));
         $append = (bool) ($config['append'] ?? true);
         $timeout = (int) ($config['timeout'] ?? 60);
         $visibleText = $this->buildVisibleSignatureText($certPath, $certPassword);
@@ -421,22 +387,6 @@ class DigitalSignatureService
             'page' => $page,
             'append' => $append,
         ]);
-    }
-
-    /**
-     * Determina la pàgina visible de la signatura.
-     *
-     * Si hi ha una pàgina configurada explícitament, té prioritat. En cas
-     * contrari s'intenta usar l'última pàgina del PDF i, si falla, es recorre
-     * al valor de reserva.
-     */
-    public function resolveSignaturePage(string $inputFile, ?int $configuredPage = null, int $fallback = 1): int
-    {
-        if ($configuredPage !== null && $configuredPage > 0) {
-            return $configuredPage;
-        }
-
-        return $this->getLastPageNumber($inputFile, $fallback);
     }
 
     private function buildJSignPdfCommand(
@@ -655,43 +605,7 @@ class DigitalSignatureService
                 'pdfPath' => $inputFile,
                 'error' => $th->getMessage(),
             ]);
-        }
-
-        $pageCount = $this->getLastPageNumberFromPdfInfo($inputFile);
-        if ($pageCount !== null) {
-            return $pageCount;
-        }
-
-        return max(1, $fallback);
-    }
-
-    /**
-     * Intenta obtindre el nombre de pàgines amb `pdfinfo` quan FPDI no pot
-     * llegir un PDF incrementalment signat.
-     */
-    private function getLastPageNumberFromPdfInfo(string $inputFile): ?int
-    {
-        $pdfInfo = trim((string) shell_exec('command -v pdfinfo 2>/dev/null'));
-        if ($pdfInfo === '' || !file_exists($inputFile)) {
-            return null;
-        }
-
-        try {
-            $process = new Process([$pdfInfo, $inputFile]);
-            $process->setTimeout(10);
-            $process->mustRun();
-
-            if (preg_match('/^Pages:\s+(\d+)$/mi', $process->getOutput(), $matches) !== 1) {
-                return null;
-            }
-
-            return max(1, (int) $matches[1]);
-        } catch (ProcessFailedException|Throwable $th) {
-            Log::channel('certificate')->warning("No s'ha pogut calcular l'última pàgina amb pdfinfo.", [
-                'pdfPath' => $inputFile,
-                'error' => $th->getMessage(),
-            ]);
-            return null;
+            return max(1, $fallback);
         }
     }
 

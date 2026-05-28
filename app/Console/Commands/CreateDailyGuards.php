@@ -6,18 +6,13 @@ use Illuminate\Console\Command;
 use Intranet\Application\Comision\ComisionService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Entities\CalendariEscolar;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Guardia;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-/**
- * Crea les guàrdies diàries del professorat de forma idempotent.
- */
 class CreateDailyGuards extends Command
 {
     private ComisionService $comisionService;
@@ -48,11 +43,12 @@ class CreateDailyGuards extends Command
 
 
     /**
-     * Retorna el DNI del substitut actiu del professor, si en té.
+     * Execute the console command.
      *
-     * @param mixed $dni
      * @return mixed
      */
+
+
     private function substitutoActual($dni)
     {
         do {
@@ -64,11 +60,6 @@ class CreateDailyGuards extends Command
         return $dni;
     }
 
-    /**
-     * Executa la creació diària de guàrdies si el dia és lectiu.
-     *
-     * @return int
-     */
     public function handle(): int
     {
         try {
@@ -76,22 +67,12 @@ class CreateDailyGuards extends Command
                 return self::SUCCESS;
             }
 
-            $dia = hoy();
-
-            if (CalendariEscolar::esNoLectiuOFestiu($dia)) {
-                Log::info('No es creen guardies diàries perquè el dia no és lectiu.', [
-                    'dia' => $dia,
-                ]);
-
-                return self::SUCCESS;
-            }
-
             $this->createGuardias();
-            $comisiones = $this->comisionService->byDay($dia);
+            $comisiones = $this->comisionService->byDay(hoy());
             foreach ($comisiones as $elemento) {
                 $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
             }
-            $actividades = Actividad::Dia($dia)
+            $actividades = Actividad::Dia(hoy())
                 ->where('fueraCentro', '=', 1)
                 ->get();
             foreach ($actividades as $actividad) {
@@ -99,7 +80,7 @@ class CreateDailyGuards extends Command
                     $this->creaGuardia($actividad, 'El professor està en Activitat extraescolar', $profesor->dni);
                 }
             }
-            $faltas = Falta::Dia($dia)->get();
+            $faltas = Falta::Dia(hoy())->get();
             foreach ($faltas as $falta) {
                 $this->creaGuardia($falta, 'El professor ha notificado ausencia');
             }
@@ -115,14 +96,6 @@ class CreateDailyGuards extends Command
         }
     }
 
-    /**
-     * Crea les guàrdies associades a una incidència del professorat.
-     *
-     * @param mixed $elemento
-     * @param string $mensaje
-     * @param string|null $idProfesor
-     * @return void
-     */
     private function creaGuardia($elemento, $mensaje, $idProfesor = null)
     {
         $idProfesor = $idProfesor ? $idProfesor : $elemento->idProfesor;
@@ -158,47 +131,30 @@ class CreateDailyGuards extends Command
     }
 
 
-    /**
-     * Guarda una guàrdia de forma idempotent.
-     *
-     * Les guàrdies base només s'insereixen si no existeixen. Les guàrdies amb
-     * incidència actualitzen el registre existent perquè prevalga el motiu.
-     *
-     * @param array<string, mixed> $dades
-     * @return void
-     */
-    private function saveGuardia(array $dades): void
+    private function saveGuardia($dades)
     {
-        $now = Carbon::now();
-        $row = [
-            'idProfesor' => $dades['idProfesor'],
-            'dia' => $dades['dia'],
-            'hora' => $dades['hora'],
-            'realizada' => $dades['realizada'],
-            'observaciones' => $dades['observaciones'] ?? '',
-            'obs_personal' => $dades['obs_personal'] ?? '',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ];
-
-        if ($row['observaciones'] === '') {
-            Guardia::insertOrIgnore([$row]);
-            return;
+        $guardia = Guardia::where('idProfesor', $dades['idProfesor'])
+                ->where('dia', $dades['dia'])
+                ->where('hora', $dades['hora'])
+                ->first();
+        if (!$guardia) {
+            $guardia = new Guardia();
+            foreach ($dades as $key => $value) {
+                $guardia->$key = $value;
+            }
+            $guardia->save();
+        } else {
+            if ($dades['observaciones'] != '') {
+                $guardia->realizada = 0;
+                $guardia->observaciones = $dades['observaciones'];
+            }
         }
-
-        Guardia::upsert(
-            [$row],
-            ['idProfesor', 'dia', 'hora'],
-            ['realizada', 'observaciones', 'updated_at']
-        );
     }
 
     /**
-     * Crea les guàrdies base del dia segons l'horari.
-     *
-     * @return void
+     * @return mixed
      */
-    private function createGuardias(): void
+    private function createGuardias()
     {
         $diaSemana = nameDay(hoy());
         foreach ($this->horarioService->guardiaAllByDia((string) $diaSemana) as $horario) {

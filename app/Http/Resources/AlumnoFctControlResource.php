@@ -4,9 +4,6 @@ namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * Recurs JSON lleuger per seleccionar i controlar alumnat assignat a una FCT.
- */
 class AlumnoFctControlResource extends JsonResource
 {
     /**
@@ -21,7 +18,6 @@ class AlumnoFctControlResource extends JsonResource
             'id' => $this->id,
             'centro' => $this->Fct->Colaboracion->Centro->nombre,
             'nombre' => $this->Alumno->fullName,
-            'nombre_corto' => $this->Alumno->shortName,
             'a56' => $this->a56,
             'desde' => $this->desde,
             'hasta' => $this->hasta,
@@ -29,3 +25,5 @@ class AlumnoFctControlResource extends JsonResource
         ];
     }
 }
+
+

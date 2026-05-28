@@ -8,7 +8,7 @@
         @yield('css')
     </head>
  @yield('body')
-    @if (!View::hasSection('hideFooter') && authUser() && authUser()->email)
+    @if (authUser() && authUser()->email)
     <footer>
         <p>Assumpte: Instruccions Importants per al Reenviament de Correus.
         Benvolgut/da destinatari/ària, si necessites <strong>reenviar este correu</strong>  a una altra persona,

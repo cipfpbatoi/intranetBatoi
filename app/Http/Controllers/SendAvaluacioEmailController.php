@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Seeder;
 use Intranet\Mail\MatriculaAlumne;
 use Intranet\Exceptions\NotFoundDomainException;
-use Intranet\Services\UI\AppAlert as Alert;
+use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
 use Intranet\Http\Requests\SendAvaluacioEmailStoreRequest;
 use Illuminate\Support\Str;

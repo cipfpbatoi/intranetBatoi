@@ -5,9 +5,6 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\School\SignaturaStatusService;
 
-/**
- * Model de documents d'annexos pendents de signatura.
- */
 class Signatura extends Model
 {
 
@@ -63,33 +60,6 @@ class Signatura extends Model
                 'signed' => $signat,
             ]
         );
-    }
-
-    /**
-     * Normalitza el tipus d'annex segons la modalitat real de l'FCT.
-     *
-     * Les pujades manuals només exposen `A1/A2/A3/A5`, però els fluxos SAO
-     * guarden `...DUAL` quan correspon. Si no resolem ací el tipus real,
-     * direcció acaba firmant amb coordenades del model incorrecte.
-     */
-    public static function normalizeTipusForAlumnoFct(string $tipus, ?AlumnoFct $alumnoFct): string
-    {
-        $normalized = strtoupper(trim($tipus));
-        if ($normalized === '' || str_ends_with($normalized, 'DUAL') || !$alumnoFct || !$alumnoFct->Fct) {
-            return $normalized;
-        }
-
-        if ($normalized === 'A1') {
-            return $alumnoFct->Fct->dual ? 'A1DUAL' : 'A1';
-        }
-
-        if (in_array($normalized, ['A2', 'A3', 'A5'], true)) {
-            return (int) ($alumnoFct->Fct->asociacion ?? 0) >= 3
-                ? $normalized . 'DUAL'
-                : $normalized;
-        }
-
-        return $normalized;
     }
 
     public function getProfesorAttribute()

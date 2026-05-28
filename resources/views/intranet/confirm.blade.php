@@ -5,31 +5,16 @@
     </x-modal>
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var modalElement = document.getElementById('dialogo');
-                if (!modalElement) {
-                    return;
-                }
-
-                if (window.bootstrap && window.bootstrap.Modal) {
-                    window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
-                }
-
-                var confirmButton = modalElement.querySelector('button.btn.btn-primary');
-                if (confirmButton) {
-                    confirmButton.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        window.location.href = '{{ $route }}';
-                    });
-                }
-
-                var cancelButton = modalElement.querySelector('button.btn.btn-secondary');
-                if (cancelButton) {
-                    cancelButton.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        window.location.href = '{{ $back }}';
-                    });
-                }
+            $(function () {
+                $("#dialogo").modal("show");
+            });
+            $('button.btn.btn-primary').on('click', function (event) {
+                event.preventDefault();
+                location.href= '{{ $route }}';
+            });
+            $('button.btn.btn-default').on('click', function (event) {
+                event.preventDefault();
+                location.href= '{{ $back }}';
             });
         </script>
     @endpush

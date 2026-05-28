@@ -8,10 +8,10 @@
                        @yield('titulo')
                     </x-layouts.titlebar>
                     <div class="x_content">
-                        {!! \Intranet\Services\UI\AppAlert::render() !!}
+                        @yield('content')
                     </div>
                     <div class="x_content">
-                        @yield('content')
+                        {!! \Intranet\Services\UI\AppAlert::render() !!}
                     </div>
                 </div>
             </div>

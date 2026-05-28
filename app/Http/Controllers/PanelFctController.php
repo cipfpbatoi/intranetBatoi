@@ -45,10 +45,7 @@ class PanelFctController extends IntranetController
      * @var array
      */
     protected $vista = ['show' => 'fct'];
-    /**
-     * @var array<string, array<int, string>>
-     */
-    protected $parametresVista = ['modal' => ['contacto', 'contactoAl', 'seleccion']];
+    protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
 
 
 
@@ -82,7 +79,6 @@ class PanelFctController extends IntranetController
     {
         Gate::authorize('viewAny', Fct::class);
         $todos = $this->search();
-        Session::forget('pestana');
         $this->setTabs(
             [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",

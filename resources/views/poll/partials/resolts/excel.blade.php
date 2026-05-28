@@ -4,7 +4,7 @@
     <tr>
         <th>Resultat Enquesta {{$poll->title}}</th>
         @foreach ($options_numeric as $item)
-            <th>{{ $item->question_label }}</th>
+            <th>{{ $item->question }}</th>
         @endforeach
     </tr>
     </thead>
