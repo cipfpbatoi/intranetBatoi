@@ -36,6 +36,7 @@ yarn-error.log
 /public/mix-manifest.json
 /tests/Browser/screenshots/failure-Tests_*
 
-# Claude Code (configuració local per programador)
+# Claude Code (configuració local per programador; commands/ és compartit)
 .claude/
+!.claude/commands/
 schedule.log
