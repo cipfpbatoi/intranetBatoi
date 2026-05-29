@@ -2,7 +2,7 @@
 
 > **Font autoritzada compartida.** Aquest fitxer és la guia única per a qualsevol agent (Codex, Claude, Cursor, etc.). El coneixement de domini i les referències detallades viuen a [`docs/agents/`](docs/agents/) i s'enllacen al final.
 >
-> **Com està organitzat el repo per a agents:** [`docs/agents/tetris.md`](docs/agents/tetris.md) (les 4 peces, la Regla Zero i la regla de l'adaptador prim per a configs d'IA).
+> **Com està organitzat el repo per a agents i com s'usa al dia a dia:** [`docs/agents/tetris.md`](docs/agents/tetris.md) (les 4 peces, la Regla Zero, receptes per escenari i la regla de l'adaptador prim per a configs d'IA).
 
 ## Pre-flight Checklist
 
@@ -121,7 +121,7 @@ Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Intercanvi de toke
 
 Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant abans de tocar el seu àrea. Índex complet: [`docs/agents/README.md`](docs/agents/README.md).
 
-- [`docs/agents/tetris.md`](docs/agents/tetris.md) — mapa del repo: les 4 peces, la Regla Zero i la regla de l'adaptador prim per a configs d'IA.
+- [`docs/agents/tetris.md`](docs/agents/tetris.md) — mapa del repo i **guia d'ús**: les 4 peces, la Regla Zero, receptes per escenari i la regla de l'adaptador prim per a configs d'IA.
 - [`docs/agents/conventions.md`](docs/agents/conventions.md) — convencions generals del repo (resum operatiu).
 - [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) — execució de tests, scripts Composer, Selenium/Docker.
 - **FCT** (annexos, signatures, SAO):
