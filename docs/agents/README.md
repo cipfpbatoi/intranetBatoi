@@ -4,6 +4,8 @@ Documents vius per a agents d'IA. Cada fitxer té **alta cohesió** (tot el que 
 
 Quan la IA es comporta malament en un domini, **refines el fitxer** corresponent; no el prompt.
 
+> **Comença ací si véns de nou:** [`tetris.md`](tetris.md) explica com està organitzat el repo per a treballar amb agents (les 4 peces, la Regla Zero i la regla de l'adaptador prim per a configs d'IA).
+
 ## Convencions generals
 
 | Fitxer | Contingut |
