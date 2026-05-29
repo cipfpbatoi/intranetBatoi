@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSpec"
+  short_description: "Flux de 3 passos amb aprovació humana."
+  default_prompt: "Usa este skill per a implementar amb el flux OpenSpec: propose → apply → archive."

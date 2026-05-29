@@ -1,0 +1,4 @@
+interface:
+  display_name: "Intranet Batoi Activitats"
+  short_description: "Activitats complementàries i extraescolars."
+  default_prompt: "Usa este skill per a canvis en activitats: tipus, ubicació, transport, coordinador o PDFs."

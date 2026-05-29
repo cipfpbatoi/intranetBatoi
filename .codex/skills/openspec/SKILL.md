@@ -1,45 +1,16 @@
 ---
 name: openspec
-description: Flux OpenSpec de tres passos per a implementar funcionalitats amb aprovació humana. Usa quan l'usuari demana un nou feature, modificació de comportament existent, o quan cal escriure una spec BDD (Given/When/Then) abans d'implementar. Els tres passos són: propose (analitza i proposa spec), apply (implementa la spec aprovada), archive (valida tests i tanca).
+description: Flux OpenSpec de tres passos per a implementar funcionalitats amb aprovació humana. Usa quan l'usuari demana un nou feature, modificació de comportament existent, o quan cal escriure una spec BDD (Given/When/Then) abans d'implementar. Els tres passos són propose (analitza i proposa spec), apply (implementa la spec aprovada) i archive (valida tests i tanca).
 ---
 
-# OpenSpec — Flux d'implementació amb aprovació humana
+# OpenSpec — adaptador per a Codex
 
-Tres passos que obliguen l'agent a parar i esperar confirmació humana abans de passar al següent.
+> **Adaptador prim.** Esta skill només és el punt d'entrada de Codex al flux. Les instruccions completes i autoritzades viuen a la **font canònica agnòstica**: [`docs/agents/openspec.md`](../../../docs/agents/openspec.md). Llig-la i segueix-la.
 
-## Pas 1: propose
+Tres passos que obliguen a parar i esperar confirmació humana abans del següent:
 
-**Trigger**: `opsx-propose <descripció del requeriment>`
+1. **propose** (`opsx-propose <requeriment>`) — analitza, genera escenaris BDD + regles + fitxers + riscos, escriu `Status: awaiting_approval` i s'atura. **No escriu codi.**
+2. **apply** (`opsx-apply`) — implementa **únicament** la spec aprovada amb tests, escriu `Status: ready_for_review` i s'atura.
+3. **archive** (`opsx-archive`) — valida tests, marca escenaris `✅`, suggereix el commit (`#issue`), escriu `Status: ready_to_commit`. **No fa el commit.**
 
-1. Llig `AGENTS.md` i el doc de domini de `docs/agents/`.
-2. Analitza el requeriment.
-3. Genera escenaris BDD (Given/When/Then), regles de negoci, fitxers afectats i riscos.
-4. Escriu `Status: awaiting_approval` i s'atura.
-
-**No escriu codi.**
-
-## Pas 2: apply
-
-**Trigger**: `opsx-apply` (després que l'usuari aprove la spec)
-
-1. Verifica que hi ha una spec aprovada.
-2. Implementa **únicament** el que descriu la spec.
-3. Crea tests per a cada escenari de la spec.
-4. Escriu `Status: ready_for_review` i s'atura.
-
-## Pas 3: archive
-
-**Trigger**: `opsx-archive` (després de revisar el codi)
-
-1. Executa els tests; si fallen, para amb `Status: tests_failing`.
-2. Actualitza `specs/<domini>.md` marcant escenaris amb `✅`.
-3. Suggereix el missatge de commit (amb prefix i `#issue`).
-4. Escriu `Status: ready_to_commit` i s'atura.
-
-**No fa el commit.** L'usuari confirma.
-
-## Referències
-
-- Documentació completa: [`docs/agents/openspec.md`](../../../docs/agents/openspec.md)
-- Specs de domini: [`specs/`](../../../specs/)
-- Plantilles de prompt: [`prompts/`](../../../prompts/)
+El detall de cada pas, els formats d'eixida i les regles del flux estan a [`docs/agents/openspec.md`](../../../docs/agents/openspec.md). Specs de domini: [`specs/`](../../../specs/). Plantilles de prompt: [`prompts/`](../../../prompts/).

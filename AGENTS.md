@@ -1,6 +1,8 @@
 # Repository Guidelines
 
 > **Font autoritzada compartida.** Aquest fitxer és la guia única per a qualsevol agent (Codex, Claude, Cursor, etc.). El coneixement de domini i les referències detallades viuen a [`docs/agents/`](docs/agents/) i s'enllacen al final.
+>
+> **Com està organitzat el repo per a agents:** [`docs/agents/tetris.md`](docs/agents/tetris.md) (les 4 peces, la Regla Zero i la regla de l'adaptador prim per a configs d'IA).
 
 ## Pre-flight Checklist
 
@@ -119,6 +121,7 @@ Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Intercanvi de toke
 
 Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant abans de tocar el seu àrea. Índex complet: [`docs/agents/README.md`](docs/agents/README.md).
 
+- [`docs/agents/tetris.md`](docs/agents/tetris.md) — mapa del repo: les 4 peces, la Regla Zero i la regla de l'adaptador prim per a configs d'IA.
 - [`docs/agents/conventions.md`](docs/agents/conventions.md) — convencions generals del repo (resum operatiu).
 - [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) — execució de tests, scripts Composer, Selenium/Docker.
 - **FCT** (annexos, signatures, SAO):
@@ -149,4 +152,10 @@ La IA que genera el codi no el revisa. Usar agents de motors diferents com a rev
 
 Plantilles per a tasques repetides (regla de les 3 vegades). Índex: [`prompts/README.md`](prompts/README.md).
 
-> Per a Codex, les fonts de domini s'invoquen via les skills de `.codex/skills/` (`intranet-batoi-general`, `intranet-batoi-fct`, `intranet-batoi-activitats`). Altres agents (Claude, Cursor, etc.) poden llegir-los directament.
+## Configuracions específiques per motor
+
+Les instruccions (fluxos, criteris, coneixement) viuen **una sola vegada** en una font canònica agnòstica (`docs/`, `specs/`, `prompts/`). Els fitxers de cada motor són **adaptadors prims** que només afigen el seu *glue* i apunten a eixa font. Detall i taula: [`docs/agents/tetris.md`](docs/agents/tetris.md) § «regla de l'adaptador prim».
+
+- **Codex**: skills a `.codex/skills/` (`intranet-batoi-general`, `intranet-batoi-fct`, `intranet-batoi-activitats`, `openspec`).
+- **Claude Code**: slash commands a `.claude/commands/` (`opsx-propose`, `opsx-apply`, `opsx-archive`, `ia-review`).
+- **Altres** (Cursor, etc.): poden llegir les fonts canòniques directament.
