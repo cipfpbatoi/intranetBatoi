@@ -16,6 +16,7 @@ Intranet del CIP FP Batoi. Documentació organitzada per tipus (alta cohesió, b
 
 ## Accés ràpid
 
+- 📐 [Filosofia Tetris: mapa i guia d'ús amb IA](agents/tetris.md) — com treballem amb agents (comença ací)
 - [Manual del Professor](manuals/manual-profe.md)
 - [Manual del Tutor de pràctiques](manuals/manual-fct.md)
 - [Preguntes freqüents](governance/faqs.md)
