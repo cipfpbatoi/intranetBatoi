@@ -523,6 +523,268 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame(1, $result['stats']['grup']['1CAE'][40]['count']);
     }
 
+    public function test_all_votes_alumno_fct_filtra_resultats_pel_curs_de_la_poll(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Sanitat',
+            'vliteral' => 'Sanitat',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'Cures auxiliars',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => '1CAE', 'nombre' => '1CAE', 'idCiclo' => 8, 'curso' => 1],
+            ['codigo' => '2CAE', 'nombre' => '2CAE', 'idCiclo' => 8, 'curso' => 2],
+        ]);
+
+        DB::table('alumnos')->insert([
+            [
+                'nia' => 'NIA10',
+                'dni' => 'DNI10',
+                'nombre' => 'Ada',
+                'apellido1' => 'Lovelace',
+                'apellido2' => 'Test',
+                'email' => 'ada@test.local',
+            ],
+            [
+                'nia' => 'NIA20',
+                'dni' => 'DNI20',
+                'nombre' => 'Grace',
+                'apellido1' => 'Hopper',
+                'apellido2' => 'Test',
+                'email' => 'grace@test.local',
+            ],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => 'NIA10', 'idGrupo' => '1CAE'],
+            ['idAlumno' => 'NIA20', 'idGrupo' => '2CAE'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            'id' => 100,
+            'idCiclo' => 8,
+        ]);
+
+        DB::table('fcts')->insert([
+            'id' => 200,
+            'idColaboracion' => 100,
+        ]);
+
+        DB::table('alumno_fcts')->insert([
+            ['idFct' => 200, 'idAlumno' => 'NIA10'],
+            ['idFct' => 200, 'idAlumno' => 'NIA20'],
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Valoració FE alumnat',
+            'what' => 'AlumnoFct',
+            'anonymous' => 1,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Enquesta valoració FE Alumnat de 1er',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+            'curs' => 1,
+        ]);
+
+        DB::table('options')->insert([
+            'id' => 41,
+            'question' => 'Valora l’empresa',
+            'scala' => 10,
+            'choices' => null,
+            'idCiclo' => null,
+            'ppoll_id' => $idPPoll,
+        ]);
+
+        DB::table('votes')->insert([
+            [
+                'idPoll' => $idPoll,
+                'user_id' => md5('NIA10'),
+                'option_id' => 41,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 9,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => md5('NIA20'),
+                'option_id' => 41,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 1,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $grupo1 = new Grupo();
+        $grupo1->codigo = '1CAE';
+        $grupo2 = new Grupo();
+        $grupo2->codigo = '2CAE';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo1, $grupo2]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertSame(9.0, $result['stats']['all'][41]['avg']);
+        $this->assertSame(1, $result['stats']['all'][41]['count']);
+        $this->assertTrue($result['hasVotes']['grup']['1CAE']);
+        $this->assertFalse($result['hasVotes']['grup']['2CAE']);
+        $this->assertSame(9.0, $result['stats']['grup']['1CAE'][41]['avg']);
+        $this->assertSame(1, $result['stats']['grup']['1CAE'][41]['count']);
+        $this->assertSame(1, $result['stats']['cicle'][8][41]['count']);
+        $this->assertSame(1, $result['stats']['departament'][1][41]['count']);
+    }
+
+    public function test_all_votes_fct_de_tutor_agrupa_una_mateixa_poll_per_grups_de_primer_i_segon(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Sanitat',
+            'vliteral' => 'Sanitat',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'Cures auxiliars',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => '1CAE', 'nombre' => '1CAE', 'idCiclo' => 8, 'curso' => 1],
+            ['codigo' => '2CAE', 'nombre' => '2CAE', 'idCiclo' => 8, 'curso' => 2],
+        ]);
+
+        DB::table('alumnos')->insert([
+            [
+                'nia' => 'NIA10',
+                'dni' => 'DNI10',
+                'nombre' => 'Ada',
+                'apellido1' => 'Lovelace',
+                'apellido2' => 'Test',
+                'email' => 'ada@test.local',
+            ],
+            [
+                'nia' => 'NIA20',
+                'dni' => 'DNI20',
+                'nombre' => 'Grace',
+                'apellido1' => 'Hopper',
+                'apellido2' => 'Test',
+                'email' => 'grace@test.local',
+            ],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => 'NIA10', 'idGrupo' => '1CAE'],
+            ['idAlumno' => 'NIA20', 'idGrupo' => '2CAE'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            'id' => 100,
+            'idCiclo' => 8,
+        ]);
+
+        DB::table('fcts')->insert([
+            ['id' => 200, 'idColaboracion' => 100],
+            ['id' => 201, 'idColaboracion' => 100],
+        ]);
+
+        DB::table('alumno_fcts')->insert([
+            ['idFct' => 200, 'idAlumno' => 'NIA10'],
+            ['idFct' => 201, 'idAlumno' => 'NIA20'],
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Enquesta tutor avaluació FCT',
+            'what' => 'Fct',
+            'anonymous' => 0,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Enquesta Tutor Avaluació FE',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+            'curs' => null,
+        ]);
+
+        DB::table('options')->insert([
+            'id' => 42,
+            'question' => 'Valora la FE',
+            'scala' => 10,
+            'choices' => null,
+            'idCiclo' => null,
+            'ppoll_id' => $idPPoll,
+        ]);
+
+        DB::table('votes')->insert([
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'PROF1',
+                'option_id' => 42,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 9,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'PROF2',
+                'option_id' => 42,
+                'idOption1' => 201,
+                'idOption2' => null,
+                'value' => 5,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $grupo1 = new Grupo();
+        $grupo1->codigo = '1CAE';
+        $grupo2 = new Grupo();
+        $grupo2->codigo = '2CAE';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo1, $grupo2]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertSame(7.0, $result['stats']['all'][42]['avg']);
+        $this->assertSame(2, $result['stats']['all'][42]['count']);
+        $this->assertTrue($result['hasVotes']['grup']['1CAE']);
+        $this->assertTrue($result['hasVotes']['grup']['2CAE']);
+        $this->assertSame(9.0, $result['stats']['grup']['1CAE'][42]['avg']);
+        $this->assertSame(5.0, $result['stats']['grup']['2CAE'][42]['avg']);
+        $this->assertSame(1, $result['stats']['grup']['1CAE'][42]['count']);
+        $this->assertSame(1, $result['stats']['grup']['2CAE'][42]['count']);
+    }
+
     /**
      * Crea una plantilla d'enquesta mínima per als tests del workflow.
      *
@@ -570,6 +832,7 @@ class PollWorkflowServiceTest extends TestCase
             $table->string('title')->nullable();
             $table->date('desde')->nullable();
             $table->date('hasta')->nullable();
+            $table->unsignedTinyInteger('curs')->nullable();
             $table->unsignedInteger('idPPoll');
         });
 
@@ -673,7 +936,7 @@ class WorkflowTestModel extends ModelPoll
         return 'dni';
     }
 
-    public static function loadPoll($votes)
+    public static function loadPoll($votes, ?Poll $poll = null)
     {
         self::$lastVotesInput = is_array($votes) ? $votes : [];
 

@@ -8,10 +8,14 @@
 
 namespace Intranet\Entities\Poll;
 
+use Illuminate\Support\Collection;
 
+/**
+ * Contracte base per als diferents tipus d'enquesta.
+ */
 abstract class ModelPoll
 {
-    public static function loadPoll($votes)
+    public static function loadPoll($votes, ?Poll $poll = null)
     {}
     public static function loadVotes($id)
     {}
@@ -29,10 +33,18 @@ abstract class ModelPoll
     {
         return class_basename(static::class);
     }
-    public static function aggregate(&$votes, $option1, $option2)
+    public static function aggregate(&$votes, $option1, $option2, ?Poll $poll = null)
     {}
 
-    public static function has()
+    /**
+     * Permet al model descartar respostes que no corresponen al context de la poll.
+     */
+    public static function filterVotesForPoll(Collection $votes, Poll $poll): Collection
+    {
+        return $votes;
+    }
+
+    public static function has(?Poll $poll = null)
     {
         return true;
     }

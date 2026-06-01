@@ -2,7 +2,9 @@
 
 namespace Intranet\Entities\Poll;
 
+use Illuminate\Support\Collection;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Grupo;
 
 /**
  * Tipus d'enquesta de valoració FCT contestada per l'alumnat.
@@ -15,7 +17,7 @@ class AlumnoFct extends ModelPoll
      * @param array<mixed> $votes
      * @return \Illuminate\Support\Collection<int, array{option1: \Intranet\Entities\Fct}>|null
      */
-    public static function loadPoll($votes)
+    public static function loadPoll($votes, ?Poll $poll = null)
     {
         $alumno = authUser();
         $fcts = collect();
@@ -25,6 +27,10 @@ class AlumnoFct extends ModelPoll
             ->whereNotIn('fcts.id', $votes)
             ->get();
         foreach ($alumnos as $fct) {
+            if (!self::matchesPollCourse($fct, $poll)) {
+                continue;
+            }
+
             $fcts->push(['option1'=>$fct]);
         }
         if (count($fcts)) {
@@ -67,7 +73,7 @@ class AlumnoFct extends ModelPoll
      * @param iterable<mixed> $option2
      * @return void
      */
-    public static function aggregate(&$votes, $option1, $option2)
+    public static function aggregate(&$votes, $option1, $option2, ?Poll $poll = null)
     {
         foreach ($option1 as $idFct => $vote) {
             $fct = Fct::with(['Colaboracion.Ciclo', 'Alumnos.Grupo'])->find($idFct);
@@ -105,23 +111,52 @@ class AlumnoFct extends ModelPoll
     }
 
     /**
-     * Construeix un mapa `nia|md5(nia) => codi de grup` per als alumnes de la FCT.
-     *
-     * @return array<string, string>
+     * Descarta els vots que no pertanyen al curs configurat en la poll.
      */
+    public static function filterVotesForPoll(Collection $votes, Poll $poll): Collection
+    {
+        if ($poll->curs === null) {
+            return $votes;
+        }
+
+        $course = (int) $poll->curs;
+        if (!in_array($course, [1, 2], true)) {
+            return $votes;
+        }
+
+        $fcts = Fct::with(['Colaboracion.Ciclo', 'Alumnos.Grupo'])
+            ->whereIn('id', $votes->pluck('idOption1')->filter()->unique()->values())
+            ->get()
+            ->keyBy('id');
+
+        return $votes
+            ->filter(function ($vote) use ($course, $fcts): bool {
+                $fct = $fcts->get($vote->idOption1);
+                $cicloId = $fct?->Colaboracion?->Ciclo?->id;
+                if (!$fct || $cicloId === null) {
+                    return false;
+                }
+
+                $group = self::groupByRespondent($fct, (int) $cicloId, (string) ($vote->user_id ?? ''));
+
+                return $group !== null && (int) $group->curso === $course;
+            })
+            ->values();
+    }
+
     private static function groupsByRespondent(Fct $fct, int $cicloId): array
     {
         $groups = [];
 
         foreach ($fct->Alumnos as $alumno) {
-            $groupCode = self::resolveStudentGroupCode($alumno, $cicloId);
-            if ($groupCode === null) {
+            $group = self::resolveStudentGroup($alumno, $cicloId);
+            if (!$group instanceof Grupo) {
                 continue;
             }
 
             $nia = (string) $alumno->nia;
-            $groups[$nia] = $groupCode;
-            $groups[md5($nia)] = $groupCode;
+            $groups[$nia] = (string) $group->codigo;
+            $groups[md5($nia)] = (string) $group->codigo;
         }
 
         return $groups;
@@ -130,12 +165,48 @@ class AlumnoFct extends ModelPoll
     /**
      * Resol el grup de l'alumne dins del mateix cicle que la FCT.
      */
-    private static function resolveStudentGroupCode(object $alumno, int $cicloId): ?string
+    private static function resolveStudentGroup(object $alumno, int $cicloId): ?Grupo
     {
         foreach ($alumno->Grupo ?? [] as $grupo) {
             if ((int) ($grupo->idCiclo ?? 0) === $cicloId) {
-                return (string) $grupo->codigo;
+                return $grupo;
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Determina si la FCT correspon al curs configurat en la poll.
+     */
+    private static function matchesPollCourse(Fct $fct, ?Poll $poll): bool
+    {
+        if (!$poll || $poll->curs === null) {
+            return true;
+        }
+
+        $cicloId = $fct->Colaboracion?->Ciclo?->id;
+        if ($cicloId === null) {
+            return false;
+        }
+
+        $group = self::groupByRespondent($fct, (int) $cicloId, (string) authUser()->id);
+
+        return $group !== null && (int) $group->curso === (int) $poll->curs;
+    }
+
+    /**
+     * Retorna el grup del respondedor en la FCT, compatible amb polls anònimes.
+     */
+    private static function groupByRespondent(Fct $fct, int $cicloId, string $respondent): ?Grupo
+    {
+        foreach ($fct->Alumnos as $alumno) {
+            $nia = (string) $alumno->nia;
+            if (!in_array($respondent, [$nia, md5($nia)], true)) {
+                continue;
+            }
+
+            return self::resolveStudentGroup($alumno, $cicloId);
         }
 
         return null;
@@ -149,8 +220,12 @@ class AlumnoFct extends ModelPoll
     /**
      * Indica si l'usuari autenticat té FCT disponibles per contestar.
      */
-    public static function has()
+    public static function has(?Poll $poll = null)
     {
-        return count(authUser()->fcts);
+        if ($poll === null || $poll->curs === null) {
+            return count(authUser()->fcts);
+        }
+
+        return self::loadPoll([], $poll) !== null;
     }
 }
