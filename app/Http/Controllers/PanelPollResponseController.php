@@ -44,7 +44,7 @@ class PanelPollResponseController extends PollController
         $usuario = [];
         foreach ($activas as $activa) {
             $modelo = $activa->modelo;
-            if ($modelo::has() && $this->hasVisibleQuestionsForUser($activa, $mustFilterByCycle, $userCicleId)) {
+            if ($modelo::has($activa) && $this->hasVisibleQuestionsForUser($activa, $mustFilterByCycle, $userCicleId)) {
                 $usuario[] = $activa;
             }
         }

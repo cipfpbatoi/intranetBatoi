@@ -23,7 +23,7 @@ class Alumno extends ModelPoll
      * @param array<mixed> $votes
      * @return Collection<int, array{option1: object}>|null
      */
-    public static function loadPoll($votes)
+    public static function loadPoll($votes, ?Poll $poll = null)
     {
         if (count($votes)) {
             return null;
@@ -87,7 +87,7 @@ class Alumno extends ModelPoll
      * @param iterable<mixed> $option2
      * @return void
      */
-    public static function aggregate(&$votes, $option1, $option2): void
+    public static function aggregate(&$votes, $option1, $option2, ?Poll $poll = null): void
     {
         foreach (AlumnoEntity::with(['Grupo.Ciclo'])->get() as $alumno) {
             $grupo = $alumno->Grupo->first();
@@ -120,7 +120,7 @@ class Alumno extends ModelPoll
     /**
      * Determina si l'alumne autenticat té context suficient per a respondre.
      */
-    public static function has()
+    public static function has(?Poll $poll = null)
     {
         $alumno = authUser();
 
