@@ -46,10 +46,7 @@ class ReunionController extends ModalController
 
     use Imprimir;
 
-    /**
-     * Ruta GET de detall/edició usada després d'operacions sobre reunions.
-     */
-    private const REUNION_EDIT = 'reunion.edit';
+    const REUNION_UPDATE = 'reunion.update';
     protected $perfil = 'profesor';
     protected $model = 'Reunion';
     protected $gridFields = ReunionCrudSchema::GRID_FIELDS;
@@ -90,12 +87,6 @@ class ReunionController extends ModalController
         return new Reunion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
     }
 
-    /**
-     * Dona d'alta una reunió i obri la pantalla d'edició/detall creada.
-     *
-     * @param ReunionStoreRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(ReunionStoreRequest $request)
     {
         $this->authorize('create', Reunion::class);
@@ -111,7 +102,7 @@ class ReunionController extends ModalController
         if ($elemento->fichero != '') {
             return back();
         }
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $elemento->id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $elemento->id]);
     }
 
 
@@ -187,7 +178,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->addProfesor($reunion, (string) $request->idProfesor);
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function borrarProfesor($reunion_id, $profesor_id)
@@ -196,7 +187,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->removeProfesor($reunion, (string) $profesor_id);
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function borrarAlumno($reunion_id, $alumno_id)
@@ -205,7 +196,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->removeAlumno($reunion, (string) $alumno_id);
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function altaAlumno(Request $request, $reunion_id)
@@ -213,7 +204,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->addAlumno($reunion, (string) $request->idAlumno, (int) $request->capacitats);
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function altaOrden(OrdenReunionStoreRequest $request, $reunion_id)
@@ -226,7 +217,7 @@ class ReunionController extends ModalController
             $request->merge(['orden' => $max + 1]);
         }
         OrdenReunion::create($request->all());
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
 
@@ -265,7 +256,7 @@ class ReunionController extends ModalController
             Alert::danger("No s'ha pogut eliminar l'ordre #{$orden_id}.");
         }
 
-        return redirect()->route(self::REUNION_EDIT, ['reunion' => $reunion_id]);
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function notify($id)
