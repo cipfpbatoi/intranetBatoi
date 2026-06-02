@@ -1,15 +1,10 @@
 'use strict';
-$(document).ready(function () {
-    var $table = $('#datatable');
-    if (!$table.length) { return; }
-
-    function applyOrder() {
-        $table.DataTable({ retrieve: true }).order([2, 'desc']).draw();
+// S'executa síncronament quan el script defer es carrega (abans de DOMContentLoaded
+// i dels callbacks $.ready). Estableix l'ordre per defecte abans que DataTables
+// s'inicialitze, de manera que qualsevol inicialitzador (custom.js, grid.js) el recull.
+(function () {
+    var table = document.getElementById('datatable');
+    if (table && !table.getAttribute('data-order')) {
+        table.setAttribute('data-order', '[[2,"desc"]]');
     }
-
-    if ($.fn.dataTable && $.fn.dataTable.isDataTable($table[0])) {
-        applyOrder();
-    } else {
-        $table.on('init.dt', applyOrder);
-    }
-});
+}());
