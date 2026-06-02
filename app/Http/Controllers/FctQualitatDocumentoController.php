@@ -95,9 +95,10 @@ class FctQualitatDocumentoController extends IntranetController
     /**
      * Mostra el formulari de creació de documentació de qualitat FCT.
      *
+     * @param array<string, mixed> $default
      * @throws NotFoundDomainException
      */
-    public function create()
+    public function create($default = [])
     {
         $this->authorize('create', Documento::class);
 

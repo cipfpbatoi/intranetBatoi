@@ -16,10 +16,10 @@
                     <td>{!! $menor->Fullname !!}</td>
                     <td>
                         @if (!$menor->pivot->autorizado)
-                            <a href="{{ route('actividad.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
+                            <a href="{{ route('actividad.menor.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
                                class="delGrupo">{!! Html::image('img/unauthorized.png',__("messages.buttons.autorizacion"),array('class' => 'iconopequeno','title'=>__("messages.buttons.authorize"))) !!}</a>
                         @else
-                            <a href="{{ route('actividad.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
+                            <a href="{{ route('actividad.menor.autorizacion', ['nia' => $menor->nia, 'id' => $actividad->id]) }}"
                                class="delGrupo">{!! Html::image('img/check.jpeg',__("messages.buttons.unauthorize"),array('class' => 'iconopequeno','title'=>__("messages.buttons.unauthorize"))) !!}</a>
                         @endif
                     </td>
