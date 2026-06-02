@@ -41,5 +41,6 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/actividad/1/gestor', route('actividad.gestor', ['actividad' => 1], false));
         $this->assertSame('/actividadorientacion/create', route('actividad.createOrientacion', absolute: false));
         $this->assertSame('/actividadorientacion/create', route('actividad.storeOrientacion', absolute: false));
+        $this->assertSame('/autorizacion/12345678A/actividad/1', route('actividad.menor.autorizacion', ['nia' => '12345678A', 'id' => 1], false));
     }
 }

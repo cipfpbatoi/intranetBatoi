@@ -267,6 +267,8 @@ Route::post('/centro/create', ['as' => 'centro.store', 'uses' => 'CentroControll
 
 
 Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show', 'edit', 'store']]);
+// Ruta duplicada per URL (POST /empresa/create ja respon via empresa.store → EmpresaController@guarda).
+// Mantinguda amb nom legacy per evitar errors de cache; mai rep requests en pràctica.
 Route::post('/empresa/create', ['as' => 'empresa.store.legacy', 'uses' => 'EmpresaController@store']);
 Route::get('/colaboracion/{colaboracion}/show', ['as' => 'colaboracion.show', 'uses' => 'ColaboracionController@show']);
 Route::get('/colaboracion/{colaboracion}/print', 'ColaboracionController@print');

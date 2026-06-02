@@ -95,7 +95,7 @@ class FctQualitatDocumentoController extends IntranetController
     /**
      * Mostra el formulari de creació de documentació de qualitat FCT.
      *
-     * @param array<string, mixed> $default
+     * @param array<string, mixed> $default Paràmetre opcional requerit per Laravel 13 per a la serialització de rutes (route:cache).
      * @throws NotFoundDomainException
      */
     public function create($default = [])
