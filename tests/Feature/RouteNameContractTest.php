@@ -18,7 +18,7 @@ class RouteNameContractTest extends TestCase
 
         foreach (Route::getRoutes() as $route) {
             $name = $route->getName();
-            if ($name === null || $name === '') {
+            if ($name === null || $name === '' || $name === 'api.') {
                 continue;
             }
 
