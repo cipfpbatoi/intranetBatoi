@@ -403,6 +403,7 @@ Route::get('/lote/{espacio}/barcode/{posicion?}', ['as' => 'lote.barcode', 'uses
 Route::resource('/incidencia', 'IncidenciaController', ['except' => ['destroy', 'store', 'update', 'show']]);
 Route::get('/incidencia/{incidencia}/show', ['as' => 'incidencia.show', 'uses' => 'IncidenciaController@show']);
 Route::get('/incidencia/{incidencia}/delete', ['as' => 'incidencia.destroy', 'uses' => 'IncidenciaController@destroy']);
+Route::post('/incidencia', ['as' => 'incidencia.store.resource', 'uses' => 'IncidenciaController@store']);
 Route::post('/incidencia/create', ['as' => 'incidencia.store', 'uses' => 'IncidenciaController@store']);
 Route::put('/incidencia/{incidencia}/edit', ['as' => 'incidencia.update', 'uses' => 'IncidenciaController@update']);
 Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notification', 'uses' => 'IncidenciaController@notify']);
