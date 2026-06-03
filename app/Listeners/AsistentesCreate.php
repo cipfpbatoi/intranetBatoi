@@ -9,6 +9,9 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Assigna professorat i alumnat convocat quan es crea una reunió.
+ */
 class AsistentesCreate
 {
     private ProfesorService $profesorService;
@@ -59,7 +62,7 @@ class AsistentesCreate
     {
         foreach ($this->queAlumnes($reunion)?? [] as $alumno) {
             // evitem duplicats al pivot
-            if (!$reunion->alumnos()->wherePivot('alumno_nia', $alumno->nia)->exists()) {
+            if (!$reunion->alumnos()->wherePivot('idAlumno', $alumno->nia)->exists()) {
                 $reunion->alumnos()->attach($alumno->nia, ['capacitats' => 3]);
             }
         }
