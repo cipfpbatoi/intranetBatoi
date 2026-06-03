@@ -137,7 +137,7 @@ class PanelFctAvalController extends IntranetController
         $this->cachedElementos = $elementos->map(function (AlumnoFct $fct): AlumnoFct {
             $grupo = $this->resolveGrupoForFct($fct);
             $normativa = $this->resolveNormativa($fct, $grupo);
-            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? 0);
+            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? $grupo?->Ciclo?->tipo ?? 0);
             $requiresProject = false;
             if ($normativa === 'LOE' || $normativa === 'LOGSE') {
                 $requiresProject = $grupo
@@ -218,24 +218,37 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Resol el grup de l'alumne vinculat al cicle de la FCT.
+     * Resol el grup de l'alumne vinculat al cicle de la FCT o a la persona.
      *
      * @param AlumnoFct $fct
      * @return Grupo|null
      */
     private function resolveGrupoForFct(AlumnoFct $fct): ?Grupo
     {
+        $grupos = $fct->Alumno?->Grupo;
+        if (!$grupos || $grupos->isEmpty()) {
+            return null;
+        }
+
         $cicloId = $fct->Fct?->Colaboracion?->idCiclo;
         if (!$cicloId) {
-            return null;
+            return $this->resolveGrupoFromAlumno($grupos);
         }
 
-        $grupos = $fct->Alumno?->Grupo;
-        if (!$grupos) {
-            return null;
-        }
+        return $grupos->firstWhere('idCiclo', $cicloId) ?? $this->resolveGrupoFromAlumno($grupos);
+    }
 
-        return $grupos->firstWhere('idCiclo', $cicloId);
+    /**
+     * Tria el grup més representatiu de l'alumne quan la FCT no aporta cicle.
+     *
+     * @param Collection<int, Grupo> $grupos
+     * @return Grupo|null
+     */
+    private function resolveGrupoFromAlumno(Collection $grupos): ?Grupo
+    {
+        return $grupos
+            ->sortByDesc(fn (Grupo $grupo): int => (int) $grupo->curso)
+            ->first();
     }
 
     /**
@@ -256,6 +269,11 @@ class PanelFctAvalController extends IntranetController
         }
 
         $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
+        if (is_string($normativa) && trim($normativa) !== '') {
+            return strtoupper($normativa);
+        }
+
+        $normativa = $grupo?->Ciclo?->normativa;
         if (is_string($normativa) && trim($normativa) !== '') {
             return strtoupper($normativa);
         }
