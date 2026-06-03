@@ -24,6 +24,7 @@ class GrupoTest extends TestCase
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('alumnos_grupos');
         $schema->dropIfExists('alumnos');
+        $schema->dropIfExists('horas');
         $schema->dropIfExists('horarios');
         $schema->dropIfExists('ciclos');
         $schema->dropIfExists('grupos');
@@ -72,6 +73,13 @@ class GrupoTest extends TestCase
             $table->string('ocupacion')->nullable();
             $table->string('modulo')->nullable();
             $table->timestamps();
+        });
+
+        $schema->create('horas', function (Blueprint $table): void {
+            $table->unsignedInteger('codigo')->primary();
+            $table->string('turno')->nullable();
+            $table->time('hora_ini')->nullable();
+            $table->time('hora_fin')->nullable();
         });
     }
 
@@ -191,6 +199,96 @@ class GrupoTest extends TestCase
         $codigos = Grupo::query()->MisGrupos((object) ['dni' => 'PX'])->pluck('codigo')->all();
 
         $this->assertSame(['GL'], $codigos);
+    }
+
+    public function test_scope_mis_grupos_inclou_grups_del_substituit_encara_que_el_substitut_tinga_horari_propi(): void
+    {
+        config(['constants.modulosNoLectivos' => ['TU01CF', 'TU02CF']]);
+
+        DB::table('profesores')->insert([
+            ['dni' => 'PTIT', 'sustituye_a' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['dni' => 'PSUB', 'sustituye_a' => 'PTIT', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => 'GPROPI', 'nombre' => 'Grup propi', 'tutor' => 'PSUB', 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['codigo' => 'GTIT', 'nombre' => 'Grup titular', 'tutor' => 'PTIT', 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('horarios')->insert([
+            [
+                'idProfesor' => 'PSUB',
+                'idGrupo' => 'GPROPI',
+                'dia_semana' => 'L',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'PTIT',
+                'idGrupo' => 'GTIT',
+                'dia_semana' => 'M',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'M02',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $codigos = Grupo::query()->MisGrupos((object) ['dni' => 'PSUB'])->pluck('codigo')->sort()->values()->all();
+
+        $this->assertSame(['GPROPI', 'GTIT'], $codigos);
+    }
+
+    public function test_scope_mis_grupos_inclou_grup_de_tutoria_encara_que_no_tinga_horari_lectiu(): void
+    {
+        config(['constants.modulosNoLectivos' => ['TU01CF', 'TU02CF']]);
+
+        DB::table('profesores')->insert([
+            ['dni' => 'PTUT', 'sustituye_a' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['dni' => 'PSUT', 'sustituye_a' => 'PTUT', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => 'GTUT', 'nombre' => 'Grup tutoria LOE', 'tutor' => 'PTUT', 'idCiclo' => 1, 'curso' => 2, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $titular = Grupo::query()->MisGrupos((object) ['dni' => 'PTUT'])->pluck('codigo')->all();
+        $substituta = Grupo::query()->MisGrupos((object) ['dni' => 'PSUT'])->pluck('codigo')->all();
+
+        $this->assertSame(['GTUT'], $titular);
+        $this->assertSame(['GTUT'], $substituta);
+    }
+
+    public function test_accessor_torn_usa_primera_hora_lectiva_encara_que_no_siga_dilluns(): void
+    {
+        DB::table('grupos')->insert([
+            ['codigo' => 'GLOE', 'nombre' => 'Grup LOE', 'tutor' => null, 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('horas')->insert([
+            ['codigo' => 2, 'turno' => 'vesprada', 'hora_ini' => '16:00:00', 'hora_fin' => '16:55:00'],
+        ]);
+
+        DB::table('horarios')->insert([
+            [
+                'idProfesor' => 'PTORN',
+                'idGrupo' => 'GLOE',
+                'dia_semana' => 'M',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $grupo = Grupo::query()->findOrFail('GLOE');
+
+        $this->assertSame('V', $grupo->torn);
     }
 
     public function test_accessor_proyecto_retorna_false_si_no_hi_ha_cicle(): void
