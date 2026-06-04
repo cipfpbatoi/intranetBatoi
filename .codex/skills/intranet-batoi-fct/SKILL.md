@@ -1,6 +1,6 @@
 ---
 name: intranet-batoi-fct
-description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when the agent is asked to modify, debug, test, review, or explain FCT features, including alumnado FCT, empresas, centros, instructores, colaboraciones, anexos/annexos, SAO downloads, SignaturaController, /signatura, document PDFs, FCT emails, Annex I/II/III/V, acts, qualifications, or Selenium automation for FCT documents.
+description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when the agent is asked to modify, debug, test, review, or explain FCT features, including alumnado FCT, empresas, centros, instructores, colaboraciones, convalidacions LOE/LFP/LOGSE, anexos/annexos, SAO downloads, SignaturaController, /signatura, document PDFs, FCT emails, Annex I/II/III/V, acts, qualifications, or Selenium automation for FCT documents.
 ---
 
 # Intranet Batoi FCT
@@ -8,7 +8,7 @@ description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when
 ## Workflow
 
 1. Llig `AGENTS.md` i, si cal, també la skill `intranet-batoi-general` (o directament `docs/agents/conventions.md`).
-2. Identifica si la petició és sobre dades FCT, generació de documents, descàrregues SAO, signatures, text d'email, o avaluació/actes.
+2. Identifica si la petició és sobre dades FCT, convalidacions, generació de documents, descàrregues SAO, signatures, text d'email, o avaluació/actes.
 3. Comença per la ruta:
    - Rutes de professor: `routes/profesor.php`.
    - Signatura compartida (pujada/PDF): `routes/todos.php`.
@@ -17,6 +17,7 @@ description: Guia per treballar en els fluxos FCT de la intranet Batoi. Use when
 4. Traça controlador, relacions de model, serveis, vistes i plantilles de correu abans d'editar.
 5. Preserva la semàntica existent de `sendTo`/`signed` llevat que l'usuari demane explícitament canviar el workflow.
 6. Per al text a instructors, fes explícit qui signa, quin document i si l'han de retornar.
+7. En convalidacions, no inferisques cicle/normativa directament de `fcts` si no hi ha `idColaboracion`; revisa alumnat associat i usa identificadors concrets de `alumno_fcts` per evitar errors amb alumnes multigrup.
 
 ## Referències compartides (`docs/agents/fct/`)
 

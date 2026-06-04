@@ -10,8 +10,14 @@ Quan la IA es comporta malament en un domini, **refines el fitxer** corresponent
 
 | Fitxer | Contingut |
 |---|---|
-| [`conventions.md`](conventions.md) | Estil de codi, patrons del projecte, commits |
+| [`conventions.md`](conventions.md) | Estil de codi, patrons del projecte, rutes/cache, commits |
 | [`testing-docker.md`](testing-docker.md) | Execució de tests, scripts Composer, Docker/Selenium |
+
+## UI operativa i graelles
+
+| Fitxer | Contingut |
+|---|---|
+| [`ui/grid-datatables.md`](ui/grid-datatables.md) | Components de graella, Panel/Pestana, DataTables, estat buit |
 
 ## FCT (Formació en Centres de Treball)
 
@@ -28,6 +34,12 @@ Dominis: annexos, signatures, SAO, expedients, empreses, col·laboracions.
 | Fitxer | Contingut |
 |---|---|
 | [`activitats/activitats-map.md`](activitats/activitats-map.md) | Rutes, fitxers clau, camps llegats, coordinador, PDFs |
+
+## Notificacions i correu
+
+| Fitxer | Contingut |
+|---|---|
+| [`notificacions/notificacions-map.md`](notificacions/notificacions-map.md) | `NotificationService`, avisos, `MyMail`, reutilització del sistema d'enviament |
 
 ## Specs de comportament
 

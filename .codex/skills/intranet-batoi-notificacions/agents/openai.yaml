@@ -1,0 +1,4 @@
+interface:
+  display_name: "Intranet Batoi Notificacions"
+  short_description: "Notificacions, avisos i correu MyMail."
+  default_prompt: "Usa aquest skill per a missatges, notificacions de panell, avisos, MyMail o investigacions de reutilització del sistema d'enviament."

@@ -84,6 +84,8 @@ No pegues pedaços al prompt cada vegada. **Refina el doc de domini** a `docs/ag
 
 - FCT → [`fct/fct-map.md`](fct/fct-map.md), [`fct/signatures.md`](fct/signatures.md), [`fct/sao-selenium.md`](fct/sao-selenium.md)
 - Activitats → [`activitats/activitats-map.md`](activitats/activitats-map.md)
+- UI/graelles → [`ui/grid-datatables.md`](ui/grid-datatables.md)
+- Notificacions/correu → [`notificacions/notificacions-map.md`](notificacions/notificacions-map.md)
 - Convencions transversals → [`conventions.md`](conventions.md)
 
 Si la norma és global (apareix en >3 prompts de qualsevol domini), va a `AGENTS.md`.
@@ -158,7 +160,7 @@ Cada motor (Claude Code, Codex, Cursor…) té el seu mecanisme propi per a invo
 | `.claude/commands/opsx-*.md` | trigger slash, `$ARGUMENTS`, contracte d'eixida `Status:` | [`openspec.md`](openspec.md) |
 | `.codex/skills/openspec/` | `name`/`description` (YAML), `agents/openai.yaml` | [`openspec.md`](openspec.md) |
 | `.claude/commands/ia-review.md` | trigger slash, `$ARGUMENTS` | [`ia-review-pipeline.md`](ia-review-pipeline.md) |
-| `.codex/skills/intranet-batoi-*` | metadades d'activació de la skill | `docs/agents/**` (conventions, fct, activitats) |
+| `.codex/skills/intranet-batoi-*` | metadades d'activació de la skill | `docs/agents/**` (conventions, fct, activitats, UI, notificacions) |
 
 Així, afegir un motor nou (p. ex. Cursor) és escriure un adaptador prim nou; **mai** reescriure el flux. I corregir un flux és editar un sol fitxer canònic, no N còpies.
 

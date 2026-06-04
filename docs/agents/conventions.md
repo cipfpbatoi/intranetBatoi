@@ -18,6 +18,13 @@
 - Autorització: revisar policies abans de canviar accions sensibles.
 - No duplicar lògica si ja hi ha `Application/*`, `Services/*`, `Finders/*` o `Presentation/*`.
 
+## Rutes I Cache
+
+- `php artisan route:cache` és una comprovació de contracte per a desplegament; no deixes noms de ruta duplicats.
+- Si elimines mètodes d'un `Route::resource()` per evitar duplicats, conserva les URL llegades que ja usen tests o usuaris amb un nom de ruta únic.
+- Exemple de patró: mantindre `POST /incidencia/create` com a ruta legacy i restaurar `POST /incidencia` amb un nom diferent si l'endpoint REST existia.
+- Després de tocar rutes, executa `php artisan route:clear`, `php artisan route:cache` i `php artisan test --filter=RouteNameContractTest`. Torna a netejar la cache quan acabes si has generat cache local.
+
 ## Estil
 
 - PHP PSR-12, indentació de 4 espais.

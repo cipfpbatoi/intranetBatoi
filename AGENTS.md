@@ -12,6 +12,8 @@ Completa estos passos **abans d'escriure codi**. Si en falta algun, retorna `Sta
 - [ ] Identificar el domini afectat i llegir el doc corresponent de [`docs/agents/`](docs/agents/).
   - FCT → [`docs/agents/fct/fct-map.md`](docs/agents/fct/fct-map.md)
   - Activitats → [`docs/agents/activitats/activitats-map.md`](docs/agents/activitats/activitats-map.md)
+  - UI/graelles → [`docs/agents/ui/grid-datatables.md`](docs/agents/ui/grid-datatables.md)
+  - Notificacions/correu → [`docs/agents/notificacions/notificacions-map.md`](docs/agents/notificacions/notificacions-map.md)
 - [ ] Confirmar el bounded context: quin model/servei/controlador és el punt d'entrada.
 - [ ] Si existeix un `spec.md` per al domini a [`specs/`](specs/), llegir-lo abans d'implementar.
 
@@ -124,6 +126,8 @@ Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant 
 - [`docs/agents/tetris.md`](docs/agents/tetris.md) — mapa del repo i **guia d'ús**: les 4 peces, la Regla Zero, receptes per escenari i la regla de l'adaptador prim per a configs d'IA.
 - [`docs/agents/conventions.md`](docs/agents/conventions.md) — convencions generals del repo (resum operatiu).
 - [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) — execució de tests, scripts Composer, Selenium/Docker.
+- [`docs/agents/ui/grid-datatables.md`](docs/agents/ui/grid-datatables.md) — graelles, Panel/Pestana, components Blade i DataTables.
+- [`docs/agents/notificacions/notificacions-map.md`](docs/agents/notificacions/notificacions-map.md) — notificacions de panell, avisos, `MyMail` i reutilització de missatgeria.
 - **FCT** (annexos, signatures, SAO):
   - [`docs/agents/fct/fct-map.md`](docs/agents/fct/fct-map.md) — rutes, controladors, entitats, vistes, correus.
   - [`docs/agents/fct/signatures.md`](docs/agents/fct/signatures.md) — flux `/signatura`, `sendTo`/`signed`, plantilles Annex I/II/III/V.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Intranet Batoi UI"
+  short_description: "Graelles, components Blade i DataTables."
+  default_prompt: "Usa aquest skill per a canvis o bugs de graelles, components Blade, Panel UI o DataTables."

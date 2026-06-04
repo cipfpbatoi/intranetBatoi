@@ -1,4 +1,4 @@
 interface:
   display_name: "Intranet Batoi FCT"
-  short_description: "Fluxos FCT, annexos i signatures."
-  default_prompt: "Usa aquest skill per a canvis relacionats amb FCT, annexos, SAO o signatures."
+  short_description: "Fluxos FCT, convalidacions, annexos i signatures."
+  default_prompt: "Usa aquest skill per a canvis relacionats amb FCT, convalidacions, annexos, SAO o signatures."
