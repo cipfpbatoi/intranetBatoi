@@ -11,6 +11,9 @@ use Intranet\Services\Automation\SeleniumService;
 use Intranet\Sao\SaoSyncAction;
 use Intranet\Services\UI\AlertLogger;
 
+/**
+ * Comanda per sincronitzar dades de FCT amb SAO.
+ */
 class SaoConnect extends Command
 {
     protected $signature = 'sao:connect';
@@ -30,10 +33,10 @@ class SaoConnect extends Command
             );
 
             (new SaoSyncAction())->execute($driver,function () {
-                return AlumnoFct::whereNotNull('idSao')
+                return AlumnoFct::query()
                     ->noHaAcabado()
                     ->haEmpezado()
-                    ->activa();
+                    ->pendentSincronitzacioSao();
             });
 
             return Command::SUCCESS;

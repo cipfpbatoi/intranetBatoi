@@ -148,6 +148,8 @@ class PanelFctAvalController extends IntranetController
             $fct->setAttribute('proyecto_requerido', $requiresProject ? 1 : 0);
             $fct->setAttribute('grupo_codigo', $grupo?->codigo);
             $fct->setAttribute('grupo_nombre', $grupo?->nombre);
+            $fct->setAttribute('hores_pendents_sao', $fct->hores_pendents_sao);
+            $fct->setAttribute('requereix_confirmacio_apte', $fct->requereix_confirmacio_apte ? 1 : 0);
 
             return $fct;
         });
@@ -308,10 +310,28 @@ class PanelFctAvalController extends IntranetController
                 'fct.apte',
                 [
                     'img' => 'fa-hand-o-up',
+                    'title' => 'Marcar com a apte',
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '<>', 2
+                        'asociacion', '<>', 2,
+                        'requereix_confirmacio_apte', '==', 0
+                    ]
+                ]
+            ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.apte',
+                [
+                    'img' => 'fa-hand-o-up',
+                    'title' => 'Marcar com a apte amb hores pendents',
+                    'onclick' => "if (!confirm('Aquesta FCT encara té hores pendents de sincronitzar amb SAO. Vols marcar-la com a apta igualment?')) { return false; } this.href += (this.href.indexOf('?') === -1 ? '?' : '&') + 'confirmar_hores=1'; return true;",
+                    'where' => [
+                        'calificacion', '!=', '1',
+                        'actas', '==', 0,
+                        'asociacion', '<>', 2,
+                        'requereix_confirmacio_apte', '==', 1
                     ]
                 ]
             ));
@@ -424,6 +444,16 @@ class PanelFctAvalController extends IntranetController
     protected function apte($id)
     {
         Gate::authorize('manageAval', Fct::class);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        if ($fct->requereix_confirmacio_apte && request('confirmar_hores') !== '1') {
+            Alert::message(
+                "Aquesta FCT encara té {$fct->hores_pendents_sao} hores pendents de sincronitzar amb SAO. Confirma explícitament l'aprovat per continuar.",
+                'warning'
+            );
+
+            return back();
+        }
+
         $this->avals()->apte((int) $id);
 
         return back();
