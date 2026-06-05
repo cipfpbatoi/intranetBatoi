@@ -18,7 +18,7 @@
                         $alumno = $fct->Alumno;
                         $modules = $feNotesData['modulesByStudent']->get((string) $fct->idAlumno, collect());
                     @endphp
-                    <h5>{{ $alumno->nameFull ?? $fct->Nombre }} - {{ $fct->qualificacio }}</h5>
+                    <h5><span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span> - {{ $fct->qualificacio }}</h5>
                     @if ($modules->isEmpty())
                         <p>No hi ha mòduls associats a l'alumne.</p>
                     @else

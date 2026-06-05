@@ -23,6 +23,11 @@
         margin-left: 2rem;
         border-left: 3px solid #d9edf7;
     }
+
+    .reunion-fe-student-name {
+        color: #31708f;
+        font-weight: 700;
+    }
 </style>
 @endsection
 @section('content')
