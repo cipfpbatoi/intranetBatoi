@@ -37,6 +37,10 @@ final class AlumnoFctPresenter
 
     public function centerName(int $length = 30): string
     {
+        if ((int) $this->alumnoFct->calificacion === 5) {
+            return substr('Renúncia / No realitzada', 0, $length);
+        }
+
         return substr((string) ($this->alumnoFct->Fct?->Centro ?? ''), 0, $length);
     }
 

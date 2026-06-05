@@ -108,7 +108,7 @@ return array(
         'unauthorize' => 'Desautorizar',
         'refuse' => 'Rechazar',
         'refused' => 'Rechazadas',
-        'renuncia' => 'Renuncia',
+        'renuncia' => 'Cese',
         'expulsat' => 'Expulsado',
         'pendiente' => 'Asignadas',
         'resta' => 'No asignadas',

@@ -206,7 +206,9 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('Apta Test, Anna - Apte - 120 hores', $summary);
         $this->assertStringContainsString('Noapta Test, Noa - No Apte - 80 hores', $summary);
         $this->assertStringContainsString('Exempta Test, Eva - Convalidat/Exempt', $summary);
-        $this->assertStringContainsString('Renuncia Test, Rita - Renúncia', $summary);
+        $this->assertStringContainsString('<strong>Alumnat en cessament:</strong>', $summary);
+        $this->assertStringContainsString('Cessament Test, Cesc - Cessament', $summary);
+        $this->assertStringContainsString('Renuncia Test, Rita - Renúncia / No realitzada', $summary);
         $this->assertStringContainsString('Loe Test, Laia - Apte - 200 hores', $summary);
     }
 
@@ -235,13 +237,14 @@ class ReunionFeValuationServiceTest extends TestCase
 
         $this->assertStringContainsString('Noapta Test, Noa', $summary);
         $this->assertStringContainsString('Renuncia Test, Rita', $summary);
+        $this->assertStringContainsString('Cessament Test, Cesc', $summary);
         $this->assertStringContainsString('Mòdul pràctic', $summary);
         $this->assertStringContainsString('<strong>Noapta Test, Noa</strong><ul><li><strong>Mòdul pràctic</strong>: 6</li></ul>', $summary);
         $this->assertStringNotContainsString('Apta Test, Anna', $summary);
     }
 
     /**
-     * Verifica que l'acta ordinària prepara els mòduls de l'alumnat no apte o amb renúncia.
+     * Verifica que l'acta ordinària prepara els mòduls de l'alumnat no apte, amb cessament o amb renúncia.
      */
     public function test_prepara_dades_per_a_notes_reals_en_acta_ordinaria(): void
     {
@@ -252,7 +255,7 @@ class ReunionFeValuationServiceTest extends TestCase
             $this->makeReunion(10, 7, 34)
         );
 
-        $this->assertSame(['A2', 'A4'], $data['fcts']->pluck('idAlumno')->all());
+        $this->assertSame(['A6', 'A2', 'A4'], $data['fcts']->pluck('idAlumno')->all());
         $this->assertCount(1, $data['modulesByStudent']->get('A2'));
         $this->assertTrue($data['results']->has('A2-1'));
         $this->assertFalse($data['results']->has('A1-1'));
@@ -324,6 +327,37 @@ class ReunionFeValuationServiceTest extends TestCase
     }
 
     /**
+     * Verifica que un punt de notes amb descripció temporal de cessament es renombra a renúncia.
+     */
+    public function test_renombra_punt_notes_temporal_de_cessament_a_renuncia(): void
+    {
+        $this->seedKnownFctData();
+        $this->seedModuleGrades();
+
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 1,
+                'descripcion' => 'Notes reals dels mòduls de l\'alumnat no apte o amb cessament',
+                'resumen' => 'Text anterior',
+            ],
+        ]);
+
+        $this->serviceWithAvalFcts($this->avalFcts())->refreshNotesOrder(
+            $this->makeReunion(10, 7, 34)
+        );
+
+        $this->assertDatabaseHas('ordenes_reuniones', [
+            'idReunion' => 10,
+            'descripcion' => ReunionFeValuationService::NOTES_ORDER_DESCRIPTION,
+        ]);
+        $this->assertDatabaseMissing('ordenes_reuniones', [
+            'idReunion' => 10,
+            'descripcion' => 'Notes reals dels mòduls de l\'alumnat no apte o amb cessament',
+        ]);
+    }
+
+    /**
      * Verifica que No Avaluat és vàlid però no es mostra en el punt de notes de l'acta.
      */
     public function test_no_avaluat_no_ix_en_resum_de_lacta(): void
@@ -363,7 +397,7 @@ class ReunionFeValuationServiceTest extends TestCase
     {
         $this->seedKnownFctData();
         $this->seedModuleGrades();
-        DB::table('alumno_resultados')->whereIn('idAlumno', ['A2', 'A4'])->update(['nota' => 0]);
+        DB::table('alumno_resultados')->whereIn('idAlumno', ['A2', 'A4', 'A6'])->update(['nota' => 0]);
         DB::table('ordenes_reuniones')->insert([
             [
                 'idReunion' => 10,
@@ -384,7 +418,7 @@ class ReunionFeValuationServiceTest extends TestCase
     }
 
     /**
-     * Verifica que es detecten notes pendents tant en no aptes com en renúncies.
+     * Verifica que es detecten notes pendents en no aptes, cessaments i renúncies.
      */
     public function test_detecta_notes_pendents_de_no_aptes_i_renuncies(): void
     {
@@ -392,14 +426,16 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->seedModuleGrades();
         DB::table('alumno_resultados')->where('idAlumno', 'A2')->delete();
         DB::table('alumno_resultados')->where('idAlumno', 'A4')->delete();
+        DB::table('alumno_resultados')->where('idAlumno', 'A6')->delete();
 
         $faltants = $this->serviceWithAvalFcts($this->avalFcts())->missingModuleGrades(
             $this->makeReunion(10, 7, 34)
         );
 
-        $this->assertCount(2, $faltants);
-        $this->assertSame('Noapta Test, Noa', $faltants[0]['alumno']);
-        $this->assertSame('Renuncia Test, Rita', $faltants[1]['alumno']);
+        $this->assertCount(3, $faltants);
+        $this->assertSame('Cessament Test, Cesc', $faltants[0]['alumno']);
+        $this->assertSame('Noapta Test, Noa', $faltants[1]['alumno']);
+        $this->assertSame('Renuncia Test, Rita', $faltants[2]['alumno']);
     }
 
     /**
@@ -458,6 +494,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['id' => 3, 'idColaboracion' => 2, 'asociacion' => 2],
             ['id' => 4, 'idColaboracion' => 2, 'asociacion' => 1],
             ['id' => 5, 'idColaboracion' => 3, 'asociacion' => 1],
+            ['id' => 6, 'idColaboracion' => 2, 'asociacion' => 1],
         ]);
         DB::table('grupos')->insert([
             ['codigo' => '2LFP', 'nombre' => 'Segon LFP', 'tutor' => 'P1', 'idCiclo' => 100],
@@ -469,6 +506,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['nia' => 'A3', 'nombre' => 'Eva', 'apellido1' => 'Exempta', 'apellido2' => 'Test'],
             ['nia' => 'A4', 'nombre' => 'Rita', 'apellido1' => 'Renuncia', 'apellido2' => 'Test'],
             ['nia' => 'A5', 'nombre' => 'Laia', 'apellido1' => 'Loe', 'apellido2' => 'Test'],
+            ['nia' => 'A6', 'nombre' => 'Cesc', 'apellido1' => 'Cessament', 'apellido2' => 'Test'],
         ]);
         DB::table('alumnos_grupos')->insert([
             ['idAlumno' => 'A1', 'idGrupo' => '2LFP'],
@@ -476,13 +514,15 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A3', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A4', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A5', 'idGrupo' => '2LOE'],
+            ['idAlumno' => 'A6', 'idGrupo' => '2LFP'],
         ]);
         DB::table('alumno_fcts')->insert([
             ['idFct' => 1, 'idAlumno' => 'A1', 'idProfesor' => 'P1', 'calificacion' => 1, 'horas' => 120],
             ['idFct' => 2, 'idAlumno' => 'A2', 'idProfesor' => 'P1', 'calificacion' => 0, 'horas' => 80],
             ['idFct' => 3, 'idAlumno' => 'A3', 'idProfesor' => 'P1', 'calificacion' => 2, 'horas' => 0],
-            ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 3, 'horas' => 0],
+            ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 5, 'horas' => 0],
             ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 1, 'horas' => 200],
+            ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'horas' => 0],
         ]);
     }
 
@@ -504,6 +544,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A1', 'idModuloGrupo' => 1, 'nota' => 8],
             ['idAlumno' => 'A2', 'idModuloGrupo' => 1, 'nota' => 6],
             ['idAlumno' => 'A4', 'idModuloGrupo' => 1, 'nota' => 5],
+            ['idAlumno' => 'A6', 'idModuloGrupo' => 1, 'nota' => 5],
         ]);
     }
 
@@ -516,7 +557,7 @@ class ReunionFeValuationServiceTest extends TestCase
     {
         return AlumnoFct::query()
             ->with('Alumno')
-            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5'])
+            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'])
             ->get();
     }
 

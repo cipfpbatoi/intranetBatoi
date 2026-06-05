@@ -117,7 +117,7 @@ class PanelSeguimientoAlumnosController extends IntranetController
 
         return AlumnoFct::query()
             ->Grupo($grupo)
-            ->where('calificacion', 3)
+            ->where('calificacion', 5)
             ->pluck('idAlumno');
     }
 }

@@ -108,7 +108,7 @@ return array(
         'justify' => 'Justify',
         'unauthorize' => 'Unauthorise',
         'refuse' => 'Refuse',
-        'renuncia' => 'Withdrawn',
+        'renuncia' => 'Termination',
         'expulsat' => 'Expelled',
         'pendiente' => 'Assigned',
         'resta' => 'Unassigned',

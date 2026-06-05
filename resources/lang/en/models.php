@@ -424,7 +424,7 @@ return array(
         ),
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',
-          'convalidacion' => 'FCT Convalidada/Exempt',
+          'convalidacion' => 'FCT Exempt or Withdrawn',
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne/a',
           'auth' => 'Imprimir autoritzacions',

@@ -96,7 +96,7 @@ class AlumnoFctAvalService
     }
 
     /**
-     * Marca una FCT com a renúncia (sense projecte).
+     * Marca una FCT com a cessament (sense projecte).
      */
     public function renuncia(int|string $id): void
     {

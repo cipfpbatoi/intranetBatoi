@@ -18,7 +18,8 @@ use Intranet\Entities\Reunion;
 class ReunionFeValuationService
 {
     public const ORDER_DESCRIPTION = 'Valoració de la FE';
-    public const NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte o amb renúncia';
+    public const NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte, amb cessament o amb renúncia';
+    private const LEGACY_NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte o amb cessament';
     private const VALID_REAL_GRADES = [0, 5, 6, 7, 8, 9, 10];
 
     private ?AlumnoFctAvalService $alumnoFctAvalService;
@@ -129,7 +130,11 @@ class ReunionFeValuationService
                 $knownSections['convalidats'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
-            '<p><strong>Alumnat en cessament:</strong> indiqueu l\'alumnat i la justificació.</p>',
+            $this->sectionLine(
+                'Alumnat en cessament',
+                $knownSections['cessaments'] ?? [],
+                'indiqueu l\'alumnat i la justificació.'
+            ),
             '<p><strong>Alumnat en cessament disciplinari:</strong> indiqueu l\'alumnat i el motiu.</p>',
             $this->sectionLine(
                 'Alumnat que no ha realitzat les pràctiques / renúncia',
@@ -170,7 +175,7 @@ class ReunionFeValuationService
     }
 
     /**
-     * Construeix el resum de notes reals introduïdes per a alumnat no apte o amb renúncia.
+     * Construeix el resum de notes reals introduïdes per a alumnat no apte, amb cessament o amb renúncia.
      *
      * @param string $tutorDni
      * @return string
@@ -220,7 +225,7 @@ class ReunionFeValuationService
             return '';
         }
 
-        return '<p>Notes reals introduïdes per a l\'alumnat no apte o amb renúncia:</p><ul>'
+        return '<p>Notes reals introduïdes per a l\'alumnat no apte, amb cessament o amb renúncia:</p><ul>'
             . implode('', $rows)
             . '</ul>';
     }
@@ -235,7 +240,7 @@ class ReunionFeValuationService
     {
         return $this->avals()
             ->latestByProfesor($tutorDni)
-            ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3], true))
+            ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3, 5], true))
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre))
             ->values();
     }
@@ -296,7 +301,7 @@ class ReunionFeValuationService
     }
 
     /**
-     * Guarda notes reals de mòduls per a alumnat no apte o amb renúncia de l'acta.
+     * Guarda notes reals de mòduls per a alumnat no apte, amb cessament o amb renúncia de l'acta.
      *
      * @param Reunion $reunion
      * @param array<string, array<string, array{nota?: mixed, observaciones?: mixed}>> $notes
@@ -349,7 +354,7 @@ class ReunionFeValuationService
     }
 
     /**
-     * Retorna l'alumnat no apte o amb renúncia que encara no té totes les notes de mòduls.
+     * Retorna l'alumnat no apte, amb cessament o amb renúncia que encara no té totes les notes de mòduls.
      *
      * @param Reunion $reunion
      * @return array<int, array{alumno: string, modulos: array<int, string>}>
@@ -408,8 +413,11 @@ class ReunionFeValuationService
             'convalidats' => $this->formatFctRows(
                 $fcts->where('calificacion', 2)
             ),
-            'renuncies' => $this->formatFctRows(
+            'cessaments' => $this->formatFctRows(
                 $fcts->where('calificacion', 3)
+            ),
+            'renuncies' => $this->formatFctRows(
+                $fcts->where('calificacion', 5)
             )
         ];
     }
@@ -439,7 +447,7 @@ class ReunionFeValuationService
         $summary = $this->notesSummaryForTutor((string) $reunion->idProfesor);
         $existing = OrdenReunion::query()
             ->forReunion($reunion->id)
-            ->where('descripcion', self::NOTES_ORDER_DESCRIPTION)
+            ->whereIn('descripcion', [self::NOTES_ORDER_DESCRIPTION, self::LEGACY_NOTES_ORDER_DESCRIPTION])
             ->first();
         if ($summary === '') {
             if ($existing) {
@@ -450,7 +458,8 @@ class ReunionFeValuationService
         }
 
         if ($existing) {
-            if ($existing->resumen !== $summary) {
+            if ($existing->descripcion !== self::NOTES_ORDER_DESCRIPTION || $existing->resumen !== $summary) {
+                $existing->descripcion = self::NOTES_ORDER_DESCRIPTION;
                 $existing->resumen = $summary;
                 $existing->save();
             }

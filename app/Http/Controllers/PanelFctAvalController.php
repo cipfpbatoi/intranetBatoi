@@ -300,9 +300,9 @@ class PanelFctAvalController extends IntranetController
 
         $asociacionesAval = [1, 2, 4, 5];
         $asociacionesNoExempt = [1, 4, 5];
-        $labelRenuncia = __('messages.buttons.renuncia');
+        $labelCessament = __('messages.buttons.renuncia');
         $labelExpulsat = __('messages.buttons.expulsat');
-        $titleRenuncia = "Marcar com a $labelRenuncia";
+        $titleCessament = "Marcar com a $labelCessament";
         $titleExpulsat = "Marcar com a $labelExpulsat";
         $this->panel->setBoton(
             'grid',
@@ -354,9 +354,9 @@ class PanelFctAvalController extends IntranetController
                 'fct.renuncia',
                 [
                     'img' => 'fa-sign-out',
-                    'text' => $labelRenuncia,
-                    'title' => $titleRenuncia,
-                    'aria-label' => $labelRenuncia,
+                    'text' => $labelCessament,
+                    'title' => $titleCessament,
+                    'aria-label' => $labelCessament,
                     'where' => [
                         'normativa', '==', 'LFP',
                         'actas', '==', 0,
@@ -476,7 +476,7 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Marca una FCT com a renúncia.
+     * Marca una FCT com a cessament.
      *
      * @param int|string $id
      * @return \Illuminate\Http\RedirectResponse

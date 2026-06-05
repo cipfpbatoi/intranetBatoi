@@ -76,6 +76,15 @@ class AlumnoFctTest extends TestCase
     }
 
     #[Test]
+    public function get_centro_attribute_mostra_renuncia_si_es_fct_ficticia_amb_renuncia()
+    {
+        $alumnoFct = new AlumnoFct();
+        $alumnoFct->calificacion = 5;
+
+        $this->assertEquals('Renúncia / No realitzada', $alumnoFct->centro);
+    }
+
+    #[Test]
     public function get_fin_practicas_attribute_retorna_setmanes_i_dies()
     {
         $alumnoFct = new AlumnoFct();
@@ -99,6 +108,12 @@ class AlumnoFctTest extends TestCase
 
         $alumnoFct->calificacion = 2;
         $this->assertEquals('Convalidat/Exempt', $alumnoFct->qualificacio);
+
+        $alumnoFct->calificacion = 3;
+        $this->assertEquals('Cessament', $alumnoFct->qualificacio);
+
+        $alumnoFct->calificacion = 5;
+        $this->assertEquals('Renúncia / No realitzada', $alumnoFct->qualificacio);
 
         $alumnoFct->calificacion = null;
         $this->assertEquals('No Avaluat', $alumnoFct->qualificacio);

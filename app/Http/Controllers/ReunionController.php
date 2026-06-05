@@ -494,12 +494,12 @@ class ReunionController extends ModalController
         );
 
         throw new IntranetException(
-            "Falten notes de mòdul per a alumnat no apte o amb renúncia: " . implode('; ', $detall)
+            "Falten notes de mòdul per a alumnat no apte, amb cessament o amb renúncia: " . implode('; ', $detall)
         );
     }
 
     /**
-     * Retorna llistat d'alumnat amb renúncia que no té totes les notes de mòdul.
+     * Retorna llistat d'alumnat no apte, amb cessament o amb renúncia que no té totes les notes de mòdul.
      *
      * @return array<int, array{alumno: string, modulos: array<int, string>}>
      */

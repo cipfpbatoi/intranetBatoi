@@ -279,8 +279,9 @@ class AlumnoFct extends Model
             0 => 'No Apte',
             1 => 'Apte',
             2 => 'Convalidat/Exempt',
-            3 => 'Renúncia',
+            3 => 'Cessament',
             4 => 'Expulsat',
+            5 => 'Renúncia / No realitzada',
             default => 'No Avaluat',
         };
     }

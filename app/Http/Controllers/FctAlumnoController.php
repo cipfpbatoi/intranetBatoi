@@ -279,6 +279,7 @@ class FctAlumnoController extends ModalController
             [
                 'idAlumno' => ['type' => 'select'],
                 'asociacion' => ['type' => 'hidden'],
+                'calificacion' => ['type' => 'select'],
                 'horas' => ['type' => 'text'],
             ]
         );
@@ -317,7 +318,7 @@ class FctAlumnoController extends ModalController
                 [
                     'desde' => FechaInglesa(Hoy()),
                     'horas' => $request->horas,
-                    'calificacion' => 2,
+                    'calificacion' => (int) $request->calificacion,
                     'correoAlumno' => 1,
                     'idProfesor' => authUser()->dni
                 ]
