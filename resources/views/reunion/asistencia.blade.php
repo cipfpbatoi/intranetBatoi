@@ -47,6 +47,12 @@
     .reunion-fe-note-observations {
         margin-top: 6px;
     }
+
+    .reunion-fe-exclude-student {
+        display: block;
+        margin-top: 8px;
+        font-weight: 400;
+    }
 </style>
 @endsection
 @section('content')

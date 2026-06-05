@@ -23,6 +23,8 @@ class ReunionFeValuationService
     private const VALID_REAL_GRADES = [0, 5, 6, 7, 8, 9, 10];
     private const DEPRECATED_SECOND_YEAR_INSTRUCTION = '<p><strong>Grups de 2n:</strong> indiqueu les notes reals '
         . 'dels mòduls de l\'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>';
+    private const DEPRECATED_SECRETARY_INSTRUCTION = '<p>El tutor o tutora ha d\'anar a secretaria per a anul·lar '
+        . 'la convocatòria extraordinària quan corresponga.</p>';
 
     private ?AlumnoFctAvalService $alumnoFctAvalService;
 
@@ -51,6 +53,7 @@ class ReunionFeValuationService
 
         if ($existing) {
             $this->removeDeprecatedSecondYearInstruction($existing);
+            $this->removeDeprecatedSecretaryInstruction($existing);
             $this->refreshNotesOrder($reunion);
 
             return $existing;
@@ -144,7 +147,6 @@ class ReunionFeValuationService
                 $knownSections['renuncies'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
-            '<p>El tutor o tutora ha d\'anar a secretaria per a anul·lar la convocatòria extraordinària quan corresponga.</p>',
         ];
 
         return implode("\n", $lines);
@@ -164,6 +166,24 @@ class ReunionFeValuationService
         }
 
         $updatedSummary = trim(str_replace(self::DEPRECATED_SECOND_YEAR_INSTRUCTION, '', $summary));
+        $order->resumen = $updatedSummary;
+        $order->save();
+    }
+
+    /**
+     * Elimina d'actes ja creades la instrucció antiga sobre anul·lació en secretaria.
+     *
+     * @param OrdenReunion $order
+     * @return void
+     */
+    private function removeDeprecatedSecretaryInstruction(OrdenReunion $order): void
+    {
+        $summary = (string) $order->resumen;
+        if (!str_contains($summary, self::DEPRECATED_SECRETARY_INSTRUCTION)) {
+            return;
+        }
+
+        $updatedSummary = trim(str_replace(self::DEPRECATED_SECRETARY_INSTRUCTION, '', $summary));
         $order->resumen = $updatedSummary;
         $order->save();
     }
@@ -325,16 +345,36 @@ class ReunionFeValuationService
      *
      * @param Reunion $reunion
      * @param array<string, array<string, array{nota?: mixed, observaciones?: mixed}>> $notes
+     * @param array<int, string> $excludedStudents
      * @return int
      */
-    public function saveModuleGrades(Reunion $reunion, array $notes): int
+    public function saveModuleGrades(Reunion $reunion, array $notes, array $excludedStudents = []): int
     {
         $data = $this->gradeInputData($reunion);
         $allowedModules = $data['modulesByStudent'];
         $validGrades = self::VALID_REAL_GRADES;
+        $excludedStudents = collect($excludedStudents)->map(static fn ($idAlumno): string => (string) $idAlumno)->all();
         $saved = 0;
 
+        foreach ($excludedStudents as $idAlumno) {
+            $studentModules = $allowedModules->get($idAlumno, collect())->pluck('id')->map(
+                static fn ($idModulo): int => (int) $idModulo
+            );
+            if ($studentModules->isEmpty()) {
+                continue;
+            }
+
+            $saved += AlumnoResultado::query()
+                ->where('idAlumno', $idAlumno)
+                ->whereIn('idModuloGrupo', $studentModules->all())
+                ->delete();
+        }
+
         foreach ($notes as $idAlumno => $modules) {
+            if (in_array((string) $idAlumno, $excludedStudents, true)) {
+                continue;
+            }
+
             $studentModules = $allowedModules->get((string) $idAlumno, collect())->pluck('id')->map(
                 static fn ($idModulo): int => (int) $idModulo
             );

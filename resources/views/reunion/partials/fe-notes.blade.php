@@ -40,6 +40,10 @@
                                     <td>
                                         <span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span><br>
                                         {{ $fct->qualificacio }}
+                                        <label class="reunion-fe-exclude-student">
+                                            <input type="checkbox" name="excluded_students[]" value="{{ $fct->idAlumno }}">
+                                            No guardar notes d'este alumne
+                                        </label>
                                     </td>
                                     @foreach ($modules as $module)
                                         @if ($studentModules->contains($module->id))
