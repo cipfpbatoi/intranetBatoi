@@ -139,8 +139,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertSame(ReunionFeValuationService::ORDER_DESCRIPTION, $order->descripcion);
         $this->assertStringContainsString('Alumnat apte', (string) $order->resumen);
         $this->assertStringContainsString('Alumnat no apte', (string) $order->resumen);
-        $this->assertStringContainsString('notes reals dels mòduls', (string) $order->resumen);
-        $this->assertStringContainsString('convocatòria extraordinària', (string) $order->resumen);
+        $this->assertStringNotContainsString('convocatòria extraordinària', (string) $order->resumen);
     }
 
     /**
@@ -163,6 +162,54 @@ class ReunionFeValuationServiceTest extends TestCase
         );
 
         $this->assertSame('Resum del tutor', $order?->resumen);
+        $this->assertSame(1, DB::table('ordenes_reuniones')->count());
+    }
+
+    /**
+     * Verifica que s'elimina la instrucció antiga de 2n en actes ja creades.
+     */
+    public function test_elimina_text_antic_de_grups_de_segon_si_ja_existix(): void
+    {
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 9,
+                'descripcion' => ReunionFeValuationService::ORDER_DESCRIPTION,
+                'resumen' => "Text del tutor\n<p><strong>Grups de 2n:</strong> indiqueu les notes reals "
+                    . "dels mòduls de l'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>",
+            ],
+        ]);
+
+        $order = $this->serviceWithAvalFcts(collect())->ensureOrder(
+            $this->makeReunion(10, 7, 35),
+            'LFP'
+        );
+
+        $this->assertSame('Text del tutor', $order?->resumen);
+        $this->assertSame(1, DB::table('ordenes_reuniones')->count());
+    }
+
+    /**
+     * Verifica que s'elimina la instrucció antiga de secretaria en actes ja creades.
+     */
+    public function test_elimina_text_antic_de_secretaria_si_ja_existix(): void
+    {
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 9,
+                'descripcion' => ReunionFeValuationService::ORDER_DESCRIPTION,
+                'resumen' => "Text del tutor\n<p>El tutor o tutora ha d'anar a secretaria per a anul·lar "
+                    . "la convocatòria extraordinària quan corresponga.</p>",
+            ],
+        ]);
+
+        $order = $this->serviceWithAvalFcts(collect())->ensureOrder(
+            $this->makeReunion(10, 7, 35),
+            'LFP'
+        );
+
+        $this->assertSame('Text del tutor', $order?->resumen);
         $this->assertSame(1, DB::table('ordenes_reuniones')->count());
     }
 
@@ -264,7 +311,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertTrue($data['results']->has('A2-1'));
         $this->assertFalse($data['results']->has('A1-1'));
         $this->assertSame(
-            [0 => 'No Avaluat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
+            [0 => 'No Superat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
             $data['gradeOptions']
         );
     }
@@ -328,6 +375,48 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('7', $summary);
         $this->assertStringContainsString('<strong>Noapta Test, Noa</strong><ul><li><strong>Mòdul pràctic</strong>: 7</li></ul>', $summary);
         $this->assertStringNotContainsString('Text anterior', $summary);
+    }
+
+    /**
+     * Verifica que es poden excloure alumnes i esborrar les seues notes FE ja guardades.
+     */
+    public function test_esborra_notes_reals_dalumnes_exclosos_des_de_lacta(): void
+    {
+        $this->seedKnownFctData();
+        $this->seedModuleGrades();
+
+        $saved = $this->serviceWithAvalFcts($this->avalFcts())->saveModuleGrades(
+            $this->makeReunion(10, 7, 34),
+            [
+                'A2' => [
+                    1 => ['nota' => 9, 'observaciones' => 'No s\'ha de guardar'],
+                ],
+                'A4' => [
+                    1 => ['nota' => 7, 'observaciones' => 'Nota revisada'],
+                ],
+            ],
+            ['A2']
+        );
+
+        $this->assertSame(2, $saved);
+        $this->assertDatabaseMissing('alumno_resultados', [
+            'idAlumno' => 'A2',
+            'idModuloGrupo' => 1,
+        ]);
+        $this->assertDatabaseHas('alumno_resultados', [
+            'idAlumno' => 'A4',
+            'idModuloGrupo' => 1,
+            'nota' => 7,
+            'observaciones' => 'Nota revisada',
+        ]);
+
+        $summary = (string) DB::table('ordenes_reuniones')
+            ->where('idReunion', 10)
+            ->where('descripcion', ReunionFeValuationService::NOTES_ORDER_DESCRIPTION)
+            ->value('resumen');
+
+        $this->assertStringNotContainsString('Noapta Test, Noa', $summary);
+        $this->assertStringContainsString('Renuncia Test, Rita', $summary);
     }
 
     /**
@@ -481,7 +570,7 @@ class ReunionFeValuationServiceTest extends TestCase
     private function seedKnownFctData(): void
     {
         DB::table('ciclos')->insert([
-            ['id' => 100, 'normativa' => 'LOE'],
+            ['id' => 100, 'normativa' => 'LFP'],
             ['id' => 200, 'normativa' => 'LOE'],
         ]);
         DB::table('profesores')->insert([
@@ -520,7 +609,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A4', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A5', 'idGrupo' => '2LOE'],
             ['idAlumno' => 'A6', 'idGrupo' => '2LFP'],
-            ['idAlumno' => 'A7', 'idGrupo' => '2LOE'],
+            ['idAlumno' => 'A7', 'idGrupo' => '2LFP'],
         ]);
         DB::table('alumno_fcts')->insert([
             ['idFct' => 1, 'idAlumno' => 'A1', 'idProfesor' => 'P1', 'calificacion' => 1, 'calProyecto' => null, 'horas' => 120],
@@ -529,7 +618,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 5, 'calProyecto' => null, 'horas' => 0],
             ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 1, 'calProyecto' => 7, 'horas' => 200],
             ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'calProyecto' => null, 'horas' => 0],
-            ['idFct' => 5, 'idAlumno' => 'A7', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => 4, 'horas' => 90],
+            ['idFct' => 6, 'idAlumno' => 'A7', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => 4, 'horas' => 90],
         ]);
     }
 

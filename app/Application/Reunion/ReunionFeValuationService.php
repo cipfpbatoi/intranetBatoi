@@ -9,6 +9,7 @@ use Intranet\Application\AlumnoFct\AlumnoFctAvalService;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoResultado;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Reunion;
 
@@ -18,9 +19,14 @@ use Intranet\Entities\Reunion;
 class ReunionFeValuationService
 {
     public const ORDER_DESCRIPTION = 'Valoració de la FE';
-    public const NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte, amb cessament o amb renúncia';
+    public const NOTES_ORDER_DESCRIPTION = 'Notes Formacio en Centre dels mòduls de l\'alumnat no apte, amb cessament o amb renúncia';
     private const LEGACY_NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte o amb cessament';
+    private const LEGACY_NOTES_ORDER_DESCRIPTION_WITH_RENUNCIA = 'Notes reals dels mòduls de l\'alumnat no apte, amb cessament o amb renúncia';
     private const VALID_REAL_GRADES = [0, 5, 6, 7, 8, 9, 10];
+    private const DEPRECATED_SECOND_YEAR_INSTRUCTION = '<p><strong>Grups de 2n:</strong> indiqueu les notes reals '
+        . 'dels mòduls de l\'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>';
+    private const DEPRECATED_SECRETARY_INSTRUCTION = '<p>El tutor o tutora ha d\'anar a secretaria per a anul·lar '
+        . 'la convocatòria extraordinària quan corresponga.</p>';
 
     private ?AlumnoFctAvalService $alumnoFctAvalService;
 
@@ -48,6 +54,8 @@ class ReunionFeValuationService
             ->first();
 
         if ($existing) {
+            $this->removeDeprecatedSecondYearInstruction($existing);
+            $this->removeDeprecatedSecretaryInstruction($existing);
             $this->refreshNotesOrder($reunion);
 
             return $existing;
@@ -141,11 +149,45 @@ class ReunionFeValuationService
                 $knownSections['renuncies'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
-            '<p><strong>Grups de 2n:</strong> indiqueu les notes reals dels mòduls de l\'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>',
-            '<p>El tutor o tutora ha d\'anar a secretaria per a anul·lar la convocatòria extraordinària quan corresponga.</p>',
         ];
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Elimina d'actes ja creades la instrucció antiga sobre notes reals de 2n.
+     *
+     * @param OrdenReunion $order
+     * @return void
+     */
+    private function removeDeprecatedSecondYearInstruction(OrdenReunion $order): void
+    {
+        $summary = (string) $order->resumen;
+        if (!str_contains($summary, self::DEPRECATED_SECOND_YEAR_INSTRUCTION)) {
+            return;
+        }
+
+        $updatedSummary = trim(str_replace(self::DEPRECATED_SECOND_YEAR_INSTRUCTION, '', $summary));
+        $order->resumen = $updatedSummary;
+        $order->save();
+    }
+
+    /**
+     * Elimina d'actes ja creades la instrucció antiga sobre anul·lació en secretaria.
+     *
+     * @param OrdenReunion $order
+     * @return void
+     */
+    private function removeDeprecatedSecretaryInstruction(OrdenReunion $order): void
+    {
+        $summary = (string) $order->resumen;
+        if (!str_contains($summary, self::DEPRECATED_SECRETARY_INSTRUCTION)) {
+            return;
+        }
+
+        $updatedSummary = trim(str_replace(self::DEPRECATED_SECRETARY_INSTRUCTION, '', $summary));
+        $order->resumen = $updatedSummary;
+        $order->save();
     }
 
     /**
@@ -156,8 +198,7 @@ class ReunionFeValuationService
      */
     public function knownSectionsForTutor(string $tutorDni): array
     {
-        $fcts = $this->avals()
-            ->latestByProfesor($tutorDni)
+        $fcts = $this->lfpFctsForTutor($tutorDni)
             ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
 
@@ -239,8 +280,7 @@ class ReunionFeValuationService
      */
     public function targetFctsForTutor(string $tutorDni): Collection
     {
-        return $this->avals()
-            ->latestByProfesor($tutorDni)
+        return $this->lfpFctsForTutor($tutorDni)
             ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
             ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3, 5], true))
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre))
@@ -307,16 +347,36 @@ class ReunionFeValuationService
      *
      * @param Reunion $reunion
      * @param array<string, array<string, array{nota?: mixed, observaciones?: mixed}>> $notes
+     * @param array<int, string> $excludedStudents
      * @return int
      */
-    public function saveModuleGrades(Reunion $reunion, array $notes): int
+    public function saveModuleGrades(Reunion $reunion, array $notes, array $excludedStudents = []): int
     {
         $data = $this->gradeInputData($reunion);
         $allowedModules = $data['modulesByStudent'];
         $validGrades = self::VALID_REAL_GRADES;
+        $excludedStudents = collect($excludedStudents)->map(static fn ($idAlumno): string => (string) $idAlumno)->all();
         $saved = 0;
 
+        foreach ($excludedStudents as $idAlumno) {
+            $studentModules = $allowedModules->get($idAlumno, collect())->pluck('id')->map(
+                static fn ($idModulo): int => (int) $idModulo
+            );
+            if ($studentModules->isEmpty()) {
+                continue;
+            }
+
+            $saved += AlumnoResultado::query()
+                ->where('idAlumno', $idAlumno)
+                ->whereIn('idModuloGrupo', $studentModules->all())
+                ->delete();
+        }
+
         foreach ($notes as $idAlumno => $modules) {
+            if (in_array((string) $idAlumno, $excludedStudents, true)) {
+                continue;
+            }
+
             $studentModules = $allowedModules->get((string) $idAlumno, collect())->pluck('id')->map(
                 static fn ($idModulo): int => (int) $idModulo
             );
@@ -439,6 +499,98 @@ class ReunionFeValuationService
     }
 
     /**
+     * Retorna només l'alumnat FE/FCT de normativa LFP del tutor.
+     *
+     * @param string $tutorDni
+     * @return Collection<int, AlumnoFct>
+     */
+    private function lfpFctsForTutor(string $tutorDni): Collection
+    {
+        return $this->avals()
+            ->latestByProfesor($tutorDni)
+            ->filter(fn (AlumnoFct $fct): bool => $this->isLfpFct($fct))
+            ->values();
+    }
+
+    /**
+     * Indica si una FCT correspon a un grup LFP.
+     *
+     * @param AlumnoFct $fct
+     * @return bool
+     */
+    private function isLfpFct(AlumnoFct $fct): bool
+    {
+        $fct->loadMissing(['Alumno.Grupo.Ciclo', 'Fct.Colaboracion.Ciclo']);
+
+        return $this->resolveNormativa($fct, $this->resolveGrupoForFct($fct)) === 'LFP';
+    }
+
+    /**
+     * Resol el grup de l'alumne vinculat al cicle de la FCT o el primer disponible.
+     *
+     * @param AlumnoFct $fct
+     * @return Grupo|null
+     */
+    private function resolveGrupoForFct(AlumnoFct $fct): ?Grupo
+    {
+        $grupos = $fct->Alumno?->Grupo;
+        if (!$grupos || $grupos->isEmpty()) {
+            return null;
+        }
+
+        $cicloId = $fct->Fct?->Colaboracion?->idCiclo;
+        if ($cicloId) {
+            $grupo = $grupos->firstWhere('idCiclo', $cicloId);
+            if ($grupo instanceof Grupo) {
+                return $grupo;
+            }
+        }
+
+        $grupo = $grupos->first();
+
+        return $grupo instanceof Grupo ? $grupo : null;
+    }
+
+    /**
+     * Determina la normativa efectiva de l'alumne per al punt FE de l'acta.
+     *
+     * @param AlumnoFct $fct
+     * @param Grupo|null $grupo
+     * @return string
+     */
+    private function resolveNormativa(AlumnoFct $fct, ?Grupo $grupo): string
+    {
+        $nombre = (string) ($grupo?->nombre ?? '');
+        if ($nombre !== '') {
+            if (preg_match('/\((LOE|LFP|LOGSE)\)/i', $nombre, $matches)) {
+                return strtoupper($matches[1]);
+            }
+            if (stripos($nombre, 'LFP') !== false) {
+                return 'LFP';
+            }
+            if (stripos($nombre, 'LOE') !== false) {
+                return 'LOE';
+            }
+        }
+
+        $normativa = $grupo?->Ciclo?->normativa;
+        if (is_string($normativa) && trim($normativa) !== '') {
+            return strtoupper($normativa);
+        }
+
+        $normativa = $fct->Fct?->Colaboracion?->Ciclo?->normativa;
+        if (is_string($normativa) && trim($normativa) !== '') {
+            return strtoupper($normativa);
+        }
+
+        if ($grupo && str_contains((string) $grupo->codigo, 'LFP')) {
+            return 'LFP';
+        }
+
+        return 'LOE';
+    }
+
+    /**
      * Garantix el punt de notes reals si hi ha notes introduïdes.
      *
      * @param Reunion $reunion
@@ -449,7 +601,11 @@ class ReunionFeValuationService
         $summary = $this->notesSummaryForTutor((string) $reunion->idProfesor);
         $existing = OrdenReunion::query()
             ->forReunion($reunion->id)
-            ->whereIn('descripcion', [self::NOTES_ORDER_DESCRIPTION, self::LEGACY_NOTES_ORDER_DESCRIPTION])
+            ->whereIn('descripcion', [
+                self::NOTES_ORDER_DESCRIPTION,
+                self::LEGACY_NOTES_ORDER_DESCRIPTION,
+                self::LEGACY_NOTES_ORDER_DESCRIPTION_WITH_RENUNCIA,
+            ])
             ->first();
         if ($summary === '') {
             if ($existing) {
@@ -489,6 +645,7 @@ class ReunionFeValuationService
     public function validGradeOptions(): array
     {
         $labels = config('auxiliares.notas');
+        $labels[0] = 'No Superat';
 
         return collect(self::VALID_REAL_GRADES)
             ->mapWithKeys(static fn (int $grade): array => [$grade => (string) ($labels[$grade] ?? $grade)])

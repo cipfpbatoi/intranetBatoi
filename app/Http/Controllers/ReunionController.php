@@ -269,9 +269,15 @@ class ReunionController extends ModalController
             'notes.*' => 'array',
             'notes.*.*.nota' => 'nullable|integer|in:0,5,6,7,8,9,10',
             'notes.*.*.observaciones' => 'nullable|string|max:200',
+            'excluded_students' => 'nullable|array',
+            'excluded_students.*' => 'string',
         ]);
 
-        $saved = $this->feValuations()->saveModuleGrades($elemento, $validated['notes'] ?? []);
+        $saved = $this->feValuations()->saveModuleGrades(
+            $elemento,
+            $validated['notes'] ?? [],
+            $validated['excluded_students'] ?? []
+        );
         if ($saved === 0) {
             Alert::info('No hi havia cap nota FE nova per a guardar.');
         } else {
