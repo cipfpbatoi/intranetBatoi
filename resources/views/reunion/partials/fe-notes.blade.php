@@ -13,54 +13,69 @@
         <div class="card-body">
             <form method="POST" action="{{ route('reunion.feNotes.store', ['reunion' => $formulario->getElemento()->id]) }}">
                 {{ csrf_field() }}
-                @foreach ($feNotesData['fcts'] as $fct)
-                    @php
-                        $alumno = $fct->Alumno;
-                        $modules = $feNotesData['modulesByStudent']->get((string) $fct->idAlumno, collect());
-                    @endphp
-                    <h5><span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span> - {{ $fct->qualificacio }}</h5>
-                    @if ($modules->isEmpty())
-                        <p>No hi ha mòduls associats a l'alumne.</p>
-                    @else
-                        <table class="table table-striped table-condensed">
+                @php
+                    $modules = $feNotesData['modulesByStudent']
+                        ->flatMap(static fn ($studentModules) => $studentModules)
+                        ->unique('id')
+                        ->sortBy(static fn ($module) => (string) ($module->Xmodulo ?: $module->id))
+                        ->values();
+                @endphp
+                @if ($modules->isEmpty())
+                    <p>No hi ha mòduls associats a l'alumnat.</p>
+                @else
+                    <div class="reunion-fe-notes-table-wrapper">
+                        <table class="table table-striped table-condensed reunion-fe-notes-table">
                             <tr>
-                                <th style="width: 35%">Mòdul</th>
-                                <th style="width: 20%">Nota real</th>
-                                <th style="width: 45%">Observacions</th>
+                                <th>Alumne</th>
+                                @foreach ($modules as $module)
+                                    <th>{{ $module->Xmodulo ?: $module->id }}</th>
+                                @endforeach
                             </tr>
-                            @foreach ($modules as $module)
+                            @foreach ($feNotesData['fcts'] as $fct)
                                 @php
-                                    $result = $feNotesData['results']->get($fct->idAlumno . '-' . $module->id);
-                                    $selectedNota = (int) ($result->nota ?? 0);
-                                    $observaciones = (string) ($result->observaciones ?? '');
+                                    $alumno = $fct->Alumno;
+                                    $studentModules = $feNotesData['modulesByStudent']->get((string) $fct->idAlumno, collect())->pluck('id');
                                 @endphp
                                 <tr>
-                                    <td>{{ $module->Xmodulo ?: $module->id }}</td>
                                     <td>
-                                        <select
-                                            name="notes[{{ $fct->idAlumno }}][{{ $module->id }}][nota]"
-                                            class="form-control"
-                                        >
-                                            @foreach ($feNotesData['gradeOptions'] as $key => $nota)
-                                                <option value="{{ $key }}" @if ($selectedNota === (int) $key) selected @endif>
-                                                    {{ $nota }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span><br>
+                                        {{ $fct->qualificacio }}
                                     </td>
-                                    <td>
-                                        <textarea
-                                            name="notes[{{ $fct->idAlumno }}][{{ $module->id }}][observaciones]"
-                                            class="form-control"
-                                            rows="1"
-                                            maxlength="200"
-                                        >{{ $observaciones }}</textarea>
-                                    </td>
+                                    @foreach ($modules as $module)
+                                        @if ($studentModules->contains($module->id))
+                                            @php
+                                                $result = $feNotesData['results']->get($fct->idAlumno . '-' . $module->id);
+                                                $selectedNota = (int) ($result->nota ?? 0);
+                                                $observaciones = (string) ($result->observaciones ?? '');
+                                            @endphp
+                                            <td>
+                                                <select
+                                                    name="notes[{{ $fct->idAlumno }}][{{ $module->id }}][nota]"
+                                                    class="form-control"
+                                                >
+                                                    @foreach ($feNotesData['gradeOptions'] as $key => $nota)
+                                                        <option value="{{ $key }}" @if ($selectedNota === (int) $key) selected @endif>
+                                                            {{ $nota }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <textarea
+                                                    name="notes[{{ $fct->idAlumno }}][{{ $module->id }}][observaciones]"
+                                                    class="form-control reunion-fe-note-observations"
+                                                    rows="1"
+                                                    maxlength="200"
+                                                    placeholder="Observacions"
+                                                >{{ $observaciones }}</textarea>
+                                            </td>
+                                        @else
+                                            <td>-</td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                             @endforeach
                         </table>
-                    @endif
-                @endforeach
+                    </div>
+                @endif
                 <input class="boton" type="submit" value="Guardar notes FE">
             </form>
         </div>

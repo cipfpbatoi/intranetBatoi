@@ -28,6 +28,25 @@
         color: #31708f;
         font-weight: 700;
     }
+
+    .reunion-fe-notes-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .reunion-fe-notes-table th,
+    .reunion-fe-notes-table td {
+        min-width: 180px;
+        vertical-align: top;
+    }
+
+    .reunion-fe-notes-table th:first-child,
+    .reunion-fe-notes-table td:first-child {
+        min-width: 220px;
+    }
+
+    .reunion-fe-note-observations {
+        margin-top: 6px;
+    }
 </style>
 @endsection
 @section('content')
