@@ -198,9 +198,45 @@ class AlumnoFct extends Model
         return $query->whereNotIn('idFct', $fcts);
     }
 
+    /**
+     * Filtra FCT actives pendents de completar i sense qualificació.
+     */
     public function scopeActiva($query)
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->whereColumn('horas', '>', 'realizadas');
+    }
+
+    /**
+     * Filtra FCT amb hores pendents que han de consultar-se en SAO.
+     */
+    public function scopePendentSincronitzacioSao($query)
+    {
+        return $query
+            ->whereNotNull('idSao')
+            ->whereColumn('horas', '>', 'realizadas')
+            ->where(function ($query): void {
+                $query->where(function ($query): void {
+                    $query->whereNull('calificacion')
+                        ->where('correoAlumno', 0);
+                })
+                    ->orWhere('calificacion', 1);
+            });
+    }
+
+    /**
+     * Indica les hores SAO pendents de sincronitzar.
+     */
+    public function getHoresPendentsSaoAttribute(): int
+    {
+        return max(0, (int) $this->horas - (int) $this->realizadas);
+    }
+
+    /**
+     * Indica si cal confirmar l'aprovat perquè queden hores pendents.
+     */
+    public function getRequereixConfirmacioApteAttribute(): bool
+    {
+        return $this->hores_pendents_sao > 0;
     }
 
     public function scopeHaEmpezado($query)

@@ -4,6 +4,7 @@
    @isset($rel) rel="{{$rel}}" @endisset
    @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset
    @isset($title) title="{{$title}}" @endisset
+   @isset($onclick) onclick="{{$onclick}}" @endisset
    {!! $disabled !!}>
     @isset($img)
         <em class='fa {{$img}}' alt="{{$text}}" title="{{$text}}"></em>
