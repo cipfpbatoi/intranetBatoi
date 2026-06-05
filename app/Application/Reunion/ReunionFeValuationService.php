@@ -547,6 +547,7 @@ class ReunionFeValuationService
     public function validGradeOptions(): array
     {
         $labels = config('auxiliares.notas');
+        $labels[0] = 'No Superat';
 
         return collect(self::VALID_REAL_GRADES)
             ->mapWithKeys(static fn (int $grade): array => [$grade => (string) ($labels[$grade] ?? $grade)])

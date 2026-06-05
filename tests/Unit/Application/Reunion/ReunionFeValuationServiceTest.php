@@ -307,7 +307,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertTrue($data['results']->has('A2-1'));
         $this->assertFalse($data['results']->has('A1-1'));
         $this->assertSame(
-            [0 => 'No Avaluat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
+            [0 => 'No Superat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
             $data['gradeOptions']
         );
     }
