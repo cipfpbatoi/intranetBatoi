@@ -12,60 +12,6 @@
    <strong>{{$datosInforme->dia}}</strong> a les <strong>{{$datosInforme->hora}}</strong>
 </div>
 @include('pdf.reunion.partials.punts')
-@if ($datosInforme->avaluacioFinal && $datosInforme->normativa === 'LFP' && $datosInforme->grupoClase && (int) $datosInforme->grupoClase->curso === 2)
-    @php
-        $grupo = $datosInforme->grupoClase;
-        $fcts = \Intranet\Entities\AlumnoFct::query()
-            ->esAval()
-            ->Grupo($grupo)
-            ->get()
-            ->keyBy('idAlumno');
-    @endphp
-    <div class="container">
-        <br/>
-        <strong>Qualificació FCT (LFP)</strong>
-        <ul style='list-style:none'>
-            @foreach ($grupo->Alumnos->sortBy('nameFull') as $alumno)
-                @php $fct = $fcts->get($alumno->nia); @endphp
-                <li><strong>{{ $alumno->nameFull }}</strong> - {{ $fct?->qualificacio ?? 'No Avaluat' }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @php
-        $renuncies = $fcts->where('calificacion', 3);
-    @endphp
-    @if ($renuncies->isNotEmpty())
-        @php
-            $modulos = \Intranet\Entities\Modulo_grupo::query()
-                ->where('idGrupo', $grupo->codigo)
-                ->get();
-            $resultats = \Intranet\Entities\AlumnoResultado::query()
-                ->whereIn('idAlumno', $renuncies->pluck('idAlumno'))
-                ->whereIn('idModuloGrupo', $modulos->pluck('id'))
-                ->get()
-                ->groupBy('idAlumno');
-        @endphp
-        <div class="container">
-            <br/>
-            <strong>Alumnat amb renúncia: notes de mòduls</strong>
-            <ul style='list-style:none'>
-                @foreach ($renuncies as $fct)
-                    @php
-                        $alumno = $fct->Alumno;
-                        $resultatsAlumne = $resultats->get($fct->idAlumno, collect())->keyBy('idModuloGrupo');
-                    @endphp
-                    <li>
-                        <strong>{{ $alumno?->nameFull ?? $fct->Nombre }}</strong><br/>
-                        @foreach ($modulos as $modulo)
-                            @php $nota = (int) ($resultatsAlumne->get($modulo->id)?->nota ?? 0); @endphp
-                            <strong>{{ $modulo->Xmodulo }}</strong>: {{ config('auxiliares.notas')[$nota] ?? $nota }}<br/>
-                        @endforeach
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-@endif
 {{--
 @if ($datosInforme->informe)
     <div class="container">

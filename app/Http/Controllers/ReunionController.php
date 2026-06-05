@@ -4,16 +4,14 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Reunion;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -43,6 +41,10 @@ class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
     private ?ReunionService $reunionService = null;
+    /**
+     * @var ReunionFeValuationService|null
+     */
+    private ?ReunionFeValuationService $feValuationService = null;
 
     use Imprimir;
 
@@ -53,11 +55,15 @@ class ReunionController extends ModalController
     protected $formFields = ReunionCrudSchema::FORM_FIELDS;
     protected $parametresVista = [  'modal' => ['password']];
 
-    public function __construct(?GrupoService $grupoService = null, ?ReunionService $reunionService = null)
-    {
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?ReunionService $reunionService = null,
+        ?ReunionFeValuationService $feValuationService = null
+    ) {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->reunionService = $reunionService;
+        $this->feValuationService = $feValuationService;
     }
 
     private function grupos(): GrupoService
@@ -78,6 +84,20 @@ class ReunionController extends ModalController
         return $this->reunionService;
     }
 
+    /**
+     * Retorna el servei de valoració FE per a actes d'avaluació.
+     *
+     * @return ReunionFeValuationService
+     */
+    private function feValuations(): ReunionFeValuationService
+    {
+        if ($this->feValuationService === null) {
+            $this->feValuationService = app(ReunionFeValuationService::class);
+        }
+
+        return $this->feValuationService;
+    }
+
     protected function search()
     {
         return Reunion::MisReuniones()->get();
@@ -96,6 +116,7 @@ class ReunionController extends ModalController
             $elemento = Reunion::findOrFail($id);
             $service = new MeetingOrderGenerateService($elemento);
             $service->exec();
+            $this->feValuations()->ensureOrder($elemento);
             return $elemento;
         });
 
@@ -116,6 +137,8 @@ class ReunionController extends ModalController
             return view('intranet.edit', compact('formulario', 'modelo'));
         }
 
+        $this->feValuations()->ensureOrder($elemento);
+        $feNotesData = $elemento->avaluacioFinal ? $this->feValuations()->gradeInputData($elemento) : null;
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
         $activos = app(ProfesorService::class)->activosOrdered();
         $tProfesores = hazArray($activos, 'dni', 'FullName');
@@ -151,11 +174,15 @@ class ReunionController extends ModalController
                     'ordenes',
                     'tAlumnos',
                     'sAlumnos',
-                    'select'
+                    'select',
+                    'feNotesData'
                 )
             );
         }
-        return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+        return view(
+            'reunion.asistencia',
+            compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes', 'feNotesData')
+        );
 
     }
 
@@ -218,6 +245,40 @@ class ReunionController extends ModalController
         }
         OrdenReunion::create($request->all());
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
+    }
+
+    /**
+     * Guarda les notes reals dels mòduls FE dins de l'acta ordinària.
+     *
+     * @param Request $request
+     * @param int|string $reunion
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeFeNotes(Request $request, $reunion)
+    {
+        $elemento = Reunion::findOrFail($reunion);
+        $this->authorize('update', $elemento);
+
+        if (!$elemento->avaluacioFinal) {
+            Alert::warning('Les notes reals de FE només es poden introduir en l\'acta ordinària.');
+            return redirect()->route(self::REUNION_UPDATE, ['reunion' => $elemento->id]);
+        }
+
+        $validated = $request->validate([
+            'notes' => 'nullable|array',
+            'notes.*' => 'array',
+            'notes.*.*.nota' => 'nullable|integer|in:0,5,6,7,8,9,10',
+            'notes.*.*.observaciones' => 'nullable|string|max:200',
+        ]);
+
+        $saved = $this->feValuations()->saveModuleGrades($elemento, $validated['notes'] ?? []);
+        if ($saved === 0) {
+            Alert::info('No hi havia cap nota FE nova per a guardar.');
+        } else {
+            Alert::success("S'han guardat les notes reals de FE.");
+        }
+
+        return redirect()->route(self::REUNION_UPDATE, ['reunion' => $elemento->id]);
     }
 
 
@@ -433,7 +494,7 @@ class ReunionController extends ModalController
         );
 
         throw new IntranetException(
-            "Falten notes de mòdul per a alumnat amb renúncia: " . implode('; ', $detall)
+            "Falten notes de mòdul per a alumnat no apte o amb renúncia: " . implode('; ', $detall)
         );
     }
 
@@ -444,58 +505,7 @@ class ReunionController extends ModalController
      */
     private function missingNotasRenuncia(Reunion $reunion): array
     {
-        if (!$reunion->avaluacioFinal || $reunion->normativa !== 'LFP') {
-            return [];
-        }
-
-        $grupo = $reunion->grupoClase;
-        if (!$grupo || (int) $grupo->curso !== 2) {
-            return [];
-        }
-
-        $renuncies = AlumnoFct::query()
-            ->esAval()
-            ->Grupo($grupo)
-            ->where('calificacion', 3)
-            ->get();
-        if ($renuncies->isEmpty()) {
-            return [];
-        }
-
-        $modulos = Modulo_grupo::query()
-            ->where('idGrupo', $grupo->codigo)
-            ->get();
-        if ($modulos->isEmpty()) {
-            return [];
-        }
-
-        $resultats = AlumnoResultado::query()
-            ->whereIn('idAlumno', $renuncies->pluck('idAlumno'))
-            ->whereIn('idModuloGrupo', $modulos->pluck('id'))
-            ->get()
-            ->groupBy('idAlumno');
-
-        $faltants = [];
-        foreach ($renuncies as $fct) {
-            $resultatsAlumne = $resultats->get($fct->idAlumno, collect())->keyBy('idModuloGrupo');
-            $modulosPendents = [];
-            foreach ($modulos as $modulo) {
-                $nota = (int) ($resultatsAlumne->get($modulo->id)?->nota ?? 0);
-                if ($nota <= 0) {
-                    $modulosPendents[] = (string) ($modulo->Xmodulo ?? $modulo->id);
-                }
-            }
-
-            if ($modulosPendents !== []) {
-                $nombre = $fct->Alumno?->nameFull ?? $fct->Nombre;
-                $faltants[] = [
-                    'alumno' => (string) $nombre,
-                    'modulos' => $modulosPendents,
-                ];
-            }
-        }
-
-        return $faltants;
+        return $this->feValuations()->missingModuleGrades($reunion);
     }
 
     public function saveFile($id)

@@ -24,6 +24,9 @@
 <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
+    @if ($formulario->getElemento()->avaluacioFinal && isset($feNotesData) && $feNotesData['fcts']->isNotEmpty())
+        @include('reunion.partials.fe-notes')
+    @endif
     @include('reunion.partials.profesores')
     @if ($formulario->getElemento()->informe)
         @include('reunion.partials.alumnos')

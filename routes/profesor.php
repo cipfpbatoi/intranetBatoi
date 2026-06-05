@@ -53,6 +53,7 @@ Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'store
 Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
 Route::post('/reunion/create', ['as' => 'reunion.store', 'uses' => 'ReunionController@store']);
 Route::put('/reunion/{reunion}/edit', ['as' => 'reunion.update', 'uses' => 'ReunionController@update']);
+Route::post('/reunion/{reunion}/feNotes', ['as' => 'reunion.feNotes.store', 'uses' => 'ReunionController@storeFeNotes']);
 Route::post('/reunion/{reunion}/nuevoOrden', ['as' => 'reunion.orden.store', 'uses' => 'ReunionController@altaOrden']);
 Route::get(
     '/reunion/{reunion}/borrarOrden/{orden}',
