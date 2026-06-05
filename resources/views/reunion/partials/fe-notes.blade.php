@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card reunion-fe-notes-subpoint">
     <a class="d-block collapsed"
        id="headingFeNotes"
        data-bs-toggle="collapse"
@@ -7,7 +7,7 @@
        aria-expanded="false"
        aria-controls="collapseFeNotes"
     >
-        <h4 class="card-title"><i class="fa fa-pencil"></i> Notes reals FE</h4>
+        <h4 class="card-title"><i class="fa fa-pencil"></i> 9.2 Notes reals FE</h4>
     </a>
     <div id="collapseFeNotes" class="collapse" aria-labelledby="headingFeNotes">
         <div class="card-body">

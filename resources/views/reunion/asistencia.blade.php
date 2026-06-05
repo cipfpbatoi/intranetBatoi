@@ -18,6 +18,11 @@
         height: auto;
         overflow: auto;
     }
+
+    .reunion-fe-notes-subpoint {
+        margin-left: 2rem;
+        border-left: 3px solid #d9edf7;
+    }
 </style>
 @endsection
 @section('content')

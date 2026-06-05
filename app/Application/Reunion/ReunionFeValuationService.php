@@ -21,6 +21,8 @@ class ReunionFeValuationService
     public const NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte, amb cessament o amb renúncia';
     private const LEGACY_NOTES_ORDER_DESCRIPTION = 'Notes reals dels mòduls de l\'alumnat no apte o amb cessament';
     private const VALID_REAL_GRADES = [0, 5, 6, 7, 8, 9, 10];
+    private const DEPRECATED_SECOND_YEAR_INSTRUCTION = '<p><strong>Grups de 2n:</strong> indiqueu les notes reals '
+        . 'dels mòduls de l\'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>';
 
     private ?AlumnoFctAvalService $alumnoFctAvalService;
 
@@ -48,6 +50,7 @@ class ReunionFeValuationService
             ->first();
 
         if ($existing) {
+            $this->removeDeprecatedSecondYearInstruction($existing);
             $this->refreshNotesOrder($reunion);
 
             return $existing;
@@ -141,11 +144,28 @@ class ReunionFeValuationService
                 $knownSections['renuncies'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
-            '<p><strong>Grups de 2n:</strong> indiqueu les notes reals dels mòduls de l\'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>',
             '<p>El tutor o tutora ha d\'anar a secretaria per a anul·lar la convocatòria extraordinària quan corresponga.</p>',
         ];
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Elimina d'actes ja creades la instrucció antiga sobre notes reals de 2n.
+     *
+     * @param OrdenReunion $order
+     * @return void
+     */
+    private function removeDeprecatedSecondYearInstruction(OrdenReunion $order): void
+    {
+        $summary = (string) $order->resumen;
+        if (!str_contains($summary, self::DEPRECATED_SECOND_YEAR_INSTRUCTION)) {
+            return;
+        }
+
+        $updatedSummary = trim(str_replace(self::DEPRECATED_SECOND_YEAR_INSTRUCTION, '', $summary));
+        $order->resumen = $updatedSummary;
+        $order->save();
     }
 
     /**

@@ -138,7 +138,6 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertSame(ReunionFeValuationService::ORDER_DESCRIPTION, $order->descripcion);
         $this->assertStringContainsString('Alumnat apte', (string) $order->resumen);
         $this->assertStringContainsString('Alumnat no apte', (string) $order->resumen);
-        $this->assertStringContainsString('notes reals dels mòduls', (string) $order->resumen);
         $this->assertStringContainsString('convocatòria extraordinària', (string) $order->resumen);
     }
 
@@ -162,6 +161,30 @@ class ReunionFeValuationServiceTest extends TestCase
         );
 
         $this->assertSame('Resum del tutor', $order?->resumen);
+        $this->assertSame(1, DB::table('ordenes_reuniones')->count());
+    }
+
+    /**
+     * Verifica que s'elimina la instrucció antiga de 2n en actes ja creades.
+     */
+    public function test_elimina_text_antic_de_grups_de_segon_si_ja_existix(): void
+    {
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 9,
+                'descripcion' => ReunionFeValuationService::ORDER_DESCRIPTION,
+                'resumen' => "Text del tutor\n<p><strong>Grups de 2n:</strong> indiqueu les notes reals "
+                    . "dels mòduls de l'alumnat no apte o que no ha realitzat la FE quan siga necessari.</p>",
+            ],
+        ]);
+
+        $order = $this->serviceWithAvalFcts(collect())->ensureOrder(
+            $this->makeReunion(10, 7, 35),
+            'LFP'
+        );
+
+        $this->assertSame('Text del tutor', $order?->resumen);
         $this->assertSame(1, DB::table('ordenes_reuniones')->count());
     }
 
