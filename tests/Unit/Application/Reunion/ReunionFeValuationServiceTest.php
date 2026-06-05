@@ -91,6 +91,7 @@ class ReunionFeValuationServiceTest extends TestCase
             $table->string('idAlumno');
             $table->string('idProfesor')->nullable();
             $table->unsignedTinyInteger('calificacion')->nullable();
+            $table->unsignedTinyInteger('calProyecto')->nullable();
             $table->unsignedTinyInteger('correoAlumno')->default(0);
             $table->unsignedInteger('horas')->default(0);
         });
@@ -209,7 +210,8 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('<strong>Alumnat en cessament:</strong>', $summary);
         $this->assertStringContainsString('Cessament Test, Cesc - Cessament', $summary);
         $this->assertStringContainsString('Renuncia Test, Rita - Renúncia / No realitzada', $summary);
-        $this->assertStringContainsString('Loe Test, Laia - Apte - 200 hores', $summary);
+        $this->assertStringNotContainsString('Loe Test, Laia', $summary);
+        $this->assertStringNotContainsString('Projecte Test, Pau', $summary);
     }
 
     /**
@@ -238,6 +240,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('Noapta Test, Noa', $summary);
         $this->assertStringContainsString('Renuncia Test, Rita', $summary);
         $this->assertStringContainsString('Cessament Test, Cesc', $summary);
+        $this->assertStringNotContainsString('Projecte Test, Pau', $summary);
         $this->assertStringContainsString('Mòdul pràctic', $summary);
         $this->assertStringContainsString('<strong>Noapta Test, Noa</strong><ul><li><strong>Mòdul pràctic</strong>: 6</li></ul>', $summary);
         $this->assertStringNotContainsString('Apta Test, Anna', $summary);
@@ -256,6 +259,7 @@ class ReunionFeValuationServiceTest extends TestCase
         );
 
         $this->assertSame(['A6', 'A2', 'A4'], $data['fcts']->pluck('idAlumno')->all());
+        $this->assertNotContains('A7', $data['fcts']->pluck('idAlumno')->all());
         $this->assertCount(1, $data['modulesByStudent']->get('A2'));
         $this->assertTrue($data['results']->has('A2-1'));
         $this->assertFalse($data['results']->has('A1-1'));
@@ -507,6 +511,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['nia' => 'A4', 'nombre' => 'Rita', 'apellido1' => 'Renuncia', 'apellido2' => 'Test'],
             ['nia' => 'A5', 'nombre' => 'Laia', 'apellido1' => 'Loe', 'apellido2' => 'Test'],
             ['nia' => 'A6', 'nombre' => 'Cesc', 'apellido1' => 'Cessament', 'apellido2' => 'Test'],
+            ['nia' => 'A7', 'nombre' => 'Pau', 'apellido1' => 'Projecte', 'apellido2' => 'Test'],
         ]);
         DB::table('alumnos_grupos')->insert([
             ['idAlumno' => 'A1', 'idGrupo' => '2LFP'],
@@ -515,14 +520,16 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A4', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A5', 'idGrupo' => '2LOE'],
             ['idAlumno' => 'A6', 'idGrupo' => '2LFP'],
+            ['idAlumno' => 'A7', 'idGrupo' => '2LOE'],
         ]);
         DB::table('alumno_fcts')->insert([
-            ['idFct' => 1, 'idAlumno' => 'A1', 'idProfesor' => 'P1', 'calificacion' => 1, 'horas' => 120],
-            ['idFct' => 2, 'idAlumno' => 'A2', 'idProfesor' => 'P1', 'calificacion' => 0, 'horas' => 80],
-            ['idFct' => 3, 'idAlumno' => 'A3', 'idProfesor' => 'P1', 'calificacion' => 2, 'horas' => 0],
-            ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 5, 'horas' => 0],
-            ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 1, 'horas' => 200],
-            ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'horas' => 0],
+            ['idFct' => 1, 'idAlumno' => 'A1', 'idProfesor' => 'P1', 'calificacion' => 1, 'calProyecto' => null, 'horas' => 120],
+            ['idFct' => 2, 'idAlumno' => 'A2', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => 0, 'horas' => 80],
+            ['idFct' => 3, 'idAlumno' => 'A3', 'idProfesor' => 'P1', 'calificacion' => 2, 'calProyecto' => null, 'horas' => 0],
+            ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 5, 'calProyecto' => null, 'horas' => 0],
+            ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 1, 'calProyecto' => 7, 'horas' => 200],
+            ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'calProyecto' => null, 'horas' => 0],
+            ['idFct' => 5, 'idAlumno' => 'A7', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => 4, 'horas' => 90],
         ]);
     }
 
@@ -557,7 +564,7 @@ class ReunionFeValuationServiceTest extends TestCase
     {
         return AlumnoFct::query()
             ->with('Alumno')
-            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'])
+            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7'])
             ->get();
     }
 

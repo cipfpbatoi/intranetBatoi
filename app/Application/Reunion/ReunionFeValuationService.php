@@ -158,6 +158,7 @@ class ReunionFeValuationService
     {
         $fcts = $this->avals()
             ->latestByProfesor($tutorDni)
+            ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
 
         return $this->knownSectionsForFcts($fcts);
@@ -240,6 +241,7 @@ class ReunionFeValuationService
     {
         return $this->avals()
             ->latestByProfesor($tutorDni)
+            ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
             ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3, 5], true))
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre))
             ->values();
