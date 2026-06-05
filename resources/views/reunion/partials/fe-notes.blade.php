@@ -7,7 +7,7 @@
        aria-expanded="false"
        aria-controls="collapseFeNotes"
     >
-        <h4 class="card-title"><i class="fa fa-pencil"></i> 9.2 Notes reals FE</h4>
+        <h4 class="card-title"><i class="fa fa-pencil"></i> Apartat 9.1: Notes Formació en Centre</h4>
     </a>
     <div id="collapseFeNotes" class="collapse" aria-labelledby="headingFeNotes">
         <div class="card-body">
@@ -36,12 +36,17 @@
                                     $alumno = $fct->Alumno;
                                     $studentModules = $feNotesData['modulesByStudent']->get((string) $fct->idAlumno, collect())->pluck('id');
                                 @endphp
-                                <tr>
+                                <tr class="reunion-fe-student-row">
                                     <td>
                                         <span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span><br>
                                         {{ $fct->qualificacio }}
                                         <label class="reunion-fe-exclude-student">
-                                            <input type="checkbox" name="excluded_students[]" value="{{ $fct->idAlumno }}">
+                                            <input
+                                                type="checkbox"
+                                                name="excluded_students[]"
+                                                value="{{ $fct->idAlumno }}"
+                                                class="reunion-fe-exclude-checkbox"
+                                            >
                                             No guardar notes d'este alumne
                                         </label>
                                     </td>
@@ -85,3 +90,22 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.reunion-fe-exclude-checkbox').forEach(function (checkbox) {
+            var updateStudentFields = function () {
+                var row = checkbox.closest('.reunion-fe-student-row');
+                if (!row) {
+                    return;
+                }
+
+                row.querySelectorAll('select, textarea').forEach(function (field) {
+                    field.disabled = checkbox.checked;
+                });
+            };
+
+            checkbox.addEventListener('change', updateStudentFields);
+            updateStudentFields();
+        });
+    });
+</script>
