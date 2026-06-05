@@ -256,7 +256,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('<strong>Alumnat en cessament:</strong>', $summary);
         $this->assertStringContainsString('Cessament Test, Cesc - Cessament', $summary);
         $this->assertStringContainsString('Renuncia Test, Rita - Renúncia / No realitzada', $summary);
-        $this->assertStringContainsString('Loe Test, Laia - Apte - 200 hores', $summary);
+        $this->assertStringNotContainsString('Loe Test, Laia', $summary);
     }
 
     /**
@@ -566,7 +566,7 @@ class ReunionFeValuationServiceTest extends TestCase
     private function seedKnownFctData(): void
     {
         DB::table('ciclos')->insert([
-            ['id' => 100, 'normativa' => 'LOE'],
+            ['id' => 100, 'normativa' => 'LFP'],
             ['id' => 200, 'normativa' => 'LOE'],
         ]);
         DB::table('profesores')->insert([
@@ -610,7 +610,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idFct' => 2, 'idAlumno' => 'A2', 'idProfesor' => 'P1', 'calificacion' => 0, 'horas' => 80],
             ['idFct' => 3, 'idAlumno' => 'A3', 'idProfesor' => 'P1', 'calificacion' => 2, 'horas' => 0],
             ['idFct' => 4, 'idAlumno' => 'A4', 'idProfesor' => 'P1', 'calificacion' => 5, 'horas' => 0],
-            ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 1, 'horas' => 200],
+            ['idFct' => 5, 'idAlumno' => 'A5', 'idProfesor' => 'P1', 'calificacion' => 0, 'horas' => 200],
             ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'horas' => 0],
         ]);
     }
