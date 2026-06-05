@@ -51,6 +51,7 @@ class ResultadoController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
+        /*
         $this->panel->setBoton(
             'grid',
             new \Intranet\UI\Botones\BotonImg(
@@ -63,7 +64,7 @@ class ResultadoController extends ModalController
                 ]
             )
         );
-
+        */
     }
 
     public function __construct(?GrupoService $grupoService = null)
