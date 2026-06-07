@@ -112,6 +112,9 @@ class AlumnoFctTest extends TestCase
         $alumnoFct->calificacion = 3;
         $this->assertEquals('Cessament', $alumnoFct->qualificacio);
 
+        $alumnoFct->calificacion = 4;
+        $this->assertEquals('Cessament Disciplinari (Expulsat)', $alumnoFct->qualificacio);
+
         $alumnoFct->calificacion = 5;
         $this->assertEquals('Renúncia / No realitzada', $alumnoFct->qualificacio);
 

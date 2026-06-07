@@ -143,7 +143,11 @@ class ReunionFeValuationService
                 $knownSections['cessaments'] ?? [],
                 'indiqueu l\'alumnat i la justificació.'
             ),
-            '<p><strong>Alumnat en cessament disciplinari:</strong> indiqueu l\'alumnat i el motiu.</p>',
+            $this->sectionLine(
+                'Alumnat en cessament disciplinari',
+                $knownSections['expulsions'] ?? [],
+                'indiqueu l\'alumnat i el motiu.'
+            ),
             $this->sectionLine(
                 'Alumnat que no ha realitzat les pràctiques / renúncia',
                 $knownSections['renuncies'] ?? [],
@@ -477,6 +481,9 @@ class ReunionFeValuationService
             ),
             'cessaments' => $this->formatFctRows(
                 $fcts->where('calificacion', 3)
+            ),
+            'expulsions' => $this->formatFctRows(
+                $fcts->where('calificacion', 4)
             ),
             'renuncies' => $this->formatFctRows(
                 $fcts->where('calificacion', 5)
