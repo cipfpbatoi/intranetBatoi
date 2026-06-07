@@ -149,7 +149,7 @@ class ReunionFeValuationService
                 'indiqueu l\'alumnat i el motiu.'
             ),
             $this->sectionLine(
-                'Alumnat que no ha realitzat les pràctiques / renúncia',
+                'Alumnat que no ha realitzat la FE o renúncia (té document de renúncia)',
                 $knownSections['renuncies'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
@@ -720,7 +720,7 @@ class ReunionFeValuationService
         $rows = [];
         foreach ($fcts as $fct) {
             $name = e((string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
-            $rows[] = $name . ' - Indiqueu si és Renúncia (firma document) o No realitzada (No firma document)';
+            $rows[] = $name . ': Indiqueu si No Realitza o Renúncia';
         }
 
         return $rows;
