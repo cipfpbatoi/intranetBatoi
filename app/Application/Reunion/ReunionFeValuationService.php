@@ -485,7 +485,7 @@ class ReunionFeValuationService
             'expulsions' => $this->formatExpulsionRows(
                 $fcts->where('calificacion', 4)
             ),
-            'renuncies' => $this->formatFctRows(
+            'renuncies' => $this->formatRenunciaRows(
                 $fcts->where('calificacion', 5)
             )
         ];
@@ -704,6 +704,23 @@ class ReunionFeValuationService
         foreach ($fcts as $fct) {
             $name = e((string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
             $rows[] = $name . ' - Motiu: (Explica el motiu principal)';
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Dona format a l'alumnat pendent d'indicar renúncia/no realització en l'acta.
+     *
+     * @param iterable<int, AlumnoFct> $fcts
+     * @return array<int, string>
+     */
+    private function formatRenunciaRows(iterable $fcts): array
+    {
+        $rows = [];
+        foreach ($fcts as $fct) {
+            $name = e((string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
+            $rows[] = $name . ' - Indiqueu si és Renúncia (firma document) o No realitzada (No firma document)';
         }
 
         return $rows;

@@ -113,7 +113,7 @@ class FctAlumnoController extends ModalController
             'grid',
             new BotonImg(
                 'alumnofct.pdf',
-                ['where' => ['asociacion', '==', '2']]
+                ['where' => ['asociacion', '==', '2', 'calificacion', '!=', '5']]
             )
         );
         $this->panel->setBoton(

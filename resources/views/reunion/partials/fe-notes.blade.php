@@ -7,7 +7,12 @@
        aria-expanded="false"
        aria-controls="collapseFeNotes"
     >
-        <h4 class="card-title"><i class="fa fa-pencil"></i> Apartat 9.1: Notes Formació en Centre</h4>
+        <h4 class="card-title">
+            <i class="fa fa-pencil"></i> Apartat 9.1: Notes Formació en Centre
+            <small class="text-warning">
+                Recordeu que si l'alumnat no ha anat a fer la FE, sols guardarem les notes si ha renunciat firmant en document de renúncia
+            </small>
+        </h4>
     </a>
     <div id="collapseFeNotes" class="collapse" aria-labelledby="headingFeNotes">
         <div class="card-body">
