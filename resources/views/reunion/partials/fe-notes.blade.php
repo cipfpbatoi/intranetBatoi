@@ -85,7 +85,7 @@
                         </table>
                     </div>
                 @endif
-                <input class="boton" type="submit" value="Guardar notes FE">
+                <input class="btn btn-success mt-2" type="submit" value="Guardar notes FE">
             </form>
         </div>
     </div>
