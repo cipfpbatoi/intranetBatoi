@@ -149,7 +149,7 @@ class ReunionFeValuationService
                 'indiqueu l\'alumnat i el motiu.'
             ),
             $this->sectionLine(
-                'Alumnat que no ha realitzat la FE o renúncia (té document de renúncia)',
+                'Alumnat que no ha realitzat la FE (No firma document) / Renúncia (firma document)',
                 $knownSections['renuncies'] ?? [],
                 'indiqueu l\'alumnat corresponent.'
             ),
