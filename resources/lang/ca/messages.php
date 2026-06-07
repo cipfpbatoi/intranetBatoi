@@ -122,7 +122,7 @@ return array(
         'withjustify' => 'Amb justificant',
         'refused' => 'Rebutjades',
         'renuncia' => 'Cessament',
-        'expulsat' => 'Expulsat',
+        'expulsat' => 'Cese Disciplinario (Expulsió)',
         'itaca' => 'ITACA',
         'justificada' => 'Justificades',
         'cobrada' => 'Cobrades',

@@ -109,7 +109,7 @@ return array(
         'refuse' => 'Rechazar',
         'refused' => 'Rechazadas',
         'renuncia' => 'Cese',
-        'expulsat' => 'Expulsado',
+        'expulsat' => 'Cese Disciplinario (Expulsió)',
         'pendiente' => 'Asignadas',
         'resta' => 'No asignadas',
         'colabora' => 'Colaboran',

@@ -109,7 +109,7 @@ return array(
         'unauthorize' => 'Unauthorise',
         'refuse' => 'Refuse',
         'renuncia' => 'Termination',
-        'expulsat' => 'Expelled',
+        'expulsat' => 'Cese Disciplinario (Expulsió)',
         'pendiente' => 'Assigned',
         'resta' => 'Unassigned',
         'colabora' => 'Collaborating',
