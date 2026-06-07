@@ -257,7 +257,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('<strong>Alumnat en cessament:</strong>', $summary);
         $this->assertStringContainsString('Cessament Test, Cesc - Cessament', $summary);
         $this->assertStringContainsString('<strong>Alumnat en cessament disciplinari:</strong>', $summary);
-        $this->assertStringContainsString('Expulsio Test, Elsa - Expulsat', $summary);
+        $this->assertStringContainsString('Expulsio Test, Elsa - Motiu: (Explica el motiu principal)', $summary);
         $this->assertStringContainsString('Renuncia Test, Rita - Renúncia / No realitzada', $summary);
         $this->assertStringNotContainsString('Loe Test, Laia', $summary);
         $this->assertStringNotContainsString('Projecte Test, Pau', $summary);

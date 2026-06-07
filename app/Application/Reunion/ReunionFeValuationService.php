@@ -482,7 +482,7 @@ class ReunionFeValuationService
             'cessaments' => $this->formatFctRows(
                 $fcts->where('calificacion', 3)
             ),
-            'expulsions' => $this->formatFctRows(
+            'expulsions' => $this->formatExpulsionRows(
                 $fcts->where('calificacion', 4)
             ),
             'renuncies' => $this->formatFctRows(
@@ -687,6 +687,23 @@ class ReunionFeValuationService
             $qualification = e((string) $fct->qualificacio);
             $hours = $includeHours ? ' - ' . (int) $fct->horasTotal . ' hores' : '';
             $rows[] = $name . ' - ' . $qualification . $hours;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Dona format a l'alumnat amb cessament disciplinari per al resum de l'acta.
+     *
+     * @param iterable<int, AlumnoFct> $fcts
+     * @return array<int, string>
+     */
+    private function formatExpulsionRows(iterable $fcts): array
+    {
+        $rows = [];
+        foreach ($fcts as $fct) {
+            $name = e((string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
+            $rows[] = $name . ' - Motiu: (Explica el motiu principal)';
         }
 
         return $rows;
