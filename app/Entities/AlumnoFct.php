@@ -140,10 +140,16 @@ class AlumnoFct extends Model
         return $query->where('actas', '=', 2);
     }
 
+    /**
+     * Filtra FCT aptes pendents d'enviar el certificat final a l'alumne.
+     */
     public function scopePendienteNotificar($query)
     {
         return $query->where('calificacion', 1)
-            ->where('correoAlumno', 0);
+            ->where('correoAlumno', 0)
+            ->whereDoesntHave('Fct.Colaboracion.Ciclo', function ($query): void {
+                $query->where('normativa', 'LFP');
+            });
     }
 
     public function scopeCalificados($query)
