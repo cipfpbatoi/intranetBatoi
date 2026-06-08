@@ -25,6 +25,109 @@ class NotificationServiceTest extends TestCase
         $service->send('12345678', 'Hola', '#', 'Emisor');
     }
 
+    public function testSendNotifiesAllReceptorsWhenIdIsArray()
+    {
+        $primerReceptor = Mockery::mock();
+        $primerReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $segonReceptor = Mockery::mock();
+        $segonReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $service = new NotificationService(
+            findAlumno: static fn () => null,
+            findProfesor: static fn ($id) => match ($id) {
+                '021652470V' => $primerReceptor,
+                '048290231Y' => $segonReceptor,
+                default => null,
+            },
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
+        $service->send(['021652470V', '048290231Y'], 'Error detectat', '#', 'Sistema');
+    }
+
+    public function testSendNotifiesArrayReceptorsWithoutAuthenticatedUserOrExplicitEmitter()
+    {
+        $primerReceptor = Mockery::mock();
+        $primerReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $segonReceptor = Mockery::mock();
+        $segonReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $service = new NotificationService(
+            findAlumno: static fn () => null,
+            findProfesor: static fn ($id) => match ($id) {
+                '021652470V' => $primerReceptor,
+                '021684282C' => $segonReceptor,
+                default => null,
+            },
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
+
+        $service->send(['021652470V', '021684282C'], 'Error detectat');
+    }
+
+    public function testSendNormalizesCommaSeparatedAndSpacedArrayReceptors()
+    {
+        $primerReceptor = Mockery::mock();
+        $primerReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $segonReceptor = Mockery::mock();
+        $segonReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $service = new NotificationService(
+            findAlumno: static fn () => null,
+            findProfesor: static fn ($id) => match ($id) {
+                '021652470V' => $primerReceptor,
+                '021684282C' => $segonReceptor,
+                default => null,
+            },
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
+
+        $service->send([' 021652470V ', '021684282C, 021652470V'], 'Error detectat');
+    }
+
+    public function testSendNormalizesDatabaseArrayLiteralReceptors()
+    {
+        $primerReceptor = Mockery::mock();
+        $primerReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $segonReceptor = Mockery::mock();
+        $segonReceptor->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::type(mensajePanel::class));
+
+        $service = new NotificationService(
+            findAlumno: static fn () => null,
+            findProfesor: static fn ($id) => match ($id) {
+                '021652470V' => $primerReceptor,
+                '021684282C' => $segonReceptor,
+                default => null,
+            },
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
+
+        $service->send("['021652470V','021684282C']", 'Error detectat');
+    }
+
     public function testSendNotifiesEmisorWhenReceptorMissing()
     {
         $emisorUser = Mockery::mock();

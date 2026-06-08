@@ -464,7 +464,7 @@
             var fusionarBtn = event.target.closest('#fusionar');
             if (fusionarBtn) {
                 event.preventDefault();
-                request('POST', '/api/centro/fusionar', {
+                request('POST', fusionarBtn.dataset.fusionUrl || '/api/centro/fusionar', {
                     fusion: getCheckedFusionValues()
                 }, true).then(function () {
                     window.location.reload();

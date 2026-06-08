@@ -108,8 +108,13 @@ class EmpresaControllerFeatureTest extends TestCase
         $showView = file_get_contents(resource_path('views/empresa/show.blade.php'));
         $mapModal = file_get_contents(resource_path('views/empresa/partials/modalMapaCentro.blade.php'));
         $script = file_get_contents(public_path('js/Empresa/detalle.js'));
+        $controller = file_get_contents(app_path('Http/Controllers/EmpresaController.php'));
 
+        $this->assertStringNotContainsString("new BotonImg('empresa.edit')", $controller);
+        $this->assertStringContainsString("config('roles.rol.administrador')", $controller);
+        $this->assertStringContainsString("config('roles.rol.direccion')", $controller);
         $this->assertStringContainsString('class="mapa-centro"', $showView);
+        $this->assertStringContainsString('data-fusion-url="{{ url(\'/api/centro/fusionar\') }}"', $showView);
         $this->assertStringContainsString("empresa.partials.modalMapaCentro", $showView);
         $this->assertStringContainsString('id="telefonoCentro"', $showView);
         $this->assertStringContainsString('id="emailCentro"', $showView);

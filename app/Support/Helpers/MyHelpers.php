@@ -588,7 +588,7 @@ function getClass($str)
 /**
  * Envia notificació interna a alumne/professor.
  *
- * @param string $id
+ * @param string|array $id
  * @param string $mensaje
  * @param string $enlace
  * @param string|null $emisor
@@ -596,30 +596,58 @@ function getClass($str)
  */
 function avisa($id, $mensaje, $enlace = '#', $emisor = null)
 {
-    if ($emisor || isset(authUser()->dni)) {
-        $emisor = ($emisor == null) ? authUser()->shortName : $emisor;
-        $fecha = fechaString();
+    $rawDestinataris = is_array($id) ? $id : [$id];
+    $destinataris = [];
 
-        if (strlen($id) == 8) {
-            $quien = \Intranet\Entities\Alumno::find($id);
-        } else {
-            $quien = profesorService()->find((string) $id);
+    foreach ($rawDestinataris as $rawDestinatari) {
+        foreach (explode(',', trim((string) $rawDestinatari, " \t\n\r\0\x0B[]")) as $destinatari) {
+            $destinatari = trim($destinatari);
+            $destinatari = trim($destinatari, " \t\n\r\0\x0B'\"");
+            if ($destinatari !== '') {
+                $destinataris[] = $destinatari;
+            }
         }
-        if ($quien) {
-            $quien->notify(new \Intranet\Notifications\mensajePanel(
-                [
-                    'motiu' => $mensaje,
-                    'emissor' => $emisor,
-                    'data' => $fecha,
-                    'enlace' => $enlace
-                ]));
-        } else {
-            authUser()->notify(new \Intranet\Notifications\mensajePanel(
-                ['motiu' => "No trobe usuari $id",
-                    'emissor' => $emisor,
-                    'data' => $fecha,
-                    'enlace' => $enlace]));
-        }
+    }
+
+    foreach (array_unique($destinataris) as $destinatari) {
+        avisaUsuari($destinatari, $mensaje, $enlace, $emisor);
+    }
+}
+
+/**
+ * Envia una notificació interna a un únic alumne o professor.
+ *
+ * @param string $id
+ * @param string $mensaje
+ * @param string $enlace
+ * @param string|null $emisor
+ * @return void
+ */
+function avisaUsuari($id, $mensaje, $enlace = '#', $emisor = null)
+{
+    $usuari = authUser();
+    $emisor = $emisor ?: ($usuari ? $usuari->shortName : 'Sistema');
+    $fecha = fechaString();
+
+    if (strlen($id) == 8) {
+        $quien = \Intranet\Entities\Alumno::find($id);
+    } else {
+        $quien = profesorService()->find((string) $id);
+    }
+    if ($quien) {
+        $quien->notify(new \Intranet\Notifications\mensajePanel(
+            [
+                'motiu' => $mensaje,
+                'emissor' => $emisor,
+                'data' => $fecha,
+                'enlace' => $enlace
+            ]));
+    } elseif ($usuari) {
+        $usuari->notify(new \Intranet\Notifications\mensajePanel(
+            ['motiu' => "No trobe usuari $id",
+                'emissor' => $emisor,
+                'data' => $fecha,
+                'enlace' => $enlace]));
     }
 }
 

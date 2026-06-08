@@ -58,7 +58,7 @@
         </ul>
         <a href="{{ route('empresa.edit', ['empresa' => $elemento->id]) }}" class="btn btn-success">
             <em class="fa fa-edit m-right-xs"></em>Editar</a>
-        @if (esRol(authUser()->rol, config('roles.rol.jefe_practicas')))
+        @if (userIsAllow([config('roles.rol.administrador'), config('roles.rol.direccion')]))
             <a href="{{ route('empresa.destroy', ['empresa' => $elemento->id]) }}" id='Borrar' class="btn btn-danger">
                 <em class="fa fa-delete m-right-xs"></em>Esborrar</a>
         @endif
@@ -153,7 +153,7 @@
                     </li>
                     @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
                     <li>
-                        <a href="#" id='fusionar'>
+                        <a href="#" id='fusionar' data-fusion-url="{{ url('/api/centro/fusionar') }}">
                             <em class="fa fa-save"></em>
                         </a>
                     </li>
