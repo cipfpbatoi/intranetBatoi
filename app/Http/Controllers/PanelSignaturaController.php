@@ -58,12 +58,15 @@ class PanelSignaturaController extends BaseController
     }
 
     /**
+     * Inicialitza botons disponibles segons permisos de direcció o gestió d'errors.
      *
+     * @return void
      */
     protected function iniBotones()
     {
         Gate::authorize('manageDirectionPanel', Signatura::class);
-        if (authUser()->dni === config('avisos.director') || authUser()->dni === config('avisos.errores')) {
+        $avisosErrores = (array) config('avisos.errores', []);
+        if (authUser()->dni === config('avisos.director') || in_array(authUser()->dni, $avisosErrores, true)) {
             $this->panel->setBotonera([], ['pdf','delete']);
             $this->panel->setBoton(
                 'index',

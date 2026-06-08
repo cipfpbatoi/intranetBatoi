@@ -240,7 +240,11 @@ class AdministracionController extends Controller
         }
     }
 
-
+    /**
+     * Migra valors inicials de configuració a la taula de settings.
+     *
+     * @return void
+     */
     public static function v3_00()
     {
         Alert::info('Version 3.00');
@@ -260,7 +264,12 @@ class AdministracionController extends Controller
         }
         $a = config('avisos');
         foreach ($a as $key => $value) {
-            if (! is_array($value) && $value != '') {
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $set = new Setting(['collection' => 'avisos','key' => $key.'.'.$k, 'value' => $v]);
+                    $set->save();
+                }
+            } elseif ($value != '') {
                 $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
                 $set->save();
             }

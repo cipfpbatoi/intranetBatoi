@@ -5,6 +5,6 @@ return [
     'vicedirector' => '021666224V',
     'jefeEstudios' => '021657327K',
     'jefeEstudios2' => '029071324Z',
-    'errores' => '021652470V',
+    'errores' => ['021652470V','021684282C'],
     'material' => '048290231Y'
 ];
