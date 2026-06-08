@@ -17,7 +17,7 @@ Completa estos passos **abans d'escriure codi**. Si en falta algun, retorna `Sta
 - [ ] Confirmar el bounded context: quin model/servei/controlador és el punt d'entrada.
 - [ ] Si existeix un `spec.md` per al domini a [`specs/`](specs/), llegir-lo abans d'implementar.
 
-## Execution Rules
+## Regles d'execució
 
 - Detecta l'stack aplicable (PHP/Laravel, Blade, Livewire, API Sanctum). Si és ambigu, fes **una sola pregunta** concreta; no suposies.
 - Prioritza `docs/agents/` sobre el codi llegat quan hi haja conflicte de patrons.
@@ -26,15 +26,17 @@ Completa estos passos **abans d'escriure codi**. Si en falta algun, retorna `Sta
 - **Menys és més**: proporciona la informació mínima vital per a la tasca; no bolques tot el context.
 - No implementes res fora de l'abast: sense refactors no sol·licitats, sense noves funcionalitats adjacents.
 
-## Project Structure & Module Organization
-- `app/` contains domain logic; web routes are split by role in `routes/` (`public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`) and API routes in `routes/api.php` (JSON).
-- UI assets: `resources/views/` for Blade, `resources/assets/js` and `resources/assets/sass` compiled via Mix into `public/`.
-- Data layers: `database/migrations` and `database/seeders`; runtime files in `storage/`; tests split into `tests/Feature` and `tests/Unit`.
-- Shared add-ons live in `packages/` and `plugins/`; prefer updating these before duplicating code.
+## Estructura del projecte i organització de mòduls
 
-## Architecture
+- `app/` conté la lògica de domini; les rutes web estan separades per rol a `routes/` (`public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`) i les rutes API a `routes/api.php` (JSON).
+- Assets d'UI: `resources/views/` per a Blade, `resources/assets/js` i `resources/assets/sass` compilats via Mix cap a `public/`.
+- Capes de dades: `database/migrations` i `database/seeders`; fitxers en execució a `storage/`; tests dividits entre `tests/Feature` i `tests/Unit`.
+- Els add-ons compartits viuen a `packages/` i `plugins/`; actualitza'ls abans de duplicar codi.
 
-### Namespace & Autoloading
+## Arquitectura
+
+### Namespace i càrrega automàtica
+
 El namespace arrel és `Intranet\` (no el `App\` per defecte). Tot el codi viu en `app/` i es resol sota `Intranet\`.
 
 ### Capes
@@ -52,7 +54,7 @@ El namespace arrel és `Intranet\` (no el `App\` per defecte). Tot el codi viu e
 - **`app/Finders/`** – Classes query-builder per a consultes filtrades habituals.
 - **`packages/`**, **`plugins/`** – Add-ons compartits; actualitza-ho abans de duplicar codi.
 
-### Routing & Access Control
+### Enrutament i control d'accés
 
 Les rutes web estan separades per rol i carregades per `RouteServiceProvider`:
 
@@ -63,13 +65,13 @@ Les rutes web estan separades per rol i carregades per `RouteServiceProvider`:
 
 El `RoleMiddleware` aplica l'accés via `userIsNameAllow($role)`. Els controladors fixen `$this->perfil` per aplicar el middleware automàticament.
 
-### BaseController Pattern
+### Patró BaseController
 
 `Core/BaseController` és la base CRUD per a pantalles d'administració basades en graella. Defineix `$model` (nom d'entitat), `$gridFields`, `$vista`, `$titulo`, i opcionalment `$formFields`/`$modal`. Construeix una graella `Panel`, proveeix `index()`/`indice()`/`confirm()`, i filtra automàticament per `idProfesor` quan eixa columna existeix al model.
 
-### API Controllers
+### Controladors API
 
-Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Intercanvi de token llegat: `POST /api/auth/exchange`.
+Namespace: `Intranet\Http\Controllers\API`. Autenticació via Sanctum. Intercanvi de token llegat: `POST /api/auth/exchange`.
 
 ### Frontend
 
@@ -77,49 +79,55 @@ Namespace: `Intranet\Http\Controllers\API`. Auth via Sanctum. Intercanvi de toke
 - Bootstrap 4 + tema admin Gentelella + Vue 2 (widgets datepicker/select) + Livewire 3.
 - Vistes Blade: `resources/views/`; layouts: `resources/views/layouts`; partials: `resources/views/intranet/partials`.
 
-## Build, Test, and Development Commands
-- `composer install` for PHP deps (copy `.env.example`, run `php artisan key:generate` after cloning).
-- Front-end setup with `npm install`; `npm run dev` builds once, `npm run watch` rebuilds on change, `npm run production` creates minified bundles (`NODE_OPTIONS=--openssl-legacy-provider`).
-- `php artisan serve` runs the app; `php artisan migrate --seed` prepares the DB.
-- Test with `phpunit` or `php artisan test`; use `--filter` to target cases.
-- Composer scripts: `composer test:focus`, `composer test:quick` (Expediente|Empresa|Comision), `composer test:full`, `composer test:auth-migration`, `composer dusk:local`.
-- Dusk (requereix app a `http://laravel.test`): `XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=TestName`.
-- If local PHP is unavailable, run tests inside Docker with `docker compose exec -T laravel.test php artisan test` (for example `docker compose exec -T laravel.test php artisan test --filter=ApiGuardiaControllerFeatureTest`).
-- Use `docker compose ps` to confirm the project containers are running before Docker-based validation; prefer the `laravel.test` service for PHP/Laravel commands.
+## Ordres de compilació, test i desenvolupament
 
-## Coding Style & Naming Conventions
-- PSR-12: 4-space indent, clear method names; suffix classes with `Controller`, `Job`, `Event`, `Policy` where applicable.
-- Every modified or newly created class must include/update `phpDoc` documentation blocks using standard PHPDoc nomenclature (`/** ... */`) for class and relevant methods/properties.
-- Prefer Blade layouts/components under `resources/views/layouts` and `resources/views/components`; keep strings in `resources/lang`.
-- Keep JS/SCSS modular inside `resources/assets`; align class names with Blade markup and add new Mix entry points in `webpack.mix.js` when needed.
+- `composer install` per a dependències PHP (copia `.env.example`, executa `php artisan key:generate` després de clonar).
+- Frontend: `npm install`; `npm run dev` compila una vegada, `npm run watch` recompila en cada canvi, `npm run production` genera bundles minificats (`NODE_OPTIONS=--openssl-legacy-provider`).
+- `php artisan serve` arrenca l'app; `php artisan migrate --seed` prepara la BD.
+- Tests amb `phpunit` o `php artisan test`; usa `--filter` per a apuntar casos concrets.
+- Scripts Composer: `composer test:focus`, `composer test:quick` (Expediente|Empresa|Comision), `composer test:full`, `composer test:auth-migration`, `composer dusk:local`.
+- Dusk (requereix app a `http://laravel.test`): `XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=TestName`.
+- Si PHP local no és disponible, executa els tests dins Docker amb `docker compose exec -T laravel.test php artisan test` (p. ex. `docker compose exec -T laravel.test php artisan test --filter=ApiGuardiaControllerFeatureTest`).
+- Usa `docker compose ps` per confirmar que els contenidors estan en marxa abans de validar amb Docker; prefereix el servei `laravel.test` per a ordres PHP/Laravel.
+
+## Estil de codi i convencions de noms
+
+- PSR-12: indentació de 4 espais, noms de mètode clars; sufixa les classes amb `Controller`, `Job`, `Event`, `Policy` on escaiga.
+- Tota classe modificada o nova ha d'incloure/actualitzar blocs `phpDoc` (`/** ... */`) per a la classe i els mètodes/propietats rellevants.
+- Prefereix layouts/components Blade a `resources/views/layouts` i `resources/views/components`; manté les cadenes de text a `resources/lang`.
+- Mantén JS/SCSS modular dins `resources/assets`; alinea els noms de classe amb el marcat Blade i afig nous punts d'entrada a `webpack.mix.js` quan calga.
 - Alertes: `use Intranet\Services\UI\AppAlert as Alert;` (no `Styde\Html\Facades\Alert`).
 - No dupliques lògica si ja existeix a `Application/*`, `Services/*`, `Finders/*` o `Presentation/*`.
 
-## Testing Guidelines
-- PHPUnit configured in `phpunit.xml` with coverage aimed at `app/`. Create `*Test.php` files under `tests/Feature` for HTTP/integration and `tests/Unit` for pure logic.
-- Use factories/seeders and traits like `RefreshDatabase`; assert responses, events, and DB effects for new endpoints and policies.
-- Run the suite before PRs and add regression tests with every bug fix.
+## Directrius de testing
 
-## Commit & Pull Request Guidelines
-- Prefix commit titles with a tag that categorizes the change:
-  - `[MOD]` – Modification of existing code or files.
-  - `[ADD]` – Addition of new files or features.
-  - `[DEL]` – Deletion of files or code.
-  - `[FIX]` – Bug fix or error correction.
-- Write imperative, specific commit titles after the tag (e.g., `[ADD] Calendar export to events`, `[FIX] Null pointer in user login`); keep related changes together.
-- **Before committing**: Check if there are related GitHub issues using `gh issue list` or `gh issue status`. If your changes address or relate to an issue, reference it in the commit message using `#issue_number` for traceability (e.g., `[FIX] Null pointer in user login #42`).
-- For multiple related issues, include all references (e.g., `[MOD] Refactor authentication flow #15 #23`).
-- **Do not include** `Co-Authored-By: Claude` or similar AI attribution in commit messages.
-- PRs should summarize intent, link issues/tasks, and list tests run (`phpunit`, `npm run production` when assets change). Add screenshots for UI updates and call out migrations or new env vars.
+- PHPUnit configurat a `phpunit.xml` amb cobertura apuntada a `app/`. Crea fitxers `*Test.php` a `tests/Feature` per a tests HTTP/integració i a `tests/Unit` per a lògica pura.
+- Usa factories/seeders i traits com `RefreshDatabase`; comprova respostes, events i efectes a la BD per a nous endpoints i policies.
+- Executa la suite abans de cada PR i afig tests de regressió amb cada correcció de bug.
 
-## Security & Configuration Tips
-- Never commit secrets or `.env`. Cache config/routes (`php artisan config:cache`, `route:cache`) only for releases.
-- Match queue/cache/mail drivers to `.env`; prefer Redis when available. Drop generated PDFs or logs from `storage/` before sharing artifacts.
+## Guia de commits i pull requests
 
-## Language
+- Prefija els títols de commit amb una etiqueta que categoritza el canvi:
+  - `[MOD]` – Modificació de codi o fitxers existents.
+  - `[ADD]` – Addició de fitxers nous o funcionalitats.
+  - `[DEL]` – Eliminació de fitxers o codi.
+  - `[FIX]` – Correcció de bug o error.
+- Escriu títols imperatius i específics (p. ex. `[ADD] Exportació de calendari a events`, `[FIX] Null pointer en login d'usuari`); agrupa els canvis relacionats.
+- **Abans de fer commit**: comprova si hi ha issues de GitHub relacionades amb `gh issue list` o `gh issue status`. Si els canvis resolen o afecten una issue, referencia-la al missatge (`#numero_issue`), p. ex. `[FIX] Null pointer en login d'usuari #42`.
+- Per a múltiples issues relacionades, inclou totes les referències (p. ex. `[MOD] Refactoritza el flux d'autenticació #15 #23`).
+- **No inclogues** `Co-Authored-By: Claude` ni atribució d'IA similar als missatges de commit.
+- Els PRs han de resumir la intenció, enllaçar issues/tasques i llistar els tests executats (`phpunit`, `npm run production` quan canvien assets). Afig captures de pantalla per a canvis d'UI i menciona migracions o variables d'entorn noves.
+
+## Seguretat i configuració
+
+- No facis commit de secrets ni del `.env`. La cache de config/rutes (`php artisan config:cache`, `route:cache`) només és per a releases.
+- Ajusta els drivers de cua/cache/correu al `.env`; prefereix Redis quan estiga disponible. Elimina PDFs generats o logs de `storage/` abans de compartir artefactes.
+
+## Llengua
+
 - Valencià per a tot text d'usuari, comentaris de codi i vistes (excepte plantilles ja explícitament bilingües).
 
-## Domain Knowledge Index (`docs/agents/`)
+## Índex de coneixement de domini (`docs/agents/`)
 
 Coneixement de domini compartit per a tots els agents. Llig el fitxer rellevant abans de tocar el seu àrea. Índex complet: [`docs/agents/README.md`](docs/agents/README.md).
 

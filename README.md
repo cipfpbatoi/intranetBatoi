@@ -19,11 +19,16 @@ Este repo està preparat perquè els agents d'IA (Claude Code, Codex, Cursor…)
 
 ## Documentació
 
-Índex complet de la documentació (arquitectura, operacions, manuals, governança): [`docs/README.md`](docs/README.md).
+Índex complet (arquitectura, operacions, manuals, governança): [`docs/README.md`](docs/README.md).
 
-- Setup i instal·lació: [`docs/operations/setup.md`](docs/operations/setup.md)
-- Tests, Docker i Dusk: [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md)
-- Esquema de la BD: [`docs/architecture/bbdd-esquema.md`](docs/architecture/bbdd-esquema.md)
+| Necessitat | Document |
+|---|---|
+| Setup i instal·lació | [`docs/operations/setup.md`](docs/operations/setup.md) |
+| Tests, Docker i Dusk | [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) |
+| Desplegament Docker | [`docs/operations/docker-prod.md`](docs/operations/docker-prod.md) |
+| Esquema de la BD | [`docs/architecture/bbdd-esquema.md`](docs/architecture/bbdd-esquema.md) |
+| Preguntes freqüents | [`docs/governance/faqs.md`](docs/governance/faqs.md) |
+| Manuals d'usuari | [`docs/manuals/`](docs/manuals/) |
 
 ## Contribuir
 

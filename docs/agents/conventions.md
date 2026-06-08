@@ -9,7 +9,7 @@
 - Migracions i seeders en `database/`; tests en `tests/Feature` i `tests/Unit`.
 - Paquets i extensions locals en `packages/` i `plugins/`.
 
-## Patrons Del Projecte
+## Patrons del projecte
 
 - Alerts: usar `use Intranet\Services\UI\AppAlert as Alert;`.
 - Vistes renderitzen alertes amb `Intranet\Services\UI\AppAlert::render()`.
@@ -18,7 +18,7 @@
 - Autorització: revisar policies abans de canviar accions sensibles.
 - No duplicar lògica si ja hi ha `Application/*`, `Services/*`, `Finders/*` o `Presentation/*`.
 
-## Rutes I Cache
+## Rutes i cache
 
 - `php artisan route:cache` és una comprovació de contracte per a desplegament; no deixes noms de ruta duplicats.
 - Si elimines mètodes d'un `Route::resource()` per evitar duplicats, conserva les URL llegades que ja usen tests o usuaris amb un nom de ruta únic.
