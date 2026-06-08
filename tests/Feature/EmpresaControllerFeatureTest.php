@@ -103,6 +103,27 @@ class EmpresaControllerFeatureTest extends TestCase
         $this->assertNull(DB::table('empresas')->where('id', $empresaId)->first());
     }
 
+    public function test_detall_empresa_te_controls_de_mapa_per_als_centres(): void
+    {
+        $showView = file_get_contents(resource_path('views/empresa/show.blade.php'));
+        $mapModal = file_get_contents(resource_path('views/empresa/partials/modalMapaCentro.blade.php'));
+        $script = file_get_contents(public_path('js/Empresa/detalle.js'));
+
+        $this->assertStringContainsString('class="mapa-centro"', $showView);
+        $this->assertStringContainsString("empresa.partials.modalMapaCentro", $showView);
+        $this->assertStringContainsString('id="telefonoCentro"', $showView);
+        $this->assertStringContainsString('id="emailCentro"', $showView);
+        $this->assertStringContainsString('id="MapaCentro"', $mapModal);
+        $this->assertStringContainsString('mapaCentroFrame', $mapModal);
+        $this->assertStringContainsString('setInputValue', $script);
+        $this->assertStringContainsString('window.bootstrap.Modal', $script);
+        $this->assertStringContainsString("window.jQuery(modalElement).modal('show')", $script);
+        $this->assertStringContainsString('normalizeStreetAddress', $script);
+        $this->assertStringContainsString("'Calle '", $script);
+        $this->assertStringContainsString('nominatim.openstreetmap.org/search', $script);
+        $this->assertStringContainsString('openstreetmap.org/export/embed.html', $script);
+    }
+
     /**
      * Crea l'esquema mínim necessari per a provar l'esborrat d'empreses.
      *

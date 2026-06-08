@@ -1,6 +1,17 @@
 @extends('layouts.intranet')
 @section('css')
     <title>Empresa {{$elemento->nombre}}</title>
+    <style>
+        .mapa-centro-contenidor {
+            min-height: 430px;
+        }
+
+        .mapa-centro-frame {
+            width: 100%;
+            height: 420px;
+            border: 0;
+        }
+    </style>
 @endsection
 @php($centros = $elemento->centros->count())
 @section('content')
@@ -184,6 +195,18 @@
                                         <a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                                     </li>
                                     <li>
+                                        <a href="#"
+                                           class="mapa-centro"
+                                           title="{{ __('messages.generic.mapa') }}"
+                                           data-centro-nom="{{ $centro->nombre }}"
+                                           data-centro-direccio="{{ $centro->direccion }}"
+                                           data-centro-localitat="{{ $centro->localidad }}"
+                                           data-centro-codi-postal="{{ $centro->codiPostal }}"
+                                        >
+                                            <em class="fa fa-map-marker"></em>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="centro" id="{{$centro->id}}" href="{{ route('centro.edit', ['centro' => $centro->id]) }}">
                                             <em class="fa fa-edit"></em>
                                         </a>
@@ -222,6 +245,7 @@
     @include('empresa.partials.modalCentro')
     @include('empresa.partials.modalColaboraciones')
     @include('empresa.partials.modalEmpresa')
+    @include('empresa.partials.modalMapaCentro')
 @endsection
 @section('titulo')
     @lang("messages.menu.Empresa"): {{$elemento->nombre}}

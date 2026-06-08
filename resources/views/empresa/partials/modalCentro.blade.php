@@ -52,6 +52,32 @@
         <input type='hidden' name='idEmpresa' value="{!!$elemento->id!!}">
     </div>
     <div class="form-group item row">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="telefono">
+            @lang("validation.attributes.telefono"):
+        </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <input type='text'
+                   name='telefono'
+                   id="telefonoCentro"
+                   placeholder='@lang("validation.attributes.telefono")'
+                   value="{{ old('telefono') }}"
+                   class='form-control' />
+        </div>
+    </div>
+    <div class="form-group item row">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email">
+            @lang("validation.attributes.email"):
+        </label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <input type='email'
+                   name='email'
+                   id="emailCentro"
+                   placeholder='@lang("validation.attributes.email")'
+                   value="{{ old('email') }}"
+                   class='form-control' />
+        </div>
+    </div>
+    <div class="form-group item row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="horarios">Horaris:</label>
         <div class="col-md-8 col-sm-8 col-xs-12">
             <input type='text'

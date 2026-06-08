@@ -8,12 +8,42 @@
     function showModal(id) {
         if (window.intranetUiHelpers) {
             window.intranetUiHelpers.showModal(id);
+            return;
+        }
+
+        var modalElement = byId(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('show');
         }
     }
 
     function hideModal(id) {
         if (window.intranetUiHelpers) {
             window.intranetUiHelpers.hideModal(id);
+            return;
+        }
+
+        var modalElement = byId(id);
+        if (!modalElement) {
+            return;
+        }
+
+        if (window.bootstrap && window.bootstrap.Modal) {
+            window.bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+            return;
+        }
+
+        if (window.jQuery) {
+            window.jQuery(modalElement).modal('hide');
         }
     }
 
@@ -81,7 +111,7 @@
         if (!modal) {
             return;
         }
-        var titleNode = modal.querySelector('h4.modal-title');
+        var titleNode = modal.querySelector('h4.modal-title, h5.modal-title');
         if (titleNode) {
             titleNode.textContent = title;
         }
@@ -93,6 +123,194 @@
             return;
         }
         window.console.error(error);
+    }
+
+    function setInputValue(id, value) {
+        var input = byId(id);
+        if (input) {
+            input.value = value || '';
+        }
+    }
+
+    function getTrimmedAttribute(element, attributeName) {
+        return (element.getAttribute(attributeName) || '').trim();
+    }
+
+    function buildCenterAddress(mapButton) {
+        return [
+            getTrimmedAttribute(mapButton, 'data-centro-direccio'),
+            getTrimmedAttribute(mapButton, 'data-centro-codi-postal'),
+            getTrimmedAttribute(mapButton, 'data-centro-localitat')
+        ].filter(function (value) {
+            return value !== '';
+        }).join(', ');
+    }
+
+    function normalizeStreetAddress(address) {
+        return address
+            .replace(/^c\/\s*/i, 'Calle ')
+            .replace(/^avda?\.?\s*/i, 'Avenida ')
+            .replace(/\s+-\s+.*$/i, '')
+            .replace(/,\s*(baix|bajo|local|planta|pis|piso|porta|puerta|esc\.?).*$/i, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function pushUniqueAddress(addresses, address) {
+        if (address && addresses.indexOf(address) === -1) {
+            addresses.push(address);
+        }
+    }
+
+    function buildCenterAddressVariants(mapButton) {
+        var street = getTrimmedAttribute(mapButton, 'data-centro-direccio');
+        var postalCode = getTrimmedAttribute(mapButton, 'data-centro-codi-postal');
+        var locality = getTrimmedAttribute(mapButton, 'data-centro-localitat');
+        var normalizedStreet = normalizeStreetAddress(street);
+        var addresses = [];
+
+        pushUniqueAddress(addresses, [street, postalCode, locality, 'España'].filter(Boolean).join(', '));
+        pushUniqueAddress(addresses, [normalizedStreet, postalCode, locality, 'España'].filter(Boolean).join(', '));
+        pushUniqueAddress(addresses, [normalizedStreet, locality, 'España'].filter(Boolean).join(', '));
+        pushUniqueAddress(addresses, [postalCode, locality, 'España'].filter(Boolean).join(', '));
+
+        return addresses;
+    }
+
+    function osmSearchUrl(address) {
+        return 'https://www.openstreetmap.org/search?query=' + encodeURIComponent(address);
+    }
+
+    function nominatimSearchUrl(address) {
+        return 'https://nominatim.openstreetmap.org/search?' + new URLSearchParams({
+            format: 'jsonv2',
+            q: address,
+            limit: '1',
+            countrycodes: 'es'
+        }).toString();
+    }
+
+    function fetchNominatimAddress(address) {
+        return fetch(nominatimSearchUrl(address), {
+            headers: {
+                Accept: 'application/json'
+            }
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        }).then(function (results) {
+            var result = Array.isArray(results) ? results[0] : null;
+            if (!result || !result.lat || !result.lon) {
+                return null;
+            }
+
+            return {
+                address: address,
+                result: result
+            };
+        });
+    }
+
+    function findFirstNominatimResult(addresses, index) {
+        if (index >= addresses.length) {
+            return Promise.resolve(null);
+        }
+
+        return fetchNominatimAddress(addresses[index]).then(function (payload) {
+            if (payload) {
+                return payload;
+            }
+
+            return findFirstNominatimResult(addresses, index + 1);
+        });
+    }
+
+    function osmEmbedUrl(latitude, longitude) {
+        var lat = parseFloat(latitude);
+        var lon = parseFloat(longitude);
+        var delta = 0.01;
+
+        return 'https://www.openstreetmap.org/export/embed.html?' + new URLSearchParams({
+            bbox: [
+                (lon - delta).toFixed(5),
+                (lat - delta).toFixed(5),
+                (lon + delta).toFixed(5),
+                (lat + delta).toFixed(5)
+            ].join(','),
+            layer: 'mapnik',
+            marker: lat.toFixed(5) + ',' + lon.toFixed(5)
+        }).toString();
+    }
+
+    function setMapMessage(message, type) {
+        var messageNode = byId('mapaCentroMissatge');
+        if (!messageNode) {
+            return;
+        }
+
+        messageNode.className = 'alert alert-' + (type || 'info');
+        messageNode.textContent = message;
+        messageNode.style.display = message ? '' : 'none';
+    }
+
+    function clearMapFrame() {
+        var frame = byId('mapaCentroFrame');
+        if (frame) {
+            frame.removeAttribute('src');
+            frame.style.display = 'none';
+        }
+    }
+
+    function showMapFrame(url) {
+        var frame = byId('mapaCentroFrame');
+        if (frame) {
+            frame.src = url;
+            frame.style.display = '';
+        }
+    }
+
+    function openCenterMap(mapButton) {
+        var name = getTrimmedAttribute(mapButton, 'data-centro-nom') || 'Centre de treball';
+        var address = buildCenterAddress(mapButton);
+        var addressVariants = buildCenterAddressVariants(mapButton);
+        var addressNode = byId('mapaCentroDireccio');
+        var externalLink = byId('mapaCentroEnllac');
+
+        setModalTitle('MapaCentro', 'Mapa de ' + name);
+        clearMapFrame();
+        setMapMessage('', 'info');
+
+        if (addressNode) {
+            addressNode.textContent = address;
+        }
+        if (externalLink) {
+            externalLink.href = address ? osmSearchUrl(addressVariants[0] || address) : '#';
+            externalLink.style.display = address ? '' : 'none';
+        }
+
+        showModal('MapaCentro');
+
+        if (!address) {
+            setMapMessage('Este centre no té adreça disponible per a mostrar el mapa.', 'warning');
+            return;
+        }
+
+        setMapMessage('Carregant el mapa del centre...', 'info');
+
+        findFirstNominatimResult(addressVariants, 0).then(function (payload) {
+            if (!payload) {
+                setMapMessage('No s\'ha trobat cap ubicació per a esta adreça.', 'warning');
+                return;
+            }
+
+            setMapMessage('', 'info');
+            showMapFrame(osmEmbedUrl(payload.result.lat, payload.result.lon));
+        }).catch(function (error) {
+            window.console.error(error);
+            setMapMessage('No s\'ha pogut carregar el mapa. Pots obrir la cerca en OpenStreetMap.', 'warning');
+        });
     }
 
     function getCheckedFusionValues() {
@@ -140,6 +358,13 @@
                 window.confirm('Vas a crear una nova empresa a partir del centre de treball');
             }
 
+            var mapaCentroBtn = event.target.closest('.mapa-centro');
+            if (mapaCentroBtn) {
+                event.preventDefault();
+                openCenterMap(mapaCentroBtn);
+                return;
+            }
+
             var editarCol = event.target.closest('.editar');
             if (editarCol) {
                 event.preventDefault();
@@ -173,16 +398,16 @@
 
                 request('GET', '/api/centro/' + centroId, {}, true)
                     .then(function (result) {
-                        byId('idCentro').value = result.data.id;
-                        byId('nombreCentro').value = result.data.nombre;
-                        byId('telefonoCentro').value = result.data.telefono;
-                        byId('emailCentro').value = result.data.email;
-                        byId('horariosCentro').value = result.data.horarios;
-                        byId('observacionesCentro').value = result.data.observaciones;
-                        byId('codiPostalCentro').value = result.data.codiPostal;
-                        byId('direccionCentro').value = result.data.direccion;
-                        byId('localidadCentro').value = result.data.localidad;
-                        byId('idiomaCentro').value = result.data.idioma;
+                        setInputValue('idCentro', result.data.id);
+                        setInputValue('nombreCentro', result.data.nombre);
+                        setInputValue('telefonoCentro', result.data.telefono);
+                        setInputValue('emailCentro', result.data.email);
+                        setInputValue('horariosCentro', result.data.horarios);
+                        setInputValue('observacionesCentro', result.data.observaciones);
+                        setInputValue('codiPostalCentro', result.data.codiPostal);
+                        setInputValue('direccionCentro', result.data.direccion);
+                        setInputValue('localidadCentro', result.data.localidad);
+                        setInputValue('idiomaCentro', result.data.idioma);
                     })
                     .catch(showError);
                 return;
