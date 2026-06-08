@@ -62,7 +62,11 @@ class FaltaController extends ModalController
         $this->panel->setBotonera(['create']);
         $this->panel->setBoton('grid', new BotonImg('falta.delete', ['where' => ['estado', '==', '0']]));
         $this->panel->setBoton('grid', new BotonImg('falta.edit', ['where' => ['estado', '<', '3']]));
-        $this->panel->setBoton('grid', new BotonImg('falta.init', ['where' => ['estado', '==', '0']]));
+        $this->panel->setBoton('grid', new BotonImg('falta.init', [
+            'where' => ['estado', '==', '0'],
+            'title' => 'Enviar a direcció',
+            'aria-label' => 'Enviar falta a direcció',
+        ]));
         $this->panel->setBoton('grid', new BotonImg('falta.document', ['where' => ['fichero', '!=', '']]));
     }
 
@@ -80,7 +84,16 @@ class FaltaController extends ModalController
         if (!$request->boolean('baja') && UserisAllow(config('roles.rol.direccion'))) {
             $this->faltas()->init($id);
         } elseif (!$request->boolean('baja')) {
-            return ConfirmAndSend::render($this->model, $id);
+            return ConfirmAndSend::render(
+                $this->model,
+                $id,
+                'Enviar falta a direcció',
+                null,
+                null,
+                'La falta s\'ha guardat, però direcció encara no la veurà. Prem "Enviar a direcció" per a completar el tràmit.',
+                'Enviar a direcció',
+                'Deixar pendent'
+            );
         }
 
         return $this->redirect();
