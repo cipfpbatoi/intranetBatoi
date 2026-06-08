@@ -1,6 +1,11 @@
 <x-layouts.app :title="$message">
     <x-modal name="dialogo" title='{{$message}}'
-             message='SI'  cancel="NO" dismiss='0' >
+             message="{{ $confirmText ?? 'SI' }}"  cancel="{{ $cancelText ?? 'NO' }}" dismiss='0' >
+        @if (!empty($notice))
+            <div class="alert alert-warning" role="alert">
+                {{ $notice }}
+            </div>
+        @endif
         @include('intranet.partials.components.showFields',['fields' => $element->showConfirm()])
     </x-modal>
     @push('scripts')
