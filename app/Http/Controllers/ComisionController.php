@@ -136,7 +136,16 @@ class ComisionController extends ModalController
         );
         $this->authorize('update', $comision);
         if ($comision->estado == 0) {
-            return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
+            return ConfirmAndSend::render(
+                $this->model,
+                $id,
+                'Enviar comissió a direcció',
+                null,
+                null,
+                'La comissió ha sigut creada, però direcció encara no la veurà. Prem "Enviar a direcció" per a completar el tràmit.',
+                'Enviar a direcció',
+                'Deixar pendent'
+            );
         }
         return $this->redirect();
     }
