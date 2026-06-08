@@ -200,6 +200,6 @@ class ProfesorTest extends TestCase
 
         $profesor = Profesor::query()->findOrFail('PT');
 
-        $this->assertSame('09:00 - 10:00 (temporal: 08:00 - 09:00)', $profesor->horario);
+        $this->assertSame('08:00 - 09:00 (Itaca --> 09:00 - 10:00)', $profesor->horario);
     }
 }

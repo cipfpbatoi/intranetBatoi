@@ -2,10 +2,11 @@
 
 namespace Intranet\Services\Calendar;
 
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event;
 use DateTime;
 
+/**
+ * Servei de generació d'arxius iCalendar.
+ */
 class CalendarService
 {
 
@@ -14,7 +15,7 @@ class CalendarService
      * @param $id
      * @param string $descripcion
      * @param string $objetivos
-     * @return Calendar
+     * @return IcsCalendar
      * @throws \Exception
      */
     public static function build($elemento, $descripcion='descripcion', $objetivos='objetivos')
@@ -37,16 +38,24 @@ class CalendarService
 
     }
 
+    /**
+     * Crea un calendari ICS renderitzable.
+     *
+     * @param \DateTimeInterface $ini
+     * @param \DateTimeInterface $fin
+     * @param string $descripcion
+     * @param string $objetivos
+     * @param string|null $location
+     * @return IcsCalendar
+     */
     public static function render($ini, $fin, $descripcion, $objetivos, $location)
     {
-        $vCalendar = new Calendar('intranet.cipfpbatoi.es');
-        $vEvent = new Event();
-        $vEvent->setDtStart($ini)
-            ->setDtEnd($fin)
-            ->setLocation($location)
-            ->setSummary($descripcion)
-            ->setDescription($objetivos);
-        $vCalendar->addComponent($vEvent);
-        return $vCalendar;
+        return new IcsCalendar(
+            $ini,
+            $fin,
+            (string) $descripcion,
+            (string) $objetivos,
+            (string) $location
+        );
     }
 }

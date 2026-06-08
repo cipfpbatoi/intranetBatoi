@@ -6,6 +6,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Intranet\Services\UI\AppAlert as Alert;
 
+/**
+ * Servei de normalització i conversió d'imatges de perfil.
+ */
 class ImageService
 {
     const WIDTH  = 68;
@@ -20,7 +23,7 @@ class ImageService
         $mime = null;
         if ($source instanceof UploadedFile) {
             $path = $source->getRealPath();
-            $mime = $source->getMimeType();
+            $mime = $source->getClientMimeType();
             $ext  = strtolower($source->getClientOriginalExtension() ?: '');
 
             // 🔹 Detectar HEIC/HEIF i convertir-lo abans de passar per GD

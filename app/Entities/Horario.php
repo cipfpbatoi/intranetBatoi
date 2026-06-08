@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Hora;
 use Illuminate\Support\Carbon;
@@ -64,6 +65,10 @@ class Horario extends Model
      */
     public function scopeProfesor($query, $profesor)
     {
+        if (!Schema::hasTable('profesores')) {
+            return $query->where('idProfesor', $profesor);
+        }
+
         return $query->whereIn('idProfesor', Profesor::getSubstituts((string) $profesor));
     }
 
