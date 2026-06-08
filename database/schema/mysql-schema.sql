@@ -522,7 +522,7 @@ CREATE TABLE `comisiones` (
   `fct` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `itinerario` varchar(254) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `itinerario` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
   `idDocumento` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `comisiones_idprofesor_foreign` (`idProfesor`),
@@ -1160,9 +1160,13 @@ CREATE TABLE `options` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `scala` int NOT NULL DEFAULT '10',
+  `choices` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `idCiclo` int DEFAULT NULL,
   `ppoll_id` int unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
+  KEY `options_idciclo_foreign` (`idCiclo`),
   KEY `options_ppoll_id_foreign` (`ppoll_id`),
+  CONSTRAINT `options_idciclo_foreign` FOREIGN KEY (`idCiclo`) REFERENCES `ciclos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `options_ppoll_id_foreign` FOREIGN KEY (`ppoll_id`) REFERENCES `ppolls` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

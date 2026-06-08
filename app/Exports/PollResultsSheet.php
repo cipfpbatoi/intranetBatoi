@@ -6,6 +6,9 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
+/**
+ * Fulla Excel basada en una vista Blade.
+ */
 class PollResultsSheet implements FromView, WithTitle
 {
     private $view;
@@ -26,6 +29,9 @@ class PollResultsSheet implements FromView, WithTitle
 
     public function title(): string
     {
-        return $this->title;
+        $title = str_replace(['\\', '/', '?', '*', ':', '[', ']'], ' ', trim($this->title));
+        $title = preg_replace('/\s+/', ' ', $title) ?: 'Fulla';
+
+        return mb_substr($title, 0, 31);
     }
 }

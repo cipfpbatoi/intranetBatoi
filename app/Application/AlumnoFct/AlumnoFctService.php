@@ -102,6 +102,16 @@ class AlumnoFctService
     }
 
     /**
+     * Resumeix l'estat de revisió documental de les FCT d'un grup.
+     *
+     * @return array{total: int, pg0301: int, a56: int, pg0301_complete: bool, a56_complete: bool}
+     */
+    public function controlStatsByGrupoEsFct(string $grupo): array
+    {
+        return $this->alumnoFctRepository->controlStatsByGrupoEsFct($grupo);
+    }
+
+    /**
      * Reassigna en bloc el tutor responsable.
      */
     public function reassignProfesor(string $fromDni, string $toDni): int

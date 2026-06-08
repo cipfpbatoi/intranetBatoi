@@ -36,7 +36,7 @@
         };
     };
 @endphp
-<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 profile_details mis-colaboraciones-card"
+<div class="profile_details mis-colaboraciones-card"
      data-target-tab="{{ $tabName ?? '' }}"
      data-town="{{ $elemento->localidad }}"
      data-company="{{ $elemento->Centro->nombre }}"

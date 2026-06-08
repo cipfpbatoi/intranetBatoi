@@ -21,27 +21,18 @@ function getEl(id) {
     return document.getElementById(id);
 }
 
-function getDataToken() {
-    var tokenNode = getEl('_token');
-    return trim(tokenNode ? tokenNode.textContent : '');
-}
-
 function getBearerToken() {
     var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
     return trim(bearerMeta ? bearerMeta.getAttribute('content') : '');
 }
 
 function apiAuthOptions(extraData) {
-    var legacyToken = getDataToken();
     var bearerToken = getBearerToken();
     var data = extraData || {};
     var headers = {};
 
     if (bearerToken) {
         headers.Authorization = 'Bearer ' + bearerToken;
-    }
-    if (legacyToken) {
-        data.api_token = legacyToken;
     }
 
     return { headers: headers, data: data };
@@ -240,9 +231,11 @@ function cambiaHora() {
     }
 
     if (parseInt(horaSelect.value, 10) > 0) {
-        apiRequest('GET', 'api/guardia/idProfesor=' + trim(dni.textContent)
-            + '&dia=' + diaIso
-            + '&hora=' + horaSelect.value).then(function (res) {
+        apiRequest('GET', '/api/guardia', {
+            idProfesor: trim(dni.textContent),
+            dia: diaIso,
+            hora: horaSelect.value
+        }).then(function (res) {
             idGuardia = 0;
             var data = res.data || [];
             if (data.length) {
@@ -285,11 +278,6 @@ function modDatos(ev) {
         obs_personal: obsPer.value,
         realizada: hecha.checked ? 1 : 0
     };
-
-    var auth = apiAuthOptions();
-    if (!auth.headers.Authorization && auth.data.api_token) {
-        datosJson.api_token = auth.data.api_token;
-    }
 
     var method = idGuardia ? 'PUT' : 'POST';
     var url = idGuardia ? '/api/guardia/' + idGuardia : '/api/guardia';

@@ -6,6 +6,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var formAviso = document.getElementById('formAviso');
         var formDialogo = document.getElementById('formDialogo');
+        var formBaja = document.getElementById('formBaja');
 
         document.addEventListener('click', function (event) {
             var mensaje = event.target.closest('.mensaje');
@@ -29,6 +30,18 @@
                 if (window.intranetUiHelpers) {
                     window.intranetUiHelpers.showModal('dialogo');
                 }
+                return;
+            }
+
+            var bajaProfesor = event.target.closest('.baja-profesor');
+            if (bajaProfesor) {
+                event.preventDefault();
+                var profileBaja = bajaProfesor.closest('.profile_view');
+                id = profileBaja ? profileBaja.id : null;
+
+                if (window.intranetUiHelpers) {
+                    window.intranetUiHelpers.showModal('baja');
+                }
             }
         });
 
@@ -42,6 +55,13 @@
         if (formDialogo) {
             formDialogo.addEventListener('submit', function () {
                 this.setAttribute('action', '/profesor/colectivo');
+            });
+        }
+
+        if (formBaja) {
+            formBaja.addEventListener('submit', function () {
+                var currentId = id || '';
+                this.setAttribute('action', '/direccion/profesor/' + currentId + '/desactivar');
             });
         }
     });

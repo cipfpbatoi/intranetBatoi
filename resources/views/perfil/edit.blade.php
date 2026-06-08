@@ -6,8 +6,8 @@
     {{ $formulario->render('put', 'perfil.partials.roles') }}
     @push('scripts')
         @if ($hasCustomScript)
-            <script src="{{ asset($modeloCreateScript) }}"></script>
+            <script src="{{ asset($modeloCreateScript) }}" defer></script>
         @endif
-        <script src="{{ asset('js/datepicker.js') }}"></script>
+        <script src="{{ asset('js/datepicker.js') }}" defer></script>
     @endpush
 </x-layouts.app>

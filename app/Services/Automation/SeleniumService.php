@@ -119,7 +119,7 @@ class SeleniumService
 
     public static function restartSelenium()
     {
-        $process = Process::fromShellCommandline("ssh intranet@172.16.9.10 'sudo -S /sbin/reboot'");
+        $process = Process::fromShellCommandline("sudo -n /usr/bin/systemctl restart selenium.service");
         try {
             $process->mustRun();
         } catch (ProcessFailedException $exception) {

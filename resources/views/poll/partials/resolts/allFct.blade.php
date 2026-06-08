@@ -5,7 +5,7 @@
             <thead>
             <tr>
                 <td>Enquesta</td>
-                @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+                @foreach ($options_numeric as $item) <th>{{$item->question_label}} </th> @endforeach
             </tr>
             </thead>
             <tr>
@@ -24,7 +24,7 @@
             <thead>
             <tr>
                 <td>Enquesta</td>
-                @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+                @foreach ($options_numeric as $item) <th>{{$item->question_label}} </th> @endforeach
             </tr>
             </thead>
             <tr>
@@ -46,7 +46,7 @@
             <thead>
             <tr>
                 <td>Enquesta</td>
-                @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+                @foreach ($options_numeric as $item) <th>{{$item->question_label}} </th> @endforeach
             </tr>
             </thead>
             <tr>
@@ -60,5 +60,4 @@
             @endforeach
         </table>
     </div>
-
 

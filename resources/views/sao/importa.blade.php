@@ -4,6 +4,13 @@
             <form method="POST" action='/sao/importa' class='form-horizontal form-label-left'>
                 {{ csrf_field() }}
                 <input name="ciclo" type="hidden" value="{{$ciclo}}"/>
+                @if (!empty($avisos))
+                    @foreach ($avisos as $aviso)
+                        <div class="alert alert-info" role="alert">
+                            {{ $aviso }}
+                        </div>
+                    @endforeach
+                @endif
                 @foreach ($dades as $key => $fct)
                     @php
                         $alumno = Intranet\Entities\Alumno::find($fct['nia']);

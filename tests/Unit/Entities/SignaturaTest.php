@@ -5,6 +5,8 @@ namespace Tests\Unit\Entities;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Signatura;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
@@ -29,7 +31,7 @@ class SignaturaTest extends TestCase
 
         $schema->create('signatures', function (Blueprint $table): void {
             $table->increments('id');
-            $table->string('tipus', 5);
+            $table->string('tipus', 6);
             $table->string('idProfesor', 10)->nullable();
             $table->integer('idSao');
             $table->unsignedTinyInteger('sendTo')->default(0);
@@ -144,5 +146,30 @@ class SignaturaTest extends TestCase
             ['A1' => 'A1', 'A2' => 'A2', 'A3' => 'A3', 'A5' => 'A5'],
             $unsigned->getTipusOptions()
         );
+    }
+
+    public function test_normalize_tipus_for_alumno_fct_respects_dual_variants(): void
+    {
+        $fctDual = new Fct(['asociacion' => 3]);
+        $alumnoFctDual = new AlumnoFct();
+        $alumnoFctDual->setRelation('Fct', $fctDual);
+
+        $this->assertSame('A1DUAL', Signatura::normalizeTipusForAlumnoFct('A1', $alumnoFctDual));
+        $this->assertSame('A2DUAL', Signatura::normalizeTipusForAlumnoFct('A2', $alumnoFctDual));
+        $this->assertSame('A3DUAL', Signatura::normalizeTipusForAlumnoFct('A3', $alumnoFctDual));
+        $this->assertSame('A5DUAL', Signatura::normalizeTipusForAlumnoFct('A5', $alumnoFctDual));
+    }
+
+    public function test_normalize_tipus_for_alumno_fct_keeps_standard_variants_when_not_dual(): void
+    {
+        $fctStandard = new Fct(['asociacion' => 1]);
+        $alumnoFctStandard = new AlumnoFct();
+        $alumnoFctStandard->setRelation('Fct', $fctStandard);
+
+        $this->assertSame('A1', Signatura::normalizeTipusForAlumnoFct('A1', $alumnoFctStandard));
+        $this->assertSame('A2', Signatura::normalizeTipusForAlumnoFct('A2', $alumnoFctStandard));
+        $this->assertSame('A3', Signatura::normalizeTipusForAlumnoFct('A3', $alumnoFctStandard));
+        $this->assertSame('A5', Signatura::normalizeTipusForAlumnoFct('A5', $alumnoFctStandard));
+        $this->assertSame('A2DUAL', Signatura::normalizeTipusForAlumnoFct('A2DUAL', $alumnoFctStandard));
     }
 }

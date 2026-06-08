@@ -70,6 +70,13 @@ interface AlumnoFctRepositoryInterface
     public function byGrupoEsDual(string $grupo): EloquentCollection;
 
     /**
+     * Resumeix l'estat de revisió documental de les FCT d'un grup.
+     *
+     * @return array{total: int, pg0301: int, a56: int, pg0301_complete: bool, a56_complete: bool}
+     */
+    public function controlStatsByGrupoEsFct(string $grupo): array;
+
+    /**
      * Reassigna tutor responsable en bloc.
      */
     public function reassignProfesor(string $fromDni, string $toDni): int;

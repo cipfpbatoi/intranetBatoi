@@ -7,12 +7,86 @@
     @push('styles')
         <style>
             .mis-colaboraciones-town-cards {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 16px;
+                width: 100%;
+            }
+
+            @media (min-width: 992px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            @media (min-width: 1700px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+            }
+
+            @media (min-width: 2400px) {
+                .mis-colaboraciones-town-cards {
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                }
             }
 
             .mis-colaboraciones-town-cards .mis-colaboraciones-card {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .mis-colaboraciones-card .profile_view {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .mis-colaboraciones-card .profile_view > .col-sm-12,
+            .mis-colaboraciones-card .profile_view > .bottom,
+            .mis-colaboraciones-card .profile_view > .bottom > .emphasis {
+                width: 100%;
                 float: none;
+            }
+
+            .mis-colaboraciones-card .profile_view > .col-sm-12 {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .mis-colaboraciones-card .profile_view .left,
+            .mis-colaboraciones-card .profile_view .listActivity,
+            .mis-colaboraciones-card .profile_view [id^="colaboracion-relacionades-"] {
+                width: 100%;
+                float: none;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .mis-colaboraciones-card .profile_view .listActivity {
+                margin-top: 12px;
+            }
+
+            @media (min-width: 1800px) {
+                .mis-colaboraciones-card .profile_view > .col-sm-12 {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 16px;
+                }
+
+                .mis-colaboraciones-card .profile_view .left {
+                    width: calc(65% - 8px);
+                }
+
+                .mis-colaboraciones-card .profile_view .listActivity {
+                    width: calc(35% - 8px);
+                    margin-top: 0;
+                }
+
+                .mis-colaboraciones-card .profile_view [id^="colaboracion-relacionades-"] {
+                    width: 100%;
+                }
             }
 
             .mis-colaboraciones-summary-row {
@@ -325,7 +399,7 @@
             <strong><em class="fa fa-map-marker"></em> {{ $localidad }}</strong>
         </div>
     </div>
-    <div class="row mis-colaboraciones-town-cards" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}">
+    <div class="mis-colaboraciones-town-cards" data-target-tab="{{ $tabName }}" data-town="{{ $localidad }}">
         @foreach ($items as $elemento)
             @php($contactos = $elemento->contactos ?? collect())
             @include ('intranet.partials.profile.partials.colaboracion')
@@ -481,7 +555,7 @@
                         });
 
                         if (cardsContainer) {
-                            cardsContainer.style.display = matchesTown && hasVisibleCards ? 'flex' : 'none';
+                            cardsContainer.style.display = matchesTown && hasVisibleCards ? '' : 'none';
                         }
                         group.style.display = matchesTown && hasVisibleCards ? '' : 'none';
                     });

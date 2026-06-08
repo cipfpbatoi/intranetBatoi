@@ -48,4 +48,16 @@ class EmpresaPolicyTest extends TestCase
         $this->assertTrue($policy->update((object) ['rol' => (int) config('roles.rol.tutor')], $empresa));
         $this->assertFalse($policy->update((object) ['rol' => (int) config('roles.rol.alumno')], $empresa));
     }
+
+    public function test_delete_només_permet_cap_de_practiques(): void
+    {
+        $policy = new EmpresaPolicy();
+        $empresa = new Empresa();
+
+        $this->assertTrue($policy->delete((object) ['rol' => (int) config('roles.rol.jefe_practicas')], $empresa));
+        $this->assertFalse($policy->delete((object) ['rol' => (int) config('roles.rol.tutor')], $empresa));
+        $this->assertFalse($policy->delete((object) ['rol' => (int) config('roles.rol.direccion')], $empresa));
+        $this->assertFalse($policy->delete((object) [], $empresa));
+        $this->assertFalse($policy->delete(null, $empresa));
+    }
 }

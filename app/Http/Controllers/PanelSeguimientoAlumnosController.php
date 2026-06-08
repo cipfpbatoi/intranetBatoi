@@ -12,7 +12,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Resultado;
 use Intranet\Exceptions\NotFoundDomainException;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\UI\AppAlert as Alert;
 
 /**
  * Class PanelSeguimientoAlumnosController

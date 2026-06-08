@@ -202,12 +202,81 @@ class GrupoTest extends TestCase
         $this->assertFalse($grupo->proyecto);
     }
 
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_loe_grau_mitja_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 1]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_loe_grau_superior_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 2]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_true_per_logse_de_segon(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOGSE', 'tipo' => 1]);
+
+        $this->assertTrue($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_false_per_lfp(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LFP', 'tipo' => 2]);
+
+        $this->assertFalse($grupo->puede_solicitar_acta);
+    }
+
+    public function test_accessor_puede_solicitar_acta_retorna_false_fora_de_segon_curs(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 1;
+        $grupo->setRelation('Ciclo', (object) ['normativa' => 'LOE', 'tipo' => 1]);
+
+        $this->assertFalse($grupo->puede_solicitar_acta);
+    }
+
     public function test_accessor_xtutor_retorna_buit_si_no_hi_ha_tutor(): void
     {
         $grupo = new Grupo();
         $grupo->tutor = null;
 
         $this->assertSame('', $grupo->xtutor);
+    }
+
+    public function test_accessor_fct_control_resumeix_estat_precarregat(): void
+    {
+        $grupo = new Grupo();
+        $grupo->setAttribute('fct_control_status', [
+            'total' => 3,
+            'pg0301' => 3,
+            'a56' => 1,
+            'pg0301_complete' => true,
+            'a56_complete' => false,
+        ]);
+
+        $this->assertSame('A2-A3 revisats (3/3)', $grupo->FctControl);
+
+        $grupo->setAttribute('fct_control_status', [
+            'total' => 3,
+            'pg0301' => 3,
+            'a56' => 3,
+            'pg0301_complete' => true,
+            'a56_complete' => true,
+        ]);
+
+        $this->assertSame('A5/6 comprovats (3/3)', $grupo->FctControl);
     }
 
     public function test_scope_matriculado_filtra_per_id_alumne(): void

@@ -89,11 +89,16 @@ class AppAlert
      */
     public static function render(): HtmlString
     {
-        if (!app()->bound('session') || !app('session')->isStarted()) {
+        if (!app()->bound('session')) {
             return new HtmlString('');
         }
 
-        $messages = app('session')->pull(self::SESSION_KEY, []);
+        $session = app('session');
+        $messages = array_merge(
+            self::pullStoredAlerts($session),
+            self::pullFlashAlerts($session)
+        );
+
         if (!is_array($messages) || $messages === []) {
             return new HtmlString('');
         }
@@ -130,5 +135,54 @@ class AppAlert
         ];
 
         $session->put(self::SESSION_KEY, $messages);
+    }
+
+    /**
+     * Recupera les alertes guardades amb la façana pròpia.
+     *
+     * @param mixed $session
+     * @return array<int, array{type: string, message: mixed}>
+     */
+    private static function pullStoredAlerts(mixed $session): array
+    {
+        $messages = $session->pull(self::SESSION_KEY, []);
+
+        return is_array($messages) ? $messages : [];
+    }
+
+    /**
+     * Recupera missatges flash estàndard de Laravel.
+     *
+     * @param mixed $session
+     * @return array<int, array{type: string, message: mixed}>
+     */
+    private static function pullFlashAlerts(mixed $session): array
+    {
+        $levels = [
+            'success' => 'success',
+            'status' => 'success',
+            'error' => 'danger',
+            'danger' => 'danger',
+            'warning' => 'warning',
+            'info' => 'info',
+            'message' => 'info',
+        ];
+
+        $messages = [];
+        foreach ($levels as $key => $type) {
+            if (!$session->has($key)) {
+                continue;
+            }
+
+            $value = $session->pull($key);
+            foreach ((array) $value as $message) {
+                $messages[] = [
+                    'type' => $type,
+                    'message' => $message,
+                ];
+            }
+        }
+
+        return $messages;
     }
 }

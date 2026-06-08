@@ -2,6 +2,7 @@
 
 Route::get('/profesor', ['as' => 'profesor.index', 'uses' => 'ProfesorController@index']);
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'direccion.mensaje', 'uses' => 'ProfesorController@alerta']);
+Route::post('/profesor/{profesor}/desactivar', ['as' => 'profesor.desactivar', 'uses' => 'ProfesorController@desactivar']);
 
 
 Route::view('/comision', 'comision.livewire-panel')->name('comision.direccion.index');

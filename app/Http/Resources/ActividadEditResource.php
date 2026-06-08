@@ -25,6 +25,8 @@ class ActividadEditResource extends ModelEditResource
             'desde',
             'hasta',
             'poll',
+            'tipus_activitat',
+            'ubicacio_activitat',
             'complementaria',
             'fueraCentro',
             'transport',

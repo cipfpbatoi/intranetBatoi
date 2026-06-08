@@ -4,6 +4,9 @@ namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Validacio del formulari de valoracio d'activitats.
+ */
 class ValoracionRequest extends FormRequest
 {
     /**
@@ -24,8 +27,37 @@ class ValoracionRequest extends FormRequest
     public function rules()
     {
         return [
-            'desenvolupament' => 'required',
-            'valoracio' => 'required',
+            'desenvolupament' => 'required|string',
+            'valoracio' => 'required|string',
+            'aspectes' => 'required|string',
+            'dades' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Missatges personalitzats per a la validacio.
+     *
+     * @return array<string, string>
+     */
+    public function messages()
+    {
+        return [
+            'required' => 'Cal completar tots els camps de la valoracio.',
+        ];
+    }
+
+    /**
+     * Noms de camps per mostrar en errors de validacio.
+     *
+     * @return array<string, string>
+     */
+    public function attributes()
+    {
+        return [
+            'desenvolupament' => 'desenvolupament',
+            'valoracio' => 'valoracio pedagogica',
+            'aspectes' => 'aspectes transversals',
+            'dades' => 'altres dades',
         ];
     }
 }

@@ -10,7 +10,23 @@
                 <div class="modal-body">
                     @csrf
                     <input type='text' name='question' placeholder='@lang("validation.attributes.question")' value="{{ old('question') }}" class='form-control' />
-                    <input type='text' name='scala' placeholder='@lang("validation.attributes.scala") *' value="{{ old('scala') }}" class='form-control' />
+                    <select name="idCiclo" class="form-control">
+                        @foreach ($cicleOptions as $idCiclo => $label)
+                            <option value="{{ $idCiclo }}" @selected((string) old('idCiclo', '') === (string) $idCiclo)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <select name="kind" class="form-control">
+                        <option value="numeric" @selected(old('kind', 'numeric') === 'numeric')>Numèrica</option>
+                        <option value="text" @selected(old('kind') === 'text')>Text lliure</option>
+                        <option value="select" @selected(old('kind') === 'select')>Selecció</option>
+                    </select>
+                    <div id="option-scala-wrapper">
+                        <input type='text' name='scala' placeholder='@lang("validation.attributes.scala")' value="{{ old('scala') }}" class='form-control' />
+                    </div>
+                    <div id="option-choices-wrapper">
+                        <textarea name="choices" rows="4" class="form-control" placeholder='@lang("validation.attributes.choices")'>{{ old('choices') }}</textarea>
+                        <small class="text-muted">Per a preguntes de selecció, escriu una opció per línia.</small>
+                    </div>
                     <input type='hidden' name='ppoll_id' value="{!!$elemento->id!!}">
                 </div>
                 <div class="modal-footer">
