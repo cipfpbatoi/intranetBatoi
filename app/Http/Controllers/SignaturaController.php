@@ -159,6 +159,7 @@ class SignaturaController extends ModalController
                     'text' => "Envia Documentació a l'Instructor",
                     'class' => 'btn-info seleccion',
                     'data-url' => '/api/documentacionFCT/Signed',
+                    'data-skip-selection-option' => 'instructor-annexes',
                     'id' => '/signatura/All/send',
                     'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
