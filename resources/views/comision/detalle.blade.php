@@ -26,6 +26,12 @@
         }
     </style>
 
+    @if ($comision->estado == 0)
+        <div class="alert alert-warning col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1" role="alert">
+            La comissió ha sigut creada, però <strong>encara no ha sigut enviada a direcció</strong>.
+            Afegeix les visites necessàries i, quan estigues a punt, fes clic en «Continuar a confirmació» per completar el tràmit.
+        </div>
+    @endif
     <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
         <div class="comision-box">
             <h4 class="centrado comision-box-title">Visites actuals de la comissió</h4>

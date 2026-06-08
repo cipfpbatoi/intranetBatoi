@@ -37,7 +37,13 @@ class ComisionControllerFeatureTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('comision_fcts');
         Schema::connection('sqlite')->dropIfExists('comisiones');
+        Schema::connection('sqlite')->dropIfExists('departamentos');
+        Schema::connection('sqlite')->dropIfExists('faltas_profesores');
+        Schema::connection('sqlite')->dropIfExists('fcts');
+        Schema::connection('sqlite')->dropIfExists('menus');
+        Schema::connection('sqlite')->dropIfExists('notifications');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -45,6 +51,22 @@ class ComisionControllerFeatureTest extends TestCase
         }
 
         parent::tearDown();
+    }
+
+    public function test_confirm_mostra_avis_d_enviament_pendent(): void
+    {
+        $comisionId = $this->insertComision(0);
+        $this->insertProfesor('PC02', 'Profe', config('roles.rol.profesor'));
+
+        $usuario = Profesor::on('sqlite')->findOrFail('PC02');
+        $response = $this
+            ->actingAs($usuario, 'profesor')
+            ->get(route('comision.confirm', ['comision' => $comisionId]));
+
+        $response->assertOk();
+        $response->assertSee('La comissió ha sigut creada, però direcció encara no la veurà.', false);
+        $response->assertSee('Enviar a direcció');
+        $response->assertSee('Deixar pendent');
     }
 
     public function test_ruta_unpaid_redirigeix_a_login_si_no_autenticat(): void
@@ -96,9 +118,26 @@ class ComisionControllerFeatureTest extends TestCase
                 $table->string('apellido2')->nullable();
                 $table->string('email')->nullable();
                 $table->unsignedInteger('rol')->default(3);
+                $table->unsignedInteger('departamento')->nullable();
                 $table->date('fecha_baja')->nullable();
                 $table->boolean('activo')->default(true);
+                $table->string('sustituye_a', 10)->nullable();
+                $table->timestamps();
             });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('departamentos')) {
+            Schema::connection('sqlite')->create('departamentos', function (Blueprint $table): void {
+                $table->unsignedInteger('id')->primary();
+                $table->string('codigo')->nullable();
+                $table->string('nombre')->nullable();
+            });
+
+            DB::connection('sqlite')->table('departamentos')->insert([
+                'id' => 99,
+                'codigo' => '99',
+                'nombre' => 'Desconegut',
+            ]);
         }
 
         if (!Schema::connection('sqlite')->hasTable('comisiones')) {
@@ -122,6 +161,36 @@ class ComisionControllerFeatureTest extends TestCase
             });
         }
 
+        if (!Schema::connection('sqlite')->hasTable('fcts')) {
+            Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
+                $table->id();
+                $table->string('idProfesor', 10)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('comision_fcts')) {
+            Schema::connection('sqlite')->create('comision_fcts', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('idComision')->nullable();
+                $table->unsignedBigInteger('idFct')->nullable();
+                $table->string('hora_ini')->nullable();
+                $table->boolean('aviso')->default(0);
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('faltas_profesores')) {
+            Schema::connection('sqlite')->create('faltas_profesores', function (Blueprint $table): void {
+                $table->id();
+                $table->string('idProfesor', 10);
+                $table->date('dia')->nullable();
+                $table->time('entrada')->nullable();
+                $table->time('salida')->nullable();
+                $table->timestamps();
+            });
+        }
+
         if (!Schema::connection('sqlite')->hasTable('activities')) {
             Schema::connection('sqlite')->create('activities', function (Blueprint $table): void {
                 $table->increments('id');
@@ -131,6 +200,34 @@ class ComisionControllerFeatureTest extends TestCase
                 $table->string('model_class')->nullable();
                 $table->unsignedBigInteger('model_id')->nullable();
                 $table->string('author_id')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('menus')) {
+            Schema::connection('sqlite')->create('menus', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->string('nombre')->nullable();
+                $table->string('url')->nullable();
+                $table->string('class')->nullable();
+                $table->unsignedInteger('rol')->default(3);
+                $table->string('menu')->default('general');
+                $table->string('submenu')->default('');
+                $table->boolean('activo')->default(true);
+                $table->unsignedInteger('orden')->default(0);
+                $table->string('img')->nullable();
+                $table->string('ajuda')->nullable();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('notifications')) {
+            Schema::connection('sqlite')->create('notifications', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->string('type');
+                $table->string('notifiable_type');
+                $table->string('notifiable_id');
+                $table->text('data');
+                $table->timestamp('read_at')->nullable();
                 $table->timestamps();
             });
         }
@@ -145,8 +242,12 @@ class ComisionControllerFeatureTest extends TestCase
             'apellido2' => 'User',
             'email' => strtolower($dni) . '@test.local',
             'rol' => $rol,
+            'departamento' => 99,
             'fecha_baja' => null,
             'activo' => 1,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 
