@@ -35,12 +35,11 @@
             @endif
         </h4>
         @if (!empty($elemento->fichero))
-            <embed
-                    type="application/pdf"
-                    src="{{ route('empresa.document', ['empresa' => $elemento->id]) }}?v={{ time() }}#toolbar=0&navpanes=0&scrollbar=0"
-                    width="100%"
-                    height="150px"
-            />
+            <p>
+                <a href="{{ route('empresa.document', ['empresa' => $elemento->id]) }}" target="_blank" rel="noopener">
+                    <em class="fa fa-file-pdf-o"></em> Obrir conveni
+                </a>
+            </p>
         @endif
         <ul class="list-unstyled user_data">
             <li>

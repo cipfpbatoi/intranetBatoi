@@ -60,10 +60,17 @@ class EmpresaController extends IntranetController
         return $this->empresaService;
     }
 
+    /**
+     * Prepara les empreses per a la graella i el seu estat visual.
+     *
+     * @return \Illuminate\Support\Collection<int, Empresa>
+     */
     protected function search()
     {
         return $this->empreses()->listForGrid()->map(function (Empresa $empresa) {
             $empresa->concierto = $empresa->concierto ?: 'Sense concert';
+            $empresa->class = $empresa->conveniNou ? 'bg-green' : '';
+
             return $empresa;
         });
     }

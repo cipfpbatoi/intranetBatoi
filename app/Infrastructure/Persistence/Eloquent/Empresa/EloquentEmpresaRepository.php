@@ -16,10 +16,18 @@ use Intranet\Entities\Empresa;
  */
 class EloquentEmpresaRepository implements EmpresaRepositoryInterface
 {
+    /**
+     * Retorna les empreses necessàries per a la graella principal.
+     *
+     * Inclou `fichero` perquè el model puga calcular l'estat visual del
+     * conveni quan la graella cau al renderitzat inicial del servidor.
+     *
+     * @return EloquentCollection<int, Empresa>
+     */
     public function listForGrid(): EloquentCollection
     {
         return Empresa::query()
-            ->select(['id', 'concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'])
+            ->select(['id', 'concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad', 'fichero'])
             ->orderBy('nombre')
             ->get();
     }

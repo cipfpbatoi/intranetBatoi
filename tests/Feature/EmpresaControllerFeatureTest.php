@@ -71,7 +71,7 @@ class EmpresaControllerFeatureTest extends TestCase
 
     public function test_destroy_bloca_empresa_amb_fct_vinculades_i_mostra_alerta(): void
     {
-        $this->insertProfesor('EMP02', $this->capPractiquesRole());
+        $this->insertProfesor('EMP02', $this->administradorRole());
         $empresaId = $this->insertEmpresa('Empresa Bloquejada');
         $centroId = $this->insertCentro($empresaId);
         $colaboracionId = $this->insertColaboracion($centroId);
@@ -91,7 +91,7 @@ class EmpresaControllerFeatureTest extends TestCase
 
     public function test_destroy_esborra_empresa_si_no_te_fct_vinculades(): void
     {
-        $this->insertProfesor('EMP03', $this->capPractiquesRole());
+        $this->insertProfesor('EMP03', $this->administradorRole());
         $empresaId = $this->insertEmpresa('Empresa Lliure');
 
         $usuario = Profesor::on('sqlite')->findOrFail('EMP03');
@@ -106,6 +106,7 @@ class EmpresaControllerFeatureTest extends TestCase
     public function test_detall_empresa_te_controls_de_mapa_per_als_centres(): void
     {
         $showView = file_get_contents(resource_path('views/empresa/show.blade.php'));
+        $centerModal = file_get_contents(resource_path('views/empresa/partials/modalCentro.blade.php'));
         $mapModal = file_get_contents(resource_path('views/empresa/partials/modalMapaCentro.blade.php'));
         $script = file_get_contents(public_path('js/Empresa/detalle.js'));
         $controller = file_get_contents(app_path('Http/Controllers/EmpresaController.php'));
@@ -116,8 +117,10 @@ class EmpresaControllerFeatureTest extends TestCase
         $this->assertStringContainsString('class="mapa-centro"', $showView);
         $this->assertStringContainsString('data-fusion-url="{{ url(\'/api/centro/fusionar\') }}"', $showView);
         $this->assertStringContainsString("empresa.partials.modalMapaCentro", $showView);
-        $this->assertStringContainsString('id="telefonoCentro"', $showView);
-        $this->assertStringContainsString('id="emailCentro"', $showView);
+        $this->assertStringNotContainsString('<embed', $showView);
+        $this->assertStringContainsString('Obrir conveni', $showView);
+        $this->assertStringContainsString('id="telefonoCentro"', $centerModal);
+        $this->assertStringContainsString('id="emailCentro"', $centerModal);
         $this->assertStringContainsString('id="MapaCentro"', $mapModal);
         $this->assertStringContainsString('mapaCentroFrame', $mapModal);
         $this->assertStringContainsString('setInputValue', $script);
@@ -232,13 +235,13 @@ class EmpresaControllerFeatureTest extends TestCase
 
     /**
      * Retorna el rol compost necessari per a passar el middleware de professor
-     * i la policy específica de cap de pràctiques.
+     * i la policy específica d'administració.
      *
      * @return int
      */
-    private function capPractiquesRole(): int
+    private function administradorRole(): int
     {
-        return (int) config('roles.rol.profesor') * (int) config('roles.rol.jefe_practicas');
+        return (int) config('roles.rol.profesor') * (int) config('roles.rol.administrador');
     }
 
     /**

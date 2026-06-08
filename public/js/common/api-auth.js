@@ -10,9 +10,15 @@
         return trim(meta ? meta.getAttribute('content') : '');
     }
 
+    function getLegacyApiToken() {
+        var tokenNode = document.getElementById('_token');
+        return trim(tokenNode ? tokenNode.textContent : '');
+    }
+
     function apiAuthOptions(extraData) {
         var bearerToken = getMetaContent('user-bearer-token');
         var csrfToken = getMetaContent('csrf-token');
+        var legacyToken = getLegacyApiToken();
         var data = extraData ? Object.assign({}, extraData) : {};
         var headers = {};
 
@@ -22,6 +28,10 @@
 
         if (bearerToken) {
             headers.Authorization = 'Bearer ' + bearerToken;
+        }
+
+        if (!bearerToken && legacyToken) {
+            data.api_token = legacyToken;
         }
 
         return { headers: headers, data: data };
