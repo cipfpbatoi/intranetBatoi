@@ -137,7 +137,7 @@ class PanelFctAvalController extends IntranetController
         $this->cachedElementos = $elementos->map(function (AlumnoFct $fct): AlumnoFct {
             $grupo = $this->resolveGrupoForFct($fct);
             $normativa = $this->resolveNormativa($fct, $grupo);
-            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? 0);
+            $cicloTipo = (int) ($fct->Fct?->Colaboracion?->Ciclo?->tipo ?? $grupo?->Ciclo?->tipo ?? 0);
             $requiresProject = false;
             if ($normativa === 'LOE' || $normativa === 'LOGSE') {
                 $requiresProject = $grupo
@@ -148,6 +148,8 @@ class PanelFctAvalController extends IntranetController
             $fct->setAttribute('proyecto_requerido', $requiresProject ? 1 : 0);
             $fct->setAttribute('grupo_codigo', $grupo?->codigo);
             $fct->setAttribute('grupo_nombre', $grupo?->nombre);
+            $fct->setAttribute('hores_pendents_sao', $fct->hores_pendents_sao);
+            $fct->setAttribute('requereix_confirmacio_apte', $fct->requereix_confirmacio_apte ? 1 : 0);
 
             return $fct;
         });
@@ -218,24 +220,37 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Resol el grup de l'alumne vinculat al cicle de la FCT.
+     * Resol el grup de l'alumne vinculat al cicle de la FCT o a la persona.
      *
      * @param AlumnoFct $fct
      * @return Grupo|null
      */
     private function resolveGrupoForFct(AlumnoFct $fct): ?Grupo
     {
+        $grupos = $fct->Alumno?->Grupo;
+        if (!$grupos || $grupos->isEmpty()) {
+            return null;
+        }
+
         $cicloId = $fct->Fct?->Colaboracion?->idCiclo;
         if (!$cicloId) {
-            return null;
+            return $this->resolveGrupoFromAlumno($grupos);
         }
 
-        $grupos = $fct->Alumno?->Grupo;
-        if (!$grupos) {
-            return null;
-        }
+        return $grupos->firstWhere('idCiclo', $cicloId) ?? $this->resolveGrupoFromAlumno($grupos);
+    }
 
-        return $grupos->firstWhere('idCiclo', $cicloId);
+    /**
+     * Tria el grup més representatiu de l'alumne quan la FCT no aporta cicle.
+     *
+     * @param Collection<int, Grupo> $grupos
+     * @return Grupo|null
+     */
+    private function resolveGrupoFromAlumno(Collection $grupos): ?Grupo
+    {
+        return $grupos
+            ->sortByDesc(fn (Grupo $grupo): int => (int) $grupo->curso)
+            ->first();
     }
 
     /**
@@ -260,6 +275,11 @@ class PanelFctAvalController extends IntranetController
             return strtoupper($normativa);
         }
 
+        $normativa = $grupo?->Ciclo?->normativa;
+        if (is_string($normativa) && trim($normativa) !== '') {
+            return strtoupper($normativa);
+        }
+
         if ($grupo && str_contains((string) $grupo->codigo, 'LFP')) {
             return 'LFP';
         }
@@ -280,9 +300,9 @@ class PanelFctAvalController extends IntranetController
 
         $asociacionesAval = [1, 2, 4, 5];
         $asociacionesNoExempt = [1, 4, 5];
-        $labelRenuncia = __('messages.buttons.renuncia');
+        $labelCessament = __('messages.buttons.renuncia');
         $labelExpulsat = __('messages.buttons.expulsat');
-        $titleRenuncia = "Marcar com a $labelRenuncia";
+        $titleCessament = "Marcar com a $labelCessament";
         $titleExpulsat = "Marcar com a $labelExpulsat";
         $this->panel->setBoton(
             'grid',
@@ -290,10 +310,28 @@ class PanelFctAvalController extends IntranetController
                 'fct.apte',
                 [
                     'img' => 'fa-hand-o-up',
+                    'title' => 'Marcar com a apte',
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '<>', 2
+                        'asociacion', '<>', 2,
+                        'requereix_confirmacio_apte', '==', 0
+                    ]
+                ]
+            ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.apte',
+                [
+                    'img' => 'fa-hand-o-up',
+                    'title' => 'Marcar com a apte amb hores pendents',
+                    'onclick' => "if (!confirm('Aquesta FCT encara té hores pendents de sincronitzar amb SAO. Vols marcar-la com a apta igualment?')) { return false; } this.href += (this.href.indexOf('?') === -1 ? '?' : '&') + 'confirmar_hores=1'; return true;",
+                    'where' => [
+                        'calificacion', '!=', '1',
+                        'actas', '==', 0,
+                        'asociacion', '<>', 2,
+                        'requereix_confirmacio_apte', '==', 1
                     ]
                 ]
             ));
@@ -316,9 +354,9 @@ class PanelFctAvalController extends IntranetController
                 'fct.renuncia',
                 [
                     'img' => 'fa-sign-out',
-                    'text' => $labelRenuncia,
-                    'title' => $titleRenuncia,
-                    'aria-label' => $labelRenuncia,
+                    'text' => $labelCessament,
+                    'title' => $titleCessament,
+                    'aria-label' => $labelCessament,
                     'where' => [
                         'normativa', '==', 'LFP',
                         'actas', '==', 0,
@@ -406,6 +444,16 @@ class PanelFctAvalController extends IntranetController
     protected function apte($id)
     {
         Gate::authorize('manageAval', Fct::class);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
+        if ($fct->requereix_confirmacio_apte && request('confirmar_hores') !== '1') {
+            Alert::message(
+                "Aquesta FCT encara té {$fct->hores_pendents_sao} hores pendents de sincronitzar amb SAO. Confirma explícitament l'aprovat per continuar.",
+                'warning'
+            );
+
+            return back();
+        }
+
         $this->avals()->apte((int) $id);
 
         return back();
@@ -428,7 +476,7 @@ class PanelFctAvalController extends IntranetController
     }
 
     /**
-     * Marca una FCT com a renúncia.
+     * Marca una FCT com a cessament.
      *
      * @param int|string $id
      * @return \Illuminate\Http\RedirectResponse

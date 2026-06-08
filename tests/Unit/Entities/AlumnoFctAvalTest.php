@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\AlumnoFct;
 use Tests\TestCase;
 
+/**
+ * Proves dels scopes d'avaluació i notificació de FCT d'alumnat.
+ */
 class AlumnoFctAvalTest extends TestCase
 {
     protected function setUp(): void
@@ -35,12 +38,31 @@ class AlumnoFctAvalTest extends TestCase
         $this->assertSame([3], AlumnoFct::query()->pendiente()->pluck('id')->all());
     }
 
-    public function test_scope_pendiente_notificar_filtra_per_calificacio_i_correu(): void
+    /**
+     * Verifica que només les FCT no LFP aptes queden pendents de certificat a l'alumne.
+     */
+    public function test_scope_pendiente_notificar_exclou_lfp(): void
     {
+        DB::table('ciclos')->insert([
+            ['id' => 1, 'normativa' => 'LOE'],
+            ['id' => 2, 'normativa' => 'LFP'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            ['id' => 100, 'idCiclo' => 1],
+            ['id' => 101, 'idCiclo' => 2],
+        ]);
+
+        DB::table('fcts')->insert([
+            ['id' => 10, 'asociacion' => 1, 'idColaboracion' => 100],
+            ['id' => 11, 'asociacion' => 1, 'idColaboracion' => 101],
+        ]);
+
         DB::table('alumno_fcts')->insert([
             ['id' => 11, 'idAlumno' => 'A2', 'idFct' => 10, 'actas' => 2, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 20],
             ['id' => 12, 'idAlumno' => 'A2', 'idFct' => 10, 'actas' => 2, 'calificacion' => 1, 'correoAlumno' => 1, 'horas' => 20],
             ['id' => 13, 'idAlumno' => 'A2', 'idFct' => 10, 'actas' => 2, 'calificacion' => 0, 'correoAlumno' => 0, 'horas' => 20],
+            ['id' => 14, 'idAlumno' => 'A2', 'idFct' => 11, 'actas' => 2, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 20],
         ]);
 
         $this->assertSame([11], AlumnoFct::query()->pendienteNotificar()->pluck('id')->all());
@@ -66,9 +88,22 @@ class AlumnoFctAvalTest extends TestCase
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('alumno_fcts');
         $schema->dropIfExists('fcts');
+        $schema->dropIfExists('colaboraciones');
+        $schema->dropIfExists('ciclos');
+
+        $schema->create('ciclos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('normativa')->nullable();
+        });
+
+        $schema->create('colaboraciones', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedInteger('idCiclo')->nullable();
+        });
 
         $schema->create('fcts', function (Blueprint $table): void {
             $table->increments('id');
+            $table->unsignedInteger('idColaboracion')->nullable();
             $table->unsignedTinyInteger('asociacion')->default(1);
         });
 

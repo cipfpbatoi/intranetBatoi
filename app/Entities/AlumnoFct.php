@@ -140,10 +140,16 @@ class AlumnoFct extends Model
         return $query->where('actas', '=', 2);
     }
 
+    /**
+     * Filtra FCT aptes pendents d'enviar el certificat final a l'alumne.
+     */
     public function scopePendienteNotificar($query)
     {
         return $query->where('calificacion', 1)
-            ->where('correoAlumno', 0);
+            ->where('correoAlumno', 0)
+            ->whereDoesntHave('Fct.Colaboracion.Ciclo', function ($query): void {
+                $query->where('normativa', 'LFP');
+            });
     }
 
     public function scopeCalificados($query)
@@ -198,9 +204,45 @@ class AlumnoFct extends Model
         return $query->whereNotIn('idFct', $fcts);
     }
 
+    /**
+     * Filtra FCT actives pendents de completar i sense qualificació.
+     */
     public function scopeActiva($query)
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->whereColumn('horas', '>', 'realizadas');
+    }
+
+    /**
+     * Filtra FCT amb hores pendents que han de consultar-se en SAO.
+     */
+    public function scopePendentSincronitzacioSao($query)
+    {
+        return $query
+            ->whereNotNull('idSao')
+            ->whereColumn('horas', '>', 'realizadas')
+            ->where(function ($query): void {
+                $query->where(function ($query): void {
+                    $query->whereNull('calificacion')
+                        ->where('correoAlumno', 0);
+                })
+                    ->orWhere('calificacion', 1);
+            });
+    }
+
+    /**
+     * Indica les hores SAO pendents de sincronitzar.
+     */
+    public function getHoresPendentsSaoAttribute(): int
+    {
+        return max(0, (int) $this->horas - (int) $this->realizadas);
+    }
+
+    /**
+     * Indica si cal confirmar l'aprovat perquè queden hores pendents.
+     */
+    public function getRequereixConfirmacioApteAttribute(): bool
+    {
+        return $this->hores_pendents_sao > 0;
     }
 
     public function scopeHaEmpezado($query)
@@ -243,8 +285,9 @@ class AlumnoFct extends Model
             0 => 'No Apte',
             1 => 'Apte',
             2 => 'Convalidat/Exempt',
-            3 => 'Renúncia',
-            4 => 'Expulsat',
+            3 => 'Cessament',
+            4 => 'Cessament Disciplinari (Expulsat)',
+            5 => 'Renúncia / No realitzada',
             default => 'No Avaluat',
         };
     }

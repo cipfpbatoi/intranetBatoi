@@ -29,7 +29,7 @@ class PollWorkflowService
         }
 
         $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user), $poll);
         $options = $this->surveyOptions($poll, $user);
 
         return [
@@ -47,7 +47,7 @@ class PollWorkflowService
         }
 
         $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user));
+        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll, $user), $poll);
         $options = $this->surveyOptions($poll, $user);
 
         foreach ($options as $question => $option) {
@@ -105,14 +105,14 @@ class PollWorkflowService
         $optionsNumeric = $options->filter(fn(Option $option): bool => $option->isNumericType());
         $optionsSelect = $options->filter(fn(Option $option): bool => $option->isSelectType());
 
-        $allVotes = Vote::allNumericVotes($id)->get();
+        $allVotes = $modelo::filterVotesForPoll(Vote::allNumericVotes($id)->get(), $poll);
         $option1 = $allVotes->groupBy(['idOption1', 'option_id']);
         $option2 = $allVotes->groupBy(['idOption2', 'option_id']);
 
         $votes = [];
         $this->initValues($votes, $optionsNumeric, $grupoService);
         $votes['all'] = $allVotes->groupBy('option_id');
-        $modelo::aggregate($votes, $option1, $option2);
+        $modelo::aggregate($votes, $option1, $option2, $poll);
 
         $stats = [
             'all' => [],
@@ -174,12 +174,13 @@ class PollWorkflowService
         ];
 
         if ($optionsSelect->isNotEmpty()) {
-            $allSelectVotes = Vote::allSelectVotes($id)->get();
+            $allSelectVotes = $modelo::filterVotesForPoll(Vote::allSelectVotes($id)->get(), $poll);
             $selectVotes['all'] = $allSelectVotes->groupBy('option_id');
             $modelo::aggregate(
                 $selectVotes,
                 $allSelectVotes->groupBy(['idOption1', 'option_id']),
-                $allSelectVotes->groupBy(['idOption2', 'option_id'])
+                $allSelectVotes->groupBy(['idOption2', 'option_id']),
+                $poll
             );
 
             foreach ($selectVotes['all'] as $optionId => $optionVote) {

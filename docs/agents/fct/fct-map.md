@@ -38,3 +38,12 @@
 
 - `AlumnoFct`, `Fct`, `Signatura`, `Instructor`, `Centro`, `Empresa`, `Colaboracion`.
 - Revisar relacions abans d'usar cadenes com `$signatura->Fct->Fct->Instructor`.
+
+## Convalidacions I Normativa
+
+- `FctAlumnoController::storeConvalidacion()` treballa sobre FCTs de convalidació i acaba associant alumnat en `alumno_fcts`.
+- La taula `fcts` no identifica per si sola un cicle o normativa. Si hi ha `idColaboracion`, el cicle ve de `colaboraciones.idCiclo`; si no, només es pot inferir a través de l'alumnat associat (`alumno_fcts -> alumnos_grupos -> grupos -> ciclos`).
+- El camp de normativa en `ciclos` és `normativa`; no uses `ley`.
+- No discrimines només per grup quan investigues LOE/LFP/LOGSE: un alumne pot estar matriculat en més d'un grup/cicle. Per canvis de dades, identifica files concretes de `alumno_fcts.id`.
+- Una FCT de convalidació pot estar contaminada amb alumnat LOE, LFP i LOGSE. En eixe cas no assumisques una normativa única; a curt termini cal separar dades en FCTs distintes per normativa/cicle i actualitzar assignacions explícites.
+- Solució robusta a llarg termini: afegir un discriminador explícit a les convalidacions, preferiblement cicle/normativa, en lloc d'inferir-ho des dels alumnes ja associats.

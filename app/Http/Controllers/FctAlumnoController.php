@@ -113,7 +113,7 @@ class FctAlumnoController extends ModalController
             'grid',
             new BotonImg(
                 'alumnofct.pdf',
-                ['where' => ['asociacion', '==', '2']]
+                ['where' => ['asociacion', '==', '2', 'calificacion', '!=', '5']]
             )
         );
         $this->panel->setBoton(
@@ -279,6 +279,7 @@ class FctAlumnoController extends ModalController
             [
                 'idAlumno' => ['type' => 'select'],
                 'asociacion' => ['type' => 'hidden'],
+                'calificacion' => ['type' => 'select'],
                 'horas' => ['type' => 'text'],
             ]
         );
@@ -317,7 +318,7 @@ class FctAlumnoController extends ModalController
                 [
                     'desde' => FechaInglesa(Hoy()),
                     'horas' => $request->horas,
-                    'calificacion' => 2,
+                    'calificacion' => (int) $request->calificacion,
                     'correoAlumno' => 1,
                     'idProfesor' => authUser()->dni
                 ]

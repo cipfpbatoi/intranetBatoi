@@ -36,6 +36,7 @@ class BotonImg extends BotonElemento
             'rel' => $this->rel,
             'ariaLabel' => $this->ariaLabel,
             'title' => $this->title,
+            'onclick' => $this->onclick,
             'img' => $this->img??config("iconos.$this->accion"),
             'text' => $this->text,
             'badge' => $this->badge

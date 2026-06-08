@@ -1,0 +1,6 @@
+# Les plantilles són opcionals: es pot continuar obrint issues en blanc.
+blank_issues_enabled: true
+contact_links:
+  - name: Com treballem amb agents (Filosofia Tetris)
+    url: https://github.com/cipfpbatoi/intranetBatoi/blob/Laravel13/docs/agents/tetris.md
+    about: Llig com està organitzat el repo per a agents abans d'obrir una issue de workflow.

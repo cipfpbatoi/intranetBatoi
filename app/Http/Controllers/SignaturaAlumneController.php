@@ -98,13 +98,16 @@ class SignaturaAlumneController extends ModalController
         return response()->file($sig->routeFile);
     }
 
+    /**
+     * Inicialitza els botons del panell de signatures de l'alumnat.
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([],['pdf']);
         $this->panel->setBoton(
             'grid',
             new BotonImg(
-                'signatura.upload',
+                'signatura.alumne.upload',
                 ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',">=", '2']]
             )
         );

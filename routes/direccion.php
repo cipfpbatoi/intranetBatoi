@@ -35,17 +35,16 @@ Route::get('/falta/{falta}/delete', ['as' => 'falta.direccion.destroy', 'uses' =
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
 Route::get('/falta/{falta}/alta', ['as' => 'falta.alta', 'uses' => 'FaltaController@alta']);
 
-Route::get('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@vistaImpresion']);
-Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@imprimir']);
+Route::get('/falta/pdf', ['as' => 'falta.direccion.pdf', 'uses' => 'MensualController@vistaImpresion']);
+Route::post('/falta/pdf', ['as' => 'falta.direccion.pdf.post', 'uses' => 'MensualController@imprimir']);
 
-Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
+Route::get('/alumno/{alumno}/edit', ['as' => 'direccion.alumno.edit', 'uses' => 'AlumnoController@edit']);
 Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'PanelControlProgramacionController@index']);
 Route::get('/fichar/resumen-rango', ['as' => 'fichar.resumen-rango', 'uses' => 'FicharController@resumenRango']);
 
 Route::get('/fichar/control', ['as' => 'fichar.control', 'uses' => 'FicharController@control']);
 Route::get('/fichar/controlDia', ['as' => 'ficharDia.control', 'uses' => 'FicharController@controlDia']);
-Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
-Route::get('/fichar/list/{dia}', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
+Route::get('/fichar/list/{dia?}', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
 Route::get('/fichar/{usuario}/email/{dia}', ['as' => 'fichar.email', 'uses' => 'PanelPresenciaController@email']);
 Route::get('/fichar/{usuario}/delete/{dia}', ['as' => 'fichar.borrar', 'uses' => 'PanelPresenciaController@deleteDia']);
 Route::get('/reunion/list', ['as' => 'reunion.list', 'uses' => 'ReunionController@listado']);
@@ -54,13 +53,13 @@ Route::get('/horarios/pdf', ['as'=>'horarios.pdf','uses'=>'ProfesorController@im
 Route::get('/infDpto', ['as'=>'infdpto.control','uses'=>'PanelInfDptoController@index']);
 
 
-Route::get('/{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'PanelActasController@indice']);
+Route::get('/{grupo}/acta', ['as' => 'direccion.fct.acta', 'uses' => 'PanelActasController@indice']);
 Route::get('/{grupo}/finActa', ['as' => 'fct.finActa', 'uses' => 'PanelActasController@finActa']);
 Route::get('/{grupo}/rejectActa', ['as' => 'fct.rejectActa', 'uses' => 'PanelActasController@rejectActa']);
 
 
-Route::get('/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);
-Route::get('/{alumno}/aFol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificado']);
+Route::get('/{grupo}/fol', ['as' => 'direccion.grupo.fol', 'uses' => 'GrupoController@certificados']);
+Route::get('/{alumno}/aFol', ['as' => 'direccion.aFol', 'uses' => 'GrupoController@certificado']);
 
 
 Route::get('/horarios/cambiar', ['as' => 'horarios.cambiarIndex', 'uses' => 'HorarioController@changeIndex']);
@@ -75,11 +74,18 @@ Route::get('/documento', ['as'=> 'documentosP.index','uses' => 'PanelDocumentoCo
 Route::get('/myMail', 'MyMailController@create');
 Route::post('/myMail', 'MyMailController@store');
 
-Route::resource('/lote', 'LoteController', ['except' => ['destroy', 'update','show']]);
-Route::post('/lote/create', ['as' => 'lote.store','uses'=> 'LoteController@store']);
-Route::get('/lote/{id}/print/{posicion?}', ['as' => 'lote.print','uses' => 'LoteController@print']);
-Route::get('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteController@capture']);
-Route::post('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
+Route::resource('/lote', 'LoteController', [
+    'except' => ['destroy', 'update', 'show', 'store'],
+    'names' => [
+        'index' => 'direccion.lote.index',
+        'create' => 'direccion.lote.create',
+        'edit' => 'direccion.lote.edit',
+    ],
+]);
+Route::post('/lote/create', ['as' => 'direccion.lote.store','uses'=> 'LoteController@store']);
+Route::get('/lote/{id}/print/{posicion?}', ['as' => 'direccion.lote.print','uses' => 'LoteController@print']);
+Route::get('/lote/{id}/capture', ['as' => 'direccion.lote.capture','uses' => 'LoteController@capture']);
+Route::post('/lote/{id}/capture', ['as' => 'direccion.lote.capture.post','uses' => 'LoteController@postcapture']);
 
 Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'MaterialModController@index']);
 Route::get('/signatures', ['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);

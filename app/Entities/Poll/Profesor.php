@@ -6,9 +6,12 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Departamento;
 use Intranet\Services\School\ModuloGrupoService;
 
+/**
+ * Tipus d'enquesta perquè l'alumnat valore professorat i mòduls.
+ */
 class Profesor extends ModelPoll
 {
-    public static function loadPoll($votes)
+    public static function loadPoll($votes, ?Poll $poll = null)
     {
         if (count($votes)) {
             return null;
@@ -47,13 +50,13 @@ class Profesor extends ModelPoll
         return $myGroupsVotes;
     }
 
-    public static function aggregate(&$votes, $option1, $option2)
+    public static function aggregate(&$votes, $option1, $option2, ?Poll $poll = null)
     {
         self::aggregateGrupo($option1, $votes);
         self::aggregateDepartamento($option2, $votes);
     }
 
-    public static function has()
+    public static function has(?Poll $poll = null)
     {
         return count(authUser()->Grupo);
     }

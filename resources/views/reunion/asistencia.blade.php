@@ -18,12 +18,50 @@
         height: auto;
         overflow: auto;
     }
+
+    .reunion-fe-notes-subpoint {
+        margin-left: 2rem;
+        border-left: 3px solid #d9edf7;
+    }
+
+    .reunion-fe-student-name {
+        color: #31708f;
+        font-weight: 700;
+    }
+
+    .reunion-fe-notes-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .reunion-fe-notes-table th,
+    .reunion-fe-notes-table td {
+        min-width: 180px;
+        vertical-align: top;
+    }
+
+    .reunion-fe-notes-table th:first-child,
+    .reunion-fe-notes-table td:first-child {
+        min-width: 220px;
+    }
+
+    .reunion-fe-note-observations {
+        margin-top: 6px;
+    }
+
+    .reunion-fe-exclude-student {
+        display: block;
+        margin-top: 8px;
+        font-weight: 400;
+    }
 </style>
 @endsection
 @section('content')
 <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
+    @if ($formulario->getElemento()->avaluacioFinal && isset($feNotesData) && $feNotesData['fcts']->isNotEmpty())
+        @include('reunion.partials.fe-notes')
+    @endif
     @include('reunion.partials.profesores')
     @if ($formulario->getElemento()->informe)
         @include('reunion.partials.alumnos')

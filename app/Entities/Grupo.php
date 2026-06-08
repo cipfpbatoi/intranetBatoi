@@ -113,9 +113,17 @@ class Grupo extends Model
             ->orderBy('codigo'); // criteri de desempat opcional
     }
 
+    /**
+     * Filtra els grups visibles per al professor, incloent horari i tutoria.
+     *
+     * @param mixed $query
+     * @param object|null $profesor
+     * @return mixed
+     */
     public function scopeMisGrupos($query, $profesor = null)
     {
         $profesor = $profesor ?? authUser();
+        $profesores = Profesor::getSubstituts((string) $profesor->dni);
         $grupos = Horario::select('idGrupo')
             ->Profesor($profesor->dni)
             ->Lectivos()
@@ -124,7 +132,10 @@ class Grupo extends Model
             ->pluck('idGrupo')
             ->toArray();
 
-        return $query->whereIn('codigo', $grupos);
+        return $query->where(function ($q) use ($grupos, $profesores) {
+            $q->whereIn('codigo', $grupos)
+                ->orWhereIn('tutor', $profesores);
+        });
     }
     
     public function scopeMiGrupoModulo($query,$dni,$modulo)
@@ -366,11 +377,23 @@ class Grupo extends Model
         return ($this->turno == 'S');
     }
 
-    public function getTornAttribute(){
+    /**
+     * Retorna el torn deduït de la primera sessió lectiva disponible.
+     */
+    public function getTornAttribute()
+    {
         if  ($this->turno == 'S') {
             return $this->turno;
         }
-        $turno = $this->Horario->where('dia_semana','L')->where('modulo','<>','TU01CF')->where('modulo','<>','TU02CF')->sortBy('sesion_orden',0)->first();
+        $dies = ['L' => 1, 'M' => 2, 'X' => 3, 'J' => 4, 'V' => 5];
+        $turno = $this->Horario
+            ->whereNotIn('modulo', ['TU01CF', 'TU02CF'])
+            ->sortBy(static fn ($hora): string => sprintf(
+                '%02d-%04d',
+                $dies[$hora->dia_semana] ?? 99,
+                (int) $hora->sesion_orden
+            ))
+            ->first();
         if ($turno?->Hora?->turno) {
             return ucfirst(substr((string) $turno->Hora->turno,0,1));
         }

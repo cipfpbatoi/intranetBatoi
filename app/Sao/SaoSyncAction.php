@@ -86,13 +86,16 @@ class SaoSyncAction
         AlertLogger::info('Fcts sincronitzades: ' . implode(', ', $alumnesActualitzats));
     }
 
+    /**
+     * Recupera les FCT candidates a sincronitzar amb SAO.
+     */
     private function getValidFcts()
     {
         if ($this->queryCallback) {
             return call_user_func($this->queryCallback)->get();
         }
 
-        return AlumnoFct::realFcts()->haEmpezado()->activa()->get();
+        return AlumnoFct::realFcts()->haEmpezado()->pendentSincronitzacioSao()->get();
     }
 
     private function obtenirHoresFct($idSao): ?int

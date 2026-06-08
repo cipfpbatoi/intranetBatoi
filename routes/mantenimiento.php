@@ -9,7 +9,7 @@ Route::get(
     '/incidencia/{incidencia}/unauthorize',
     ['as' => 'incidencia.unauthorize', 'uses' => 'MantenimientoIncidenciaController@resign']
 );
-Route::get('/incidencia/{incidencia}/show', ['as' => 'incidencia.show', 'uses' => 'IncidenciaController@show']);
+Route::get('/incidencia/{incidencia}/show', ['as' => 'mantenimiento.incidencia.show', 'uses' => 'IncidenciaController@show']);
 Route::post(
     '/incidencia/{incidencia}/resolve',
     ['as' => 'incidencia.resolve', 'uses' => 'MantenimientoIncidenciaController@resolve']

@@ -3,13 +3,15 @@
 <tr class="lineaGrupo {{ $elemento->class ?? '' }}" id="{{ $elemento->getKey() }}">
     @foreach ($pestana->getRejilla() as $item)
         @php($long = str_starts_with($item, 'L') ? 200 : 100)
-        @php($valor = ($item === 'FullName' && isset($elemento->incidenciaFullName)) ? $elemento->incidenciaFullName : rescue(fn() => $elemento->$item, ''))
+        @php($teHtmlControlat = $item === 'FullName' && isset($elemento->incidenciaFullName))
+        @php($valor = $teHtmlControlat ? $elemento->incidenciaFullName : rescue(fn() => $elemento->$item, ''))
+        @php($valorRetallat = $teHtmlControlat ? $valor : in_substr($valor, $long))
         <td>
             <span class="input" name="{{ $item }}">
                 @if (!empty($elemento->leido) && !$elemento->leido)
-                    <strong>{!! in_substr($valor, $long) !!}</strong>
+                    <strong>{!! $teHtmlControlat ? $valorRetallat : e($valorRetallat) !!}</strong>
                 @else
-                    {!! in_substr($valor, $long) !!}
+                    {!! $teHtmlControlat ? $valorRetallat : e($valorRetallat) !!}
                 @endif
             </span>
         </td>

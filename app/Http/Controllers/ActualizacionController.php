@@ -46,6 +46,14 @@ class ActualizacionController extends Controller
         Alert::info('config:cache executat');
         Log::info('config:cache executat durant /actualizacion.');
 
+        Artisan::call('route:cache');
+        Alert::info('route:cache executat');
+        Log::info('route:cache executat durant /actualizacion.');
+
+        Artisan::call('view:cache');
+        Alert::info('view:cache executat');
+        Log::info('view:cache executat durant /actualizacion.');
+
         Artisan::call('migrate', ['--force' => true]);
         Alert::info('migrate --force executat');
         Log::info('migrate --force executat durant /actualizacion.');

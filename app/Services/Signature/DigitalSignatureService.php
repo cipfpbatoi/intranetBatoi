@@ -2,6 +2,7 @@
 
 namespace Intranet\Services\Signature;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -91,18 +92,42 @@ class DigitalSignatureService
         ]);
     }
 
+    /**
+     * Desxifra el certificat digital guardat per a un usuari.
+     *
+     * @param string $fileName Nom base del fitxer xifrat
+     * @param string $password Contrasenya de la intranet usada per xifrar-lo
+     * @return string Ruta temporal del certificat desxifrat
+     * @throws CertException
+     */
     public static function decryptCertificate($fileName, $password): string
     {
         return (new self())->decryptUserCertificate($fileName, $password);
     }
 
+    /**
+     * Desxifra el certificat digital guardat i el deixa en un fitxer temporal.
+     *
+     * @param string $fileName Nom base del fitxer xifrat
+     * @param string $password Contrasenya de la intranet usada per xifrar-lo
+     * @return string Ruta temporal del certificat desxifrat
+     * @throws CertException
+     */
     public function decryptUserCertificate($fileName, $password): string
     {
         $cryptfile = $this->fileNameCrypt($fileName);
         $decryptfile = $this->fileNameDeCrypt($fileName);
         $encrypter = $this->getEncrypter($password);
 
-        File::put($decryptfile, base64_decode($encrypter->decryptString(file_get_contents($cryptfile))));
+        try {
+            File::put($decryptfile, base64_decode($encrypter->decryptString(file_get_contents($cryptfile))));
+        } catch (DecryptException $exception) {
+            throw new CertException(
+                "No s'ha pogut obrir el certificat digital guardat. Torna a pujar-lo des del teu perfil amb la contrasenya actual de la intranet.",
+                0,
+                $exception
+            );
+        }
 
         Log::channel('certificate')->info("S'ha desxifrat el certificat d'usuari.", [
             'intranetUser' => authUser()->fullName,
@@ -111,11 +136,27 @@ class DigitalSignatureService
         return $decryptfile;
     }
 
+    /**
+     * Desxifra el certificat digital guardat d'un usuari validant abans la seua contrasenya.
+     *
+     * @param string $decrypt Contrasenya de la intranet
+     * @param mixed $user Usuari propietari del certificat
+     * @return string|null Ruta temporal del certificat desxifrat
+     * @throws CertException
+     */
     public static function decryptCertificateUser($decrypt, $user): ?string
     {
         return (new self())->decryptUserCertificateInstance($decrypt, $user);
     }
 
+    /**
+     * Desxifra el certificat digital guardat d'un usuari validant abans la seua contrasenya.
+     *
+     * @param string $decrypt Contrasenya de la intranet
+     * @param mixed $user Usuari propietari del certificat
+     * @return string|null Ruta temporal del certificat desxifrat
+     * @throws CertException
+     */
     public function decryptUserCertificateInstance($decrypt, $user): ?string
     {
         if (!Hash::check($decrypt, $user->password)) {

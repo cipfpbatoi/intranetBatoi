@@ -1,6 +1,6 @@
 <?php
 
-Route::resource('/menu', 'MenuController', ['except' => ['destroy', 'update']]);
+Route::resource('/menu', 'MenuController', ['except' => ['destroy', 'update', 'store']]);
 Route::get('/menu/{menu}/delete', ['as' => 'menu.destroy', 'uses' => 'MenuController@destroy']);
 Route::get('/menu/{menu}/active', ['as' => 'menu.active', 'uses' => 'MenuController@active']);
 Route::post('/menu/create', ['as' => 'menu.store', 'uses' => 'MenuController@store']);
@@ -52,8 +52,8 @@ Route::get('/task/{task}/delete', ['as' => 'task.destroy', 'uses' => 'TaskContro
 
 //manteniment taula tipo incidencias
 Route::resource('/tipoincidencia', 'TipoIncidenciaController', ['except' => ['destroy', 'update', 'show']]);
-Route::put('/tipoincidencia/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'TipoIncidenciaController@update']);
-Route::get('/tipoincidencia/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'TipoIncidenciaController@destroy']);
+Route::put('/tipoincidencia/{ciclo}/edit', ['as' => 'tipoincidencia.update', 'uses' => 'TipoIncidenciaController@update']);
+Route::get('/tipoincidencia/{ciclo}/delete', ['as' => 'tipoincidencia.destroy', 'uses' => 'TipoIncidenciaController@destroy']);
 //canvia d'usuari
 Route::get('/profesor/{idProfesor}/change', ['as' =>'profesor.change','uses' => 'ProfesorController@change']);
 Route::get('/alumno/{idAlumne}/change', ['as' =>'alumno.change','uses' => 'AlumnoController@change']);

@@ -72,6 +72,23 @@ class AlumnoFctScopeTest extends TestCase
         $this->assertSame([30], $ids);
     }
 
+    public function test_scope_pendent_sincronitzacio_sao_inclou_aptes_amb_hores_pendents(): void
+    {
+        DB::table('alumno_fcts')->insert([
+            ['id' => 34, 'idFct' => 1, 'idSao' => 1001, 'calificacion' => null, 'correoAlumno' => 0, 'horas' => 120, 'realizadas' => 60],
+            ['id' => 35, 'idFct' => 1, 'idSao' => 1002, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 120, 'realizadas' => 60],
+            ['id' => 36, 'idFct' => 1, 'idSao' => 1003, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 120, 'realizadas' => 120],
+            ['id' => 37, 'idFct' => 1, 'idSao' => 1004, 'calificacion' => 0, 'correoAlumno' => 0, 'horas' => 120, 'realizadas' => 60],
+            ['id' => 38, 'idFct' => 1, 'idSao' => null, 'calificacion' => 1, 'correoAlumno' => 0, 'horas' => 120, 'realizadas' => 60],
+            ['id' => 39, 'idFct' => 1, 'idSao' => 1005, 'calificacion' => 1, 'correoAlumno' => 1, 'horas' => 120, 'realizadas' => 60],
+            ['id' => 40, 'idFct' => 1, 'idSao' => 1006, 'calificacion' => null, 'correoAlumno' => 1, 'horas' => 120, 'realizadas' => 60],
+        ]);
+
+        $ids = AlumnoFct::query()->pendentSincronitzacioSao()->pluck('id')->all();
+
+        $this->assertSame([34, 35, 39], $ids);
+    }
+
     public function test_scope_mis_fcts_inclou_professor_i_substituit(): void
     {
         DB::table('profesores')->insert([
@@ -229,6 +246,7 @@ class AlumnoFctScopeTest extends TestCase
         $schema->create('alumno_fcts', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idFct');
+            $table->unsignedInteger('idSao')->nullable();
             $table->string('idProfesor', 10)->nullable();
             $table->unsignedInteger('calificacion')->nullable();
             $table->unsignedTinyInteger('correoAlumno')->default(0);

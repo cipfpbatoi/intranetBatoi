@@ -3,12 +3,16 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Hora;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
 
+/**
+ * Model d'horari docent.
+ */
 class Horario extends Model
 {
 
@@ -52,13 +56,20 @@ class Horario extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
+    /**
+     * Filtra l'horari del professor i de la persona a qui substitueix.
+     *
+     * @param mixed $query
+     * @param string $profesor
+     * @return mixed
+     */
     public function scopeProfesor($query, $profesor)
     {
-        if (Horario::where('idProfesor', $profesor)->count()) {
+        if (!Schema::hasTable('profesores')) {
             return $query->where('idProfesor', $profesor);
-        } else {
-            return $query->where('idProfesor', Profesor::findOrFail($profesor)->sustituye_a);
         }
+
+        return $query->whereIn('idProfesor', Profesor::getSubstituts((string) $profesor));
     }
 
     public function scopeGrup($query, $grupo)
