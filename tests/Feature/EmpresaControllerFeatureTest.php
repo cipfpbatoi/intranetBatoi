@@ -71,7 +71,7 @@ class EmpresaControllerFeatureTest extends TestCase
 
     public function test_destroy_bloca_empresa_amb_fct_vinculades_i_mostra_alerta(): void
     {
-        $this->insertProfesor('EMP02', $this->administradorRole());
+        $this->insertProfesor('EMP02', $this->capPractiquesRole());
         $empresaId = $this->insertEmpresa('Empresa Bloquejada');
         $centroId = $this->insertCentro($empresaId);
         $colaboracionId = $this->insertColaboracion($centroId);
@@ -91,7 +91,7 @@ class EmpresaControllerFeatureTest extends TestCase
 
     public function test_destroy_esborra_empresa_si_no_te_fct_vinculades(): void
     {
-        $this->insertProfesor('EMP03', $this->administradorRole());
+        $this->insertProfesor('EMP03', $this->capPractiquesRole());
         $empresaId = $this->insertEmpresa('Empresa Lliure');
 
         $usuario = Profesor::on('sqlite')->findOrFail('EMP03');
@@ -112,8 +112,8 @@ class EmpresaControllerFeatureTest extends TestCase
         $controller = file_get_contents(app_path('Http/Controllers/EmpresaController.php'));
 
         $this->assertStringNotContainsString("new BotonImg('empresa.edit')", $controller);
-        $this->assertStringContainsString("config('roles.rol.administrador')", $controller);
-        $this->assertStringContainsString("config('roles.rol.direccion')", $controller);
+        $this->assertStringContainsString("config('roles.rol.jefe_practicas')", $controller);
+        $this->assertStringContainsString("userIsAllow(config('roles.rol.jefe_practicas'))", $showView);
         $this->assertStringContainsString('class="mapa-centro"', $showView);
         $this->assertStringContainsString('data-fusion-url="{{ url(\'/api/centro/fusionar\') }}"', $showView);
         $this->assertStringContainsString("empresa.partials.modalMapaCentro", $showView);
@@ -239,9 +239,9 @@ class EmpresaControllerFeatureTest extends TestCase
      *
      * @return int
      */
-    private function administradorRole(): int
+    private function capPractiquesRole(): int
     {
-        return (int) config('roles.rol.profesor') * (int) config('roles.rol.administrador');
+        return (int) config('roles.rol.profesor') * (int) config('roles.rol.jefe_practicas');
     }
 
     /**
