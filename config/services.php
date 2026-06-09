@@ -35,8 +35,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
     'google' => [
-        'client_id' => env('GOOGLE_ID', '722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com'),
-        'client_secret' => env('GOOGLE_SECRET', 'QU20APPRUWBlDlp839bI3P98'),
+        'client_id' => env('GOOGLE_ID'),
+        'client_secret' => env('GOOGLE_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/callback/google'),
     ],
     'calendar' => [
@@ -50,8 +50,8 @@ return [
         'full_url'  => env('SELENIUM_URL', '172.16.9.10').":4444",
         //'url' => env('SELENIUM_URL', '192.168.56.1:4444'),
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
-        'SAO_USER' => env('SELENIUM_USER_SAO', '21668389C'),
-        'SAO_PASS' => env('SELENIUM_PASS_SAO', '21668389C'),
+        'SAO_USER' => env('SELENIUM_USER_SAO'),
+        'SAO_PASS' => env('SELENIUM_PASS_SAO'),
         'SELENIUM_ROOT_PASS' => env('SELENIUM_ROOT_PASS', 'intranet'),
         'firefox_path' => env('FIREFOX_PATH',null),
         'itaca' => env('SELENIUM_URL_ITACA','https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/'),
