@@ -11,7 +11,7 @@
 ## Fluxos
 
 - `NotificationService::send($id, $mensaje, $enlace, $emisor)` resol receptor per NIA/DNI, crea `mensajePanel` i usa el canal `database`.
-- `AdviseService` envia avisos segons configuració de model i estat; revisa `config/modelos.php`, `config/avisos.php` o `config/contacto.php` abans de canviar destinataris.
+- `AdviseService` envia avisos segons configuració de model i estat; revisa `config/modelos.php` i la col·lecció `avisos` de `settings` abans de canviar destinataris.
 - `AdviseTeacher` calcula professorat afectat per horaris/grups i pot enviar correus a tutors.
 - `MyMail` prepara receptors, vista editable, adjunts i dades del correu; `MailSender` executa l'enviament i controla mida estimada, registre d'activitat i postprocessat.
 
