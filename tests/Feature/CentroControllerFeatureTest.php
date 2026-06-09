@@ -37,6 +37,8 @@ class CentroControllerFeatureTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('fcts');
+        Schema::connection('sqlite')->dropIfExists('colaboraciones');
         Schema::connection('sqlite')->dropIfExists('centros');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
@@ -59,6 +61,23 @@ class CentroControllerFeatureTest extends TestCase
 
         $response->assertStatus(302);
         $this->assertNull(DB::table('centros')->where('id', $centroId)->first());
+    }
+
+    public function test_destroy_no_esborra_centre_amb_fct_vinculada(): void
+    {
+        $this->insertProfesor('AD01', config('roles.rol.administrador'));
+        $centroId = $this->insertCentro(99);
+        $colaboracionId = $this->insertColaboracion($centroId);
+        $this->insertFct($colaboracionId);
+
+        $usuario = Profesor::on('sqlite')->findOrFail('AD01');
+        $response = $this
+            ->actingAs($usuario, 'profesor')
+            ->get(route('centro.destroy', ['centro' => $centroId]));
+
+        $response->assertStatus(302);
+        $response->assertRedirect(route('empresa.detalle', ['empresa' => 99]));
+        $this->assertNotNull(DB::table('centros')->where('id', $centroId)->first());
     }
 
     private function createSchema(): void
@@ -104,6 +123,34 @@ class CentroControllerFeatureTest extends TestCase
                 $table->timestamps();
             });
         }
+
+        if (!Schema::connection('sqlite')->hasTable('colaboraciones')) {
+            Schema::connection('sqlite')->create('colaboraciones', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('idCentro');
+                $table->unsignedBigInteger('idCiclo')->nullable();
+                $table->string('contacto')->nullable();
+                $table->string('telefono')->nullable();
+                $table->string('email')->nullable();
+                $table->unsignedInteger('puestos')->default(1);
+                $table->string('tutor')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('fcts')) {
+            Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('idColaboracion')->nullable();
+                $table->string('idInstructor')->nullable();
+                $table->date('desde')->nullable();
+                $table->date('hasta')->nullable();
+                $table->unsignedInteger('horas')->nullable();
+                $table->unsignedTinyInteger('asociacion')->default(1);
+                $table->unsignedTinyInteger('autorizacion')->default(0);
+                $table->unsignedTinyInteger('erasmus')->default(0);
+            });
+        }
     }
 
     private function insertProfesor(string $dni, int $rol): void
@@ -136,5 +183,33 @@ class CentroControllerFeatureTest extends TestCase
             'updated_at' => now(),
         ]);
     }
-}
 
+    private function insertColaboracion(int $centroId): int
+    {
+        return (int) DB::table('colaboraciones')->insertGetId([
+            'idCentro' => $centroId,
+            'idCiclo' => 1,
+            'contacto' => 'Contacte',
+            'telefono' => '965000000',
+            'email' => 'contacte@test.local',
+            'puestos' => 1,
+            'tutor' => 'AD01',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function insertFct(int $colaboracionId): int
+    {
+        return (int) DB::table('fcts')->insertGetId([
+            'idColaboracion' => $colaboracionId,
+            'idInstructor' => null,
+            'desde' => now()->toDateString(),
+            'hasta' => now()->addMonth()->toDateString(),
+            'horas' => 400,
+            'asociacion' => 1,
+            'autorizacion' => 0,
+            'erasmus' => 0,
+        ]);
+    }
+}

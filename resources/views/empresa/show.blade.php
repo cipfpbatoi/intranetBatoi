@@ -206,13 +206,27 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="centro" id="{{$centro->id}}" href="{{ route('centro.edit', ['centro' => $centro->id]) }}">
+                                        <a class="centro"
+                                           id="{{$centro->id}}"
+                                           href="{{ route('centro.edit', ['centro' => $centro->id]) }}"
+                                           data-centro-id="{{ $centro->id }}"
+                                           data-centro-nombre="{{ $centro->nombre }}"
+                                           data-centro-telefono="{{ $centro->telefono }}"
+                                           data-centro-email="{{ $centro->email }}"
+                                           data-centro-horarios="{{ $centro->horarios }}"
+                                           data-centro-observaciones="{{ $centro->observaciones }}"
+                                           data-centro-codi-postal="{{ $centro->codiPostal }}"
+                                           data-centro-direccion="{{ $centro->direccion }}"
+                                           data-centro-localidad="{{ $centro->localidad }}"
+                                           data-centro-idioma="{{ $centro->idioma }}">
                                             <em class="fa fa-edit"></em>
                                         </a>
                                     </li>
                                     <li>
                                         @if ($centro->colaboraciones->count() == 0)
-                                            <a href="{{ route('centro.destroy', ['centro' => $centro->id]) }}">
+                                            <a class="delete-centro"
+                                               href="{{ route('centro.destroy', ['centro' => $centro->id]) }}"
+                                               data-centro-nombre="{{ $centro->nombre }}">
                                                 <em class="fa fa-trash"></em>
                                             </a>
                                         @endif

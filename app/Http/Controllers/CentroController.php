@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
+use Intranet\Entities\Fct;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
@@ -63,7 +64,9 @@ class CentroController extends ModalController
 
 
     /**
-     * @param $id
+     * Esborra un centre de treball si no té FCT vinculades.
+     *
+     * @param int|string $id
      * @throws NotFoundDomainException
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -71,6 +74,13 @@ class CentroController extends ModalController
     {
         $centro = $this->findModelOrFail(Centro::class, $id, 'Centre no trobat', ['centro_id' => $id]);
         $empresa = $centro->idEmpresa;
+
+        if ($this->linkedFctsQuery($centro)->exists()) {
+            Alert::danger("No es pot esborrar el centre de treball perquè té FCT vinculades. Elimina abans les FCT relacionades.");
+            Session::put('pestana',2);
+
+            return $this->showEmpresa($empresa);
+        }
 
         if (isAdmin()) {
             parent::destroy($id);
@@ -95,6 +105,21 @@ class CentroController extends ModalController
         }
         Session::put('pestana',2);
         return $this->showEmpresa($empresa);
+    }
+
+    /**
+     * Construeix la consulta de FCT vinculades a un centre de treball.
+     *
+     * @param Centro $centro
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function linkedFctsQuery(Centro $centro)
+    {
+        return Fct::query()->whereIn('idColaboracion', function ($query) use ($centro) {
+            $query->select('id')
+                ->from('colaboraciones')
+                ->where('idCentro', (int) $centro->id);
+        });
     }
 
     /**

@@ -132,6 +132,34 @@
         }
     }
 
+    function fillCenterModal(data) {
+        setInputValue('idCentro', data.id);
+        setInputValue('nombreCentro', data.nombre);
+        setInputValue('telefonoCentro', data.telefono);
+        setInputValue('emailCentro', data.email);
+        setInputValue('horariosCentro', data.horarios);
+        setInputValue('observacionesCentro', data.observaciones);
+        setInputValue('codiPostalCentro', data.codiPostal);
+        setInputValue('direccionCentro', data.direccion);
+        setInputValue('localidadCentro', data.localidad);
+        setInputValue('idiomaCentro', data.idioma);
+    }
+
+    function centerDataFromButton(button) {
+        return {
+            id: button.getAttribute('data-centro-id') || button.id,
+            nombre: button.getAttribute('data-centro-nombre') || '',
+            telefono: button.getAttribute('data-centro-telefono') || '',
+            email: button.getAttribute('data-centro-email') || '',
+            horarios: button.getAttribute('data-centro-horarios') || '',
+            observaciones: button.getAttribute('data-centro-observaciones') || '',
+            codiPostal: button.getAttribute('data-centro-codi-postal') || '',
+            direccion: button.getAttribute('data-centro-direccion') || '',
+            localidad: button.getAttribute('data-centro-localidad') || '',
+            idioma: button.getAttribute('data-centro-idioma') || ''
+        };
+    }
+
     function getTrimmedAttribute(element, attributeName) {
         return (element.getAttribute(attributeName) || '').trim();
     }
@@ -393,21 +421,13 @@
             if (centroBtn) {
                 event.preventDefault();
                 var centroId = centroBtn.id;
+                fillCenterModal(centerDataFromButton(centroBtn));
                 showModal('AddCenter');
                 setModalTitle('AddCenter', 'Modificar Centre Treball');
 
                 request('GET', '/api/centro/' + centroId, {}, true)
                     .then(function (result) {
-                        setInputValue('idCentro', result.data.id);
-                        setInputValue('nombreCentro', result.data.nombre);
-                        setInputValue('telefonoCentro', result.data.telefono);
-                        setInputValue('emailCentro', result.data.email);
-                        setInputValue('horariosCentro', result.data.horarios);
-                        setInputValue('observacionesCentro', result.data.observaciones);
-                        setInputValue('codiPostalCentro', result.data.codiPostal);
-                        setInputValue('direccionCentro', result.data.direccion);
-                        setInputValue('localidadCentro', result.data.localidad);
-                        setInputValue('idiomaCentro', result.data.idioma);
+                        fillCenterModal(result.data);
                     })
                     .catch(showError);
                 return;

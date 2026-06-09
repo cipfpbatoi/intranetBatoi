@@ -25,6 +25,15 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', function (event) {
+            var centerDeleteButton = event.target.closest('a.delete-centro');
+            if (centerDeleteButton) {
+                var centerName = centerDeleteButton.getAttribute('data-centro-nombre') || '';
+                if (!window.confirm('Vas a borrar el centre de treball: ' + centerName)) {
+                    event.preventDefault();
+                }
+                return;
+            }
+
             var trashIcon = event.target.closest('.fa-trash');
             if (trashIcon) {
                 var data = getInfoAndOption(trashIcon);
