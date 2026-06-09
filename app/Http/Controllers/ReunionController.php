@@ -445,14 +445,6 @@ class ReunionController extends ModalController
         if (!$elemento) {
             throw new NotFoundDomainException("No s'ha trobat la reunió #$id", ['reunion_id' => $id]);
         }
-        if (!$elemento->archivada) {
-            try {
-                $this->ensureLfpRenunciaNotas($elemento);
-            } catch (IntranetException $e) {
-                Alert::warning($e->getMessage());
-                return back();
-            }
-        }
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
@@ -478,40 +470,6 @@ class ReunionController extends ModalController
                 }
             }
         }
-
-        $this->ensureLfpRenunciaNotas($reunion);
-    }
-
-    /**
-     * Comprova que l'acta final LFP tinga totes les notes de mòdul per a renúncies.
-     *
-     * @throws IntranetException
-     */
-    private function ensureLfpRenunciaNotas(Reunion $reunion): void
-    {
-        $faltants = $this->missingNotasRenuncia($reunion);
-        if ($faltants === []) {
-            return;
-        }
-
-        $detall = array_map(
-            static fn (array $item): string => $item['alumno'] . ': ' . implode(', ', $item['modulos']),
-            $faltants
-        );
-
-        throw new IntranetException(
-            "Falten notes de mòdul per a alumnat no apte, amb cessament o amb renúncia: " . implode('; ', $detall)
-        );
-    }
-
-    /**
-     * Retorna llistat d'alumnat no apte, amb cessament o amb renúncia que no té totes les notes de mòdul.
-     *
-     * @return array<int, array{alumno: string, modulos: array<int, string>}>
-     */
-    private function missingNotasRenuncia(Reunion $reunion): array
-    {
-        return $this->feValuations()->missingModuleGrades($reunion);
     }
 
     public function saveFile($id)
