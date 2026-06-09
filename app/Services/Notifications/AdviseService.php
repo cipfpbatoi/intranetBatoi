@@ -4,6 +4,9 @@ namespace Intranet\Services\Notifications;
 
 use Intranet\Services\Notifications\NotificationService;
 
+/**
+ * Envia avisos de domini segons la configuració de destinataris del model.
+ */
 class AdviseService
 {
     protected object $element;
@@ -22,9 +25,12 @@ class AdviseService
         $this->setLink();
     }
 
-    protected static function file(): string
+    /**
+     * Resol el DNI configurat per a un càrrec directiu.
+     */
+    protected static function configuredRole(string $role): ?string
     {
-        return is_file(base_path() . '/config/avisos.php') ? 'avisos.' : 'contacto.';
+        return config("avisos.$role") ?? config("contacto.$role");
     }
 
     protected function getAdvises(): array
@@ -87,7 +93,7 @@ class AdviseService
                 'Creador' =>
                     $this->element->Creador(),
                 'director', 'jefeEstudios', 'secretario', 'orientador', 'vicedirector' =>
-                    config(self::file() . $people),
+                    self::configuredRole($people),
                 'jefeDepartamento' =>
                     $this->element->Profesor->dni ?? authUser()->miJefe,
                 default =>
