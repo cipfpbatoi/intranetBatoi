@@ -42,8 +42,13 @@
 
     .reunion-fe-module-row {
         border-top: 1px solid #eee;
+        display: inline-block;
         margin-top: 10px;
+        margin-right: 12px;
+        min-width: 180px;
         padding-top: 10px;
+        vertical-align: top;
+        width: 220px;
     }
 
     .reunion-fe-module-row label {
