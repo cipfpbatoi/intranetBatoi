@@ -117,7 +117,7 @@ final class DocumentoCrudSchema
             'rol' => ['type' => 'hidden'],
             'ciclo' => ['type' => 'hidden'],
             'detalle' => ['type' => 'textarea'],
-            'curso' => ['disabled' => 'disabled'],
+            'curso' => ['type' => 'text'],
             'grupo' => ['disabled' => 'disabled'],
             'descripcion' => ['type' => 'text'],
             'activo' => ['type' => 'checkbox'],
@@ -133,4 +133,3 @@ final class DocumentoCrudSchema
         return $common;
     }
 }
-

@@ -13,7 +13,7 @@
                     <td>
                         <select name="valoraciones" class="valoraciones">
                             @foreach (config($select) as $index => $value)
-                                @if ($alumno->pivot->capacitats === $index)
+                                @if ((int) $alumno->pivot->capacitats === (int) $index)
                                     <option value="{{ $index }}" selected>{{$value}}</option>
                                 @else
                                     <option value="{{ $index }}" >{{$value}}</option>
