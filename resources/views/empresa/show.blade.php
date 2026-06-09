@@ -57,7 +57,7 @@
         </ul>
         <a href="{{ route('empresa.edit', ['empresa' => $elemento->id]) }}" class="btn btn-success">
             <em class="fa fa-edit m-right-xs"></em>Editar</a>
-        @if (userIsAllow([config('roles.rol.administrador'), config('roles.rol.direccion')]))
+        @if (userIsAllow([config('roles.rol.jefe_practicas'), config('roles.rol.administrador')]))
             <a href="{{ route('empresa.destroy', ['empresa' => $elemento->id]) }}" id='Borrar' class="btn btn-danger">
                 <em class="fa fa-delete m-right-xs"></em>Esborrar</a>
         @endif

@@ -109,8 +109,8 @@ class EmpresaController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('empresa.detalle'));
         $this->panel->setBoton('grid', new BotonImg('empresa.delete', [
             'roles' => [
+                config('roles.rol.jefe_practicas'),
                 config('roles.rol.administrador'),
-                config('roles.rol.direccion'),
             ],
         ]));
      }
