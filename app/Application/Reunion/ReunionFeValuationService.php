@@ -224,9 +224,10 @@ class ReunionFeValuationService
      * Construeix el resum de notes reals introduïdes per a alumnat no apte, amb cessament o amb renúncia.
      *
      * @param string $tutorDni
+     * @param int|null $moduleCourse
      * @return string
      */
-    public function notesSummaryForTutor(string $tutorDni): string
+    public function notesSummaryForTutor(string $tutorDni, ?int $moduleCourse = null): string
     {
         $targetFcts = $this->targetFctsForTutor($tutorDni);
         if ($targetFcts->isEmpty()) {
@@ -234,10 +235,18 @@ class ReunionFeValuationService
         }
 
         $alumnos = $targetFcts->keyBy('idAlumno');
-        $resultados = AlumnoResultado::query()
+        $resultadosQuery = AlumnoResultado::query()
             ->with(['Alumno', 'ModuloGrupo.ModuloCiclo.Modulo'])
             ->whereIn('idAlumno', $alumnos->keys()->all())
-            ->whereIn('nota', $this->numericRealGrades())
+            ->whereIn('nota', $this->numericRealGrades());
+
+        if ($moduleCourse !== null && $moduleCourse > 0) {
+            $resultadosQuery->whereHas('ModuloGrupo.ModuloCiclo', static function ($query) use ($moduleCourse): void {
+                $query->where('curso', (string) $moduleCourse);
+            });
+        }
+
+        $resultados = $resultadosQuery
             ->get()
             ->groupBy('idAlumno');
 
@@ -309,6 +318,7 @@ class ReunionFeValuationService
             ];
         }
 
+        $actaCourse = $this->actaModuleCourse($reunion);
         foreach ($fcts as $fct) {
             $fct->loadMissing('Alumno.Grupo.Modulos.ModuloCiclo.Modulo');
         }
@@ -316,9 +326,21 @@ class ReunionFeValuationService
         $modulesByStudent = collect();
         $moduleIds = collect();
         foreach ($fcts as $fct) {
-            $modules = $fct->Alumno?->Grupo
-                ? $fct->Alumno->Grupo
-                    ->flatMap(static fn ($grupo): Collection => $grupo->Modulos)
+            $studentGroups = $fct->Alumno?->Grupo ?? collect();
+            if ($actaCourse > 0) {
+                $studentGroups = $studentGroups->filter(
+                    static fn (Grupo $grupo): bool => (int) ($grupo->curso ?? 0) === $actaCourse
+                );
+            }
+
+            $modules = $studentGroups->isNotEmpty()
+                ? $studentGroups
+                    ->flatMap(static function (Grupo $grupo) use ($actaCourse): Collection {
+                        return $grupo->Modulos->filter(
+                            static fn (Modulo_grupo $modulo): bool => $actaCourse <= 0
+                                || (int) ($modulo->ModuloCiclo?->curso ?? 0) === $actaCourse
+                        );
+                    })
                     ->unique('id')
                     ->sortBy(static fn (Modulo_grupo $modulo): string => (string) $modulo->Xmodulo)
                     ->values()
@@ -605,7 +627,7 @@ class ReunionFeValuationService
      */
     public function refreshNotesOrder(Reunion $reunion): ?OrdenReunion
     {
-        $summary = $this->notesSummaryForTutor((string) $reunion->idProfesor);
+        $summary = $this->notesSummaryForTutor((string) $reunion->idProfesor, $this->actaModuleCourse($reunion));
         $existing = OrdenReunion::query()
             ->forReunion($reunion->id)
             ->whereIn('descripcion', [
@@ -670,6 +692,19 @@ class ReunionFeValuationService
             self::VALID_REAL_GRADES,
             static fn (int $grade): bool => $grade >= 5 && $grade <= 10
         ));
+    }
+
+    /**
+     * Retorna el curs del grup que correspon a l'acta per a filtrar mòduls.
+     *
+     * @param Reunion $reunion
+     * @return int|null
+     */
+    private function actaModuleCourse(Reunion $reunion): ?int
+    {
+        $course = (int) ($reunion->GrupoClase?->curso ?? 0);
+
+        return $course > 0 ? $course : null;
     }
 
     /**

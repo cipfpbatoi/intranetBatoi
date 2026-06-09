@@ -70,6 +70,7 @@ class ReunionFeValuationServiceTest extends TestCase
             $table->string('nombre')->nullable();
             $table->string('tutor')->nullable();
             $table->unsignedInteger('idCiclo')->nullable();
+            $table->unsignedTinyInteger('curso')->nullable();
         });
         $schema->create('profesores', function (Blueprint $table): void {
             $table->string('dni')->primary();
@@ -314,6 +315,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertNotContains('A7', $data['fcts']->pluck('idAlumno')->all());
         $this->assertCount(1, $data['modulesByStudent']->get('A2'));
         $this->assertTrue($data['results']->has('A2-1'));
+        $this->assertFalse($data['results']->has('A2-2'));
         $this->assertFalse($data['results']->has('A1-1'));
         $this->assertSame(
             [0 => 'No Superat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
@@ -379,6 +381,7 @@ class ReunionFeValuationServiceTest extends TestCase
         $this->assertStringContainsString('Noapta Test, Noa', $summary);
         $this->assertStringContainsString('7', $summary);
         $this->assertStringContainsString('<strong>Noapta Test, Noa</strong><ul><li><strong>Mòdul pràctic</strong>: 7</li></ul>', $summary);
+        $this->assertStringNotContainsString('Mòdul de primer', $summary);
         $this->assertStringNotContainsString('Text anterior', $summary);
     }
 
@@ -595,8 +598,8 @@ class ReunionFeValuationServiceTest extends TestCase
             ['id' => 6, 'idColaboracion' => 2, 'asociacion' => 1],
         ]);
         DB::table('grupos')->insert([
-            ['codigo' => '2LFP', 'nombre' => 'Segon LFP', 'tutor' => 'P1', 'idCiclo' => 100],
-            ['codigo' => '2LOE', 'nombre' => 'Segon LOE', 'tutor' => 'P1', 'idCiclo' => 200],
+            ['codigo' => '2LFP', 'nombre' => 'Segon LFP', 'tutor' => 'P1', 'idCiclo' => 100, 'curso' => 2],
+            ['codigo' => '2LOE', 'nombre' => 'Segon LOE', 'tutor' => 'P1', 'idCiclo' => 200, 'curso' => 2],
         ]);
         DB::table('alumnos')->insert([
             ['nia' => 'A1', 'nombre' => 'Anna', 'apellido1' => 'Apta', 'apellido2' => 'Test'],
@@ -637,16 +640,20 @@ class ReunionFeValuationServiceTest extends TestCase
     {
         DB::table('modulos')->insert([
             ['codigo' => 'M1', 'cliteral' => 'Módulo práctico', 'vliteral' => 'Mòdul pràctic'],
+            ['codigo' => 'M2', 'cliteral' => 'Módulo de primero', 'vliteral' => 'Mòdul de primer'],
         ]);
         DB::table('modulo_ciclos')->insert([
             ['id' => 1, 'idModulo' => 'M1', 'idCiclo' => 100, 'curso' => '2'],
+            ['id' => 2, 'idModulo' => 'M2', 'idCiclo' => 100, 'curso' => '1'],
         ]);
         DB::table('modulo_grupos')->insert([
             ['id' => 1, 'idModuloCiclo' => 1, 'idGrupo' => '2LFP'],
+            ['id' => 2, 'idModuloCiclo' => 2, 'idGrupo' => '2LFP'],
         ]);
         DB::table('alumno_resultados')->insert([
             ['idAlumno' => 'A1', 'idModuloGrupo' => 1, 'nota' => 8],
             ['idAlumno' => 'A2', 'idModuloGrupo' => 1, 'nota' => 6],
+            ['idAlumno' => 'A2', 'idModuloGrupo' => 2, 'nota' => 9],
             ['idAlumno' => 'A4', 'idModuloGrupo' => 1, 'nota' => 5],
             ['idAlumno' => 'A6', 'idModuloGrupo' => 1, 'nota' => 5],
         ]);
