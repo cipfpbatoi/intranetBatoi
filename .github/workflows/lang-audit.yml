@@ -3,13 +3,10 @@ name: Lang Audit
 on:
   pull_request:
     branches:
-      - Laravel12
-      - Laravel13
-      - master
+      - main
   push:
     branches:
-      - Laravel12
-      - Laravel13
+      - main
 
 jobs:
   lang-audit:
