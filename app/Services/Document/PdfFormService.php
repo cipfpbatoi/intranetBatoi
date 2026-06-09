@@ -149,9 +149,9 @@ class PdfFormService
                 continue;
             }
 
-            $fieldName = $this->escapeFdfString((string) $name);
-            $fieldValue = $this->escapeFdfString((string) ($value ?? ''));
-            $fieldEntries[] = "<< /T ({$fieldName}) /V ({$fieldValue}) >>";
+            $fieldName = $this->formatFdfString((string) $name);
+            $fieldValue = $this->formatFdfString((string) ($value ?? ''));
+            $fieldEntries[] = "<< /T {$fieldName} /V {$fieldValue} >>";
         }
 
         $fdf = "%FDF-1.2\n";
@@ -180,6 +180,21 @@ class PdfFormService
         $value = str_replace('\\', '\\\\', $value);
         $value = str_replace('(', '\\(', $value);
         return str_replace(')', '\\)', $value);
+    }
+
+    /**
+     * Formata una cadena FDF preservant accents i caràcters no ASCII.
+     *
+     * @param string $value
+     * @return string
+     */
+    private function formatFdfString(string $value): string
+    {
+        if (preg_match('/^[\x20-\x7E]*$/', $value) === 1) {
+            return '(' . $this->escapeFdfString($value) . ')';
+        }
+
+        return '<FEFF' . strtoupper(bin2hex(mb_convert_encoding($value, 'UTF-16BE', 'UTF-8'))) . '>';
     }
 
     /**
