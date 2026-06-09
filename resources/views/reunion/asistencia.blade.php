@@ -29,50 +29,26 @@
         font-weight: 700;
     }
 
-    .reunion-fe-notes-table-wrapper {
-        overflow-x: auto;
-    }
-
-    .reunion-fe-notes-table {
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .reunion-fe-notes-table th,
-    .reunion-fe-notes-table td {
-        min-width: 180px;
-        vertical-align: top;
-    }
-
-    .reunion-fe-notes-table th:first-child,
-    .reunion-fe-notes-table td:first-child {
-        background: #fff;
-        box-shadow: 6px 0 8px -8px rgba(0, 0, 0, 0.35);
-        left: 0;
-        min-width: 220px;
-        position: sticky;
-        z-index: 2;
-    }
-
-    .reunion-fe-notes-table th:first-child {
-        z-index: 3;
-    }
-
-    .reunion-fe-notes-table.table-striped tr:nth-child(odd) td:first-child {
-        background: #f9f9f9;
-    }
-
-    .reunion-fe-student-row.is-collapsed td:not(:first-child) {
-        display: none;
-    }
-
-    .reunion-fe-row-toggle {
-        margin-bottom: 6px;
-        padding: 1px 6px;
-    }
-
     .reunion-fe-note-observations {
         margin-top: 6px;
+    }
+
+    .reunion-fe-student-panel {
+        border: 1px solid #d9edf7;
+        border-radius: 4px;
+        margin-top: 12px;
+        padding: 12px;
+    }
+
+    .reunion-fe-module-row {
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
+    .reunion-fe-module-row label {
+        display: block;
+        margin-bottom: 4px;
     }
 
     .reunion-fe-exclude-student {
