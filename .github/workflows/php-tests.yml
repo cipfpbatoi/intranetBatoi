@@ -4,11 +4,9 @@ on:
   pull_request:
     branches:
       - main
-      - Laravel13
   push:
     branches:
       - main
-      - Laravel13
 
 jobs:
   feature-tests:
