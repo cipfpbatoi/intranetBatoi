@@ -41,14 +41,14 @@
                                     $alumno = $fct->Alumno;
                                     $studentModules = $feNotesData['modulesByStudent']->get((string) $fct->idAlumno, collect())->pluck('id');
                                 @endphp
-                                <tr class="reunion-fe-student-row">
+                                <tr class="reunion-fe-student-row is-collapsed">
                                     <td>
                                         <button
                                             type="button"
                                             class="btn btn-default btn-xs reunion-fe-row-toggle"
-                                            aria-expanded="true"
+                                            aria-expanded="false"
                                         >
-                                            Plegar
+                                            Desplegar
                                         </button>
                                         <br>
                                         <span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span><br>
