@@ -103,6 +103,20 @@ class EmpresaControllerFeatureTest extends TestCase
         $this->assertNull(DB::table('empresas')->where('id', $empresaId)->first());
     }
 
+    public function test_destroy_esborra_empresa_com_administrador_si_no_te_fct_vinculades(): void
+    {
+        $this->insertProfesor('EMP04', $this->administradorRole());
+        $empresaId = $this->insertEmpresa('Empresa Admin');
+
+        $usuario = Profesor::on('sqlite')->findOrFail('EMP04');
+        $response = $this
+            ->actingAs($usuario, 'profesor')
+            ->get(route('empresa.destroy', ['empresa' => $empresaId]), ['referer' => '/home']);
+
+        $response->assertStatus(302);
+        $this->assertNull(DB::table('empresas')->where('id', $empresaId)->first());
+    }
+
     public function test_detall_empresa_te_controls_de_mapa_per_als_centres(): void
     {
         $showView = file_get_contents(resource_path('views/empresa/show.blade.php'));
@@ -113,7 +127,8 @@ class EmpresaControllerFeatureTest extends TestCase
 
         $this->assertStringNotContainsString("new BotonImg('empresa.edit')", $controller);
         $this->assertStringContainsString("config('roles.rol.jefe_practicas')", $controller);
-        $this->assertStringContainsString("userIsAllow(config('roles.rol.jefe_practicas'))", $showView);
+        $this->assertStringContainsString("config('roles.rol.administrador')", $controller);
+        $this->assertStringContainsString("userIsAllow([config('roles.rol.jefe_practicas'), config('roles.rol.administrador')])", $showView);
         $this->assertStringContainsString('class="mapa-centro"', $showView);
         $this->assertStringContainsString('data-fusion-url="{{ url(\'/api/centro/fusionar\') }}"', $showView);
         $this->assertStringContainsString("empresa.partials.modalMapaCentro", $showView);
@@ -235,13 +250,24 @@ class EmpresaControllerFeatureTest extends TestCase
 
     /**
      * Retorna el rol compost necessari per a passar el middleware de professor
-     * i la policy específica d'administració.
+     * i la policy específica de cap de pràctiques.
      *
      * @return int
      */
     private function capPractiquesRole(): int
     {
         return (int) config('roles.rol.profesor') * (int) config('roles.rol.jefe_practicas');
+    }
+
+    /**
+     * Retorna el rol compost necessari per a passar el middleware de professor
+     * i la policy específica d'administració.
+     *
+     * @return int
+     */
+    private function administradorRole(): int
+    {
+        return (int) config('roles.rol.profesor') * (int) config('roles.rol.administrador');
     }
 
     /**

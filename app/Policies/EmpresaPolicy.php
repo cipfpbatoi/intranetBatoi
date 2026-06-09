@@ -32,7 +32,7 @@ class EmpresaPolicy
     /**
      * Determina si l'usuari pot eliminar una empresa.
      *
-     * L'esborrat queda restringit al cap de pràctiques.
+     * L'esborrat queda restringit al cap de pràctiques i administració.
      *
      * @param mixed $user
      */
@@ -72,6 +72,7 @@ class EmpresaPolicy
 
         $rol = (int) $user->rol;
 
-        return $rol % (int) config('roles.rol.jefe_practicas') === 0;
+        return $rol % (int) config('roles.rol.jefe_practicas') === 0
+            || $rol % (int) config('roles.rol.administrador') === 0;
     }
 }
