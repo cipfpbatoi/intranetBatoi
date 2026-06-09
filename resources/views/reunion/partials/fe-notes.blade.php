@@ -43,6 +43,14 @@
                                 @endphp
                                 <tr class="reunion-fe-student-row">
                                     <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-xs reunion-fe-row-toggle"
+                                            aria-expanded="true"
+                                        >
+                                            Plegar
+                                        </button>
+                                        <br>
                                         <span class="reunion-fe-student-name">{{ $alumno->nameFull ?? $fct->Nombre }}</span><br>
                                         {{ $fct->qualificacio }}
                                         <label class="reunion-fe-exclude-student">
@@ -113,6 +121,19 @@
 
             checkbox.addEventListener('change', updateStudentFields);
             updateStudentFields();
+        });
+
+        document.querySelectorAll('.reunion-fe-row-toggle').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var row = button.closest('.reunion-fe-student-row');
+                if (!row) {
+                    return;
+                }
+
+                var collapsed = row.classList.toggle('is-collapsed');
+                button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                button.textContent = collapsed ? 'Desplegar' : 'Plegar';
+            });
         });
     });
 </script>
