@@ -50,6 +50,17 @@ Cada peça té una **font canònica única** i un lloc físic al repo. Quan l'ag
 
 > **Abans de res, sempre**: completa el [Pre-flight Checklist](../../AGENTS.md#pre-flight-checklist) d'`AGENTS.md` (llig AGENTS.md, identifica el domini i el seu doc, confirma el bounded context, llig la spec si existeix). Si falta una peça, l'agent ha de retornar `Status: need_input`, no suposar.
 
+Traça mínima abans de tocar codi:
+
+```text
+Domini: <FCT|Activitats|UI|Notificacions|...>
+Punt d'entrada: <model|servei|controlador|vista|ruta>
+Docs/specs llegits: <docs/agents/...>, <specs/... si aplica>
+Abast: <canvi concret sol·licitat>
+```
+
+Si el domini té spec però no té mapa dedicat en `docs/agents/`, llig `docs/agents/conventions.md` i la spec corresponent. Si encara no queda clar el bounded context o el comportament esperat, retorna `Status: need_input` amb la peça exacta que falta.
+
 ### Recepta 1: Funcionalitat nova o canvi de comportament
 
 Usa el flux **OpenSpec** (font canònica: [`openspec.md`](openspec.md)). Tres passos amb **aprovació humana** entre cadascun:
