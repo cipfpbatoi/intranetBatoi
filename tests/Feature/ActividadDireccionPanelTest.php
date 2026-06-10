@@ -155,6 +155,15 @@ class ActividadDireccionPanelTest extends TestCase
         $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
+    public function test_mostrar_oculta_justificacio_ra_en_activitats_extraescolars(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->call('mostrar', 4)
+            ->assertSet('selectedActividad.tipo', 'No complementària')
+            ->assertDontSee('Justificació RA');
+    }
+
     public function test_mostrar_usa_el_pivot_per_a_identificar_el_coordinador(): void
     {
         DB::connection('sqlite')->table('profesores')->insert([
