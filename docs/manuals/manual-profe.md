@@ -51,11 +51,11 @@
 ## Entrada
 L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil. Actualment també es pot accedir des de fora del Centre mitjançant l'enllaç que heu rebut al vostre email del Centre.
 
-![login](./img/ajuda/01-login.png)
+![login](../img/ajuda/01-login.png)
 
 Polsem el botó blau de 'Professor' e introduïm l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre -_...@edu.gva.es_-) i la contrasenya (al principi el nostre DNI amb 0 davant i lletra en majúscula però és convenient canviar-ho).
 
-![login professor](./img/ajuda/01-loginprofe.png)
+![login professor](../img/ajuda/01-loginprofe.png)
 
 Si no recordem la contrasenya polsem el botó de '**Canvia Password**' i escrivim el nostre email (de _...@edu.gva.es_) per a rebre un correu amb un enllaç per a posar una nova contrasenya.
 
@@ -66,7 +66,7 @@ Des de qualsevol pàgina podem accedir a aquesta pàgina polsant sobre el nom de
 
 La pàgina d'inici te vàries parts:
 
-<a name="fig2">![Pàgina d'inici](./img/ajuda/04-panel-control.png)
+<a name="fig2">![Pàgina d'inici](../img/ajuda/04-panel-control.png)
 
 1. Nom del Centre: des d'ací tornem a la pàgina d'inici des de qualsevol altra pàgina. A la seua dreta hi ha una icona que ens permet amagar o mostrar la barra lateral dels menús
 2. Menús: ens permeten realitzar qualsevol acció e la intranet. Els veurem en detall més avant
@@ -98,7 +98,7 @@ Quan iniciem sessió en la intranet es fitxa automàticament indicant que estem 
  
 De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). 
  
-![fitxa](./img/ajuda/fitxa.png)
+![fitxa](../img/ajuda/fitxa.png)
  
 Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet (zona 3). 
  
@@ -111,7 +111,7 @@ Per a no haver d'obrir el email cada vegada en el mòbil el més senzill és gua
 ### Notificacions
 En la zona 4 trobem una icona amb un sobre i el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si l'alumnat se'n van a fer una activitat extraescolar, si hi ha una reunió de departament, si no hem fixat un dia, ...
 
-![Notificacions](./img/ajuda/05-btnNotificacions.png)
+![Notificacions](../img/ajuda/05-btnNotificacions.png)
 
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
  
@@ -123,7 +123,7 @@ Des d'ací tenim accés a informació i documentació general del Centre.
 ### Programacions
 Ací trobem totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
 
-![Programacions](./img/ajuda/09-programacions.png)
+![Programacions](../img/ajuda/09-programacions.png)
 
 Per a veure la programació desitjada polsem el botó de la cadena que trobem a la dreta. Si es tracta d'una programació nostra també ens apareix un botó per a editar les seues dades (mòdul a que correspon, any, ...).
 
@@ -133,7 +133,7 @@ Ací és on podem trobar documents generals del centre com:
 * Justificants d'assistència per a l'alumnat o per als pares
 * Calendari escolar
 * Plànols del centre
-* [Esquema de la BBDD (HTML)](./bbdd-esquema.html)
+* [Esquema de la BBDD (HTML)](../architecture/bbdd-esquema.md)
 * ...
 
 Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professorat, Tutor/a, Cap de departament, …). A cada usuari només l'apareixeran les pestanyes referents al seu rol.
@@ -148,12 +148,12 @@ Ací trobem totes les actes ordenades per pestanyes:
 * Claustres
 * ...
 
-![Actes](./img/ajuda/acta.png)
+![Actes](../img/ajuda/acta.png)
 
 ### Projectes
 Ací trobem els projectes presentats per l'alumnat del cicles de grau superior en el mòdul de 'Projecte' que els seus tutors i tutores han pujat a la intranet. 
 
-![Projectes](./img/ajuda/proyecto.png)
+![Projectes](../img/ajuda/proyecto.png)
 
 
 ## Menú 'Docència'
@@ -163,13 +163,13 @@ On fer les accions més habituals que fa el professorat:
 Ens mostra tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
 
 Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada polsant sobre el títol de la columna.
-![Grups](./img/ajuda/09-grupos.png)
+![Grups](../img/ajuda/09-grupos.png)
 
 Les opcions que tenim per a qualsevol grup són:
 * Imprimir full de fotos: mostra el llistat de l'alumnat del grup amb foto.
 * Horari del grup.
 * Vore alumnat: apareix el llistat de l'alumnat del grup. El podem veure com a llistat o mosaic.  
-![GestGrupVeureAl](./img/ajuda/gestiog_vorealumnat.png)
+![GestGrupVeureAl](../img/ajuda/gestiog_vorealumnat.png)
 
 Amb l'opció **llistat** tenim la llista de l'alumnat del grup i amb el botó **+** podem veure algunes dades personals de l'alumnat.
 Amb l'opció **mosaic** apareixen les dades personals de l'alumnat en forma de fitxa. 
@@ -184,7 +184,7 @@ Amb el perfil de tutor/a del grup, a més, podem:
 
 ### Claustre
 
-![Claustre](./img/ajuda/07-miDep.png)
+![Claustre](../img/ajuda/07-miDep.png)
 
 Podem veure a tot el professorat del claustre i comprovar si estan ara o no en el Centre i on es poden trobar (segons el seu horari). A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
 * rellotge: en blau vol dir que s'està en el Centre i en roig que no.
@@ -202,7 +202,7 @@ Disposem de la mateixa informació que en el [claustre](#claustre) però de l'eq
 ### Guàrdia
 Ens permet signar les guàrdies del nostre horari i incloure comentaris:
 
-![Signar guàrdia](./img/ajuda/14-guardia.png)
+![Signar guàrdia](../img/ajuda/14-guardia.png)
 
 Només podem signar les guàrdies del dia actual, encara que es pot modificar el camp de comentari personal de guàrdies ja passades, principalment per a indicar per quin motiu no es va fer una guàrdia.
 
@@ -213,7 +213,7 @@ Els camps que hi ha són:
 
 Trobem dos botons:
 
-![Botons Guàrdia](./img/ajuda/botonsguardia.png)
+![Botons Guàrdia](../img/ajuda/botonsguardia.png)
 
 El botó **Control Personal** l'utilitzarem per a veure les absències del personal del Centre eixe dia (comissions de serveis, extraescolars, baixes...).
 El botó **Guardar** l'utilitzarem per a guardar els canvis.
@@ -228,7 +228,7 @@ Si per algun motiu no ho hem fet (se'ns ha oblidat marcar-la o no l'hem feta per
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
 
-![Seguiments](./img/ajuda/10-seguiments.png)
+![Seguiments](../img/ajuda/10-seguiments.png)
 
 Per a pujar un nou seguiment polsem el botó '**Crea resultats per un grup**' de la part superior i introduïm les dades:
 * Grup, mòdul i avaluació
@@ -276,7 +276,7 @@ Quan creem un nou expedient hem d'indicar l'alumne, el tipus d'expedient i una e
 * Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
 * Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
-![Expedients](./img/ajuda/expediente.png)
+![Expedients](../img/ajuda/expediente.png)
 
 Una vegada fet un expedient el podem eliminar o editar però l'expedient **no es tramita fins que ho enviem a direcció** (icona del sobre). A partir d'eixe moment direcció te conenxement de l'expedient i contactarà amb nosaltres per a fer els tràmits necessaris (com informar oficialment a l'alumne en cas de perdua de l'avaluació contínua, etc).
 
@@ -284,16 +284,16 @@ Una vegada fet un expedient el podem eliminar o editar però l'expedient **no es
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
 
 * Llistat
-![Activitats extraescolars](./img/ajuda/12-actExtr-listado.png)
+![Activitats extraescolars](../img/ajuda/12-actExtr-listado.png)
 
 * Mosaic
 
-![Activitats extraescolars](./img/ajuda/12-actExtr-mosaico.png)
+![Activitats extraescolars](../img/ajuda/12-actExtr-mosaico.png)
 
 En cada activitat hi ha vàries operacions que podem fer:
 
 * Detall activitat: permet afegir o eliminar professors i grups participants. Pot fer-ho qualsevol professor participant. També podem canviar el coordinador de l'activitat
-![Activitats extraescolars - detall](./img/ajuda/12-actExtr-detalle.png)
+![Activitats extraescolars - detall](../img/ajuda/12-actExtr-detalle.png)
 
 * Modificar activitat: permet canviar les dades com el seu nom, las dates o els comentaris
 * Enviar per a autoritzar: s'envia a caporalia l'activitat per a que l'autoritzen
@@ -305,7 +305,7 @@ En cada activitat hi ha vàries operacions que podem fer:
 Els pasos a fer són:
 
 1. Polsar el botó **'Alta activitat'** i omplir els camps del formulari, es pot indicar si es fora el centre, requereix transport, decripció, etc.:
-![Alta activitat extraescolar](./img/ajuda/12-actExtr-alta.png)
+![Alta activitat extraescolar](../img/ajuda/12-actExtr-alta.png)
 2. Polsar sobre **'Detall activitat'** per a indicar els professors i grups participants
 3. Polsar sobre **'Enviar l'activitat per a autoritzar'**. 
 4. Polsar sobre **'Imprimir autorització menors'** i imprimir les autoritzacions per als alumnes menors d'edat (no apareix fins que s'envia per autoritzar)
@@ -315,7 +315,7 @@ Una activitat **NO ES POT REALITZAR** fins que no estiga autoritzada.
 
 ### Comissions de servei
 Aquest apartat ens permet gestionar totes les comisions per visites de FCT, viatges, etc.
-![Comissió de servei](./img/ajuda/13-comisions.png)
+![Comissió de servei](../img/ajuda/13-comisions.png)
 
 A la part dreta del llistat tenim les operacions que podem fer amb cada comissió:
 
@@ -343,11 +343,11 @@ No podem modificar ni anul·lar comisions cobrades ni pendents de cobrament.
 
 #### Alta nova comissió
 Polsem el botó 'Sol·licitud autorització comissió de servei' i omplim el formulari:
-![Alta Comissió de servei](./img/ajuda/13-comissions-alta.png)
+![Alta Comissió de servei](../img/ajuda/13-comissions-alta.png)
 
 Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) ens apareix un avís en el que se'ns informa si volem comunicar-ho formalment a Direcció i que s'envien els correus electrónics a les persones implicades. Si polsem que **SÍ** automàticament es comunicarà a direcció de la mateixa forma que si haguerem polsat la icona de Enviar/Tramitar (la icona del sobre). Si polsem que **NO** es guardarà com a un esborrany per a ser posteriorment modificat, pero no estarà tramitat de forma oficial a direcció. Posteriorment podria enviar-se polsant la icona de Enviar (icona del sobre).
 
-![Confirma enviar direcció](./img/ajuda/confirma-enviar-direccio.png)
+![Confirma enviar direcció](../img/ajuda/confirma-enviar-direccio.png)
 
 Ara, depenent de quina opció havem triat, podrem borrar-la, modificar-la o enviar-la per autoritzar.
 
@@ -356,7 +356,7 @@ Aquesta aplicació ens permet informar a Caporalia de qualsevol absència i just
 
 Si sabem prèviament que hem de faltar un dia, abans d'eixe dia entrem ací i polsem sobre 'Comunicació d'Absència Profesorat'. Si la falta és imprevista (malaltia, etc) quan tornem al Centre després de haver faltat fem el mateix.
 
-![Alta absència](./img/ajuda/14-ausencia-alta.png)
+![Alta absència](../img/ajuda/14-ausencia-alta.png)
 
 El que em d'omplir en el formulari és:
 
@@ -377,11 +377,11 @@ El que em d'omplir en el formulari és:
 
 Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) ens apareix un avís en el que se'ns informa si volem comunicar-ho formalment a Direcció i que s'envien els correus electrónics a les persones implicades. Si polsem que **SÍ** automàticament es comunicarà a direcció de la mateixa forma que si haguerem polsat la icona de Enviar/Tramitar (la icona del sobre). Si polsem que **NO** es guardarà com a un esborrany per a ser posteriorment modificat, pero no estarà comunicat de forma oficial a direcció. Posteriorment podria enviar-se polsant la icona de Enviar (icona del sobre).
 
-![Comunicar absencia direccio](./img/ajuda/confirma-enviar-direccio2.png)
+![Comunicar absencia direccio](../img/ajuda/confirma-enviar-direccio2.png)
 
 Les absències donades d'alta es poden visualitzar en format de **Llistat** o **Mosaic** polsant en les pestanyes de dalt a la dreta. Una vegada donada d'alta una absència, el podem eliminar o editar però l'expedient **no es tramita fins que ho enviem a direcció** (icona del sobre). 
 
-![Absències registrades](./img/ajuda/13-ausencia.png)
+![Absències registrades](../img/ajuda/13-ausencia.png)
 
 
 Amb les absències donades d'alta podem fer:
@@ -398,7 +398,7 @@ Una vegada resolta es pot consultar el doument justificatiu adjuntat i no es pot
 ### Gestió d'incidències
 Utilitzem la intranet per a gestionar les incidències que es produeixen en el centre (amb les instal·lacions, preblemes informàtics, ...). Ací trobem totes les incidències que hem obert i el seu estat:
 
-![Incidències](./img/ajuda/16-incidencies.png)
+![Incidències](../img/ajuda/16-incidencies.png)
 
 També tenim un botó per a obrir una nova incidència que li arribarà al responsable de resoldre-la. Els tipus d'incidències que tenim són:
 * Instal·lacions: fontaneria, electricitat, fusteria, obra, estors, cristaleria, etc
@@ -408,7 +408,7 @@ També tenim un botó per a obrir una nova incidència que li arribarà al respo
 
 Quan obrim una nova incidència hem d'indicar el seu tipus i a més:
 
-![Nova incidència](./img/ajuda/nova-incidencia.png)
+![Nova incidència](../img/ajuda/nova-incidencia.png)
 
 * Espai: en quin espai (quina aula, taller, etc) s'ha produit la incidència
 * Material: si hem triat espai ací ens apareixen tots els materials inventariats en eixe espai per a triar-lo. Si no està o no és algo inventariable ho deixarem en blanc i ho especificarem en l'apartat de '_descripció_'
@@ -422,13 +422,13 @@ Aquesta incidència es crea amb estat de **'Pendent'**.
 ### Reserva aules
 Permet a qualsevol professor reservar un espai, com un aula d'informàtica o el Saló d'actes, per a fer en ell qualsevol activitat (un examen, una xarrada, …).
 
-![Reserves](./img/ajuda/14-reservas.png)
+![Reserves](../img/ajuda/14-reservas.png)
 
 Al seleccionar l'espai i la data apareix a cada hora si l'espai està lliure o reservet i per qui.
 
 Per a reservar un espai seleccionem al quadre **TICKET** per a aconseguir un "ticket" de reserva. Cal que emplenem desde quina hora fins quan volem fer la reserva i polsem el botó 'Reservar'.
 
-![Reservar aula](./img/ajuda/14-reservar.png)
+![Reservar aula](../img/ajuda/14-reservar.png)
 
 Si hi ha alguna hora ja reservada dins de l'interval que hem indicat la reserva fallarà.
 
@@ -439,14 +439,14 @@ No es pot reservar un espai amb més de 30 dies d'antelació.
 ### Oblit birret
 Aquesta opció es per justificar si em oblidar marcar el birret a Ítaca. Indiquem quin dia s'hem oblidat de marcar i ens apareixeran totes les hores que hem impartit eixe dia. A la columna 'Estava al centre' s'indica si eixe dia hem fitxat a la Intranet.
 
-![Birret](./img/ajuda/20-birret.png)
+![Birret](../img/ajuda/20-birret.png)
 
 A continuació seleccionen totes les hores que hem oblidat marcar el birret, indiquem la causa en el quadre de "_Justificació_" i premem el botó _Enviar_.
 
 ### Canviar horari
 Aquesta opció només està disponible poc abans d'acabar les classes els grups de segon. Ens permet canviar el nostre horari a partir de Març per a recol·locar les hores que alliberem de 2n. Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem:
 
-![Canviar-horari](./img/ajuda/cambiarHorarioUp.png)
+![Canviar-horari](../img/ajuda/cambiarHorarioUp.png)
 
 Per començar hem de polsar el botó '**Iniciar procediment**' i a partir d'eixe moment ja podem arrastrar hores del nostre horari. **ATENCIÓ**: si tornes a polsar aquest botó el teu horari es torna a quedar com estava i es perden els canvis que hages fet
  
@@ -454,7 +454,7 @@ NOTA: no s'ha de posar cap hora en les hores del pati o migdia
 
 Podem fer canvis totes les vegades que vulguem fins que el nou horari siga aprovat per _Caporalia_. Recorda omplir el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades. Per a que es guarden els canvis haurem de premer el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. 
 
-![Canviar-horari](./img/ajuda/cambiarHorarioDown.png)
+![Canviar-horari](../img/ajuda/cambiarHorarioDown.png)
 
 Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
 
@@ -464,7 +464,7 @@ Ací tenim els documents relacionats amb la qualitat així com les diferents enq
 ### Resultats
 Des d'ací podem accedir als resultats de les diferents enquestes passades al nostre alumnat:
 
-![Enquestes](./img/ajuda/enquestes.png)
+![Enquestes](../img/ajuda/enquestes.png)
 
 En cada enquesta tenim botons per a vore les dades i els resultats.
 
@@ -480,9 +480,9 @@ Ací trobem informació sobre les reunions de tot tipus i els Grups de treball a
 ### Gestió de reunions
 Ens apareixen totes les reunions a les que ens han convocat (Claustre, Departament, Equip docent, Grup de treball, ...) i podem veure l'acta de cadascuna d'elles des del botó 'Imprimir'.
 
-![Gestió de reunions](./img/ajuda/15-reunio.png)
+![Gestió de reunions](../img/ajuda/15-reunio.png)
 
-Per a vore com crear una nova reunió pots consultar-ho en el [Manual del tutor](../manual-tutor.html#nova-reunió).
+Per a vore com crear una nova reunió pots consultar-ho en el [Manual del tutor](./manual-tutor.md#nova-reunió).
 
 ### Grups de treball
 Des d'ací podem veure els nostres grups de treball o crear un nou grup.
@@ -499,7 +499,7 @@ En aquest apartat veurem altres eines que ens proporciona la intranet.
 ### Taules amb informació
 En moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles podem fer:
 
-![Treballar amb taules de dades](./img/ajuda/30-taula.png)
+![Treballar amb taules de dades](../img/ajuda/30-taula.png)
 
 1. **Mostrar**: per defecte es mostren 25 registres per pàgina i des d'ací podem canviar-ho
 2. **Filtrar**: filtra la taula per la paraula/paraules que posem ací. Mostrará només els registres que contenen eixa paraula en qualsevol camp
@@ -516,7 +516,7 @@ Des del botó de 'Editar perfil' podem canviar algunes opcions com:
 - el idioma per defecte de la intranet
 - el nostre correu electrònic
 
-![Editar perfil](./img/ajuda/08-perfil-modificar.png)
+![Editar perfil](../img/ajuda/08-perfil-modificar.png)
 
 #### Fitxers personals
 Des d'ací podem pujar la nostra foto de perfil a intranet, i a més podem estabir altres opcions com:
@@ -525,4 +525,4 @@ Des d'ací podem pujar la nostra foto de perfil a intranet, i a més podem estab
 - **Peu email**: ací podem pujar una imatge que s'inclourà en els emails que s'envien a alumnes i empreses (per a la FCT)
 - **Certificat Digital**: podem pujar el nostre certificat digital per a signar la documentació de les FCT (útil per als tutors de FCT)
 
-![Fitxers personals](./img/ajuda/08-fitxers-personals.png)
+![Fitxers personals](../img/ajuda/08-fitxers-personals.png)

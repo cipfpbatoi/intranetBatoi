@@ -188,7 +188,7 @@ En el xml de Itaca per a la primera importació han d'estar les següents taules
 
 Les importacions es fan des del menú **Administració -> Importació des de Itaca**. Al ser la primera cal marcar la casella '_Hi ha professors amb horari nou (no és substitut)_'.
 
-![Importar dades itaca](./img/ajuda/setupImportItaca1a-1.png)
+![Importar dades itaca](../img/ajuda/setupImportItaca1a-1.png)
 
 A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Enviar'.
 
@@ -245,7 +245,7 @@ smtp.gmail.com:intranet@gmail.com:abcd@1234
 
 Per a finalitzar hem de configurar el compte de GMail per a permetre a exim eixir. Es fa des de **GMail -> Configuració -> Compte -> Configuració del compte de Google -> Inici de sessió i seguretat -> Aplicacions amb accés al compte -> Permet l'accés a les aplicacions menys segures** i ACTIVEM aquesta opció:
 
-![Activar compte Google](./img/ajuda/exim-google.png)
+![Activar compte Google](../img/ajuda/exim-google.png)
 
 Podem conprovar que funciona correctament enviant un e-mail des de la terminal:
 ```bash

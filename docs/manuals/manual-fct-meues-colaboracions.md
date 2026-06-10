@@ -20,7 +20,7 @@ Cada pestanya presenta, a la part de dalt, una serie de botons amb accions. Ixem
 
 ## Que signifiquen totes les dades que hi ha en una col·laboració.
 
-Per ordre a l'esquerra apareix: ![colaboracio](./img/fct/02-profile-colaboracio.png)
+Per ordre a l'esquerra apareix: ![colaboracio](../img/fct/02-profile-colaboracio.png)
 
 * Nom centre treball (ordenats alfabèticament)
   * Número de conveni i si està actualitzat (ditet)
@@ -40,9 +40,9 @@ Per ordre a l'esquerra apareix: ![colaboracio](./img/fct/02-profile-colaboracio.
 Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
 Un cuadrat de color roig significa que l'empresa no vol col·laborar enguany.
 
-![solicitud](./img/ajuda/fct_solicitud_practiques.PNG)
+![solicitud](../img/ajuda/fct_solicitud_practiques.PNG)
 
-![llistat](./img/ajuda/fct_seleccio_elements.PNG)
+![llistat](../img/ajuda/fct_seleccio_elements.PNG)
 
 Una vegada feta la selecció podrem editar el cos del correu que per defecte es el següent:
 

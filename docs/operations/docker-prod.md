@@ -14,7 +14,7 @@ Els fitxers base del repositori són:
 
 ## Què canvia respecte a desenvolupament
 
-En desenvolupament, [`docker-compose.yml`](/Users/arturo/Documents/desarrollo/intranetBatoi/docker-compose.yml) munta el repositori complet com a volum (`.:/var/www/html`). En producció o preproducció, [`docker-compose.prod.yml`](/Users/arturo/Documents/desarrollo/intranetBatoi/docker-compose.prod.yml) usa una imatge publicada i només munta els elements que han de persistir o injectar-se en runtime:
+En desenvolupament, [`docker-compose.yml`](../../docker-compose.yml) munta el repositori complet com a volum (`.:/var/www/html`). En producció o preproducció, [`docker-compose.prod.yml`](../../docker-compose.prod.yml) usa una imatge publicada i només munta els elements que han de persistir o injectar-se en runtime:
 
 - el fitxer `.env`
 - la carpeta `storage`
@@ -70,8 +70,8 @@ La carpeta `storage/` ha de persistir entre desplegaments perquè conté logs, f
 
 No s'ha de copiar mai el `.env` dins de la imatge. En este projecte, això es reforça de dues maneres:
 
-- [`.dockerignore`](/Users/arturo/Documents/desarrollo/intranetBatoi/.dockerignore) exclou `.env*` i només permet `.env.example`
-- [`docker-compose.prod.yml`](/Users/arturo/Documents/desarrollo/intranetBatoi/docker-compose.prod.yml) munta `./.env:/var/www/html/.env`
+- [`.dockerignore`](../../.dockerignore) exclou `.env*` i només permet `.env.example`
+- [`docker-compose.prod.yml`](../../docker-compose.prod.yml) munta `./.env:/var/www/html/.env`
 
 Abans de publicar una imatge convé revisar:
 

@@ -6,7 +6,7 @@
 
 <br />
 
-   ![fct1](./img/ajuda/01.png)
+   ![fct1](../img/ajuda/01.png)
    
    **Captura 1**
 
@@ -14,7 +14,7 @@
 
    I quan estiguem dins veurem el següent:
 
-   ![fct2](./img/ajuda/02.png)
+   ![fct2](../img/ajuda/02.png)
 
    **Captura 2**
 
@@ -50,19 +50,19 @@
          * Imprimit informe de competències adquirides
 
 
-   ![fct6](./img/ajuda/06.jpg) Amb aquesta icona podem seleccionar l’idioma que volem que tinga tot el que veiem a la pantalla.
+   ![fct6](../img/ajuda/06.jpg) Amb aquesta icona podem seleccionar l’idioma que volem que tinga tot el que veiem a la pantalla.
 
-   ![fct7](./img/ajuda/07.jpg)
+   ![fct7](../img/ajuda/07.jpg)
 
-   ![fct8](./img/ajuda/08.jpg) Amb aquesta icona accedim a aquesta ajuda.
+   ![fct8](../img/ajuda/08.jpg) Amb aquesta icona accedim a aquesta ajuda.
 
-   ![fct9](./img/ajuda/09.jpg) Amb aquesta icona es tanca tot el contingut de la pantalla. Si fem això hem de tornar a accedir a la part d’FCT igual que ho hem fet des de la (Captura 1).
+   ![fct9](../img/ajuda/09.jpg) Amb aquesta icona es tanca tot el contingut de la pantalla. Si fem això hem de tornar a accedir a la part d’FCT igual que ho hem fet des de la (Captura 1).
 
    A la (Captura 2) veiem una sèrie de botons amb fons blau. D'esquerra a dreta tenim:
 
-   ![fct10](./img/ajuda/10.jpg) Este botó és per a la creació d’una FCT a la intranet. La pantalla que vorem és la següent (Captura 4).
+   ![fct10](../img/ajuda/10.jpg) Este botó és per a la creació d’una FCT a la intranet. La pantalla que vorem és la següent (Captura 4).
 
-   ![fct11](./img/ajuda/11.jpg) 
+   ![fct11](../img/ajuda/11.jpg) 
    
    **Captura 4**
 
@@ -78,7 +78,7 @@
 
    <br />
 
-   ![fct12](./img/ajuda/12.jpg)
+   ![fct12](../img/ajuda/12.jpg)
 
    **Captura 5**
 
@@ -86,7 +86,7 @@
 
    El camp (Data d'inici) té una icona amb forma de calendari i és on s'ha de dir la data de començament de les pràctiques. A aquest camp tenim dues opcions per introduir les dates. O bé s'escriu a mà o bé es polsa damunt de la icona de calendari , es desplega el mes y any actuals i es selecciona la data que volem. Veure la (Captura 6).
 
-   ![fct13](./img/ajuda/13.jpg)
+   ![fct13](../img/ajuda/13.jpg)
 
    **Captura 6**
 
@@ -96,12 +96,12 @@
 
    Finalment, el camp (Hores) s'usa per a escriure el nombre d'hores de durada de l'FCT. Els botons roig i verd de la part inferior esquerra són per guardar la informació introduïda (Guardar) o (Cancelar) si el que volem és esborrar tot el que s'ha introduït.
 
-   ![fct14](./img/ajuda/14.jpg) Aquest és el segon botó blau d'esquerra a dreta de la (Captura 2).
+   ![fct14](../img/ajuda/14.jpg) Aquest és el segon botó blau d'esquerra a dreta de la (Captura 2).
 
    Aquest botó serveix per a indicar al sistema si tenim algun alumne o alumna que està exempte de realitzar les FCT. La pantalla que veem quan polsem eixe botó és:
    <br />
 
-   ![fct15](./img/ajuda/15.jpg)
+   ![fct15](../img/ajuda/15.jpg)
 
    **Captura 7**
 
@@ -111,7 +111,7 @@
 
    Els botons roig i verd de la part inferior esquerra són (Cancelar) si el que volem és esborrar tot el que hem introduït al formulari i tornar a la pantalla anterior, i per guardar la informació introduïda polsarem en (Guardar).
 
-   ![fct16](./img/ajuda/16.jpg)  Aquest és el tercer botó blau d'esquerra a dreta de la (Captura 2).
+   ![fct16](../img/ajuda/16.jpg)  Aquest és el tercer botó blau d'esquerra a dreta de la (Captura 2).
 
    Quan polsem al botó (x Empresa), la nova pantalla ens mostra el llistat d'FCTs actives ordenades alfabèticament per nom d'empresa (Captura 8).
 
@@ -119,7 +119,7 @@
 
    El botó de la Captura anomenat (x Alumne/a) torna a la pantalla de la (Captura 2) i ens mostra la llista d'FCTs actives ordenades alfabèticament per alumne/a.
 
-   ![fct17](./img/ajuda/17.jpg)
+   ![fct17](../img/ajuda/17.jpg)
 
    **Captura 8**
 
@@ -131,7 +131,7 @@
 
    La pantalla que apareix quan polsem a aquesta opció té el següent aspecte:
 
-   ![fct18](./img/ajuda/18.jpg)
+   ![fct18](../img/ajuda/18.jpg)
 
    **Captura 9**
 
@@ -143,7 +143,7 @@
 
    El pdf generat té el següent aspecte:
 
-   ![fct19](./img/ajuda/19.jpg)
+   ![fct19](../img/ajuda/19.jpg)
 
    **Captura 10**
 
@@ -155,7 +155,7 @@
 
    Quan polsem en el botó (Confirmar) es genera un pdf com el següent:
 
-   ![fct20](./img/ajuda/20.jpg)
+   ![fct20](../img/ajuda/20.jpg)
 
    **Captura 11**
 
@@ -169,7 +169,7 @@
 
    Quan polsem damunt d'aquesta opció, ens apareix una pantalla com la de la (Captura 9) perquè seleccionem l'alumnat que volem convocar i una vegada polsem en el botó (Confirmar) es generarà un pdf com el següent:
 
-   ![fct21](./img/ajuda/21.jpg)
+   ![fct21](../img/ajuda/21.jpg)
 
    **Captura 12**
 
@@ -181,7 +181,7 @@
 
    **Imprimeix Full de Vacances:** aquesta és l'última opció de les que apareixen a la pantalla de la (Captura 2). Igual que s'ha operat amb l'anterior opció, quan polsem damunt apareix una pantalla igual que la (Captura 9) a on es seleccionarà l'alumnat del qual es vol generar el pdf i polsarem damunt del botó (Confirmar). El pdf generat té el següent aspecte:
 
-   ![fct22](./img/ajuda/22.jpg)
+   ![fct22](../img/ajuda/22.jpg)
 
    **Captura 13**
 
@@ -195,7 +195,7 @@
 
    Per una banda, tenim la següent llista desplegable:
 
-   ![fct23](./img/ajuda/23.jpg)
+   ![fct23](../img/ajuda/23.jpg)
 
    **Captura 14**
 
@@ -205,7 +205,7 @@
 
    Per l’altra banda, tenim el següent quadre de text anomenat “Filtrar”.
 
-   ![fct24](./img/ajuda/24.jpg)
+   ![fct24](../img/ajuda/24.jpg)
 
    **Captura 15**
 
@@ -217,7 +217,7 @@
 
    <br />
 
-   ![fct25](./img/ajuda/25.jpg)
+   ![fct25](../img/ajuda/25.jpg)
 
    **Captura 16**
 
@@ -239,7 +239,7 @@
 
    <br />
 
-   ![fct26](./img/ajuda/26.jpg)
+   ![fct26](../img/ajuda/26.jpg)
 
    **Captura 17**
 

@@ -22,7 +22,7 @@
 
 
 ## Introducció
-Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el [manual del professor](./manual-profe.html).
+Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el [manual del professor](./manual-profe.md).
 
 L'accés a la intranet és igual per a tots els professors i és el sistema qui detecta quin és el seu rol (professor, tutor, cap de departament, …) i mostra les opcions adequades en cada cas.
 
@@ -48,14 +48,14 @@ També tenim l¡opció de vore els alumnes en **_Mosaic_** en compte de en _Llis
 
 Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
 
-![Nou expedient reunió](img/tutor/07-nou-expedient.png)
+![Nou expedient reunió](../img/tutor/07-nou-expedient.png)
 
 ### Remissió a Orientació
 Des d'ací podem derivar alumnes per a que siguen tractats pel departament d'Orientació. Per a cada alumne creem un 'Qüestionari de derivació' on indiquem el motiu i l'orientador responsable esposarà en contacte en el tutor o directament en l'alumne.
 
 En la taula podem vore totes les derivacions fetes i el resultat de les mateixes.
 
-![Remissió a Orientació](img/tutor/orientacio .png)
+![Remissió a Orientació](../img/tutor/orientacio.png)
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
@@ -82,24 +82,24 @@ Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els c
 * objectius de la reunió (camp opcional)
 * espai on es celebrarà la reunió
 
-![Nova reunió](img/tutor/01-nova-reunio.png)
+![Nova reunió](../img/tutor/01-nova-reunio.png)
 
 Una vegada guardada la reunió ja podem completar l'ordre del dia i els participants:
 
-![Acta reunió](img/tutor/02-acta-reunio.png)
+![Acta reunió](../img/tutor/02-acta-reunio.png)
 
 Per defecte ja apareix un ordre del dia de la reunió del qual podem llevar qualsevol punt i afegir punts nous.
 
 També apareixen ja seleccionats els professors participants: tots els de l'equip educatiu.
 
-![Nova reunió](img/tutor/03-profes-reunio.png)
+![Nova reunió](../img/tutor/03-profes-reunio.png)
 
 Igualment podem afegir o eliminar professors participants.
 
 ### Gestionar les reunions
 Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on podem:
 
-![Reunions](img/tutor/04-reunions.png)
+![Reunions](../img/tutor/04-reunions.png)
 
 * imprimir: s'imprimeix la convocatòria en PDF
 * editar: tornem a la finestra d'edició per a modificar qualsevol cosa
@@ -110,7 +110,7 @@ Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on pod
 ### Acta de la reunió
 Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l'_**Ordre del dia**_ polsem en cada punt el botó d'_Editar_ (l'últim) i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió. Quan acabes d'escriure en eixe recuadre és **MOLT IMPORTANT polsar la icona _V_** de la dreta per a guradar els canvis o **_X_** per a cancel·lar-los (si no polses es cancel·laran).
 
-![Acta reunió](img/tutor/05-omplir-acta-reunio.png)
+![Acta reunió](../img/tutor/05-omplir-acta-reunio.png)
 
 Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als participants o enviar-los l'acta. En aquest cas l'avís els indicarà que ja està l'acta disponible per a que la puguen veure.
 
@@ -127,7 +127,7 @@ Hem d'omplir els camps amb les dades del projecte:
 * Fitxer: podem pujar un únic fitxer (si són més els comprimirem prèviament per a tindre només un) polsant en el botó de triar fitxer
 etiquetes: podem asociar al projecte tantes etiquetes com vulgam. Per a crear cada etiqueta la escribim ací dins i polsem Intro.
 
-![Nou projecte](img/tutor/06-nou-projecte.png)
+![Nou projecte](../img/tutor/06-nou-projecte.png)
 
 ## Menú 'Tutor'
 Aquest menú només els apareix als tutor i inclou la majoria d'accions específiques per a ells.
@@ -138,13 +138,13 @@ Apareixen els seguiments que hagen omplit tots els professors de l'equip educati
 ### Tutories
 Ací apareixen totes les tutories que ompli el departament d'orientació. 
 
-![Tutories](img/tutor/08-tutories.png)
+![Tutories](../img/tutor/08-tutories.png)
 
 De cada una podem:
 * Veure el fitxer: podem veure la tutoria que han fet des del departament d'orientació
 * Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris. És important omplir això en sugeriments o millores per a que des del departament d'Orientació puguen saber cóm ha funcionat la tutoria
 
-![Nova tutoria](img/tutor/09-tutoria-crear.png)
+![Nova tutoria](../img/tutor/09-tutoria-crear.png)
 
 ## Menú 'Pràctiques'
 Aquest menú només els apareix als tutors de 2n curs per a gestionar les FCT tal i com s'explica en el [manual de FCT](./manual-fct.md)
@@ -158,20 +158,20 @@ Des d'aquest menú busquem la empresa. Si la empresa ja està ens hem d'asegurar
 
 Si la empresa no està donada de alta la donem nosaltres des de 'Nova empresa':
 
-![Nova empresa](img/tutor/10-nova-empresa.png)
+![Nova empresa](../img/tutor/10-nova-empresa.png)
 
 Ací omplim les dades excepte el fitxer de l'Annex I (a la part inferior). Quen tinguem l'annex I signat per l'empresa l'escanejarem i el pujarem ací per a que es quede guardat.
 
 Una vegada creada es fa automàticament la col·laboració amb el nostre cicle. 
 
-![Col·laboracions](img/tutor/11-colaboraciones.png)
+![Col·laboracions](../img/tutor/11-colaboraciones.png)
 
 Una vegada afegida l'empresa la intranet ens dona automàticament un número de concert per a l'empresa. Aquest número és el que utilitzem per a apuntar-la en el llibre d'empreses del departament de FCT i per al SAO.
 
 Si posterioment l'empresa ha de acogir alumnes de qualsevol altre cicle afegirem una nova col·laboració per a eixe cicle des d'ací:
 
-![Nova col·laboració](img/tutor/12-nova-colaboracio.png)
-![Nova col·laboració](img/tutor/13-nova-colaboracio-ii.png)
+![Nova col·laboració](../img/tutor/12-nova-colaboracio.png)
+![Nova col·laboració](../img/tutor/13-nova-colaboracio-ii.png)
 
 ### Centres de treball
 Una col.laboració no es vincula a una empresa sinó a un centre de treball. Una empresa pot tindre varios centres de treballs. Per defecte una empresa té un centre de treball que concidix amb les dades de l'empresa. Si calen més s'han de donar d'alta de la mateixa forma que s'ha fet amb les col.laboracions.
@@ -179,7 +179,7 @@ Una col.laboració no es vincula a una empresa sinó a un centre de treball. Una
 ### FCTs
 Quan ja existeix l'empresa i la col·laboració amb el nostre cicle ja podem crear la nova FCT des del menú FCTs amb el botó 'Nova FCT':
 
-![Nova FCT](img/tutor/14-nova-fct.png)
+![Nova FCT](../img/tutor/14-nova-fct.png)
 
 Una vegada guardada podem esborrar-la, editar-la o imprimir els certificats una vegada acabades les pràctiques.
 
