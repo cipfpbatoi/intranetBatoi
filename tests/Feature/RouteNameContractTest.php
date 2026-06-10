@@ -43,4 +43,15 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/actividadorientacion/create', route('actividad.storeOrientacion', absolute: false));
         $this->assertSame('/autorizacion/12345678A/actividad/1', route('actividad.menor.autorizacion', ['nia' => '12345678A', 'id' => 1], false));
     }
+
+    public function test_rutes_de_lot_de_direccio_accepten_modal_i_legacy(): void
+    {
+        $this->assertSame('/direccion/lote/create', route('direccion.lote.store', absolute: false));
+        $this->assertSame('/direccion/lote', route('direccion.lote.store.rest', absolute: false));
+        $this->assertSame('/direccion/lote/2026-2-10/edit', route('direccion.lote.update', ['id' => '2026-2-10'], false));
+
+        $this->assertContains('POST', Route::getRoutes()->getByName('direccion.lote.store')->methods());
+        $this->assertContains('POST', Route::getRoutes()->getByName('direccion.lote.store.rest')->methods());
+        $this->assertContains('PUT', Route::getRoutes()->getByName('direccion.lote.update')->methods());
+    }
 }
