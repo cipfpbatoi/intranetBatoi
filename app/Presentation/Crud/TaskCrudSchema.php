@@ -58,7 +58,7 @@ final class TaskCrudSchema
     public const RULES = [
         'descripcion' => 'required|max:100',
         'vencimiento' => 'required|date',
+        'enlace' => 'nullable|max:2048',
         'destinatario' => 'required|numeric',
     ];
 }
-
