@@ -155,6 +155,49 @@ class ActividadDireccionPanelTest extends TestCase
         $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
+    public function test_mostrar_usa_el_pivot_per_a_identificar_el_coordinador(): void
+    {
+        DB::connection('sqlite')->table('profesores')->insert([
+            'dni' => 'ACT050',
+            'nombre' => 'Marta',
+            'apellido1' => 'Andreu',
+            'apellido2' => 'Gil',
+            'email' => 'act050@test.local',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::connection('sqlite')->table('actividades')->insert([
+            'id' => 5,
+            'name' => 'Taller valorat',
+            'tipo_actividad_id' => 7,
+            'descripcion' => 'Activitat amb diversos participants',
+            'extraescolar' => 1,
+            'desde' => '2026-03-25 09:00:00',
+            'hasta' => '2026-03-25 12:00:00',
+            'complementaria' => 0,
+            'fueraCentro' => 1,
+            'transport' => 0,
+            'objetivos' => null,
+            'idDocumento' => null,
+            'estado' => 4,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::connection('sqlite')->table('actividad_profesor')->insert([
+            ['idActividad' => 5, 'idProfesor' => 'ACT050', 'coordinador' => 0],
+            ['idActividad' => 5, 'idProfesor' => 'ACT200', 'coordinador' => 1],
+        ]);
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->call('mostrar', 5)
+            ->assertSet('selectedActividad.coordinador', 'Anna Soler Lopez');
+    }
+
     private function direccionUser(): Profesor
     {
         return Profesor::on('sqlite')->findOrFail('DIR001');
