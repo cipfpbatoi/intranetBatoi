@@ -78,14 +78,14 @@ Namespace: `Intranet\Http\Controllers\API`. Autenticació via Sanctum. Intercanv
 
 ### Frontend
 
-- Laravel Mix (`webpack.mix.js`): `resources/assets/js` + `resources/assets/sass` → `public/`.
-- Bootstrap 4 + tema admin Gentelella + Vue 2 (widgets datepicker/select) + Livewire 3.
+- Vite (`vite.config.mjs`, plugin `laravel-vite-plugin`): entrades a `resources/assets/js` (`app.js`, `legacy-app.js`, `fichar-app.js`, `ppIntranet.js`) i `resources/assets/sass/app.scss`.
+- Bootstrap 5 + Vue 3 + Livewire 3.
 - Vistes Blade: `resources/views/`; layouts: `resources/views/layouts`; partials: `resources/views/intranet/partials`.
 
 ## Ordres de compilació, test i desenvolupament
 
 - `composer install` per a dependències PHP (copia `.env.example`, executa `php artisan key:generate` després de clonar).
-- Frontend: `npm install`; `npm run dev` compila una vegada, `npm run watch` recompila en cada canvi, `npm run production` genera bundles minificats (`NODE_OPTIONS=--openssl-legacy-provider`).
+- Frontend: `npm install`; `npm run dev` arranca el servidor Vite amb HMR, `npm run build` (o `npm run production`) genera els bundles de producció.
 - `php artisan serve` arrenca l'app; `php artisan migrate --seed` prepara la BD.
 - Tests amb `phpunit` o `php artisan test`; usa `--filter` per a apuntar casos concrets.
 - Scripts Composer: `composer test:focus`, `composer test:quick` (Expediente|Empresa|Comision), `composer test:full`, `composer test:auth-migration`, `composer dusk:local`.
@@ -98,7 +98,7 @@ Namespace: `Intranet\Http\Controllers\API`. Autenticació via Sanctum. Intercanv
 - PSR-12: indentació de 4 espais, noms de mètode clars; sufixa les classes amb `Controller`, `Job`, `Event`, `Policy` on escaiga.
 - Tota classe modificada o nova ha d'incloure/actualitzar blocs `phpDoc` (`/** ... */`) per a la classe i els mètodes/propietats rellevants.
 - Prefereix layouts/components Blade a `resources/views/layouts` i `resources/views/components`; manté les cadenes de text a `resources/lang`.
-- Mantén JS/SCSS modular dins `resources/assets`; alinea els noms de classe amb el marcat Blade i afig nous punts d'entrada a `webpack.mix.js` quan calga.
+- Mantén JS/SCSS modular dins `resources/assets`; alinea els noms de classe amb el marcat Blade i afig nous punts d'entrada a `vite.config.mjs` quan calga.
 - Alertes: `use Intranet\Services\UI\AppAlert as Alert;` (no `Styde\Html\Facades\Alert`).
 - No dupliques lògica si ja existeix a `Application/*`, `Services/*`, `Finders/*` o `Presentation/*`.
 
