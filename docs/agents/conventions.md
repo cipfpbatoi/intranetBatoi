@@ -5,7 +5,7 @@
 - `app/` conté domini, serveis, controladors, policies, finders i helpers.
 - `routes/` està separat per rol: `public.php`, `todos.php`, `profesor.php`, `alumno.php`, `direccion.php`, `administrador.php`, `conserge.php`, `mantenimiento.php`, `jefeDpto.php`; API en `routes/api.php`.
 - `resources/views/` conté Blade. Plantilles de correu en `resources/views/email/`.
-- Assets en `resources/assets/js` i `resources/assets/sass`, compilats amb Laravel Mix.
+- Assets en `resources/assets/js` i `resources/assets/sass`, compilats amb Vite (`vite.config.mjs`).
 - Migracions i seeders en `database/`; tests en `tests/Feature` i `tests/Unit`.
 - Paquets i extensions locals en `packages/` i `plugins/`.
 

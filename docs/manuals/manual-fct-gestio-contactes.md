@@ -48,9 +48,9 @@ Per ordre a l'esquerra apareix:
 Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
 Un cuadrat de color roig significa que l'empresa no vol col·laborar enguany.
 
-![solicitud](./img/ajuda/fct_solicitud_practiques.PNG)
+![solicitud](../img/ajuda/fct_solicitud_practiques.PNG)
 
-![llistat](./img/ajuda/fct_seleccio_elements.PNG)
+![llistat](../img/ajuda/fct_seleccio_elements.PNG)
 
 Una vegada feta la selecció podrem editar el cos del correu que per defecte es el següent:
 
@@ -126,11 +126,11 @@ Salutacions cordials de Ignasi Gomis
 
 L'us d'aquest botó d'inici es queda enregistrat en cada una de les fitxes de les empreses amb l'aparició de la següent icona:
 
-![bandera](./img/ajuda/bandera_inici.PNG)
+![bandera](../img/ajuda/bandera_inici.PNG)
 
 En aquest moment de les FCT hem de fer servir el botó **Documentació alumnat** que envía un correu a l'alumne/a en el que se li informa de la data d'inici de les FCT i de la asegurança. **L'enviament d'aquest correu no es veu reflectit a les fitxes de les empreses però sens envia també al nostre correu personal, així queda constància de que s'ha enviat**. La següent imatge mostra el contingut d'aquest correu:
 
-![documentacio](./img/ajuda/documentacio_fct_alumne.PNG)
+![documentacio](../img/ajuda/documentacio_fct_alumne.PNG)
 
 
 Una volta iniciada la FCT farem servir el botó **Seguiment** per tal d'enviar correus automàtics als instructors per tal de demanar-los informació. S'envía el següent text:
@@ -149,7 +149,7 @@ Salutacions cordials de Ignasi Gomis
 
 L'enviament de cada correu queda registrat en la corresponent Fitxa del contacte amb un sobre. Inicialment aquesta icona apareix amb un **-** que indica que no hem aportat retroalimentació de la comunicació. Per tal d'aportar la retroalimentació, premem sobre el text amb la data i s'ens obri un formulari. Una vegada aportada la retroalimentació, la icona pasa a ser un **+** tal com es mostra en la següent imatge. 
 
-![correu_retro](./img/ajuda/correu_fct_retroalimentacio.png)
+![correu_retro](../img/ajuda/correu_fct_retroalimentacio.png)
 
 Si necessitem editar o consultar la retroalimentació aportada podem premer de nou sobre la data.
 
@@ -167,7 +167,7 @@ Salutacions cordials de Ignacio Pérez
 **IMPORTANT:**
 L'enviament del correu **Concertar visita** no genera cap nova icona a la fitxa del contacte. En cas d'acordar una data per tal de fer la visita serà necessari tramitar una **comissió de servei** i es aquest tràmit el que genera la corresponent icona. El comportament d'aquesta icona es anàloga a la del sobre. Ens permet aportar una retroalimentació de la reunió:
 
-![visita_retroalimentacio](./img/ajuda/comissio_servei_fct_retroalimentacio.png)
+![visita_retroalimentacio](../img/ajuda/comissio_servei_fct_retroalimentacio.png)
 
 
 Durant el període d'FCT hem de citar als alumnes per a que acudisquen al centre, aço ho fem amb el botó **Citar alumnes** que envia un correu als alumnes amb el següent text:
@@ -179,8 +179,8 @@ Salutacions cordials de Ignacio Pérez
 
 Per finalitzar, una vegada iniciada la FCT, en cada Fitxa de contacte trobem la icona del teléfon que ens permet registrar una conversació telefónica amb l'instructor:
 
-![telefon](./img/ajuda/telefon_fct.PNG)
+![telefon](../img/ajuda/telefon_fct.PNG)
 
 Aquesta icona permet registrar una cridada de telèfon. El comportament es exactament el mateix que el de les icones del sobre i el vehícle, possibilitant el registre de informació de retroalimentació.
 
-![telefon_retro](./img/ajuda/telefon_retroalimentacio.png)
+![telefon_retro](../img/ajuda/telefon_retroalimentacio.png)

@@ -7,7 +7,7 @@
 ## Context i Rol
 
 Ets un desenvolupador PHP/Laravel expert en el projecte intranetBatoi.
-Namespace arrel: `Intranet\`. Stack: Laravel, Blade, Bootstrap 4, Livewire 3.
+Namespace arrel: `Intranet\`. Stack: Laravel, Blade, Bootstrap 5, Livewire 3.
 Llegeix `AGENTS.md` i `docs/agents/conventions.md` abans de generar res.
 
 ## Tasca

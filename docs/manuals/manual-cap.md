@@ -29,24 +29,24 @@ Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els c
 * objectius de la reunió (camp opcional)
 * espai on es celebrarà la reunió
 
-![Nova reunió](img/tutor/01-nova-reunio.png)
+![Nova reunió](../img/tutor/01-nova-reunio.png)
 
 Una vegada guardada la reunió ja podem completar l'ordre del dia i els participants:
 
-![Nova reunió](img/tutor/02-acta-reunio.png)
+![Nova reunió](../img/tutor/02-acta-reunio.png)
 
 Per defecte ja apareix un ordre del dia de la reunió del qual podem llevar qualsevol punt i afegir punts nous.
 
 També apareixen ja seleccionats els professors participants: tots els de l'equip educatiu.
 
-![Nova reunió](img/tutor/03-profes-reunio.png)
+![Nova reunió](../img/tutor/03-profes-reunio.png)
 
 Igualment podem afegir o eliminar professors participants.
 
 ### Gestionar les reunions
 Una vegada creada la reunió ens apareix en el llistat de reunions des d'on podem fer:
 
-![Nova reunió](img/tutor/04-reunions.png)
+![Nova reunió](../img/tutor/04-reunions.png)
 
 * imprimir: s'imprimeix la convocatòria en PDF
 * editar: tornem a la finestra d'edició per a modificar qualsevol cosa
@@ -57,7 +57,7 @@ Una vegada creada la reunió ens apareix en el llistat de reunions des d'on pode
 ### Acta de la reunió
 Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l''Ordre del dia' polsem en cada punt el botó d'Editar i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió
 
-![Nova reunió](img/tutor/05-omplir-acta-reunio.png)
+![Nova reunió](../img/tutor/05-omplir-acta-reunio.png)
 
 Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als participants o enviar l'acta. En aquest cas l'avís els indicarà que ja està l'acta disponible per a que la puguen veure.
 
@@ -69,7 +69,7 @@ Aquest menú només els apareix als caps de departament i inclou les accions esp
 ### Autoritzar programacions
 Des d'ací els caps autortzaran totes les programacions del seu departament. 
 
-![Nova reunió](img/tutor/01-cap-programacions-mant.png)
+![Nova reunió](../img/tutor/01-cap-programacions-mant.png)
 
 Les programacions poden estar en un d'aquests 3 estats:
 * Pendent: el professor ha pujat la programació però encara està per revisar

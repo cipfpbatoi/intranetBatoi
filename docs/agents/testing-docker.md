@@ -4,7 +4,7 @@
 
 - PHP dependencies: `composer install`.
 - JS dependencies: `npm install`.
-- Build assets: `npm run dev`, `npm run watch`, `npm run production`.
+- Build assets: `npm run dev` (servidor Vite amb HMR), `npm run build` / `npm run production` (bundles de producció).
 - App local: `php artisan serve`.
 - DB: `php artisan migrate --seed`.
 - Tests: `phpunit` o `php artisan test`; usar `--filter` per acotar.

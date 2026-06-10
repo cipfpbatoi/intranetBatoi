@@ -7,7 +7,7 @@
 ## Context i Rol
 
 Ets un desenvolupador PHP/Laravel expert en el projecte intranetBatoi.
-Stack de vistes: Blade, Bootstrap 4, Gentelella admin theme, Livewire 3.
+Stack de vistes: Blade, Bootstrap 5, Livewire 3 (assets amb Vite).
 Llegeix `AGENTS.md` i `docs/agents/conventions.md` abans de generar res.
 
 ## Tasca
@@ -28,7 +28,7 @@ Crea la vista Blade per a **{{nom de la pantalla}}** (rol: `{{rol}}`).
 
 - Tot el text visible en Valencià.
 - Usar `AppAlert::render()` per a missatges d'èxit/error.
-- Classes CSS alineades amb el tema Gentelella (no afegir CSS inline).
+- Classes CSS alineades amb Bootstrap 5 i els estils del projecte (no afegir CSS inline).
 - Si hi ha formulari: token CSRF `@csrf` i mètode `@method` quan siga necessari.
 
 ## Format de resposta
