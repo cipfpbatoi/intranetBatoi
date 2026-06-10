@@ -14,14 +14,17 @@ Completa estos passos **abans d'escriure codi**. Si en falta algun, retorna `Sta
   - Activitats → [`docs/agents/activitats/activitats-map.md`](docs/agents/activitats/activitats-map.md)
   - UI/graelles → [`docs/agents/ui/grid-datatables.md`](docs/agents/ui/grid-datatables.md)
   - Notificacions/correu → [`docs/agents/notificacions/notificacions-map.md`](docs/agents/notificacions/notificacions-map.md)
+  - Dominis sense mapa dedicat (`comisions`, `guardies`, `horaris`, etc.) → llegir [`docs/agents/conventions.md`](docs/agents/conventions.md), la spec de domini corresponent si existeix i retornar `Status: need_input` si encara falta context de domini.
 - [ ] Confirmar el bounded context: quin model/servei/controlador és el punt d'entrada.
-- [ ] Si existeix un `spec.md` per al domini a [`specs/`](specs/), llegir-lo abans d'implementar.
+- [ ] Si existeix una spec per al domini a [`specs/`](specs/), llegir-la abans d'implementar.
+- [ ] Declarar la traça mínima abans de tocar codi: `Domini`, `Punt d'entrada`, `Docs/specs llegits` i `Abast`.
 
 ## Regles d'execució
 
 - Detecta l'stack aplicable (PHP/Laravel, Blade, Livewire, API Sanctum). Si és ambigu, fes **una sola pregunta** concreta; no suposies.
+- Si la petició és una funcionalitat nova o un canvi de comportament, usa el flux OpenSpec (`propose → apply → archive`) i no escrigues codi en `propose`.
 - Prioritza `docs/agents/` sobre el codi llegat quan hi haja conflicte de patrons.
-- Si hi ha un `spec.md` per al domini, implementa estrictament el que descriu; no afegisques comportament no especificat.
+- Si hi ha una spec per al domini, implementa estrictament el que descriu; no afegisques comportament no especificat.
 - **Regla de les 3 vegades**: si una norma apareix en >3 prompts, pertany ací (AGENTS.md) o a `docs/agents/<domini>.md`.
 - **Menys és més**: proporciona la informació mínima vital per a la tasca; no bolques tot el context.
 - No implementes res fora de l'abast: sense refactors no sol·licitats, sense noves funcionalitats adjacents.
