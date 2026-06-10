@@ -6,7 +6,11 @@
         @php($teHtmlControlat = $item === 'FullName' && isset($elemento->incidenciaFullName))
         @php($valor = $teHtmlControlat ? $elemento->incidenciaFullName : rescue(fn() => $elemento->$item, ''))
         @php($valorRetallat = $teHtmlControlat ? $valor : in_substr($valor, $long))
-        <td>
+        @php($ordreData = null)
+        @if (is_string($valor) && preg_match('/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/', trim($valor), $parts))
+            @php($ordreData = $parts[3] . '-' . $parts[2] . '-' . $parts[1])
+        @endif
+        <td @if($ordreData) data-order="{{ $ordreData }}" @endif>
             <span class="input" name="{{ $item }}">
                 @if (!empty($elemento->leido) && !$elemento->leido)
                     <strong>{!! $teHtmlControlat ? $valorRetallat : e($valorRetallat) !!}</strong>
