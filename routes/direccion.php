@@ -82,7 +82,9 @@ Route::resource('/lote', 'LoteController', [
         'edit' => 'direccion.lote.edit',
     ],
 ]);
+Route::post('/lote', ['as' => 'direccion.lote.store.rest','uses'=> 'LoteController@store']);
 Route::post('/lote/create', ['as' => 'direccion.lote.store','uses'=> 'LoteController@store']);
+Route::put('/lote/{id}/edit', ['as' => 'direccion.lote.update','uses'=> 'LoteController@update']);
 Route::get('/lote/{id}/print/{posicion?}', ['as' => 'direccion.lote.print','uses' => 'LoteController@print']);
 Route::get('/lote/{id}/capture', ['as' => 'direccion.lote.capture','uses' => 'LoteController@capture']);
 Route::post('/lote/{id}/capture', ['as' => 'direccion.lote.capture.post','uses' => 'LoteController@postcapture']);
