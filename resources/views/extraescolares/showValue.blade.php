@@ -38,7 +38,10 @@
             </ul>
         </div>
         <div style="display: inline-block;width: 70%;margin-right:30px;float: right">
-            <strong>Descripció:</strong><br/><em style="font-size: smaller">{{$Actividad->descripcion}}</em><br/>
+            <strong>Descripció de l'activitat:</strong><br/><em style="font-size: smaller">{{$Actividad->descripcion}}</em><br/>
+            @if ($Actividad->complementaria)
+                <strong>Justificació RA:</strong><br/><em style="font-size: smaller">{{$Actividad->tipoActividad->justificacio ?? '-'}}</em><br/>
+            @endif
             <strong>Objectius:</strong><br/><em style="font-size: smaller">{{$Actividad->objetivos}}</em><br/>
             <strong>Comentaris:</strong><br/><em style="font-size: smaller">{{$Actividad->comentarios}}</em><br/>
         </div>

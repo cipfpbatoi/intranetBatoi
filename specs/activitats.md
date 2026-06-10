@@ -69,9 +69,25 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 **When** sol·licita el PDF  
 **Then** es genera un PDF usant `resources/views/pdf/extraescolars.blade.php` amb les dades correctes
 
+### Escenari 9: Mostrar justificació RA només en complementàries ✅
+
+**Given** que una activitat té un tipus amb `tipo_actividad.justificacio`
+**When** es mostra el detall o la valoració de l'activitat
+**Then**
+- La justificació RA prové de `tipo_actividad.justificacio`
+- Les activitats complementàries poden mostrar `Justificació RA`
+- Les activitats extraescolars no mostren `Justificació RA`
+
+### Escenari 10: Evitar etiquetes ambigües en PDFs d'activitats ✅
+
+**Given** que direcció genera el PDF/listat d'activitats extraescolars
+**When** es renderitza la columna de descripció
+**Then** la columna es mostra com `Descripció` i no com `Descripció/Justificació`
+
 ## Regles de negoci invariants
 
 - `complementaria` i `extraescolar` (llegat) no són el mateix camp; no intercanviar sense migració.
 - `transport = 1` és incoherent si `fueraCentro = 0`; normalitzar o rebutjar.
 - Les activitats complementàries mostren RA; les extraescolars, no.
+- La justificació RA és `tipo_actividad.justificacio`; `actividades.descripcion` és descripció general.
 - El coordinador sempre es determina per `actividad_profesor.coordinador = 1`, mai per posició.
