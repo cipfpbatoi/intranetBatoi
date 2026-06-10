@@ -12,7 +12,6 @@ Intranet del CIP FP Batoi. Documentació organitzada per tipus (alta cohesió, b
 | [`operations/`](operations/) | Setup, desplegament, Docker, Dusk |
 | [`manuals/`](manuals/) | Manuals d'usuari per rol |
 | [`archive/`](archive/) | Sprints tancats, migracions, estudis històrics |
-| [`incidencies/`](incidencies/) | Incidències actives |
 
 ## Accés ràpid
 

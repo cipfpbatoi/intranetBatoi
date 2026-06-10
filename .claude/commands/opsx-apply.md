@@ -1,6 +1,6 @@
 # /opsx-apply — Implementa la spec aprovada
 
-> **Adaptador de Claude Code.** Font canònica del flux: [`docs/agents/openspec.md`](../../../docs/agents/openspec.md) § **Pas 2 — apply**. Este fitxer només afig el *glue* de Claude.
+> **Adaptador de Claude Code.** Font canònica del flux: [`docs/agents/openspec.md`](../../docs/agents/openspec.md) § **Pas 2 — apply**. Este fitxer només afig el *glue* de Claude.
 
 **Pas 2 del flux OpenSpec.** Segueix les instruccions de `docs/agents/openspec.md` § Pas 2.
 

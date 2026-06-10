@@ -1,6 +1,6 @@
 # /opsx-propose — Analitza i proposa una especificació
 
-> **Adaptador de Claude Code.** Font canònica del flux: [`docs/agents/openspec.md`](../../../docs/agents/openspec.md) § **Pas 1 — propose**. Este fitxer només afig el *glue* de Claude (trigger slash + `$ARGUMENTS`).
+> **Adaptador de Claude Code.** Font canònica del flux: [`docs/agents/openspec.md`](../../docs/agents/openspec.md) § **Pas 1 — propose**. Este fitxer només afig el *glue* de Claude (trigger slash + `$ARGUMENTS`).
 
 **Pas 1 del flux OpenSpec.** Segueix les instruccions de `docs/agents/openspec.md` § Pas 1, aplicades al requeriment:
 

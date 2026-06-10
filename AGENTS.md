@@ -171,6 +171,6 @@ Plantilles per a tasques repetides (regla de les 3 vegades). Índex: [`prompts/R
 
 Les instruccions (fluxos, criteris, coneixement) viuen **una sola vegada** en una font canònica agnòstica (`docs/`, `specs/`, `prompts/`). Els fitxers de cada motor són **adaptadors prims** que només afigen el seu *glue* i apunten a eixa font. Detall i taula: [`docs/agents/tetris.md`](docs/agents/tetris.md) § «regla de l'adaptador prim».
 
-- **Codex**: skills a `.codex/skills/` (`intranet-batoi-general`, `intranet-batoi-fct`, `intranet-batoi-activitats`, `openspec`).
+- **Codex**: skills a `.codex/skills/` (una per domini de `docs/agents/` + `openspec`; la llista vigent és el contingut del directori).
 - **Claude Code**: slash commands a `.claude/commands/` (`opsx-propose`, `opsx-apply`, `opsx-archive`, `ia-review`).
 - **Altres** (Cursor, etc.): poden llegir les fonts canòniques directament.
