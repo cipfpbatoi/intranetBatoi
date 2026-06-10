@@ -326,7 +326,7 @@ class PanelFctAvalController extends IntranetController
                 [
                     'img' => 'fa-hand-o-up',
                     'title' => 'Marcar com a apte amb hores pendents',
-                    'onclick' => "if (!confirm('Aquesta FCT encara té hores pendents de sincronitzar amb SAO. Vols marcar-la com a apta igualment?')) { return false; } this.href += (this.href.indexOf('?') === -1 ? '?' : '&') + 'confirmar_hores=1'; return true;",
+                    'onclick' => "if (!confirm(" . json_encode($this->aptePendingHoursConfirmMessage(), JSON_UNESCAPED_UNICODE) . ")) { return false; } this.href += (this.href.indexOf('?') === -1 ? '?' : '&') + 'confirmar_hores=1'; return true;",
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
@@ -447,7 +447,7 @@ class PanelFctAvalController extends IntranetController
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
         if ($fct->requereix_confirmacio_apte && request('confirmar_hores') !== '1') {
             Alert::message(
-                "Aquesta FCT encara té {$fct->hores_pendents_sao} hores pendents de sincronitzar amb SAO. Confirma explícitament l'aprovat per continuar.",
+                $this->aptePendingHoursAlertMessage($fct),
                 'warning'
             );
 
@@ -457,6 +457,31 @@ class PanelFctAvalController extends IntranetController
         $this->avals()->apte((int) $id);
 
         return back();
+    }
+
+    /**
+     * Missatge del diàleg per a FCT amb hores pendents de sincronitzar.
+     *
+     * @return string
+     */
+    private function aptePendingHoursConfirmMessage(): string
+    {
+        return "Aquesta FCT encara té hores pendents de sincronitzar. "
+            . "Si vols actualitzar-les abans, cancel·la i ves a l'opció de sincronització d'hores de la intranet. "
+            . "Si continues, marcaràs l'FCT com a apta amb les hores registrades ara mateix.";
+    }
+
+    /**
+     * Missatge de fallback quan es prova d'aprovar sense confirmació explícita.
+     *
+     * @param AlumnoFct $fct
+     * @return string
+     */
+    private function aptePendingHoursAlertMessage(AlumnoFct $fct): string
+    {
+        return "Aquesta FCT encara té {$fct->hores_pendents_sao} hores pendents de sincronitzar. "
+            . "Pots anar a l'opció de sincronització d'hores de la intranet abans d'aprovar-la. "
+            . "Si vols continuar igualment, confirma explícitament l'aprovat i es guardaran les hores registrades ara mateix.";
     }
 
     /**

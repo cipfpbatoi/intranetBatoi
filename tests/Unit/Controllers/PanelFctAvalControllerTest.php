@@ -41,6 +41,34 @@ class PanelFctAvalControllerTest extends TestCase
         $this->assertSame('G2LFP', $grupo?->codigo);
     }
 
+    public function test_missatge_confirmacio_apte_amb_hores_pendents_orienta_sense_alarmar(): void
+    {
+        $controller = (new ReflectionClass(PanelFctAvalController::class))->newInstanceWithoutConstructor();
+
+        $message = $this->invokePrivate($controller, 'aptePendingHoursConfirmMessage');
+
+        $this->assertStringContainsString('hores pendents de sincronitzar', $message);
+        $this->assertStringContainsString("opció de sincronització d'hores de la intranet", $message);
+        $this->assertStringContainsString('cancel·la', $message);
+        $this->assertStringContainsString('Si continues', $message);
+        $this->assertStringContainsString('hores registrades ara mateix', $message);
+    }
+
+    public function test_missatge_fallback_apte_amb_hores_pendents_inclou_hores_i_opcio_sincronitzar(): void
+    {
+        $controller = (new ReflectionClass(PanelFctAvalController::class))->newInstanceWithoutConstructor();
+        $fct = new AlumnoFct();
+        $fct->horas = 20;
+        $fct->realizadas = 8;
+
+        $message = $this->invokePrivate($controller, 'aptePendingHoursAlertMessage', [$fct]);
+
+        $this->assertStringContainsString('12 hores pendents de sincronitzar', $message);
+        $this->assertStringContainsString("opció de sincronització d'hores de la intranet", $message);
+        $this->assertStringContainsString('confirma explícitament', $message);
+        $this->assertStringContainsString('hores registrades ara mateix', $message);
+    }
+
     private function makeAlumnoFctWithoutCicle(string $normativa): AlumnoFct
     {
         return $this->makeAlumnoFctWithGroups([
