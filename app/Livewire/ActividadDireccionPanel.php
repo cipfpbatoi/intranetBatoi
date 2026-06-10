@@ -287,12 +287,14 @@ class ActividadDireccionPanel extends Component
                 return [
                     'dni' => (string) $profesor->dni,
                     'nom' => $label,
+                    'coordinador' => (bool) ($profesor->pivot->coordinador ?? false),
                     'teHorariDocent' => $grupsAfectats !== [],
                     'grupsAfectats' => $grupsAfectats,
                 ];
             })
             ->filter(fn (array $profesor): bool => $profesor['nom'] !== '')
             ->values();
+        $coordinador = $profesores->firstWhere('coordinador', true);
         $grups = $actividad->grupos
             ->map(fn ($grup) => (string) ($grup->nombre ?? $grup->codigo ?? ''))
             ->filter()
@@ -311,7 +313,7 @@ class ActividadDireccionPanel extends Component
             'tipoActividad' => (string) ($actividad->tipoActividad->vliteral ?? '-'),
             'justificacioRa' => (string) ($actividad->tipoActividad->justificacio ?? ''),
             'departamento' => (string) ($actividad->tipoActividad->departamento ?? 'CENTRE'),
-            'coordinador' => $profesores->first()['nom'] ?? 'Sense assignar',
+            'coordinador' => $coordinador['nom'] ?? 'Sense assignar',
             'profesores' => $profesores->pluck('nom')->all(),
             'participants' => $profesores->all(),
             'grups' => $grups->all(),
