@@ -45,7 +45,9 @@ Route::get(
     ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']
 );
 
-Route::resource('/task', 'TaskController', ['except' => ['destroy', 'update', 'edit', 'show']]);
+Route::resource('/task', 'TaskController', ['except' => ['destroy', 'update', 'edit', 'show', 'store']]);
+Route::post('/task/create', ['as' => 'task.store', 'uses' => 'TaskController@store']);
+Route::post('/task', ['as' => 'task.store.rest', 'uses' => 'TaskController@store']);
 Route::put('/task/{task}/edit', ['as' => 'task.update', 'uses' => 'TaskController@update']);
 Route::get('/task/{task}/delete', ['as' => 'task.destroy', 'uses' => 'TaskController@destroy']);
 
