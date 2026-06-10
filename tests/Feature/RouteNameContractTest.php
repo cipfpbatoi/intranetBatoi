@@ -54,4 +54,10 @@ class RouteNameContractTest extends TestCase
         $this->assertContains('POST', Route::getRoutes()->getByName('direccion.lote.store.rest')->methods());
         $this->assertContains('PUT', Route::getRoutes()->getByName('direccion.lote.update')->methods());
     }
+
+    public function test_route_list_de_lot_de_direccio_no_falla_per_controladors_documentals(): void
+    {
+        $this->artisan('route:list --name=direccion.lote -vvv')
+            ->assertExitCode(0);
+    }
 }

@@ -7,14 +7,13 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Application\Projecte\ProjecteDocumentService;
-use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Projecte;
 
 /**
  * Gestiona fluxos documentals específics del domini de projectes.
  */
-class ProjecteDocumentoController extends IntranetController
+class ProjecteDocumentoController extends Controller
 {
     private ?GrupoService $grupoService = null;
     private ?ProfesorService $profesorService = null;
