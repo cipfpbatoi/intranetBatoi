@@ -1,10 +1,15 @@
 <ul class="messages fct">
+    @php
+        $userDni = (string) (authUser()->dni ?? '');
+        $professorsAccessibles = $userDni !== ''
+            ? \Intranet\Entities\Profesor::getSubstituts($userDni)
+            : [];
+    @endphp
     @foreach($fct->alFct as $alfct)
         @php
             $alumno = $alfct->Alumno;
-            $userDni = (string) (authUser()->dni ?? '');
             $tutorFct = $alfct->Tutor;
-            $mio = $userDni !== '' && in_array($userDni, $tutorFct?->Sustituidos ?? [], true);
+            $mio = in_array((string) ($alfct->idProfesor ?? ''), $professorsAccessibles, true);
         @endphp
         @if ($mio)
             <li>
