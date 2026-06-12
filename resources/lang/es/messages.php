@@ -233,6 +233,7 @@ return array(
         'Gtrabajo' => 'Actas/Convocatorias',
         'Grtrabajo' => 'Grupos de Trabajo',
         'Resultados' => 'Seguimientos',
+        'CertOptatiu' => 'Certificados optativos',
         'Register' => 'Registrar Curso/Ponencia',
         'Documento' => 'Gestor Documental',
         'Nohanfichado' => 'Presencia',

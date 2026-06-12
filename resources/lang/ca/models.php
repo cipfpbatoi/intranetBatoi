@@ -574,6 +574,7 @@ return array(
             'Fctcap' => 'Revisió FCT',
             'Solicitud' => "Derivació al departament d'orientació",
             'Signatura' => 'Signatures Digitals',
+            'ModulOptatiuCertificatAlumne' => 'Certificat de mòdul optatiu',
             'Cotxe' => 'Vehicles'
         ),
         'resign' => array(

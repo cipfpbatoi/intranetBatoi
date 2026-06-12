@@ -236,6 +236,22 @@ Route::post('/resultado/create', ['as' => 'resultado.store', 'uses' => 'Resultad
 Route::put('/resultado/{resultado}/edit', ['as' => 'resultado.update', 'uses' => 'ResultadoController@update']);
 Route::get('/resultado/pdf', ['as' => 'resultado.pdf', 'uses' => 'ResultadoController@listado']);
 
+Route::get('/modul-optatiu-certificat', [
+    'as' => 'modulOptatiuCertificat.index',
+    'uses' => 'ModuloOptatiuCertificatController@index',
+]);
+Route::get('/modul-optatiu-certificat/{moduloGrupo}', [
+    'as' => 'modulOptatiuCertificat.show',
+    'uses' => 'ModuloOptatiuCertificatController@show',
+]);
+Route::put('/modul-optatiu-certificat/{moduloGrupo}', [
+    'as' => 'modulOptatiuCertificat.update',
+    'uses' => 'ModuloOptatiuCertificatController@update',
+]);
+Route::post('/modul-optatiu-certificat/{certificat}/emet', [
+    'as' => 'modulOptatiuCertificat.emit',
+    'uses' => 'ModuloOptatiuCertificatController@emit',
+]);
 
 //Empreses
 Route::resource('/empresa', 'EmpresaController', ['except' => ['destroy', 'store', 'update', 'show']]);

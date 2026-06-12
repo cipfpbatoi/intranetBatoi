@@ -235,6 +235,7 @@ return array(
         'Gtrabajo' => 'Actes/Convocatòries',
         'Grtrabajo' => 'Grups de Treball',
         'Resultados' => 'Seguiments',
+        'CertOptatiu' => 'Certificats optatius',
         'Register' => 'Registrar Curs/Ponència',
         'Documento' => 'Gestor Documental',
         'Nohanfichado' => 'Presència',
