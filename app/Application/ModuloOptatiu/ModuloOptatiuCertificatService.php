@@ -22,6 +22,8 @@ class ModuloOptatiuCertificatService
 {
     public const DOCUMENT_TYPE = 16;
 
+    private const OPTIONAL_MODULE_CODE = 'CVOPT';
+
     public function __construct(
         private ?ModuloGrupoService $moduloGrupoService = null,
         private ?PdfService $pdfService = null,
@@ -39,8 +41,17 @@ class ModuloOptatiuCertificatService
     {
         return collect($this->modulos()->misModulos($dni))
             ->each(static fn (Modulo_grupo $modulo): Modulo_grupo => $modulo->loadMissing('Grupo.Alumnos', 'ModuloCiclo.Modulo'))
+            ->filter(static fn (Modulo_grupo $modulo): bool => self::isOptionalModule($modulo))
             ->sortBy(static fn (Modulo_grupo $modulo): string => $modulo->literal)
             ->values();
+    }
+
+    /**
+     * Indica si el mòdul-grup correspon al mòdul optatiu codificat a ITACA.
+     */
+    public static function isOptionalModule(Modulo_grupo $moduloGrupo): bool
+    {
+        return strtoupper(trim((string) $moduloGrupo->ModuloCiclo?->idModulo)) === self::OPTIONAL_MODULE_CODE;
     }
 
     /**

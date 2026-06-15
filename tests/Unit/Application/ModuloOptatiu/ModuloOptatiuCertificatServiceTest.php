@@ -10,8 +10,12 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\ModulOptatiuCertificat;
+use Intranet\Services\School\ModuloGrupoService;
 use Tests\TestCase;
 
+/**
+ * Proves del cas d'ús de certificats de mòduls optatius.
+ */
 class ModuloOptatiuCertificatServiceTest extends TestCase
 {
     protected function setUp(): void
@@ -111,16 +115,32 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         });
 
         DB::table('modulos')->insert([
-            'codigo' => 'OPT1',
-            'cliteral' => 'Optatiu',
-            'vliteral' => 'Mòdul optatiu',
+            [
+                'codigo' => 'OPT1',
+                'cliteral' => 'Optatiu antic',
+                'vliteral' => 'Mòdul no optatiu',
+            ],
+            [
+                'codigo' => 'CVOPT',
+                'cliteral' => 'Optatiu',
+                'vliteral' => 'Mòdul optatiu',
+            ],
         ]);
         DB::table('modulo_ciclos')->insert([
-            'id' => 1,
-            'idModulo' => 'OPT1',
-            'idCiclo' => 1,
-            'idDepartamento' => 1,
-            'curso' => 1,
+            [
+                'id' => 1,
+                'idModulo' => 'OPT1',
+                'idCiclo' => 1,
+                'idDepartamento' => 1,
+                'curso' => 1,
+            ],
+            [
+                'id' => 2,
+                'idModulo' => 'CVOPT',
+                'idCiclo' => 1,
+                'idDepartamento' => 1,
+                'curso' => 1,
+            ],
         ]);
         DB::table('grupos')->insert([
             'codigo' => 'G1',
@@ -131,9 +151,16 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
             'updated_at' => now(),
         ]);
         DB::table('modulo_grupos')->insert([
-            'id' => 1,
-            'idModuloCiclo' => 1,
-            'idGrupo' => 'G1',
+            [
+                'id' => 1,
+                'idModuloCiclo' => 1,
+                'idGrupo' => 'G1',
+            ],
+            [
+                'id' => 2,
+                'idModuloCiclo' => 2,
+                'idGrupo' => 'G1',
+            ],
         ]);
         DB::table('alumnos')->insert([
             [
@@ -191,6 +218,31 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         ]);
     }
 
+    public function test_mostra_només_moduls_codificats_com_a_cvopt(): void
+    {
+        $moduloGrupoService = new class extends ModuloGrupoService {
+            /**
+             * Retorna mòduls de prova sense consultar l'horari real.
+             *
+             * @return array<int, Modulo_grupo>
+             */
+            public function misModulos(string $dni, ?string $modulo = null): array
+            {
+                return [
+                    Modulo_grupo::query()->findOrFail(1),
+                    Modulo_grupo::query()->findOrFail(2),
+                ];
+            }
+        };
+        $service = new ModuloOptatiuCertificatService($moduloGrupoService);
+
+        $modules = $service->modulesForTeacher('P1');
+
+        $this->assertSame([2], $modules->pluck('id')->all());
+        $this->assertTrue($service->canManage(Modulo_grupo::query()->findOrFail(2), 'P1'));
+        $this->assertFalse($service->canManage(Modulo_grupo::query()->findOrFail(1), 'P1'));
+    }
+
     public function test_detecta_alumnat_sense_nota_abans_demetre(): void
     {
         $service = new ModuloOptatiuCertificatService();
@@ -208,7 +260,7 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         $errors = $service->validationErrors($certificat);
 
         $this->assertCount(1, $errors);
-        $this->assertStringContainsString('BETA', $errors[0]);
+        $this->assertStringContainsString('Beta', $errors[0]);
     }
 
     public function test_reutilitza_la_nota_existent_del_mateix_modul_grup(): void
