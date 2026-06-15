@@ -91,4 +91,32 @@ class GridTableComponentTest extends TestCase
 
         $this->assertSame('[[0,"desc"]]', $table?->getAttribute('data-order'));
     }
+
+    public function test_nom_edat_d_alumno_fct_renderitza_icona_controlada_sense_escapar_html(): void
+    {
+        $panel = new Panel('AlumnoFct', ['NomEdat']);
+        $pestana = $panel->getPestanas()[0];
+        $elemento = new class () {
+            public string $class = '';
+            public string $NomEdat = 'Alba &lt;script&gt; <em class=\'fa fa-child\' aria-hidden=\'true\'></em>';
+
+            public function getKey(): int
+            {
+                return 1;
+            }
+        };
+
+        $html = Blade::render(
+            '<x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$elementos" />',
+            [
+                'panel' => $panel,
+                'pestana' => $pestana,
+                'elementos' => new Collection([$elemento]),
+            ]
+        );
+
+        $this->assertStringContainsString("<em class='fa fa-child' aria-hidden='true'></em>", $html);
+        $this->assertStringNotContainsString('&lt;em class=', $html);
+        $this->assertStringContainsString('Alba &lt;script&gt;', $html);
+    }
 }

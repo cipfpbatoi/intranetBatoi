@@ -57,6 +57,29 @@ class AlumnoFctTest extends TestCase
     }
 
     #[Test]
+    public function get_nom_edat_attribute_escapa_el_nom_i_renderitza_icona_si_es_menor(): void
+    {
+        $mockAlumno = Mockery::mock(Alumno::class)->makePartial();
+
+        $mockAlumno->shouldReceive('offsetExists')->andReturn(true);
+        $mockAlumno->shouldReceive('getAttribute')
+            ->andReturnUsing(fn($key) => match ($key) {
+                'ShortName' => 'Joan <script>',
+                default => null,
+            });
+        $mockAlumno->shouldReceive('esMenorEdat')->andReturn(true);
+
+        $alumnoFct = new AlumnoFct();
+        $alumnoFct->desde = '2026-01-01';
+        $alumnoFct->setRelation('Alumno', $mockAlumno);
+
+        $this->assertSame(
+            "Joan &lt;script&gt; <em class='fa fa-child' aria-hidden='true'></em>",
+            $alumnoFct->NomEdat
+        );
+    }
+
+    #[Test]
     public function get_centro_attribute_trunca_el_text_correctament()
     {
         $mockFct = Mockery::mock(Fct::class)->makePartial();
