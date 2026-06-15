@@ -49,6 +49,9 @@ final class AlumnoFctPresenter
         return (string) ($this->alumnoFct->Alumno?->ShortName ?? '');
     }
 
+    /**
+     * Retorna el nom curt amb la icona HTML controlada si l'alumne és menor d'edat.
+     */
     public function studentNameWithMinorIcon(): string
     {
         $name = $this->studentShortName();
@@ -56,7 +59,7 @@ final class AlumnoFctPresenter
             return $name;
         }
 
-        return $name . "<em class='fa fa-child'></em>";
+        return e($name) . " <em class='fa fa-child' aria-hidden='true'></em>";
     }
 
     public function remainingPracticeTimeLabel(): string

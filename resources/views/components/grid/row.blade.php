@@ -3,8 +3,8 @@
 <tr class="lineaGrupo {{ $elemento->class ?? '' }}" id="{{ $elemento->getKey() }}">
     @foreach ($pestana->getRejilla() as $item)
         @php($long = str_starts_with($item, 'L') ? 200 : 100)
-        @php($teHtmlControlat = $item === 'FullName' && isset($elemento->incidenciaFullName))
-        @php($valor = $teHtmlControlat ? $elemento->incidenciaFullName : rescue(fn() => $elemento->$item, ''))
+        @php($teHtmlControlat = ($item === 'FullName' && isset($elemento->incidenciaFullName)) || ($panel->getModel() === 'AlumnoFct' && $item === 'NomEdat'))
+        @php($valor = ($item === 'FullName' && isset($elemento->incidenciaFullName)) ? $elemento->incidenciaFullName : rescue(fn() => $elemento->$item, ''))
         @php($valorRetallat = $teHtmlControlat ? $valor : in_substr($valor, $long))
         @php($ordreData = null)
         @if (is_string($valor) && preg_match('/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/', trim($valor), $parts))

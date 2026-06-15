@@ -50,6 +50,16 @@ Impacte:
 Impacte:
 - Menys acoblament global i menys “efectes col·laterals” entre pantalles.
 
+### Incidència #251 resolta - `/alumnofct` mostrava HTML escapolit
+
+- Data de registre: 2026-06-15.
+- Resolució local: 2026-06-15.
+- Pantalla afectada: `/alumnofct`, graella principal d'alumnat FCT.
+- Símptoma: en algunes entrades es mostra literalment el text `<em class='fa fa-child'></em>` al costat del nom de l'alumne, en lloc de renderitzar la icona de menor d'edat.
+- Origen probable: el camp `NomEdat` de `AlumnoFctCrudSchema::GRID_FIELDS` acaba consumint `AlumnoFctPresenter::studentNameWithMinorIcon()`, que retorna una cadena amb HTML. La capa de graella actual sembla escapar eixe valor en alguns casos.
+- Correcció: `AlumnoFctPresenter::studentNameWithMinorIcon()` escapa el nom abans d'afegir la icona i `resources/views/components/grid/row.blade.php` tracta `AlumnoFct/NomEdat` com a HTML controlat.
+- Regressió: `GridTableComponentTest` comprova que la icona es renderitza i `AlumnoFctTest` comprova que el nom continua escapolit.
+
 ### Fase C - Migració funcional (decisió d’arquitectura)
 
 - C1: Definir criteri: què va a Livewire i què queda en Vue.
