@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('idModuloGrupo')->unique();
             $table->string('denominacio', 200);
-            $table->string('idProfesor', 10);
+            $table->string('idProfesor', 10)
+                ->charset('utf8mb3')
+                ->collation('utf8mb3_unicode_ci');
             $table->timestamps();
 
             $table->foreign('idModuloGrupo')
@@ -35,7 +37,9 @@ return new class extends Migration
                 ->constrained('modul_optatiu_certificats')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('idAlumno', 8);
+            $table->string('idAlumno', 8)
+                ->charset('utf8mb3')
+                ->collation('utf8mb3_unicode_ci');
             $table->timestamp('enviat_at')->nullable();
             $table->timestamp('registrat_at')->nullable();
             $table->string('fitxer', 255)->nullable();
