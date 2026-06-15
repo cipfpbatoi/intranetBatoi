@@ -71,7 +71,7 @@ class ModuloOptatiuCertificatService
         return ModulOptatiuCertificat::query()->firstOrCreate(
             ['idModuloGrupo' => $moduloGrupo->id],
             [
-                'denominacio' => (string) ($moduloGrupo->Xmodulo ?: $moduloGrupo->literal),
+                'denominacio' => '',
                 'idProfesor' => $dni,
             ]
         );
@@ -141,8 +141,8 @@ class ModuloOptatiuCertificatService
     public function validationErrors(ModulOptatiuCertificat $certificat): array
     {
         $errors = [];
-        if (trim((string) $certificat->denominacio) === '') {
-            $errors[] = 'Cal informar la denominació del mòdul optatiu.';
+        if (!$this->hasRealDenomination($certificat)) {
+            $errors[] = 'Cal informar la denominació real del mòdul optatiu impartit.';
         }
 
         $data = $this->panelData($certificat);
@@ -154,6 +154,35 @@ class ModuloOptatiuCertificatService
         }
 
         return $errors;
+    }
+
+    /**
+     * Evita emetre certificats amb el literal genèric del codi CVOPT.
+     */
+    private function hasRealDenomination(ModulOptatiuCertificat $certificat): bool
+    {
+        $denominacio = trim((string) $certificat->denominacio);
+        if ($denominacio === '') {
+            return false;
+        }
+
+        $genericNames = collect([
+            $certificat->ModuloGrupo?->Xmodulo,
+            $certificat->ModuloGrupo?->ModuloCiclo?->Modulo?->cliteral,
+            $certificat->ModuloGrupo?->ModuloCiclo?->Modulo?->vliteral,
+            'Mòdul optatiu',
+            'Módulo optativo',
+            'Optatiu',
+            'Optativo',
+        ])
+            ->map(static fn ($name): string => trim((string) $name))
+            ->filter()
+            ->unique()
+            ->values();
+
+        return !$genericNames->contains(
+            static fn (string $generic): bool => strcasecmp($denominacio, $generic) === 0
+        );
     }
 
     /**

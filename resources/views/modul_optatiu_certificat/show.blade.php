@@ -12,12 +12,13 @@
         @method('put')
 
         <div class="form-group">
-            <label for="denominacio">Denominació del mòdul optatiu</label>
+            <label for="denominacio">Nom del mòdul optatiu impartit</label>
             <input
                 id="denominacio"
                 name="denominacio"
                 class="form-control"
                 value="{{ old('denominacio', $certificat->denominacio) }}"
+                placeholder="Nom real del mòdul optatiu d'este grup"
                 maxlength="200"
                 required
             >

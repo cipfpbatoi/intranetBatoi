@@ -243,6 +243,15 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         $this->assertFalse($service->canManage(Modulo_grupo::query()->findOrFail(1), 'P1'));
     }
 
+    public function test_el_certificat_nou_no_usa_el_literal_generic_del_cvopt(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+
+        $certificat = $service->certificateFor(Modulo_grupo::query()->findOrFail(2), 'P1');
+
+        $this->assertSame('', $certificat->denominacio);
+    }
+
     public function test_detecta_alumnat_sense_nota_abans_demetre(): void
     {
         $service = new ModuloOptatiuCertificatService();
@@ -261,6 +270,57 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
 
         $this->assertCount(1, $errors);
         $this->assertStringContainsString('Beta', $errors[0]);
+    }
+
+    public function test_no_permet_emetre_amb_el_literal_generic_del_cvopt(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Mòdul optatiu',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 8,
+            ],
+        ]);
+
+        $errors = $service->validationErrors($certificat);
+
+        $this->assertCount(1, $errors);
+        $this->assertStringContainsString('denominació real', $errors[0]);
+    }
+
+    public function test_permet_emetre_amb_denominacio_real_i_notes_completes(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 8,
+            ],
+        ]);
+
+        $this->assertSame([], $service->validationErrors($certificat));
     }
 
     public function test_reutilitza_la_nota_existent_del_mateix_modul_grup(): void

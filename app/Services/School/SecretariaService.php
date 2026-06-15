@@ -3,8 +3,11 @@ namespace Intranet\Services\School;
 
 use Illuminate\Support\Facades\Http;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Services\Auth\RemoteLoginService;
 
-
+/**
+ * Client per registrar documents d'alumnat al servidor de secretaria.
+ */
 class SecretariaService
 {
     protected $link;
