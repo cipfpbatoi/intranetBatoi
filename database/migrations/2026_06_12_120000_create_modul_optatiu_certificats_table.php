@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('modul_optatiu_certificats', function (Blueprint $table): void {
+            $table->charset = 'utf8mb3';
+            $table->collation = 'utf8mb3_unicode_ci';
+
             $table->id();
             $table->unsignedInteger('idModuloGrupo')->unique();
             $table->string('denominacio', 200);
-            $table->string('idProfesor', 10)
-                ->charset('utf8mb3')
-                ->collation('utf8mb3_unicode_ci');
+            $table->string('idProfesor', 10);
             $table->timestamps();
 
             $table->foreign('idModuloGrupo')
@@ -32,14 +33,15 @@ return new class extends Migration
         });
 
         Schema::create('modul_optatiu_certificat_alumnes', function (Blueprint $table): void {
+            $table->charset = 'utf8mb3';
+            $table->collation = 'utf8mb3_unicode_ci';
+
             $table->id();
             $table->foreignId('idCertificat')
                 ->constrained('modul_optatiu_certificats')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('idAlumno', 8)
-                ->charset('utf8mb3')
-                ->collation('utf8mb3_unicode_ci');
+            $table->string('idAlumno', 8);
             $table->timestamp('enviat_at')->nullable();
             $table->timestamp('registrat_at')->nullable();
             $table->string('fitxer', 255)->nullable();
