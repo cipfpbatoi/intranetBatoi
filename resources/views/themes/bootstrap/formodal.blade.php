@@ -2,7 +2,7 @@
     @php
         $storePath = preg_replace('#/(create|[^/]+/edit)$#', '', request()->path());
     @endphp
-    {!! Form::model($elemento, ['url' => url($storePath), 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data"]) !!}
+    {!! Form::model($elemento, ['url' => url($storePath . '/create'), 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data"]) !!}
     {{ csrf_field() }}
     <input id='metodo' type='hidden' name='_method' value='{{old('_method')}}'/>
     <input id='id' type='hidden' name='id' value='{{old('id')}}'/>
