@@ -14,7 +14,12 @@
                                                     @else
                                                         <span style="color:red">
                                                     @endif
-                                                        <strong>{{ ucwords($funcio)}}</strong> : {{ $aviso }}
+                                                        <strong>{{ ucwords($funcio)}}</strong> :
+                                                        @if ($aviso instanceof \Illuminate\Contracts\Support\Htmlable)
+                                                            {!! $aviso->toHtml() !!}
+                                                        @else
+                                                            {{ $aviso }}
+                                                        @endif
                                                     </span>
                                                 </li>
                                                 @endforeach
@@ -29,4 +34,3 @@
 @section('titulo')
         Me'n Puc anar de vacances ??
 @endsection
-

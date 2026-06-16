@@ -10,6 +10,7 @@ use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\Programacion;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
@@ -129,16 +130,32 @@ class PanelFinCursoController extends BaseController
         foreach ($service->modulesForTeacher((string) AuthUser()->dni) as $modulo) {
             $summary = $service->emissionSummary($modulo);
             $literal = $modulo->literal;
+            $link = route('modulOptatiuCertificat.show', ['moduloGrupo' => $modulo->id]);
 
             if ($summary['complet']) {
-                $avisos[self::SUCCESS][] = "Certificats del mòdul optatiu {$literal} emesos "
+                $message = "Certificats del mòdul optatiu {$literal} emesos "
                     . "({$summary['emesos']}/{$summary['certificables']} emesos)";
+                $avisos[self::SUCCESS][] = self::linkedAviso($message, $link, 'Revisar');
                 continue;
             }
 
-            $avisos[self::DANGER][] = "Certificats del mòdul optatiu {$literal} pendents "
+            $message = "Certificats del mòdul optatiu {$literal} pendents "
                 . "({$summary['emesos']}/{$summary['certificables']} emesos)";
+            $avisos[self::DANGER][] = self::linkedAviso($message, $link, 'Gestionar');
         }
+    }
+
+    /**
+     * Genera un avís amb enllaç segur al panell relacionat.
+     */
+    private static function linkedAviso(string $message, string $url, string $label): HtmlString
+    {
+        return new HtmlString(
+            e($message)
+            . ' <a class="btn btn-default btn-xs" href="' . e($url) . '">'
+            . e($label)
+            . '</a>'
+        );
     }
 
     private static function lookForIssues(&$avisos) {
