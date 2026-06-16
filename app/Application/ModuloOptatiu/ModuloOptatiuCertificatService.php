@@ -116,6 +116,52 @@ class ModuloOptatiuCertificatService
     }
 
     /**
+     * Resumeix l'estat d'emissió dels certificats possibles d'un mòdul-grup.
+     *
+     * @return array{certificables:int,emesos:int,pendents:int,complet:bool}
+     */
+    public function emissionSummary(Modulo_grupo $moduloGrupo): array
+    {
+        $moduloGrupo->loadMissing('Grupo.Alumnos');
+        $alumnes = $moduloGrupo->Grupo?->Alumnos ?? collect();
+        $alumneIds = $alumnes->pluck('nia')->all();
+
+        $certificables = AlumnoResultado::query()
+            ->where('idModuloGrupo', $moduloGrupo->id)
+            ->whereIn('idAlumno', $alumneIds)
+            ->get()
+            ->filter(static fn (AlumnoResultado $resultat): bool => self::isCertifiableNote((int) $resultat->nota))
+            ->pluck('idAlumno')
+            ->unique()
+            ->values();
+
+        $totalCertificables = $certificables->count();
+        $certificat = ModulOptatiuCertificat::query()
+            ->where('idModuloGrupo', $moduloGrupo->id)
+            ->first();
+
+        $emesos = 0;
+        if ($certificat && $totalCertificables > 0) {
+            $emesos = ModulOptatiuCertificatAlumne::query()
+                ->where('idCertificat', $certificat->id)
+                ->whereIn('idAlumno', $certificables->all())
+                ->whereNotNull('enviat_at')
+                ->pluck('idAlumno')
+                ->unique()
+                ->count();
+        }
+
+        $pendents = max(0, $totalCertificables - $emesos);
+
+        return [
+            'certificables' => $totalCertificables,
+            'emesos' => $emesos,
+            'pendents' => $pendents,
+            'complet' => $pendents === 0,
+        ];
+    }
+
+    /**
      * Opcions de qualificació pròpies del certificat optatiu.
      *
      * @return array<int, string>

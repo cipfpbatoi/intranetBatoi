@@ -480,6 +480,86 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         $this->assertFalse($data['potEmetre']);
     }
 
+    public function test_resume_emissio_detecta_certificats_pendents_amb_nota_certificable(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 8,
+            ],
+        ]);
+        DB::table('modul_optatiu_certificat_alumnes')->insert([
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A1',
+            'enviat_at' => now(),
+            'registrat_at' => now(),
+            'fitxer' => 'tmp/a1.pdf',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $summary = $service->emissionSummary(Modulo_grupo::query()->findOrFail(2));
+
+        $this->assertSame([
+            'certificables' => 2,
+            'emesos' => 1,
+            'pendents' => 1,
+            'complet' => false,
+        ], $summary);
+    }
+
+    public function test_resume_emissio_es_complet_quan_tots_els_certificables_estan_emesos(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 4,
+            ],
+        ]);
+        DB::table('modul_optatiu_certificat_alumnes')->insert([
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A1',
+            'enviat_at' => now(),
+            'registrat_at' => now(),
+            'fitxer' => 'tmp/a1.pdf',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $summary = $service->emissionSummary(Modulo_grupo::query()->findOrFail(2));
+
+        $this->assertSame([
+            'certificables' => 1,
+            'emesos' => 1,
+            'pendents' => 0,
+            'complet' => true,
+        ], $summary);
+    }
+
     public function test_no_permet_descarregar_certificats_individuals_sense_denominacio_real(): void
     {
         $service = new ModuloOptatiuCertificatService();
