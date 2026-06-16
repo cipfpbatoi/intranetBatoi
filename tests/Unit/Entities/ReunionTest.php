@@ -4,6 +4,8 @@ namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Reunion;
 use Tests\TestCase;
 
@@ -59,5 +61,49 @@ class ReunionTest extends TestCase
         $count = Reunion::query()->convocante('NOPE')->count();
 
         $this->assertSame(0, $count);
+    }
+
+    public function test_informe_retorna_true_per_avaluacio_final_de_primer_semipresencial(): void
+    {
+        Reunion::query()->create([
+            'id' => 2,
+            'idProfesor' => 'P100',
+            'tipo' => 7,
+            'numero' => 34,
+        ]);
+
+        $grupo = new Grupo();
+        $grupo->curso = 1;
+        $grupo->turno = 'S';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService->method('largestByTutor')->with('P100')->willReturn($grupo);
+        app()->instance(GrupoService::class, $grupoService);
+
+        $reunion = Reunion::query()->findOrFail(2);
+
+        $this->assertTrue($reunion->informe);
+    }
+
+    public function test_informe_retorna_false_per_avaluacio_final_de_segon_semipresencial(): void
+    {
+        Reunion::query()->create([
+            'id' => 3,
+            'idProfesor' => 'P200',
+            'tipo' => 7,
+            'numero' => 34,
+        ]);
+
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->turno = 'S';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService->method('largestByTutor')->with('P200')->willReturn($grupo);
+        app()->instance(GrupoService::class, $grupoService);
+
+        $reunion = Reunion::query()->findOrFail(3);
+
+        $this->assertFalse($reunion->informe);
     }
 }
