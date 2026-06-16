@@ -32,11 +32,14 @@
         return window.location.href.replace(/#/, '');
     }
 
-    function getCreateUrl() {
+    function getStoreUrl() {
         var url = new URL(window.location.href);
         url.hash = '';
         url.search = '';
-        url.pathname = url.pathname.replace(/\/$/, '') + '/create';
+        url.pathname = url.pathname
+            .replace(/\/$/, '')
+            .replace(/\/create$/, '')
+            .replace(/\/[^/]+\/edit$/, '');
 
         return url.toString();
     }
@@ -320,7 +323,7 @@
                 }
 
                 if (formModal) {
-                    formModal.setAttribute('action', getCreateUrl());
+                    formModal.setAttribute('action', getStoreUrl());
                 }
 
                 var metodoField = document.getElementById('metodo');
@@ -352,7 +355,7 @@
         } else {
             var createFormModal = getFormModal();
             if (createFormModal) {
-                createFormModal.setAttribute('action', getCreateUrl());
+                createFormModal.setAttribute('action', getStoreUrl());
             }
         }
 

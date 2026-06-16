@@ -11,6 +11,8 @@ use Intranet\Presentation\Crud\CotxeCrudSchema;
 
 /**
  * Controlador de gestió de cotxes.
+ *
+ * Gestiona els vehicles associats al professor autenticat.
  */
 class CotxeController extends ModalController
 {
@@ -24,10 +26,16 @@ class CotxeController extends ModalController
      */
     protected $model = 'Cotxe';
 
+    /**
+     * Guarda un vehicle nou per al professor autenticat.
+     *
+     * @param CotxeRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function store(CotxeRequest $request)
     {
         $this->authorize('create', Cotxe::class);
-        $request->merge(['idProfesor' => authUser()->dni]);
+        $request->merge(['idProfesor' => \authUser()->dni]);
         $this->persist($request);
         return $this->redirect();
     }
@@ -42,7 +50,7 @@ class CotxeController extends ModalController
     {
         $cotxe = $this->findModelOrFail(Cotxe::class, $id, 'Cotxe no trobat', ['cotxe_id' => $id]);
         $this->authorize('update', $cotxe);
-        $request->merge(['idProfesor' => authUser()->dni]);
+        $request->merge(['idProfesor' => \authUser()->dni]);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -52,6 +60,7 @@ class CotxeController extends ModalController
      *
      * @param int|string $id
      * @throws NotFoundDomainException
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
