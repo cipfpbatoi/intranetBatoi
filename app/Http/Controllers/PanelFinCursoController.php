@@ -131,13 +131,12 @@ class PanelFinCursoController extends BaseController
             $literal = $modulo->literal;
 
             if ($summary['complet']) {
-                $avisos[self::SUCCESS][] = $summary['certificables'] > 0
-                    ? "Certificats del mòdul optatiu {$literal} emesos ({$summary['emesos']}/{$summary['certificables']})"
-                    : "Mòdul optatiu {$literal} sense certificats pendents d'emetre";
+                $avisos[self::SUCCESS][] = "Certificats del mòdul optatiu {$literal} emesos "
+                    . "({$summary['emesos']}/{$summary['certificables']} emesos)";
                 continue;
             }
 
-            $avisos[self::DANGER][] = "Falten {$summary['pendents']} certificats del mòdul optatiu {$literal} "
+            $avisos[self::DANGER][] = "Certificats del mòdul optatiu {$literal} pendents "
                 . "({$summary['emesos']}/{$summary['certificables']} emesos)";
         }
     }

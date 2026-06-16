@@ -157,7 +157,7 @@ class ModuloOptatiuCertificatService
             'certificables' => $totalCertificables,
             'emesos' => $emesos,
             'pendents' => $pendents,
-            'complet' => $pendents === 0,
+            'complet' => $totalCertificables > 0 && $pendents === 0,
         ];
     }
 
