@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Comision\ComisionService;
 use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
@@ -21,8 +22,7 @@ use function PHPUnit\Framework\isNull;
 
 
 /**
- * Class PanelActaController
- * @package Intranet\Http\Controllers
+ * Panell d'avisos de final de curs per rols del professorat.
  */
 class PanelFinCursoController extends BaseController
 {
@@ -62,6 +62,7 @@ class PanelFinCursoController extends BaseController
 
         self::lookForMyResults($avisos);
         self::lookforMyPrograms($avisos);
+        self::lookForOptionalModuleCertificates($avisos);
         self::lookUnPaidBills($avisos);
 
         if (AuthUser()->xdepartamento == 'Fol' ){
@@ -115,6 +116,29 @@ class PanelFinCursoController extends BaseController
             if ($grupo->fol == 0) {
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
+        }
+    }
+
+    /**
+     * Afig l'estat d'emissió dels certificats de mòduls optatius del professor.
+     */
+    private static function lookForOptionalModuleCertificates(&$avisos): void
+    {
+        $service = app(ModuloOptatiuCertificatService::class);
+
+        foreach ($service->modulesForTeacher((string) AuthUser()->dni) as $modulo) {
+            $summary = $service->emissionSummary($modulo);
+            $literal = $modulo->literal;
+
+            if ($summary['complet']) {
+                $avisos[self::SUCCESS][] = $summary['certificables'] > 0
+                    ? "Certificats del mòdul optatiu {$literal} emesos ({$summary['emesos']}/{$summary['certificables']})"
+                    : "Mòdul optatiu {$literal} sense certificats pendents d'emetre";
+                continue;
+            }
+
+            $avisos[self::DANGER][] = "Falten {$summary['pendents']} certificats del mòdul optatiu {$literal} "
+                . "({$summary['emesos']}/{$summary['certificables']} emesos)";
         }
     }
 
