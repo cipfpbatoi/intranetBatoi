@@ -116,7 +116,7 @@ class ReunionController extends ModalController
             $elemento = Reunion::findOrFail($id);
             $service = new MeetingOrderGenerateService($elemento);
             $service->exec();
-            $this->feValuations()->ensureOrder($elemento);
+            $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
             return $elemento;
         });
 
@@ -137,7 +137,7 @@ class ReunionController extends ModalController
             return view('intranet.edit', compact('formulario', 'modelo'));
         }
 
-        $this->feValuations()->ensureOrder($elemento);
+        $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
         $feNotesData = $elemento->avaluacioFinal ? $this->feValuations()->gradeInputData($elemento) : null;
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
         $activos = app(ProfesorService::class)->activosOrdered();

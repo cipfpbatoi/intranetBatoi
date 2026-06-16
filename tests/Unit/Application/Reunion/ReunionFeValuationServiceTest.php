@@ -547,9 +547,38 @@ class ReunionFeValuationServiceTest extends TestCase
         $service = new ReunionFeValuationService();
 
         $this->assertNull($service->ensureOrder($this->makeReunion(10, 7, 34), 'LOE'));
+        $this->assertNull($service->ensureOrder($this->makeReunion(12, 7, 34), 'LOGSE'));
         $this->assertNull($service->ensureOrder($this->makeReunion(11, 7, 31), 'LFP'));
 
         $this->assertSame(0, DB::table('ordenes_reuniones')->count());
+    }
+
+    /**
+     * Verifica que una acta LOGSE no mostra punts automàtics de FE ja creats.
+     */
+    public function test_elimina_punts_fe_en_acta_final_logse(): void
+    {
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 9,
+                'descripcion' => ReunionFeValuationService::ORDER_DESCRIPTION,
+                'resumen' => 'Resum FE',
+            ],
+            [
+                'idReunion' => 10,
+                'orden' => 10,
+                'descripcion' => ReunionFeValuationService::NOTES_ORDER_DESCRIPTION,
+                'resumen' => 'Notes FE',
+            ],
+            ['idReunion' => 10, 'orden' => 1, 'descripcion' => 'Observacions', 'resumen' => 'Text'],
+        ]);
+
+        $order = (new ReunionFeValuationService())->ensureOrder($this->makeReunion(10, 7, 34), 'LOGSE');
+
+        $this->assertNull($order);
+        $this->assertSame(1, DB::table('ordenes_reuniones')->count());
+        $this->assertSame('Observacions', DB::table('ordenes_reuniones')->value('descripcion'));
     }
 
     /**

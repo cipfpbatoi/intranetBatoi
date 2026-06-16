@@ -261,7 +261,7 @@ class Reunion extends Model
     }
 
     /**
-     * Determina la normativa (LOE/LFP) del grup associat a la reunió.
+     * Determina la normativa (LOE/LFP/LOGSE) del grup associat a la reunió.
      */
     public function getNormativaAttribute(): string
     {
@@ -272,7 +272,7 @@ class Reunion extends Model
 
         $nombre = (string) ($grupo->nombre ?? '');
         if ($nombre !== '') {
-            if (preg_match('/\\((LOE|LFP)\\)/i', $nombre, $matches)) {
+            if (preg_match('/\\((LOE|LFP|LOGSE)\\)/i', $nombre, $matches)) {
                 return strtoupper($matches[1]);
             }
             if (stripos($nombre, 'LFP') !== false) {
@@ -280,6 +280,9 @@ class Reunion extends Model
             }
             if (stripos($nombre, 'LOE') !== false) {
                 return 'LOE';
+            }
+            if (stripos($nombre, 'LOGSE') !== false) {
+                return 'LOGSE';
             }
         }
 

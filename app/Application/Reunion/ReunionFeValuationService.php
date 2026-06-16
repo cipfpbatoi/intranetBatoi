@@ -45,6 +45,8 @@ class ReunionFeValuationService
     public function ensureOrder(Reunion $reunion, ?string $normativa = null): ?OrdenReunion
     {
         if (!$this->needsFeOrder($reunion, $normativa)) {
+            $this->removeFeOrders($reunion);
+
             return null;
         }
 
@@ -86,11 +88,45 @@ class ReunionFeValuationService
      */
     public function needsFeOrder(Reunion $reunion, ?string $normativa = null): bool
     {
-        $resolvedNormativa = $normativa === null ? 'LFP' : strtoupper((string) $normativa);
+        $resolvedNormativa = $this->resolveActaNormativa($reunion, $normativa);
 
         return (int) $reunion->tipo === 7
             && in_array((int) $reunion->numero, [34, 35], true)
             && $resolvedNormativa === 'LFP';
+    }
+
+    /**
+     * Resol la normativa efectiva de l'acta mantenint el comportament antic si no es pot deduir.
+     *
+     * @param Reunion $reunion
+     * @param string|null $normativa
+     * @return string
+     */
+    private function resolveActaNormativa(Reunion $reunion, ?string $normativa = null): string
+    {
+        $resolvedNormativa = $normativa === null ? (string) $reunion->normativa : $normativa;
+        $resolvedNormativa = strtoupper(trim((string) $resolvedNormativa));
+
+        return $resolvedNormativa === '' ? 'LFP' : $resolvedNormativa;
+    }
+
+    /**
+     * Elimina els punts automàtics de FE quan l'acta no els necessita.
+     *
+     * @param Reunion $reunion
+     * @return void
+     */
+    private function removeFeOrders(Reunion $reunion): void
+    {
+        OrdenReunion::query()
+            ->forReunion($reunion->id)
+            ->whereIn('descripcion', [
+                self::ORDER_DESCRIPTION,
+                self::NOTES_ORDER_DESCRIPTION,
+                self::LEGACY_NOTES_ORDER_DESCRIPTION,
+                self::LEGACY_NOTES_ORDER_DESCRIPTION_WITH_RENUNCIA,
+            ])
+            ->delete();
     }
 
     /**

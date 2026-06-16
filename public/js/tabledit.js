@@ -259,7 +259,8 @@
                                 var sourceOptions = optionsMap[sourceName] || {};
                                 original.innerHTML = sourceOptions[field.value] || field.value;
                             } else if (original.className === 'textarea') {
-                                original.innerHTML = field.value;
+                                var richEditor = editingNode.querySelector('.reunion-richtext-editor');
+                                original.innerHTML = richEditor ? richEditor.innerHTML.trim() : field.value;
                             } else {
                                 original.innerHTML = field.value;
                             }
