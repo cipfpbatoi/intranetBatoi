@@ -1,8 +1,12 @@
 <div class="modal-body">
     @php
         $storePath = preg_replace('#/(create|[^/]+/edit)$#', '', request()->path());
+        $storeRoute = str_replace('/', '.', trim($storePath, '/')) . '.store';
+        $storeUrl = \Illuminate\Support\Facades\Route::has($storeRoute)
+            ? route($storeRoute)
+            : url($storePath);
     @endphp
-    {!! Form::model($elemento, ['url' => url($storePath . '/create'), 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data"]) !!}
+    {!! Form::model($elemento, ['url' => $storeUrl, 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data", 'data-store-url' => $storeUrl]) !!}
     {{ csrf_field() }}
     <input id='metodo' type='hidden' name='_method' value='{{old('_method')}}'/>
     <input id='id' type='hidden' name='id' value='{{old('id')}}'/>

@@ -33,6 +33,12 @@
     }
 
     function getStoreUrl() {
+        var formModal = getFormModal();
+        var configuredStoreUrl = formModal ? formModal.getAttribute('data-store-url') : '';
+        if (configuredStoreUrl) {
+            return configuredStoreUrl;
+        }
+
         var url = new URL(window.location.href);
         url.hash = '';
         url.search = '';

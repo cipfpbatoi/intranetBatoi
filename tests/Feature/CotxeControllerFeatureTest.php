@@ -124,7 +124,22 @@ class CotxeControllerFeatureTest extends TestCase
         $html = $formulario->modal()->render();
 
         $this->assertStringContainsString('action="http://localhost/cotxe"', $html);
+        $this->assertStringContainsString('data-store-url="http://localhost/cotxe"', $html);
         $this->assertStringNotContainsString('action="http://localhost/cotxe/create"', $html);
+    }
+
+    public function test_modal_d_alta_de_comissio_publica_a_la_ruta_legacy_create(): void
+    {
+        $this->app->instance('request', Request::create('/comision/create', 'GET'));
+        View::share('errors', new ViewErrorBag());
+
+        $formulario = new FormBuilder(new Cotxe(), CotxeCrudSchema::FORM_FIELDS);
+
+        $html = $formulario->modal()->render();
+
+        $this->assertStringContainsString('action="http://localhost/comision/create"', $html);
+        $this->assertStringContainsString('data-store-url="http://localhost/comision/create"', $html);
+        $this->assertStringNotContainsString('action="http://localhost/comision"', $html);
     }
 
     /**
