@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\ModuloOptatiu;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
@@ -13,6 +14,7 @@ use Intranet\Entities\Alumno;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\ModulOptatiuCertificat;
 use Intranet\Entities\Profesor;
+use Intranet\Jobs\SendEmail;
 use Intranet\Services\Document\PdfService;
 use Intranet\Services\School\ModuloGrupoService;
 use Intranet\Services\School\SecretariaService;
@@ -223,6 +225,23 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         ]);
     }
 
+    public function test_el_selector_de_notes_te_una_sola_opcio_no_cursa(): void
+    {
+        $notes = collect((new ModuloOptatiuCertificatService())->noteOptions());
+
+        $this->assertSame([12], $notes->filter(fn (string $nota): bool => $nota === 'No cursa')->keys()->all());
+    }
+
+    public function test_el_selector_de_notes_te_una_sola_opcio_no_supera(): void
+    {
+        $notes = (new ModuloOptatiuCertificatService())->noteOptions();
+
+        $this->assertArrayNotHasKey(1, $notes);
+        $this->assertArrayNotHasKey(2, $notes);
+        $this->assertArrayNotHasKey(3, $notes);
+        $this->assertSame('No supera', $notes[4]);
+    }
+
     public function test_mostra_només_moduls_codificats_com_a_cvopt(): void
     {
         $moduloGrupoService = new class extends ModuloGrupoService {
@@ -365,6 +384,100 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
 
         $this->assertTrue($data['pdfDisponibles']->get('A1'));
         $this->assertFalse($data['pdfDisponibles']->get('A2'));
+        $this->assertFalse($data['potEmetre']);
+    }
+
+    public function test_no_cursa_no_bloqueja_el_grup_pero_no_te_pdf_individual(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 12,
+            ],
+        ]);
+
+        $data = $service->panelData($certificat);
+
+        $this->assertSame([], $service->validationErrors($certificat));
+        $this->assertTrue($data['pdfDisponibles']->get('A1'));
+        $this->assertFalse($data['pdfDisponibles']->get('A2'));
+        $this->assertTrue($data['potEmetre']);
+        $this->assertSame(
+            ['Beta D Dos figura com a No cursa.'],
+            $service->validationErrorsForAlumno($certificat, Alumno::query()->findOrFail('A2'))
+        );
+    }
+
+    public function test_no_supera_no_bloqueja_el_grup_pero_no_te_pdf_individual(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 4,
+            ],
+        ]);
+
+        $data = $service->panelData($certificat);
+
+        $this->assertSame([], $service->validationErrors($certificat));
+        $this->assertTrue($data['pdfDisponibles']->get('A1'));
+        $this->assertFalse($data['pdfDisponibles']->get('A2'));
+        $this->assertTrue($data['potEmetre']);
+        $this->assertSame(
+            ['Beta D Dos figura com a No supera.'],
+            $service->validationErrorsForAlumno($certificat, Alumno::query()->findOrFail('A2'))
+        );
+    }
+
+    public function test_no_mostra_emissio_si_tot_lalumnat_no_cursa(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 12,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 12,
+            ],
+        ]);
+
+        $data = $service->panelData($certificat);
+
+        $this->assertFalse($data['pdfDisponibles']->contains(true));
+        $this->assertFalse($data['potEmetre']);
     }
 
     public function test_no_permet_descarregar_certificats_individuals_sense_denominacio_real(): void
@@ -417,6 +530,86 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         ]);
     }
 
+    public function test_emissio_de_grup_salta_alumnat_que_no_cursa(): void
+    {
+        Bus::fake();
+        $this->bindProfesorServiceAmbSecretari();
+        $pdfService = new ModuloOptatiuPdfServiceFake();
+        $secretariaService = new ModuloOptatiuSecretariaServiceFake();
+        $service = new ModuloOptatiuCertificatService(null, $pdfService, $secretariaService);
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 12,
+            ],
+        ]);
+
+        $result = $service->emit($certificat);
+
+        $this->assertSame(['sent' => 1, 'errors' => []], $result);
+        $this->assertSame(1, $secretariaService->uploads);
+        $this->assertCount(1, $pdfService->calls);
+        $this->assertSame('A1', $pdfService->calls[0]['todos']['alumne']->nia);
+        $this->assertDatabaseHas('modul_optatiu_certificat_alumnes', [
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A1',
+        ]);
+        $this->assertDatabaseMissing('modul_optatiu_certificat_alumnes', [
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A2',
+        ]);
+        Bus::assertDispatchedTimes(SendEmail::class, 1);
+    }
+
+    public function test_emissio_de_grup_salta_alumnat_que_no_supera(): void
+    {
+        Bus::fake();
+        $this->bindProfesorServiceAmbSecretari();
+        $pdfService = new ModuloOptatiuPdfServiceFake();
+        $secretariaService = new ModuloOptatiuSecretariaServiceFake();
+        $service = new ModuloOptatiuCertificatService(null, $pdfService, $secretariaService);
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 7,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 4,
+            ],
+        ]);
+
+        $result = $service->emit($certificat);
+
+        $this->assertSame(['sent' => 1, 'errors' => []], $result);
+        $this->assertSame(1, $secretariaService->uploads);
+        $this->assertCount(1, $pdfService->calls);
+        $this->assertSame('A1', $pdfService->calls[0]['todos']['alumne']->nia);
+        $this->assertDatabaseMissing('modul_optatiu_certificat_alumnes', [
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A2',
+        ]);
+        Bus::assertDispatchedTimes(SendEmail::class, 1);
+    }
+
     public function test_valida_un_alumne_abans_de_generar_el_pdf_individual(): void
     {
         $service = new ModuloOptatiuCertificatService();
@@ -449,6 +642,27 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
             public function find(string $dni): ?Profesor
             {
                 return null;
+            }
+        });
+    }
+
+    private function bindProfesorServiceAmbSecretari(): void
+    {
+        $secretari = new Profesor();
+        $secretari->dni = 'S1';
+        $secretari->nombre = 'SECRETARI';
+        $secretari->apellido1 = 'BATOI';
+        $secretari->apellido2 = '';
+        $secretari->email = 'secretaria@example.test';
+
+        $this->app->instance(ProfesorService::class, new class ($secretari) extends ProfesorService {
+            public function __construct(private Profesor $secretari)
+            {
+            }
+
+            public function find(string $dni): ?Profesor
+            {
+                return $this->secretari;
             }
         });
     }

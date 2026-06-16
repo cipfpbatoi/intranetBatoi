@@ -23,6 +23,8 @@ class ModuloOptatiuCertificatService
     public const DOCUMENT_TYPE = 16;
 
     private const OPTIONAL_MODULE_CODE = 'CVOPT';
+    private const NO_CURSA_NOTES = [12, 13];
+    private const NO_SUPERA_NOTE = 4;
 
     public function __construct(
         private ?ModuloGrupoService $moduloGrupoService = null,
@@ -80,7 +82,7 @@ class ModuloOptatiuCertificatService
     /**
      * Dades del panell: alumnat, notes existents i estat d'emissió.
      *
-     * @return array{alumnes:Collection<int, Alumno>, resultats:Collection<string, AlumnoResultado>, estats:Collection<string, ModulOptatiuCertificatAlumne>, pdfDisponibles:Collection<string, bool>}
+     * @return array{alumnes:Collection<int, Alumno>, resultats:Collection<string, AlumnoResultado>, estats:Collection<string, ModulOptatiuCertificatAlumne>, pdfDisponibles:Collection<string, bool>, potEmetre:bool}
      */
     public function panelData(ModulOptatiuCertificat $certificat): array
     {
@@ -101,11 +103,31 @@ class ModuloOptatiuCertificatService
         $denominacioValida = $this->hasRealDenomination($certificat);
         $pdfDisponibles = $alumnes->mapWithKeys(
             static fn (Alumno $alumne): array => [
-                $alumne->nia => $denominacioValida && (int) ($resultats->get($alumne->nia)?->nota ?? 0) > 0,
+                $alumne->nia => $denominacioValida
+                    && self::isCertifiableNote((int) ($resultats->get($alumne->nia)?->nota ?? 0)),
             ]
         );
+        $totesLesNotesGuardades = $alumnes->every(
+            static fn (Alumno $alumne): bool => (int) ($resultats->get($alumne->nia)?->nota ?? 0) > 0
+        );
+        $potEmetre = $denominacioValida && $totesLesNotesGuardades && $pdfDisponibles->contains(true);
 
-        return compact('alumnes', 'resultats', 'estats', 'pdfDisponibles');
+        return compact('alumnes', 'resultats', 'estats', 'pdfDisponibles', 'potEmetre');
+    }
+
+    /**
+     * Opcions de qualificació pròpies del certificat optatiu.
+     *
+     * @return array<int, string>
+     */
+    public function noteOptions(): array
+    {
+        $notes = config('auxiliares.notas');
+        unset($notes[1], $notes[2], $notes[3]);
+        $notes[self::NO_SUPERA_NOTE] = 'No supera';
+        ksort($notes);
+
+        return $notes;
     }
 
     /**
@@ -122,8 +144,11 @@ class ModuloOptatiuCertificatService
         $saved = 0;
         foreach ($notes as $idAlumno => $nota) {
             $nota = (int) $nota;
-            if ($nota < 0 || $nota > 13) {
+            if ($nota < 0 || $nota > 12) {
                 continue;
+            }
+            if ($nota > 0 && $nota < 5) {
+                $nota = self::NO_SUPERA_NOTE;
             }
 
             AlumnoResultado::query()->updateOrCreate(
@@ -175,8 +200,13 @@ class ModuloOptatiuCertificatService
         }
 
         $resultat = $this->resultForAlumno($certificat, $alumne);
-        if (!$resultat || (int) $resultat->nota <= 0) {
+        $nota = (int) ($resultat?->nota ?? 0);
+        if ($nota <= 0) {
             $errors[] = "Falta la nota de {$alumne->fullName}.";
+        } elseif ($nota < 5) {
+            $errors[] = "{$alumne->fullName} figura com a No supera.";
+        } elseif (!self::isCertifiableNote($nota)) {
+            $errors[] = "{$alumne->fullName} figura com a No cursa.";
         }
 
         return $errors;
@@ -233,6 +263,10 @@ class ModuloOptatiuCertificatService
 
         foreach ($data['alumnes'] as $alumne) {
             $resultado = $data['resultats']->get($alumne->nia);
+            if (!self::isCertifiableNote((int) ($resultado?->nota ?? 0))) {
+                continue;
+            }
+
             try {
                 $route = $this->pdfRoute($certificat, $alumne);
                 $path = storage_path($route);
@@ -311,6 +345,14 @@ class ModuloOptatiuCertificatService
             ->where('idModuloGrupo', $certificat->idModuloGrupo)
             ->where('idAlumno', $alumne->nia)
             ->first();
+    }
+
+    /**
+     * Indica si la qualificació genera certificat.
+     */
+    private static function isCertifiableNote(int $nota): bool
+    {
+        return $nota >= 5 && !in_array($nota, self::NO_CURSA_NOTES, true);
     }
 
     private function modulos(): ModuloGrupoService

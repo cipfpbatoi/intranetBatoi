@@ -117,8 +117,7 @@ return [
         9=>'9',
         10=>'10',
         11=>'MH',
-        12=>'Convalida',
-        13=>'Aprovada amb anterioritat'
+        12=>'No cursa'
     ],
     'valoraciones' => [
         0=>'Ha seguit de manera satisfactòria el procés de formació online,
