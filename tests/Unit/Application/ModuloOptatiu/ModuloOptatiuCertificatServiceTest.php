@@ -347,6 +347,45 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         $this->assertSame(6, (int) $data['resultats']->get('A1')->nota);
     }
 
+    public function test_indica_quins_certificats_individuals_es_poden_descarregar(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            'idAlumno' => 'A1',
+            'idModuloGrupo' => 2,
+            'nota' => 6,
+        ]);
+
+        $data = $service->panelData($certificat);
+
+        $this->assertTrue($data['pdfDisponibles']->get('A1'));
+        $this->assertFalse($data['pdfDisponibles']->get('A2'));
+    }
+
+    public function test_no_permet_descarregar_certificats_individuals_sense_denominacio_real(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Mòdul optatiu',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            'idAlumno' => 'A1',
+            'idModuloGrupo' => 2,
+            'nota' => 6,
+        ]);
+
+        $data = $service->panelData($certificat);
+
+        $this->assertFalse($data['pdfDisponibles']->get('A1'));
+    }
+
     public function test_genera_un_pdf_individual_sense_registrar_ni_enviar(): void
     {
         $this->bindProfesorServiceSenseCarrecs();

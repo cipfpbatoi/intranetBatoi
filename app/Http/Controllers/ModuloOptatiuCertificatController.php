@@ -47,6 +47,7 @@ class ModuloOptatiuCertificatController extends Controller
             'alumnes' => $data['alumnes'],
             'resultats' => $data['resultats'],
             'estats' => $data['estats'],
+            'pdfDisponibles' => $data['pdfDisponibles'],
             'notes' => config('auxiliares.notas'),
         ]);
     }

@@ -20,6 +20,8 @@
             amb una qualificació de <strong>{{ $nota }}</strong>.
         </p>
 
-        @include('pdf.partials.firmaDS')
+        <div style="margin-top: 130px;">
+            @include('pdf.partials.firmaDS')
+        </div>
     </div>
 @endsection
