@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\ModulOptatiuCertificat;
 use Intranet\Exceptions\NotFoundDomainException;
@@ -98,6 +99,38 @@ class ModuloOptatiuCertificatController extends Controller
         }
 
         return redirect()->route('modulOptatiuCertificat.show', ['moduloGrupo' => $certificat->idModuloGrupo]);
+    }
+
+    /**
+     * Mostra el certificat PDF d'un alumne sense registrar-lo ni enviar correus.
+     *
+     * @param int|string $certificat
+     * @param int|string $alumne
+     */
+    public function pdf($certificat, $alumne)
+    {
+        $certificat = ModulOptatiuCertificat::query()->findOrFail((int) $certificat);
+        $modul = $this->allowedModuloGrupo($certificat->idModuloGrupo);
+
+        $alumne = $modul->Grupo->Alumnos
+            ->firstWhere('nia', (string) $alumne);
+        if (!$alumne instanceof Alumno) {
+            throw new NotFoundDomainException('Alumne no matriculat en el grup del mòdul optatiu', [
+                'certificat_id' => $certificat->id,
+                'alumne' => $alumne,
+            ]);
+        }
+
+        $errors = $this->certificats()->validationErrorsForAlumno($certificat, $alumne);
+        if ($errors !== []) {
+            foreach ($errors as $error) {
+                Alert::danger($error);
+            }
+
+            return redirect()->route('modulOptatiuCertificat.show', ['moduloGrupo' => $certificat->idModuloGrupo]);
+        }
+
+        return $this->certificats()->pdf($certificat, $alumne)->stream();
     }
 
     /**

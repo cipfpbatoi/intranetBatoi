@@ -8,9 +8,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
+use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\ModulOptatiuCertificat;
+use Intranet\Entities\Profesor;
+use Intranet\Services\Document\PdfService;
 use Intranet\Services\School\ModuloGrupoService;
+use Intranet\Services\School\SecretariaService;
 use Tests\TestCase;
 
 /**
@@ -340,5 +345,139 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         $data = $service->panelData($certificat);
 
         $this->assertSame(6, (int) $data['resultats']->get('A1')->nota);
+    }
+
+    public function test_genera_un_pdf_individual_sense_registrar_ni_enviar(): void
+    {
+        $this->bindProfesorServiceSenseCarrecs();
+        $pdfService = new ModuloOptatiuPdfServiceFake();
+        $secretariaService = new ModuloOptatiuSecretariaServiceFake();
+        $service = new ModuloOptatiuCertificatService(null, $pdfService, $secretariaService);
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            'idAlumno' => 'A1',
+            'idModuloGrupo' => 2,
+            'nota' => 7,
+        ]);
+
+        $pdf = $service->pdf($certificat, Alumno::query()->findOrFail('A1'));
+
+        $this->assertSame($pdfService->pdf, $pdf);
+        $this->assertCount(1, $pdfService->calls);
+        $this->assertSame('pdf.modulOptatiu.certificat', $pdfService->calls[0]['informe']);
+        $this->assertSame('A1', $pdfService->calls[0]['todos']['alumne']->nia);
+        $this->assertSame(7, (int) $pdfService->calls[0]['todos']['resultat']->nota);
+        $this->assertSame(0, $secretariaService->uploads);
+        $this->assertDatabaseMissing('modul_optatiu_certificat_alumnes', [
+            'idCertificat' => $certificat->id,
+            'idAlumno' => 'A1',
+        ]);
+    }
+
+    public function test_valida_un_alumne_abans_de_generar_el_pdf_individual(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        $certificat = ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            'idAlumno' => 'A1',
+            'idModuloGrupo' => 2,
+            'nota' => 7,
+        ]);
+
+        $errorsAmbNota = $service->validationErrorsForAlumno($certificat, Alumno::query()->findOrFail('A1'));
+        $errorsSenseNota = $service->validationErrorsForAlumno($certificat, Alumno::query()->findOrFail('A2'));
+
+        $this->assertSame([], $errorsAmbNota);
+        $this->assertCount(1, $errorsSenseNota);
+        $this->assertStringContainsString('Falta la nota de Beta', $errorsSenseNota[0]);
+    }
+
+    private function bindProfesorServiceSenseCarrecs(): void
+    {
+        $this->app->instance(ProfesorService::class, new class extends ProfesorService {
+            public function __construct()
+            {
+            }
+
+            public function find(string $dni): ?Profesor
+            {
+                return null;
+            }
+        });
+    }
+}
+
+/**
+ * Doble de PDF per comprovar la generació sense renderitzar documents reals.
+ */
+class ModuloOptatiuPdfServiceFake extends PdfService
+{
+    public array $calls = [];
+
+    public ModuloOptatiuGeneratedPdfFake $pdf;
+
+    public function __construct()
+    {
+        $this->pdf = new ModuloOptatiuGeneratedPdfFake();
+    }
+
+    public function hazPdf(
+        $informe,
+        $todos,
+        $datosInforme = null,
+        $orientacion = 'portrait',
+        $dimensiones = 'a4',
+        $marginTop = 15,
+        $driver = null
+    ) {
+        $this->calls[] = compact('informe', 'todos', 'datosInforme', 'orientacion', 'dimensiones', 'marginTop', 'driver');
+
+        return $this->pdf;
+    }
+}
+
+/**
+ * PDF generat de prova.
+ */
+class ModuloOptatiuGeneratedPdfFake
+{
+    public array $savedPaths = [];
+
+    public function save(string $path): void
+    {
+        file_put_contents($path, 'pdf');
+        $this->savedPaths[] = $path;
+    }
+
+    public function stream(): string
+    {
+        return 'pdf';
+    }
+}
+
+/**
+ * Doble de Secretaria per garantir que el PDF individual no puja fitxers.
+ */
+class ModuloOptatiuSecretariaServiceFake extends SecretariaService
+{
+    public int $uploads = 0;
+
+    public function __construct()
+    {
+    }
+
+    public function uploadFile($document)
+    {
+        $this->uploads++;
+
+        return 1;
     }
 }

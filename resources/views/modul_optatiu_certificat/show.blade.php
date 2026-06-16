@@ -30,6 +30,7 @@
                 <th>Alumne/a</th>
                 <th style="width: 180px;">Nota</th>
                 <th style="width: 220px;">Estat</th>
+                <th style="width: 140px;">PDF</th>
             </tr>
             </thead>
             <tbody>
@@ -55,6 +56,15 @@
                         @else
                             Pendent
                         @endif
+                    </td>
+                    <td>
+                        <a
+                            class="btn btn-default btn-sm"
+                            href="{{ route('modulOptatiuCertificat.pdf', ['certificat' => $certificat->id, 'alumne' => $alumne->nia]) }}"
+                            target="_blank"
+                        >
+                            <i class="fa fa-file-pdf-o"></i> Certificat
+                        </a>
                     </td>
                 </tr>
             @endforeach

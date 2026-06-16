@@ -248,6 +248,10 @@ Route::put('/modul-optatiu-certificat/{moduloGrupo}', [
     'as' => 'modulOptatiuCertificat.update',
     'uses' => 'ModuloOptatiuCertificatController@update',
 ]);
+Route::get('/modul-optatiu-certificat/{certificat}/alumne/{alumne}/pdf', [
+    'as' => 'modulOptatiuCertificat.pdf',
+    'uses' => 'ModuloOptatiuCertificatController@pdf',
+]);
 Route::post('/modul-optatiu-certificat/{certificat}/emet', [
     'as' => 'modulOptatiuCertificat.emit',
     'uses' => 'ModuloOptatiuCertificatController@emit',

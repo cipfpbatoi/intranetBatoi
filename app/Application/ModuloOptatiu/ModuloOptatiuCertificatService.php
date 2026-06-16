@@ -157,6 +157,26 @@ class ModuloOptatiuCertificatService
     }
 
     /**
+     * Llista les dades que impedeixen generar el certificat d'un alumne.
+     *
+     * @return array<int, string>
+     */
+    public function validationErrorsForAlumno(ModulOptatiuCertificat $certificat, Alumno $alumne): array
+    {
+        $errors = [];
+        if (!$this->hasRealDenomination($certificat)) {
+            $errors[] = 'Cal informar la denominació real del mòdul optatiu impartit.';
+        }
+
+        $resultat = $this->resultForAlumno($certificat, $alumne);
+        if (!$resultat || (int) $resultat->nota <= 0) {
+            $errors[] = "Falta la nota de {$alumne->fullName}.";
+        }
+
+        return $errors;
+    }
+
+    /**
      * Evita emetre certificats amb el literal genèric del codi CVOPT.
      */
     private function hasRealDenomination(ModulOptatiuCertificat $certificat): bool
@@ -217,12 +237,7 @@ class ModuloOptatiuCertificatService
                     unlink($path);
                 }
 
-                $this->pdfs()->hazPdf(
-                    'pdf.modulOptatiu.certificat',
-                    ['alumne' => $alumne, 'certificat' => $certificat, 'resultat' => $resultado],
-                    cargaDatosCertificado([]),
-                    'portrait'
-                )->save($path);
+                $this->pdf($certificat, $alumne, $resultado)->save($path);
 
                 $estat = ModulOptatiuCertificatAlumne::query()->updateOrCreate(
                     ['idCertificat' => $certificat->id, 'idAlumno' => $alumne->nia],
@@ -259,11 +274,37 @@ class ModuloOptatiuCertificatService
     }
 
     /**
+     * Genera el PDF d'un alumne sense registrar-lo ni enviar correus.
+     */
+    public function pdf(ModulOptatiuCertificat $certificat, Alumno $alumne, ?AlumnoResultado $resultat = null): mixed
+    {
+        $resultat ??= $this->resultForAlumno($certificat, $alumne);
+
+        return $this->pdfs()->hazPdf(
+            'pdf.modulOptatiu.certificat',
+            ['alumne' => $alumne, 'certificat' => $certificat, 'resultat' => $resultat],
+            cargaDatosCertificado([]),
+            'portrait'
+        );
+    }
+
+    /**
      * Ruta relativa al directori `storage`.
      */
     private function pdfRoute(ModulOptatiuCertificat $certificat, Alumno $alumne): string
     {
         return "tmp/modul_optatiu_{$certificat->id}_{$alumne->nia}.pdf";
+    }
+
+    /**
+     * Retorna el resultat de l'alumne per al mòdul-grup del certificat.
+     */
+    private function resultForAlumno(ModulOptatiuCertificat $certificat, Alumno $alumne): ?AlumnoResultado
+    {
+        return AlumnoResultado::query()
+            ->where('idModuloGrupo', $certificat->idModuloGrupo)
+            ->where('idAlumno', $alumne->nia)
+            ->first();
     }
 
     private function modulos(): ModuloGrupoService
