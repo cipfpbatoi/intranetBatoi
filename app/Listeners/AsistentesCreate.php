@@ -50,10 +50,6 @@ class AsistentesCreate
             return $grupo->Alumnos;
         }
 
-        if ($reunion->avaluacioFinal && (int) $grupo->curso === 1 && $grupo->isSemi) {
-            return $grupo->Alumnos;
-        }
-
         return collect();
     }
 

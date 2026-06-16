@@ -253,12 +253,7 @@ class Reunion extends Model
         if ($this->extraOrdinaria) {
             return true;
         }
-
-        $grupo = $this->GrupoClase;
-
-        return $this->avaluacioFinal
-            && (int) ($grupo?->curso ?? 0) === 1
-            && (bool) ($grupo?->isSemi ?? false);
+        return false;
     }
     public function getIsSemiAttribute()
     {
