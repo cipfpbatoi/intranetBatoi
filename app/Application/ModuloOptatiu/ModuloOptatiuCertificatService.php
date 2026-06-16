@@ -80,7 +80,7 @@ class ModuloOptatiuCertificatService
     /**
      * Dades del panell: alumnat, notes existents i estat d'emissió.
      *
-     * @return array{alumnes:Collection<int, Alumno>, resultats:Collection<string, AlumnoResultado>, estats:Collection<string, ModulOptatiuCertificatAlumne>}
+     * @return array{alumnes:Collection<int, Alumno>, resultats:Collection<string, AlumnoResultado>, estats:Collection<string, ModulOptatiuCertificatAlumne>, pdfDisponibles:Collection<string, bool>}
      */
     public function panelData(ModulOptatiuCertificat $certificat): array
     {
@@ -98,8 +98,14 @@ class ModuloOptatiuCertificatService
             ->whereIn('idAlumno', $alumnes->pluck('nia')->all())
             ->get()
             ->keyBy('idAlumno');
+        $denominacioValida = $this->hasRealDenomination($certificat);
+        $pdfDisponibles = $alumnes->mapWithKeys(
+            static fn (Alumno $alumne): array => [
+                $alumne->nia => $denominacioValida && (int) ($resultats->get($alumne->nia)?->nota ?? 0) > 0,
+            ]
+        );
 
-        return compact('alumnes', 'resultats', 'estats');
+        return compact('alumnes', 'resultats', 'estats', 'pdfDisponibles');
     }
 
     /**

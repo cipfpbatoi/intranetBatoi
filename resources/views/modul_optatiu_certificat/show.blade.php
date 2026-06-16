@@ -38,6 +38,7 @@
                 @php
                     $resultat = $resultats->get($alumne->nia);
                     $estat = $estats->get($alumne->nia);
+                    $pdfDisponible = (bool) ($pdfDisponibles->get($alumne->nia) ?? false);
                 @endphp
                 <tr>
                     <td>{{ $alumne->fullName }}</td>
@@ -58,13 +59,19 @@
                         @endif
                     </td>
                     <td>
-                        <a
-                            class="btn btn-default btn-sm"
-                            href="{{ route('modulOptatiuCertificat.pdf', ['certificat' => $certificat->id, 'alumne' => $alumne->nia]) }}"
-                            target="_blank"
-                        >
-                            <i class="fa fa-file-pdf-o"></i> Certificat
-                        </a>
+                        @if ($pdfDisponible)
+                            <a
+                                class="btn btn-default btn-sm"
+                                href="{{ route('modulOptatiuCertificat.pdf', ['certificat' => $certificat->id, 'alumne' => $alumne->nia]) }}"
+                                target="_blank"
+                            >
+                                <i class="fa fa-file-pdf-o"></i> Certificat
+                            </a>
+                        @else
+                            <button type="button" class="btn btn-default btn-sm" disabled>
+                                <i class="fa fa-file-pdf-o"></i> Certificat
+                            </button>
+                        @endif
                     </td>
                 </tr>
             @endforeach
