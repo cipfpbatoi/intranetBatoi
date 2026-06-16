@@ -234,6 +234,7 @@ return array(
         'Gtrabajo' => 'Proceedings/Announcements',
         'Grtrabajo' => 'Working groups',
         'Resultados' => 'Tracking',
+        'CertOptatiu' => 'Optional certificates',
         'Register' => 'Register Course/Lecture',
         'Documento' => 'Document Manager',
         'Nohanfichado' => 'Presence',
