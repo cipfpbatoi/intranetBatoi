@@ -520,6 +520,37 @@ class ModuloOptatiuCertificatServiceTest extends TestCase
         ], $summary);
     }
 
+    public function test_resume_emissio_no_es_complet_si_no_hi_ha_alumnat_certificable(): void
+    {
+        $service = new ModuloOptatiuCertificatService();
+        ModulOptatiuCertificat::query()->create([
+            'idModuloGrupo' => 2,
+            'denominacio' => 'Robòtica aplicada',
+            'idProfesor' => 'P1',
+        ]);
+        DB::table('alumno_resultados')->insert([
+            [
+                'idAlumno' => 'A1',
+                'idModuloGrupo' => 2,
+                'nota' => 12,
+            ],
+            [
+                'idAlumno' => 'A2',
+                'idModuloGrupo' => 2,
+                'nota' => 4,
+            ],
+        ]);
+
+        $summary = $service->emissionSummary(Modulo_grupo::query()->findOrFail(2));
+
+        $this->assertSame([
+            'certificables' => 0,
+            'emesos' => 0,
+            'pendents' => 0,
+            'complet' => false,
+        ], $summary);
+    }
+
     public function test_resume_emissio_es_complet_quan_tots_els_certificables_estan_emesos(): void
     {
         $service = new ModuloOptatiuCertificatService();
