@@ -48,7 +48,8 @@ class ModuloOptatiuCertificatController extends Controller
             'resultats' => $data['resultats'],
             'estats' => $data['estats'],
             'pdfDisponibles' => $data['pdfDisponibles'],
-            'notes' => config('auxiliares.notas'),
+            'potEmetre' => $data['potEmetre'],
+            'notes' => $this->certificats()->noteOptions(),
         ]);
     }
 
@@ -66,7 +67,7 @@ class ModuloOptatiuCertificatController extends Controller
         $validated = $request->validate([
             'denominacio' => 'required|string|max:200',
             'notes' => 'nullable|array',
-            'notes.*' => 'nullable|integer|min:0|max:13',
+            'notes.*' => 'nullable|integer|min:0|max:12',
         ]);
 
         $saved = $this->certificats()->save(

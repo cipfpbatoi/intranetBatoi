@@ -39,13 +39,15 @@
                     $resultat = $resultats->get($alumne->nia);
                     $estat = $estats->get($alumne->nia);
                     $pdfDisponible = (bool) ($pdfDisponibles->get($alumne->nia) ?? false);
+                    $notaActual = (int) old("notes.{$alumne->nia}", $resultat->nota ?? 0);
+                    $notaActual = $notaActual > 0 && $notaActual < 5 ? 4 : $notaActual;
                 @endphp
                 <tr>
                     <td>{{ $alumne->fullName }}</td>
                     <td>
                         <select name="notes[{{ $alumne->nia }}]" class="form-control">
                             @foreach ($notes as $key => $label)
-                                <option value="{{ $key }}" @selected((string) old("notes.{$alumne->nia}", $resultat->nota ?? 0) === (string) $key)>
+                                <option value="{{ $key }}" @selected($notaActual === (int) $key)>
                                     {{ $label }}
                                 </option>
                             @endforeach
@@ -81,8 +83,14 @@
         <button type="submit" class="btn btn-primary">Guardar notes</button>
     </form>
 
-    <form method="post" action="{{ route('modulOptatiuCertificat.emit', ['certificat' => $certificat->id]) }}" class="mt-3">
-        @csrf
-        <button type="submit" class="btn btn-success">Emetre certificats PDF</button>
-    </form>
+    @if ($potEmetre)
+        <form method="post" action="{{ route('modulOptatiuCertificat.emit', ['certificat' => $certificat->id]) }}" class="mt-3">
+            @csrf
+            <button type="submit" class="btn btn-success">Emetre certificats PDF</button>
+        </form>
+    @else
+        <div class="alert alert-danger mt-3" role="alert">
+            S'ha d'avaluar tot l'alumnat i guardar les notes per poder emetre els certificats.
+        </div>
+    @endif
 @endsection
