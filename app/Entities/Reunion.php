@@ -255,6 +255,19 @@ class Reunion extends Model
         }
         return false;
     }
+
+    /**
+     * Indica si l'acta ordinària ha de mostrar el formulari de notes FE sense FCTs de 2n.
+     */
+    public function getMostraNotesFeAttribute(): bool
+    {
+        $grupo = $this->GrupoClase;
+
+        return $this->avaluacioFinal
+            && (int) ($grupo?->curso ?? 0) === 1
+            && (bool) ($grupo?->isSemi ?? false);
+    }
+
     public function getIsSemiAttribute()
     {
         return (bool) ($this->GrupoClase->isSemi ?? false);
