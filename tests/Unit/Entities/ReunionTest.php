@@ -65,8 +65,7 @@ class ReunionTest extends TestCase
 
     public function test_mostra_notes_fe_retorna_true_per_avaluacio_final_de_primer_semipresencial(): void
     {
-        Reunion::query()->create([
-            'id' => 2,
+        $reunion = Reunion::query()->create([
             'idProfesor' => 'P100',
             'tipo' => 7,
             'numero' => 34,
@@ -80,15 +79,12 @@ class ReunionTest extends TestCase
         $grupoService->method('largestByTutor')->with('P100')->willReturn($grupo);
         app()->instance(GrupoService::class, $grupoService);
 
-        $reunion = Reunion::query()->findOrFail(2);
-
         $this->assertTrue($reunion->mostra_notes_fe);
     }
 
     public function test_mostra_notes_fe_retorna_false_per_avaluacio_final_de_primer_no_semipresencial(): void
     {
-        Reunion::query()->create([
-            'id' => 3,
+        $reunion = Reunion::query()->create([
             'idProfesor' => 'P200',
             'tipo' => 7,
             'numero' => 34,
@@ -101,8 +97,6 @@ class ReunionTest extends TestCase
         $grupoService = $this->createMock(GrupoService::class);
         $grupoService->method('largestByTutor')->with('P200')->willReturn($grupo);
         app()->instance(GrupoService::class, $grupoService);
-
-        $reunion = Reunion::query()->findOrFail(3);
 
         $this->assertFalse($reunion->mostra_notes_fe);
     }

@@ -22,12 +22,17 @@ class SecretariaService
     }
 
 
+    /**
+     * Puja un document a l'expedient de matrícula del curs acadèmic actual.
+     *
+     * @param array{title:int|string,dni:string,alumne:string,route:string,name:string,size?:int} $document
+     * @return int
+     */
     public function uploadFile($document)
     {
         try {
-            $curso = substr(curso(), 0, 4);
-            $link = $this->link."application/2024-2025/student/".$document['dni']."/document/".$document['title'];
-            //$link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
+            $curso = curso();
+            $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
             $route = storage_path($document['route']);
 
             $response = Http::withToken($this->token)
