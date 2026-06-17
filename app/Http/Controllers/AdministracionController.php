@@ -411,20 +411,4 @@ class AdministracionController extends Controller
         $doors = Espacio::whereNotNull('dispositivo')->get();
         return view('espai.show', compact('missatge', 'doors'));
     }
-
-    /*public function consulta()
-    {
-        $alumnosPendientes = app(AlumnoFctService::class)->all()->filter(fn ($fct) => $fct->erasmus);
-
-            foreach ($alumnosPendientes as $alumno) {
-                try {
-                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
-                    $alumno->correoAlumno = 1;
-                    $alumno->save();
-                } catch (Exception $e) {
-                    Alert::info($e->getMessage());
-                }
-            }
-    }
-    */
 }
