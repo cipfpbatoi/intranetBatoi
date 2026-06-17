@@ -5,15 +5,13 @@ namespace Intranet\Console\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
 use Intranet\Entities\Fct;
 
 /**
- * Envia correus diaris de FCT a alumnat i instructors.
+ * Envia correus diaris de certificació de FCT a instructors.
  */
 class SendFctEmails extends Command
 {
@@ -40,41 +38,6 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
-        $alumnosPendientes = AlumnoFct::pendienteNotificar()->get();
-
-        foreach ($alumnosPendientes as $alumno) {
-            $fct = $alumno->Fct;
-
-            try {
-                Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)
-                    ->cc($alumno->Tutor->email)
-                    ->send(new CertificatAlumneFct($alumno));
-                avisa($alumno->Tutor->dni,
-                    'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
-                    '#', 'Servidor de correu');
-                $alumno->correoAlumno = 1;
-                $alumno->save();
-            } catch (Exception  $e) {
-                $mensaje = "Error : Enviant certificats a l'alumne:  ".$e->getMessage().".".
-                    $alumno->Alumno->fullName.' al email '.
-                    $alumno->Alumno->email;
-                avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                if ($alumno->Tutor != null) {
-                    avisa($alumno->Tutor->dni, $mensaje, '#', 'Servidor de correu');
-                }
-                report($e);
-                Log::error('Error enviant certificat a l\'alumne', [
-                    'alumno_id' => $alumno->idAlumno,
-                    'dni' => $alumno->Alumno->dni,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-
-            if ($this->shouldSendInstructorCertificate($fct)) {
-                $this->correuInstructor($fct);
-            }
-        }
-
         $fcts = Fct::where('correoInstructor', 0)->get();
         foreach ($fcts as $fct) {
             if ($this->shouldSendInstructorCertificate($fct)) {
@@ -96,12 +59,12 @@ class SendFctEmails extends Command
             return false;
         }
 
-        $alumnos = $fct->AlFct()->get(['calificacion', 'correoAlumno']);
+        $alumnos = $fct->AlFct()->get(['calificacion']);
         if ($alumnos->isEmpty()) {
             return false;
         }
 
-        $hasNotifiedApprovedStudent = false;
+        $hasApprovedStudent = false;
 
         foreach ($alumnos as $alumno) {
             if ($alumno->calificacion === null) {
@@ -109,15 +72,11 @@ class SendFctEmails extends Command
             }
 
             if ((int) $alumno->calificacion === 1) {
-                if ((int) $alumno->correoAlumno !== 1) {
-                    return false;
-                }
-
-                $hasNotifiedApprovedStudent = true;
+                $hasApprovedStudent = true;
             }
         }
 
-        return $hasNotifiedApprovedStudent;
+        return $hasApprovedStudent;
     }
 
     /**
