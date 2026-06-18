@@ -62,7 +62,7 @@ return array(
                 '1' => 'Sense justificant',
                 '5' => 'Llarga Durada',
                 '6' => 'Itaca',
-                '0' => 'No enviada/autoritzada'
+                '0' => 'Esborrany'
                 
              ),
         'Profesor' => array(

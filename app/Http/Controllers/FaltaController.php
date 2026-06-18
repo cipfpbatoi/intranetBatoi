@@ -109,7 +109,15 @@ class FaltaController extends ModalController
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update', $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]));
+        $falta = $this->findModelOrFail(Falta::class, (int) $id, 'Falta no trobada', ['falta_id' => $id]);
+        $this->authorize('update', $falta);
+
+        if ((int) $falta->estado >= 1 && !UserisAllow(config('roles.rol.direccion'))) {
+            $this->validate($request, ['fichero' => 'nullable|mimes:pdf,jpg,jpeg,png']);
+            $this->faltas()->updateJustificant($id, $request);
+            return $this->redirect();
+        }
+
         $this->validate($request, (new FaltaRequest())->rules());
         $this->faltas()->update($id, $request);
         return $this->redirect();

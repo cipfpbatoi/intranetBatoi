@@ -62,7 +62,7 @@ return array(
                 '1' => 'Sin justificante',
                 '5' => 'Larga Duración',
                 '6' => 'Itaca',
-                '0' => 'No enviada/autorizada'
+                '0' => 'Borrador'
                 
              ),
         'Profesor' => array(
