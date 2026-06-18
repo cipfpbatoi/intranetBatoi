@@ -7,10 +7,12 @@ namespace Tests\Unit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
@@ -278,6 +280,112 @@ class FaltaControllerTest extends TestCase
         $response = $controller->update($request, $faltaId);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+    }
+
+    public function test_update_de_falta_enviada_del_professor_conserva_les_dades(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P906',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P906'), 'profesor');
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P906',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'idProfesor' => 'P999',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-02',
+            'motivos' => 3,
+            'observaciones' => 'Canvi no permés',
+            'dia_completo' => '0',
+            'hora_ini' => '09:00',
+            'hora_fin' => '10:00',
+        ]);
+
+        $controller = new DummyFaltaController();
+        $response = $controller->update($request, $faltaId);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('P906', $falta->idProfesor);
+        $this->assertSame('2026-02-10', $falta->desde);
+        $this->assertSame('2026-02-10', $falta->hasta);
+        $this->assertSame(1, (int) $falta->motivos);
+        $this->assertSame('Original', $falta->observaciones);
+        $this->assertSame(1, (int) $falta->dia_completo);
+        $this->assertNull($falta->hora_ini);
+        $this->assertNull($falta->hora_fin);
+        $this->assertSame(1, (int) $falta->estado);
+    }
+
+    public function test_update_de_falta_enviada_del_professor_permet_adjuntar_justificant(): void
+    {
+        Storage::fake('local');
+
+        DB::table('profesores')->insert([
+            'dni' => 'P907',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P907'), 'profesor');
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P907',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = Request::create(
+            '/falta/' . $faltaId . '/edit',
+            'PUT',
+            ['observaciones' => 'Canvi no permés'],
+            [],
+            ['fichero' => UploadedFile::fake()->create('justificant.pdf', 10, 'application/pdf')]
+        );
+
+        $controller = new DummyFaltaController();
+        $response = $controller->update($request, $faltaId);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('Original', $falta->observaciones);
+        $this->assertSame(2, (int) $falta->estado);
+        $this->assertNotEmpty($falta->fichero);
+        Storage::disk('local')->assertExists($falta->fichero);
     }
 
     private function createSchema(): void

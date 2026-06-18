@@ -69,6 +69,27 @@ class FaltaService
         return $falta;
     }
 
+    /**
+     * Actualitza únicament el justificant d'una falta ja enviada.
+     */
+    public function updateJustificant(int|string $id, Request $request): Falta
+    {
+        $falta = Falta::findOrFail($id);
+
+        if ($request->hasFile('fichero')) {
+            $falta->fichero = $falta->fillFile($request->file('fichero'));
+            $falta->save();
+            $falta->refresh();
+        }
+
+        if ((int) $falta->estado === 1 && !empty($falta->fichero)) {
+            (new StateService($falta))->putEstado(2);
+            $falta = $falta->fresh();
+        }
+
+        return $falta;
+    }
+
     public function init(int|string $id): Falta
     {
         $falta = Falta::findOrFail($id);
