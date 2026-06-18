@@ -26,7 +26,7 @@
         "laravelcollective/html": "^6.4",
         "lcobucci/jwt": "^5.3",
         "livewire/livewire": "^3.7.11",
-        "maatwebsite/excel": "*",
+        "maatwebsite/excel": "~3.1.69",
         "php-webdriver/webdriver": "^1.13",
         "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",
