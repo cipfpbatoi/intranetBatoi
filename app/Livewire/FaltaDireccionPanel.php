@@ -379,6 +379,8 @@ class FaltaDireccionPanel extends Component
                 'hasDocument' => !empty($falta->fichero),
             ];
         })->all();
+
+        $this->reloadEstatOptions();
     }
 
     /**
@@ -398,14 +400,35 @@ class FaltaDireccionPanel extends Component
             })
             ->toArray();
 
-        $this->estatOptions = Falta::query()
-            ->orderBy('estado')
-            ->get()
-            ->mapWithKeys(function (Falta $falta) {
-                $key = (string) $falta->estado;
-                return [$key => (string) $falta->situacion];
-            })
+        $this->reloadEstatOptions();
+    }
+
+    /**
+     * Recarrega totes les opcions d'estat amb recompte segons el filtre de professor.
+     */
+    private function reloadEstatOptions(): void
+    {
+        $countQuery = Falta::query();
+
+        if ($this->filterProfessor !== '') {
+            $this->applyProfessorFilter($countQuery, $this->filterProfessor);
+        }
+
+        $counts = $countQuery
+            ->selectRaw('estado, COUNT(*) as total')
+            ->groupBy('estado')
+            ->pluck('total', 'estado')
+            ->map(fn ($total): int => (int) $total)
             ->toArray();
+
+        $this->estatOptions = [];
+        foreach ([0, 1, 2, 3, 4, 5] as $estado) {
+            $label = isblankTrans('models.Falta.' . $estado)
+                ? __('messages.situations.' . $estado)
+                : __('models.Falta.' . $estado);
+
+            $this->estatOptions[(string) $estado] = $label . ' (' . ($counts[$estado] ?? 0) . ')';
+        }
     }
 
     /**

@@ -106,6 +106,33 @@ class FaltaDireccionPanelTest extends TestCase
         $this->assertSame(2, $faltes[0]['estado']);
     }
 
+    public function test_mostra_tots_els_estats_amb_recompte_encara_que_no_tinguen_faltes(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class);
+
+        $this->assertSame([0, 1, 2, 3, 4, 5], array_keys($component->get('estatOptions')));
+        $this->assertEstatOptionCounts($component->get('estatOptions'), [
+            '0' => 0,
+            '1' => 1,
+            '2' => 1,
+            '3' => 1,
+            '4' => 0,
+            '5' => 0,
+        ]);
+
+        $component->set('filterProfessor', 'Maria');
+
+        $this->assertEstatOptionCounts($component->get('estatOptions'), [
+            '0' => 0,
+            '1' => 1,
+            '2' => 1,
+            '3' => 0,
+            '4' => 0,
+            '5' => 0,
+        ]);
+    }
+
     public function test_esborrar_permet_estat_0_1_o_2_i_rebutja_autoritzades(): void
     {
         DB::connection('sqlite')->table('faltas')->where('id', 1)->update(['estado' => 0]);
@@ -227,6 +254,20 @@ class FaltaDireccionPanelTest extends TestCase
     private function direccionUser(): Profesor
     {
         return Profesor::on('sqlite')->findOrFail('DIR001');
+    }
+
+    /**
+     * Comprova els recomptes mostrats al final de cada opció d'estat.
+     *
+     * @param array<string, string> $estatOptions
+     * @param array<string, int> $expectedCounts
+     */
+    private function assertEstatOptionCounts(array $estatOptions, array $expectedCounts): void
+    {
+        foreach ($expectedCounts as $estat => $expectedCount) {
+            $this->assertArrayHasKey($estat, $estatOptions);
+            $this->assertStringEndsWith('(' . $expectedCount . ')', $estatOptions[$estat]);
+        }
     }
 
     private function createSchema(): void
