@@ -28,10 +28,12 @@ class ActualizacionController extends Controller
             'resolved_branch' => $this->resolveBranch(),
         ]);
 
-        if (File::exists(base_path('composer.lock'))) {
-            File::delete(base_path('composer.lock'));
-            Alert::info('composer.lock eliminat');
-            Log::info('composer.lock eliminat durant /actualizacion.');
+        foreach (['composer.json', 'composer.lock'] as $composerFile) {
+            if (File::exists(base_path($composerFile))) {
+                File::delete(base_path($composerFile));
+                Alert::info($composerFile.' eliminat');
+                Log::info($composerFile.' eliminat durant /actualizacion.');
+            }
         }
 
         $branch = $this->resolveBranch();
