@@ -266,6 +266,22 @@ class ReunionFeValuationServiceTest extends TestCase
     }
 
     /**
+     * Verifica que una acta vinculada a grup no depén del tutor convocant antic.
+     */
+    public function test_resum_fe_usa_id_grupo_encara_que_el_convocant_siga_antic(): void
+    {
+        $this->seedKnownFctData();
+
+        $summary = (new ReunionFeValuationService())->defaultSummaryForReunion(
+            $this->makeReunion(10, 7, 34, '2LFP', 'POLD')
+        );
+
+        $this->assertStringContainsString('Apta Test, Anna - Apte - 120 hores', $summary);
+        $this->assertStringContainsString('Noapta Test, Noa - No Apte - 80 hores', $summary);
+        $this->assertStringNotContainsString('Loe Test, Laia', $summary);
+    }
+
+    /**
      * Verifica que es crea el punt 10 amb notes reals introduïdes.
      */
     public function test_crea_punt_notes_reals_per_alumnat_no_apte_o_renuncia(): void
@@ -584,7 +600,7 @@ class ReunionFeValuationServiceTest extends TestCase
     /**
      * Crea una reunió Eloquent mínima per a les proves.
      */
-    private function makeReunion(int $id, int $tipo, int $numero): Reunion
+    private function makeReunion(int $id, int $tipo, int $numero, ?string $idGrupo = null, string $idProfesor = 'P1'): Reunion
     {
         $reunion = new Reunion([
             'tipo' => $tipo,
@@ -592,7 +608,8 @@ class ReunionFeValuationServiceTest extends TestCase
             'curso' => '2025',
             'fecha' => '2026-06-04 10:00:00',
             'descripcion' => 'Acta',
-            'idProfesor' => 'P1',
+            'idProfesor' => $idProfesor,
+            'idGrupo' => $idGrupo,
             'idEspacio' => 'A1',
         ]);
         $reunion->id = $id;

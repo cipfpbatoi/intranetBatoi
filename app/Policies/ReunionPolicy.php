@@ -3,6 +3,7 @@
 namespace Intranet\Policies;
 
 use Intranet\Entities\Reunion;
+use Intranet\Entities\Grupo;
 use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
@@ -80,7 +81,27 @@ class ReunionPolicy
      */
     private function isOwner($user, Reunion $reunion): bool
     {
-        return $this->hasProfesorIdentity($user)
-            && (string) $reunion->idProfesor === (string) $user->dni;
+        if (!$this->hasProfesorIdentity($user)) {
+            return false;
+        }
+
+        return (string) $reunion->idProfesor === (string) $user->dni
+            || $this->isTutorDelGrupo($user, $reunion);
+    }
+
+    /**
+     * Determina si l'usuari és tutor actual del grup docent de l'acta.
+     *
+     * @param mixed $user
+     */
+    private function isTutorDelGrupo($user, Reunion $reunion): bool
+    {
+        if (!$reunion->idGrupo) {
+            return false;
+        }
+
+        return Grupo::qTutor((string) $user->dni)
+            ->where('codigo', (string) $reunion->idGrupo)
+            ->exists();
     }
 }

@@ -18,6 +18,7 @@ class ReunionTest extends TestCase
         $schema = Schema::connection('sqlite');
 
         $schema->dropIfExists('reuniones');
+        $schema->dropIfExists('grupos');
         $schema->dropIfExists('profesores');
         $schema->dropIfExists('departamentos');
 
@@ -33,11 +34,22 @@ class ReunionTest extends TestCase
             $table->string('sustituye_a', 10)->nullable();
         });
 
+        $schema->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo', 10)->primary();
+            $table->string('nombre')->nullable();
+            $table->string('tutor', 10)->nullable();
+            $table->unsignedTinyInteger('curso')->nullable();
+            $table->string('turno')->nullable();
+            $table->unsignedInteger('idCiclo')->nullable();
+            $table->timestamps();
+        });
+
         $schema->create('reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedTinyInteger('tipo')->nullable();
             $table->unsignedTinyInteger('numero')->nullable();
             $table->string('idProfesor', 10)->nullable();
+            $table->string('idGrupo', 10)->nullable();
             $table->timestamps();
         });
     }
@@ -99,5 +111,27 @@ class ReunionTest extends TestCase
         app()->instance(GrupoService::class, $grupoService);
 
         $this->assertFalse($reunion->mostra_notes_fe);
+    }
+
+    public function test_grupo_clase_preferix_id_grupo_abans_del_tutor_convocant(): void
+    {
+        Grupo::query()->create([
+            'codigo' => 'G1',
+            'nombre' => 'Primer LFP',
+            'tutor' => 'P900',
+            'curso' => 1,
+            'turno' => 'S',
+        ]);
+
+        $reunion = Reunion::query()->create([
+            'idProfesor' => 'P100',
+            'idGrupo' => 'G1',
+            'tipo' => 7,
+            'numero' => 34,
+        ]);
+
+        $this->assertSame('G1', $reunion->grupoClase?->codigo);
+        $this->assertSame('Primer LFP', $reunion->xgrupo);
+        $this->assertTrue($reunion->mostra_notes_fe);
     }
 }
