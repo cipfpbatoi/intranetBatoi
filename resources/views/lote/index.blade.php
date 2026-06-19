@@ -3,8 +3,9 @@
     <title>{{$panel->getTitulo()}}</title>
 @endsection
 @section('grid')
+    @php($pestana = $panel->getPestanas()[0])
     <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
-    <x-grid.table :panel="$panel" :mostrarBody="false" />
+    <x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$panel->getElementos($pestana)" />
 @endsection
 @section('titulo')
     {{$panel->getTitulo()}}
