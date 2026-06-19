@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
@@ -33,8 +34,14 @@ class LoteController extends ModalController
      */
     protected $vista = 'lote.index';
 
-    protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
+    /**
+     * @var array<int, string>
+     */
+    protected $gridFields = ['registre', 'proveedor', 'factura', 'procedencia', 'estado', 'fechaAlta', 'departament'];
 
+    /**
+     * Retorna les factures ordenades de més recents a més antigues.
+     */
     protected function search()
     {
         return Lote::query()
@@ -46,10 +53,10 @@ class LoteController extends ModalController
                     $query->where('espacio', 'INVENT');
                 },
             ])
+            ->orderByDesc('fechaAlta')
+            ->orderByDesc('registre')
             ->get();
     }
-
-
 
     public function store(LoteRequest $request)
     {
@@ -85,7 +92,15 @@ class LoteController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => [config('roles.rol.direccion'), config('roles.rol.administrador')]]));
+        $roles = [config('roles.rol.direccion'), config('roles.rol.administrador')];
+
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico('direccion.lote.create', ['text' => 'Nova Factura', 'roles' => $roles])
+        );
+        $this->panel->setBoton('grid', new BotonImg('lote.edit', ['roles' => $roles], 'direccion'));
+        $this->panel->setBoton('grid', new BotonImg('lote.capture', ['img' => 'fa-list', 'roles' => $roles], 'direccion'));
+        $this->panel->setBoton('grid', new BotonImg('lote.print', ['img' => 'fa-file-pdf-o', 'roles' => $roles], 'direccion'));
     }
 
     /**
@@ -94,10 +109,11 @@ class LoteController extends ModalController
      * @throws NotFoundDomainException
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    protected function print($id,$posicion=1){
+    public function print($id, $posicion = 1)
+    {
         $lote = $this->findModelOrFail(Lote::class, (string) $id, 'Lot no trobat', ['lote_id' => $id]);
         $this->authorize('update', $lote);
-        return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait',[210,297],5)->stream();
+        return $this->hazPdf('pdf.inventario.lote', $lote->Materiales, $posicion, 'portrait', [210, 297], 5)->stream();
     }
 
     /**
@@ -105,10 +121,11 @@ class LoteController extends ModalController
      * @throws NotFoundDomainException
      * @return \Illuminate\View\View
      */
-    protected function capture($lote){
+    public function capture($lote)
+    {
         $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
-        $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
-        return view('lote.inventario',compact('lote','materiales'));
+        $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable', 0)->get();
+        return view('lote.inventario', compact('lote', 'materiales'));
     }
 
     /**
@@ -117,35 +134,42 @@ class LoteController extends ModalController
      * @throws NotFoundDomainException
      * @return void
      */
-    protected function postCapture($lote,Request $request){
-       $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
-       foreach ($request->except('_token') as $key => $value){
-           $material = Material::find($key);
-           if (!$material) {
-               throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
-           }
-           if (!$value) {
-               $value = $material->descripcion;
-           }
-           DB::transaction(function () use ($material,$value,$lote){
-               $articulo = Articulo::where('descripcion',$value)->first();
-               if (!$articulo){
-                   $articulo = new Articulo(['descripcion'=>$value]);
-                   $articulo->save();
-               }
-               $articulo_lote = new ArticuloLote(['lote_id'=>$lote,'articulo_id'=>$articulo->id,'marca'=>$material->marca,'modelo'=>$material->modelo,'unidades'=>$material->unidades]);
-               $articulo_lote->save();
-               for ($i=0; $i<$material->unidades;$i++){
-                 $new = $material->replicate();
-                 $new->unidades = 1;
-                 $new->inventariable = 1;
-                 $new->fechaultimoinventario = null;
-                 $new->articulo_lote_id = $articulo_lote->id;
-                 $new->save();
-               }
-               $material->delete();
-           });
-       }
+    public function postCapture($lote, Request $request)
+    {
+        $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
+        foreach ($request->except('_token') as $key => $value) {
+            $material = Material::find($key);
+            if (!$material) {
+                throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
+            }
+            if (!$value) {
+                $value = $material->descripcion;
+            }
+            DB::transaction(function () use ($material, $value, $lote) {
+                $articulo = Articulo::where('descripcion', $value)->first();
+                if (!$articulo) {
+                    $articulo = new Articulo(['descripcion' => $value]);
+                    $articulo->save();
+                }
+                $articulo_lote = new ArticuloLote([
+                    'lote_id' => $lote,
+                    'articulo_id' => $articulo->id,
+                    'marca' => $material->marca,
+                    'modelo' => $material->modelo,
+                    'unidades' => $material->unidades,
+                ]);
+                $articulo_lote->save();
+                for ($i = 0; $i < $material->unidades; $i++) {
+                    $new = $material->replicate();
+                    $new->unidades = 1;
+                    $new->inventariable = 1;
+                    $new->fechaultimoinventario = null;
+                    $new->articulo_lote_id = $articulo_lote->id;
+                    $new->save();
+                }
+                $material->delete();
+            });
+        }
     }
 
 }

@@ -482,6 +482,8 @@ return array(
             'show' => 'Factura :quien',
             'index' => 'Libro de Facturas',
             'edit' => 'Editar Factura',
+            'capture' => 'Capturar materiales',
+            'print' => 'Imprimir factura',
             'create' => 'Nueva Factura',
         ),
         'Articulolote' => array(

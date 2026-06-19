@@ -11,7 +11,8 @@
            name="{{ $panel->getModel() }}"
            class="table table-striped table-bordered display nowrap dtr-inline collapsed"
            style="width:100%" data-page-length="25"
-           @if($panel->getModel() === 'Task') data-order='[[0,"desc"]]' @endif>
+           @if($panel->getModel() === 'Task') data-order='[[0,"desc"]]' @endif
+           @if($panel->getModel() === 'Lote') data-order='[[5,"desc"],[0,"desc"]]' @endif>
 
         <thead>
             <x-grid.header :panel="$panel" :pestana="$pestana" />
