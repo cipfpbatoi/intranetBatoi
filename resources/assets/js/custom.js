@@ -2741,7 +2741,18 @@ if (typeof NProgress != 'undefined') {
 				var shouldSkipLegacyDatatable = datatableModel && managedModels.indexOf(datatableModel) !== -1;
 
 				if ($legacyDatatable.length && !shouldSkipLegacyDatatable && !$.fn.dataTable.isDataTable($legacyDatatable[0])) {
-				  $legacyDatatable.DataTable();
+				  var legacyDatatableOptions = {};
+				  var legacyDataOrder = $legacyDatatable.attr('data-order');
+
+				  if (legacyDataOrder) {
+					try {
+					  legacyDatatableOptions.order = JSON.parse(legacyDataOrder);
+					} catch (error) {
+					  intranetDebugLog('data-order invalid');
+					}
+				  }
+
+				  $legacyDatatable.DataTable(legacyDatatableOptions);
 				}
 
 				$('#datatable-keytable').DataTable({

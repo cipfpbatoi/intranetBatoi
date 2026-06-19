@@ -92,6 +92,28 @@ class GridTableComponentTest extends TestCase
         $this->assertSame('[[0,"desc"]]', $table?->getAttribute('data-order'));
     }
 
+    public function test_taula_de_lote_ordena_per_data_i_registre_descendent_per_defecte(): void
+    {
+        $panel = new Panel('Lote', ['registre', 'proveedor', 'factura', 'procedencia', 'estado', 'fechaAlta', 'departament']);
+        $pestana = $panel->getPestanas()[0];
+
+        $html = Blade::render(
+            '<x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$elementos" />',
+            [
+                'panel' => $panel,
+                'pestana' => $pestana,
+                'elementos' => new Collection(),
+            ]
+        );
+
+        $document = new DOMDocument();
+        @$document->loadHTML($html);
+
+        $table = (new DOMXPath($document))->query('//table[@id="datatable"]')->item(0);
+
+        $this->assertSame('[[5,"desc"],[0,"desc"]]', $table?->getAttribute('data-order'));
+    }
+
     public function test_nom_edat_d_alumno_fct_renderitza_icona_controlada_sense_escapar_html(): void
     {
         $panel = new Panel('AlumnoFct', ['NomEdat']);
