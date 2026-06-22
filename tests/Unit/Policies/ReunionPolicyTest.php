@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Policies;
 
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Reunion;
 use Intranet\Policies\ReunionPolicy;
 use Tests\TestCase;
@@ -40,6 +43,34 @@ class ReunionPolicyTest extends TestCase
         $this->assertFalse($policy->manageParticipants($other, $reunion));
         $this->assertFalse($policy->manageOrder($other, $reunion));
         $this->assertFalse($policy->notify($other, $reunion));
+    }
+
+    public function test_update_manage_i_notify_permeten_tutor_actual_del_grup(): void
+    {
+        $schema = Schema::connection('sqlite');
+        $schema->dropIfExists('grupos');
+        $schema->dropIfExists('profesores');
+        $schema->create('profesores', function (Blueprint $table): void {
+            $table->string('dni', 10)->primary();
+            $table->string('sustituye_a', 10)->nullable();
+        });
+        $schema->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo', 10)->primary();
+            $table->string('tutor', 10)->nullable();
+        });
+        DB::table('profesores')->insert(['dni' => 'PRF999', 'sustituye_a' => null]);
+        DB::table('grupos')->insert(['codigo' => 'G1', 'tutor' => 'PRF999']);
+
+        $policy = new ReunionPolicy();
+        $reunion = new Reunion();
+        $reunion->idProfesor = 'PRF001';
+        $reunion->idGrupo = 'G1';
+        $tutorActual = (object) ['dni' => 'PRF999'];
+
+        $this->assertTrue($policy->update($tutorActual, $reunion));
+        $this->assertTrue($policy->manageParticipants($tutorActual, $reunion));
+        $this->assertTrue($policy->manageOrder($tutorActual, $reunion));
+        $this->assertTrue($policy->notify($tutorActual, $reunion));
     }
 
     public function test_manage_department_report_requerix_rol_cap_de_departament(): void

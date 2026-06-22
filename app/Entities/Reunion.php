@@ -24,6 +24,7 @@ class Reunion extends Model
     protected $fillable = [
         'tipo',
         'grupo',
+        'idGrupo',
         'curso',
         'numero',
         'fecha',
@@ -86,7 +87,16 @@ class Reunion extends Model
                 ->whereIn('idProfesor', array_filter([authUser()->dni, authUser()->sustituye_a]))
                 ->pluck('idReunion')
                 ->all();
-        return $query->whereIn('id', $reuniones)->orWhere('idProfesor', authUser()->dni);
+        $grupos = Grupo::qTutor(authUser()->dni)->pluck('codigo')->all();
+
+        return $query->where(function ($innerQuery) use ($reuniones, $grupos) {
+            $innerQuery->whereIn('id', $reuniones)
+                ->orWhere('idProfesor', authUser()->dni);
+
+            if ($grupos !== []) {
+                $innerQuery->orWhereIn('idGrupo', $grupos);
+            }
+        });
     }
     public function scopeConvocante($query, $dni=null)
     {
@@ -112,6 +122,17 @@ class Reunion extends Model
             return $query;
         }
     }
+    /**
+     * Filtra les actes pel curs acadèmic.
+     *
+     * @param mixed $query
+     * @param string|null $curso
+     * @return mixed
+     */
+    public function scopeCurso($query, $curso = null)
+    {
+        return $query->where('curso', $curso ?? Curso());
+    }
     public function scopeArchivada($query)
     {
         return $query->where('archivada', 1);
@@ -119,6 +140,24 @@ class Reunion extends Model
     public function scopeActaFinal($query, $tutor)
     {
         return $query->where('tipo', 7)->where('numero', 34)->where('idProfesor', $tutor);
+    }
+
+    /**
+     * Filtra actes d'un grup docent amb compatibilitat per actes antigues sense `idGrupo`.
+     *
+     * @param mixed $query
+     * @param Grupo $grupo
+     * @return mixed
+     */
+    public function scopeActaGrupo($query, Grupo $grupo)
+    {
+        return $query->where(function ($innerQuery) use ($grupo) {
+            $innerQuery->where('idGrupo', $grupo->codigo)
+                ->orWhere(function ($legacyQuery) use ($grupo) {
+                    $legacyQuery->whereNull('idGrupo')
+                        ->where('idProfesor', $grupo->tutor);
+                });
+        });
     }
 
     public function getTipoOptions()
@@ -143,6 +182,16 @@ class Reunion extends Model
     public function getGrupoOptions()
     {
         return hazArray(GrupoTrabajo::MisGruposTrabajo()->get(), 'id', 'literal');
+    }
+
+    /**
+     * Opcions de grup docent per a vincular actes de tutoria.
+     *
+     * @return array<string, string>
+     */
+    public function getIdGrupoOptions(): array
+    {
+        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
     }
 
     public function getDepartamentoAttribute()
@@ -180,6 +229,14 @@ class Reunion extends Model
         return $this->belongsTo(GrupoTrabajo::class, 'grupo', 'id');
     }
 
+    /**
+     * Grup docent propietari de l'acta de tutoria.
+     */
+    public function GrupoDocente()
+    {
+        return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');
+    }
+
     public function Espacio()
     {
         return $this->belongsTo(Espacio::class, 'idEspacio', 'aula');
@@ -197,7 +254,7 @@ class Reunion extends Model
         }
         $colectivo =$this->Tipos()->colectivo;
         $profesor = Profesor::query()->find($this->idProfesor);
-        if (!$profesor) {
+        if (!$profesor && $colectivo !== 'Grupo') {
             return '';
         }
         $grupo = '';
@@ -212,7 +269,7 @@ class Reunion extends Model
                 $grupo = Departamento::query()->where('id', $profesor->departamento)->value('cliteral') ?? '';
                 break;
             case 'Grupo':
-                $grupo = app(GrupoService::class)->largestByTutor($profesor->dni)?->nombre ?? '';
+                $grupo = $this->grupoDocenteActual()?->nombre ?? '';
                 break;
             default:
                 $grupo = '';
@@ -222,7 +279,7 @@ class Reunion extends Model
 
     public function getCicloAttribute()
     {
-        return app(GrupoService::class)->firstByTutor($this->idProfesor)?->Ciclo->ciclo ?? '';
+        return $this->grupoDocenteActual()?->Ciclo?->ciclo ?? '';
     }
 
     public function getXtipoAttribute()
@@ -244,9 +301,21 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
-        return $this->Tipos()->colectivo == 'Grupo'
-            ? app(GrupoService::class)->largestByTutor($this->idProfesor)
-            : null;
+        return $this->Tipos()->colectivo == 'Grupo' ? $this->grupoDocenteActual() : null;
+    }
+
+    /**
+     * Resol el grup docent de l'acta: primer `idGrupo`, després el tutor antic.
+     *
+     * @return Grupo|null
+     */
+    public function grupoDocenteActual(): ?Grupo
+    {
+        if ($this->idGrupo) {
+            return $this->GrupoDocente;
+        }
+
+        return app(GrupoService::class)->largestByTutor($this->idProfesor);
     }
     public function getInformeAttribute()
     {

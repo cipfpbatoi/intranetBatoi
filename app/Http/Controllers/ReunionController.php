@@ -104,12 +104,17 @@ class ReunionController extends ModalController
     }
 
     protected function createWithDefaultValues( $default=[]){
-        return new Reunion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
+        return new Reunion([
+            'idProfesor' => AuthUser()->dni,
+            'idGrupo' => $this->grupoTutorActual(),
+            'curso' => Curso()
+        ]);
     }
 
     public function store(ReunionStoreRequest $request)
     {
         $this->authorize('create', Reunion::class);
+        $this->normalitzaGrupoDocente($request);
 
         $elemento = DB::transaction(function() use ($request) {
             $id = $this->persist($request);
@@ -152,6 +157,7 @@ class ReunionController extends ModalController
             'tipo' => ['type' => 'hidden'],
             'numero' => ['type' => 'select'],
             'grupo' => ['type' => 'hidden'],
+            'idGrupo' => ['type' => 'select'],
             'curso' => ['disabled' => 'disabled'],
             'fecha' => ['type' => 'datetime'],
             'descripcion' => ['type' => 'text'],
@@ -190,6 +196,7 @@ class ReunionController extends ModalController
     {
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
+        $this->normalitzaGrupoDocente($request);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -539,7 +546,11 @@ class ReunionController extends ModalController
     {
         foreach ($this->grupos()->all() as $grupo) {
             foreach (config('auxiliares.reunionesControlables') as $tipo => $howMany) {
-                $reuniones[$grupo->nombre][$tipo] = Reunion::Convocante($grupo->tutor)->Tipo($tipo)->Archivada()->get();
+                $reuniones[$grupo->nombre][$tipo] = Reunion::ActaGrupo($grupo)
+                    ->Tipo($tipo)
+                    ->Curso()
+                    ->Archivada()
+                    ->get();
             }
         }
         return view('reunion.control', compact('reuniones'));
@@ -556,9 +567,10 @@ class ReunionController extends ModalController
         }
         
         foreach ($grupos as $grupo) {
-            if (!Reunion::Convocante($grupo->tutor)
+            if (!Reunion::ActaGrupo($grupo)
                 ->Tipo($request->tipo)
                 ->Numero($request->numero)
+                ->Curso()
                 ->Archivada()
                 ->count()) {
                 $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunionService::find($request->tipo)->vliteral . ' ';
@@ -569,6 +581,39 @@ class ReunionController extends ModalController
         }
         Alert::info($cont . ' Avisos enviats');
         return back();
+    }
+
+    /**
+     * Retorna el grup docent principal del tutor autenticat.
+     *
+     * @return string|null
+     */
+    private function grupoTutorActual(): ?string
+    {
+        return $this->grupos()->largestByTutor(AuthUser()->dni)?->codigo;
+    }
+
+    /**
+     * Normalitza el grup docent de l'acta segons el tipus de reunió.
+     *
+     * Les actes de grup queden vinculades al grup enviat pel formulari o, per
+     * defecte, al grup docent del tutor actual. La resta de reunions no han de
+     * persistir cap `idGrupo` accidental del formulari general.
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function normalitzaGrupoDocente(Request $request): void
+    {
+        $tipo = $request->input('tipo');
+        if (!$tipo || (new TipoReunionService($tipo))->colectivo !== 'Grupo') {
+            $request->merge(['idGrupo' => null]);
+            return;
+        }
+
+        if (!$request->filled('idGrupo') && $grupo = $this->grupoTutorActual()) {
+            $request->merge(['idGrupo' => $grupo]);
+        }
     }
 
     private function construye_pdf($id)

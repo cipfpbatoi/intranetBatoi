@@ -140,14 +140,14 @@ class ReunionFeValuationService
     }
 
     /**
-     * Plantilla inicial per a una acta concreta, amb dades conegudes per tutor.
+     * Plantilla inicial per a una acta concreta, amb dades conegudes pel grup o tutor.
      *
      * @param Reunion $reunion
      * @return string
      */
     public function defaultSummaryForReunion(Reunion $reunion): string
     {
-        return $this->summaryWithKnownData($this->knownSectionsForTutor((string) $reunion->idProfesor));
+        return $this->summaryWithKnownData($this->knownSectionsForReunion($reunion));
     }
 
     /**
@@ -257,6 +257,21 @@ class ReunionFeValuationService
     }
 
     /**
+     * Construeix els apartats amb les dades FE/FCT de l'acta.
+     *
+     * @param Reunion $reunion
+     * @return array<string, array<int, string>>
+     */
+    private function knownSectionsForReunion(Reunion $reunion): array
+    {
+        $fcts = $this->lfpFctsForReunion($reunion)
+            ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
+            ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
+
+        return $this->knownSectionsForFcts($fcts);
+    }
+
+    /**
      * Construeix el resum de notes reals introduïdes per a alumnat no apte, amb cessament o amb renúncia.
      *
      * @param string $tutorDni
@@ -265,7 +280,32 @@ class ReunionFeValuationService
      */
     public function notesSummaryForTutor(string $tutorDni, ?int $moduleCourse = null): string
     {
-        $targetFcts = $this->targetFctsForTutor($tutorDni);
+        return $this->notesSummaryForFcts($this->targetFctsForTutor($tutorDni), $moduleCourse);
+    }
+
+    /**
+     * Construeix el resum de notes reals introduïdes per a una acta concreta.
+     *
+     * @param Reunion $reunion
+     * @return string
+     */
+    private function notesSummaryForReunion(Reunion $reunion): string
+    {
+        return $this->notesSummaryForFcts(
+            $this->targetFctsForReunion($reunion),
+            $this->actaModuleCourse($reunion)
+        );
+    }
+
+    /**
+     * Construeix el resum de notes reals a partir de les FCT objectiu.
+     *
+     * @param Collection<int, AlumnoFct> $targetFcts
+     * @param int|null $moduleCourse
+     * @return string
+     */
+    private function notesSummaryForFcts(Collection $targetFcts, ?int $moduleCourse = null): string
+    {
         if ($targetFcts->isEmpty()) {
             return '';
         }
@@ -329,7 +369,29 @@ class ReunionFeValuationService
      */
     public function targetFctsForTutor(string $tutorDni): Collection
     {
-        return $this->lfpFctsForTutor($tutorDni)
+        return $this->targetFctsFromLfpFcts($this->lfpFctsForTutor($tutorDni));
+    }
+
+    /**
+     * Retorna l'alumnat de l'acta que necessita notes reals de mòduls.
+     *
+     * @param Reunion $reunion
+     * @return Collection<int, AlumnoFct>
+     */
+    private function targetFctsForReunion(Reunion $reunion): Collection
+    {
+        return $this->targetFctsFromLfpFcts($this->lfpFctsForReunion($reunion));
+    }
+
+    /**
+     * Filtra les FCT LFP que necessiten notes reals.
+     *
+     * @param Collection<int, AlumnoFct> $fcts
+     * @return Collection<int, AlumnoFct>
+     */
+    private function targetFctsFromLfpFcts(Collection $fcts): Collection
+    {
+        return $fcts
             ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
             ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3, 5], true))
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre))
@@ -344,7 +406,7 @@ class ReunionFeValuationService
      */
     public function gradeInputData(Reunion $reunion): array
     {
-        $fcts = $this->targetFctsForTutor((string) $reunion->idProfesor);
+        $fcts = $this->targetFctsForReunion($reunion);
         if ($fcts->isEmpty()) {
             return [
                 'fcts' => collect(),
@@ -578,6 +640,39 @@ class ReunionFeValuationService
     }
 
     /**
+     * Retorna les FCT LFP de l'acta, preferint el grup docent vinculat.
+     *
+     * @param Reunion $reunion
+     * @return Collection<int, AlumnoFct>
+     */
+    private function lfpFctsForReunion(Reunion $reunion): Collection
+    {
+        if ($reunion->idGrupo) {
+            return $this->lfpFctsForGrupo((string) $reunion->idGrupo);
+        }
+
+        return $this->lfpFctsForTutor((string) $reunion->idProfesor);
+    }
+
+    /**
+     * Retorna només l'alumnat FE/FCT de normativa LFP d'un grup docent.
+     *
+     * @param string $idGrupo
+     * @return Collection<int, AlumnoFct>
+     */
+    private function lfpFctsForGrupo(string $idGrupo): Collection
+    {
+        return AlumnoFct::query()
+            ->with(['Alumno.Grupo.Ciclo', 'Fct.Colaboracion.Ciclo'])
+            ->whereHas('Alumno.Grupo', static function ($query) use ($idGrupo): void {
+                $query->where('grupos.codigo', $idGrupo);
+            })
+            ->get()
+            ->filter(fn (AlumnoFct $fct): bool => $this->isLfpFct($fct))
+            ->values();
+    }
+
+    /**
      * Indica si una FCT correspon a un grup LFP.
      *
      * @param AlumnoFct $fct
@@ -663,7 +758,7 @@ class ReunionFeValuationService
      */
     public function refreshNotesOrder(Reunion $reunion): ?OrdenReunion
     {
-        $summary = $this->notesSummaryForTutor((string) $reunion->idProfesor, $this->actaModuleCourse($reunion));
+        $summary = $this->notesSummaryForReunion($reunion);
         $existing = OrdenReunion::query()
             ->forReunion($reunion->id)
             ->whereIn('descripcion', [

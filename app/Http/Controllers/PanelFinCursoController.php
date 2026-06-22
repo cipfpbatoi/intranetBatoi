@@ -199,7 +199,7 @@ class PanelFinCursoController extends BaseController
     {
         foreach ( config('auxiliares.reunionesControlables') as $tipo => $howManyNeeded) {
             if ($howManyNeeded){
-                $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
+                $howManyAre = self::actasArchivadasTutorActual((int) $tipo);
                 if ($howManyAre >= $howManyNeeded) {
                     $avisos[self::SUCCESS][] = "Acta ".TipoReunionService::find($tipo)->vliteral." Arxivada";
                 } else {
@@ -208,6 +208,32 @@ class PanelFinCursoController extends BaseController
             }
         }
     }
+
+    /**
+     * Compta les actes arxivades dels grups del tutor actual en el curs vigent.
+     *
+     * @param int $tipo
+     * @return int
+     */
+    private static function actasArchivadasTutorActual(int $tipo): int
+    {
+        $grupos = app(GrupoService::class)->qTutor(AuthUser()->dni);
+        if ($grupos->isEmpty()) {
+            return Reunion::Convocante()->Tipo($tipo)->Curso()->Archivada()->count();
+        }
+
+        return Reunion::query()
+            ->where(function ($query) use ($grupos): void {
+                foreach ($grupos as $grupo) {
+                    $query->orWhere(fn ($grupoQuery) => $grupoQuery->ActaGrupo($grupo));
+                }
+            })
+            ->Tipo($tipo)
+            ->Curso()
+            ->Archivada()
+            ->count();
+    }
+
     private static function lookAtPollsTutor(&$avisos)
     {
         $ppols = hazArray(PPoll::where('what', 'Fct')->get(), 'id', 'id');
