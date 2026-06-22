@@ -61,16 +61,17 @@ class ComisionDireccionPanelTest extends TestCase
             ->assertSee('Autoritzar comissions pendents (1)')
             ->assertSee('Imprimir pagaments seleccionats (0/1)')
             ->assertSee('Maria Garcia Lopez')
-            ->assertSee('Joan Soler Perez');
+            ->assertSee('Joan Soler Perez')
+            ->assertSee('Pau Ferrer Vidal');
 
         $comisiones = $component->get('comisiones');
         $pendingPayments = $component->get('pendingPayments');
 
-        $this->assertCount(4, $comisiones);
+        $this->assertCount(5, $comisiones);
         $this->assertCount(1, $pendingPayments);
         $this->assertSame('CM200', $pendingPayments[0]['dni']);
-        $this->assertTrue((bool) $comisiones[0]['hasDocument']);
-        $this->assertTrue((bool) $comisiones[1]['hasDocument']);
+        $this->assertTrue((bool) collect($comisiones)->firstWhere('id', 1)['hasDocument']);
+        $this->assertTrue((bool) collect($comisiones)->firstWhere('id', 2)['hasDocument']);
     }
 
     public function test_filtra_per_professor_i_estat(): void
@@ -89,6 +90,14 @@ class ComisionDireccionPanelTest extends TestCase
         $comisiones = $component->get('comisiones');
         $this->assertCount(1, $comisiones);
         $this->assertSame(2, $comisiones[0]['estado']);
+
+        $component->set('filterProfessor', 'Pau')
+            ->set('filterEstat', '0');
+
+        $comisiones = $component->get('comisiones');
+        $this->assertCount(1, $comisiones);
+        $this->assertSame('CM300', $comisiones[0]['idProfesor']);
+        $this->assertSame(0, $comisiones[0]['estado']);
     }
 
     public function test_acceptar_i_desautoritzar_actualitzen_estat(): void
@@ -292,6 +301,17 @@ class ComisionDireccionPanelTest extends TestCase
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'dni' => 'CM300',
+                'nombre' => 'Pau',
+                'apellido1' => 'Ferrer',
+                'apellido2' => 'Vidal',
+                'email' => 'cm300@test.local',
+                'rol' => config('roles.rol.profesor'),
+                'activo' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         DB::connection('sqlite')->table('comisiones')->insert([
@@ -356,6 +376,22 @@ class ComisionDireccionPanelTest extends TestCase
                 'medio' => 0,
                 'estado' => 5,
                 'idDocumento' => 3004,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 5,
+                'idProfesor' => 'CM300',
+                'desde' => '2026-03-14 09:00:00',
+                'hasta' => '2026-03-14 12:00:00',
+                'servicio' => 'Visita empresa anul·lada',
+                'kilometraje' => 0,
+                'gastos' => 0,
+                'comida' => 0,
+                'alojamiento' => 0,
+                'medio' => 0,
+                'estado' => 0,
+                'idDocumento' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
