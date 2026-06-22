@@ -114,7 +114,7 @@ class ReunionController extends ModalController
     public function store(ReunionStoreRequest $request)
     {
         $this->authorize('create', Reunion::class);
-        $this->vinculaGrupoDocente($request);
+        $this->normalitzaGrupoDocente($request);
 
         $elemento = DB::transaction(function() use ($request) {
             $id = $this->persist($request);
@@ -196,6 +196,7 @@ class ReunionController extends ModalController
     {
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
+        $this->normalitzaGrupoDocente($request);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -593,24 +594,24 @@ class ReunionController extends ModalController
     }
 
     /**
-     * Vincula automàticament les actes de tipus grup al grup docent actual si el formulari no l'envia.
+     * Normalitza el grup docent de l'acta segons el tipus de reunió.
+     *
+     * Les actes de grup queden vinculades al grup enviat pel formulari o, per
+     * defecte, al grup docent del tutor actual. La resta de reunions no han de
+     * persistir cap `idGrupo` accidental del formulari general.
      *
      * @param Request $request
      * @return void
      */
-    private function vinculaGrupoDocente(Request $request): void
+    private function normalitzaGrupoDocente(Request $request): void
     {
-        if ($request->filled('idGrupo')) {
-            return;
-        }
-
         $tipo = $request->input('tipo');
         if (!$tipo || (new TipoReunionService($tipo))->colectivo !== 'Grupo') {
+            $request->merge(['idGrupo' => null]);
             return;
         }
 
-        $grupo = $this->grupoTutorActual();
-        if ($grupo) {
+        if (!$request->filled('idGrupo') && $grupo = $this->grupoTutorActual()) {
             $request->merge(['idGrupo' => $grupo]);
         }
     }

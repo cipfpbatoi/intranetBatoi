@@ -64,6 +64,18 @@
         }
     }
 
+    function setGrupoDocenteEnabled(enabled) {
+        var idGrupo = byId('idGrupo_id');
+        if (!idGrupo) {
+            return;
+        }
+
+        idGrupo.disabled = !enabled;
+        if (!enabled) {
+            idGrupo.value = '';
+        }
+    }
+
     function fillNumeroOptions(numeracion) {
         var numero = byId('numero_id');
         if (!numero) {
@@ -77,6 +89,30 @@
             option.textContent = numeracion[key];
             numero.appendChild(option);
         });
+    }
+
+    function applyTipoReunionData(data) {
+        setDisabled('grupo_id', Number(data.select) === 0);
+        setGrupoDocenteEnabled(data.colectivo === 'Grupo');
+
+        if (data.numeracion) {
+            fillNumeroOptions(data.numeracion);
+        }
+    }
+
+    function loadTipoReunion(tipoValue) {
+        if (!tipoValue && tipoValue !== 0) {
+            setGrupoDocenteEnabled(false);
+            return;
+        }
+
+        fetchTipoReunion(tipoValue)
+            .then(function (result) {
+                applyTipoReunionData(result && result.data ? result.data : {});
+            })
+            .catch(function (error) {
+                window.console.log(error);
+            });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -93,6 +129,7 @@
             if (String(tipoValue) === '9') {
                 setDisabled('fichero_id', false);
                 setDisabled('numero_id', true);
+                setGrupoDocenteEnabled(true);
                 if (descripcion) {
                     descripcion.value = 'Acta FSE';
                 }
@@ -105,18 +142,9 @@
             setDisabled('numero_id', false);
             setDisabled('objetivos_id', false);
 
-            fetchTipoReunion(tipoValue)
-                .then(function (result) {
-                    var data = result && result.data ? result.data : {};
-                    setDisabled('grupo_id', Number(data.select) === 0);
-
-                    if (data.numeracion) {
-                        fillNumeroOptions(data.numeracion);
-                    }
-                })
-                .catch(function (error) {
-                    window.console.log(error);
-                });
+            loadTipoReunion(tipoValue);
         });
+
+        loadTipoReunion(tipo.value);
     });
 })();
