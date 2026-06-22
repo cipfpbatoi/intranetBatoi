@@ -332,7 +332,7 @@ trait BatoiModels
         }
 
         // Validar extensió
-        $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png', 'webp', 'heic', 'heif', 'zip'];
+        $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'zip'];
         $extension = strtolower($file->getClientOriginalExtension());
 
         if (!in_array($extension, $allowedExtensions)) {
