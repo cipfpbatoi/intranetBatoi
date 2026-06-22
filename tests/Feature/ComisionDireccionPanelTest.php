@@ -92,12 +92,12 @@ class ComisionDireccionPanelTest extends TestCase
         $this->assertSame(2, $comisiones[0]['estado']);
 
         $component->set('filterProfessor', 'Pau')
-            ->set('filterEstat', '0');
+            ->set('filterEstat', '-1');
 
         $comisiones = $component->get('comisiones');
         $this->assertCount(1, $comisiones);
         $this->assertSame('CM300', $comisiones[0]['idProfesor']);
-        $this->assertSame(0, $comisiones[0]['estado']);
+        $this->assertSame(-1, $comisiones[0]['estado']);
     }
 
     public function test_acceptar_i_desautoritzar_actualitzen_estat(): void
@@ -390,7 +390,7 @@ class ComisionDireccionPanelTest extends TestCase
                 'comida' => 0,
                 'alojamiento' => 0,
                 'medio' => 0,
-                'estado' => 0,
+                'estado' => -1,
                 'idDocumento' => null,
                 'created_at' => now(),
                 'updated_at' => now(),

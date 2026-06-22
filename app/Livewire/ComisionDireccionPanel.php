@@ -456,7 +456,7 @@ class ComisionDireccionPanel extends Component
     {
         $query = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>=', 0)
+            ->where('estado', '>=', -1)
             ->orderByDesc('desde');
 
         if ($this->filterProfessor !== '') {
@@ -511,7 +511,7 @@ class ComisionDireccionPanel extends Component
     {
         $this->professorOptions = Comision::query()
             ->with('Profesor')
-            ->where('estado', '>=', 0)
+            ->where('estado', '>=', -1)
             ->orderBy('idProfesor')
             ->get()
             ->map(function (Comision $comision) {
@@ -524,7 +524,7 @@ class ComisionDireccionPanel extends Component
             ->toArray();
 
         $this->estatOptions = [
-            '0' => 'Anul·lades',
+            '-1' => 'Anul·lades',
             '1' => 'Pendents',
             '2' => 'Autoritzades',
             '3' => 'Registrades',
