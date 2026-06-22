@@ -29,11 +29,10 @@
         }
     }
 
-    function fetchInformeOptions(informeCode) {
-        var url = '/api/documentacionFCT/' + informeCode;
-        var formSeleccion = document.getElementById('formSeleccion');
-        if (formSeleccion) {
-            formSeleccion.setAttribute('action', url.substring(4));
+    function apiGet(url) {
+        var apiAuth = window.intranetApiAuth || {};
+        if (typeof apiAuth.apiGet === 'function') {
+            return apiAuth.apiGet(url);
         }
 
         var auth = typeof window.apiAuthOptions === 'function' ? window.apiAuthOptions() : { headers: {}, data: {} };
@@ -53,6 +52,20 @@
         });
     }
 
+    function fetchInformeOptions(informeCode) {
+        if (!informeCode) {
+            return Promise.resolve({ data: [] });
+        }
+
+        var url = '/api/documentacionFCT/' + informeCode;
+        var formSeleccion = document.getElementById('formSeleccion');
+        if (formSeleccion) {
+            formSeleccion.setAttribute('action', url.substring(4));
+        }
+
+        return apiGet(url);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.selecciona').forEach(function (button) {
             button.addEventListener('click', function (event) {
@@ -61,9 +74,8 @@
                 openModal('seleccion');
 
                 var formSeleccion = document.getElementById('formSeleccion');
-                var defaultUrl = '/api/documentacionFCT/pg0301';
                 if (formSeleccion) {
-                    formSeleccion.setAttribute('action', defaultUrl.substring(4));
+                    formSeleccion.setAttribute('action', '');
                 }
             });
         });

@@ -23,10 +23,10 @@
                 @if(file_exists(authUser()->pathCertificate))
                         <div style="border: 1px solid black;background-color:#ddd" >
                                 <h3 style="text-align: center">Signatura Digital</h3>
-                                <label class="control-label" for="password">Introduir Password Intranet:</label>
-                                <input type="password" id="decrypt" name="decrypt" class="form-control"/>
-                                <label class="control-label" for="password">Introduir Password Certificat:</label>
-                                <input type="password" id="cert" name="cert" class="form-control"/>
+                                <label class="control-label" for="extended-decrypt">Introduir Password Intranet:</label>
+                                <input type="password" id="extended-decrypt" name="decrypt" class="form-control"/>
+                                <label class="control-label" for="extended-cert">Introduir Password Certificat:</label>
+                                <input type="password" id="extended-cert" name="cert" class="form-control"/>
                         </div>
                 @endif
         </div>

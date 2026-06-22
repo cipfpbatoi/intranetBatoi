@@ -8,14 +8,14 @@
         @endforeach
     </select>
     <br/>
-    <label class="control-label" for="password">Introduir Password SAO:</label>
-    <input type="password" id="password" name="password" class="form-control"/>
+    <label class="control-label" for="sao-password">Introduir Password SAO:</label>
+    <input type="password" id="sao-password" name="password" class="form-control"/>
     @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
-        <div id="decrypt" hidden>
-            <label class="control-label" for="password">Introduir Password Intranet:</label>
-            <input type="password" id="decrypt" name="decrypt" class="form-control"/>
-            <label class="control-label" for="password">Introduir Password Certificat:</label>
-            <input type="password" id="cert" name="cert" class="form-control"/>
+        <div id="decrypt-fields" hidden>
+            <label class="control-label" for="sao-decrypt">Introduir Password Intranet:</label>
+            <input type="password" id="sao-decrypt" name="decrypt" class="form-control"/>
+            <label class="control-label" for="sao-cert">Introduir Password Certificat:</label>
+            <input type="password" id="sao-cert" name="cert" class="form-control"/>
         </div>
     @endif
     <x-ui.errors />

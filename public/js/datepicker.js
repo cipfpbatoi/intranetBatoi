@@ -6,8 +6,31 @@
         var dateTimeInputs = document.querySelectorAll('input[type="text"].datetime');
         var hasPickerTargets = dateInputs.length || timeInputs.length || dateTimeInputs.length;
 
+        function toNativeDate(value) {
+            var trimmed = (value || '').toString().trim();
+            var match = trimmed.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
+
+            if (!match) {
+                return value;
+            }
+
+            return match[3] + '-' + match[2] + '-' + match[1];
+        }
+
+        function toNativeDateTime(value) {
+            var trimmed = (value || '').toString().trim();
+            var match = trimmed.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+
+            if (!match) {
+                return value;
+            }
+
+            return match[3] + '-' + match[2] + '-' + match[1] + 'T' + (match[4] || '00') + ':' + (match[5] || '00');
+        }
+
         function applyNativeFallback() {
             dateInputs.forEach(function (input) {
+                input.value = toNativeDate(input.value);
                 input.setAttribute('type', 'date');
             });
 
@@ -16,6 +39,7 @@
             });
 
             dateTimeInputs.forEach(function (input) {
+                input.value = toNativeDateTime(input.value);
                 input.setAttribute('type', 'datetime-local');
             });
         }
