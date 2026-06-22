@@ -66,12 +66,10 @@ final class ComisionCrudSchema
      */
     public static function requestRules(bool $isDirector): array
     {
-        $day = $isDirector ? 'today' : 'tomorrow';
-
         return [
             'servicio' => 'required',
             'kilometraje' => 'required|integer',
-            'desde' => "required|date|after:$day",
+            'desde' => 'required|date|after:today',
             'hasta' => 'required|date|after:desde',
             'alojamiento' => 'required|numeric',
             'comida' => 'required|numeric',
@@ -95,4 +93,3 @@ final class ComisionCrudSchema
         'matricula' => 'required_with:marca',
     ];
 }
-
