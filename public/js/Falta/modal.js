@@ -17,7 +17,68 @@
         return !!(element && element.checked);
     }
 
+    function isSubmittedFalta() {
+        var method = byId('metodo');
+        var estado = byId('estado_id');
+
+        return method && method.value.toUpperCase() === 'PUT' && estado && Number(estado.value) >= 1;
+    }
+
+    function fieldContainer(element) {
+        if (!element) {
+            return null;
+        }
+
+        if ((element.getAttribute('type') || '').toLowerCase() === 'hidden') {
+            return null;
+        }
+
+        return element.closest('.form-group') || element.closest('.item') || element.parentElement;
+    }
+
+    function setFieldEditable(id, editable) {
+        var element = byId(id);
+        var container = fieldContainer(element);
+
+        if (container) {
+            container.style.display = '';
+        }
+
+        if (element && id !== 'fichero_id') {
+            element.disabled = !editable;
+        }
+    }
+
+    function updateSubmittedFormState() {
+        var onlyJustificant = isSubmittedFalta();
+        var editableFields = [
+            'idProfesor_id',
+            'estado_id',
+            'desde_id',
+            'hasta_id',
+            'baja_id',
+            'dia_completo_id',
+            'hora_ini_id',
+            'hora_fin_id',
+            'motivos_id',
+            'observaciones_id'
+        ];
+
+        editableFields.forEach(function (id) {
+            setFieldEditable(id, !onlyJustificant);
+        });
+
+        setFieldEditable('fichero_id', true);
+    }
+
     function updateFaltaState() {
+        if (isSubmittedFalta()) {
+            updateSubmittedFormState();
+            return;
+        }
+
+        updateSubmittedFormState();
+
         var baja = isChecked('baja_id');
         var diaCompleto = isChecked('dia_completo_id');
 

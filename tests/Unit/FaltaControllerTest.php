@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
 use Tests\TestCase;
@@ -386,6 +387,103 @@ class FaltaControllerTest extends TestCase
         $this->assertSame(2, (int) $falta->estado);
         $this->assertNotEmpty($falta->fichero);
         Storage::disk('local')->assertExists($falta->fichero);
+    }
+
+    public function test_servei_update_de_falta_enviada_sense_permis_conserva_les_dades(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P908',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P908',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        app(FaltaService::class)->update($faltaId, new Request([
+            'idProfesor' => 'P999',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-02',
+            'motivos' => 3,
+            'observaciones' => 'Canvi no permés',
+            'dia_completo' => '0',
+            'hora_ini' => '09:00',
+            'hora_fin' => '10:00',
+        ]));
+
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('P908', $falta->idProfesor);
+        $this->assertSame('2026-02-10', $falta->desde);
+        $this->assertSame('2026-02-10', $falta->hasta);
+        $this->assertSame(1, (int) $falta->motivos);
+        $this->assertSame('Original', $falta->observaciones);
+        $this->assertSame(1, (int) $falta->dia_completo);
+        $this->assertNull($falta->hora_ini);
+        $this->assertNull($falta->hora_fin);
+        $this->assertSame(1, (int) $falta->estado);
+    }
+
+    public function test_servei_update_de_falta_enviada_amb_permis_de_direccio_edita_les_dades(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P909',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P909',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        app(FaltaService::class)->update($faltaId, new Request([
+            'idProfesor' => 'P909',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-02',
+            'motivos' => 3,
+            'observaciones' => 'Canvi de Direcció',
+            'dia_completo' => '1',
+        ]), true);
+
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('P909', $falta->idProfesor);
+        $this->assertSame('2026-03-01', $falta->desde);
+        $this->assertSame('2026-03-02', $falta->hasta);
+        $this->assertSame(3, (int) $falta->motivos);
+        $this->assertSame('Canvi de Direcció', $falta->observaciones);
+        $this->assertSame(1, (int) $falta->dia_completo);
     }
 
     private function createSchema(): void

@@ -17,6 +17,9 @@ use Illuminate\Support\Carbon;
  */
 class FaltaService
 {
+    /**
+     * Crea una falta de professorat.
+     */
     public function create(Request $request): int
     {
         $request->merge(['baja' => $request->boolean('baja') ? 1 : 0]);
@@ -47,8 +50,21 @@ class FaltaService
         return (int) $falta->fillAll($request);
     }
 
-    public function update(int|string $id, Request $request): Falta
+    /**
+     * Actualitza una falta.
+     *
+     * Quan la falta ja està enviada, només Direcció ha de poder modificar les
+     * dades de la comunicació. La resta de fluxos només poden substituir el
+     * justificant.
+     */
+    public function update(int|string $id, Request $request, bool $canEditSubmittedData = false): Falta
     {
+        $falta = Falta::findOrFail($id);
+
+        if ((int) $falta->estado >= 1 && !$canEditSubmittedData) {
+            return $this->updateJustificant($id, $request);
+        }
+
         $diaCompleto = $request->boolean('dia_completo') ? 1 : 0;
 
         $request->merge([
@@ -57,7 +73,6 @@ class FaltaService
             'hasta' => esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta,
         ]);
 
-        $falta = Falta::findOrFail($id);
         $falta->fillAll($request);
 
         $falta = $falta->fresh();
@@ -90,6 +105,9 @@ class FaltaService
         return $falta;
     }
 
+    /**
+     * Comunica la falta a Direcció i ajusta l'estat inicial.
+     */
     public function init(int|string $id): Falta
     {
         $falta = Falta::findOrFail($id);
@@ -107,6 +125,9 @@ class FaltaService
         return $falta->fresh();
     }
 
+    /**
+     * Tramita l'alta d'una baixa llarga i reactiva el professor.
+     */
     public function alta(int|string $id): Falta
     {
         /** @var Falta $falta */

@@ -295,7 +295,7 @@ class FaltaDireccionPanel extends Component
             }
 
             $this->authorize('update', $falta);
-            $this->faltas()->update($this->formFaltaId, $this->buildFormRequest());
+            $this->faltas()->update($this->formFaltaId, $this->buildFormRequest(), true);
             $this->message = 'Falta actualitzada correctament.';
         } else {
             $this->authorize('create', Falta::class);
