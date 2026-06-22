@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Articulo;
 use Tests\TestCase;
 
+/**
+ * Proves unitàries de l'entitat Articulo.
+ */
 class ArticuloTest extends TestCase
 {
     protected function setUp(): void
@@ -89,5 +92,18 @@ class ArticuloTest extends TestCase
         $this->assertSame('Articulos/25.jpg', $path);
         Storage::disk('public')->assertExists('Articulos/25.jpg');
     }
-}
 
+    public function test_fill_file_accepta_extensio_jpeg(): void
+    {
+        Storage::fake('public');
+
+        $articulo = new Articulo();
+        $articulo->id = 26;
+        $file = UploadedFile::fake()->image('foto.jpeg');
+
+        $path = $articulo->fillFile($file);
+
+        $this->assertSame('Articulos/26.jpeg', $path);
+        Storage::disk('public')->assertExists('Articulos/26.jpeg');
+    }
+}
