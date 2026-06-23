@@ -14,12 +14,14 @@ use Intranet\Application\Import\ImportSchemaProvider;
 use Intranet\Application\Import\ImportService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
+use Intranet\Application\Import\RemoteIntranetImportService;
 use Intranet\Entities\ImportRun;
 use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Controllers\Concerns\FindsModel;
 use Intranet\Http\Requests\ImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Intranet\Services\UI\AppAlert as Alert;
+use Throwable;
 
 /**
  * Controlador d'importacions.
@@ -34,6 +36,7 @@ class ImportController extends Seeder
     private ?ImportXmlHelperService $importXmlHelperService = null;
     private ?ImportSchemaProvider $importSchemaProvider = null;
     private ?GeneralImportExecutionService $generalImportExecutionService = null;
+    private ?RemoteIntranetImportService $remoteIntranetImportService = null;
 
     /**
      * @var array<int, array<string, mixed>>
@@ -151,6 +154,31 @@ class ImportController extends Seeder
         ]);
     }
 
+    /**
+     * Importa FCT d'alumnat des d'una intranet remota autenticada.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function remoteAlumnoFct()
+    {
+        $this->authorizeImportManagement();
+
+        try {
+            $summary = $this->remoteImports()->importAlumnoFcts();
+        } catch (Throwable) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No s\'ha pogut completar la importació remota.',
+            ], 502);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Importació remota completada',
+            'data' => $summary,
+        ]);
+    }
+
     public function asignarTutores()
     {
         $this->authorizeImportManagement(true);
@@ -249,6 +277,15 @@ class ImportController extends Seeder
         }
 
         return $this->generalImportExecutionService;
+    }
+
+    private function remoteImports(): RemoteIntranetImportService
+    {
+        if ($this->remoteIntranetImportService === null) {
+            $this->remoteIntranetImportService = app(RemoteIntranetImportService::class);
+        }
+
+        return $this->remoteIntranetImportService;
     }
 
     /**

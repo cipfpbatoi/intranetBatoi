@@ -16,6 +16,7 @@ Route::post('/import', ['as' => 'import.store', 'uses' => 'ImportController@stor
 Route::post('/import/async', ['as' => 'import.storeAsync', 'uses' => 'ImportController@storeAsync']);
 Route::get('/import/status/{importRunId}', ['as' => 'import.status', 'uses' => 'ImportController@status']);
 Route::get('/import/runs', ['as' => 'import.history', 'uses' => 'ImportController@history']);
+Route::post('/import/remote/alumnofct', ['as' => 'import.remote.alumnofct', 'uses' => 'ImportController@remoteAlumnoFct']);
 Route::get('/teacherImport', ['as' => 'teacherImport.create', 'uses' => 'TeacherImportController@create']);
 Route::post('/teacherImport', ['as' => 'teacherImport.store', 'uses' => 'TeacherImportController@store']);
 Route::post('/teacherImport/async', ['as' => 'teacherImport.storeAsync', 'uses' => 'TeacherImportController@storeAsync']);

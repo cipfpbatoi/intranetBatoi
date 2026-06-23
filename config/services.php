@@ -55,6 +55,13 @@ return [
         'SELENIUM_ROOT_PASS' => env('SELENIUM_ROOT_PASS', 'intranet'),
         'firefox_path' => env('FIREFOX_PATH',null),
         'itaca' => env('SELENIUM_URL_ITACA','https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/'),
-    ]
+    ],
+
+    'remote_intranet' => [
+        'url' => env('REMOTE_INTRABETOI_URL'),
+        'api_token' => env('REMOTE_INTRABETOI_API_TOKEN'),
+        'device_name' => env('REMOTE_INTRABETOI_DEVICE_NAME', 'intranet-import'),
+        'timeout' => (int) env('REMOTE_INTRABETOI_TIMEOUT', 20),
+    ],
 
 ];
