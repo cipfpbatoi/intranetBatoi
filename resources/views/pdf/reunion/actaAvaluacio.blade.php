@@ -27,17 +27,7 @@
     </div>
 @endif
 --}}
-@if ($datosInforme->informe)
-    <div class="container">
-        <br/>
-        <strong>Promoció de l'alumnat</strong>
-        <ul style='list-style:none'>
-            @foreach ($datosInforme->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get() as $alumno)
-                <strong><li>{{ $alumno->nameFull }} - @if ($alumno->pivot->capacitats == 3) NO @else SI @endif</strong> - {{config('auxiliares.promociona')[$alumno->pivot->capacitats]}}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+@includeWhen($datosInforme->extraOrdinaria, 'pdf.reunion.partials.promocio', ['datosInforme' => $datosInforme])
 @include('pdf.reunion.partials.asistents')
 @include('pdf.reunion.partials.signatura')
 {{--
