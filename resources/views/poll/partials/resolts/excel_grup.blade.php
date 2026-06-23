@@ -1,8 +1,10 @@
-@php($colspan = $options_numeric->count() + 1)
+@php($colspan = $options_numeric->count() + 3)
 <table>
     <thead>
     <tr>
         <th>Resultat Enquesta {{$poll->title}}</th>
+        <th>Empreses del grup</th>
+        <th>Valoracions totals</th>
         @foreach ($options_numeric as $item)
             <th>{{ $item->question_label }}</th>
         @endforeach
@@ -14,14 +16,14 @@
     </tr>
     @foreach ($votes['grup'] as $nameGroup => $grupVotes)
         @if ($hasVotes['grup'][$nameGroup] ?? false)
+            @php($summary = $stats['grup_summary'][$nameGroup] ?? ['company_count' => 0, 'received_count' => 0])
             <tr>
                 <td>{{ \Intranet\Entities\Grupo::find($nameGroup)->nombre }}</td>
+                <td>{{ $summary['company_count'] }}</td>
+                <td>{{ $summary['received_count'] }}</td>
                 @foreach ($grupVotes as $optionId => $optionVote)
-                    <td>
-                        @if (($stats['grup'][$nameGroup][$optionId]['count'] ?? 0) > 0)
-                            {{ $stats['grup'][$nameGroup][$optionId]['avg'] }} / {{ $stats['grup'][$nameGroup][$optionId]['count'] }}
-                        @endif
-                    </td>
+                    @php($avg = $stats['grup'][$nameGroup][$optionId]['avg'] ?? null)
+                    <td>{{ $avg ?? '' }}</td>
                 @endforeach
             </tr>
         @endif

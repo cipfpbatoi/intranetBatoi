@@ -68,6 +68,35 @@ class Fct extends ModelPoll
     }
 
     /**
+     * Calcula les empreses/FCT avaluables associades a cada grup.
+     *
+     * Una mateixa FCT només compta una vegada dins del grup encara que tinga
+     * més d'un alumne o més d'una resposta de tutor/cotutor.
+     *
+     * @return array<string, int>
+     */
+    public static function availableEvaluationsByGroup(?Poll $poll = null): array
+    {
+        $fctsByGroup = [];
+
+        foreach (realFct::with(['Colaboracion.Ciclo', 'Alumnos.Grupo'])->esFct()->get() as $fct) {
+            $ciclo = $fct?->Colaboracion?->Ciclo;
+            if (!$ciclo) {
+                continue;
+            }
+
+            foreach (self::groupCodesForFct($fct, (int) $ciclo->id) as $groupCode) {
+                $fctsByGroup[$groupCode] ??= [];
+                $fctsByGroup[$groupCode][(int) $fct->id] = true;
+            }
+        }
+
+        return collect($fctsByGroup)
+            ->map(static fn(array $fcts): int => count($fcts))
+            ->all();
+    }
+
+    /**
      * Retorna els codis de grup de l'alumnat associat a la FCT dins del cicle.
      *
      * @return array<int, string>

@@ -54,8 +54,29 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 **When** fa `GET /signatura/{id}/pdf`  
 **Then** el servidor retorna un PDF vàlid (Content-Type `application/pdf`)
 
+## Enquestes FE tutors
+
+### Escenari 7: ✅ Exportar resultats per grup amb preguntes d'empresa agregades
+
+**Given** que una enquesta FE de tutors té respostes numèriques sobre FCT/empresa vinculades a alumnat d'un grup  
+**When** s'exporta la pestanya **Grups** a Excel  
+**Then**
+- Es mostren les preguntes numèriques de valoració d'empresa com a columnes
+- Cada columna de pregunta mostra la mitjana aritmètica de les respostes rebudes en eixe grup
+- Les mitjanes s'exporten com a valors numèrics d'Excel i amb format de dos decimals
+
+### Escenari 8: ✅ Mostrar empreses i valoracions totals per grup
+
+**Given** que un grup té diverses empreses/FCT avaluables i només una part han rebut valoració  
+**When** s'exporta la pestanya **Grups** a Excel  
+**Then**
+- La columna `Empreses del grup` compta les FCT/empreses avaluables del grup
+- La columna `Valoracions totals` compta una valoració per cada parella FCT/respondedor
+- Una resposta de cotutor sobre la mateixa FCT incrementa les valoracions totals però no duplica les empreses del grup
+
 ## Regles de negoci invariants
 
 - `sendTo` i `signed` no es poden modificar directament des de cap controlador sense passar per `SignaturaStatusService` o `EmailPostSendService`.
 - Abans d'enviar a instructor: verificar existència de `Fct`, `Instructor`, `email`, `nombre`.
 - Canvis a `sendTo`/`signed` requereixen revisar: `A1Finder`, `A2Finder`, `A3Finder`, `MailFinders/*`, `SignaturaStatusService`, `EmailPostSendService`.
+- En la pestanya **Grups** de l'Excel FE tutors, les mitjanes s'han d'exportar com a números, no com a text.

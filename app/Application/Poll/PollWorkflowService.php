@@ -93,6 +93,11 @@ class PollWorkflowService
         ];
     }
 
+    /**
+     * Calcula els resultats agregats d'una enquesta per a gràfiques i exportació.
+     *
+     * @return array<string, mixed>|null
+     */
     public function allVotes(int|string $id, GrupoService $grupoService): ?array
     {
         $poll = Poll::find($id);
@@ -113,10 +118,12 @@ class PollWorkflowService
         $this->initValues($votes, $optionsNumeric, $grupoService);
         $votes['all'] = $allVotes->groupBy('option_id');
         $modelo::aggregate($votes, $option1, $option2, $poll);
+        $availableEvaluationsByGroup = $modelo::availableEvaluationsByGroup($poll);
 
         $stats = [
             'all' => [],
             'grup' => [],
+            'grup_summary' => [],
             'cicle' => [],
             'departament' => [],
         ];
@@ -136,9 +143,17 @@ class PollWorkflowService
                     $stats[$bucket][$nameGroup][$optionId] = [
                         'avg' => $avg !== null ? round((float) $avg, 1) : null,
                         'count' => $optionVote->groupBy('user_id')->count(),
+                        'received_count' => $optionVote->groupBy('user_id')->count(),
                     ];
                 }
             }
+        }
+
+        foreach ($votes['grup'] as $nameGroup => $groupVotes) {
+            $stats['grup_summary'][$nameGroup] = $this->summarizeGroupValuations(
+                $groupVotes,
+                $availableEvaluationsByGroup[$nameGroup] ?? 0
+            );
         }
 
         $hasVotes = [
@@ -151,7 +166,7 @@ class PollWorkflowService
             foreach ($stats[$bucket] as $nameGroup => $groupStats) {
                 $hasVotes[$bucket][$nameGroup] = false;
                 foreach ($groupStats as $stat) {
-                    if ($stat['count'] > 0) {
+                    if (($stat['received_count'] ?? $stat['count']) > 0) {
                         $hasVotes[$bucket][$nameGroup] = true;
                         break;
                     }
@@ -221,6 +236,35 @@ class PollWorkflowService
             'selectHasVotes' => $selectHasVotes,
             'student_select_groups' => $studentSelectGroups,
         ];
+    }
+
+    /**
+     * Resumeix totes les respostes numèriques del grup en una valoració única.
+     *
+     * @param array<int|string, Collection<int, mixed>> $groupVotes
+     * @return array{avg: float|null, received_count: int, company_count: int}
+     */
+    private function summarizeGroupValuations(array $groupVotes, int $companyCount): array
+    {
+        $numericVotes = collect($groupVotes)->flatMap(static fn(Collection $optionVotes): Collection => $optionVotes);
+        $avg = $numericVotes->avg('value');
+
+        return [
+            'avg' => $avg !== null ? round((float) $avg, 1) : null,
+            'received_count' => $this->countReceivedValuations($numericVotes),
+            'company_count' => $companyCount,
+        ];
+    }
+
+    /**
+     * Compta una valoració per cada parella FCT/respondedor.
+     */
+    private function countReceivedValuations(Collection $votes): int
+    {
+        return $votes
+            ->map(static fn(object $vote): string => ($vote->idOption1 ?? 'sense-fct') . ':' . $vote->user_id)
+            ->unique()
+            ->count();
     }
 
     private function userKey(Poll $poll, object $user): string

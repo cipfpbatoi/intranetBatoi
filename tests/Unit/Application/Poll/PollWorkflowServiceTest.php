@@ -785,6 +785,252 @@ class PollWorkflowServiceTest extends TestCase
         $this->assertSame(1, $result['stats']['grup']['2CAE'][42]['count']);
     }
 
+    public function test_all_votes_fct_de_tutor_mostra_preguntes_empreses_i_valoracions_per_grup(): void
+    {
+        DB::table('departamentos')->insert([
+            'id' => 1,
+            'cliteral' => 'Sanitat',
+            'vliteral' => 'Sanitat',
+        ]);
+
+        DB::table('ciclos')->insert([
+            'id' => 8,
+            'ciclo' => 'Cures auxiliars',
+            'departamento' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => '2CAE', 'nombre' => '2CAE', 'idCiclo' => 8, 'curso' => 2],
+        ]);
+
+        DB::table('alumnos')->insert([
+            [
+                'nia' => 'NIA10',
+                'dni' => 'DNI10',
+                'nombre' => 'Ada',
+                'apellido1' => 'Lovelace',
+                'apellido2' => 'Test',
+                'email' => 'ada@test.local',
+            ],
+            [
+                'nia' => 'NIA20',
+                'dni' => 'DNI20',
+                'nombre' => 'Grace',
+                'apellido1' => 'Hopper',
+                'apellido2' => 'Test',
+                'email' => 'grace@test.local',
+            ],
+            [
+                'nia' => 'NIA30',
+                'dni' => 'DNI30',
+                'nombre' => 'Katherine',
+                'apellido1' => 'Johnson',
+                'apellido2' => 'Test',
+                'email' => 'katherine@test.local',
+            ],
+            [
+                'nia' => 'NIA40',
+                'dni' => 'DNI40',
+                'nombre' => 'Margaret',
+                'apellido1' => 'Hamilton',
+                'apellido2' => 'Test',
+                'email' => 'margaret@test.local',
+            ],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => 'NIA10', 'idGrupo' => '2CAE'],
+            ['idAlumno' => 'NIA20', 'idGrupo' => '2CAE'],
+            ['idAlumno' => 'NIA30', 'idGrupo' => '2CAE'],
+            ['idAlumno' => 'NIA40', 'idGrupo' => '2CAE'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            'id' => 100,
+            'idCiclo' => 8,
+        ]);
+
+        DB::table('fcts')->insert([
+            ['id' => 200, 'idColaboracion' => 100],
+            ['id' => 201, 'idColaboracion' => 100],
+            ['id' => 202, 'idColaboracion' => 100],
+            ['id' => 203, 'idColaboracion' => 100],
+        ]);
+
+        DB::table('alumno_fcts')->insert([
+            ['idFct' => 200, 'idAlumno' => 'NIA10'],
+            ['idFct' => 201, 'idAlumno' => 'NIA20'],
+            ['idFct' => 202, 'idAlumno' => 'NIA30'],
+            ['idFct' => 203, 'idAlumno' => 'NIA40'],
+        ]);
+
+        $idPPoll = (int) DB::table('ppolls')->insertGetId([
+            'title' => 'Enquesta tutor avaluació FCT',
+            'what' => 'Fct',
+            'anonymous' => 0,
+            'remains' => 0,
+        ]);
+
+        $idPoll = (int) DB::table('polls')->insertGetId([
+            'title' => 'Enquesta Tutor Avaluació FE',
+            'desde' => '2026-03-01',
+            'hasta' => '2026-03-31',
+            'idPPoll' => $idPPoll,
+            'curs' => null,
+        ]);
+
+        DB::table('options')->insert([
+            [
+                'id' => 43,
+                'question' => 'Valora la predisposició o grau de col·laboració de l’empresa en la FE.',
+                'scala' => 10,
+                'choices' => null,
+                'idCiclo' => null,
+                'ppoll_id' => $idPPoll,
+            ],
+            [
+                'id' => 44,
+                'question' => 'Valora el desenvolupament de les pràctiques en l’empresa.',
+                'scala' => 10,
+                'choices' => null,
+                'idCiclo' => null,
+                'ppoll_id' => $idPPoll,
+            ],
+        ]);
+
+        DB::table('votes')->insert([
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'TUTOR1',
+                'option_id' => 43,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 10,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'TUTOR1',
+                'option_id' => 44,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 6,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'COTUTOR1',
+                'option_id' => 43,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 6,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'COTUTOR1',
+                'option_id' => 44,
+                'idOption1' => 200,
+                'idOption2' => null,
+                'value' => 8,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'TUTOR2',
+                'option_id' => 43,
+                'idOption1' => 201,
+                'idOption2' => null,
+                'value' => 8,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idPoll' => $idPoll,
+                'user_id' => 'TUTOR2',
+                'option_id' => 44,
+                'idOption1' => 201,
+                'idOption2' => null,
+                'value' => 10,
+                'text' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $grupo = new Grupo();
+        $grupo->codigo = '2CAE';
+
+        $grupoService = $this->createMock(GrupoService::class);
+        $grupoService
+            ->method('all')
+            ->willReturn(new EloquentCollection([$grupo]));
+
+        $service = new PollWorkflowService();
+        $result = $service->allVotes($idPoll, $grupoService);
+
+        $this->assertNotNull($result);
+        $this->assertTrue($result['hasVotes']['grup']['2CAE']);
+        $this->assertSame(4, $result['stats']['grup_summary']['2CAE']['company_count']);
+        $this->assertSame(3, $result['stats']['grup_summary']['2CAE']['received_count']);
+        $this->assertSame(8.0, $result['stats']['grup']['2CAE'][43]['avg']);
+        $this->assertSame(8.0, $result['stats']['grup']['2CAE'][44]['avg']);
+    }
+
+    public function test_excel_grup_renderitza_les_mitjanes_com_a_valors_numerics(): void
+    {
+        DB::table('grupos')->insert([
+            'codigo' => '2CAE',
+            'nombre' => '2CAE',
+            'idCiclo' => null,
+            'curso' => 2,
+        ]);
+
+        $html = view('poll.partials.resolts.excel_grup', [
+            'poll' => (object) ['title' => 'Enquesta FE'],
+            'votes' => [
+                'grup' => [
+                    '2CAE' => [
+                        43 => collect([(object) ['value' => 8.5]]),
+                    ],
+                ],
+            ],
+            'options_numeric' => collect([
+                (object) ['id' => 43, 'question_label' => 'Valora la predisposició o grau de col·laboració de l’empresa en la FE.'],
+            ]),
+            'options_select' => collect(),
+            'hasVotes' => [
+                'grup' => [
+                    '2CAE' => true,
+                ],
+            ],
+            'stats' => [
+                'grup' => [
+                    '2CAE' => [
+                        43 => ['avg' => 8.5],
+                    ],
+                ],
+                'grup_summary' => [
+                    '2CAE' => ['company_count' => 4, 'received_count' => 3],
+                ],
+            ],
+            'select_stats' => ['grup' => []],
+            'select_hasVotes' => ['grup' => []],
+        ])->render();
+
+        $this->assertStringContainsString('8.5', $html);
+        $this->assertStringNotContainsString('8,5', $html);
+    }
+
     /**
      * Crea una plantilla d'enquesta mínima per als tests del workflow.
      *
@@ -898,6 +1144,7 @@ class PollWorkflowServiceTest extends TestCase
         $schema->create('fcts', function (Blueprint $table): void {
             $table->unsignedInteger('id')->primary();
             $table->unsignedInteger('idColaboracion')->nullable();
+            $table->unsignedTinyInteger('asociacion')->default(1);
         });
 
         $schema->create('alumno_fcts', function (Blueprint $table): void {

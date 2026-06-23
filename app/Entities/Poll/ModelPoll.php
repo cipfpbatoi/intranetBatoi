@@ -37,6 +37,16 @@ abstract class ModelPoll
     {}
 
     /**
+     * Retorna el nombre d'empreses/FCT avaluables per grup quan el model ho pot calcular.
+     *
+     * @return array<string, int>
+     */
+    public static function availableEvaluationsByGroup(?Poll $poll = null): array
+    {
+        return [];
+    }
+
+    /**
      * Permet al model descartar respostes que no corresponen al context de la poll.
      */
     public static function filterVotesForPoll(Collection $votes, Poll $poll): Collection
