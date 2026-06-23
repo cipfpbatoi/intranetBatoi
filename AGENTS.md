@@ -119,7 +119,7 @@ Namespace: `Intranet\Http\Controllers\API`. Autenticació via Sanctum. Intercanv
 - **Abans de fer commit**: comprova si hi ha issues de GitHub relacionades amb `gh issue list` o `gh issue status`. Si els canvis resolen o afecten una issue, referencia-la al missatge (`#numero_issue`), p. ex. `[FIX] Null pointer en login d'usuari #42`.
 - Per a múltiples issues relacionades, inclou totes les referències (p. ex. `[MOD] Refactoritza el flux d'autenticació #15 #23`).
 - **No inclogues** `Co-Authored-By: Claude` ni atribució d'IA similar als missatges de commit.
-- Els PRs han de resumir la intenció, enllaçar issues/tasques i llistar els tests executats (`phpunit`, `npm run production` quan canvien assets). Afig captures de pantalla per a canvis d'UI i menciona migracions o variables d'entorn noves.
+- Els PRs han de resumir la intenció, enllaçar issues/tasques i llistar els tests executats (`phpunit`, `npm run production` quan canvien assets). Si el PR resol una issue, el cos del PR ha d'incloure una paraula clau de tancament de GitHub (`Closes #123`, `Fixes #123` o equivalent) perquè la issue es tanque automàticament en fusionar. Afig captures de pantalla per a canvis d'UI i menciona migracions o variables d'entorn noves.
 
 ## Seguretat i configuració
 
