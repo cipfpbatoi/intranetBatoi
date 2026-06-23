@@ -3,6 +3,8 @@
 namespace Intranet\Exports;
 
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 /**
  * Exporta els resultats agregats d'una enquesta en diverses pestanyes Excel.
@@ -58,7 +60,12 @@ class PollResultsExport implements WithMultipleSheets
         $sheets = [
             new PollResultsSheet('poll.partials.resolts.excel_general', 'Resultats', $data),
             new PollResultsSheet('poll.partials.resolts.excel_departament', 'Departaments', $data),
-            new PollResultsSheet('poll.partials.resolts.excel_grup', 'Grups', $data),
+            new PollResultsSheet(
+                'poll.partials.resolts.excel_grup',
+                'Grups',
+                $data,
+                $this->groupSheetColumnFormats()
+            ),
         ];
 
         foreach ($this->studentSelectGroups as $sheetData) {
@@ -83,5 +90,23 @@ class PollResultsExport implements WithMultipleSheets
         $cycleName = $group->Ciclo?->ciclo ?? $group->idCiclo ?? '';
 
         return trim($group->codigo . ' ' . $cycleName);
+    }
+
+    /**
+     * Formata les columnes de mitjana de la pestanya Grups amb dos decimals.
+     *
+     * @return array<string, string>
+     */
+    private function groupSheetColumnFormats(): array
+    {
+        $formats = [];
+        $firstAverageColumn = 4;
+        $lastAverageColumn = $firstAverageColumn + $this->options_numeric->count() - 1;
+
+        for ($column = $firstAverageColumn; $column <= $lastAverageColumn; $column++) {
+            $formats[Coordinate::stringFromColumnIndex($column)] = NumberFormat::FORMAT_NUMBER_00;
+        }
+
+        return $formats;
     }
 }
