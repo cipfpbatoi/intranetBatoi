@@ -38,3 +38,7 @@
 - Abans de commit, intentar consultar issues amb `gh issue list` o `gh issue status`.
 - Si `gh` no està autenticat o no hi ha xarxa, continuar i indicar-ho en el resum.
 - No afegir atribució d'IA en missatges de commit.
+
+## Pull requests
+
+- Quan un PR resol una issue, incloure al cos del PR una paraula clau de tancament de GitHub (`Closes #123`, `Fixes #123` o equivalent) perquè la issue es tanque automàticament en fusionar.
