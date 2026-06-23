@@ -28,7 +28,7 @@ class ActualizacionController extends Controller
             'resolved_branch' => $this->resolveBranch(),
         ]);
 
-        foreach (['composer.json', 'composer.lock'] as $composerFile) {
+        foreach (['composer.json', 'composer.lock',"AGENTS.md","CLAUDE.md","README.md"] as $composerFile) {
             if (File::exists(base_path($composerFile))) {
                 File::delete(base_path($composerFile));
                 Alert::info($composerFile.' eliminat');
