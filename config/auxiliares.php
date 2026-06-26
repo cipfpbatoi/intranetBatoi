@@ -137,8 +137,8 @@ return [
         3 => "No Promociona"
     ],
     'promocionaSemi' => [
-        1 => "Només li queda la FCT",
-        3 => "Encara no pot cursar la FCT"
+        1 => "Només li queda la FCT / Sols FE amb Notes Guardades (LFP)",
+        3 => "Encara no pot cursar la FCT / Queden mòduls pendents (LFP)"
     ],
     'periodesFct' => [1=>'Sept-Des',2=>'Abril-Juny',3=>'Altres',4=>'Flexible'],
     'estadosLote' => [0=>'BUIDA',1=>'ALTA',2=> 'INVENTARIANT',3=>'FINALITZADA'],
