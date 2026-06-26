@@ -12,6 +12,10 @@
     </style>
 @endsection
 @section('content')
+@php
+    $resultatsActa = app(\Intranet\Application\Reunion\ReunionFeValuationService::class)
+        ->reportModuleResultsForStudent($todos->Alumno);
+@endphp
 <p align="center" class="normal"><br/><br/><br/><br/></p>
 <p align="center" class="normal" style="font-size: 36pt">
     <b>Informe individual </b>
@@ -78,13 +82,13 @@ Curs 2019-20</p>
 <p style="margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%; page-break-before: always"><br/></p>
 <p class="left"><b>Notes dels mòduls</b></p>
 <p class="normal"><br/></p>
-@foreach ($todos->Alumno->AlumnoResultado as $resultado)
+@foreach ($resultatsActa as $resultado)
     <p class="left"><strong>{{$resultado->modulo}}</strong>: {{ config('auxiliares.notas')[$resultado->nota] ?? $resultado->nota }}</p>
 @endforeach
 <p class="normal"><br/><br/></p>
 <p class="title">_______ALTRES DADES D’INTERÉS________________________________</p>
 <p class="normal"><br/></p>
-@foreach ($todos->Alumno->AlumnoResultado as $resultado)
+@foreach ($resultatsActa as $resultado)
     @if ($resultado->observaciones)
         <p class="left"><strong>{{$resultado->modulo}}</strong>: {{$resultado->observaciones}}</p>
     @endif

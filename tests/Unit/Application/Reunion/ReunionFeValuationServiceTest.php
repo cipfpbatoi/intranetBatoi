@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Application\AlumnoFct\AlumnoFctAvalService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Reunion;
 use Mockery;
@@ -397,6 +398,22 @@ class ReunionFeValuationServiceTest extends TestCase
     }
 
     /**
+     * Verifica que l'informe d'una acta no mostra el mòdul optatiu si l'alumne és apte en FE.
+     */
+    public function test_informe_no_mostra_modul_optatiu_si_alumne_es_apte_en_fe(): void
+    {
+        $this->seedKnownFctData();
+        $this->seedModuleGrades();
+
+        $results = (new ReunionFeValuationService())->reportModuleResultsForStudent(
+            Alumno::query()->findOrFail('A9')
+        );
+
+        $this->assertSame([], $results->pluck('modulo')->all());
+        $this->assertFalse($results->contains('idModuloGrupo', 3));
+    }
+
+    /**
      * Verifica que es guarden les notes FE i es refresque el punt de notes reals.
      */
     public function test_guarda_notes_reals_de_moduls_des_de_lacta(): void
@@ -749,12 +766,12 @@ class ReunionFeValuationServiceTest extends TestCase
         DB::table('modulos')->insert([
             ['codigo' => 'M1', 'cliteral' => 'Módulo práctico', 'vliteral' => 'Mòdul pràctic'],
             ['codigo' => 'M2', 'cliteral' => 'Módulo de primero', 'vliteral' => 'Mòdul de primer'],
-            ['codigo' => 'M3', 'cliteral' => 'Módulo optativo', 'vliteral' => 'Mòdul optatiu'],
+            ['codigo' => 'CVOPT', 'cliteral' => 'Módulo optativo', 'vliteral' => 'Mòdul optatiu'],
         ]);
         DB::table('modulo_ciclos')->insert([
             ['id' => 1, 'idModulo' => 'M1', 'idCiclo' => 100, 'curso' => '2'],
             ['id' => 2, 'idModulo' => 'M2', 'idCiclo' => 100, 'curso' => '1'],
-            ['id' => 3, 'idModulo' => 'M3', 'idCiclo' => 100, 'curso' => '1'],
+            ['id' => 3, 'idModulo' => 'CVOPT', 'idCiclo' => 100, 'curso' => '1'],
         ]);
         DB::table('modulo_grupos')->insert([
             ['id' => 1, 'idModuloCiclo' => 1, 'idGrupo' => '2LFP'],

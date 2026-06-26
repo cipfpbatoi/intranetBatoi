@@ -6,6 +6,8 @@ namespace Intranet\Application\Reunion;
 
 use Illuminate\Support\Collection;
 use Intranet\Application\AlumnoFct\AlumnoFctAvalService;
+use Intranet\Application\ModuloOptatiu\ModuloOptatiuCertificatService;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoResultado;
@@ -464,6 +466,67 @@ class ReunionFeValuationService
             'results' => $results,
             'gradeOptions' => $this->validGradeOptions(),
         ];
+    }
+
+    /**
+     * Retorna les notes de mòduls que han d'eixir en els informes d'acta.
+     *
+     * Si l'alumne ja és apte en FE LFP, el mòdul optatiu no ha de condicionar
+     * l'acta extraordinària ni aparéixer com a nota pendent de l'informe.
+     *
+     * @param Alumno $alumno
+     * @return Collection<int, AlumnoResultado>
+     */
+    public function reportModuleResultsForStudent(Alumno $alumno): Collection
+    {
+        $alumno->loadMissing([
+            'AlumnoResultado.ModuloGrupo.ModuloCiclo.Modulo',
+            'AlumnoFct.Alumno.Grupo.Ciclo',
+            'AlumnoFct.Fct.Colaboracion.Ciclo',
+        ]);
+
+        $results = $alumno->AlumnoResultado instanceof Collection
+            ? $alumno->AlumnoResultado
+            : collect($alumno->AlumnoResultado);
+
+        if (!$this->hasAptLfpFe($alumno)) {
+            return $results;
+        }
+
+        return $results
+            ->reject(fn (AlumnoResultado $resultado): bool => $this->isOptionalModuleResult($resultado))
+            ->values();
+    }
+
+    /**
+     * Indica si l'alumne té una FE LFP apta segons la qualificació efectiva de l'acta.
+     *
+     * @param Alumno $alumno
+     * @return bool
+     */
+    private function hasAptLfpFe(Alumno $alumno): bool
+    {
+        $fcts = $alumno->AlumnoFct instanceof Collection
+            ? $alumno->AlumnoFct
+            : collect($alumno->AlumnoFct);
+
+        return $fcts->contains(
+            fn (AlumnoFct $fct): bool => $this->isLfpFct($fct) && $this->effectiveQualification($fct) === 1
+        );
+    }
+
+    /**
+     * Indica si una nota correspon al mòdul optatiu codificat en ITACA.
+     *
+     * @param AlumnoResultado $resultado
+     * @return bool
+     */
+    private function isOptionalModuleResult(AlumnoResultado $resultado): bool
+    {
+        $moduloGrupo = $resultado->ModuloGrupo;
+
+        return $moduloGrupo instanceof Modulo_grupo
+            && ModuloOptatiuCertificatService::isOptionalModule($moduloGrupo);
     }
 
     /**
