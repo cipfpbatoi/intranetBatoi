@@ -58,7 +58,7 @@ class ReunionFeValuationService
         if ($existing) {
             $this->removeDeprecatedSecondYearInstruction($existing);
             $this->removeDeprecatedSecretaryInstruction($existing);
-            $this->refreshNotesOrder($reunion);
+            $this->refreshNotesOrder($reunion, true);
 
             return $existing;
         }
@@ -393,7 +393,7 @@ class ReunionFeValuationService
     {
         return $fcts
             ->filter(static fn (AlumnoFct $fct): bool => (int) ($fct->calProyecto ?? 0) <= 0)
-            ->filter(static fn (AlumnoFct $fct): bool => in_array((int) $fct->calificacion, [0, 3, 5], true))
+            ->filter(fn (AlumnoFct $fct): bool => in_array($this->effectiveQualification($fct), [0, 3, 5], true))
             ->sortBy(static fn (AlumnoFct $fct): string => (string) ($fct->Alumno?->nameFull ?? $fct->Nombre))
             ->values();
     }
@@ -589,24 +589,24 @@ class ReunionFeValuationService
         $fcts = collect($fcts);
         return [
             'aptes' => $this->formatFctRows(
-                $fcts->where('calificacion', 1),
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 1),
                 true
             ),
             'no_aptes' => $this->formatFctRows(
-                $fcts->where('calificacion', 0),
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 0),
                 true
             ),
             'convalidats' => $this->formatFctRows(
-                $fcts->where('calificacion', 2)
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 2)
             ),
             'cessaments' => $this->formatFctRows(
-                $fcts->where('calificacion', 3)
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 3)
             ),
             'expulsions' => $this->formatExpulsionRows(
-                $fcts->where('calificacion', 4)
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 4)
             ),
             'renuncies' => $this->formatRenunciaRows(
-                $fcts->where('calificacion', 5)
+                $fcts->filter(fn (AlumnoFct $fct): bool => $this->effectiveQualification($fct) === 5)
             )
         ];
     }
@@ -751,14 +751,65 @@ class ReunionFeValuationService
     }
 
     /**
+     * Retorna la qualificació que ha d'usar l'acta FE, aplicant la regla de 1r LFP amb 100 hores.
+     *
+     * @param AlumnoFct $fct
+     * @return int|null
+     */
+    private function effectiveQualification(AlumnoFct $fct): ?int
+    {
+        $qualification = $fct->calificacion === null ? null : (int) $fct->calificacion;
+
+        if (in_array($qualification, [null, 0], true) && $this->isCompletedFirstCourseFe($fct)) {
+            return 1;
+        }
+
+        return $qualification;
+    }
+
+    /**
+     * Indica si una FE LFP de 1r té les 100 hores completades i s'ha de considerar apta.
+     *
+     * @param AlumnoFct $fct
+     * @return bool
+     */
+    private function isCompletedFirstCourseFe(AlumnoFct $fct): bool
+    {
+        $grupo = $this->resolveGrupoForFct($fct);
+
+        return $this->resolveNormativa($fct, $grupo) === 'LFP'
+            && (int) ($grupo?->curso ?? 0) === 1
+            && (int) ($fct->horasTotal ?? $fct->horas ?? 0) >= 100;
+    }
+
+    /**
+     * Retorna l'etiqueta de qualificació efectiva per al resum de l'acta.
+     *
+     * @param AlumnoFct $fct
+     * @return string
+     */
+    private function qualificationLabel(AlumnoFct $fct): string
+    {
+        return match ($this->effectiveQualification($fct)) {
+            0 => 'No Apte',
+            1 => 'Apte',
+            2 => 'Convalidat/Exempt',
+            3 => 'Cessament',
+            4 => 'Cessament Disciplinari (Expulsat)',
+            5 => 'Renúncia / No realitzada',
+            default => 'No Avaluat',
+        };
+    }
+
+    /**
      * Garantix el punt de notes reals si hi ha notes introduïdes.
      *
      * @param Reunion $reunion
+     * @param bool $preserveExistingSummary
      * @return OrdenReunion|null
      */
-    public function refreshNotesOrder(Reunion $reunion): ?OrdenReunion
+    public function refreshNotesOrder(Reunion $reunion, bool $preserveExistingSummary = false): ?OrdenReunion
     {
-        $summary = $this->notesSummaryForReunion($reunion);
         $existing = OrdenReunion::query()
             ->forReunion($reunion->id)
             ->whereIn('descripcion', [
@@ -767,6 +818,17 @@ class ReunionFeValuationService
                 self::LEGACY_NOTES_ORDER_DESCRIPTION_WITH_RENUNCIA,
             ])
             ->first();
+
+        if ($preserveExistingSummary && $existing) {
+            if ($existing->descripcion !== self::NOTES_ORDER_DESCRIPTION) {
+                $existing->descripcion = self::NOTES_ORDER_DESCRIPTION;
+                $existing->save();
+            }
+
+            return $existing;
+        }
+
+        $summary = $this->notesSummaryForReunion($reunion);
         if ($summary === '') {
             if ($existing) {
                 $existing->delete();
@@ -850,7 +912,7 @@ class ReunionFeValuationService
         $rows = [];
         foreach ($fcts as $fct) {
             $name = e((string) ($fct->Alumno?->nameFull ?? $fct->Nombre));
-            $qualification = e((string) $fct->qualificacio);
+            $qualification = e($this->qualificationLabel($fct));
             $hours = $includeHours ? ' - ' . (int) $fct->horasTotal . ' hores' : '';
             $rows[] = $name . ' - ' . $qualification . $hours;
         }

@@ -167,6 +167,42 @@ class ReunionFeValuationServiceTest extends TestCase
     }
 
     /**
+     * Verifica que entrar a l'acta no recalcula el punt de notes editat pel tutor.
+     */
+    public function test_entrada_acta_conserva_punt_notes_ja_editat(): void
+    {
+        $this->seedKnownFctData();
+        $this->seedModuleGrades();
+        DB::table('ordenes_reuniones')->insert([
+            [
+                'idReunion' => 10,
+                'orden' => 9,
+                'descripcion' => ReunionFeValuationService::ORDER_DESCRIPTION,
+                'resumen' => 'Resum FE',
+            ],
+            [
+                'idReunion' => 10,
+                'orden' => 10,
+                'descripcion' => ReunionFeValuationService::NOTES_ORDER_DESCRIPTION,
+                'resumen' => 'Text modificat pel tutor',
+            ],
+        ]);
+
+        $this->serviceWithAvalFcts($this->avalFcts())->ensureOrder(
+            $this->makeReunion(10, 7, 34),
+            'LFP'
+        );
+
+        $this->assertSame(
+            'Text modificat pel tutor',
+            DB::table('ordenes_reuniones')
+                ->where('idReunion', 10)
+                ->where('descripcion', ReunionFeValuationService::NOTES_ORDER_DESCRIPTION)
+                ->value('resumen')
+        );
+    }
+
+    /**
      * Verifica que s'elimina la instrucció antiga de 2n en actes ja creades.
      */
     public function test_elimina_text_antic_de_grups_de_segon_si_ja_existix(): void
@@ -337,6 +373,27 @@ class ReunionFeValuationServiceTest extends TestCase
             [0 => 'No Superat', 5 => '5', 6 => '6', 7 => '7', 8 => '8', 9 => '9', 10 => '10'],
             $data['gradeOptions']
         );
+    }
+
+    /**
+     * Verifica que la FE de 1r LFP amb 100 hores es tracta com a apta i no arrossega el mòdul optatiu.
+     */
+    public function test_fe_de_primer_amb_cent_hores_es_apta_i_no_demana_notes_de_moduls(): void
+    {
+        $this->seedKnownFctData();
+        $this->seedModuleGrades();
+
+        $summary = (new ReunionFeValuationService())->defaultSummaryForReunion(
+            $this->makeReunion(11, 7, 35, '1LFP')
+        );
+        $data = (new ReunionFeValuationService())->gradeInputData(
+            $this->makeReunion(11, 7, 35, '1LFP')
+        );
+
+        $this->assertStringContainsString('Optativa Test, Ona - Apte - 100 hores', $summary);
+        $this->assertStringNotContainsString('Optativa Test, Ona - No Apte', $summary);
+        $this->assertNotContains('A9', $data['fcts']->pluck('idAlumno')->all());
+        $this->assertFalse($data['results']->has('A9-3'));
     }
 
     /**
@@ -642,8 +699,10 @@ class ReunionFeValuationServiceTest extends TestCase
             ['id' => 4, 'idColaboracion' => 2, 'asociacion' => 1],
             ['id' => 5, 'idColaboracion' => 3, 'asociacion' => 1],
             ['id' => 6, 'idColaboracion' => 2, 'asociacion' => 1],
+            ['id' => 7, 'idColaboracion' => 2, 'asociacion' => 1],
         ]);
         DB::table('grupos')->insert([
+            ['codigo' => '1LFP', 'nombre' => 'Primer LFP', 'tutor' => 'P1', 'idCiclo' => 100, 'curso' => 1],
             ['codigo' => '2LFP', 'nombre' => 'Segon LFP', 'tutor' => 'P1', 'idCiclo' => 100, 'curso' => 2],
             ['codigo' => '2LOE', 'nombre' => 'Segon LOE', 'tutor' => 'P1', 'idCiclo' => 200, 'curso' => 2],
         ]);
@@ -656,6 +715,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['nia' => 'A6', 'nombre' => 'Cesc', 'apellido1' => 'Cessament', 'apellido2' => 'Test'],
             ['nia' => 'A7', 'nombre' => 'Pau', 'apellido1' => 'Projecte', 'apellido2' => 'Test'],
             ['nia' => 'A8', 'nombre' => 'Elsa', 'apellido1' => 'Expulsio', 'apellido2' => 'Test'],
+            ['nia' => 'A9', 'nombre' => 'Ona', 'apellido1' => 'Optativa', 'apellido2' => 'Test'],
         ]);
         DB::table('alumnos_grupos')->insert([
             ['idAlumno' => 'A1', 'idGrupo' => '2LFP'],
@@ -666,6 +726,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A6', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A7', 'idGrupo' => '2LFP'],
             ['idAlumno' => 'A8', 'idGrupo' => '2LFP'],
+            ['idAlumno' => 'A9', 'idGrupo' => '1LFP'],
         ]);
         DB::table('alumno_fcts')->insert([
             ['idFct' => 1, 'idAlumno' => 'A1', 'idProfesor' => 'P1', 'calificacion' => 1, 'calProyecto' => null, 'horas' => 120],
@@ -676,6 +737,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idFct' => 6, 'idAlumno' => 'A6', 'idProfesor' => 'P1', 'calificacion' => 3, 'calProyecto' => null, 'horas' => 0],
             ['idFct' => 6, 'idAlumno' => 'A7', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => 4, 'horas' => 90],
             ['idFct' => 6, 'idAlumno' => 'A8', 'idProfesor' => 'P1', 'calificacion' => 4, 'calProyecto' => null, 'horas' => 0],
+            ['idFct' => 7, 'idAlumno' => 'A9', 'idProfesor' => 'P1', 'calificacion' => 0, 'calProyecto' => null, 'horas' => 100],
         ]);
     }
 
@@ -687,14 +749,17 @@ class ReunionFeValuationServiceTest extends TestCase
         DB::table('modulos')->insert([
             ['codigo' => 'M1', 'cliteral' => 'Módulo práctico', 'vliteral' => 'Mòdul pràctic'],
             ['codigo' => 'M2', 'cliteral' => 'Módulo de primero', 'vliteral' => 'Mòdul de primer'],
+            ['codigo' => 'M3', 'cliteral' => 'Módulo optativo', 'vliteral' => 'Mòdul optatiu'],
         ]);
         DB::table('modulo_ciclos')->insert([
             ['id' => 1, 'idModulo' => 'M1', 'idCiclo' => 100, 'curso' => '2'],
             ['id' => 2, 'idModulo' => 'M2', 'idCiclo' => 100, 'curso' => '1'],
+            ['id' => 3, 'idModulo' => 'M3', 'idCiclo' => 100, 'curso' => '1'],
         ]);
         DB::table('modulo_grupos')->insert([
             ['id' => 1, 'idModuloCiclo' => 1, 'idGrupo' => '2LFP'],
             ['id' => 2, 'idModuloCiclo' => 2, 'idGrupo' => '2LFP'],
+            ['id' => 3, 'idModuloCiclo' => 3, 'idGrupo' => '1LFP'],
         ]);
         DB::table('alumno_resultados')->insert([
             ['idAlumno' => 'A1', 'idModuloGrupo' => 1, 'nota' => 8],
@@ -702,6 +767,7 @@ class ReunionFeValuationServiceTest extends TestCase
             ['idAlumno' => 'A2', 'idModuloGrupo' => 2, 'nota' => 9],
             ['idAlumno' => 'A4', 'idModuloGrupo' => 1, 'nota' => 5],
             ['idAlumno' => 'A6', 'idModuloGrupo' => 1, 'nota' => 5],
+            ['idAlumno' => 'A9', 'idModuloGrupo' => 3, 'nota' => 8],
         ]);
     }
 
@@ -714,7 +780,7 @@ class ReunionFeValuationServiceTest extends TestCase
     {
         return AlumnoFct::query()
             ->with('Alumno')
-            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'])
+            ->whereIn('idAlumno', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9'])
             ->get();
     }
 
