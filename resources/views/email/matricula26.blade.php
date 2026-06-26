@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>Matricula curs 2025/26</th>
+            <th>Matricula curs 2026/27</th>
         </tr>
     </table>
     <div>
@@ -13,10 +13,10 @@
         </table>
     </div>
     <div class="container" style="font-size: 1.3em; line-height: 1.3em" >
-        <p>  Recordar-vos les dates de matrícula del curs 2025-26 .</p>
+        <p>  Recordar-vos les dates de matrícula del curs 2026-27 .</p>
         <ul>
             <li style=" margin-top: 1.3em">
-                La data de matrícula serà a partir del 30 de juny fins al 7 de juliol a les 14hores</strong>.
+                La data de matrícula serà a partir del 3 de juliol a les 8:00 fins al 17 de juliol a les 14:00</strong>.
             </li>
             <li style=" margin-top: 1.3em">
                 La matríula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
