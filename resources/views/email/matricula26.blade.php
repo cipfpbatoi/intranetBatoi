@@ -13,7 +13,7 @@
         </table>
     </div>
     <div class="container" style="font-size: 1.3em; line-height: 1.3em" >
-        <p>  Recordar-vos les dates de matrícula del curs 2026-27 .</p>
+        <p> A continuació us indiquem el procediment per a realitzar la matricula per al curs 2026/27...</p>
         <ul>
             <li style=" margin-top: 1.3em">
                 La data de matrícula serà a partir del 3 de juliol a les 8:00 fins al 17 de juliol a les 14:00</strong>.
@@ -32,7 +32,7 @@
             </li>
             <li style=" margin-top: 1.3em">
                 Hi ha un manual del procediment que pots consultar en el següent enllaç:
-                <a href="https://bit.ly/2SGWC2o">https://bit.ly/2SGWC2o</a>
+                <a href="https://docs.google.com/document/d/1HTOMBXtc3fzCZGCwFUyKpfbmtTyqlyAvCK45WglEViM/export?format=pdf">Manual de matrícula</a>
             </li>
             <li style=" margin-top: 1.3em">
                 Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a 03012165.secretaria+automatricula@edu.gva.es.
