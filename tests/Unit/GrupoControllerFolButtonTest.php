@@ -64,7 +64,7 @@ class GrupoControllerFolButtonTest extends TestCase
             'departamento' => 99,
         ]);
         $profesorFolLiteral->setRelation('Departamento', new Departamento([
-            'depcurt' => 'Fol',
+            'depcurt' => ' FOL ',
         ]));
 
         Auth::guard('profesor')->setUser($profesorFolLiteral);
