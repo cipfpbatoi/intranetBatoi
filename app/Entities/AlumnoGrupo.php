@@ -82,6 +82,15 @@ class AlumnoGrupo extends Model
     {
         return $this->Alumno->fol;
     }
+
+    /**
+     * Retorna el curs acadèmic del grup on està matriculat l'alumne.
+     */
+    public function getCursoAttribute()
+    {
+        return $this->Grupo?->curso;
+    }
+
     public function getFotoAttribute()
     {
         return $this->Alumno->foto;

@@ -42,7 +42,9 @@ class AlumnoGrupoController extends ModalController
     public function search()
     {
         $this->titulo = ['quien' => $this->search];
-        return AlumnoGrupo::where('idGrupo', $this->search)->get();
+        return AlumnoGrupo::with(['Alumno', 'Grupo'])
+            ->where('idGrupo', $this->search)
+            ->get();
     }
 
     /*
