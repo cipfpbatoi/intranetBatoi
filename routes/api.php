@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api,sanctum'], function () {
     Route::put('fct/contact/{id}', 'FctController@updateContact')->middleware('auth:api,sanctum');
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
+    Route::get('/alumnoreunion/resumen', 'AlumnoReunionController@resumen')->middleware('auth:api,sanctum');
     Route::resource('falta', 'FaltaController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
     Route::resource('documento', 'DocumentoController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']])->middleware('auth:api,sanctum');
