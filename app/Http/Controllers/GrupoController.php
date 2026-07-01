@@ -124,7 +124,7 @@ class GrupoController extends IntranetController
 
 
 
-        if ($this->isFolTeacher() && date('Y-m-d') > config('variables.certificatFol')) {
+        if ($this->isFolTeacher() && $this->folCertificatePeriodIsOpen()) {
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>$this->folCertificateButtonWhere(0)]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>$this->folCertificateButtonWhere(1)]));
         }
@@ -161,6 +161,20 @@ class GrupoController extends IntranetController
 
         return (int) $profesor->departamento === self::FOL
             || $departamentoLiteral === 'fol';
+    }
+
+    /**
+     * Indica si el període de comprovació FOL està obert.
+     */
+    protected function folCertificatePeriodIsOpen(): bool
+    {
+        $startDate = trim((string) config('variables.certificatFol', ''));
+
+        if ($startDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate)) {
+            return true;
+        }
+
+        return date('Y-m-d') > $startDate;
     }
 
     /**
