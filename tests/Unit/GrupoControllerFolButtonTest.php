@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Auth;
+use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\GrupoController;
@@ -49,12 +50,24 @@ class GrupoControllerFolButtonTest extends TestCase
         $this->assertSame('', $botoMarcat->render($segonMarcat));
     }
 
-    public function test_botonera_fol_usa_el_departament_numeric_de_fol(): void
+    public function test_botonera_fol_usa_el_departament_numeric_o_literal_de_fol(): void
     {
         Auth::guard('profesor')->setUser(new Profesor([
             'dni' => 'FOL01',
             'departamento' => 12,
         ]));
+
+        $this->assertTrue($this->controller()->isFol());
+
+        $profesorFolLiteral = new Profesor([
+            'dni' => 'FOL02',
+            'departamento' => 99,
+        ]);
+        $profesorFolLiteral->setRelation('Departamento', new Departamento([
+            'depcurt' => 'Fol',
+        ]));
+
+        Auth::guard('profesor')->setUser($profesorFolLiteral);
 
         $this->assertTrue($this->controller()->isFol());
 
