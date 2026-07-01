@@ -179,8 +179,27 @@ class Grupo extends Model
      */
     public function getFolCertificableAttribute(): bool
     {
-        return (int) $this->curso === 1
-            || str_starts_with(trim((string) $this->codigo), '1');
+        if ((int) $this->curso === 1) {
+            return true;
+        }
+
+        foreach ([$this->codigo, $this->nombre] as $value) {
+            $text = strtolower(trim((string) $value));
+
+            if ($text === '') {
+                continue;
+            }
+
+            if (preg_match('/\b(1r?|primer|primero)\b/u', $text)) {
+                return true;
+            }
+
+            if (preg_match('/\d/', $text, $matches)) {
+                return $matches[0] === '1';
+            }
+        }
+
+        return false;
     }
 
     public function getProyectoAttribute()

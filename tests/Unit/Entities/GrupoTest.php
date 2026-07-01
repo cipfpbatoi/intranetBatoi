@@ -147,18 +147,33 @@ class GrupoTest extends TestCase
     {
         $primerPerCurs = new Grupo();
         $primerPerCurs->codigo = 'CF';
+        $primerPerCurs->nombre = 'Cicle formatiu';
         $primerPerCurs->curso = 1;
 
-        $primerPerCodi = new Grupo();
-        $primerPerCodi->codigo = '1DAW';
-        $primerPerCodi->curso = 2;
+        $primerPerCodiInicial = new Grupo();
+        $primerPerCodiInicial->codigo = '1DAW';
+        $primerPerCodiInicial->nombre = 'Desenvolupament web';
+        $primerPerCodiInicial->curso = 2;
+
+        $primerPerCodiFinal = new Grupo();
+        $primerPerCodiFinal->codigo = 'DAW1';
+        $primerPerCodiFinal->nombre = 'Desenvolupament web';
+        $primerPerCodiFinal->curso = 2;
+
+        $primerPerNom = new Grupo();
+        $primerPerNom->codigo = 'DAW';
+        $primerPerNom->nombre = 'Primer DAW';
+        $primerPerNom->curso = 2;
 
         $segon = new Grupo();
-        $segon->codigo = '2DAW';
+        $segon->codigo = 'DAW2';
+        $segon->nombre = 'Segon DAW';
         $segon->curso = 2;
 
         $this->assertTrue($primerPerCurs->folCertificable);
-        $this->assertTrue($primerPerCodi->folCertificable);
+        $this->assertTrue($primerPerCodiInicial->folCertificable);
+        $this->assertTrue($primerPerCodiFinal->folCertificable);
+        $this->assertTrue($primerPerNom->folCertificable);
         $this->assertFalse($segon->folCertificable);
     }
 

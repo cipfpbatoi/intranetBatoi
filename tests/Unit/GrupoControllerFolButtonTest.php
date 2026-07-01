@@ -28,11 +28,11 @@ class GrupoControllerFolButtonTest extends TestCase
             'where' => $where,
         ]);
 
-        $primer = $this->makeGrupo('1CF', 0, 1);
+        $primer = $this->makeGrupo('CF1', 0, 2);
         $segon = $this->makeGrupo('2CF', 0, 2);
 
         $this->assertSame(['fol', '==', 0, 'folCertificable', '==', true], $where);
-        $this->assertStringContainsString('http://intranet.test/grupo/1CF/fol', $boto->render($primer));
+        $this->assertStringContainsString('http://intranet.test/grupo/CF1/fol', $boto->render($primer));
         $this->assertSame('', $boto->render($segon));
 
         $whereMarcat = $this->controller()->folWhere(1);
@@ -42,11 +42,11 @@ class GrupoControllerFolButtonTest extends TestCase
             'where' => $whereMarcat,
         ]);
 
-        $primerMarcat = $this->makeGrupo('1DAW', 1, 1);
-        $segonMarcat = $this->makeGrupo('2DAW', 1, 2);
+        $primerMarcat = $this->makeGrupo('DAW1', 1, 2);
+        $segonMarcat = $this->makeGrupo('DAW2', 1, 2);
 
         $this->assertSame(['fol', '==', 1, 'folCertificable', '==', true], $whereMarcat);
-        $this->assertStringContainsString('http://intranet.test/grupo/1DAW/fol', $botoMarcat->render($primerMarcat));
+        $this->assertStringContainsString('http://intranet.test/grupo/DAW1/fol', $botoMarcat->render($primerMarcat));
         $this->assertSame('', $botoMarcat->render($segonMarcat));
     }
 
