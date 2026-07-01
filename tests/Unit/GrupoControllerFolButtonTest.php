@@ -64,7 +64,7 @@ class GrupoControllerFolButtonTest extends TestCase
             'departamento' => 99,
         ]);
         $profesorFolLiteral->setRelation('Departamento', new Departamento([
-            'depcurt' => 'Fol',
+            'depcurt' => ' FOL ',
         ]));
 
         Auth::guard('profesor')->setUser($profesorFolLiteral);
@@ -77,6 +77,24 @@ class GrupoControllerFolButtonTest extends TestCase
         ]));
 
         $this->assertFalse($this->controller()->isFol());
+    }
+
+    public function test_periode_fol_no_amaga_botons_si_la_variable_no_esta_configurada(): void
+    {
+        config()->set('variables.certificatFol', null);
+        $this->assertTrue($this->controller()->folPeriodIsOpen());
+
+        config()->set('variables.certificatFol', '');
+        $this->assertTrue($this->controller()->folPeriodIsOpen());
+
+        config()->set('variables.certificatFol', 'data-no-valida');
+        $this->assertTrue($this->controller()->folPeriodIsOpen());
+
+        config()->set('variables.certificatFol', date('Y-m-d', strtotime('+1 day')));
+        $this->assertFalse($this->controller()->folPeriodIsOpen());
+
+        config()->set('variables.certificatFol', date('Y-m-d', strtotime('-1 day')));
+        $this->assertTrue($this->controller()->folPeriodIsOpen());
     }
 
     private function controller(): object
@@ -99,6 +117,14 @@ class GrupoControllerFolButtonTest extends TestCase
             public function isFol(): bool
             {
                 return $this->isFolTeacher();
+            }
+
+            /**
+             * Exposa la finestra temporal FOL per provar configuració absent o mal formada.
+             */
+            public function folPeriodIsOpen(): bool
+            {
+                return $this->folCertificatePeriodIsOpen();
             }
         };
     }

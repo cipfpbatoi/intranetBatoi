@@ -49,6 +49,15 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
         $this->assertSame('', $botoMarcat->render($segonMarcat));
     }
 
+    public function test_periode_fol_no_amaga_botons_si_la_variable_no_esta_configurada(): void
+    {
+        config()->set('variables.certificatFol', null);
+        $this->assertTrue($this->controller()->folPeriodIsOpen());
+
+        config()->set('variables.certificatFol', date('Y-m-d', strtotime('+1 day')));
+        $this->assertFalse($this->controller()->folPeriodIsOpen());
+    }
+
     private function controller(): object
     {
         return new class extends AlumnoGrupoController {
@@ -61,6 +70,14 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
             public function folWhere(int $fol): array
             {
                 return $this->folCertificateButtonWhere($fol);
+            }
+
+            /**
+             * Exposa la finestra temporal FOL per provar configuració absent.
+             */
+            public function folPeriodIsOpen(): bool
+            {
+                return $this->folCertificatePeriodIsOpen();
             }
         };
     }

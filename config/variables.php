@@ -7,6 +7,7 @@ return [
     'comisionFCTexterna' => 1,
     'httpFCTexterna' => 'http://www.fpxativa.es/admin',
     'enquestaInstructor' => 'https://forms.office.com/r/rMqmGzMbTn',
+    'certificatFol' => env('CERTIFICAT_FOL_DATE', null),
     'actividadImg' => 0,
     'altaInstructores' => 0,
     'ipDomotica' => env('DOMOTICA_DEVICE_ENDPOINT', 'http://172.16.10.74/api/devices/{dispositivo}/action'),
