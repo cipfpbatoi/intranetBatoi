@@ -10,6 +10,9 @@ use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Curso;
 
+/**
+ * Controlador del llistat modal d'alumnat associat a un grup.
+ */
 class AlumnoGrupoController extends ModalController
 {
     protected $perfil = 'profesor';
@@ -105,8 +108,8 @@ class AlumnoGrupoController extends ModalController
         $this->panel->setBoton('profile', new BotonIcon('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
         if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('variables.certificatFol')) {
-            $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => ['fol', '==', 0]]));
-            $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => ['fol', '==', 1]]));
+            $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => $this->folCertificateButtonWhere(0)]));
+            $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => $this->folCertificateButtonWhere(1)]));
         }
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
@@ -126,6 +129,17 @@ class AlumnoGrupoController extends ModalController
             )
         );
         
+    }
+
+    /**
+     * Restringeix la comprovació individual del certificat FOL a alumnat de primer curs.
+     *
+     * @param int $fol Estat actual del certificat FOL de l'alumne.
+     * @return array<int, int|string>
+     */
+    protected function folCertificateButtonWhere(int $fol): array
+    {
+        return ['fol', '==', $fol, 'curso', '==', 1];
     }
 
 }
