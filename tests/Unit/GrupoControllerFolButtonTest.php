@@ -30,7 +30,7 @@ class GrupoControllerFolButtonTest extends TestCase
         $primer = $this->makeGrupo('1CF', 0, 1);
         $segon = $this->makeGrupo('2CF', 0, 2);
 
-        $this->assertSame(['fol', '==', 0, 'curso', '==', 1], $where);
+        $this->assertSame(['fol', '==', 0, 'folCertificable', '==', true], $where);
         $this->assertStringContainsString('http://intranet.test/grupo/1CF/fol', $boto->render($primer));
         $this->assertSame('', $boto->render($segon));
 
@@ -44,7 +44,7 @@ class GrupoControllerFolButtonTest extends TestCase
         $primerMarcat = $this->makeGrupo('1DAW', 1, 1);
         $segonMarcat = $this->makeGrupo('2DAW', 1, 2);
 
-        $this->assertSame(['fol', '==', 1, 'curso', '==', 1], $whereMarcat);
+        $this->assertSame(['fol', '==', 1, 'folCertificable', '==', true], $whereMarcat);
         $this->assertStringContainsString('http://intranet.test/grupo/1DAW/fol', $botoMarcat->render($primerMarcat));
         $this->assertSame('', $botoMarcat->render($segonMarcat));
     }

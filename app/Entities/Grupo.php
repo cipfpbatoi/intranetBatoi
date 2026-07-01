@@ -174,6 +174,15 @@ class Grupo extends Model
         return $query->where('curso', $curso);
     }
 
+    /**
+     * Indica si el grup ha de mostrar les accions de comprovació del certificat FOL.
+     */
+    public function getFolCertificableAttribute(): bool
+    {
+        return (int) $this->curso === 1
+            || str_starts_with(trim((string) $this->codigo), '1');
+    }
+
     public function getProyectoAttribute()
     {
         $ciclo = $this->Ciclo;

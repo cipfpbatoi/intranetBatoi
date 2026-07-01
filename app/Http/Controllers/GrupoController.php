@@ -148,7 +148,7 @@ class GrupoController extends IntranetController
      */
     protected function folCertificateButtonWhere(int $fol): array
     {
-        return ['fol', '==', $fol, 'curso', '==', 1];
+        return ['fol', '==', $fol, 'folCertificable', '==', true];
     }
 
     /**
