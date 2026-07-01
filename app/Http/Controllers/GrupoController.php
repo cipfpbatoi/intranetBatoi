@@ -156,7 +156,10 @@ class GrupoController extends IntranetController
      */
     protected function isFolTeacher(): bool
     {
-        return (int) AuthUser()->departamento === self::FOL;
+        $profesor = AuthUser();
+
+        return (int) $profesor->departamento === self::FOL
+            || strtolower((string) $profesor->xdepartamento) === 'fol';
     }
 
     /**
