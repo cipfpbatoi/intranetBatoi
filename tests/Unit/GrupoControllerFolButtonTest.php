@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\GrupoController;
 use Intranet\UI\Botones\BotonImg;
 use Tests\TestCase;
@@ -47,6 +49,23 @@ class GrupoControllerFolButtonTest extends TestCase
         $this->assertSame('', $botoMarcat->render($segonMarcat));
     }
 
+    public function test_botonera_fol_usa_el_departament_numeric_de_fol(): void
+    {
+        Auth::guard('profesor')->setUser(new Profesor([
+            'dni' => 'FOL01',
+            'departamento' => 12,
+        ]));
+
+        $this->assertTrue($this->controller()->isFol());
+
+        Auth::guard('profesor')->setUser(new Profesor([
+            'dni' => 'INF01',
+            'departamento' => 1,
+        ]));
+
+        $this->assertFalse($this->controller()->isFol());
+    }
+
     private function controller(): object
     {
         return new class extends GrupoController {
@@ -59,6 +78,14 @@ class GrupoControllerFolButtonTest extends TestCase
             public function folWhere(int $fol): array
             {
                 return $this->folCertificateButtonWhere($fol);
+            }
+
+            /**
+             * Exposa el criteri de departament FOL per a provar-lo.
+             */
+            public function isFol(): bool
+            {
+                return $this->isFolTeacher();
             }
         };
     }
