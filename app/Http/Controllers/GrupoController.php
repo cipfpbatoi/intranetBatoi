@@ -124,12 +124,12 @@ class GrupoController extends IntranetController
 
 
         if (AuthUser()->xdepartamento === 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>$this->folCertificateButtonWhere(0)]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>$this->folCertificateButtonWhere(1)]));
         }
 
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',
-            ['img' => 'fa-file-word-o','roles' => config(self::DIRECCION),'where'=>['fol','==', 1]]));
+            ['img' => 'fa-file-word-o','roles' => config(self::DIRECCION),'where'=>$this->folCertificateButtonWhere(1)]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo'))){
@@ -137,6 +137,17 @@ class GrupoController extends IntranetController
 
             }
         }
+    }
+
+    /**
+     * Restringeix la comprovació de certificats FOL als grups de primer curs.
+     *
+     * @param int $fol Estat actual de comprovació FOL del grup.
+     * @return array<int, int|string>
+     */
+    protected function folCertificateButtonWhere(int $fol): array
+    {
+        return ['fol', '==', $fol, 'curso', '==', 1];
     }
 
     /**
