@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
 use Intranet\Http\Controllers\Controller;
@@ -15,8 +16,25 @@ class LoteController extends ApiResourceController
 
     protected $model = 'Lote';
 
+    /**
+     * Resol l'usuari autenticat pels guards habituals de l'API.
+     */
+    private function authenticatedUser(Request $request)
+    {
+        return $request->user('sanctum') ?? $request->user('api');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $lote = Lote::findOrFail($id);
+        Gate::forUser($this->authenticatedUser($request))->authorize('update', $lote);
+        return parent::update($request, $id);
+    }
+
     public function destroy($id)
     {
+        $lote = Lote::findOrFail($id);
+        Gate::forUser($this->authenticatedUser(request()))->authorize('delete', $lote);
         Lote::destroy($id);
         return $this->sendResponse(['success' => true], 'OK');
     }
