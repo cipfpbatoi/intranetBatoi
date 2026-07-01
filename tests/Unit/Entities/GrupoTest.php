@@ -143,40 +143,6 @@ class GrupoTest extends TestCase
         $this->assertSame(['GB'], $codigos);
     }
 
-    public function test_accessor_fol_certificable_detecta_grups_de_primer_per_curs_o_codi(): void
-    {
-        $primerPerCurs = new Grupo();
-        $primerPerCurs->codigo = 'CF';
-        $primerPerCurs->nombre = 'Cicle formatiu';
-        $primerPerCurs->curso = 1;
-
-        $primerPerCodiInicial = new Grupo();
-        $primerPerCodiInicial->codigo = '1DAW';
-        $primerPerCodiInicial->nombre = 'Desenvolupament web';
-        $primerPerCodiInicial->curso = 2;
-
-        $primerPerCodiFinal = new Grupo();
-        $primerPerCodiFinal->codigo = 'DAW1';
-        $primerPerCodiFinal->nombre = 'Desenvolupament web';
-        $primerPerCodiFinal->curso = 2;
-
-        $primerPerNom = new Grupo();
-        $primerPerNom->codigo = 'DAW';
-        $primerPerNom->nombre = 'Primer DAW';
-        $primerPerNom->curso = 2;
-
-        $segon = new Grupo();
-        $segon->codigo = 'DAW2';
-        $segon->nombre = 'Segon DAW';
-        $segon->curso = 2;
-
-        $this->assertTrue($primerPerCurs->folCertificable);
-        $this->assertTrue($primerPerCodiInicial->folCertificable);
-        $this->assertTrue($primerPerCodiFinal->folCertificable);
-        $this->assertTrue($primerPerNom->folCertificable);
-        $this->assertFalse($segon->folCertificable);
-    }
-
     public function test_scope_departamento_filtra_grups_per_cicle(): void
     {
         DB::table('ciclos')->insert([

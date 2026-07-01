@@ -30,7 +30,6 @@ class GrupoController extends IntranetController
     const DIRECCION ='roles.rol.direccion';
     const TUTOR ='roles.rol.tutor';
     const ORIENTADOR ='roles.rol.orientador';
-    const FOL = 12;
 
 
     use Imprimir;
@@ -124,13 +123,13 @@ class GrupoController extends IntranetController
 
 
 
-        if ($this->isFolTeacher() && $this->folCertificatePeriodIsOpen()) {
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>$this->folCertificateButtonWhere(0)]));
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>$this->folCertificateButtonWhere(1)]));
+        if (AuthUser()->xdepartamento === 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
         }
 
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',
-            ['img' => 'fa-file-word-o','roles' => config(self::DIRECCION),'where'=>$this->folCertificateButtonWhere(1)]));
+            ['img' => 'fa-file-word-o','roles' => config(self::DIRECCION),'where'=>['fol','==', 1]]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo'))){
@@ -138,43 +137,6 @@ class GrupoController extends IntranetController
 
             }
         }
-    }
-
-    /**
-     * Restringeix la comprovació de certificats FOL als grups de primer curs.
-     *
-     * @param int $fol Estat actual de comprovació FOL del grup.
-     * @return array<int, int|string>
-     */
-    protected function folCertificateButtonWhere(int $fol): array
-    {
-        return ['fol', '==', $fol, 'folCertificable', '==', true];
-    }
-
-    /**
-     * Indica si l'usuari autenticat pertany al departament de FOL.
-     */
-    protected function isFolTeacher(): bool
-    {
-        $profesor = AuthUser();
-        $departamentoLiteral = strtolower(trim((string) $profesor->xdepartamento));
-
-        return (int) $profesor->departamento === self::FOL
-            || $departamentoLiteral === 'fol';
-    }
-
-    /**
-     * Indica si el període de comprovació FOL està obert.
-     */
-    protected function folCertificatePeriodIsOpen(): bool
-    {
-        $startDate = trim((string) config('variables.certificatFol', ''));
-
-        if ($startDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate)) {
-            return true;
-        }
-
-        return date('Y-m-d') > $startDate;
     }
 
     /**
