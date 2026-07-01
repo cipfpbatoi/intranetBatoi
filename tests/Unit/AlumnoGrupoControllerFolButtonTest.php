@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Intranet\Entities\Alumno;
+use Intranet\Entities\AlumnoGrupo;
+use Intranet\Entities\Grupo;
 use Intranet\Http\Controllers\AlumnoGrupoController;
 use Intranet\UI\Botones\BotonImg;
 use Tests\TestCase;
@@ -24,8 +27,8 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
             'where' => $where,
         ]);
 
-        $primer = $this->makeElement(['id' => 1, 'fol' => 0, 'curso' => 1]);
-        $segon = $this->makeElement(['id' => 2, 'fol' => 0, 'curso' => 2]);
+        $primer = $this->makeAlumnoGrupo('1', 0, 1);
+        $segon = $this->makeAlumnoGrupo('2', 0, 2);
 
         $this->assertSame(['fol', '==', 0, 'curso', '==', 1], $where);
         $this->assertStringContainsString('http://intranet.test/alumno/1/checkFol', $boto->render($primer));
@@ -38,8 +41,8 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
             'where' => $whereMarcat,
         ]);
 
-        $primerMarcat = $this->makeElement(['id' => 3, 'fol' => 1, 'curso' => 1]);
-        $segonMarcat = $this->makeElement(['id' => 4, 'fol' => 1, 'curso' => 2]);
+        $primerMarcat = $this->makeAlumnoGrupo('3', 1, 1);
+        $segonMarcat = $this->makeAlumnoGrupo('4', 1, 2);
 
         $this->assertSame(['fol', '==', 1, 'curso', '==', 1], $whereMarcat);
         $this->assertStringContainsString('http://intranet.test/alumno/3/checkFol', $botoMarcat->render($primerMarcat));
@@ -62,20 +65,22 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
         };
     }
 
-    private function makeElement(array $values): object
+    private function makeAlumnoGrupo(string $nia, int $fol, int $curso): AlumnoGrupo
     {
-        return new class($values) {
-            public function __construct(private array $values)
-            {
-                foreach ($values as $key => $value) {
-                    $this->$key = $value;
-                }
-            }
+        $alumne = new Alumno();
+        $alumne->nia = $nia;
+        $alumne->fol = $fol;
 
-            public function getKey(): int|string|null
-            {
-                return $this->values['id'] ?? null;
-            }
-        };
+        $grup = new Grupo();
+        $grup->codigo = 'G' . $curso;
+        $grup->curso = $curso;
+
+        $alumneGrup = new AlumnoGrupo();
+        $alumneGrup->idAlumno = $nia;
+        $alumneGrup->idGrupo = $grup->codigo;
+        $alumneGrup->setRelation('Alumno', $alumne);
+        $alumneGrup->setRelation('Grupo', $grup);
+
+        return $alumneGrup;
     }
 }
