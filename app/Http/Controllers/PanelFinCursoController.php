@@ -114,7 +114,7 @@ class PanelFinCursoController extends BaseController
     private static function lookForCheckFol(&$avisos)
     {
         foreach (app(GrupoService::class)->misGrupos() as $grupo) {
-            if ($grupo->fol == 0) {
+            if ($grupo->curso == 1 && $grupo->fol == 0) {
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
