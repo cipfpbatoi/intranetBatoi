@@ -10,10 +10,13 @@ use Tests\TestCase;
 
 /**
  * Proves de la visibilitat del botó individual del certificat FOL en alumnat de grup.
+ *
+ * Issue #290 (oberta): el camp `curso` del grup no és fiable (p.ex. grups LFP), així
+ * que el botó no restringeix per curs mentre no es trobe un criteri més fiable.
  */
 class AlumnoGrupoControllerFolButtonTest extends TestCase
 {
-    public function test_boto_de_certificat_fol_nomes_renderitza_en_alumnat_de_primer(): void
+    public function test_boto_de_certificat_fol_renderitza_independentment_del_curs(): void
     {
         config()->set('app.url', 'http://intranet.test');
 
@@ -27,9 +30,9 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
         $primer = $this->makeElement(['id' => 1, 'fol' => 0, 'curso' => 1]);
         $segon = $this->makeElement(['id' => 2, 'fol' => 0, 'curso' => 2]);
 
-        $this->assertSame(['fol', '==', 0, 'curso', '==', 1], $where);
+        $this->assertSame(['fol', '==', 0], $where);
         $this->assertStringContainsString('http://intranet.test/alumno/1/checkFol', $boto->render($primer));
-        $this->assertSame('', $boto->render($segon));
+        $this->assertStringContainsString('http://intranet.test/alumno/2/checkFol', $boto->render($segon));
 
         $whereMarcat = $this->controller()->folWhere(1);
         $botoMarcat = new BotonImg('alumno.checkFol', [
@@ -41,9 +44,9 @@ class AlumnoGrupoControllerFolButtonTest extends TestCase
         $primerMarcat = $this->makeElement(['id' => 3, 'fol' => 1, 'curso' => 1]);
         $segonMarcat = $this->makeElement(['id' => 4, 'fol' => 1, 'curso' => 2]);
 
-        $this->assertSame(['fol', '==', 1, 'curso', '==', 1], $whereMarcat);
+        $this->assertSame(['fol', '==', 1], $whereMarcat);
         $this->assertStringContainsString('http://intranet.test/alumno/3/checkFol', $botoMarcat->render($primerMarcat));
-        $this->assertSame('', $botoMarcat->render($segonMarcat));
+        $this->assertStringContainsString('http://intranet.test/alumno/4/checkFol', $botoMarcat->render($segonMarcat));
     }
 
     private function controller(): object

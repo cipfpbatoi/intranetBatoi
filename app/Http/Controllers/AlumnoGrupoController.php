@@ -132,14 +132,18 @@ class AlumnoGrupoController extends ModalController
     }
 
     /**
-     * Restringeix la comprovació individual del certificat FOL a alumnat de primer curs.
+     * Condició del botó individual del certificat FOL.
+     *
+     * Sense restricció de curs (issue #290): el camp `curso` del grup no sempre
+     * reflecteix el curs real (p.ex. grups LFP), i filtrar per curso==1 amagava
+     * alumnat pendent de revisió FOL. Vore commit c986f108 per al detall.
      *
      * @param int $fol Estat actual del certificat FOL de l'alumne.
      * @return array<int, int|string>
      */
     protected function folCertificateButtonWhere(int $fol): array
     {
-        return ['fol', '==', $fol, 'curso', '==', 1];
+        return ['fol', '==', $fol];
     }
 
 }
