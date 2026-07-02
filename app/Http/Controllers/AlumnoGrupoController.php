@@ -42,9 +42,7 @@ class AlumnoGrupoController extends ModalController
     public function search()
     {
         $this->titulo = ['quien' => $this->search];
-        return AlumnoGrupo::with(['Alumno', 'Grupo'])
-            ->where('idGrupo', $this->search)
-            ->get();
+        return AlumnoGrupo::where('idGrupo', $this->search)->get();
     }
 
     /*
@@ -109,7 +107,7 @@ class AlumnoGrupoController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('profile', new BotonIcon('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
-        if (AuthUser()->departamento == self::FOL && $this->folCertificatePeriodIsOpen()) {
+        if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('variables.certificatFol')) {
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => $this->folCertificateButtonWhere(0)]));
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => $this->folCertificateButtonWhere(1)]));
         }
@@ -142,20 +140,6 @@ class AlumnoGrupoController extends ModalController
     protected function folCertificateButtonWhere(int $fol): array
     {
         return ['fol', '==', $fol, 'curso', '==', 1];
-    }
-
-    /**
-     * Indica si el període de comprovació FOL està obert.
-     */
-    protected function folCertificatePeriodIsOpen(): bool
-    {
-        $startDate = trim((string) config('variables.certificatFol', ''));
-
-        if ($startDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate)) {
-            return true;
-        }
-
-        return date('Y-m-d') > $startDate;
     }
 
 }

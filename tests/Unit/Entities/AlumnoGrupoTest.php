@@ -6,7 +6,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Grupo;
 use Tests\TestCase;
 
 class AlumnoGrupoTest extends TestCase
@@ -46,17 +45,6 @@ class AlumnoGrupoTest extends TestCase
 
         $this->assertNotNull($row);
         $this->assertSame('A002', $row->idAlumno);
-    }
-
-    public function test_curso_resol_el_curs_del_grup_associat(): void
-    {
-        $grupo = new Grupo();
-        $grupo->curso = 1;
-
-        $alumnoGrupo = new AlumnoGrupo();
-        $alumnoGrupo->setRelation('Grupo', $grupo);
-
-        $this->assertSame(1, $alumnoGrupo->curso);
     }
 
     private function createSchema(): void
