@@ -5,7 +5,8 @@
    @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset
    @isset($title) title="{{$title}}" @endisset
    @isset($onclick) onclick="{{$onclick}}" @endisset
-   {!! $disabled !!}>
+   {!! $disabled !!}
+   {!! $data !!}>
     @isset($img)
         <em class='fa {{$img}}' alt="{{$text}}" title="{{$text}}"></em>
     @else

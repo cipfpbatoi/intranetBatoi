@@ -160,6 +160,46 @@ class BotonesTest extends TestCase
         $this->assertStringContainsString("data-confirm='Segur que vols eliminar?'", $html);
     }
 
+    public function test_boton_img_renderitza_data_confirm(): void
+    {
+        $boto = new BotonImg('grupo.fol', [
+            'img' => 'fa-square-o',
+            'roles' => 3,
+            'data-confirm' => 'Confirmes la revisió del grup?',
+        ]);
+
+        $html = $boto->render($this->makeElement(['id' => 7]));
+
+        $this->assertStringContainsString("data-confirm='Confirmes la revisió del grup?'", $html);
+    }
+
+    public function test_boton_icon_renderitza_data_confirm(): void
+    {
+        $boto = new BotonIcon('actividad.delete', [
+            'text' => 'Eliminar',
+            'roles' => 3,
+            'data-confirm' => 'Segur que vols eliminar esta activitat?',
+        ]);
+
+        $html = $boto->render($this->makeElement(['id' => 4]));
+
+        $this->assertStringContainsString("data-confirm='Segur que vols eliminar esta activitat?'", $html);
+    }
+
+    public function test_data_confirm_escapa_el_valor(): void
+    {
+        $boto = new BotonImg('grupo.fol', [
+            'img' => 'fa-square-o',
+            'roles' => 3,
+            'data-confirm' => "Confirmes la revisió de l'alumnat?",
+        ]);
+
+        $html = $boto->render($this->makeElement(['id' => 7]));
+
+        $this->assertStringContainsString("data-confirm='Confirmes la revisió de l&#039;alumnat?'", $html);
+        $this->assertStringNotContainsString("data-confirm='Confirmes la revisió de l'alumnat?'", $html);
+    }
+
     public function test_boton_admet_data_loading_text(): void
     {
         $boto = new BotonPost('profesor.edit', [
