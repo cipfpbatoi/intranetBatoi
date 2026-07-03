@@ -31,6 +31,7 @@ class BotonImg extends BotonElemento
             'href' => $this->href($key),
             'class' => $this->clase(),
             'id' => $this->id($key),
+            'data' => $this->data(),
             'disabled' => $this->disabledAttr(),
             'target' => $this->target,
             'rel' => $this->rel,
