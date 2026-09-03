@@ -53,11 +53,11 @@ class ReunionActesAvaluacioZipTest extends TestCase
         Schema::connection('sqlite')->dropIfExists('reuniones');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
-        foreach (glob(storage_path('app/zip/actes_avaluacio_2026-2027_*.zip')) ?: [] as $file) {
+        foreach (glob(storage_path('app/zip/actes_avaluacio_202*-*.zip')) ?: [] as $file) {
             @unlink($file);
         }
 
-        foreach (glob(storage_path('app/gestor/2026-2027/Reunion/Acta_*.pdf')) ?: [] as $file) {
+        foreach (glob(storage_path('app/gestor/202*/Reunion/Acta_*.pdf')) ?: [] as $file) {
             @unlink($file);
         }
 
@@ -108,11 +108,25 @@ class ReunionActesAvaluacioZipTest extends TestCase
 
     public function test_ruta_de_direccio_descarrega_zip_de_l_avaluacio(): void
     {
-        $this->createActa(20, 31, '2026-2027', '1DAM');
+        $this->createActa(20, 31, '2025-2026', '1DAM');
+        $this->createActa(21, 31, '2026-2027', '2DAM');
 
         $response = $this
             ->actingAs(Profesor::on('sqlite')->findOrFail('DIR001'), 'profesor')
             ->get(route('reunion.actesAvaluacio.zip', ['numero' => 31]));
+
+        $response->assertOk();
+        $response->assertDownload('actes_avaluacio_2025-2026_1Ava.zip');
+    }
+
+    public function test_ruta_de_direccio_permet_indicar_el_curs_explicitament(): void
+    {
+        $this->createActa(30, 31, '2025-2026', '1DAM');
+        $this->createActa(31, 31, '2026-2027', '2DAM');
+
+        $response = $this
+            ->actingAs(Profesor::on('sqlite')->findOrFail('DIR001'), 'profesor')
+            ->get(route('reunion.actesAvaluacio.zip', ['numero' => 31, 'curso' => '2026-2027']));
 
         $response->assertOk();
         $response->assertDownload('actes_avaluacio_2026-2027_1Ava.zip');

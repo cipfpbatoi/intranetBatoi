@@ -28,7 +28,7 @@ class ReunionActaExportService
             return $this->emptyResult($numero, $curso);
         }
 
-        $curso = $curso ?? curso();
+        $curso = $curso ?: cursoAnterior();
         $documents = $this->documents($numero, $curso);
         $filename = $this->zipFilename($numero, $curso);
         $zipPath = storage_path('app/zip/' . $filename);
@@ -165,7 +165,7 @@ class ReunionActaExportService
      */
     private function emptyResult(int $numero, ?string $curso): array
     {
-        return $this->result(null, $this->zipFilename($numero, $curso ?? curso()), 0, 0, []);
+        return $this->result(null, $this->zipFilename($numero, $curso ?: cursoAnterior()), 0, 0, []);
     }
 
     /**
