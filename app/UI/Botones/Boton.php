@@ -233,14 +233,15 @@ abstract class Boton
 
     // torna data del boto en format html
     /**
-     * Retorna els atributs `data-*` en format HTML.
+     * Retorna els atributs `data-*` en format HTML, amb el valor escapat
+     * perquè les vistes els imprimeixen sense escapar (`{!! $data !!}`).
      */
     protected function data(): string
     {
         $cadena = "";
         foreach ($this->atributos as $key => $value) {
             if (substr($key, 0, 5)=='data-') {
-                $cadena .= " ".$key."='".$value."'";
+                $cadena .= " ".$key."='".e($value)."'";
             }
         }
         return $cadena;

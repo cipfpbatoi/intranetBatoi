@@ -4,7 +4,8 @@
    @isset($rel) rel="{{$rel}}" @endisset
    @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset
    @isset($title) title="{{$title}}" @endisset
-   {!! $disabled !!}>
+   {!! $disabled !!}
+   {!! $data !!}>
     @isset($icon)
         <em class='fa {{$icon}}'></em>
     @endisset

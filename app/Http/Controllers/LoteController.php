@@ -37,7 +37,7 @@ class LoteController extends ModalController
     /**
      * @var array<int, string>
      */
-    protected $gridFields = ['registre', 'proveedor', 'factura', 'procedencia', 'estado', 'fechaAlta', 'departament'];
+    protected $gridFields = ['registre', 'proveedor', 'factura', 'origen', 'estat', 'fechaAlta', 'departament'];
 
     /**
      * Retorna les factures ordenades de més recents a més antigues.
@@ -98,9 +98,33 @@ class LoteController extends ModalController
             'index',
             new BotonBasico('direccion.lote.create', ['text' => 'Nova Factura', 'roles' => $roles])
         );
-        $this->panel->setBoton('grid', new BotonImg('lote.edit', ['roles' => $roles], 'direccion'));
-        $this->panel->setBoton('grid', new BotonImg('lote.capture', ['img' => 'fa-list', 'roles' => $roles], 'direccion'));
+        $this->panel->setBoton('grid', new BotonImg('#', [
+            'text' => 'Veure articles',
+            'img' => 'fa-eye',
+            'class' => 'ver',
+            'roles' => $roles,
+        ]));
+        $this->panel->setBoton('grid', new BotonImg('lote.edit', ['class' => 'edit', 'roles' => $roles], 'direccion'));
+        $this->panel->setBoton('grid', new BotonImg('lote.capture', [
+            'img' => 'fa-list',
+            'roles' => $roles,
+            'where' => ['estado', '==', 0],
+        ], 'direccion'));
         $this->panel->setBoton('grid', new BotonImg('lote.print', ['img' => 'fa-file-pdf-o', 'roles' => $roles], 'direccion'));
+        $this->panel->setBoton('grid', new BotonImg('#', [
+            'text' => 'Inventariar',
+            'img' => 'fa-cubes',
+            'class' => 'inventary',
+            'roles' => $roles,
+            'where' => ['estado', '==', 1],
+        ]));
+        $this->panel->setBoton('grid', new BotonImg('#', [
+            'text' => 'Esborrar',
+            'img' => 'fa-trash',
+            'class' => 'delete',
+            'roles' => $roles,
+            'where' => ['estado', 'in', [0, 1]],
+        ]));
     }
 
     /**

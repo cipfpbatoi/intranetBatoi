@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoReunion;
@@ -165,6 +166,44 @@ class AlumnoReunionController extends ApiResourceController
             return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
         }
         return $this->sendError('Token no vàlid');
+    }
+
+    /**
+     * Retorna el resum anual de promoció i tokens d'alumnat de reunions.
+     *
+     * Exclou els grups semipresencials i compta només les reunions del curs acadèmic actual.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resumen()
+    {
+        $cursoAcademico = curso();
+
+        $base = DB::table('alumno_reuniones as ar')
+            ->join('reuniones as r', 'r.id', '=', 'ar.idReunion')
+            ->join('grupos as g', 'g.codigo', '=', 'r.idGrupo')
+            ->where('r.curso', $cursoAcademico)
+            ->whereIn('g.curso', [1, 2])
+            ->where('g.turno', '!=', 'S');
+
+        $data = [
+            'curso' => $cursoAcademico,
+            'exclou_semipresencial' => true,
+            'curs_1' => [
+                'promocionen' => (clone $base)->where('g.curso', 1)->where('ar.capacitats', 1)->count(),
+                'repeteixen' => (clone $base)->where('g.curso', 1)->where('ar.capacitats', 3)->count(),
+            ],
+            'curs_2' => [
+                'promocionen' => (clone $base)->where('g.curso', 2)->where('ar.capacitats', 1)->count(),
+                'repeteixen' => (clone $base)->where('g.curso', 2)->where('ar.capacitats', 3)->count(),
+            ],
+            'tokens_generats' => (clone $base)
+                ->whereNotNull('ar.token')
+                ->where('ar.token', '!=', '')
+                ->count(),
+        ];
+
+        return $this->sendResponse($data, 'OK');
     }
 
 

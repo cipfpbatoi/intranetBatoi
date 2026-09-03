@@ -201,6 +201,25 @@ class ApiCustomEndpoints
     }
 
     /**
+     * Endpoint custom: GET /alumnoreunion/resumen
+     */
+    #[OA\Get(
+        path: '/alumnoreunion/resumen',
+        operationId: 'alumnoreunion_resumen_get',
+        summary: 'Resum de promoció i tokens d alumnat de reunions',
+        tags: ['Reunions'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Resum de reunions', content: new OA\JsonContent(ref: '#/components/schemas/ApiSuccess')),
+            new OA\Response(response: 401, description: 'No autoritzat', content: new OA\JsonContent(ref: '#/components/schemas/ApiError')),
+            new OA\Response(response: 422, description: 'Validacio incorrecta', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
+    public function alumnoreunion_resumen_get(): void
+    {
+    }
+
+    /**
      * Endpoint custom: GET /presencia/resumen-rango
      */
     #[OA\Get(

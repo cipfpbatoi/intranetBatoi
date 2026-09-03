@@ -124,8 +124,16 @@ class GrupoController extends IntranetController
 
 
         if (AuthUser()->xdepartamento === 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
-            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',[
+                'img' => 'fa-square-o',
+                'where'=>['fol','==', 0],
+                'data-confirm' => 'Confirmes que has revisat el certificat FOL de tot l\'alumnat del grup?',
+            ]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',[
+                'img' => 'fa-check',
+                'where'=>['fol','==', 1],
+                'data-confirm' => 'Confirmes que vols desmarcar la revisió FOL del grup?',
+            ]));
         }
 
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',

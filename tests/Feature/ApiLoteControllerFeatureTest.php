@@ -7,6 +7,8 @@ namespace Tests\Feature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ApiLoteControllerFeatureTest extends TestCase
@@ -39,12 +41,87 @@ class ApiLoteControllerFeatureTest extends TestCase
         Schema::connection('sqlite')->dropIfExists('articulos_lote');
         Schema::connection('sqlite')->dropIfExists('articulos');
         Schema::connection('sqlite')->dropIfExists('lotes');
+        Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
         }
 
         parent::tearDown();
+    }
+
+    public function test_update_retorna_403_sense_rol_de_direccio_o_admin(): void
+    {
+        DB::table('lotes')->insert([
+            'registre' => 'LOT-200',
+            'procedencia' => 2,
+            'proveedor' => 'Proveidor Test',
+        ]);
+        $this->insertProfesor('PPROF01', config('roles.rol.profesor'));
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PPROF01'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/lote/LOT-200', ['proveedor' => 'Proveidor Nou'])
+            ->assertStatus(403);
+
+        $this->assertSame(
+            'Proveidor Test',
+            DB::table('lotes')->where('registre', 'LOT-200')->value('proveedor')
+        );
+    }
+
+    public function test_update_permet_a_direccio(): void
+    {
+        DB::table('lotes')->insert([
+            'registre' => 'LOT-201',
+            'procedencia' => 2,
+            'proveedor' => 'Proveidor Test',
+        ]);
+        $this->insertProfesor('PDIR01', config('roles.rol.direccion'));
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PDIR01'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/lote/LOT-201', ['proveedor' => 'Proveidor Nou'])
+            ->assertOk();
+
+        $this->assertSame(
+            'Proveidor Nou',
+            DB::table('lotes')->where('registre', 'LOT-201')->value('proveedor')
+        );
+    }
+
+    public function test_destroy_retorna_403_sense_rol_de_direccio_o_admin(): void
+    {
+        DB::table('lotes')->insert([
+            'registre' => 'LOT-202',
+            'procedencia' => 2,
+            'proveedor' => 'Proveidor Test',
+        ]);
+        $this->insertProfesor('PPROF02', config('roles.rol.profesor'));
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PPROF02'));
+
+        $this->withoutMiddleware()
+            ->deleteJson('/api/lote/LOT-202')
+            ->assertStatus(403);
+
+        $this->assertNotNull(DB::table('lotes')->where('registre', 'LOT-202')->first());
+    }
+
+    public function test_destroy_permet_a_direccio(): void
+    {
+        DB::table('lotes')->insert([
+            'registre' => 'LOT-203',
+            'procedencia' => 2,
+            'proveedor' => 'Proveidor Test',
+        ]);
+        $this->insertProfesor('PDIR02', config('roles.rol.direccion'));
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PDIR02'));
+
+        $this->withoutMiddleware()
+            ->deleteJson('/api/lote/LOT-203')
+            ->assertOk();
+
+        $this->assertNull(DB::table('lotes')->where('registre', 'LOT-203')->first());
     }
 
     public function test_get_articulos_retorna_404_quan_lot_no_existeix(): void
@@ -152,5 +229,22 @@ class ApiLoteControllerFeatureTest extends TestCase
                 $table->unsignedInteger('articulo_lote_id')->nullable();
             });
         }
+
+        if (!Schema::connection('sqlite')->hasTable('profesores')) {
+            Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
+                $table->string('dni', 10)->primary();
+                $table->unsignedInteger('rol')->default(config('roles.rol.profesor'));
+                $table->string('api_token', 80)->nullable();
+            });
+        }
+    }
+
+    private function insertProfesor(string $dni, int $rol): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => $dni,
+            'rol' => $rol,
+            'api_token' => bin2hex(random_bytes(20)),
+        ]);
     }
 }
