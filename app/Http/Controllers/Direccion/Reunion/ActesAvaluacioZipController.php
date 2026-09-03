@@ -40,7 +40,7 @@ class ActesAvaluacioZipController extends Controller
         }
 
         try {
-            $result = $this->exports()->export($numero);
+            $result = $this->exports()->export($numero, (string) $request->input('curso', cursoAnterior()));
         } catch (RuntimeException $exception) {
             report($exception);
             Alert::danger($exception->getMessage());

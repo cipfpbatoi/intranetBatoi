@@ -27,6 +27,7 @@
     </div>
     <div class="clearfix col-md-6 col-lg-6">
         <form action="{{ route('reunion.actesAvaluacio.zip') }}" method="GET">
+            <input type='text' name='curso' value='{{ cursoAnterior() }}' class='form-control' required/>
             <select name='numero' class='form-control select' required>
                 @foreach (Intranet\Services\Document\TipoReunionService::find(7)->numeracion as $index => $valor)
                     <option value='{{$index}}'>{{$valor}}</option>
