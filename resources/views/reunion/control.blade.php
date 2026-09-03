@@ -25,6 +25,16 @@
             <input type='submit' value='Avisar Falta Document' class="btn btn-primary"/>
         </form>
     </div>
+    <div class="clearfix col-md-6 col-lg-6">
+        <form action="{{ route('reunion.actesAvaluacio.zip') }}" method="GET">
+            <select name='numero' class='form-control select' required>
+                @foreach (Intranet\Services\Document\TipoReunionService::find(7)->numeracion as $index => $valor)
+                    <option value='{{$index}}'>{{$valor}}</option>
+                @endforeach
+            </select>
+            <input type='submit' value='Descarregar actes avaluació' class="btn btn-success"/>
+        </form>
+    </div>
     <br/><br/>
     <div class="col-md-12 col-lg-12">
         <table id="tabla-datos" border="1">

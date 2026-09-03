@@ -49,6 +49,10 @@ Route::get('/fichar/{usuario}/email/{dia}', ['as' => 'fichar.email', 'uses' => '
 Route::get('/fichar/{usuario}/delete/{dia}', ['as' => 'fichar.borrar', 'uses' => 'PanelPresenciaController@deleteDia']);
 Route::get('/reunion/list', ['as' => 'reunion.list', 'uses' => 'ReunionController@listado']);
 Route::post('/reunion/aviso', ['as' => 'reunion.avisaFalta','uses'=>'ReunionController@avisaFaltaActa']);
+Route::get('/reunion/actes-avaluacio', [
+    'as' => 'reunion.actesAvaluacio.zip',
+    'uses' => 'Direccion\\Reunion\\ActesAvaluacioZipController'
+]);
 Route::get('/horarios/pdf', ['as'=>'horarios.pdf','uses'=>'ProfesorController@imprimirHorarios']);
 Route::get('/infDpto', ['as'=>'infdpto.control','uses'=>'PanelInfDptoController@index']);
 
