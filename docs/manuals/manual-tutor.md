@@ -3,22 +3,21 @@
 - [Manual del tutor](#manual-del-tutor)
   - [Introducció](#introducció)
   - [Menú 'Docència' → 'Gestió dels grups'](#menú-docència--gestió-dels-grups)
-  - [Menú 'Tràmits' → 'Expedients'](#menú-tràmits--expedients)
+  - [Menú 'Tràmits'](#menú-tràmits)
     - [Expedients](#expedients)
     - [Remissió a Orientació](#remissió-a-orientació)
+  - [Menú 'Tutoria'](#menú-tutoria)
+    - [Seguiments](#seguiments)
+    - [Tutories](#tutories)
   - [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
     - [Nova reunió](#nova-reunió)
     - [Gestionar les reunions](#gestionar-les-reunions)
     - [Acta de la reunió](#acta-de-la-reunió)
-  - [Menú 'Actes/Convocatòries' → 'Gestor documental'](#menú-actesconvocatòries--gestor-documental)
-  - [Menú 'Tutor'](#menú-tutor)
-    - [Seguiments](#seguiments)
-    - [Tutories](#tutories)
+  - [Menú 'Documentació' → 'Gestor documental'](#menú-documentació--gestor-documental)
   - [Menú 'Pràctiques'](#menú-pràctiques)
     - [Menú 'Empresa'](#menú-empresa)
     - [Centres de treball](#centres-de-treball)
     - [FCTs](#fcts)
-  - [Menú 'FP Dual'](#menú-fp-dual)
 
 
 ## Introducció
@@ -34,11 +33,12 @@ En el nostre grup apareixen una nova icona:
 
 A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icones:
 * Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail, la seua foto o l'idioma de la intranet per a l'alumne
+* _Editar_: permet assignar l'alumne a un subgrup (útil si es fan desdobles) i indicar la seua posició en l'aula per a que la fulla de fotos del grup aparega ordenada per aquest ordre i no alfabèticament 
 * Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
 
 També tenim l¡opció de vore els alumnes en **_Mosaic_** en compte de en _Llistat_ i això ens mostra el NIA de cadascú i la seua contrasenya inicial per si algú no s'ho sap per a entrar a la intranet.
 
-## Menú 'Tràmits' → 'Expedients'
+## Menú 'Tràmits'
 ### Expedients
 És igual que per al professor però al crear un nou expedient el tutor pot triar també 
 * **Baixa per inasistència** que permet donar de baixa a un alumne per faltes d'asistència segons la normativa
@@ -56,6 +56,23 @@ Des d'ací podem derivar alumnes per a que siguen tractats pel departament d'Ori
 En la taula podem vore totes les derivacions fetes i el resultat de les mateixes.
 
 ![Remissió a Orientació](../img/tutor/orientacio.png)
+
+## Menú 'Tutoria'
+Aquest menú només els apareix als tutor i inclou la majoria d'accions específiques per a ells.
+
+### Seguiments
+Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe del grup per a cada avaluació
+
+### Tutories
+Ací apareixen totes les tutories que ompli el departament d'orientació. 
+
+![Tutories](../img/tutor/08-tutories.png)
+
+Per a cada una tenim 2 icones:
+* Veure el fitxer: per a veure la tutoria que han fet des del departament d'orientació
+* Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris. És important omplir això en sugeriments o millores per a que des del departament d'Orientació puguen saber cóm ha funcionat la tutoria
+
+![Nova tutoria](../img/tutor/09-tutoria-crear.png)
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
@@ -129,23 +146,6 @@ etiquetes: podem asociar al projecte tantes etiquetes com vulgam. Per a crear ca
 
 ![Nou projecte](../img/tutor/06-nou-projecte.png)
 
-## Menú 'Tutor'
-Aquest menú només els apareix als tutor i inclou la majoria d'accions específiques per a ells.
-
-### Seguiments
-Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe del grup.
-
-### Tutories
-Ací apareixen totes les tutories que ompli el departament d'orientació. 
-
-![Tutories](../img/tutor/08-tutories.png)
-
-De cada una podem:
-* Veure el fitxer: podem veure la tutoria que han fet des del departament d'orientació
-* Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris. És important omplir això en sugeriments o millores per a que des del departament d'Orientació puguen saber cóm ha funcionat la tutoria
-
-![Nova tutoria](../img/tutor/09-tutoria-crear.png)
-
 ## Menú 'Pràctiques'
 Aquest menú només els apareix als tutors de 2n curs per a gestionar les FCT tal i com s'explica en el [manual de FCT](./manual-fct.md)
 
@@ -182,5 +182,3 @@ Quan ja existeix l'empresa i la col·laboració amb el nostre cicle ja podem cre
 ![Nova FCT](../img/tutor/14-nova-fct.png)
 
 Una vegada guardada podem esborrar-la, editar-la o imprimir els certificats una vegada acabades les pràctiques.
-
-## Menú 'FP Dual'
