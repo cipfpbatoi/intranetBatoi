@@ -28,14 +28,6 @@ class ActualizacionController extends Controller
             'resolved_branch' => $this->resolveBranch(),
         ]);
 
-        foreach (['composer.json', 'composer.lock',"AGENTS.md","CLAUDE.md","README.md"] as $composerFile) {
-            if (File::exists(base_path($composerFile))) {
-                File::delete(base_path($composerFile));
-                Alert::info($composerFile.' eliminat');
-                Log::info($composerFile.' eliminat durant /actualizacion.');
-            }
-        }
-
         $branch = $this->resolveBranch();
         if (! $this->runShell('git pull origin ' . $branch, 'git pull')) {
             Log::warning('/actualizacion interrompuda després de fallar git pull.', [
