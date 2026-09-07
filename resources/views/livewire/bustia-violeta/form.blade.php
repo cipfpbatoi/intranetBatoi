@@ -9,7 +9,7 @@
     <form wire:submit.prevent="confirmAndSubmit">
        <div class="form-group mb-2">
             <label>Tipus</label>
-            <select class="form-control" wire:model="tipus">
+            <select class="form-control" wire:model.live="tipus">
                 <option value="violeta">Violeta</option>
                 <option value="convivencia">Convivència</option>
             </select>
