@@ -59,7 +59,7 @@ return [
         ],
         'documentacio' => [
             'driver' => 'local',
-            'root' => base_path('docs'),
+            'root' => base_path('docs/manuals'),
             'visibility' => 'public',
         ],
         'tmpFCT' => [
