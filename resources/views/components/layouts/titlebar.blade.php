@@ -24,7 +24,7 @@
         {{-- Ajuda contextual --}}
         @if ($ajuda)
             <li>
-                <a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/{{ $ajuda }}" target="_blank">
+                <a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/manuals/{{ $ajuda }}" target="_blank">
                     <i class="fa fa-question"></i>
                 </a>
             </li>
