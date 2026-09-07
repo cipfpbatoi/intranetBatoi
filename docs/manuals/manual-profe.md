@@ -8,19 +8,20 @@
     - [Control de presència](#control-de-presència)
     - [Notificacions](#notificacions)
   - [Menú 'Documentació'](#menú-documentació)
-    - [Programacions](#programacions)
-    - [Gestió de Centre](#gestió-de-centre)
+    - [Totes les Programacions](#totes-les-programacions)
+    - [Procediments de Gestió](#procediments-de-gestió)
     - [Informació de Centre](#informació-de-centre)
     - [Actes](#actes)
     - [Projectes](#projectes)
+    - [Gestor documental](#gestor-documental)
   - [Menú 'Docència'](#menú-docència)
     - [Gestió de grups](#gestió-de-grups)
+    - [Gestió de mòduls](#gestió-de-mòduls)
     - [Claustre](#claustre)
     - [Equip directiu](#equip-directiu)
     - [Guàrdia](#guàrdia)
       - [Fer la guàrdia](#fer-la-guàrdia)
     - [Seguiments](#seguiments)
-    - [Programacions](#programacions-1)
     - [Tancament de curs](#tancament-de-curs)
   - [Menú 'Tràmits'](#menú-tràmits)
     - [Expedients](#expedients)
@@ -32,8 +33,7 @@
     - [Notificació absències](#notificació-absències)
     - [Gestió d'incidències](#gestió-dincidències)
     - [Reserva aules](#reserva-aules)
-    - [Oblit birret](#oblit-birret)
-    - [Canviar horari](#canviar-horari)
+    - [Sol·licitar Canvi d'horari](#sollicitar-canvi-dhorari)
   - [Menú 'Enquestes'](#menú-enquestes)
     - [Resultats](#resultats)
     - [Realitzar](#realitzar)
@@ -120,33 +120,33 @@ Si no hem vist alguna notificació al acabar el dia rebrem automàticament un em
 ## Menú 'Documentació'
 Des d'ací tenim accés a informació i documentació general del Centre.
 
-### Programacions
+### Totes les Programacions
 Ací trobem totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
 
 ![Programacions](../img/ajuda/09-programacions.png)
 
-Per a veure la programació desitjada polsem el botó de la cadena que trobem a la dreta. Si es tracta d'una programació nostra també ens apareix un botó per a editar les seues dades (mòdul a que correspon, any, ...).
+Polsant el botó que trobem a la dreta accedim a l'aplicació de les programacions des d'on la podem veure. Si es tracta d'una programació nostra també ens apareix en el menú **Docència -> Gestió de mòduls**.
 
-### Gestió de Centre
+### Procediments de Gestió
 Ací és on podem trobar documents generals del centre com:
-* Dossier del professorat
-* Justificants d'assistència per a l'alumnat o per als pares
-* Calendari escolar
-* Plànols del centre
-* [Esquema de la BBDD (HTML)](../architecture/bbdd-esquema.md)
+* Dossier del professorat i del Tutor/a
+* Justificants d'assistència a examen
+* Plantilla de document genèric amb capçalera 
+* Full de comanda de material
+* Pla d'acutuació sanitària i d'emergències
+* Procediment de renúncia a convocatòries
 * ...
 
-Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professorat, Tutor/a, Cap de departament, …). A cada usuari només l'apareixeran les pestanyes referents al seu rol.
+Els diferents documents estan organitzats en pestanyes segons la temàtica (Professorat/Tutor, Gestió econòmica, Seguretat/Salut, …).
 
 ### Informació de Centre
-Ací trobem la informació general del Centre amb els documents ordenats per pestanyes, Millora, Pla Funcional, Pla d'Atenció Sanitària, Pla d'Emergències, Reglament de Règim Intern (RRI), la PGA o els resums dels Consells Socials del Centre.
+Ací trobem la informació general del Centre amb els documents ordenats per pestanyes: Millora, Plans Estratègics i Consell (resums dels Consells Socials del Centre).
 
 ### Actes
 Ací trobem totes les actes ordenades per pestanyes:
 * COCOPE
 * Reunions de departament
 * Claustres
-* ...
 
 ![Actes](../img/ajuda/acta.png)
 
@@ -155,6 +155,8 @@ Ací trobem els projectes presentats per l'alumnat del cicles de grau superior e
 
 ![Projectes](../img/ajuda/proyecto.png)
 
+### Gestor documental
+Ens permet buscar documents en la intranet. Podem filtrar per tipus de document, curs, etc.
 
 ## Menú 'Docència'
 On fer les accions més habituals que fa el professorat:
@@ -181,6 +183,9 @@ Amb el perfil de tutor/a del grup, a més, podem:
   * Imprimir el seu carnet.
 
 * Mostra equip educatiu: podem veure a tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
+
+### Gestió de mòduls
+Ens mostra tots els mòduls que impartim. La icona de l'enllaç de cada mòdul ens porta a l'aplicació de les programacions per a veure o editar la programació didàctica d'eixe mòdul.
 
 ### Claustre
 
@@ -237,29 +242,6 @@ Per a pujar un nou seguiment polsem el botó '**Crea resultats per un grup**' de
 * Comentaris
 
 Les icones de cada seguiment creat ens permeten esborrar-lo o modificar-lo (Edita resultats).
-
-### Programacions
-Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ perquè encara no l'hem enviat al/la Cap del departament).
-
-Les operacions que podem fer amb cadascuna són:
-* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive.
-* **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada.
-* **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor/a que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incloure-les en la nostra programació d'enguany.
-
-Els estats pels que passa una programació són:
-* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al/la Cap del departament. En aquest estat modificarem la programació i l'enviarem al/la Cap de departament.
-* '_No autoritzada_': ja està enviada al/la Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos què és el que haurem de modificar i després, haurem de tornar a enviar-la.
-* '_Autoritzada_': quan la nostra programació està correcta, el/la Cap del departament la marca com Autoritzada i ja no podem fer canvis en la mateixa.
-
-Totes les programacions estan al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la amb el botó d'Enllaç explicat anteriorment o utilitzant l'enllaç que ens han enviat al nostre email del Centre. Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
-
-Només hi ha una programació per mòdul i cicle. Si un mateix mòdul s'imparteix en més d'un grup, la programació ha de ser la mateixa. L'enllaç és el mateix per a tot el professorat que l'imparteix. Si hi han alguns apartats que han de ser diferents en funció del grup, han d'especificar-se en un annex al final del document, indicant els apartats que són diferents i per a què grups.
-
-Segons marca normativa i per a la millora contínua del procés d’ensenyament-aprenentatge, la programació ha d’incloure un apartat de propostes de millora tretes de l'avaluació de la  mateixa del curs anterior. Explicat anteriorment en icona dels prismàtics.
-
-Una vegada acabada la programació l'enviarem al/la nostre/a Cap del departament polsant el botó de **Enviar** (icona del sobre).
-
-La programació queda en estat '_No autoritzada_'. El/la Cap del departament no la pot veure per a revisar-la, si no l'enviem.
 
 ### Tancament de curs
 Ací al final del curs ens apareixeran totes les tasques que hem de fer per a tancar el curs (introduir els resultats finals de cada mòdul, etc) per a assegurar-nos que no ens deixem res per fer.
@@ -436,14 +418,7 @@ Per a alliberar una reserva d'un espai fem el mateix procés però polsem el bot
 
 No es pot reservar un espai amb més de 30 dies d'antelació.
 
-### Oblit birret
-Aquesta opció es per justificar si em oblidar marcar el birret a Ítaca. Indiquem quin dia s'hem oblidat de marcar i ens apareixeran totes les hores que hem impartit eixe dia. A la columna 'Estava al centre' s'indica si eixe dia hem fitxat a la Intranet.
-
-![Birret](../img/ajuda/20-birret.png)
-
-A continuació seleccionen totes les hores que hem oblidat marcar el birret, indiquem la causa en el quadre de "_Justificació_" i premem el botó _Enviar_.
-
-### Canviar horari
+### Sol·licitar Canvi d'horari
 Aquesta opció només està disponible poc abans d'acabar les classes els grups de segon. Ens permet canviar el nostre horari a partir de Març per a recol·locar les hores que alliberem de 2n. Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem:
 
 ![Canviar-horari](../img/ajuda/cambiarHorarioUp.png)
@@ -489,8 +464,7 @@ Des d'ací podem veure els nostres grups de treball o crear un nou grup.
 
 ## Menú 'Enllaços externs'
 Des d'ací podem accedir ràpidament a:
-* Moodle: ens obri el Moodle del Centre. Si ens hem autenticat amb Google per a entrar a la intranet ara no tindrem que tornar-ho a fer
-* Correu: obri el nostre compte de Gmail del Centre (el ...@cipfpbatoi.es)
+* Cita prèvia Certificat Digital: per a demanar cita per a obtindre el certificat digital de la ACCV en el nostre Centre
 * Itaca: ens porta a la pàgina d'Itaca. Ací sí que ens haurem d'autenticar
 
 ## Altres accions
