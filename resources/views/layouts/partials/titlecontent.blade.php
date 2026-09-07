@@ -14,7 +14,7 @@
         </ul>
     </li>
     @if ($ajuda = existsHelp(substr(url()->current(), strlen(url('/')))))
-        <li><a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/{{$ajuda}}" target="_blank"><i
+        <li><a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/manuals/{{$ajuda}}" target="_blank"><i
                         class="fa fa-question"></i></a>
             
         </li>
