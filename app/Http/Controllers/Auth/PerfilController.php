@@ -11,11 +11,25 @@ use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Log;
 
 
+/**
+ * Persistència compartida dels camps editables dels perfils d'usuari.
+ */
 abstract class PerfilController extends IntranetController
 {
-    
+    /**
+     * Vistes compartides de consulta i edició del perfil.
+     *
+     * @var array<string, string>
+     */
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
 
+    /**
+     * Actualitza el perfil i reserva la gestió de rols a Direcció i Administració.
+     *
+     * @param Request $request
+     * @param mixed $new
+     * @return void
+     */
     public function update(Request $request, $new)
     {
         $this->validate($request, (new AuthPerfilUpdateRequest())->rules());
@@ -43,7 +57,7 @@ abstract class PerfilController extends IntranetController
         if ($request->especialitat) {
             $new->especialitat = $request->especialitat;
         }
-        if ($request->rol) {
+        if ($request->rol && $this->canManageRoles()) {
             $new->rol = Rol($request->rol);
         }
         if ($request->telef1) {
@@ -82,6 +96,14 @@ abstract class PerfilController extends IntranetController
         }
 
         $new->save();
+    }
+
+    /**
+     * Indica si l'usuari autenticat pot gestionar rols.
+     */
+    protected function canManageRoles(): bool
+    {
+        return userIsNameAllow('direccion') || userIsNameAllow('administrador');
     }
 
 }

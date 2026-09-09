@@ -155,6 +155,7 @@ Especificacions BDD (Given/When/Then) per domini. Tecnologia-agnòstiques: defin
 - [`specs/comisions.md`](specs/comisions.md) — Comissions de servei: cicle d'estats, FCTs associades, PDF.
 - [`specs/guardies.md`](specs/guardies.md) — Guàrdies: presència, panell `donde`, extraescolars, comissions.
 - [`specs/horaris.md`](specs/horaris.md) — Horaris: canvi temporal, flux proposta JSON, bulk apply.
+- [`specs/perfils.md`](specs/perfils.md) — Perfils: edició de dades i protecció de rols.
 
 ## Pipeline de revisió
 
