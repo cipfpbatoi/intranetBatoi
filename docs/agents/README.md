@@ -52,6 +52,7 @@ Les especificacions BDD (Given/When/Then) viuen a [`specs/`](../../specs/). Cada
 | [`specs/comisions.md`](../../specs/comisions.md) | Comissions: estats, FCTs associades, PDF |
 | [`specs/guardies.md`](../../specs/guardies.md) | Guàrdies: presència, panell donde, coincidències |
 | [`specs/horaris.md`](../../specs/horaris.md) | Horaris: canvi temporal, proposta JSON, bulk apply |
+| [`specs/perfils.md`](../../specs/perfils.md) | Perfils: edició de dades i protecció de rols |
 
 ## ✅ Flux OpenSpec
 
