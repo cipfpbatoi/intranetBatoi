@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\AssumpteParticular;
 
 use Carbon\Carbon;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -37,7 +36,6 @@ class AssumpteParticularProfessorPanelTest extends TestCase
         DB::reconnect('sqlite');
 
         $this->crearEsquema();
-        $this->omplirCalendari();
         $this->crearProfesor('PROF001');
         $this->crearProfesor('PROF002');
 
@@ -203,24 +201,6 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             $table->unsignedInteger('falta_id')->nullable();
             $table->timestamps();
         });
-    }
-
-    private function omplirCalendari(): void
-    {
-        $dia = CarbonImmutable::parse('2026-09-01');
-        $fi = CarbonImmutable::parse('2027-07-31');
-        $files = [];
-        while ($dia->lessThanOrEqualTo($fi)) {
-            $files[] = [
-                'data' => $dia->toDateString(),
-                'tipus' => $dia->isWeekend() ? 'festiu' : 'lectiu',
-                'esdeveniment' => null,
-            ];
-            $dia = $dia->addDay();
-        }
-        foreach (array_chunk($files, 100) as $bloc) {
-            DB::table('calendari_escolar')->insert($bloc);
-        }
     }
 
     private function crearProfesor(string $dni): void

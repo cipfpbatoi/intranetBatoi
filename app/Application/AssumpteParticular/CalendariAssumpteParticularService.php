@@ -18,7 +18,9 @@ class CalendariAssumpteParticularService
     private const PATRONS_PERIODE_EXCLOS = ['nadal', 'pasqua', 'festiu local'];
 
     /**
-     * Valida la data i retorna si correspon a un dia lectiu o no lectiu.
+     * Valida la data en un calendari que només registra excepcions.
+     *
+     * Els laborables sense registre són lectius i els caps de setmana no es poden demanar.
      */
     public function validar(
         CarbonInterface $data,
@@ -28,13 +30,13 @@ class CalendariAssumpteParticularService
         /** @var CalendariEscolar|null $dia */
         $dia = CalendariEscolar::query()->whereDate('data', $data->toDateString())->first();
 
-        if ($dia === null) {
-            throw new AssumpteParticularException('La data no està definida en el calendari escolar.');
+        if ($data->isWeekend()) {
+            throw new AssumpteParticularException('No es pot demanar el permís en cap de setmana.');
         }
-        if ($dia->tipus === 'festiu') {
+        if ($dia?->tipus === 'festiu') {
             throw new AssumpteParticularException('No es pot demanar el permís en un dia festiu.');
         }
-        if ($this->esEsdevenimentBloquejat((string) $dia->esdeveniment)) {
+        if ($this->esEsdevenimentBloquejat((string) ($dia?->esdeveniment ?? ''))) {
             throw new AssumpteParticularException('La data està bloquejada per un període d’avaluació o examen.');
         }
 
@@ -47,9 +49,9 @@ class CalendariAssumpteParticularService
             throw new AssumpteParticularException('La data està dins dels set dies lectius pròxims a un període exclòs.');
         }
 
-        return $dia->tipus === 'lectiu'
-            ? AssumpteParticular::TIPUS_LECTIU
-            : AssumpteParticular::TIPUS_NO_LECTIU;
+        return $dia?->tipus === 'no lectiu'
+            ? AssumpteParticular::TIPUS_NO_LECTIU
+            : AssumpteParticular::TIPUS_LECTIU;
     }
 
     /**
@@ -71,16 +73,32 @@ class CalendariAssumpteParticularService
     }
 
     /**
+     * Genera els laborables lectius i exclou les marques del calendari.
+     *
      * @return Collection<int, string>
      */
     private function diesLectius(CarbonInterface $inici, CarbonInterface $fi): Collection
     {
-        return CalendariEscolar::query()
+        $exclosos = CalendariEscolar::query()
             ->whereBetween('data', [$inici->toDateString(), $fi->toDateString()])
-            ->where('tipus', 'lectiu')
-            ->orderBy('data')
+            ->whereIn('tipus', ['no lectiu', 'festiu'])
             ->pluck('data')
-            ->map(static fn ($data): string => CarbonImmutable::parse((string) $data)->toDateString());
+            ->mapWithKeys(static fn ($data): array => [
+                CarbonImmutable::parse((string) $data)->toDateString() => true,
+            ]);
+        $lectius = collect();
+        $dia = CarbonImmutable::parse($inici->toDateString());
+        $ultimDia = CarbonImmutable::parse($fi->toDateString());
+
+        while ($dia->lessThanOrEqualTo($ultimDia)) {
+            $data = $dia->toDateString();
+            if (!$dia->isWeekend() && !$exclosos->has($data)) {
+                $lectius->push($data);
+            }
+            $dia = $dia->addDay();
+        }
+
+        return $lectius;
     }
 
     /**
