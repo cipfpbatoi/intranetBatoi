@@ -2,6 +2,7 @@
 
 namespace Intranet\Providers;
 
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Falta;
@@ -38,6 +39,7 @@ use Intranet\Entities\Setting;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Projecte;
 use Intranet\Policies\ColaboracionPolicy;
+use Intranet\Policies\AssumpteParticularPolicy;
 use Intranet\Policies\ProjectePolicy;
 use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\CicloPolicy;
@@ -75,6 +77,9 @@ use Intranet\Policies\PPollPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+/**
+ * Registra les policies i portes d'autorització de l'aplicació.
+ */
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -84,6 +89,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'Intranet\Model' => 'Intranet\Policies\ModelPolicy',
+        AssumpteParticular::class => AssumpteParticularPolicy::class,
         Empresa::class => EmpresaPolicy::class,
         Fct::class => FctPolicy::class,
         Falta::class => FaltaPolicy::class,
