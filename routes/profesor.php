@@ -184,6 +184,8 @@ Route::get('/profesor/{profesor}/horario-cambiar', ['as' => 'horario.profesor.ch
 
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 
+Route::view('/assumptes-particulars', 'assumpte-particular.livewire-panel')
+    ->name('assumptes-particulars.index');
 
 Route::resource('/falta', 'FaltaController', ['except' => ['destroy', 'store', 'update', 'show']]);
 Route::get('/falta/{falta}/delete', ['as' => 'falta.destroy', 'uses' => 'FaltaController@destroy']);

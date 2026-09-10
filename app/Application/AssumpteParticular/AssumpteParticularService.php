@@ -33,6 +33,39 @@ class AssumpteParticularService
         ?string $plaActivitats = null,
         CarbonInterface|string|null $hui = null
     ): AssumpteParticular {
+        $previsualitzacio = $this->previsualitzar(
+            $dni,
+            $dataGaudi,
+            $motivacioExcepcional,
+            $plaActivitats,
+            $hui
+        );
+
+        return AssumpteParticular::query()->create([
+            'idProfesor' => $dni,
+            'data_gaudi' => $previsualitzacio['data'],
+            'curs' => $previsualitzacio['curs'],
+            'tipus' => $previsualitzacio['tipus'],
+            'torn' => $previsualitzacio['torn'],
+            'estat' => AssumpteParticular::ESTAT_PENDENT,
+            'motivacio_excepcional' => filled($motivacioExcepcional) ? trim($motivacioExcepcional) : null,
+            'pla_activitats' => filled($plaActivitats) ? trim($plaActivitats) : null,
+            'sollicitada_at' => now(),
+        ]);
+    }
+
+    /**
+     * Valida una proposta sense persistir-la i retorna les dades derivades.
+     *
+     * @return array{data: string, curs: string, tipus: string, torn: string, saldo: float, excepcional: bool}
+     */
+    public function previsualitzar(
+        string $dni,
+        CarbonInterface|string $dataGaudi,
+        ?string $motivacioExcepcional = null,
+        ?string $plaActivitats = null,
+        CarbonInterface|string|null $hui = null
+    ): array {
         $profesor = Profesor::query()->findOrFail($dni);
         $data = $this->data($dataGaudi);
         $avui = $hui === null ? CarbonImmutable::today() : $this->data($hui);
@@ -46,17 +79,50 @@ class AssumpteParticularService
         $this->validarSaldo($profesor, $curs, $tipus, $iniciCurs, $fiCurs);
         $this->validarConsecutivitat($dni, $data, $iniciCurs, $fiCurs, $tipus);
 
-        return AssumpteParticular::query()->create([
-            'idProfesor' => $dni,
-            'data_gaudi' => $data,
+        return [
+            'data' => $data->toDateString(),
             'curs' => $curs,
             'tipus' => $tipus,
             'torn' => $this->tornService->delProfessor($dni),
-            'estat' => AssumpteParticular::ESTAT_PENDENT,
-            'motivacio_excepcional' => filled($motivacioExcepcional) ? trim($motivacioExcepcional) : null,
-            'pla_activitats' => filled($plaActivitats) ? trim($plaActivitats) : null,
-            'sollicitada_at' => now(),
-        ]);
+            'saldo' => $this->saldo($dni, $curs, $tipus),
+            'excepcional' => $data->lessThan($avui->addDays(7)),
+        ];
+    }
+
+    /**
+     * Retorna el curs aplicable al panell per a una data concreta.
+     */
+    public function cursVigent(CarbonInterface|string|null $data = null): string
+    {
+        $dia = $data === null ? CarbonImmutable::today() : $this->data($data);
+        $iniciAny = $dia->month >= 9 ? $dia->year : $dia->year - 1;
+
+        return sprintf('%d-%d', $iniciAny, $iniciAny + 1);
+    }
+
+    /**
+     * Retorna els saldos legals i les reserves pendents del professor.
+     *
+     * @return array<string, array{disponible: float, pendent: int}>
+     */
+    public function resumSaldo(string $dni, ?string $curs = null): array
+    {
+        $curs ??= $this->cursVigent();
+        $resum = [];
+
+        foreach ([AssumpteParticular::TIPUS_LECTIU, AssumpteParticular::TIPUS_NO_LECTIU] as $tipus) {
+            $resum[$tipus] = [
+                'disponible' => $this->saldo($dni, $curs, $tipus),
+                'pendent' => AssumpteParticular::query()
+                    ->where('idProfesor', $dni)
+                    ->where('curs', $curs)
+                    ->where('tipus', $tipus)
+                    ->where('estat', AssumpteParticular::ESTAT_PENDENT)
+                    ->count(),
+            ];
+        }
+
+        return $resum;
     }
 
     /**

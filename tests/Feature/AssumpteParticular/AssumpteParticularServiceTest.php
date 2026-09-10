@@ -77,6 +77,34 @@ class AssumpteParticularServiceTest extends TestCase
         $this->assertNull($peticio->falta_id);
     }
 
+    public function test_la_previsualitzacio_valida_sense_persistir(): void
+    {
+        $this->crearProfesor('PROF001');
+
+        $resultat = $this->service->previsualitzar(
+            'PROF001',
+            '2026-10-15',
+            null,
+            'Activitats preparades per als grups.',
+            '2026-10-01'
+        );
+
+        $this->assertSame(AssumpteParticular::TIPUS_LECTIU, $resultat['tipus']);
+        $this->assertSame(3.0, $resultat['saldo']);
+        $this->assertDatabaseCount('assumptes_particulars', 0);
+    }
+
+    public function test_les_pendents_es_mostren_com_reserva_sense_restar_saldo_legal(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearPeticio('PROF001', '2026-10-15');
+
+        $resum = $this->service->resumSaldo('PROF001', '2026-2027');
+
+        $this->assertSame(3.0, $resum[AssumpteParticular::TIPUS_LECTIU]['disponible']);
+        $this->assertSame(1, $resum[AssumpteParticular::TIPUS_LECTIU]['pendent']);
+    }
+
     public function test_menys_de_set_dies_requerix_motivacio_excepcional(): void
     {
         $this->crearProfesor('PROF001');
