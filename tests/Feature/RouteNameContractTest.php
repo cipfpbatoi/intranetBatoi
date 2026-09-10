@@ -69,4 +69,12 @@ class RouteNameContractTest extends TestCase
         $this->artisan('route:list --name=direccion.lote -vvv')
             ->assertExitCode(0);
     }
+
+    public function test_la_ruta_d_assumptes_particulars_del_professor_es_estable(): void
+    {
+        $this->assertSame(
+            '/assumptes-particulars',
+            route('assumptes-particulars.index', absolute: false)
+        );
+    }
 }
