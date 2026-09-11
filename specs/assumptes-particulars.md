@@ -17,6 +17,10 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - El contingent màxim és de 8 autoritzacions per dia, repartides proporcionalment entre els torns de la plantilla.
 - L'autorització revalida calendari, saldo i contingent dins d'una transacció amb bloqueig.
 - El professor només gestiona peticions pròpies; Direcció o Administració les resol.
+- Direcció consulta les peticions pendents agrupades per data i pot filtrar-les per una data exacta.
+- Dins d'un dia, la prioritat és: menys dies autoritzats en el curs, menys sessions lectives afectades, sol·licitud més antiga i ID més baix.
+- El panell de Direcció mostra el contingent global i per torn, ocupat únicament per peticions autoritzades.
+- Els canvis sobrevinguts de calendari, torn, saldo o contingent es mostren com a avisos abans de resoldre.
 
 ## Escenaris
 
@@ -75,3 +79,35 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **Given** un usuari autenticat  
 **When** consulta, modifica, cancel·la o resol una petició  
 **Then** el professor només gestiona les pròpies pendents i únicament Direcció o Administració pot resoldre-les.
+
+### ✅ Direcció consulta les peticions agrupades i filtrades per data
+
+**Given** peticions pendents en diferents dates
+
+**When** Direcció obri el panell o selecciona una data
+
+**Then** les veu agrupades cronològicament o limitades a la data exacta seleccionada.
+
+### ✅ La prioritat combina dies gaudits, hores i antiguitat
+
+**Given** diverses peticions pendents per al mateix dia
+
+**When** es calcula l'ordre del panell
+
+**Then** apareixen primer les de menys dies autoritzats, menys sessions lectives, més antigues i amb ID més baix.
+
+### ✅ El panell mostra torn, hores i contingent
+
+**Given** l'horari vigent i les autoritzacions d'una data
+
+**When** Direcció consulta el grup del dia
+
+**Then** veu el torn actual, totes les sessions lectives afectades i les places totals, ocupades i disponibles per torn.
+
+### ✅ Les incompatibilitats sobrevingudes són visibles
+
+**Given** una petició pendent que ja no complix calendari, torn, saldo o contingent
+
+**When** es prepara el panell
+
+**Then** Direcció veu els avisos i el panell no resol encara la petició.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Application\AssumpteParticular;
 
+use Carbon\CarbonInterface;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
@@ -19,7 +20,7 @@ class TornAssumpteParticularService
     public function delProfessor(string $dni): string
     {
         $torns = Horario::query()
-            ->where('idProfesor', $dni)
+            ->profesor($dni)
             ->lectivos()
             ->join('horas', 'horas.codigo', '=', 'horarios.sesion_orden')
             ->whereNotNull('horas.turno')
@@ -43,6 +44,20 @@ class TornAssumpteParticularService
         }
 
         return AssumpteParticular::TORN_SENSE_DOCENCIA;
+    }
+
+    /**
+     * Compta les sessions lectives afectades en el dia de gaudi.
+     */
+    public function horesLectivesAfectades(string $dni, CarbonInterface|string $data): int
+    {
+        return Horario::query()
+            ->profesor($dni)
+            ->dia(nameDay($data))
+            ->lectivos()
+            ->distinct()
+            ->pluck('sesion_orden')
+            ->count();
     }
 
     /**
