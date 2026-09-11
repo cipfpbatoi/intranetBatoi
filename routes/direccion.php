@@ -28,6 +28,8 @@ Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'Direccion\\Act
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Direccion\\Actividad\\AuthorizeController']);
 
 Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');
+Route::view('/assumptes-particulars', 'assumpte-particular.direccion-livewire-panel')
+    ->name('assumptes-particulars.direccion.index');
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
 Route::get('/falta/{falta}/show', ['as' => 'falta.direccion.show', 'uses' => 'Direccion\\Falta\\ShowController']);
 Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'Direccion\\Falta\\DocumentController']);

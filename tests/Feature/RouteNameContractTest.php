@@ -77,4 +77,16 @@ class RouteNameContractTest extends TestCase
             route('assumptes-particulars.index', absolute: false)
         );
     }
+
+    public function test_la_ruta_d_assumptes_particulars_de_direccio_es_estable_i_protegida(): void
+    {
+        $route = Route::getRoutes()->getByName('assumptes-particulars.direccion.index');
+
+        $this->assertNotNull($route);
+        $this->assertSame('/direccion/assumptes-particulars', route(
+            'assumptes-particulars.direccion.index',
+            absolute: false
+        ));
+        $this->assertContains('role:direccion', $route->gatherMiddleware());
+    }
 }
