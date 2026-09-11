@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\AssumpteParticular;
 
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -36,7 +35,6 @@ class AssumpteParticularServiceTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
         $this->crearEsquema();
-        $this->omplirCalendari();
 
         $torns = Mockery::mock(TornAssumpteParticularService::class);
         $torns->shouldReceive('delProfessor')->andReturn(AssumpteParticular::TORN_MATI);
@@ -75,6 +73,69 @@ class AssumpteParticularServiceTest extends TestCase
         $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->estat);
         $this->assertSame(AssumpteParticular::TIPUS_LECTIU, $peticio->tipus);
         $this->assertNull($peticio->falta_id);
+    }
+
+    public function test_un_laborable_sense_registre_es_lectiu(): void
+    {
+        $this->crearProfesor('PROF001');
+
+        $peticio = $this->service->crear(
+            'PROF001',
+            '2026-10-15',
+            null,
+            'Pla',
+            '2026-10-01'
+        );
+
+        $this->assertSame(AssumpteParticular::TIPUS_LECTIU, $peticio->tipus);
+    }
+
+    public function test_un_cap_de_setmana_sense_registre_es_rebutja(): void
+    {
+        $this->crearProfesor('PROF001');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('cap de setmana');
+        $this->service->crear('PROF001', '2026-10-17', null, null, '2026-10-01');
+    }
+
+    public function test_un_dia_marcat_com_no_lectiu_consumix_la_bossa_no_lectiva(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-10-15', 'no lectiu');
+
+        $peticio = $this->service->crear('PROF001', '2026-10-15', null, null, '2026-10-01');
+
+        $this->assertSame(AssumpteParticular::TIPUS_NO_LECTIU, $peticio->tipus);
+    }
+
+    public function test_un_dia_marcat_com_festiu_es_rebutja(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-10-15', 'festiu');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('dia festiu');
+        $this->service->crear('PROF001', '2026-10-15', null, null, '2026-10-01');
+    }
+
+    public function test_els_primers_dies_lectius_es_calculen_sense_registres(): void
+    {
+        $this->crearProfesor('PROF001');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('set primers');
+        $this->service->crear('PROF001', '2026-09-02', null, 'Pla', '2026-08-03');
+    }
+
+    public function test_la_proximitat_a_un_periode_exclos_usa_laborables_sense_registre(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-12-25', 'festiu', 'Nadal');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('període exclòs');
+        $this->service->crear('PROF001', '2026-12-16', null, 'Pla', '2026-11-20');
     }
 
     public function test_la_previsualitzacio_valida_sense_persistir(): void
@@ -117,9 +178,7 @@ class AssumpteParticularServiceTest extends TestCase
     public function test_una_avaluacio_del_calendari_es_rebutja_amb_motiu_especific(): void
     {
         $this->crearProfesor('PROF001');
-        DB::table('calendari_escolar')->where('data', '2026-10-15')->update([
-            'esdeveniment' => 'Primera avaluació',
-        ]);
+        $this->crearDiaCalendari('2026-10-15', 'lectiu', 'Primera avaluació');
 
         $this->expectException(AssumpteParticularException::class);
         $this->expectExceptionMessage('avaluació');
@@ -203,22 +262,17 @@ class AssumpteParticularServiceTest extends TestCase
         });
     }
 
-    private function omplirCalendari(): void
+    private function crearDiaCalendari(
+        string $data,
+        string $tipus,
+        ?string $esdeveniment = null
+    ): void
     {
-        $dia = CarbonImmutable::parse('2026-09-01');
-        $fi = CarbonImmutable::parse('2027-07-31');
-        $files = [];
-        while ($dia->lessThanOrEqualTo($fi)) {
-            $files[] = [
-                'data' => $dia->toDateString(),
-                'tipus' => $dia->isWeekend() ? 'festiu' : 'lectiu',
-                'esdeveniment' => null,
-            ];
-            $dia = $dia->addDay();
-        }
-        foreach (array_chunk($files, 100) as $bloc) {
-            DB::table('calendari_escolar')->insert($bloc);
-        }
+        DB::table('calendari_escolar')->insert([
+            'data' => $data,
+            'tipus' => $tipus,
+            'esdeveniment' => $esdeveniment,
+        ]);
     }
 
     private function crearProfesor(string $dni): void

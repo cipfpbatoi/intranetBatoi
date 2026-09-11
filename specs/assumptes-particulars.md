@@ -11,7 +11,8 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Una petició pendent no crea cap `Falta`.
 - Les peticions ordinàries es presenten entre 7 dies naturals i un mes abans; amb menys de 7 dies requerixen motivació excepcional.
 - Els dies lectius requerixen un pla d'activitats.
-- El calendari escolar de Direcció determina els dies lectius, festius, avaluacions, exàmens i períodes exclosos.
+- El calendari escolar de Direcció registra les excepcions: un laborable sense registre és lectiu, un dia marcat `no lectiu` usa la bossa no lectiva i un `festiu` es rebutja.
+- Els dissabtes i diumenges no es poden demanar, encara que no tinguen registre al calendari.
 - No es permeten dies lectius consecutius; divendres i dilluns compten com a consecutius.
 - El contingent màxim és de 8 autoritzacions per dia, repartides proporcionalment entre els torns de la plantilla.
 - L'autorització revalida calendari, saldo i contingent dins d'una transacció amb bloqueig.
@@ -36,6 +37,14 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **Given** una data festiva, d'avaluació, d'examen o dins d'un període exclòs del calendari  
 **When** es presenta la petició  
 **Then** es rebutja indicant la restricció concreta.
+
+### ✅ El calendari dispers classifica les dates
+
+**Given** un calendari on només estan marcats els dies no lectius, els festius i els esdeveniments especials
+
+**When** es valida una data sense registre
+
+**Then** es considera lectiva si és laborable i es rebutja si cau en cap de setmana.
 
 ### ✅ Els dies lectius consecutius es rebutgen
 
