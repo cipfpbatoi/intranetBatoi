@@ -21,6 +21,10 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Dins d'un dia, la prioritat és: menys dies autoritzats en el curs, menys sessions lectives afectades, sol·licitud més antiga i ID més baix.
 - El panell de Direcció mostra el contingent global i per torn, ocupat únicament per peticions autoritzades.
 - Els canvis sobrevinguts de calendari, torn, saldo o contingent es mostren com a avisos abans de resoldre.
+- La denegació requerix una motivació i no genera ni document de resolució ni `Falta`.
+- L'autorització només la pot efectuar la persona configurada com a directora i requerix la rúbrica gràfica del professor i de la directora.
+- Una petició autoritzada genera un únic PDF d'una pàgina sobre el model oficial, amb les dues signatures, i una única `Falta` de dia complet.
+- El document autoritzat queda arxivat en emmagatzematge privat i només el poden descarregar el professor titular, Direcció o Administració.
 
 ## Escenaris
 
@@ -111,3 +115,51 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** es prepara el panell
 
 **Then** Direcció veu els avisos i el panell no resol encara la petició.
+
+### ✅ Una denegació motivada no genera document ni absència
+
+**Given** una petició pendent i un membre de Direcció o Administració
+
+**When** la denega indicant-ne el motiu
+
+**Then** la petició queda denegada sense generar cap PDF ni cap `Falta`.
+
+### ✅ La sol·licitud requerix la rúbrica del professor
+
+**Given** un professor que no té una rúbrica gràfica configurada
+
+**When** intenta presentar una petició
+
+**Then** la petició es rebutja i se li indica que configure la firma en el seu perfil.
+
+### ✅ Només la directora configurada pot autoritzar
+
+**Given** una petició pendent
+
+**When** un usuari de Direcció o Administració que no és la directora configurada intenta autoritzar-la
+
+**Then** l'operació es rebutja sense generar document ni absència.
+
+### ✅ L'autorització genera un únic document amb les dues signatures
+
+**Given** una petició pendent vàlida i les rúbriques gràfiques del professor i de la directora
+
+**When** la directora l'autoritza
+
+**Then** es genera i arxiva un únic PDF d'una pàgina sobre el model oficial amb les dues signatures i es crea una única `Falta` de dia complet.
+
+### ✅ Una autorització invàlida no deixa artefactes parcials
+
+**Given** una petició que deixa de complir el calendari, el saldo, la consecutivitat o el contingent
+
+**When** la directora intenta autoritzar-la
+
+**Then** la transacció es cancel·la i no queda cap PDF ni cap `Falta` parcial.
+
+### ✅ El document autoritzat té accés restringit
+
+**Given** el document arxivat d'una petició autoritzada
+
+**When** un usuari intenta descarregar-lo
+
+**Then** només el professor titular, Direcció o Administració hi poden accedir.

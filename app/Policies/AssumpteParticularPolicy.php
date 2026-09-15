@@ -65,4 +65,16 @@ class AssumpteParticularPolicy
     {
         return $peticio->estaPendent() && $this->isDirectionOrAdmin($user);
     }
+
+    /**
+     * Només la direcció configurada pot autoritzar i aplicar la seua rúbrica.
+     *
+     * @param mixed $user
+     */
+    public function approve($user, AssumpteParticular $peticio): bool
+    {
+        return $this->resolve($user, $peticio)
+            && filled(config('avisos.director'))
+            && (string) $user->dni === (string) config('avisos.director');
+    }
 }

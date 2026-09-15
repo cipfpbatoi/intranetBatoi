@@ -42,6 +42,7 @@ class AssumpteParticular extends Model
         'cancel_lada_at',
         'resolta_per',
         'falta_id',
+        'resolucio_document',
     ];
 
     protected $attributes = [

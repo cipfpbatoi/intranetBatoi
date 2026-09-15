@@ -6,6 +6,7 @@ namespace Intranet\Application\Falta;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Falta;
 use Intranet\Services\General\StateService;
 use Intranet\Services\Notifications\AdviseTeacher;
@@ -17,6 +18,8 @@ use Illuminate\Support\Carbon;
  */
 class FaltaService
 {
+    private const MOTIU_ASSUMPTE_PARTICULAR = 'PERMÍS RETRIBUÏT PER ASSUMPTES PARTICULARS';
+
     /**
      * Crea una falta de professorat.
      */
@@ -48,6 +51,35 @@ class FaltaService
 
         $falta = new Falta();
         return (int) $falta->fillAll($request);
+    }
+
+    /**
+     * Crea la falta autoritzada de dia complet vinculada a un assumpte particular.
+     */
+    public function createForAssumpteParticular(AssumpteParticular $peticio): Falta
+    {
+        $motiu = array_search(
+            self::MOTIU_ASSUMPTE_PARTICULAR,
+            config('auxiliares.motivoAusencia', []),
+            true
+        );
+        if ($motiu === false) {
+            throw new \LogicException('No està configurat el motiu de falta per assumptes particulars.');
+        }
+
+        return Falta::query()->create([
+            'idProfesor' => $peticio->idProfesor,
+            'baja' => 0,
+            'dia_completo' => 1,
+            'desde' => $peticio->data_gaudi->toDateString(),
+            'hasta' => $peticio->data_gaudi->toDateString(),
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => (string) $motiu,
+            'observaciones' => sprintf('Permís retribuït per assumptes particulars. Sol·licitud #%d.', $peticio->id),
+            'fichero' => null,
+            'estado' => 3,
+        ]);
     }
 
     /**
