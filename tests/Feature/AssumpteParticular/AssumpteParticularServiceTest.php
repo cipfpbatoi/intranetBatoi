@@ -6,13 +6,17 @@ namespace Tests\Feature\AssumpteParticular;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Application\AssumpteParticular\AssumpteParticularException;
 use Intranet\Application\AssumpteParticular\AssumpteParticularService;
 use Intranet\Application\AssumpteParticular\CalendariAssumpteParticularService;
 use Intranet\Application\AssumpteParticular\ContingentAssumpteParticularCalculator;
+use Intranet\Application\AssumpteParticular\RubricaAssumpteParticularService;
 use Intranet\Application\AssumpteParticular\SaldoAssumpteParticularCalculator;
 use Intranet\Application\AssumpteParticular\TornAssumpteParticularService;
+use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\AssumpteParticular;
 use Mockery;
 use Tests\TestCase;
@@ -34,6 +38,9 @@ class AssumpteParticularServiceTest extends TestCase
         DB::setDefaultConnection('sqlite');
         DB::purge('sqlite');
         DB::reconnect('sqlite');
+        Event::fake();
+        Storage::fake('local');
+        Storage::fake('public');
         $this->crearEsquema();
 
         $torns = Mockery::mock(TornAssumpteParticularService::class);
@@ -45,7 +52,9 @@ class AssumpteParticularServiceTest extends TestCase
             new SaldoAssumpteParticularCalculator(),
             new ContingentAssumpteParticularCalculator(),
             new CalendariAssumpteParticularService(),
-            $torns
+            $torns,
+            new FaltaService(),
+            new RubricaAssumpteParticularService()
         );
     }
 
@@ -215,14 +224,102 @@ class AssumpteParticularServiceTest extends TestCase
             $this->crearProfesor($dni);
             $peticio = $this->crearPeticio($dni, '2026-10-15');
             if ($i <= 8) {
-                $this->service->autoritzar($peticio->id, 'DIRE001');
+                $document = sprintf('assumptes-particulars/resolucions/%d.pdf', $peticio->id);
+                Storage::disk('local')->put($document, 'PDF firmat');
+                $this->service->autoritzar($peticio->id, 'DIRE001', $document);
             }
         }
 
         $novena = AssumpteParticular::query()->where('idProfesor', 'PROF009')->firstOrFail();
+        $document = sprintf('assumptes-particulars/resolucions/%d.pdf', $novena->id);
+        Storage::disk('local')->put($document, 'PDF firmat');
         $this->expectException(AssumpteParticularException::class);
         $this->expectExceptionMessage('màxim de huit');
-        $this->service->autoritzar($novena->id, 'DIRE001');
+        $this->service->autoritzar($novena->id, 'DIRE001', $document);
+    }
+
+    public function test_autoritza_amb_una_unica_falta_i_el_document_firmat(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $document = 'assumptes-particulars/resolucions/peticio-1.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $resolta->estat);
+        $this->assertNotNull($resolta->falta_id);
+        $this->assertSame($document, $resolta->resolucio_document);
+        $this->assertDatabaseHas('faltas', [
+            'id' => $resolta->falta_id,
+            'idProfesor' => 'PROF001',
+            'desde' => '2026-10-15',
+            'hasta' => '2026-10-15',
+            'dia_completo' => 1,
+            'estado' => 3,
+        ]);
+        $this->assertDatabaseCount('faltas', 1);
+        Storage::disk('local')->assertExists($document);
+    }
+
+    public function test_no_autoritza_sense_document_firmat(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', 'document-inexistent.pdf');
+            $this->fail('S’esperava una excepció per falta de document firmat.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('resolució oficial firmada', $exception->getMessage());
+        }
+
+        $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
+        $this->assertDatabaseCount('faltas', 0);
+    }
+
+    public function test_una_resolucio_repetida_no_duplica_la_falta_i_neteja_el_document_orfe(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        Storage::disk('local')->put('resolucio-primera.pdf', 'PDF firmat');
+        $this->service->autoritzar($peticio->id, 'DIRE001', 'resolucio-primera.pdf');
+        Storage::disk('local')->put('resolucio-repetida.pdf', 'PDF firmat repetit');
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', 'resolucio-repetida.pdf');
+            $this->fail('S’esperava una excepció en repetir la resolució.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('petició pendent', $exception->getMessage());
+        }
+
+        $this->assertDatabaseCount('faltas', 1);
+        Storage::disk('local')->assertExists('resolucio-primera.pdf');
+        Storage::disk('local')->assertMissing('resolucio-repetida.pdf');
+    }
+
+    public function test_un_error_creant_la_falta_revertix_l_autoritzacio_i_neteja_el_document(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $document = 'resolucio-amb-error.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $motiusOriginals = config('auxiliares.motivoAusencia');
+        config(['auxiliares.motivoAusencia' => []]);
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+            $this->fail('S’esperava un error en crear la falta.');
+        } catch (\LogicException $exception) {
+            $this->assertStringContainsString('motiu de falta', $exception->getMessage());
+        } finally {
+            config(['auxiliares.motivoAusencia' => $motiusOriginals]);
+        }
+
+        $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
+        $this->assertNull($peticio->fresh()->falta_id);
+        $this->assertDatabaseCount('faltas', 0);
+        Storage::disk('local')->assertMissing($document);
     }
 
     private function crearEsquema(): void
@@ -233,6 +330,7 @@ class AssumpteParticularServiceTest extends TestCase
             $table->date('fecha_baja')->nullable();
             $table->unsignedBigInteger('rol')->default(3);
             $table->boolean('activo')->default(true);
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
         Schema::create('calendari_escolar', function (Blueprint $table): void {
@@ -258,6 +356,22 @@ class AssumpteParticularServiceTest extends TestCase
             $table->timestamp('cancel_lada_at')->nullable();
             $table->string('resolta_per')->nullable();
             $table->unsignedInteger('falta_id')->nullable();
+            $table->string('resolucio_document')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('faltas', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('idProfesor');
+            $table->date('desde');
+            $table->date('hasta')->nullable();
+            $table->string('motivos', 2);
+            $table->string('observaciones', 200)->nullable();
+            $table->tinyInteger('estado')->default(0);
+            $table->string('fichero', 100)->nullable();
+            $table->time('hora_ini')->nullable();
+            $table->time('hora_fin')->nullable();
+            $table->boolean('dia_completo')->nullable();
+            $table->boolean('baja')->nullable();
             $table->timestamps();
         });
     }
@@ -283,7 +397,9 @@ class AssumpteParticularServiceTest extends TestCase
             'fecha_baja' => null,
             'rol' => 3,
             'activo' => true,
+            'foto' => $dni . '.png',
         ]);
+        Storage::disk('public')->put('signatures/' . $dni . '.png', 'Rúbrica');
     }
 
     private function crearPeticio(

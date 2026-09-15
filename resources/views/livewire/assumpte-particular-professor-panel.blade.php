@@ -1,4 +1,11 @@
 <div>
+    @unless ($teRubrica)
+        <div class="alert alert-warning" role="alert">
+            Abans de presentar una sol·licitud has de
+            <a href="{{ route('files.edit') }}" class="alert-link">pujar la rúbrica des de Fitxers del perfil</a>.
+        </div>
+    @endunless
+
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <div>
             <h2 class="h4 mb-1">Assumptes particulars</h2>
@@ -139,10 +146,10 @@
                             <td>{{ __('assumptes_particulars.estats.' . $peticio->estat) }}</td>
                             <td>{{ $peticio->resolucio ?: '—' }}</td>
                             <td class="text-end text-nowrap">
-                                @if ($peticio->falta_id)
+                                @if ($peticio->resolucio_document)
                                     <a
                                         class="btn btn-sm btn-outline-primary"
-                                        href="{{ route('falta.document', ['falta' => $peticio->falta_id]) }}"
+                                        href="{{ route('assumptes-particulars.document', ['assumpteParticular' => $peticio->id]) }}"
                                     >
                                         Descarregar resolució
                                     </a>

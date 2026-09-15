@@ -1,4 +1,11 @@
 <div>
+    @if ($missatge !== '')
+        <div class="alert alert-success" role="alert">{{ $missatge }}</div>
+    @endif
+    @if ($error !== '')
+        <div class="alert alert-danger" role="alert">{{ $error }}</div>
+    @endif
+
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <div>
             <h2 class="h4 mb-1">Assumptes particulars pendents</h2>
@@ -9,6 +16,19 @@
             Actualitzar
         </button>
     </div>
+
+    @unless ($potAutoritzar)
+        <div class="alert alert-info" role="status">
+            Pots consultar i denegar peticions. Només la directora configurada pot autoritzar-les amb la seua rúbrica.
+        </div>
+    @else
+        @unless ($teRubricaDirectora)
+            <div class="alert alert-warning" role="alert">
+                Per a autoritzar peticions has de
+                <a href="{{ route('files.edit') }}" class="alert-link">pujar la rúbrica des de Fitxers del perfil</a>.
+            </div>
+        @endunless
+    @endunless
 
     <div class="card mb-3">
         <div class="card-body py-2">
@@ -85,6 +105,7 @@
                             <th class="text-center">Hores afectades</th>
                             <th>Motivació excepcional</th>
                             <th>Estat i avisos</th>
+                            <th class="text-end">Accions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,7 +148,64 @@
                                         </div>
                                     @endforeach
                                 </td>
+                                <td class="text-end text-nowrap">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        @if ($potAutoritzar && $teRubricaDirectora)
+                                            wire:click="autoritzar({{ $peticio['id'] }})"
+                                            wire:confirm="Segur que vols autoritzar esta petició i generar el document firmat?"
+                                        @else
+                                            disabled
+                                            title="{{ $potAutoritzar ? 'Cal pujar la rúbrica al perfil' : 'Només la directora configurada pot autoritzar' }}"
+                                        @endif
+                                    >
+                                        Autoritzar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        wire:click="seleccionarDenegacio({{ $peticio['id'] }})"
+                                    >
+                                        Denegar
+                                    </button>
+                                </td>
                             </tr>
+                            @if ($peticioADenegar === $peticio['id'])
+                                <tr wire:key="denegacio-assumpte-{{ $peticio['id'] }}">
+                                    <td colspan="9">
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-md-9">
+                                                <label for="motiu-denegacio-{{ $peticio['id'] }}" class="form-label">
+                                                    Motiu de la denegació
+                                                </label>
+                                                <textarea
+                                                    id="motiu-denegacio-{{ $peticio['id'] }}"
+                                                    class="form-control @error('motiuDenegacio') is-invalid @enderror"
+                                                    rows="2"
+                                                    maxlength="2000"
+                                                    wire:model="motiuDenegacio"
+                                                ></textarea>
+                                                @error('motiuDenegacio')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-3 text-md-end">
+                                                <button type="button" class="btn btn-danger" wire:click="denegar">
+                                                    Confirmar denegació
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-outline-secondary"
+                                                    wire:click="cancelLarDenegacio"
+                                                >
+                                                    Cancel·lar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
