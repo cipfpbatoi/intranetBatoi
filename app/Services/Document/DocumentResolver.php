@@ -2,8 +2,10 @@
 
 namespace Intranet\Services\Document;
 
+use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Documento;
 
+/** Resol la ubicació del fitxer associat a un registre documental. */
 class DocumentResolver
 {
     public function resolve($elemento = null, $documento = null): DocumentContext
@@ -19,7 +21,7 @@ class DocumentResolver
             }
 
             if (isset($document->fichero)) {
-                $link = storage_path('app/' . $document->fichero);
+                $link = Storage::disk('local')->path($document->fichero);
                 $isFile = true;
             }
 

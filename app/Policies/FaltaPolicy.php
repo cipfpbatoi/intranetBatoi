@@ -51,4 +51,12 @@ class FaltaPolicy
     {
         return $this->ownsOrIsDirectionOrAdmin($user, (string) $falta->idProfesor);
     }
+
+    /** Només Direcció pot anul·lar una falta autoritzada no tancada. */
+    public function annul($user, Falta $falta): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion')
+            && (int) $falta->estado === 3
+            && $falta->idDocumento === null;
+    }
 }

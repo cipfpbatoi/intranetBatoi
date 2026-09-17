@@ -164,6 +164,24 @@ class PerfilControllerTest extends TestCase
         $this->assertSame('professor-nou@example.com', $fresh->email);
     }
 
+    public function test_professor_pot_emplenar_i_buidar_la_localitat_del_perfil(): void
+    {
+        $profesor = $this->createProfesor('PROFLOC', (int) config('roles.rol.profesor'));
+        $this->withoutMiddleware([RoleMiddleware::class])
+            ->withoutMiddleware([VerifyCsrfToken::class])
+            ->actingAs($profesor, 'profesor')
+            ->put('/perfil', ['email' => 'professor@example.com', 'localitat' => '  Alcoi  '])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Alcoi', Profesor::on('sqlite')->findOrFail('PROFLOC')->localitat);
+        $this->assertArrayHasKey('localitat', (new FormBuilder($profesor))->getDefault());
+
+        $this->put('/perfil', ['email' => 'professor@example.com', 'localitat' => ''])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull(Profesor::on('sqlite')->findOrFail('PROFLOC')->localitat);
+    }
+
     public function test_usuari_sense_permis_no_veu_controls_de_rols(): void
     {
         $profesor = $this->createProfesor('PROF002', (int) config('roles.rol.profesor'));
@@ -233,6 +251,7 @@ class PerfilControllerTest extends TestCase
             $table->string('password')->nullable();
             $table->string('movil1')->nullable();
             $table->string('movil2')->nullable();
+            $table->string('localitat')->nullable();
             $table->unsignedBigInteger('rol')->default(config('roles.rol.profesor'));
             $table->boolean('mostrar')->default(false);
             $table->rememberToken();

@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\DocumentoCrudSchema;
@@ -17,7 +18,7 @@ class Documento extends Model
     use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'documentos';
-    protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'supervisor', 'descripcion'
+    protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'propietario_dni', 'supervisor', 'descripcion'
         , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags', 'activo'];
     protected $rules = DocumentoCrudSchema::RULES;
     protected $inputTypes = DocumentoCrudSchema::INPUT_TYPES;
@@ -73,7 +74,7 @@ class Documento extends Model
     
     public function getLinkAttribute()
     {
-        $path = isset($this->fichero) ? storage_path('app/' . $this->fichero) : null;
+        $path = isset($this->fichero) ? Storage::disk('local')->path($this->fichero) : null;
         if (!$path) {
             return false;
         }

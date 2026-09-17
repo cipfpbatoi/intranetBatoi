@@ -2,6 +2,7 @@
 
 namespace Intranet\Livewire;
 
+use Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService;
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
 use Livewire\Component;
@@ -86,6 +87,7 @@ class DocumentoTable extends Component
                 'curso',
                 'idDocumento',
                 'propietario',
+                'propietario_dni',
                 'created_at',
                 'grupo',
                 'tags',
@@ -104,8 +106,15 @@ class DocumentoTable extends Component
             $query->whereIn('rol', $roles);
         } else {
             $this->propietario = AuthUser()->FullName;
-            $query->where('propietario', AuthUser()->FullName)
-                ->whereIn('rol', $roles);
+            $query->where(function ($q): void {
+                $q->where(function ($normal): void {
+                    $normal->where('tipoDocumento', '!=', AssumpteParticularArchiveService::TIPO_DOCUMENTO)
+                        ->where('propietario', AuthUser()->FullName);
+                })->orWhere(function ($resolucio): void {
+                    $resolucio->where('tipoDocumento', AssumpteParticularArchiveService::TIPO_DOCUMENTO)
+                        ->where('propietario_dni', AuthUser()->dni);
+                });
+            })->whereIn('rol', $roles);
         }
 
         $search = trim($this->search);
@@ -192,6 +201,7 @@ class DocumentoTable extends Component
 
     private function isDireccion(): bool
     {
-        return userIsAllow(config('roles.rol.direccion'));
+        return userIsAllow(config('roles.rol.direccion'))
+            || userIsAllow(config('roles.rol.administrador'));
     }
 }

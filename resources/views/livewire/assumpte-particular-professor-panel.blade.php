@@ -1,4 +1,11 @@
 <div>
+    @unless ($teRubrica)
+        <div class="alert alert-warning" role="alert">
+            Abans de presentar una sol·licitud has de
+            <a href="{{ route('files.edit') }}" class="alert-link">pujar la rúbrica des de Fitxers del perfil</a>.
+        </div>
+    @endunless
+
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <div>
             <h2 class="h4 mb-1">Assumptes particulars</h2>
@@ -66,20 +73,6 @@
                         @enderror
                     </div>
 
-                    <div class="col-12">
-                        <label for="pla-activitats" class="form-label">Pla d’activitats</label>
-                        <textarea
-                            id="pla-activitats"
-                            class="form-control @error('plaActivitats') is-invalid @enderror"
-                            rows="5"
-                            wire:model="plaActivitats"
-                            placeholder="Grups afectats, tasques previstes i indicacions per a l’alumnat"
-                        ></textarea>
-                        <div class="form-text">És obligatori quan el dia seleccionat és lectiu.</div>
-                        @error('plaActivitats')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-3" wire:loading.attr="disabled">
@@ -139,10 +132,10 @@
                             <td>{{ __('assumptes_particulars.estats.' . $peticio->estat) }}</td>
                             <td>{{ $peticio->resolucio ?: '—' }}</td>
                             <td class="text-end text-nowrap">
-                                @if ($peticio->falta_id)
+                                @if ($peticio->resolucio_document)
                                     <a
                                         class="btn btn-sm btn-outline-primary"
-                                        href="{{ route('falta.document', ['falta' => $peticio->falta_id]) }}"
+                                        href="{{ route('assumptes-particulars.document', ['assumpteParticular' => $peticio->id]) }}"
                                     >
                                         Descarregar resolució
                                     </a>

@@ -169,6 +169,7 @@ return array(
                 'movil2' => 'Mòbil',
                 'sexo' => 'Sexe',
                 'codigo_postal' => 'Codi Postal',
+                'localitat' => 'Localitat',
                 'departamento' => 'Departament',
                 'fecha_ingreso' => "Data d'ingrés",
                 'fecha_nac' => 'Data de Naixement',

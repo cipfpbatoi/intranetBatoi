@@ -10,7 +10,7 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Només les peticions autoritzades consumeixen saldo i contingent.
 - Una petició pendent no crea cap `Falta`.
 - Les peticions ordinàries es presenten entre 7 dies naturals i un mes abans; amb menys de 7 dies requerixen motivació excepcional.
-- Els dies lectius requerixen un pla d'activitats.
+- El pla d'activitats no es demana en el formulari actual, però el camp es conserva per a usos futurs.
 - El calendari escolar de Direcció registra les excepcions: un laborable sense registre és lectiu, un dia marcat `no lectiu` usa la bossa no lectiva i un `festiu` es rebutja.
 - Els dissabtes i diumenges no es poden demanar, encara que no tinguen registre al calendari.
 - No es permeten dies lectius consecutius; divendres i dilluns compten com a consecutius.
@@ -21,12 +21,19 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Dins d'un dia, la prioritat és: menys dies autoritzats en el curs, menys sessions lectives afectades, sol·licitud més antiga i ID més baix.
 - El panell de Direcció mostra el contingent global i per torn, ocupat únicament per peticions autoritzades.
 - Els canvis sobrevinguts de calendari, torn, saldo o contingent es mostren com a avisos abans de resoldre.
+- La denegació requerix una motivació i no genera ni document de resolució ni `Falta`.
+- L'autorització només la pot efectuar la persona configurada com a directora i requerix la rúbrica gràfica del professor i de la directora.
+- Una petició autoritzada genera un únic PDF d'una pàgina sobre el model oficial, amb les dues signatures, i una única `Falta` de dia complet.
+- El document autoritzat queda arxivat en emmagatzematge privat i només el poden descarregar el professor titular, Direcció o Administració.
+- El document autoritzat s'associa també a la `Falta` com a justificant i es conserva en el gestor documental quan es buiden les taules del curs.
+- El PDF inclou la localitat editable del perfil, el cos i l'especialitat en camps separats i els dies consumits anteriors, sense comptar el dia sol·licitat.
+- Direcció pot anul·lar una `Falta` autoritzada amb motiu només abans del tancament mensual; l'anul·lació allibera el dia d'assumptes particulars i elimina el PDF i la seua entrada documental.
 
 ## Escenaris
 
 ### ✅ Una petició vàlida queda pendent
 
-**Given** un professor amb saldo, calendari vàlid i pla d'activitats quan correspon  
+**Given** un professor amb saldo i calendari vàlid
 **When** crea una petició  
 **Then** queda pendent i no genera cap `Falta`.
 
@@ -111,3 +118,91 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** es prepara el panell
 
 **Then** Direcció veu els avisos i el panell no resol encara la petició.
+
+### ✅ Una denegació motivada no genera document ni absència
+
+**Given** una petició pendent i un membre de Direcció o Administració
+
+**When** la denega indicant-ne el motiu
+
+**Then** la petició queda denegada sense generar cap PDF ni cap `Falta`.
+
+### ✅ La sol·licitud requerix la rúbrica del professor
+
+**Given** un professor que no té una rúbrica gràfica configurada
+
+**When** intenta presentar una petició
+
+**Then** la petició es rebutja i se li indica que configure la firma en el seu perfil.
+
+### ✅ Només la directora configurada pot autoritzar
+
+**Given** una petició pendent
+
+**When** un usuari de Direcció o Administració que no és la directora configurada intenta autoritzar-la
+
+**Then** l'operació es rebutja sense generar document ni absència.
+
+### ✅ L'autorització genera un únic document amb les dues signatures
+
+**Given** una petició pendent vàlida i les rúbriques gràfiques del professor i de la directora
+
+**When** la directora l'autoritza
+
+**Then** es genera i arxiva un únic PDF d'una pàgina sobre el model oficial amb les dues signatures i es crea una única `Falta` de dia complet.
+
+### ✅ Una autorització invàlida no deixa artefactes parcials
+
+**Given** una petició que deixa de complir el calendari, el saldo, la consecutivitat o el contingent
+
+**When** la directora intenta autoritzar-la
+
+**Then** la transacció es cancel·la i no queda cap PDF ni cap `Falta` parcial.
+
+### ✅ El document autoritzat té accés restringit
+
+**Given** el document arxivat d'una petició autoritzada
+
+**When** un usuari intenta descarregar-lo
+
+**Then** només el professor titular, Direcció o Administració hi poden accedir.
+
+### ✅ El pla d'activitats no es demana en la sol·licitud actual
+
+**Given** un professor que demana un dia lectiu
+
+**When** ompli el formulari sense pla d'activitats
+
+**Then** pot presentar la petició i el camp llegat continua disponible en les dades.
+
+### ✅ El document firmat entra en el circuit de faltes
+
+**Given** una petició autoritzada amb resolució firmada
+
+**When** el professor o Direcció consulta la falta associada
+
+**Then** pot obrir el mateix PDF com a justificant ordinari sense duplicar el fitxer.
+
+### ✅ L'arxiu documental sobreviu al canvi de curs
+
+**Given** una resolució autoritzada i arxivada
+
+**When** es buiden les taules temporals del curs
+
+**Then** la resolució i la seua titularitat continuen disponibles en el gestor documental.
+
+### ✅ L'anul·lació abans del tancament allibera el dia
+
+**Given** una falta autoritzada d'assumptes particulars que encara no s'ha tancat mensualment
+
+**When** Direcció l'anul·la indicant-ne el motiu
+
+**Then** la petició queda cancel·lada, el dia torna al saldo i s'eliminen la falta, el PDF i la seua entrada documental.
+
+### ✅ Una falta tancada mensualment no es pot anul·lar
+
+**Given** una falta autoritzada ja inclosa en el tancament mensual
+
+**When** Direcció intenta anul·lar-la
+
+**Then** l'operació es rebutja i es conserven la falta, la petició i el PDF.

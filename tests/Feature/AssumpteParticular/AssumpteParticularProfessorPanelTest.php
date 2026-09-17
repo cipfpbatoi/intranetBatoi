@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Application\AssumpteParticular\TornAssumpteParticularService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
@@ -34,6 +35,8 @@ class AssumpteParticularProfessorPanelTest extends TestCase
         DB::setDefaultConnection('sqlite');
         DB::purge('sqlite');
         DB::reconnect('sqlite');
+        Storage::fake('local');
+        Storage::fake('public');
 
         $this->crearEsquema();
         $this->crearProfesor('PROF001');
@@ -108,14 +111,30 @@ class AssumpteParticularProfessorPanelTest extends TestCase
         $this->assertDatabaseCount('assumptes_particulars', 0);
     }
 
-    public function test_rebutja_un_dia_lectiu_sense_pla_d_activitats(): void
+    public function test_permet_un_dia_lectiu_sense_pla_d_activitats_i_no_mostra_el_camp(): void
     {
         Livewire::actingAs($this->professor('PROF001'), 'profesor')
             ->test(AssumpteParticularProfessorPanel::class)
+            ->assertDontSee('Pla d’activitats')
             ->set('dataGaudi', '2026-10-15')
             ->call('previsualitzar')
+            ->assertSet('previsualitzacio.data', '2026-10-15');
+
+        $this->assertDatabaseCount('assumptes_particulars', 0);
+    }
+
+    public function test_no_permet_enviar_la_peticio_sense_rubrica_al_perfil(): void
+    {
+        Storage::disk('public')->delete('signatures/PROF001.png');
+
+        Livewire::actingAs($this->professor('PROF001'), 'profesor')
+            ->test(AssumpteParticularProfessorPanel::class)
+            ->set('dataGaudi', '2026-10-15')
+            ->set('plaActivitats', 'Pla preparat.')
+            ->call('previsualitzar')
+            ->call('enviar')
             ->assertSet('previsualitzacio', null)
-            ->assertSee('pla d’activitats és obligatori');
+            ->assertSee('no té una rúbrica guardada en el perfil');
 
         $this->assertDatabaseCount('assumptes_particulars', 0);
     }
@@ -157,6 +176,39 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_el_propietari_pot_descarregar_la_resolucio_i_un_altre_professor_no(): void
+    {
+        $document = 'assumptes-particulars/resolucions/peticio-firmada.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $peticio = $this->crearPeticio(
+            'PROF001',
+            '2026-10-15',
+            AssumpteParticular::ESTAT_AUTORITZADA,
+            null,
+            $document
+        );
+
+        Livewire::actingAs($this->professor('PROF001'), 'profesor')
+            ->test(AssumpteParticularProfessorPanel::class)
+            ->assertSee('Descarregar resolució')
+            ->assertSee(route('assumptes-particulars.document', [
+                'assumpteParticular' => $peticio->id,
+            ]), false);
+
+        $this->actingAs($this->professor('PROF001'), 'profesor')
+            ->get(route('assumptes-particulars.document', [
+                'assumpteParticular' => $peticio->id,
+            ]))
+            ->assertOk()
+            ->assertDownload('resolucio-assumpte-particular-' . $peticio->id . '.pdf');
+
+        $this->actingAs($this->professor('PROF002'), 'profesor')
+            ->get(route('assumptes-particulars.document', [
+                'assumpteParticular' => $peticio->id,
+            ]))
+            ->assertForbidden();
+    }
+
     private function professor(string $dni): Profesor
     {
         return Profesor::on('sqlite')->findOrFail($dni);
@@ -174,6 +226,7 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             $table->date('fecha_baja')->nullable();
             $table->unsignedBigInteger('rol')->default(config('roles.rol.profesor'));
             $table->boolean('activo')->default(true);
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
         Schema::create('calendari_escolar', function (Blueprint $table): void {
@@ -199,6 +252,7 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             $table->timestamp('cancel_lada_at')->nullable();
             $table->string('resolta_per')->nullable();
             $table->unsignedInteger('falta_id')->nullable();
+            $table->string('resolucio_document')->nullable();
             $table->timestamps();
         });
     }
@@ -213,14 +267,17 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             'fecha_ingreso' => '2026-09-01',
             'rol' => config('roles.rol.profesor'),
             'activo' => true,
+            'foto' => $dni . '.png',
         ]);
+        Storage::disk('public')->put('signatures/' . $dni . '.png', 'Rúbrica');
     }
 
     private function crearPeticio(
         string $dni,
         string $data,
         string $estat = AssumpteParticular::ESTAT_PENDENT,
-        ?string $resolucio = null
+        ?string $resolucio = null,
+        ?string $resolucioDocument = null
     ): AssumpteParticular {
         return AssumpteParticular::query()->create([
             'idProfesor' => $dni,
@@ -231,6 +288,7 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             'estat' => $estat,
             'pla_activitats' => 'Pla',
             'resolucio' => $resolucio,
+            'resolucio_document' => $resolucioDocument,
         ]);
     }
 }

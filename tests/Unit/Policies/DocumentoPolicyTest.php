@@ -53,4 +53,24 @@ class DocumentoPolicyTest extends TestCase
         $this->assertFalse($policy->update($invalid, $documento));
         $this->assertFalse($policy->delete($invalid, $documento));
     }
+
+    public function test_la_resolucio_privada_nomes_es_accessible_al_titular_i_direccio(): void
+    {
+        $policy = new DocumentoPolicy();
+        $documento = new Documento([
+            'tipoDocumento' => 'AssumpteParticular',
+            'propietario_dni' => 'PRF001',
+        ]);
+        $titular = (object) ['dni' => 'PRF001', 'rol' => config('roles.rol.profesor')];
+        $altre = (object) ['dni' => 'PRF002', 'rol' => config('roles.rol.profesor')];
+        $direccio = (object) ['dni' => 'DIR001', 'rol' => config('roles.rol.direccion')];
+
+        $this->assertTrue($policy->view($titular, $documento));
+        $this->assertFalse($policy->view($altre, $documento));
+        $this->assertFalse($policy->update($titular, $documento));
+        $this->assertFalse($policy->delete($titular, $documento));
+        $this->assertTrue($policy->view($direccio, $documento));
+        $this->assertFalse($policy->update($direccio, $documento));
+        $this->assertFalse($policy->delete($direccio, $documento));
+    }
 }

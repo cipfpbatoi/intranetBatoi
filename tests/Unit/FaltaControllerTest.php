@@ -47,6 +47,7 @@ class FaltaControllerTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('assumptes_particulars');
         Schema::connection('sqlite')->dropIfExists('notifications');
         Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('faltas');
@@ -488,6 +489,11 @@ class FaltaControllerTest extends TestCase
 
     private function createSchema(): void
     {
+        Schema::connection('sqlite')->create('assumptes_particulars', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('falta_id')->nullable();
+            $table->string('estat');
+        });
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
             Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
                 $table->string('dni', 10)->primary();

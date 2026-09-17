@@ -169,7 +169,8 @@ class AdministracionController extends Controller
             $this->ferVotsPermanents();
         }
         if ($request->Auxiliars){
-            $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas',   'faltas_profesores',
+            app(\Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService::class)->arxivarPendents();
+            $tables = ['assumptes_particulars', 'actividades', 'comisiones', 'cursos', 'expedientes', 'faltas',   'faltas_profesores',
                 'grupos_trabajo', 'guardias',  'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
                 'resultados',   'tutorias_grupos', 'activities',
                 'autorizaciones', 'votes' , 'activities', 'failed_jobs'   ];
