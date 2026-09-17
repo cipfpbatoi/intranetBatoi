@@ -101,3 +101,9 @@ Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'Panel
 
 Route::view('/guardia/control', 'guardias.control');
 Route::view('/calendari',  'calendari.escolar');
+
+Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
+    Route::get('/direction', ['as' => 'direction.index', 'uses' => 'ConvalidacioController@directionIndex']);
+    Route::get('/direction/{sollicitud}', ['as' => 'direction.show', 'uses' => 'ConvalidacioController@directionShow']);
+    Route::post('/direction/{sollicitud}/resolve', ['as' => 'direction.resolve', 'uses' => 'ConvalidacioController@resolve']);
+});

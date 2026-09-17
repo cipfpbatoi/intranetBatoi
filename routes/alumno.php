@@ -17,3 +17,13 @@ Route::get('/A3',['as' => 'signatura.alumne','uses' => 'SignaturaAlumneControlle
 Route::post('/A3/upload',['as' => 'signatura.alumne.upload','uses' => 'SignaturaAlumneController@uploadPost']);
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
+
+Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
+    Route::get('/', ['as' => 'index', 'uses' => 'ConvalidacioController@index']);
+    Route::get('/create', ['as' => 'create', 'uses' => 'ConvalidacioController@create']);
+    Route::post('/upload-certificat', ['as' => 'upload-certificat', 'uses' => 'ConvalidacioController@uploadCertificat']);
+    Route::post('/', ['as' => 'store', 'uses' => 'ConvalidacioController@store']);
+    Route::get('/{sollicitud}', ['as' => 'show', 'uses' => 'ConvalidacioController@show']);
+    Route::get('/{convalidacio}/download', ['as' => 'download', 'uses' => 'ConvalidacioController@download']);
+});
+
