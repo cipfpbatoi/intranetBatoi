@@ -38,9 +38,11 @@ use Intranet\Entities\Task;
 use Intranet\Entities\Setting;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Projecte;
+use Intranet\Entities\SollicitudConvalidacio;
 use Intranet\Policies\ColaboracionPolicy;
 use Intranet\Policies\AssumpteParticularPolicy;
 use Intranet\Policies\ProjectePolicy;
+use Intranet\Policies\ConvalidacioPolicy;
 use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\CicloPolicy;
 use Intranet\Policies\ComisionPolicy;
@@ -125,6 +127,7 @@ class AuthServiceProvider extends ServiceProvider
         Comision::class => ComisionPolicy::class,
         Task::class => TaskPolicy::class,
         Setting::class => SettingPolicy::class,
+        SollicitudConvalidacio::class => ConvalidacioPolicy::class,
     ];
 
     /**
