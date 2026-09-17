@@ -155,6 +155,7 @@ return [
                ,'movil2' =>'Mobile'
                ,'sexo' =>'Sex'
                ,'codigo_postal' =>'Postal code'
+               ,'localitat' =>'Town'
                ,'departamento' =>'Department'
                ,'fecha_ingreso' =>'Entry date'
                ,'fecha_nac' =>'Date of birth'
