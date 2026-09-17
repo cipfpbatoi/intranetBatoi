@@ -111,14 +111,14 @@ class AssumpteParticularProfessorPanelTest extends TestCase
         $this->assertDatabaseCount('assumptes_particulars', 0);
     }
 
-    public function test_rebutja_un_dia_lectiu_sense_pla_d_activitats(): void
+    public function test_permet_un_dia_lectiu_sense_pla_d_activitats_i_no_mostra_el_camp(): void
     {
         Livewire::actingAs($this->professor('PROF001'), 'profesor')
             ->test(AssumpteParticularProfessorPanel::class)
+            ->assertDontSee('Pla d’activitats')
             ->set('dataGaudi', '2026-10-15')
             ->call('previsualitzar')
-            ->assertSet('previsualitzacio', null)
-            ->assertSee('pla d’activitats és obligatori');
+            ->assertSet('previsualitzacio.data', '2026-10-15');
 
         $this->assertDatabaseCount('assumptes_particulars', 0);
     }

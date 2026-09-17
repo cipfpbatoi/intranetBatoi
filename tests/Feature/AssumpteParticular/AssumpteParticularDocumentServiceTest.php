@@ -15,6 +15,7 @@ use Intranet\Application\AssumpteParticular\RubricaAssumpteParticularService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use setasign\Fpdi\Fpdi;
+use Smalot\PdfParser\Parser;
 use Tests\TestCase;
 
 /**
@@ -64,6 +65,36 @@ class AssumpteParticularDocumentServiceTest extends TestCase
         Storage::disk('local')->assertExists($ruta);
         $pdf = new Fpdi();
         $this->assertSame(1, $pdf->setSourceFile(Storage::disk('local')->path($ruta)));
+        $text = (new Parser())->parseFile(Storage::disk('local')->path($ruta))->getText();
+        $this->assertStringContainsString('Alcoi', $text);
+        $this->assertStringContainsString('600000000', $text);
+        $this->assertStringContainsString('PROFESSOR SECUNDÀRIA', $text);
+        $this->assertStringContainsString('INFORMÀTICA', $text);
+        $this->assertStringContainsString('Lectius: 0', $text);
+        $this->assertStringContainsString('No lectius: 0', $text);
+    }
+
+    public function test_el_pdf_compta_els_dies_anteriors_pero_no_la_peticio_actual(): void
+    {
+        $professor = $this->crearProfessor('PROF001', 'Professor');
+        $directora = $this->crearProfessor('DIR001', 'Directora');
+        $this->crearRubrica($professor);
+        $this->crearRubrica($directora);
+        $peticio = $this->crearPeticio($professor);
+        AssumpteParticular::query()->create([
+            'idProfesor' => $professor->dni,
+            'data_gaudi' => '2026-10-01',
+            'curs' => '2026-2027',
+            'tipus' => AssumpteParticular::TIPUS_LECTIU,
+            'torn' => AssumpteParticular::TORN_MATI,
+            'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+        ]);
+
+        $ruta = $this->servei()->generarAutoritzada($peticio, $directora);
+        $text = (new Parser())->parseFile(Storage::disk('local')->path($ruta))->getText();
+
+        $this->assertStringContainsString('Lectius: 1', $text);
+        $this->assertStringContainsString('No lectius: 0', $text);
     }
 
     public function test_no_genera_document_si_falta_la_rubrica_de_la_directora(): void
@@ -95,6 +126,7 @@ class AssumpteParticularDocumentServiceTest extends TestCase
             $table->string('movil1')->nullable();
             $table->string('movil2')->nullable();
             $table->string('codigo_postal')->nullable();
+            $table->string('localitat')->nullable();
             $table->string('especialitat')->nullable();
             $table->string('foto')->nullable();
             $table->timestamps();
@@ -121,7 +153,8 @@ class AssumpteParticularDocumentServiceTest extends TestCase
             'domicilio' => 'Carrer de prova, 1',
             'movil1' => '600000000',
             'codigo_postal' => '03801',
-            'especialitat' => 'Informàtica',
+            'localitat' => 'Alcoi',
+            'especialitat' => 'PROFESSOR SECUNDÀRIA ESPECIALITAT INFORMÀTICA',
             'foto' => $dni . '.png',
         ]);
 

@@ -133,10 +133,12 @@
                                 <i class="fa fa-eye"></i>
                             </a>
                         @endif
-                        @if (userIsAllow(config('roles.rol.direccion')))
+                        @if ($isDireccion && $documento->tipoDocumento !== \Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService::TIPO_DOCUMENTO)
                             <a class="btn btn-xs btn-warning" href="{{ route('documento.edit', $documento->id) }}" title="Editar">
                                 <i class="fa fa-edit"></i>
                             </a>
+                        @endif
+                        @if ($isDireccion && $documento->tipoDocumento !== \Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService::TIPO_DOCUMENTO)
                             <a class="btn btn-xs btn-danger" href="{{ route('documento.destroy', $documento->id) }}" title="Eliminar">
                                 <i class="fa fa-trash"></i>
                             </a>

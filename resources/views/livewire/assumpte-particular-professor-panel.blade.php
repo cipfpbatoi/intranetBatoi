@@ -73,20 +73,6 @@
                         @enderror
                     </div>
 
-                    <div class="col-12">
-                        <label for="pla-activitats" class="form-label">Pla d’activitats</label>
-                        <textarea
-                            id="pla-activitats"
-                            class="form-control @error('plaActivitats') is-invalid @enderror"
-                            rows="5"
-                            wire:model="plaActivitats"
-                            placeholder="Grups afectats, tasques previstes i indicacions per a l’alumnat"
-                        ></textarea>
-                        <div class="form-text">És obligatori quan el dia seleccionat és lectiu.</div>
-                        @error('plaActivitats')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-3" wire:loading.attr="disabled">

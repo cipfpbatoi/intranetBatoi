@@ -353,6 +353,18 @@ class DireccionPanelTest extends TestCase
             $table->string('resolucio_document')->nullable();
             $table->timestamps();
         });
+        Schema::create('documentos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('tipoDocumento');
+            $table->string('curso');
+            $table->integer('idDocumento')->nullable();
+            $table->string('propietario')->nullable();
+            $table->string('propietario_dni')->nullable();
+            $table->string('descripcion');
+            $table->string('fichero')->nullable();
+            $table->integer('rol')->default(1);
+            $table->timestamps();
+        });
     }
 
     private function crearPlantilla(): void

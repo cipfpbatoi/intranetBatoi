@@ -44,6 +44,7 @@ class FaltaDireccionPanelTest extends TestCase
         Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('notifications');
         Schema::connection('sqlite')->dropIfExists('faltas');
+        Schema::connection('sqlite')->dropIfExists('assumptes_particulars');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -67,6 +68,59 @@ class FaltaDireccionPanelTest extends TestCase
         $faltes = $component->get('faltes');
 
         $this->assertCount(3, $faltes);
+    }
+
+    public function test_mostra_la_resolucio_pel_circuit_ordinari_de_la_falta(): void
+    {
+        DB::connection('sqlite')->table('faltas')->where('id', 3)->update([
+            'fichero' => 'assumptes-particulars/resolucions/resolucio.pdf',
+        ]);
+        DB::connection('sqlite')->table('assumptes_particulars')->insert([
+            'id' => 10,
+            'falta_id' => 3,
+            'idProfesor' => 'PF200',
+            'estat' => 'autoritzada',
+            'resolucio_document' => 'assumptes-particulars/resolucions/resolucio.pdf',
+        ]);
+
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class);
+
+        $this->assertTrue(collect($component->get('faltes'))->firstWhere('id', 3)['hasDocument']);
+        $component
+            ->assertSeeHtml(route('falta.direccion.document', ['falta' => 3]))
+            ->assertSeeHtml(route('falta.direccion.document', ['falta' => 2]));
+    }
+
+    public function test_no_mostra_resolucio_si_la_peticio_no_te_pdf(): void
+    {
+        DB::connection('sqlite')->table('assumptes_particulars')->insert([
+            'id' => 10,
+            'falta_id' => 3,
+            'idProfesor' => 'PF200',
+            'estat' => 'autoritzada',
+            'resolucio_document' => null,
+        ]);
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertDontSeeHtml(route('assumptes-particulars.document', ['assumpteParticular' => 10]))
+            ->assertSeeHtml(route('falta.direccion.document', ['falta' => 2]));
+    }
+
+    public function test_no_mostra_resolucio_d_una_peticio_no_autoritzada(): void
+    {
+        DB::connection('sqlite')->table('assumptes_particulars')->insert([
+            'id' => 10,
+            'falta_id' => 3,
+            'idProfesor' => 'PF200',
+            'estat' => 'denegada',
+            'resolucio_document' => 'assumptes-particulars/resolucions/resolucio.pdf',
+        ]);
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertDontSeeHtml(route('assumptes-particulars.document', ['assumpteParticular' => 10]));
     }
 
     public function test_filtra_per_professor_mentre_escriu_nom_o_dni(): void
@@ -148,6 +202,29 @@ class FaltaDireccionPanelTest extends TestCase
 
         $component->call('esborrar', 3)
             ->assertSet('error', 'Només es poden esborrar faltes sense autoritzar.');
+
+        $this->assertNotNull(DB::connection('sqlite')->table('faltas')->where('id', 3)->first());
+    }
+
+    public function test_direccio_pot_anullar_una_falta_autoritzada_amb_motiu(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirAnulacio', 3)
+            ->set('motiuAnulacio', 'Duplicada')
+            ->call('confirmarAnulacio')
+            ->assertSet('message', 'Falta anul·lada i dia alliberat correctament.');
+
+        $this->assertNull(DB::connection('sqlite')->table('faltas')->where('id', 3)->first());
+    }
+
+    public function test_no_pot_anullar_una_falta_tancada_mensualment(): void
+    {
+        DB::connection('sqlite')->table('faltas')->where('id', 3)->update(['idDocumento' => 12]);
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertDontSeeHtml('wire:click="obrirAnulacio(3)"');
 
         $this->assertNotNull(DB::connection('sqlite')->table('faltas')->where('id', 3)->first());
     }
@@ -300,7 +377,16 @@ class FaltaDireccionPanelTest extends TestCase
             $table->string('observaciones', 200)->nullable();
             $table->string('fichero')->nullable();
             $table->tinyInteger('estado')->default(0);
+            $table->unsignedInteger('idDocumento')->nullable();
             $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('assumptes_particulars', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('falta_id')->nullable();
+            $table->string('idProfesor', 10);
+            $table->string('estat');
+            $table->string('resolucio_document')->nullable();
         });
 
         Schema::connection('sqlite')->create('activities', function (Blueprint $table): void {

@@ -171,4 +171,23 @@ class FaltaController extends ModalController
         return view('intranet.show', compact('elemento', 'modelo'));
     }
 
+    /** Protegeix el justificant de la falta amb la mateixa policy que el detall. */
+    public function document($id)
+    {
+        $falta = Falta::query()->findOrFail($id);
+        $this->authorize('view', $falta);
+
+        return parent::document($id);
+    }
+
+    /** L'esborrat ordinari només és possible sobre esborranys propis. */
+    public function destroy($id)
+    {
+        $falta = Falta::query()->findOrFail($id);
+        $this->authorize('delete', $falta);
+        abort_if((int) $falta->estado !== 0 || $falta->idDocumento !== null, 403);
+
+        return parent::destroy($id);
+    }
+
 }

@@ -79,9 +79,6 @@ class AssumpteParticularService
 
         $this->validarTermini($data, $avui, $motivacioExcepcional);
         $tipus = $this->calendariService->validar($data, $iniciCurs, $fiCurs);
-        if ($tipus === AssumpteParticular::TIPUS_LECTIU && blank($plaActivitats)) {
-            throw new AssumpteParticularException('El pla d’activitats és obligatori en un dia lectiu.');
-        }
         $this->validarSaldo($profesor, $curs, $tipus, $iniciCurs, $fiCurs);
         $this->validarConsecutivitat($dni, $data, $iniciCurs, $fiCurs, $tipus);
 
@@ -207,7 +204,7 @@ class AssumpteParticularService
                 );
                 $this->validarContingent($peticio, $peticionsDia);
 
-                $falta = $this->faltaService->createForAssumpteParticular($peticio);
+                $falta = $this->faltaService->createForAssumpteParticular($peticio, $documentFirmat);
                 $peticio->forceFill([
                     'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
                     'resolta_per' => $resoltaPer,
@@ -215,6 +212,8 @@ class AssumpteParticularService
                     'falta_id' => $falta->getKey(),
                     'resolucio_document' => $documentFirmat,
                 ])->save();
+
+                app(AssumpteParticularArchiveService::class)->arxivar($peticio, $profesor);
 
                 return $peticio->fresh();
             }, 3);

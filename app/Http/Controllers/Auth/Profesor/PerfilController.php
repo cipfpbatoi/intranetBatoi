@@ -260,6 +260,7 @@ class PerfilController extends Perfil
         if (isset($request->movil2)){
             $new->movil2 = $request->movil2;
         }
+        $new->localitat = $request->filled('localitat') ? trim($request->localitat) : null;
         
         parent::update($request, $new);
         Alert::info(system('php ./../artisan cache:clear'));

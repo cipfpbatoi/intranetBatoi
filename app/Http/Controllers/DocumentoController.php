@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService;
 use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Application\Documento\DocumentoPersistenceService;
@@ -71,6 +72,10 @@ class DocumentoController extends IntranetController
     public function store(Request $request, $fct = null)
     {
         $this->authorize('create', Documento::class);
+        abort_if(
+            $request->input('tipoDocumento') === AssumpteParticularArchiveService::TIPO_DOCUMENTO,
+            403
+        );
         $this->persistence()->storeFromRequest($request);
 
         return $this->redirect();
@@ -91,6 +96,18 @@ class DocumentoController extends IntranetController
         $this->authorize('view', $documento);
         $gestor = new GestorService(null, $documento);
         return $gestor->render();
+    }
+
+    /** Protegix també les actualitzacions directes dels documents arxivats. */
+    public function update(Request $request, $id)
+    {
+        $this->authorize('update', Documento::findOrFail($id));
+        abort_if(
+            $request->input('tipoDocumento') === AssumpteParticularArchiveService::TIPO_DOCUMENTO,
+            403
+        );
+
+        return parent::update($request, $id);
     }
 
     public function destroy($id)

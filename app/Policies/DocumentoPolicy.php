@@ -2,6 +2,7 @@
 
 namespace Intranet\Policies;
 
+use Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService;
 use Intranet\Entities\Documento;
 
 /**
@@ -36,6 +37,11 @@ class DocumentoPolicy
      */
     public function view($user, Documento $documento): bool
     {
+        if ($documento->tipoDocumento === AssumpteParticularArchiveService::TIPO_DOCUMENTO) {
+            return $this->canManageArchive($user)
+                || ($this->hasIdentity($user) && (string) $user->dni === (string) $documento->propietario_dni);
+        }
+
         return $this->hasIdentity($user) || $this->canViewAsAlumno($user, $documento);
     }
 
@@ -46,6 +52,10 @@ class DocumentoPolicy
      */
     public function update($user, Documento $documento): bool
     {
+        if ($documento->tipoDocumento === AssumpteParticularArchiveService::TIPO_DOCUMENTO) {
+            return false;
+        }
+
         return $this->hasIdentity($user);
     }
 
@@ -56,7 +66,20 @@ class DocumentoPolicy
      */
     public function delete($user, Documento $documento): bool
     {
+        if ($documento->tipoDocumento === AssumpteParticularArchiveService::TIPO_DOCUMENTO) {
+            return false;
+        }
+
         return $this->hasIdentity($user);
+    }
+
+    /** Direcció i Administració poden consultar i gestionar l'arxiu. */
+    private function canManageArchive($user): bool
+    {
+        return $this->hasIdentity($user)
+            && isset($user->rol)
+            && (esRol((int) $user->rol, (int) config('roles.rol.direccion'))
+                || esRol((int) $user->rol, (int) config('roles.rol.administrador')));
     }
 
     /**

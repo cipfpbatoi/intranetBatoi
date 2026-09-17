@@ -96,8 +96,11 @@ class AssumpteParticularDocumentService
         $this->text($pdf, 55, 62, 125, (string) $professor->dni);
         $this->text($pdf, 35, 72, 145, (string) ($professor->domicilio ?? ''), 8);
         $this->text($pdf, 35, 83, 20, (string) ($professor->codigo_postal ?? ''));
-        $this->text($pdf, 44, 88, 45, $this->telefon($professor));
-        $this->text($pdf, 128, 101, 54, (string) ($professor->especialitat ?? ''), 8);
+        $this->text($pdf, 75, 83, 105, (string) ($professor->localitat ?? ''));
+        $this->text($pdf, 101, 88, 79, $this->telefon($professor));
+        [$cos, $especialitat] = $this->cosIEspecialitat((string) ($professor->especialitat ?? ''));
+        $this->text($pdf, 35, 102, 88, $cos, 8);
+        $this->text($pdf, 128, 102, 54, $especialitat, 8);
         $this->text($pdf, 35, 120, 145, (string) config('contacto.nombre'), 9);
         $this->text($pdf, 50, 136, 35, (string) config('contacto.poblacion'));
         $this->text($pdf, 130, 136, 45, (string) config('contacto.provincia'));
@@ -148,8 +151,16 @@ class AssumpteParticularDocumentService
         return (string) (filled($professor->movil1) ? $professor->movil1 : $professor->movil2);
     }
 
+    /** Separa el cos i l'especialitat que el registre llegat guarda junts. */
+    private function cosIEspecialitat(string $valor): array
+    {
+        $parts = preg_split('/\s+ESPECIALITAT\s+/iu', trim($valor), 2);
+
+        return [$parts[0] ?? '', $parts[1] ?? ''];
+    }
+
     /**
-     * Resumeix els dies autoritzats anteriors del curs, separats per tipus.
+     * Resumeix els dies ja autoritzats del curs, sense comptar la petició actual.
      */
     private function diesConsumits(AssumpteParticular $peticio): string
     {
@@ -157,6 +168,7 @@ class AssumpteParticularDocumentService
             ->where('idProfesor', $peticio->idProfesor)
             ->where('curs', $peticio->curs)
             ->where('estat', AssumpteParticular::ESTAT_AUTORITZADA)
+            ->where('id', '!=', $peticio->getKey())
             ->selectRaw('tipus, COUNT(*) as total')
             ->groupBy('tipus')
             ->pluck('total', 'tipus');

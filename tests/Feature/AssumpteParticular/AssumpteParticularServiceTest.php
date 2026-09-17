@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\AssumpteParticular\AssumpteParticularException;
+use Intranet\Application\AssumpteParticular\AssumpteParticularArchiveService;
 use Intranet\Application\AssumpteParticular\AssumpteParticularService;
 use Intranet\Application\AssumpteParticular\CalendariAssumpteParticularService;
 use Intranet\Application\AssumpteParticular\ContingentAssumpteParticularCalculator;
@@ -17,7 +18,11 @@ use Intranet\Application\AssumpteParticular\RubricaAssumpteParticularService;
 use Intranet\Application\AssumpteParticular\SaldoAssumpteParticularCalculator;
 use Intranet\Application\AssumpteParticular\TornAssumpteParticularService;
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Middleware\RoleMiddleware;
 use Mockery;
 use Tests\TestCase;
 
@@ -257,9 +262,97 @@ class AssumpteParticularServiceTest extends TestCase
             'hasta' => '2026-10-15',
             'dia_completo' => 1,
             'estado' => 3,
+            'fichero' => $document,
         ]);
         $this->assertDatabaseCount('faltas', 1);
+        $this->assertDatabaseHas('documentos', [
+            'tipoDocumento' => 'AssumpteParticular',
+            'curso' => '2026-2027',
+            'propietario_dni' => 'PROF001',
+            'fichero' => $document,
+            'idDocumento' => null,
+        ]);
         Storage::disk('local')->assertExists($document);
+    }
+
+    public function test_direccio_anulla_una_falta_autoritzada_i_allibera_el_dia(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $document = 'assumptes-particulars/resolucions/anullada.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+
+        app(FaltaAnulacioService::class)->annullar((int) $resolta->falta_id, 'Error en la concessió', 'DIRE001');
+
+        $this->assertDatabaseMissing('faltas', ['id' => $resolta->falta_id]);
+        $this->assertDatabaseMissing('documentos', ['fichero' => $document]);
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => $peticio->id,
+            'estat' => AssumpteParticular::ESTAT_CANCEL_LADA,
+            'falta_id' => null,
+            'resolucio_document' => null,
+        ]);
+        $this->assertSame(3.0, $this->service->saldo('PROF001', '2026-2027', AssumpteParticular::TIPUS_LECTIU));
+        Storage::disk('local')->assertMissing($document);
+    }
+
+    public function test_no_anulla_una_falta_tancada_mensualment(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $document = 'assumptes-particulars/resolucions/tancada.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+        DB::table('faltas')->where('id', $resolta->falta_id)->update(['estado' => 4]);
+
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        try {
+            app(FaltaAnulacioService::class)->annullar((int) $resolta->falta_id, 'Error', 'DIRE001');
+        } finally {
+            $this->assertDatabaseHas('assumptes_particulars', ['id' => $peticio->id, 'estat' => AssumpteParticular::ESTAT_AUTORITZADA]);
+            Storage::disk('local')->assertExists($document);
+        }
+    }
+
+    public function test_l_arxiu_sobreviu_al_buidatge_del_curs_sense_duplicats(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $ruta = 'assumptes-particulars/resolucions/arxiu.pdf';
+        Storage::disk('local')->put($ruta, 'PDF firmat');
+        $this->service->autoritzar($peticio->id, 'DIRE001', $ruta);
+
+        app(AssumpteParticularArchiveService::class)->arxivarPendents();
+        $this->assertDatabaseCount('documentos', 1);
+
+        DB::table('assumptes_particulars')->delete();
+        DB::table('faltas')->delete();
+
+        $this->assertDatabaseCount('documentos', 1);
+        $this->assertDatabaseHas('documentos', ['fichero' => $ruta, 'propietario_dni' => 'PROF001']);
+        Storage::disk('local')->assertExists($ruta);
+
+        $documento = Documento::query()->firstOrFail();
+        $this->withoutMiddleware([RoleMiddleware::class])
+            ->actingAs(Profesor::query()->findOrFail('PROF001'), 'profesor')
+            ->get('/documento/' . $documento->id . '/show')
+            ->assertOk();
+
+        $this->crearProfesor('PROF002');
+        $this->actingAs(Profesor::query()->findOrFail('PROF002'), 'profesor')
+            ->get('/documento/' . $documento->id . '/show')
+            ->assertForbidden();
+    }
+
+    public function test_el_buidatge_es_deté_si_falta_un_pdf_autoritzat(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearPeticioAutoritzada('PROF001', '2026-10-15');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('Falta el PDF firmat');
+        app(AssumpteParticularArchiveService::class)->arxivarPendents();
     }
 
     public function test_no_autoritza_sense_document_firmat(): void
@@ -276,6 +369,7 @@ class AssumpteParticularServiceTest extends TestCase
 
         $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
         $this->assertDatabaseCount('faltas', 0);
+        $this->assertDatabaseCount('documentos', 0);
     }
 
     public function test_una_resolucio_repetida_no_duplica_la_falta_i_neteja_el_document_orfe(): void
@@ -319,6 +413,7 @@ class AssumpteParticularServiceTest extends TestCase
         $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
         $this->assertNull($peticio->fresh()->falta_id);
         $this->assertDatabaseCount('faltas', 0);
+        $this->assertDatabaseCount('documentos', 0);
         Storage::disk('local')->assertMissing($document);
     }
 
@@ -367,11 +462,24 @@ class AssumpteParticularServiceTest extends TestCase
             $table->string('motivos', 2);
             $table->string('observaciones', 200)->nullable();
             $table->tinyInteger('estado')->default(0);
+            $table->unsignedInteger('idDocumento')->nullable();
             $table->string('fichero', 100)->nullable();
             $table->time('hora_ini')->nullable();
             $table->time('hora_fin')->nullable();
             $table->boolean('dia_completo')->nullable();
             $table->boolean('baja')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('documentos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('tipoDocumento');
+            $table->string('curso');
+            $table->integer('idDocumento')->nullable();
+            $table->string('propietario')->nullable();
+            $table->string('propietario_dni')->nullable();
+            $table->string('descripcion');
+            $table->string('fichero')->nullable();
+            $table->integer('rol')->default(1);
             $table->timestamps();
         });
     }
