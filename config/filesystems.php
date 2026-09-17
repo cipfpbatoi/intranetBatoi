@@ -67,6 +67,11 @@ return [
             'root' => '/srv/documentsFct',
             'visibility' => 'public',
         ],
+        'convalidacions' => [
+            'driver' => 'local',
+            'root' => storage_path('app/convalidacions'),
+            'visibility' => 'private',
+        ],
 
         
         's3' => [
