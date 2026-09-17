@@ -35,7 +35,7 @@ return new class extends Migration
             $table->collation = 'utf8mb3_unicode_ci';
             $table->id();
             $table->unsignedBigInteger('sollicitud_convalidacio_id');
-            $table->string('modulo_id', 10)->nullable();
+            $table->string('modulo_id', 12)->nullable();
             $table->enum('tipus_convalidacio', ['mateix_centre', 'altre_centre', 'escola_idiomes', 'titol_universitari', 'titol_fp']);
             $table->unsignedBigInteger('cicle_formatiu_cursat_id')->nullable();
             $table->string('certificat_path', 255)->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
 
             $table->foreign('sollicitud_convalidacio_id')->references('id')->on('sollicituds_convalidacions')
                 ->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreign('modulo_id')->references('codigo')->on('moduls')
+            $table->foreign('modulo_id')->references('codigo')->on('modulos')
                 ->cascadeOnUpdate()->nullOnDelete();
             $table->foreign('cicle_formatiu_cursat_id')->references('id')->on('cicles_formatius_cursats')
                 ->cascadeOnUpdate()->nullOnDelete();

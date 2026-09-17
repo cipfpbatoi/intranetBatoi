@@ -13,11 +13,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cicles_formatius_cursats', function (Blueprint $table) {
+            $table->charset = 'utf8mb3';
+            $table->collation = 'utf8mb3_unicode_ci';
             $table->id();
-            $table->foreignId('alumno_id')->constrained('alumnos');
-            $table->foreignId('cicle_formatiu_id')->nullable()->constrained('cicles');
+            $table->string('alumno_id', 8);
+            $table->integer('cicle_formatiu_id')->nullable();
             $table->integer('any_curs');
             $table->timestamps();
+
+            $table->foreign('alumno_id')->references('nia')->on('alumnos')
+                ->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('cicle_formatiu_id')->references('id')->on('ciclos')
+                ->cascadeOnUpdate()->nullOnDelete();
         });
     }
 
