@@ -47,7 +47,7 @@ class AssumpteParticularService
         );
         $this->rubriques->path(Profesor::query()->findOrFail($dni));
 
-        return AssumpteParticular::query()->create([
+        $peticio = AssumpteParticular::query()->create([
             'idProfesor' => $dni,
             'data_gaudi' => $previsualitzacio['data'],
             'curs' => $previsualitzacio['curs'],
@@ -58,6 +58,12 @@ class AssumpteParticularService
             'pla_activitats' => filled($plaActivitats) ? trim($plaActivitats) : null,
             'sollicitada_at' => now(),
         ]);
+
+        if ($previsualitzacio['excepcional']) {
+            app(AssumpteParticularNotificationService::class)->urgent($peticio);
+        }
+
+        return $peticio;
     }
 
     /**
@@ -160,7 +166,7 @@ class AssumpteParticularService
         try {
             $referencia = AssumpteParticular::query()->findOrFail($id);
 
-            return DB::transaction(function () use (
+            $peticio = DB::transaction(function () use (
                 $id,
                 $resoltaPer,
                 $referencia,
@@ -221,6 +227,10 @@ class AssumpteParticularService
             Storage::disk('local')->delete($documentFirmat);
             throw $exception;
         }
+
+        app(AssumpteParticularNotificationService::class)->autoritzada($peticio);
+
+        return $peticio;
     }
 
     /**
@@ -232,7 +242,7 @@ class AssumpteParticularService
             throw new AssumpteParticularException('La denegació ha d’estar motivada.');
         }
 
-        return DB::transaction(function () use ($id, $resoltaPer, $motiu): AssumpteParticular {
+        $peticio = DB::transaction(function () use ($id, $resoltaPer, $motiu): AssumpteParticular {
             $peticio = AssumpteParticular::query()->lockForUpdate()->findOrFail($id);
             if (!$peticio->estaPendent()) {
                 throw new AssumpteParticularException('Només es pot denegar una petició pendent.');
@@ -246,6 +256,10 @@ class AssumpteParticularService
 
             return $peticio->fresh();
         });
+
+        app(AssumpteParticularNotificationService::class)->denegada($peticio);
+
+        return $peticio;
     }
 
     /**

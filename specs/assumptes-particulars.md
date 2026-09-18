@@ -28,6 +28,9 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - El document autoritzat s'associa també a la `Falta` com a justificant i es conserva en el gestor documental quan es buiden les taules del curs.
 - El PDF inclou la localitat editable del perfil, el cos i l'especialitat en camps separats i els dies consumits anteriors, sense comptar el dia sol·licitat.
 - Direcció pot anul·lar una `Falta` autoritzada amb motiu només abans del tancament mensual; l'anul·lació allibera el dia d'assumptes particulars i elimina el PDF i la seua entrada documental.
+- Una petició urgent confirmada avisa per correu la directora configurada; la previsualització no envia cap avís.
+- La denegació comunica el motiu al professor i l'autorització li envia un enllaç autenticat a la resolució, sense adjuntar el PDF.
+- Cada transició genera com a màxim un registre de correu; una fallada d'enviament no desfà la petició i queda registrada per a reintents sense exposar dades sensibles als logs.
 
 ## Escenaris
 
@@ -206,3 +209,35 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** Direcció intenta anul·lar-la
 
 **Then** l'operació es rebutja i es conserven la falta, la petició i el PDF.
+
+### ✅ Una petició urgent avisa Direcció només quan es confirma
+
+**Given** una petició amb menys de set dies d'antelació i motivació excepcional
+
+**When** el professor la previsualitza i després la presenta
+
+**Then** la previsualització no envia res i la petició confirmada posa en cua un únic correu per a la directora configurada.
+
+### ✅ La denegació informa del motiu sense duplicats
+
+**Given** una petició pendent
+
+**When** Direcció la denega amb una motivació i intenta resoldre-la de nou
+
+**Then** el professor rep l'avís motivat una sola vegada i el segon intent no genera cap correu nou.
+
+### ✅ L'autorització comunica un enllaç protegit
+
+**Given** una petició pendent amb una resolució firmada
+
+**When** la directora l'autoritza
+
+**Then** el professor rep un enllaç autenticat al document, sense cap PDF adjunt.
+
+### ✅ Una fallada del correu no desfà la resolució
+
+**Given** una petició denegada i un error SMTP o un destinatari sense adreça vàlida
+
+**When** es processa l'avís
+
+**Then** la denegació es conserva, l'error queda registrat sense dades sensibles i l'enviament fallit es pot reintentar.

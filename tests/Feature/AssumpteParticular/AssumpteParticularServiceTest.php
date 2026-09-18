@@ -7,6 +7,8 @@ namespace Tests\Feature\AssumpteParticular;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\AssumpteParticular\AssumpteParticularException;
@@ -20,8 +22,11 @@ use Intranet\Application\AssumpteParticular\TornAssumpteParticularService;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
+use Intranet\Entities\AssumpteParticularMailDelivery;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Profesor;
+use Intranet\Jobs\SendAssumpteParticularMail;
+use Intranet\Mail\AssumpteParticularAvis;
 use Intranet\Http\Middleware\RoleMiddleware;
 use Mockery;
 use Tests\TestCase;
@@ -44,6 +49,7 @@ class AssumpteParticularServiceTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
         Event::fake();
+        Queue::fake();
         Storage::fake('local');
         Storage::fake('public');
         $this->crearEsquema();
@@ -87,6 +93,132 @@ class AssumpteParticularServiceTest extends TestCase
         $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->estat);
         $this->assertSame(AssumpteParticular::TIPUS_LECTIU, $peticio->tipus);
         $this->assertNull($peticio->falta_id);
+    }
+
+    /** La previsualització no envia res i la petició urgent real avisa una vegada. */
+    public function test_avis_urgent_nomes_despres_de_persistir(): void
+    {
+        config(['avisos.director' => 'DIRE001']);
+        $this->crearProfesor('PROF001');
+        $this->crearProfesor('DIRE001');
+
+        $this->service->previsualitzar('PROF001', '2026-10-05', 'Motiu urgent', null, '2026-10-01');
+        $this->assertDatabaseCount('assumpte_particular_mail_deliveries', 0);
+        Queue::assertNothingPushed();
+
+        $peticio = $this->service->crear('PROF001', '2026-10-05', 'Motiu urgent', null, '2026-10-01');
+
+        $this->assertDatabaseHas('assumpte_particular_mail_deliveries', [
+            'peticio_id' => $peticio->id,
+            'tipus' => AssumpteParticularMailDelivery::URGENT,
+            'destinatari_email' => 'dire001@example.org',
+            'estat' => AssumpteParticularMailDelivery::PENDENT,
+        ]);
+        Queue::assertPushed(SendAssumpteParticularMail::class, 1);
+    }
+
+    /** Una denegació motivada queda registrada, fins i tot si es reintenta la resolució. */
+    public function test_avis_denegacio_sense_duplicats(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+
+        $this->service->denegar($peticio->id, 'DIRE001', 'Necessitat del servei');
+        $this->assertDatabaseHas('assumpte_particular_mail_deliveries', [
+            'peticio_id' => $peticio->id,
+            'tipus' => AssumpteParticularMailDelivery::DENEGADA,
+            'destinatari_email' => 'prof001@example.org',
+        ]);
+        Queue::assertPushed(SendAssumpteParticularMail::class, 1);
+
+        try {
+            $this->service->denegar($peticio->id, 'DIRE001', 'Segon intent');
+            $this->fail('S’esperava rebutjar una denegació repetida.');
+        } catch (AssumpteParticularException) {
+            $this->assertDatabaseCount('assumpte_particular_mail_deliveries', 1);
+            Queue::assertPushed(SendAssumpteParticularMail::class, 1);
+        }
+    }
+
+    /** La resolució es comunica amb un enllaç protegit, sense adjuntar el PDF. */
+    public function test_avis_autoritzacio_i_lliurament_sense_adjunt(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        Storage::disk('local')->put('resolucio.pdf', 'PDF firmat');
+
+        $this->service->autoritzar($peticio->id, 'DIRE001', 'resolucio.pdf');
+        $registre = AssumpteParticularMailDelivery::query()->sole();
+        $this->assertSame(AssumpteParticularMailDelivery::AUTORITZADA, $registre->tipus);
+        Queue::assertPushed(SendAssumpteParticularMail::class, 1);
+
+        Mail::fake();
+        (new SendAssumpteParticularMail($registre->id))->handle();
+
+        $this->assertSame(AssumpteParticularMailDelivery::ENVIADA, $registre->fresh()->estat);
+        $this->assertSame(1, $registre->fresh()->intents);
+        Mail::assertSent(AssumpteParticularAvis::class, function (AssumpteParticularAvis $mail) use ($peticio): bool {
+            $html = $mail->render();
+            return str_contains($html, (string) $peticio->id . '/document')
+                && count($mail->attachments) === 0;
+        });
+
+        (new SendAssumpteParticularMail($registre->id))->handle();
+        Mail::assertSent(AssumpteParticularAvis::class, 1);
+    }
+
+    /** Un error SMTP no desfà la denegació i permet reintentar el mateix registre. */
+    public function test_error_smtp_queda_registrat_i_es_pot_reintentar(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $this->service->denegar($peticio->id, 'DIRE001', 'Motiu de denegació');
+        $registre = AssumpteParticularMailDelivery::query()->sole();
+
+        Mail::fake();
+        $correuFals = Mail::getFacadeRoot();
+        Mail::shouldReceive('to')->once()->andThrow(new \RuntimeException('Clau SMTP privada'));
+        try {
+            (new SendAssumpteParticularMail($registre->id))->handle();
+            $this->fail('S’esperava un error SMTP.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Clau SMTP privada', $exception->getMessage());
+        }
+
+        $this->assertSame(AssumpteParticular::ESTAT_DENEGADA, $peticio->fresh()->estat);
+        $this->assertDatabaseHas('assumpte_particular_mail_deliveries', [
+            'id' => $registre->id,
+            'estat' => AssumpteParticularMailDelivery::ERROR,
+            'intents' => 1,
+            'error' => 'RuntimeException',
+        ]);
+
+        Mail::swap($correuFals);
+        (new SendAssumpteParticularMail($registre->id))->handle();
+        $this->assertDatabaseHas('assumpte_particular_mail_deliveries', [
+            'id' => $registre->id,
+            'estat' => AssumpteParticularMailDelivery::ENVIADA,
+            'intents' => 2,
+        ]);
+        Mail::assertSent(AssumpteParticularAvis::class, 1);
+    }
+
+    /** Si no hi ha adreça vàlida, la transició de negoci continua i no es posa res en cua. */
+    public function test_destinatari_sense_email_no_bloqueja_la_denegacio(): void
+    {
+        $this->crearProfesor('PROF001');
+        DB::table('profesores')->where('dni', 'PROF001')->update(['email' => null]);
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+
+        $this->service->denegar($peticio->id, 'DIRE001', 'Motiu de denegació');
+
+        $this->assertSame(AssumpteParticular::ESTAT_DENEGADA, $peticio->fresh()->estat);
+        $this->assertDatabaseHas('assumpte_particular_mail_deliveries', [
+            'peticio_id' => $peticio->id,
+            'estat' => AssumpteParticularMailDelivery::ERROR,
+            'error' => 'destinatari_sense_email_valid',
+        ]);
+        Queue::assertNothingPushed();
     }
 
     public function test_un_laborable_sense_registre_es_lectiu(): void
@@ -421,6 +553,7 @@ class AssumpteParticularServiceTest extends TestCase
     {
         Schema::create('profesores', function (Blueprint $table): void {
             $table->string('dni')->primary();
+            $table->string('email')->nullable();
             $table->date('fecha_ingreso')->nullable();
             $table->date('fecha_baja')->nullable();
             $table->unsignedBigInteger('rol')->default(3);
@@ -454,6 +587,7 @@ class AssumpteParticularServiceTest extends TestCase
             $table->string('resolucio_document')->nullable();
             $table->timestamps();
         });
+        $this->crearEsquemaCorreus();
         Schema::create('faltas', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('idProfesor');
@@ -484,6 +618,13 @@ class AssumpteParticularServiceTest extends TestCase
         });
     }
 
+    /** Reproduïx l'esquema persistent dels avisos per a les transicions. */
+    private function crearEsquemaCorreus(): void
+    {
+        $migration = require database_path('migrations/2026_09_17_100000_create_assumpte_particular_mail_deliveries_table.php');
+        $migration->up();
+    }
+
     private function crearDiaCalendari(
         string $data,
         string $tipus,
@@ -501,6 +642,7 @@ class AssumpteParticularServiceTest extends TestCase
     {
         DB::table('profesores')->insert([
             'dni' => $dni,
+            'email' => strtolower($dni) . '@example.org',
             'fecha_ingreso' => '2026-09-01',
             'fecha_baja' => null,
             'rol' => 3,
