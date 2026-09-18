@@ -67,7 +67,7 @@ class AssumpteParticularPolicy
     }
 
     /**
-     * Només la direcció configurada pot autoritzar i aplicar la seua rúbrica.
+     * Qualsevol membre de Direcció pot autoritzar amb la rúbrica de la directora configurada.
      *
      * @param mixed $user
      */
@@ -75,6 +75,6 @@ class AssumpteParticularPolicy
     {
         return $this->resolve($user, $peticio)
             && filled(config('avisos.director'))
-            && (string) $user->dni === (string) config('avisos.director');
+            && esRol($user->rol, config('roles.rol.direccion'));
     }
 }

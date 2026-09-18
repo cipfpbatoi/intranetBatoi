@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\AssumpteParticular;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -30,6 +31,8 @@ class DireccionPanelTest extends TestCase
     {
         parent::setUp();
 
+        CarbonImmutable::setTestNow('2026-10-08 12:00:00');
+
         $this->sqlitePath = tempnam(sys_get_temp_dir(), 'assumptes-direccio-') ?: ':memory:';
         config(['database.default' => 'sqlite']);
         config(['database.connections.sqlite.database' => $this->sqlitePath]);
@@ -48,6 +51,7 @@ class DireccionPanelTest extends TestCase
 
     protected function tearDown(): void
     {
+        CarbonImmutable::setTestNow();
         DB::disconnect('sqlite');
         if ($this->sqlitePath !== ':memory:' && file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -69,6 +73,34 @@ class DireccionPanelTest extends TestCase
         Livewire::actingAs($this->professor('PROF01'), 'profesor')
             ->test(AssumpteParticularDireccionPanel::class)
             ->assertForbidden();
+    }
+
+    /** El panell mostra per defecte el seté dia natural i manté el filtre manual. */
+    public function test_filtra_per_defecte_el_sete_dia_natural(): void
+    {
+        $this->crearPeticio('PROF01', '2026-10-15', AssumpteParticular::ESTAT_PENDENT);
+        $this->crearPeticio('PROF02', '2026-10-16', AssumpteParticular::ESTAT_PENDENT);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSet('filtreData', '2026-10-15')
+            ->assertSee('Professor 01')
+            ->assertDontSee('Professor 02')
+            ->set('filtreData', '2026-10-16')
+            ->assertSee('Professor 02');
+    }
+
+    /** El huité dia es pot consultar però no autoritzar des de la pantalla. */
+    public function test_el_boto_d_autoritzar_es_desactiva_mes_enlla_del_sete_dia(): void
+    {
+        $peticio = $this->crearPeticio('PROF01', '2026-10-16', AssumpteParticular::ESTAT_PENDENT);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->set('filtreData', '2026-10-16')
+            ->assertSee('Professor 01')
+            ->assertDontSeeHtml('wire:click="autoritzar(' . $peticio->id . ')"')
+            ->assertSee('Només es poden autoritzar els pròxims set dies naturals');
     }
 
     public function test_ordena_per_dies_gaudits_hores_i_antiguitat(): void
@@ -257,6 +289,44 @@ class DireccionPanelTest extends TestCase
         $this->assertSame($document, $peticio->resolucio_document);
         $this->assertNotNull($peticio->falta_id);
         $this->assertDatabaseCount('faltas', 1);
+    }
+
+    /** Direcció tramita, però el PDF porta sempre la rúbrica de la directora configurada. */
+    public function test_un_altre_membre_de_direccio_autoritza_amb_la_rubrica_de_la_directora(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'DIR002',
+            'nombre' => 'Segona direcció',
+            'apellido1' => '',
+            'apellido2' => '',
+            'fecha_ingreso' => '2026-09-01',
+            'rol' => config('roles.rol.direccion'),
+            'activo' => true,
+            'foto' => 'DIR002.png',
+        ]);
+        $peticio = $this->crearPeticio('PROF01', '2026-10-15', AssumpteParticular::ESTAT_PENDENT);
+        $document = 'assumptes-particulars/resolucions/delegada.pdf';
+        Storage::disk('local')->put($document, 'PDF amb rúbrica de la directora');
+        $documents = Mockery::mock(AssumpteParticularDocumentService::class);
+        $documents->shouldReceive('generarAutoritzada')
+            ->once()
+            ->withArgs(fn ($actual, $directora): bool => $actual->id === $peticio->id
+                && $directora->dni === 'DIR001')
+            ->andReturn($document);
+        app()->instance(AssumpteParticularDocumentService::class, $documents);
+
+        Livewire::actingAs($this->professor('DIR002'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSet('potAutoritzar', true)
+            ->assertSet('teRubricaDirectora', true)
+            ->call('autoritzar', $peticio->id)
+            ->assertSet('error', '');
+
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => $peticio->id,
+            'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+            'resolta_per' => 'DIR002',
+        ]);
     }
 
     public function test_no_permet_denegar_sense_motiu(): void

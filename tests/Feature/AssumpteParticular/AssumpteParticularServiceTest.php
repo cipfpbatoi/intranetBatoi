@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\AssumpteParticular;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -42,6 +43,7 @@ class AssumpteParticularServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        CarbonImmutable::setTestNow('2026-10-08 12:00:00');
         $this->sqlitePath = tempnam(sys_get_temp_dir(), 'assumptes-') ?: ':memory:';
         config(['database.default' => 'sqlite']);
         config(['database.connections.sqlite.database' => $this->sqlitePath]);
@@ -71,6 +73,7 @@ class AssumpteParticularServiceTest extends TestCase
 
     protected function tearDown(): void
     {
+        CarbonImmutable::setTestNow();
         DB::disconnect('sqlite');
         if ($this->sqlitePath !== ':memory:' && file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -115,6 +118,46 @@ class AssumpteParticularServiceTest extends TestCase
             'estat' => AssumpteParticularMailDelivery::PENDENT,
         ]);
         Queue::assertPushed(SendAssumpteParticularMail::class, 1);
+    }
+
+    /** L'avís urgent posa en còpia el cap d'estudis configurat, sense adjunts. */
+    public function test_avis_urgent_en_copia_al_cap_estudis(): void
+    {
+        config(['avisos.director' => 'DIRE001', 'avisos.jefeEstudios' => 'CAP001']);
+        $this->crearProfesor('PROF001');
+        $this->crearProfesor('DIRE001');
+        $this->crearProfesor('CAP001');
+        $peticio = $this->service->crear('PROF001', '2026-10-05', 'Motiu urgent', null, '2026-10-01');
+        $registre = AssumpteParticularMailDelivery::query()->sole();
+
+        Mail::fake();
+        (new SendAssumpteParticularMail($registre->id))->handle();
+
+        Mail::assertSent(AssumpteParticularAvis::class, function (AssumpteParticularAvis $mail): bool {
+            return $mail->hasTo('dire001@example.org')
+                && $mail->hasCc('cap001@example.org')
+                && count($mail->attachments) === 0;
+        });
+        $this->assertSame($peticio->id, $registre->peticio_id);
+    }
+
+    /** El límit del seté dia es valida al servei i no genera una falta prematura. */
+    public function test_no_autoritza_mes_enlla_del_sete_dia_natural(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-16');
+        Storage::disk('local')->put('resolucio-futura.pdf', 'PDF firmat');
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', 'resolucio-futura.pdf');
+            $this->fail('S’esperava rebutjar una autorització amb més de set dies.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('set dies naturals', $exception->getMessage());
+        }
+
+        $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
+        $this->assertDatabaseCount('faltas', 0);
+        Storage::disk('local')->assertMissing('resolucio-futura.pdf');
     }
 
     /** Una denegació motivada queda registrada, fins i tot si es reintenta la resolució. */
