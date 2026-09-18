@@ -1,6 +1,6 @@
-@extends('layouts.intranet')
+@extends('intranet.index')
 
-@section('titulo', 'Detall de la convalidació - Direcció')
+@section('panel', 'Convalidacions')
 
 @section('content')
 <div class="container">
@@ -120,6 +120,7 @@
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
