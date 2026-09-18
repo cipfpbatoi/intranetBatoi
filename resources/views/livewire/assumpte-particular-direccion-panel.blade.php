@@ -19,13 +19,12 @@
 
     @unless ($potAutoritzar)
         <div class="alert alert-info" role="status">
-            Pots consultar i denegar peticions. Només la directora configurada pot autoritzar-les amb la seua rúbrica.
+            Pots consultar i denegar peticions. Cal tindre el rol de Direcció per a autoritzar-les amb la rúbrica de la directora configurada.
         </div>
     @else
         @unless ($teRubricaDirectora)
             <div class="alert alert-warning" role="alert">
-                Per a autoritzar peticions has de
-                <a href="{{ route('files.edit') }}" class="alert-link">pujar la rúbrica des de Fitxers del perfil</a>.
+                Per a autoritzar peticions, la directora configurada ha de tindre la rúbrica guardada en el seu perfil.
             </div>
         @endunless
     @endunless
@@ -152,12 +151,12 @@
                                     <button
                                         type="button"
                                         class="btn btn-sm btn-outline-success"
-                                        @if ($potAutoritzar && $teRubricaDirectora)
+                                        @if ($potAutoritzar && $teRubricaDirectora && $grup['data'] <= now()->addDays(7)->toDateString())
                                             wire:click="autoritzar({{ $peticio['id'] }})"
                                             wire:confirm="Segur que vols autoritzar esta petició i generar el document firmat?"
                                         @else
                                             disabled
-                                            title="{{ $potAutoritzar ? 'Cal pujar la rúbrica al perfil' : 'Només la directora configurada pot autoritzar' }}"
+                                            title="{{ !$potAutoritzar ? 'Cal el rol de Direcció per a autoritzar' : (!$teRubricaDirectora ? 'Cal la rúbrica de la directora configurada' : 'Només es poden autoritzar els pròxims set dies naturals') }}"
                                         @endif
                                     >
                                         Autoritzar

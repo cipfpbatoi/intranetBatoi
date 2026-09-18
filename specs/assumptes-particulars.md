@@ -18,17 +18,19 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - L'autorització revalida calendari, saldo i contingent dins d'una transacció amb bloqueig.
 - El professor només gestiona peticions pròpies; Direcció o Administració les resol.
 - Direcció consulta les peticions pendents agrupades per data i pot filtrar-les per una data exacta.
+- En obrir el panell de Direcció es mostra per defecte el seté dia natural posterior a hui; es pot seleccionar una altra data o mostrar-les totes.
 - Dins d'un dia, la prioritat és: menys dies autoritzats en el curs, menys sessions lectives afectades, sol·licitud més antiga i ID més baix.
 - El panell de Direcció mostra el contingent global i per torn, ocupat únicament per peticions autoritzades.
 - Els canvis sobrevinguts de calendari, torn, saldo o contingent es mostren com a avisos abans de resoldre.
 - La denegació requerix una motivació i no genera ni document de resolució ni `Falta`.
-- L'autorització només la pot efectuar la persona configurada com a directora i requerix la rúbrica gràfica del professor i de la directora.
+- L'autorització la pot efectuar qualsevol persona amb rol de Direcció només fins al seté dia natural posterior a hui, inclòs; requerix la rúbrica gràfica del professor i de la directora configurada.
+- El PDF sempre mostra la rúbrica de la directora configurada, mentre que la petició registra en `resolta_per` la persona de Direcció que ha tramitat l'autorització.
 - Una petició autoritzada genera un únic PDF d'una pàgina sobre el model oficial, amb les dues signatures, i una única `Falta` de dia complet.
 - El document autoritzat queda arxivat en emmagatzematge privat i només el poden descarregar el professor titular, Direcció o Administració.
 - El document autoritzat s'associa també a la `Falta` com a justificant i es conserva en el gestor documental quan es buiden les taules del curs.
 - El PDF inclou la localitat editable del perfil, el cos i l'especialitat en camps separats i els dies consumits anteriors, sense comptar el dia sol·licitat.
 - Direcció pot anul·lar una `Falta` autoritzada amb motiu només abans del tancament mensual; l'anul·lació allibera el dia d'assumptes particulars i elimina el PDF i la seua entrada documental.
-- Una petició urgent confirmada avisa per correu la directora configurada; la previsualització no envia cap avís.
+- Una petició urgent confirmada avisa per correu la directora configurada i posa en còpia el cap d'estudis configurat, sense adjunts; la previsualització no envia cap avís.
 - La denegació comunica el motiu al professor i l'autorització li envia un enllaç autenticat a la resolució, sense adjuntar el PDF.
 - Cada transició genera com a màxim un registre de correu; una fallada d'enviament no desfà la petició i queda registrada per a reintents sense exposar dades sensibles als logs.
 
@@ -96,7 +98,7 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 
 **When** Direcció obri el panell o selecciona una data
 
-**Then** les veu agrupades cronològicament o limitades a la data exacta seleccionada.
+**Then** veu per defecte el seté dia natural posterior a hui i pot triar una altra data o mostrar-les totes agrupades cronològicament.
 
 ### ✅ La prioritat combina dies gaudits, hores i antiguitat
 
@@ -138,13 +140,13 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 
 **Then** la petició es rebutja i se li indica que configure la firma en el seu perfil.
 
-### ✅ Només la directora configurada pot autoritzar
+### ✅ Direcció pot autoritzar amb la rúbrica de la directora configurada
 
 **Given** una petició pendent
 
-**When** un usuari de Direcció o Administració que no és la directora configurada intenta autoritzar-la
+**When** una persona amb rol de Direcció, encara que no siga la directora configurada, l'autoritza
 
-**Then** l'operació es rebutja sense generar document ni absència.
+**Then** el PDF porta la rúbrica de la directora configurada i `resolta_per` identifica la persona que ha tramitat l'autorització; Administració sense rol de Direcció no pot autoritzar.
 
 ### ✅ L'autorització genera un únic document amb les dues signatures
 
@@ -153,6 +155,14 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** la directora l'autoritza
 
 **Then** es genera i arxiva un únic PDF d'una pàgina sobre el model oficial amb les dues signatures i es crea una única `Falta` de dia complet.
+
+### ✅ L'autorització es limita als pròxims set dies naturals
+
+**Given** una petició pendent per al seté o el huité dia natural posterior a hui
+
+**When** Direcció la consulta i intenta autoritzar-la
+
+**Then** el seté dia és autoritzable i el huité no ho és ni des del botó ni directament des del servei; no es genera cap falta ni document parcial.
 
 ### ✅ Una autorització invàlida no deixa artefactes parcials
 
@@ -216,7 +226,7 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 
 **When** el professor la previsualitza i després la presenta
 
-**Then** la previsualització no envia res i la petició confirmada posa en cua un únic correu per a la directora configurada.
+**Then** la previsualització no envia res i la petició confirmada posa en cua un únic correu per a la directora configurada, amb el cap d'estudis configurat en còpia i sense adjunts.
 
 ### ✅ La denegació informa del motiu sense duplicats
 

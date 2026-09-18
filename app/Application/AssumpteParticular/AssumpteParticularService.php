@@ -182,6 +182,11 @@ class AssumpteParticularService
                 if ($peticio === null || !$peticio->estaPendent()) {
                     throw new AssumpteParticularException('Només es pot autoritzar una petició pendent.');
                 }
+                if ($peticio->data_gaudi->greaterThan(CarbonImmutable::today()->addDays(7))) {
+                    throw new AssumpteParticularException(
+                        'Només es poden autoritzar peticions dels pròxims set dies naturals.'
+                    );
+                }
 
                 [$iniciCurs, $fiCurs] = $this->limitsDelCurs($peticio->curs);
                 $profesor = Profesor::query()->findOrFail($peticio->idProfesor);

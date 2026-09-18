@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Livewire;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDocumentService;
@@ -45,10 +46,14 @@ class AssumpteParticularDireccionPanel extends Component
             ),
             403
         );
-        $this->potAutoritzar = filled(config('avisos.director'))
-            && (string) $user->dni === (string) config('avisos.director');
-        $this->teRubricaDirectora = $this->potAutoritzar
-            && app(RubricaAssumpteParticularService::class)->exists($user);
+        $this->potAutoritzar = esRol($user->rol, config('roles.rol.direccion'))
+            && filled(config('avisos.director'));
+        $directora = $this->potAutoritzar
+            ? Profesor::query()->find((string) config('avisos.director'))
+            : null;
+        $this->teRubricaDirectora = $directora !== null
+            && app(RubricaAssumpteParticularService::class)->exists($directora);
+        $this->filtreData = CarbonImmutable::today()->addDays(7)->toDateString();
 
         $this->recarregar();
     }
@@ -153,14 +158,14 @@ class AssumpteParticularDireccionPanel extends Component
         $this->error = '';
         $peticio = AssumpteParticular::query()->findOrFail($id);
         Gate::authorize('approve', $peticio);
-        $directora = Profesor::query()->findOrFail((string) authUser()->dni);
+        $directora = Profesor::query()->findOrFail((string) config('avisos.director'));
 
         try {
             $document = app(AssumpteParticularDocumentService::class)
                 ->generarAutoritzada($peticio, $directora);
             app(AssumpteParticularService::class)->autoritzar(
                 (int) $peticio->id,
-                (string) $directora->dni,
+                (string) authUser()->dni,
                 $document
             );
         } catch (AssumpteParticularException $exception) {

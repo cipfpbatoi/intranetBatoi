@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\AssumpteParticularMailDelivery;
+use Intranet\Entities\Profesor;
 use Intranet\Mail\AssumpteParticularAvis;
 use Throwable;
 
@@ -77,9 +78,16 @@ class SendAssumpteParticularMail implements ShouldQueue
                 ->where('curs', $registre->curs)
                 ->with('profesor')
                 ->firstOrFail();
-            Mail::to($registre->destinatari_email)->send(
-                new AssumpteParticularAvis($peticio, $registre->tipus)
-            );
+            $correu = new AssumpteParticularAvis($peticio, $registre->tipus);
+            if ($registre->tipus === AssumpteParticularMailDelivery::URGENT) {
+                $capEstudis = Profesor::query()->find((string) config('avisos.jefeEstudios'));
+                $copia = trim((string) ($capEstudis?->email ?? ''));
+                if (filter_var($copia, FILTER_VALIDATE_EMAIL) !== false
+                    && $copia !== $registre->destinatari_email) {
+                    $correu->cc($copia);
+                }
+            }
+            Mail::to($registre->destinatari_email)->send($correu);
             $registre->forceFill([
                 'estat' => AssumpteParticularMailDelivery::ENVIADA,
                 'sent_at' => now(),
