@@ -1,71 +1,18 @@
-@extends('intranet.index')
+@extends('layouts.intranet')
 
-@section('panel', 'Convalidacions')
+@section('titulo', 'Gestió de convalidacions')
 
 @section('content')
 <div class="container">
-    <h1>Convalidacions pendents</h1>
-    
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i>
-        Gestiona les sol·licituds de convalidació dels alumnes.
-    </div>
-
-    @if ($sollicituds->isEmpty())
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            No hi ha cap sol·licitud pendent de resolució.
-        </div>
-    @else
-        <div class="table-responsive">
-            <table class="table table-striped table-hover" id="convalidacions-table">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Alumne</th>
-                        <th>Mòduls</th>
-                        <th>Tipus</th>
-                        <th>Accions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($sollicituds as $sollicitud)
-                        <tr>
-                            <td>{{ $sollicitud->data_sol·licitud->format('d/m/Y H:i') }}</td>
-                            <td>{{ $sollicitud->alumno->fullName ?? 'Desconegut' }}</td>
-                            <td>{{ $sollicitud->convalidacions->count() }} mòduls</td>
-                            <td>
-                                @php
-                                    $tipusUnics = $sollicitud->convalidacions->pluck('tipus_convalidacio')->unique();
-                                @endphp
-                                @foreach ($tipusUnics as $tipus)
-                                    <span class="badge bg-primary me-1">{{ $tipus }}</span>
-                                @endforeach
-                            </td>
-                            <td>
-                                <a href="{{ route('convalidacions.direction.show', $sollicitud->id) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i> Detall
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
+    <h1>Gestió de convalidacions</h1>
+    <form method="GET" class="row g-2 mb-3">
+        <div class="col-md-4"><select name="estat" class="form-select"><option value="">Tots els estats</option>@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected(($filters['estat'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
+        <div class="col-md-4"><select name="origen" class="form-select"><option value="">Tots els orígens</option>@foreach ($origens as $value => $label)<option value="{{ $value }}" @selected(($filters['origen'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
+        <div class="col-md-4"><button class="btn btn-primary">Filtrar</button> <a class="btn btn-secondary" href="{{ route('convalidacions.direction.index') }}">Netejar</a></div>
+    </form>
+    <div class="table-responsive"><table class="table table-striped">
+        <thead><tr><th>Data</th><th>Alumne</th><th>Peticions</th><th></th></tr></thead>
+        <tbody>@forelse ($sollicituds as $sollicitud)<tr><td>{{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</td><td>{{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</td><td>{{ $sollicitud->convalidacions->count() }}</td><td><a href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a></td></tr>@empty<tr><td colspan="4">No hi ha sol·licituds amb estos filtres.</td></tr>@endforelse</tbody>
+    </table></div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-$(document).ready(function() {
-    $('#convalidacions-table').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/ca.json'
-        },
-        pageLength: 25,
-        order: [[0, 'desc']]
-    });
-});
-</script>
-@endpush

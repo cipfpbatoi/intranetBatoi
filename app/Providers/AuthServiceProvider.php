@@ -39,6 +39,7 @@ use Intranet\Entities\Setting;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Projecte;
 use Intranet\Entities\SollicitudConvalidacio;
+use Intranet\Entities\Convalidacio;
 use Intranet\Policies\ColaboracionPolicy;
 use Intranet\Policies\AssumpteParticularPolicy;
 use Intranet\Policies\ProjectePolicy;
@@ -128,6 +129,7 @@ class AuthServiceProvider extends ServiceProvider
         Task::class => TaskPolicy::class,
         Setting::class => SettingPolicy::class,
         SollicitudConvalidacio::class => ConvalidacioPolicy::class,
+        Convalidacio::class => ConvalidacioPolicy::class,
     ];
 
     /**

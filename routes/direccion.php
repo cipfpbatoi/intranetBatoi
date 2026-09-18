@@ -103,7 +103,8 @@ Route::view('/guardia/control', 'guardias.control');
 Route::view('/calendari',  'calendari.escolar');
 
 Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
-    Route::get('/direction', ['as' => 'direction.index', 'uses' => 'ConvalidacioController@directionIndex']);
-    Route::get('/direction/{sollicitud}', ['as' => 'direction.show', 'uses' => 'ConvalidacioController@directionShow']);
-    Route::post('/direction/{sollicitud}/resolve', ['as' => 'direction.resolve', 'uses' => 'ConvalidacioController@resolve']);
+    Route::get('/', ['as' => 'direction.index', 'uses' => 'DireccionConvalidacioController@index']);
+    Route::get('/documents/{convalidacio}', ['as' => 'direction.download', 'uses' => 'DireccionConvalidacioController@download']);
+    Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
+    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);
 });

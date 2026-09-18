@@ -1,61 +1,32 @@
 @extends('layouts.intranet')
 
-@section('titulo', 'Convalidacions')
+@section('titulo', 'Convalidar')
 
 @section('content')
 <div class="container">
-    <h1>Convalidacions</h1>
-    
-    <div class="card mt-3">
-        <div class="card-body">
-            <a href="{{ route('convalidacions.create') }}" class="btn btn-primary mb-3">
-                <i class="fas fa-plus"></i> Nova sol·licitud
-            </a>
-
-            @if ($sollicituds->isEmpty())
-                <div class="alert alert-info">
-                    No tens cap sol·licitud de convalidació.
-                </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Estat</th>
-                                <th>Mòduls</th>
-                                <th>Accions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($sollicituds as $sollicitud)
-                                <tr>
-                                    <td>{{ $sollicitud->data_sol·licitud->format('d/m/Y H:i') }}</td>
-                                    <td>
-                                        <span class="badge 
-                                            @if ($sollicitud->estat == 'pendent') bg-warning
-                                            @elseif ($sollicitud->estat == 'aprovat') bg-success
-                                            @elseif ($sollicitud->estat == 'rebutjat') bg-danger
-                                            @elseif ($sollicitud->estat == 'documents_requerits') bg-info
-                                            @endif">
-                                            {{ $sollicitud->estat }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {{ $sollicitud->convalidacions->count() }} mòduls
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('convalidacions.show', $sollicitud->id) }}" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> Detall
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Convalidar</h1>
+        <a href="{{ route('convalidacions.create') }}" class="btn btn-primary">Nova sol·licitud</a>
     </div>
+
+    @forelse ($sollicituds as $sollicitud)
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <span>Tramitada el {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</span>
+                <a href="{{ route('convalidacions.show', $sollicitud) }}">Consultar</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach ($sollicitud->convalidacions as $peticio)
+                    <li class="list-group-item">
+                        <strong>{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</strong>
+                        — {{ \Intranet\Entities\Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat }}
+                        @if ($peticio->observacions)<div class="text-muted">{{ $peticio->observacions }}</div>@endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @empty
+        <div class="alert alert-info">No tens cap sol·licitud de convalidació.</div>
+    @endforelse
 </div>
 @endsection

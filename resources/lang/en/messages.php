@@ -193,6 +193,7 @@ return array(
         'itaca' => 'ITACA'
     ),
     'menu' => array(
+        'convalidar' => 'Credit transfer',
         'Link' => 'External links',
         'Edit' => 'Faculty',
         'Institution' => 'Tutoring',

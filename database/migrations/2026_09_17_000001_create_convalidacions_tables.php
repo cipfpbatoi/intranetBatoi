@@ -6,28 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Crea les taules per a convalidacions: sollicituds i convalidacions individuals.
-     */
+    /** Crea les capçaleres i les peticions individuals de convalidació. */
     public function up(): void
     {
         Schema::create('sollicituds_convalidacions', function (Blueprint $table) {
             $table->charset = 'utf8mb3';
             $table->collation = 'utf8mb3_unicode_ci';
             $table->id();
-            $table->string('alumno_id', 10);
-            $table->enum('estat', ['pendent', 'aprovat', 'rebutjat', 'documents_requerits'])
-                ->default('pendent');
-            $table->timestamp('data_sol·licitud')->useCurrent();
-            $table->timestamp('data_resolucio')->nullable();
-            $table->text('observacions')->nullable();
+            $table->string('alumno_id', 8);
+            $table->string('submission_token', 64);
+            $table->timestamp('submitted_at')->useCurrent();
             $table->timestamps();
 
             $table->foreign('alumno_id')->references('nia')->on('alumnos')
                 ->cascadeOnUpdate()->cascadeOnDelete();
 
-            $table->index(['alumno_id', 'estat']);
-            $table->index(['estat', 'data_sol·licitud']);
+            $table->unique(['alumno_id', 'submission_token']);
+            $table->index(['alumno_id', 'submitted_at']);
         });
 
         Schema::create('convalidacions', function (Blueprint $table) {
@@ -35,25 +30,31 @@ return new class extends Migration
             $table->collation = 'utf8mb3_unicode_ci';
             $table->id();
             $table->unsignedBigInteger('sollicitud_convalidacio_id');
-            $table->string('modulo_id', 12)->nullable();
-            $table->enum('tipus_convalidacio', ['mateix_centre', 'altre_centre', 'escola_idiomes', 'titol_universitari', 'titol_fp']);
-            $table->unsignedBigInteger('cicle_formatiu_cursat_id')->nullable();
-            $table->string('certificat_path', 255)->nullable();
-            $table->boolean('certificat_autentic')->nullable();
-            $table->enum('estat', ['pendent', 'aprovat', 'rebutjat'])
-                ->default('pendent');
-            $table->text('motiu_rebutj')->nullable();
+            $table->string('modulo_destino_id', 12);
+            $table->string('origen', 40);
+            $table->string('modulo_origen_id', 12)->nullable();
+            $table->string('document_path')->nullable();
+            $table->string('document_original_name')->nullable();
+            $table->string('document_mime', 100)->nullable();
+            $table->boolean('declaracio_responsable')->default(false);
+            $table->string('estat', 60)->default('en_proces');
+            $table->text('observacions')->nullable();
+            $table->string('revisat_per', 10)->nullable();
+            $table->timestamp('revisat_at')->nullable();
             $table->timestamps();
 
             $table->foreign('sollicitud_convalidacio_id')->references('id')->on('sollicituds_convalidacions')
                 ->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreign('modulo_id')->references('codigo')->on('modulos')
+            $table->foreign('modulo_destino_id')->references('codigo')->on('modulos')
+                ->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign('modulo_origen_id')->references('codigo')->on('modulos')
                 ->cascadeOnUpdate()->nullOnDelete();
-            $table->foreign('cicle_formatiu_cursat_id')->references('id')->on('cicles_formatius_cursats')
+            $table->foreign('revisat_per')->references('dni')->on('profesores')
                 ->cascadeOnUpdate()->nullOnDelete();
 
             $table->index(['sollicitud_convalidacio_id', 'estat']);
-            $table->index(['modulo_id', 'estat']);
+            $table->index(['origen', 'estat']);
+            $table->unique(['sollicitud_convalidacio_id', 'modulo_destino_id'], 'convalidacions_sollicitud_modul_unique');
         });
     }
 

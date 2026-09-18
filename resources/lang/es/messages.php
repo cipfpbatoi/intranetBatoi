@@ -192,6 +192,7 @@ return array(
         'itaca' => 'Pasar datos a Itaca',
     ),
     'menu' => array(
+        'convalidar' => 'Convalidar',
         'Link' => 'Enlaces externos',
         'Edit' => 'Docencia',
         'Institution' => 'Tutor',

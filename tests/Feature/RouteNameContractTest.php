@@ -89,4 +89,16 @@ class RouteNameContractTest extends TestCase
         ));
         $this->assertContains('role:direccion', $route->gatherMiddleware());
     }
+
+    public function test_rutes_de_convalidacions_separen_alumnat_i_direccio(): void
+    {
+        $alumno = Route::getRoutes()->getByName('convalidacions.index');
+        $direccion = Route::getRoutes()->getByName('convalidacions.direction.index');
+
+        $this->assertSame('/alumno/convalidacions', route('convalidacions.index', absolute: false));
+        $this->assertSame('/direccion/convalidacions', route('convalidacions.direction.index', absolute: false));
+        $this->assertContains('role:alumno', $alumno->gatherMiddleware());
+        $this->assertContains('role:direccion', $direccion->gatherMiddleware());
+        $this->assertNotContains('role:alumno', $direccion->gatherMiddleware());
+    }
 }

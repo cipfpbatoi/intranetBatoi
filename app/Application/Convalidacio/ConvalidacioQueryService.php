@@ -4,80 +4,65 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Convalidacio;
 
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Modulo;
 use Intranet\Entities\SollicitudConvalidacio;
 
-/**
- * Servei de consultes per a la gestió de convalidacions.
- */
+/** Consultes de lectura del flux de convalidacions. */
 class ConvalidacioQueryService
 {
-    /**
-     * Retorna totes les sol·licituds d'un alumne.
-     */
-    public function sollicitudsAlumne(string $alumnoId): Collection
+    /** Retorna les sol·licituds d'un alumne amb totes les peticions. */
+    public function sollicitudsAlumne(string $nia): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['convalidacions.modulo', 'convalidacions.cicleFormatiuCursat'])
-            ->where('alumno_id', $alumnoId)
-            ->orderBy('data_sol·licitud', 'desc')
+            ->with(['convalidacions.moduloDestino', 'convalidacions.moduloOrigen'])
+            ->where('alumno_id', $nia)
+            ->latest('submitted_at')
             ->get();
     }
 
-    /**
-     * Retorna el detall d'una sol·licitud.
-     */
-    public function sollicitudDetail(int $sollicitudId): ?SollicitudConvalidacio
+    /** Retorna el detall complet d'una sol·licitud. */
+    public function sollicitudDetail(int $id): ?SollicitudConvalidacio
     {
         return SollicitudConvalidacio::query()
-            ->with([
-                'alumno',
-                'convalidacions.modulo',
-                'convalidacions.cicleFormatiuCursat',
-            ])
-            ->find($sollicitudId);
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.moduloOrigen', 'convalidacions.revisor'])
+            ->find($id);
     }
 
-    /**
-     * Retorna totes les sol·licituds pendents per a Direcció.
-     */
-    public function sollicitudsDireccion(): Collection
+    /** Retorna les sol·licituds visibles per Direcció amb filtres per petició. */
+    public function sollicitudsDireccion(?string $estat = null, ?string $origen = null): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with([
-                'alumno',
-                'convalidacions.modulo',
-                'convalidacions.cicleFormatiuCursat',
-            ])
-            ->where('estat', SollicitudConvalidacio::ESTAT_PENDENT)
-            ->orderBy('data_sol·licitud', 'asc')
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.moduloOrigen'])
+            ->when($estat, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('estat', $estat)))
+            ->when($origen, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('origen', $origen)))
+            ->latest('submitted_at')
             ->get();
     }
 
-    /**
-     * Retorna les sol·licituds d'un alumne filtrades per estat.
-     */
-    public function sollicitudsAlumnePerEstat(string $alumnoId, string $estat): Collection
+    /** Retorna els mòduls de la matrícula vigent de l'alumne. */
+    public function modulsActuals(Alumno $alumno): Collection
     {
-        return SollicitudConvalidacio::query()
-            ->with(['convalidacions.modulo', 'convalidacions.cicleFormatiuCursat'])
-            ->where('alumno_id', $alumnoId)
-            ->where('estat', $estat)
-            ->orderBy('data_sol·licitud', 'desc')
-            ->get();
+        $grups = $alumno->Grupo()->pluck('grupos.codigo');
+
+        $ids = DB::table('modulo_grupos')
+            ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
+            ->whereIn('modulo_grupos.idGrupo', $grups)
+            ->pluck('modulo_ciclos.idModulo');
+
+        return Modulo::query()->whereIn('codigo', $ids)->orderBy('vliteral')->get();
     }
 
-    /**
-     * Retorna una convalidació amb totes les relacions.
-     */
-    public function convalidacioDetail(int $convalidacioId): ?\Intranet\Entities\Convalidacio
+    /** Retorna els mòduls que consten en l'historial acadèmic de l'alumne. */
+    public function modulsPrevis(Alumno $alumno): Collection
     {
-        return \Intranet\Entities\Convalidacio::query()
-            ->with([
-                'sollicitud.alumno',
-                'modulo',
-                'cicleFormatiuCursat.alumno',
-            ])
-            ->find($convalidacioId);
+        $ids = $alumno->AlumnoResultado()
+            ->join('modulo_grupos', 'modulo_grupos.id', '=', 'alumno_resultados.idModuloGrupo')
+            ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
+            ->pluck('modulo_ciclos.idModulo');
+
+        return Modulo::query()->whereIn('codigo', $ids)->orderBy('vliteral')->get();
     }
 }

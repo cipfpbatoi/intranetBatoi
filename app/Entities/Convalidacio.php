@@ -6,43 +6,50 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Intranet\Entities\Modulo;
 
 /**
- * Sol·licitud de convalidació individual d'un mòdul.
- * Una Convalidacio pot ser per mateix centre, altre centre, escola d'idiomes, etc.
+ * Petició individual d'una sol·licitud de convalidació.
  */
 class Convalidacio extends Model
 {
-    public const TIPUS_MATEIX_CENTRE = 'mateix_centre';
-    public const TIPUS_ALTRE_CENTRE = 'altre_centre';
-    public const TIPUS_ESCOOLA_IDIOMES = 'escola_idiomes';
-    public const TIPUS_TITOL_UNIVERSITARI = 'titol_universitari';
-    public const TIPUS_TITOL_FP = 'titol_fp';
+    public const ORIGEN_PROPI_CENTRE = 'propi_centre';
+    public const ORIGEN_ALTRE_CENTRE = 'altre_centre';
+    public const ORIGEN_CERTIFICAT_ACADEMIC = 'certificat_academic';
+    public const ORIGEN_EOI = 'certificat_eoi';
+    public const ORIGEN_NOTES = 'certificat_notes';
+    public const ORIGEN_PRL_LOGSE = 'prl_logse';
 
-    public const ESTAT_PENDENT = 'pendent';
-    public const ESTAT_APROVAT = 'aprovat';
-    public const ESTAT_REBUTJAT = 'rebutjat';
+    public const ESTAT_EN_PROCES = 'en_proces';
+    public const ESTAT_REALITZADA = 'realitzada';
+    public const ESTAT_REALITZADA_PENDENT_REVISIO = 'realitzada_pendent_revisio';
+    public const ESTAT_DENEGADA = 'denegada';
+    public const ESTAT_REVISAR_DOCUMENTACIO = 'revisar_documentacio';
+    public const ESTAT_APORTAR_ORIGINAL = 'aportar_original_secretaria';
 
     protected $table = 'convalidacions';
 
     protected $fillable = [
         'sollicitud_convalidacio_id',
-        'modulo_id',
-        'tipus_convalidacio',
-        'cicle_formatiu_cursat_id',
-        'certificat_path',
-        'certificat_autentic',
+        'modulo_destino_id',
+        'origen',
+        'modulo_origen_id',
+        'document_path',
+        'document_original_name',
+        'document_mime',
+        'declaracio_responsable',
         'estat',
-        'motiu_rebutj',
+        'observacions',
+        'revisat_per',
+        'revisat_at',
     ];
 
     protected $attributes = [
-        'estat' => self::ESTAT_PENDENT,
+        'estat' => self::ESTAT_EN_PROCES,
     ];
 
     protected $casts = [
-        'certificat_autentic' => 'boolean',
+        'declaracio_responsable' => 'boolean',
+        'revisat_at' => 'datetime',
     ];
 
     /**
@@ -53,28 +60,22 @@ class Convalidacio extends Model
         return $this->belongsTo(SollicitudConvalidacio::class, 'sollicitud_convalidacio_id', 'id');
     }
 
-    /**
-     * Mòdul a convalidar (opcional, pot ser null per casos 2-3).
-     */
-    public function modulo(): BelongsTo
+    /** Mòdul destí de la matrícula vigent. */
+    public function moduloDestino(): BelongsTo
     {
-        return $this->belongsTo(Modulo::class, 'modulo_id', 'codigo');
+        return $this->belongsTo(Modulo::class, 'modulo_destino_id', 'codigo');
     }
 
-    /**
-     * Cicle formatiu cursat (opcional, només per tipus 'mateix_centre').
-     */
-    public function cicleFormatiuCursat(): BelongsTo
+    /** Mòdul origen de l'historial del centre, quan correspon. */
+    public function moduloOrigen(): BelongsTo
     {
-        return $this->belongsTo(CicleFormatiuCursat::class, 'cicle_formatiu_cursat_id', 'id');
+        return $this->belongsTo(Modulo::class, 'modulo_origen_id', 'codigo');
     }
 
-    /**
-     * Indica si la convalidació encara es pot tramitar.
-     */
-    public function estaPendent(): bool
+    /** Última persona de Direcció que ha revisat la petició. */
+    public function revisor(): BelongsTo
     {
-        return $this->estat === self::ESTAT_PENDENT;
+        return $this->belongsTo(Profesor::class, 'revisat_per', 'dni');
     }
 
     /**
@@ -82,14 +83,15 @@ class Convalidacio extends Model
      *
      * @return array<string, string>
      */
-    public function getTipusConvalidacioOptions(): array
+    public static function origenOptions(): array
     {
         return [
-            self::TIPUS_MATEIX_CENTRE => 'Mateix centre (cicle cursat)',
-            self::TIPUS_ALTRE_CENTRE => 'Altre centre (certificat)',
-            self::TIPUS_ESCOOLA_IDIOMES => 'Escola d\'idiomes (certificat)',
-            self::TIPUS_TITOL_UNIVERSITARI => 'Títol universitari',
-            self::TIPUS_TITOL_FP => 'Títol FP1 o FP2',
+            self::ORIGEN_PROPI_CENTRE => 'Estudis cursats al propi centre',
+            self::ORIGEN_ALTRE_CENTRE => 'Estudis cursats en un altre centre',
+            self::ORIGEN_CERTIFICAT_ACADEMIC => 'Certificat acadèmic',
+            self::ORIGEN_EOI => 'Certificat d\'escola oficial d\'idiomes',
+            self::ORIGEN_NOTES => 'Certificat de notes',
+            self::ORIGEN_PRL_LOGSE => 'Prevenció de riscos (LOGSE)',
         ];
     }
 
@@ -98,12 +100,27 @@ class Convalidacio extends Model
      *
      * @return array<string, string>
      */
-    public function getEstatOptions(): array
+    public static function estatOptions(): array
     {
         return [
-            self::ESTAT_PENDENT => 'Pendent',
-            self::ESTAT_APROVAT => 'Aprovat',
-            self::ESTAT_REBUTJAT => 'Rebutjat',
+            self::ESTAT_EN_PROCES => 'En procés',
+            self::ESTAT_REALITZADA => 'Realitzada',
+            self::ESTAT_REALITZADA_PENDENT_REVISIO => 'Realitzada pendent de revisió',
+            self::ESTAT_DENEGADA => 'Denegada',
+            self::ESTAT_REVISAR_DOCUMENTACIO => 'Revisar documentació',
+            self::ESTAT_APORTAR_ORIGINAL => 'Aportar documentació original a Secretaria',
         ];
+    }
+
+    /** Indica si l'origen necessita documentació. */
+    public function esOrigenExtern(): bool
+    {
+        return $this->origen !== self::ORIGEN_PROPI_CENTRE;
+    }
+
+    /** Indica si la petició ja no admet cap canvi. */
+    public function esTerminal(): bool
+    {
+        return $this->estat === self::ESTAT_REALITZADA;
     }
 }

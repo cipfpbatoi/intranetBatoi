@@ -194,6 +194,7 @@ return array(
 
     ),
     'menu' => array(
+        'convalidar' => 'Convalidar',
         'Link' => 'Enllaços externs',
         'Edit' => 'Docència',
         'Institution' => 'Tutoria',

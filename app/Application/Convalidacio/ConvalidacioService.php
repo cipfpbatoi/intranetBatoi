@@ -4,239 +4,243 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Convalidacio;
 
-use DomainException;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\CicleFormatiuCursat;
+use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Convalidacio;
-use Inranet\Entities\Modulo;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
 
-/**
- * Casos d'ús del cicle de vida de les convalidacions.
- */
+/** Casos d'ús del cicle de vida de les convalidacions. */
 class ConvalidacioService
 {
-    public const CERTIFICATS_PATH = 'convalidacions/certificats';
-
-    public function __construct(
-        private readonly ConvalidacioQueryService $queryService
-    ) {
-    }
-
     /**
-     * Crea una sol·licitud de convalidació amb varis mòduls.
+     * Tramita de manera atòmica i idempotent una composició validada.
      *
-     * @param array<array{modulo_id: string|null, tipus_convalidacio: string, cicle_formatiu_cursat_id: int|null, certificat_path: string|null, certificat_autentic: bool|null}> $items
-     *
-     * @throws ConvalidacioException
+     * @param array<int, array<string, mixed>> $items
      */
-    public function tramitar(string $alumnoId, array $items): SollicitudConvalidacio
+    public function tramitar(Alumno $alumno, string $token, array $items): SollicitudConvalidacio
     {
-        return DB::transaction(function () use ($alumnoId, $items): SollicitudConvalidacio {
-            $alumno = Alumno::query()->findOrFail($alumnoId);
+        $existent = SollicitudConvalidacio::query()
+            ->where('alumno_id', $alumno->nia)
+            ->where('submission_token', $token)
+            ->first();
 
-            $sollicitud = SollicitudConvalidacio::query()->create([
-                'alumno_id' => $alumnoId,
-                'estat' => SollicitudConvalidacio::ESTAT_PENDENT,
-                'data_sol·licitud' => now(),
-            ]);
+        if ($existent) {
+            return $existent->load('convalidacions');
+        }
 
-            foreach ($items as $index => $item) {
-                $this->validarItem($item, $alumno);
-                $convalidacio = $this->crearConvalidacio($sollicitud, $item, $index);
-                $sollicitud->convalidacions()->save($convalidacio);
+        $this->validarComposicio($alumno, $items);
+        $storedPaths = [];
+
+        try {
+            return DB::transaction(function () use ($alumno, $token, $items, &$storedPaths): SollicitudConvalidacio {
+                $sollicitud = SollicitudConvalidacio::query()->create([
+                    'alumno_id' => $alumno->nia,
+                    'submission_token' => $token,
+                    'submitted_at' => now(),
+                ]);
+
+                foreach ($items as $item) {
+                    $document = $this->guardarDocument($alumno, $sollicitud, $item['document'] ?? null);
+                    if ($document['document_path']) {
+                        $storedPaths[] = $document['document_path'];
+                    }
+
+                    $sollicitud->convalidacions()->create(array_merge([
+                        'modulo_destino_id' => $item['modulo_destino_id'],
+                        'origen' => $item['origen'],
+                        'modulo_origen_id' => $item['modulo_origen_id'] ?? null,
+                        'declaracio_responsable' => (bool) ($item['declaracio_responsable'] ?? false),
+                        'estat' => Convalidacio::ESTAT_EN_PROCES,
+                    ], $document));
+                }
+
+                return $sollicitud->load('convalidacions');
+            }, 3);
+        } catch (QueryException $exception) {
+            Storage::disk('convalidacions')->delete($storedPaths);
+            $existent = SollicitudConvalidacio::query()
+                ->where('alumno_id', $alumno->nia)
+                ->where('submission_token', $token)
+                ->first();
+
+            if ($existent) {
+                return $existent->load('convalidacions');
             }
 
-            return $sollicitud->fresh();
-        }, 3);
+            throw $exception;
+        } catch (\Throwable $exception) {
+            Storage::disk('convalidacions')->delete($storedPaths);
+            throw $exception;
+        }
     }
 
-    /**
-     * Valida un item abans de crear la convalidació.
-     *
-     * @param array{modulo_id: string|null, tipus_convalidacio: string, cicle_formatiu_cursat_id: int|null, certificat_path: string|null, certificat_autentic: bool|null} $item
-     *
-     * @throws ConvalidacioException
-     */
-    private function validarItem(array $item, Alumno $alumno): void
+    /** Canvia l'estat d'una sola petició i conserva la traçabilitat. */
+    public function revisar(Convalidacio $peticio, Profesor $revisor, string $estat, ?string $observacions): Convalidacio
     {
-        $tipus = $item['tipus_convalidacio'] ?? null;
-
-        if (!in_array($tipus, Convalidacio::getTipusConvalidacioOptions())) {
-            throw new ConvalidacioException('Tipus de convalidació invàlid.');
+        if (!array_key_exists($estat, Convalidacio::estatOptions())) {
+            throw new ConvalidacioException('L\'estat indicat no és vàlid.');
         }
 
-        match ($tipus) {
-            Convalidacio::TIPUS_MATEIX_CENTRE => $this->validarMateixCentre($item, $alumno),
-            Convalidacio::TIPUS_ALTRE_CENTRE, Convalidacio::TIPUS_ESCOOLA_IDIOMES => $this->validarCertificat($item),
-            Convalidacio::TIPUS_TITOL_UNIVERSITARI, Convalidacio::TIPUS_TITOL_FP => throw new ConvalidacioException(
-                'Aquesta convalidació no es pot fer a través d\'aquesta interfície. ' .
-                'Per favor, contacta amb la secretaria per a més informació.'
-            ),
-            default => throw new ConvalidacioException('Tipus de convalidació invàlid.')
-        };
-    }
+        $requereixObservacio = in_array($estat, [
+            Convalidacio::ESTAT_DENEGADA,
+            Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+            Convalidacio::ESTAT_APORTAR_ORIGINAL,
+        ], true);
 
-    /**
-     * Valida una convalidació per mateix centre.
-     *
-     * @param array{modulo_id: string|null, tipus_convalidacio: string, cicle_formatiu_cursat_id: int|null, certificat_path: string|null, certificat_autentic: bool|null} $item
-     *
-     * @throws ConvalidacioException
-     */
-    private function validarMateixCentre(array $item, Alumno $alumno): void
-    {
-        if (blank($item['modulo_id'])) {
-            throw new ConvalidacioException('El mòdul és obligatori per convalidació del mateix centre.');
+        if ($requereixObservacio && blank($observacions)) {
+            throw new ConvalidacioException('L\'observació és obligatòria per a l\'estat seleccionat.');
         }
 
-        if (blank($item['cicle_formatiu_cursat_id'])) {
-            throw new ConvalidacioException('El cicle formatiu cursat és obligatori per convalidació del mateix centre.');
-        }
-
-        $cicleCursat = CicleFormatiuCursat::query()->findOrFail($item['cicle_formatiu_cursat_id']);
-
-        if ((string) $cicleCursat->alumno_id !== (string) $alumno->nia) {
-            throw new ConvalidacioException('El cicle formatiu cursat no pertany a este alumne.');
-        }
-
-        $modulo = Modulo::query()->findOrFail($item['modulo_id']);
-
-        $grupsAlumne = $alumno->Grupo()->pluck('id')->toArray();
-        $grupsModulo = $modulo->Grupos()->pluck('id')->toArray();
-
-        if (count(array_intersect($grupsAlumne, $grupsModulo)) === 0) {
-            throw new ConvalidacioException('El mòdul no forma part del cicle actual de l\'alumne.');
-        }
-    }
-
-    /**
-     * Valida una convalidació amb certificat.
-     *
-     * @param array{modulo_id: string|null, tipus_convalidacio: string, cicle_formatiu_cursat_id: int|null, certificat_path: string|null, certificat_autentic: bool|null} $item
-     *
-     * @throws ConvalidacioException
-     */
-    private function validarCertificat(array $item): void
-    {
-        if (blank($item['certificat_path'])) {
-            throw new ConvalidacioException('El certificat és obligatori per este tipus de convalidació.');
-        }
-
-        if ($item['certificat_autentic'] !== true) {
-            throw new ConvalidacioException('Has d\'indicar que la informació és autèntica.');
-        }
-    }
-
-    /**
-     * Crea una convalidació amb les dades proporcionades.
-     *
-     * @param array{modulo_id: string|null, tipus_convalidacio: string, cicle_formatiu_cursat_id: int|null, certificat_path: string|null, certificat_autentic: bool|null} $item
-     */
-    private function crearConvalidacio(
-        SollicitudConvalidacio $sollicitud,
-        array $item,
-        int $index
-    ): Convalidacio {
-        $convalidacio = new Convalidacio([
-            'tipus_convalidacio' => $item['tipus_convalidacio'],
-            'certificat_path' => $item['certificat_path'] ?? null,
-            'certificat_autentic' => $item['certificat_autentic'] ?? null,
-            'estat' => Convalidacio::ESTAT_PENDENT,
-        ]);
-
-        if ($item['modulo_id'] ?? null) {
-            $convalidacio->modulo_id = $item['modulo_id'];
-        }
-
-        if ($item['cicle_formatiu_cursat_id'] ?? null) {
-            $convalidacio->cicle_formatiu_cursat_id = $item['cicle_formatiu_cursat_id'];
-        }
-
-        return $convalidacio;
-    }
-
-    /**
-     * Canvia l'estat d'una sol·licitud (aprovar/rebutjar).
-     *
-     * @throws ConvalidacioException
-     */
-    public function canviarEstat(int $sollicitudId, string $estat, string $observacions = ''): SollicitudConvalidacio
-    {
-        if (!in_array($estat, [SollicitudConvalidacio::ESTAT_APROVAT, SollicitudConvalidacio::ESTAT_REBUTJAT, SollicitudConvalidacio::ESTAT_DOCUMENTS_REQUERITS])) {
-            throw new ConvalidacioException('Estat invàlid.');
-        }
-
-        return DB::transaction(function () use ($sollicitudId, $estat, $observacions): SollicitudConvalidacio {
-            $sollicitud = SollicitudConvalidacio::query()->lockForUpdate()->findOrFail($sollicitudId);
-
-            if (!$sollicitud->estaPendent()) {
-                throw new ConvalidacioException('Només es pot canviar l\'estat d\'una sol·licitud pendent.');
+        return DB::transaction(function () use ($peticio, $revisor, $estat, $observacions): Convalidacio {
+            $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
+            if ($actual->esTerminal()) {
+                throw new ConvalidacioException('Una petició realitzada és de només consulta.');
             }
 
-            $sollicitud->forceFill([
+            $actual->forceFill([
                 'estat' => $estat,
-                'observacions' => trim($observacions),
-                'data_resolucio' => now(),
+                'observacions' => filled($observacions) ? trim((string) $observacions) : null,
+                'revisat_per' => $revisor->dni,
+                'revisat_at' => now(),
             ])->save();
 
-            return $sollicitud->fresh();
+            return $actual->fresh();
         });
     }
 
-    /**
-     * Descarrega un document adjunt.
-     *
-     * @throws ConvalidacioException
-     */
-    public function descarregarDocument(int $convalidacioId): string
+    /** Substituïx exclusivament el document requerit i reactiva la petició. */
+    public function corregirDocument(Convalidacio $peticio, Alumno $alumno, UploadedFile $file): Convalidacio
     {
-        $convalidacio = Convalidacio::query()->with('sollicitud.alumno')->findOrFail($convalidacioId);
-
-        if (blank($convalidacio->certificat_path)) {
-            throw new ConvalidacioException('No hi ha cap document adjunt.');
+        if ((string) $peticio->sollicitud->alumno_id !== (string) $alumno->nia) {
+            throw new ConvalidacioException('No pots modificar esta petició.');
         }
 
-        if (!Storage::disk('private')->exists($convalidacio->certificat_path)) {
-            throw new ConvalidacioException('El document no s\'ha trobat al servidor.');
+        if (!$peticio->esOrigenExtern() || $peticio->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+            throw new ConvalidacioException('Esta petició no admet una correcció documental.');
         }
 
-        return Storage::disk('private')->path($convalidacio->certificat_path);
+        $this->validarDocument($file);
+        $document = $this->guardarDocument($alumno, $peticio->sollicitud, $file);
+        $anterior = $peticio->document_path;
+
+        try {
+            DB::transaction(function () use ($peticio, $document): void {
+                $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
+                if ($actual->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO || !$actual->esOrigenExtern()) {
+                    throw new ConvalidacioException('Esta petició ja no admet una correcció documental.');
+                }
+                $actual->forceFill(array_merge($document, ['estat' => Convalidacio::ESTAT_EN_PROCES]))->save();
+            });
+        } catch (\Throwable $exception) {
+            Storage::disk('convalidacions')->delete($document['document_path']);
+            throw $exception;
+        }
+
+        if ($anterior) {
+            Storage::disk('convalidacions')->delete($anterior);
+        }
+
+        return $peticio->fresh();
     }
 
-    /**
-     * Guarda un certificat adjunt i torna la ruta on s'ha desat.
-     */
-    public function guardarCertificat(\SplFileInfo $file, string $alumnoId): string
+    /** @param array<int, array<string, mixed>> $items */
+    private function validarComposicio(Alumno $alumno, array $items): void
     {
-        $nomFitxer = sprintf(
-            '%s_%s_%s',
-            now()->timestamp,
-            preg_replace('/[^A-Za-z0-9_]/', '_', $alumnoId),
-            preg_replace('/[^A-Za-z0-9_]/', '_', $file->getClientOriginalName())
-        );
+        if ($items === []) {
+            throw new ConvalidacioException('Has d\'afegir almenys un mòdul.');
+        }
 
-        $ruta = sprintf('%s/%s', self::CERTIFICATS_PATH, $alumnoId);
+        $destins = array_column($items, 'modulo_destino_id');
+        if (count($destins) !== count(array_unique($destins))) {
+            throw new ConvalidacioException('No pots repetir el mateix mòdul destí.');
+        }
 
-        $file->move(Storage::disk('private')->path($ruta), $nomFitxer);
-
-        return sprintf('%s/%s', $ruta, $nomFitxer);
+        foreach ($items as $item) {
+            $this->validarItem($alumno, $item);
+        }
     }
 
-    /**
-     * Valida que el fitxer adjunt siga un PDF o una imatge.
-     */
-    public function validarTipusFitxer(\SplFileInfo $file): bool
+    /** @param array<string, mixed> $item */
+    private function validarItem(Alumno $alumno, array $item): void
     {
-        $mime = $file->getMimeType();
+        $destino = (string) ($item['modulo_destino_id'] ?? '');
+        $origen = (string) ($item['origen'] ?? '');
 
-        return in_array($mime, [
-            'application/pdf',
-            'image/jpeg',
-            'image/png',
-            'image/jpg',
-        ]);
+        if (!array_key_exists($origen, Convalidacio::origenOptions())) {
+            throw new ConvalidacioException('L\'origen indicat no és vàlid.');
+        }
+
+        $grups = $alumno->Grupo()->pluck('grupos.codigo');
+        $destinoValido = DB::table('modulo_grupos')
+            ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
+            ->whereIn('modulo_grupos.idGrupo', $grups)
+            ->where('modulo_ciclos.idModulo', $destino)
+            ->exists();
+
+        if (!$destinoValido) {
+            throw new ConvalidacioException('El mòdul destí no pertany a la matrícula vigent.');
+        }
+
+        if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE) {
+            $moduloOrigen = (string) ($item['modulo_origen_id'] ?? '');
+            $origenValido = AlumnoResultado::query()
+                ->where('idAlumno', $alumno->nia)
+                ->whereHas('ModuloGrupo.ModuloCiclo', fn ($query) => $query->where('idModulo', $moduloOrigen))
+                ->exists();
+
+            if (!$origenValido) {
+                throw new ConvalidacioException('El mòdul origen no consta en l\'historial de l\'alumne.');
+            }
+
+            return;
+        }
+
+        if (($item['declaracio_responsable'] ?? false) !== true || !($item['document'] ?? null) instanceof UploadedFile) {
+            throw new ConvalidacioException('Els orígens externs requerixen declaració responsable i un document.');
+        }
+
+        $this->validarDocument($item['document']);
+    }
+
+    /** @return array{document_path: ?string, document_original_name: ?string, document_mime: ?string} */
+    private function guardarDocument(Alumno $alumno, SollicitudConvalidacio $sollicitud, ?UploadedFile $file): array
+    {
+        if (!$file) {
+            return ['document_path' => null, 'document_original_name' => null, 'document_mime' => null];
+        }
+
+        $name = Str::uuid() . '.' . strtolower($file->getClientOriginalExtension());
+        $path = $file->storeAs($alumno->nia . '/' . $sollicitud->id, $name, 'convalidacions');
+
+        if (!$path) {
+            throw new ConvalidacioException('No s\'ha pogut guardar el document.');
+        }
+
+        return [
+            'document_path' => $path,
+            'document_original_name' => mb_substr($file->getClientOriginalName(), 0, 255),
+            'document_mime' => $file->getMimeType(),
+        ];
+    }
+
+    /** Valida el document també en la frontera de domini. */
+    private function validarDocument(UploadedFile $file): void
+    {
+        $extensions = ['pdf', 'jpg', 'jpeg', 'png'];
+        $mimes = ['application/pdf', 'image/jpeg', 'image/png'];
+        $maxBytes = (int) config('convalidacions.max_document_kb', 5120) * 1024;
+
+        if (!$file->isValid()
+            || !in_array(strtolower($file->getClientOriginalExtension()), $extensions, true)
+            || !in_array((string) $file->getMimeType(), $mimes, true)
+            || $file->getSize() > $maxBytes) {
+            throw new ConvalidacioException('El document ha de ser PDF, JPG, JPEG o PNG i respectar el límit de mida.');
+        }
     }
 }
