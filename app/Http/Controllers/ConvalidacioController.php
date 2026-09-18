@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
  */
 class ConvalidacioController extends BaseController
 {
-    protected string $perfil = 'alumno';
+    protected string $perfil = 'alumno|direccion';
 
     public function __construct(
         private readonly ConvalidacioService $convalidacioService,
