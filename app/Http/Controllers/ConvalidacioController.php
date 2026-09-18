@@ -5,6 +5,8 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Entities\SollicitudConvalidacio;
+use Intranet\Entities\Modulo;
+use Intranet\Entities\CicleFormatiuCursat;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Http\Request;
@@ -46,12 +48,12 @@ class ConvalidacioController extends BaseController
         $alumnoId = authUser()->dni;
         
         $grupsAlumne = authUser()->Grupo()->pluck('id')->toArray();
-        $modulsDisponibles = \Intranet\Entities\Modulo::query()
+        $modulsDisponibles = Modulo::query()
             ->whereHas('Grupos', fn ($q) => $q->whereIn('id', $grupsAlumne))
             ->distinct()
             ->get(['codigo', 'cliteral', 'vliteral']);
 
-        $ciclesCursats = \Intranet\Entities\CicleFormatiuCursat::query()
+        $ciclesCursats = CicleFormatiuCursat::query()
             ->where('alumno_id', $alumnoId)
             ->with('cicle')
             ->get();
