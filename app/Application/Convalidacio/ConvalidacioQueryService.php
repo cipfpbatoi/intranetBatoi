@@ -7,6 +7,8 @@ namespace Intranet\Application\Convalidacio;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Alumno;
+use Intranet\Entities\Ciclo;
+use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\SollicitudConvalidacio;
 
@@ -17,7 +19,7 @@ class ConvalidacioQueryService
     public function sollicitudsAlumne(string $nia): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['convalidacions.moduloDestino', 'convalidacions.moduloOrigen'])
+            ->with(['convalidacions.moduloDestino', 'convalidacions.cicloOrigen'])
             ->where('alumno_id', $nia)
             ->latest('submitted_at')
             ->get();
@@ -27,7 +29,7 @@ class ConvalidacioQueryService
     public function sollicitudDetail(int $id): ?SollicitudConvalidacio
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.moduloOrigen', 'convalidacions.revisor'])
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.cicloOrigen', 'convalidacions.revisor'])
             ->find($id);
     }
 
@@ -35,7 +37,7 @@ class ConvalidacioQueryService
     public function sollicitudsDireccion(?string $estat = null, ?string $origen = null): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.moduloOrigen'])
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.cicloOrigen'])
             ->when($estat, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('estat', $estat)))
             ->when($origen, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('origen', $origen)))
             ->latest('submitted_at')
@@ -52,17 +54,28 @@ class ConvalidacioQueryService
             ->whereIn('modulo_grupos.idGrupo', $grups)
             ->pluck('modulo_ciclos.idModulo');
 
-        return Modulo::query()->whereIn('codigo', $ids)->orderBy('vliteral')->get();
+        $bloquejats = Convalidacio::query()
+            ->whereHas('sollicitud', fn ($query) => $query->where('alumno_id', $alumno->nia))
+            ->where('estat', '!=', Convalidacio::ESTAT_DENEGADA)
+            ->pluck('modulo_destino_id');
+
+        return Modulo::query()
+            ->whereIn('codigo', $ids)
+            ->whereNotIn('codigo', $bloquejats)
+            ->orderBy('vliteral')
+            ->get();
     }
 
-    /** Retorna els mòduls que consten en l'historial acadèmic de l'alumne. */
-    public function modulsPrevis(Alumno $alumno): Collection
+    /** Retorna els cicles que consten en l'historial acadèmic de l'alumne. */
+    public function ciclesPrevis(Alumno $alumno): Collection
     {
         $ids = $alumno->AlumnoResultado()
             ->join('modulo_grupos', 'modulo_grupos.id', '=', 'alumno_resultados.idModuloGrupo')
             ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
-            ->pluck('modulo_ciclos.idModulo');
+            ->whereNotNull('modulo_ciclos.idCiclo')
+            ->distinct()
+            ->pluck('modulo_ciclos.idCiclo');
 
-        return Modulo::query()->whereIn('codigo', $ids)->orderBy('vliteral')->get();
+        return Ciclo::query()->whereIn('id', $ids)->orderBy('vliteral')->get();
     }
 }

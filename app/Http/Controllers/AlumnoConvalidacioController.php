@@ -41,7 +41,7 @@ class AlumnoConvalidacioController extends Controller
     {
         return view('intranet.convalidacions.alumno.create', [
             'modulsDisponibles' => $this->queries->modulsActuals($this->alumno()),
-            'modulsPrevis' => $this->queries->modulsPrevis($this->alumno()),
+            'ciclesPrevis' => $this->queries->ciclesPrevis($this->alumno()),
             'origens' => Convalidacio::origenOptions(),
             'submissionToken' => (string) Str::uuid(),
             'maxDocumentKb' => (int) config('convalidacions.max_document_kb', 5120),
@@ -56,7 +56,7 @@ class AlumnoConvalidacioController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.modulo_destino_id' => ['required', 'string'],
             'items.*.origen' => ['required', 'string', Rule::in(array_keys(Convalidacio::origenOptions()))],
-            'items.*.modulo_origen_id' => ['nullable', 'string'],
+            'items.*.ciclo_origen_id' => ['nullable', 'integer'],
             'items.*.declaracio_responsable' => ['nullable', 'accepted'],
             'items.*.document' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:' . config('convalidacions.max_document_kb', 5120)],
         ]);

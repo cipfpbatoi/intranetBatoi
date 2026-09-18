@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\AlumnoResultado;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
@@ -34,11 +33,22 @@ class ConvalidacioService
             return $existent->load('convalidacions');
         }
 
-        $this->validarComposicio($alumno, $items);
         $storedPaths = [];
 
         try {
             return DB::transaction(function () use ($alumno, $token, $items, &$storedPaths): SollicitudConvalidacio {
+                Alumno::query()->whereKey($alumno->nia)->lockForUpdate()->firstOrFail();
+
+                $existent = SollicitudConvalidacio::query()
+                    ->where('alumno_id', $alumno->nia)
+                    ->where('submission_token', $token)
+                    ->first();
+                if ($existent) {
+                    return $existent->load('convalidacions');
+                }
+
+                $this->validarComposicio($alumno, $items);
+
                 $sollicitud = SollicitudConvalidacio::query()->create([
                     'alumno_id' => $alumno->nia,
                     'submission_token' => $token,
@@ -54,7 +64,7 @@ class ConvalidacioService
                     $sollicitud->convalidacions()->create(array_merge([
                         'modulo_destino_id' => $item['modulo_destino_id'],
                         'origen' => $item['origen'],
-                        'modulo_origen_id' => $item['modulo_origen_id'] ?? null,
+                        'ciclo_origen_id' => $item['ciclo_origen_id'] ?? null,
                         'declaracio_responsable' => (bool) ($item['declaracio_responsable'] ?? false),
                         'estat' => Convalidacio::ESTAT_EN_PROCES,
                     ], $document));
@@ -187,15 +197,27 @@ class ConvalidacioService
             throw new ConvalidacioException('El mòdul destí no pertany a la matrícula vigent.');
         }
 
+        $peticioOberta = Convalidacio::query()
+            ->whereHas('sollicitud', fn ($query) => $query->where('alumno_id', $alumno->nia))
+            ->where('modulo_destino_id', $destino)
+            ->where('estat', '!=', Convalidacio::ESTAT_DENEGADA)
+            ->exists();
+
+        if ($peticioOberta) {
+            throw new ConvalidacioException('Ja tens una petició oberta o resolta favorablement per a este mòdul.');
+        }
+
         if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE) {
-            $moduloOrigen = (string) ($item['modulo_origen_id'] ?? '');
-            $origenValido = AlumnoResultado::query()
-                ->where('idAlumno', $alumno->nia)
-                ->whereHas('ModuloGrupo.ModuloCiclo', fn ($query) => $query->where('idModulo', $moduloOrigen))
+            $cicloOrigen = (int) ($item['ciclo_origen_id'] ?? 0);
+            $origenValido = DB::table('alumno_resultados')
+                ->join('modulo_grupos', 'modulo_grupos.id', '=', 'alumno_resultados.idModuloGrupo')
+                ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
+                ->where('alumno_resultados.idAlumno', $alumno->nia)
+                ->where('modulo_ciclos.idCiclo', $cicloOrigen)
                 ->exists();
 
             if (!$origenValido) {
-                throw new ConvalidacioException('El mòdul origen no consta en l\'historial de l\'alumne.');
+                throw new ConvalidacioException('L\'estudi previ no consta en l\'historial acadèmic de l\'alumne.');
             }
 
             return;

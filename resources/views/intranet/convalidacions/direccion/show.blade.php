@@ -10,7 +10,7 @@
         <div class="card mb-3"><div class="card-body">
             <h2 class="h5">{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</h2>
             <p><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenOptions()[$peticio->origen] ?? $peticio->origen }}</p>
-            @if ($peticio->moduloOrigen)<p><strong>Mòdul origen:</strong> {{ $peticio->moduloOrigen->literal }}</p>@endif
+            @if ($peticio->cicloOrigen)<p><strong>Estudi previ:</strong> {{ $peticio->cicloOrigen->literal }}</p>@endif
             @if ($peticio->document_path)<a href="{{ route('convalidacions.direction.download', $peticio) }}">Descarregar {{ $peticio->document_original_name }}</a>@endif
             @if ($peticio->revisor)<p class="mt-2"><small>Últim canvi: {{ $peticio->revisor->fullName ?? $peticio->revisat_per }}, {{ $peticio->revisat_at?->format('d/m/Y H:i') }}</small></p>@endif
             @if ($peticio->esTerminal())

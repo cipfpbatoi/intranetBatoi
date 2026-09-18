@@ -14,9 +14,7 @@ class Convalidacio extends Model
 {
     public const ORIGEN_PROPI_CENTRE = 'propi_centre';
     public const ORIGEN_ALTRE_CENTRE = 'altre_centre';
-    public const ORIGEN_CERTIFICAT_ACADEMIC = 'certificat_academic';
     public const ORIGEN_EOI = 'certificat_eoi';
-    public const ORIGEN_NOTES = 'certificat_notes';
     public const ORIGEN_PRL_LOGSE = 'prl_logse';
 
     public const ESTAT_EN_PROCES = 'en_proces';
@@ -32,7 +30,7 @@ class Convalidacio extends Model
         'sollicitud_convalidacio_id',
         'modulo_destino_id',
         'origen',
-        'modulo_origen_id',
+        'ciclo_origen_id',
         'document_path',
         'document_original_name',
         'document_mime',
@@ -66,10 +64,10 @@ class Convalidacio extends Model
         return $this->belongsTo(Modulo::class, 'modulo_destino_id', 'codigo');
     }
 
-    /** Mòdul origen de l'historial del centre, quan correspon. */
-    public function moduloOrigen(): BelongsTo
+    /** Cicle cursat al centre que s'aporta com a estudi previ. */
+    public function cicloOrigen(): BelongsTo
     {
-        return $this->belongsTo(Modulo::class, 'modulo_origen_id', 'codigo');
+        return $this->belongsTo(Ciclo::class, 'ciclo_origen_id', 'id');
     }
 
     /** Última persona de Direcció que ha revisat la petició. */
@@ -87,10 +85,8 @@ class Convalidacio extends Model
     {
         return [
             self::ORIGEN_PROPI_CENTRE => 'Estudis cursats al propi centre',
-            self::ORIGEN_ALTRE_CENTRE => 'Estudis cursats en un altre centre',
-            self::ORIGEN_CERTIFICAT_ACADEMIC => 'Certificat acadèmic',
+            self::ORIGEN_ALTRE_CENTRE => 'Estudis o certificats acadèmics d\'un altre centre',
             self::ORIGEN_EOI => 'Certificat d\'escola oficial d\'idiomes',
-            self::ORIGEN_NOTES => 'Certificat de notes',
             self::ORIGEN_PRL_LOGSE => 'Prevenció de riscos (LOGSE)',
         ];
     }
