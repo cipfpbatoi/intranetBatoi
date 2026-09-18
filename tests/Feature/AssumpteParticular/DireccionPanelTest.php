@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Queue;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDocumentService;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDireccionQueryService;
 use Intranet\Entities\AssumpteParticular;
@@ -39,6 +40,7 @@ class DireccionPanelTest extends TestCase
         Event::fake();
         Storage::fake('local');
         Storage::fake('public');
+        Queue::fake();
 
         $this->crearEsquema();
         $this->crearPlantilla();
@@ -353,6 +355,8 @@ class DireccionPanelTest extends TestCase
             $table->string('resolucio_document')->nullable();
             $table->timestamps();
         });
+        $migration = require database_path('migrations/2026_09_17_100000_create_assumpte_particular_mail_deliveries_table.php');
+        $migration->up();
         Schema::create('documentos', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('tipoDocumento');

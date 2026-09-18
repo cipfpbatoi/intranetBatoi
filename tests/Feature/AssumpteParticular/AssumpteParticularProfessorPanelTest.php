@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Queue;
 use Intranet\Application\AssumpteParticular\TornAssumpteParticularService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
@@ -37,6 +38,7 @@ class AssumpteParticularProfessorPanelTest extends TestCase
         DB::reconnect('sqlite');
         Storage::fake('local');
         Storage::fake('public');
+        Queue::fake();
 
         $this->crearEsquema();
         $this->crearProfesor('PROF001');
@@ -255,6 +257,8 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             $table->string('resolucio_document')->nullable();
             $table->timestamps();
         });
+        $migration = require database_path('migrations/2026_09_17_100000_create_assumpte_particular_mail_deliveries_table.php');
+        $migration->up();
     }
 
     private function crearProfesor(string $dni): void
