@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
-use Intranet\Entities\Convalidacio;
+use Intranet\Entities\SollicitudConvalidacio;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Http\Request;
@@ -16,13 +16,13 @@ use Illuminate\Http\Request;
 class ConvalidacioController extends BaseController
 {
     protected $perfil = 'alumno';
+    protected $model = 'SollicitudConvalidacio';
 
     public function __construct(
         private readonly ConvalidacioService $convalidacioService,
         private readonly ConvalidacioQueryService $convalidacioQueryService
     ) {
         parent::__construct();
-        $this->model = 'SollicitudConvalidacio';
     }
 
     /**
