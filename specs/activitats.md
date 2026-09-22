@@ -84,6 +84,27 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 **When** es renderitza la columna de descripció
 **Then** la columna es mostra com `Descripció` i no com `Descripció/Justificació`
 
+### Escenari 11: Mostrar la ubicació en el llistat de Direcció ✅
+
+**Given** una activitat visible al panell de Direcció
+**When** es renderitza el llistat d'activitats
+**Then** apareix una columna `Ubicació` amb el valor corresponent
+
+### Escenari 12: Mostrar la ubicació en el detall de Direcció ✅
+
+**Given** que Direcció selecciona l'opció de veure una activitat
+**When** s'obri el modal de detall
+**Then** es mostra el camp `Ubicació`
+
+### Escenari 13: Representar ubicació i transport en Direcció ✅
+
+**Given** els valors guardats en `fueraCentro` i `transport`
+**When** es prepara l'activitat per al panell de Direcció
+**Then**
+- Es mostra `Dins del centre` si `fueraCentro = 0`
+- Es mostra `Fora del centre amb transport` si `fueraCentro = 1` i `transport = 1`
+- Es mostra `Fora del centre sense transport` si `fueraCentro = 1` i `transport = 0`
+
 ## Regles de negoci invariants
 
 - `complementaria` i `extraescolar` (llegat) no són el mateix camp; no intercanviar sense migració.
@@ -91,3 +112,4 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 - Les activitats complementàries mostren RA; les extraescolars, no.
 - La justificació RA és `tipo_actividad.justificacio`; `actividades.descripcion` és descripció general.
 - El coordinador sempre es determina per `actividad_profesor.coordinador = 1`, mai per posició.
+- El panell de Direcció mostra la ubicació a partir dels camps llegats `fueraCentro` i `transport`.
