@@ -164,6 +164,34 @@ class ActividadDireccionPanelTest extends TestCase
             ->assertDontSee('Justificació RA');
     }
 
+    public function test_mostra_ubicacio_en_el_llistat_i_el_detall(): void
+    {
+        DB::connection('sqlite')->table('actividades')->where('id', 1)->update([
+            'fueraCentro' => 0,
+            'transport' => 0,
+        ]);
+        DB::connection('sqlite')->table('actividades')->where('id', 2)->update([
+            'fueraCentro' => 1,
+            'transport' => 1,
+        ]);
+
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->assertSee('Ubicació')
+            ->assertSee('Dins del centre')
+            ->assertSee('Fora del centre amb transport')
+            ->assertSee('Fora del centre sense transport');
+
+        $actividades = collect($component->get('actividades'))->keyBy('id');
+
+        $this->assertSame('Dins del centre', $actividades[1]['ubicacio']);
+        $this->assertSame('Fora del centre amb transport', $actividades[2]['ubicacio']);
+        $this->assertSame('Fora del centre sense transport', $actividades[3]['ubicacio']);
+
+        $component->call('mostrar', 1)
+            ->assertSet('selectedActividad.ubicacio', 'Dins del centre');
+    }
+
     public function test_mostrar_usa_el_pivot_per_a_identificar_el_coordinador(): void
     {
         DB::connection('sqlite')->table('profesores')->insert([
