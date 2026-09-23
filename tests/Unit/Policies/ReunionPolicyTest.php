@@ -25,7 +25,7 @@ class ReunionPolicyTest extends TestCase
         $this->assertFalse($policy->create(null));
     }
 
-    public function test_update_manage_i_notify_requerixen_ser_convocant(): void
+    public function test_update_manage_notify_i_archive_requerixen_ser_convocant(): void
     {
         $policy = new ReunionPolicy();
         $reunion = new Reunion();
@@ -38,14 +38,16 @@ class ReunionPolicyTest extends TestCase
         $this->assertTrue($policy->manageParticipants($owner, $reunion));
         $this->assertTrue($policy->manageOrder($owner, $reunion));
         $this->assertTrue($policy->notify($owner, $reunion));
+        $this->assertTrue($policy->archive($owner, $reunion));
 
         $this->assertFalse($policy->update($other, $reunion));
         $this->assertFalse($policy->manageParticipants($other, $reunion));
         $this->assertFalse($policy->manageOrder($other, $reunion));
         $this->assertFalse($policy->notify($other, $reunion));
+        $this->assertFalse($policy->archive($other, $reunion));
     }
 
-    public function test_update_manage_i_notify_permeten_tutor_actual_del_grup(): void
+    public function test_update_manage_notify_i_archive_permeten_tutor_actual_del_grup(): void
     {
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('grupos');
@@ -71,6 +73,7 @@ class ReunionPolicyTest extends TestCase
         $this->assertTrue($policy->manageParticipants($tutorActual, $reunion));
         $this->assertTrue($policy->manageOrder($tutorActual, $reunion));
         $this->assertTrue($policy->notify($tutorActual, $reunion));
+        $this->assertTrue($policy->archive($tutorActual, $reunion));
     }
 
     public function test_manage_department_report_requerix_rol_cap_de_departament(): void
