@@ -155,12 +155,22 @@ class ActividadDireccionPanelTest extends TestCase
         $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
-    public function test_mostrar_oculta_justificacio_ra_en_activitats_extraescolars(): void
+    public function test_mostra_tipus_complementaria_i_extraescolar_en_llistat_i_detall(): void
     {
-        Livewire::actingAs($this->direccionUser(), 'profesor')
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(ActividadDireccionPanel::class)
+            ->assertSee('Tipus')
+            ->assertSee('Complementària')
+            ->assertSee('Extraescolar');
+
+        $actividades = collect($component->get('actividades'))->keyBy('id');
+
+        $this->assertSame('Complementària', $actividades[1]['tipo']);
+        $this->assertSame('Extraescolar', $actividades[4]['tipo']);
+
+        $component
             ->call('mostrar', 4)
-            ->assertSet('selectedActividad.tipo', 'No complementària')
+            ->assertSet('selectedActividad.tipo', 'Extraescolar')
             ->assertDontSee('Justificació RA');
     }
 

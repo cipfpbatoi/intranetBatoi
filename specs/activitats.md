@@ -105,6 +105,17 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 - Es mostra `Fora del centre amb transport` si `fueraCentro = 1` i `transport = 1`
 - Es mostra `Fora del centre sense transport` si `fueraCentro = 1` i `transport = 0`
 
+### Escenari 14: Mostrar la classificació completa abans d'autoritzar en Direcció ✅
+
+**Given** una activitat visible al panell de Direcció
+**When** es renderitza el llistat o el detall de l'activitat
+**Then**
+- El llistat mostra les columnes `Tipus` i `Ubicació`
+- Es mostra `Complementària` si `complementaria = 1`
+- Es mostra `Extraescolar` si `complementaria = 0`
+- La ubicació diferencia `Dins del centre`, `Fora del centre amb transport` i `Fora del centre sense transport`
+- No s'usa l'etiqueta ambigua `No complementària`
+
 ## Regles de negoci invariants
 
 - `complementaria` i `extraescolar` (llegat) no són el mateix camp; no intercanviar sense migració.
@@ -113,3 +124,4 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 - La justificació RA és `tipo_actividad.justificacio`; `actividades.descripcion` és descripció general.
 - El coordinador sempre es determina per `actividad_profesor.coordinador = 1`, mai per posició.
 - El panell de Direcció mostra la ubicació a partir dels camps llegats `fueraCentro` i `transport`.
+- El panell de Direcció mostra el tipus a partir de `complementaria` amb les etiquetes `Complementària` i `Extraescolar`.
