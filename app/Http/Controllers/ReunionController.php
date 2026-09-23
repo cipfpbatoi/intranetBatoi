@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Reunion\ReunionContinuityService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -32,6 +33,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Response;
 use Intranet\Services\UI\AppAlert as Alert;
+use Throwable;
 use function dispatch;
 
 /**
@@ -41,6 +43,10 @@ class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
     private ?ReunionService $reunionService = null;
+
+    /** @var ReunionContinuityService|null */
+    private ?ReunionContinuityService $continuityService = null;
+
     /**
      * @var ReunionFeValuationService|null
      */
@@ -58,12 +64,14 @@ class ReunionController extends ModalController
     public function __construct(
         ?GrupoService $grupoService = null,
         ?ReunionService $reunionService = null,
-        ?ReunionFeValuationService $feValuationService = null
+        ?ReunionFeValuationService $feValuationService = null,
+        ?ReunionContinuityService $continuityService = null
     ) {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->reunionService = $reunionService;
         $this->feValuationService = $feValuationService;
+        $this->continuityService = $continuityService;
     }
 
     private function grupos(): GrupoService
@@ -82,6 +90,18 @@ class ReunionController extends ModalController
         }
 
         return $this->reunionService;
+    }
+
+    /**
+     * Retorna el servei de continuïtat de les actes.
+     */
+    private function continuity(): ReunionContinuityService
+    {
+        if ($this->continuityService === null) {
+            $this->continuityService = app(ReunionContinuityService::class);
+        }
+
+        return $this->continuityService;
     }
 
     /**
@@ -119,7 +139,7 @@ class ReunionController extends ModalController
         $elemento = DB::transaction(function() use ($request) {
             $id = $this->persist($request);
             $elemento = Reunion::findOrFail($id);
-            $service = new MeetingOrderGenerateService($elemento);
+            $service = new MeetingOrderGenerateService($elemento, $this->continuity());
             $service->exec();
             $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
             return $elemento;
@@ -462,41 +482,51 @@ class ReunionController extends ModalController
         }
 
         if ($elemento->archivada) {
-            $this->saveFile($id);
+            Alert::warning("L'acta està arxivada però no té cap fitxer disponible.");
+            return back();
         }
 
         return $this->construye_pdf($id)->stream();
     }
 
-    private function actaCompleta(Reunion $reunion)
+    /**
+     * Garantix que tots els punts tinguen contingut abans d'arxivar l'acta.
+     */
+    private function normalitzaActa(Reunion $reunion): void
     {
-        if ($reunion->tipo == 7) {
-            foreach ($reunion->ordenes as $orden) {
-                if (empty($orden->resumen)) {
-                    throw new IntranetException("Tots els punts han de completar-se en una reunió d'avaluació");
-                }
-            }
-        }
+        $this->continuity()->normaliseEmptySummaries($reunion);
     }
 
     public function saveFile($id)
     {
+        $elemento = $this->class::findOrFail($id);
+        $this->authorize('archive', $elemento);
+
+        if ($elemento->archivada) {
+            Alert::warning("L'acta ja està arxivada i no es modificarà.");
+            return back();
+        }
+
+        $createdFile = null;
+
         try {
-            $elemento = $this->class::find($id);
-            if ($elemento->fichero != '') {
-                $nomComplet = $elemento->fichero;
-            } else {
-                $this->actaCompleta($elemento);
-                $nom = 'Acta_' . $elemento->id . '.pdf';
-                $directorio = 'gestor/' . Curso() . '/' . $this->model;
-                $nomComplet = $directorio . '/' . $nom;
-                if (!file_exists(storage_path('/app/' . $nomComplet))) {
-                    $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
+            DB::transaction(function () use ($elemento, &$createdFile): void {
+                if ($elemento->fichero != '') {
+                    $nomComplet = $elemento->fichero;
+                } else {
+                    $this->normalitzaActa($elemento);
+                    $nom = 'Acta_' . $elemento->id . '.pdf';
+                    $directorio = 'gestor/' . Curso() . '/' . $this->model;
+                    $nomComplet = $directorio . '/' . $nom;
+                    $absolutePath = storage_path('/app/' . $nomComplet);
+                    if (!file_exists($absolutePath)) {
+                        $createdFile = $absolutePath;
+                        $this->construye_pdf($elemento->id)->save($absolutePath);
+                    }
                 }
-            }
-            $elemento->archivada = 1;
-            $elemento->fichero = $nomComplet;
-            DB::transaction(function () use ($elemento) {
+
+                $elemento->archivada = 1;
+                $elemento->fichero = $nomComplet;
                 $gestor = new GestorService($elemento);
                 $gestor->save(['propietario' => $elemento->Creador->FullName,
                     'tipoDocumento' => 'Acta',
@@ -509,13 +539,20 @@ class ReunionController extends ModalController
                     'rol' => config('roles.rol.profesor')]);
                 $elemento->save();
             });
-        } catch (IntranetException $e){
+        } catch (Throwable $e) {
+            if ($createdFile !== null && is_file($createdFile)) {
+                unlink($createdFile);
+            }
+
             report($e);
             Log::warning('Error generant acta de reunió.', [
                 'reunion_id' => $id,
                 'error' => $e->getMessage(),
             ]);
-            Alert::warning($e->getMessage());
+            $message = $e instanceof IntranetException
+                ? $e->getMessage()
+                : "No s'ha pogut arxivar l'acta.";
+            Alert::warning($message);
         }
         return back();
     }

@@ -242,6 +242,16 @@ class Reunion extends Model
         return $this->belongsTo(Espacio::class, 'idEspacio', 'aula');
     }
 
+    /**
+     * Retorna la descripció del lloc de reunió o, si manca, el seu codi.
+     */
+    public function getLlocReunioAttribute(): string
+    {
+        $description = trim((string) ($this->Espacio?->descripcion ?? ''));
+
+        return $description !== '' ? $description : (string) ($this->idEspacio ?? '');
+    }
+
     public function Responsable()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');

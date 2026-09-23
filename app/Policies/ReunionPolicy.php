@@ -64,6 +64,16 @@ class ReunionPolicy
     }
 
     /**
+     * Determina si l'usuari pot arxivar la reunió.
+     *
+     * @param mixed $user
+     */
+    public function archive($user, Reunion $reunion): bool
+    {
+        return $this->isOwner($user, $reunion);
+    }
+
+    /**
      * Determina si l'usuari pot gestionar l'informe trimestral de departament.
      *
      * @param mixed $user
@@ -73,9 +83,6 @@ class ReunionPolicy
         return $this->hasRole($user, 'roles.rol.jefe_dpto');
     }
 
-    /**
-     * @param mixed $user
-     */
     /**
      * @param mixed $user
      */

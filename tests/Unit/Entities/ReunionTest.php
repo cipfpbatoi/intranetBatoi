@@ -3,6 +3,7 @@
 namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Grupo;
@@ -21,6 +22,7 @@ class ReunionTest extends TestCase
         $schema->dropIfExists('grupos');
         $schema->dropIfExists('profesores');
         $schema->dropIfExists('departamentos');
+        $schema->dropIfExists('espacios');
 
         $schema->create('departamentos', function (Blueprint $table): void {
             $table->increments('id');
@@ -32,6 +34,11 @@ class ReunionTest extends TestCase
             $table->string('dni', 10)->primary();
             $table->unsignedInteger('departamento')->nullable();
             $table->string('sustituye_a', 10)->nullable();
+        });
+
+        $schema->create('espacios', function (Blueprint $table): void {
+            $table->string('aula', 10)->primary();
+            $table->string('descripcion')->nullable();
         });
 
         $schema->create('grupos', function (Blueprint $table): void {
@@ -50,6 +57,7 @@ class ReunionTest extends TestCase
             $table->unsignedTinyInteger('numero')->nullable();
             $table->string('idProfesor', 10)->nullable();
             $table->string('idGrupo', 10)->nullable();
+            $table->string('idEspacio', 10)->nullable();
             $table->timestamps();
         });
     }
@@ -133,5 +141,27 @@ class ReunionTest extends TestCase
         $this->assertSame('G1', $reunion->grupoClase?->codigo);
         $this->assertSame('Primer LFP', $reunion->xgrupo);
         $this->assertTrue($reunion->mostra_notes_fe);
+    }
+
+    public function test_lloc_reunio_usa_descripcio_i_cau_al_codi_si_esta_buida(): void
+    {
+        DB::table('espacios')->insert([
+            ['aula' => 'SALA1', 'descripcion' => 'Sala de reunions'],
+            ['aula' => 'A101', 'descripcion' => null],
+        ]);
+
+        $described = Reunion::query()->create([
+            'idProfesor' => 'P100',
+            'idEspacio' => 'SALA1',
+            'tipo' => 2,
+        ]);
+        $withoutDescription = Reunion::query()->create([
+            'idProfesor' => 'P100',
+            'idEspacio' => 'A101',
+            'tipo' => 2,
+        ]);
+
+        $this->assertSame('Sala de reunions', $described->lloc_reunio);
+        $this->assertSame('A101', $withoutDescription->lloc_reunio);
     }
 }
