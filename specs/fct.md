@@ -74,9 +74,55 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - La columna `Valoracions totals` compta una valoració per cada parella FCT/respondedor
 - Una resposta de cotutor sobre la mateixa FCT incrementa les valoracions totals però no duplica les empreses del grup
 
+## Dades de l'empresa en les col·laboracions
+
+### Escenari 9: ✅ Separar el NIF llegat del nom del gerent
+
+**Given** que una empresa té el camp `gerente` en format `NIF nom i cognoms`
+**When** s'executa la migració de dades del gerent
+**Then**
+- El DNI, NIE o NIF inicial es guarda en `nif_gerente`, normalitzat en majúscules
+- La resta del text es conserva en `gerente` com a nom complet
+
+### Escenari 10: ✅ Conservar dades de gerent amb format ambigu
+
+**Given** que el valor de `gerente` no comença per un DNI, NIE o NIF recognoscible
+**When** s'executa la migració de dades del gerent
+**Then**
+- El contingut original de `gerente` no es modifica
+- `nif_gerente` queda buit perquè l'empresa es revise manualment
+
+### Escenari 11: ✅ Marcar una empresa sense NIF del gerent
+
+**Given** que una col·laboració està vinculada a una empresa sense `nif_gerente`
+**When** el tutor consulta el panell de col·laboracions
+**Then**
+- La fitxa mostra l'avís visible `Falta NIF del gerent`
+- La col·laboració queda identificada com a fitxa incompleta
+- L'avís enllaça directament amb l'edició de l'empresa
+
+### Escenari 12: ✅ No marcar una empresa amb NIF del gerent
+
+**Given** que una empresa té `nif_gerente` informat
+**When** es mostra una col·laboració vinculada a l'empresa
+**Then** no apareix l'avís `Falta NIF del gerent`
+
+### Escenari 13: ✅ Actualitzar el NIF compartit del gerent
+
+**Given** que diverses col·laboracions estan vinculades a la mateixa empresa
+**When** un usuari autoritzat guarda el nom i el NIF del gerent des de l'edició de l'empresa
+**Then**
+- El NIF es normalitza en majúscules i sense espais externs
+- La dada queda guardada en la fitxa compartida de l'empresa
+- L'avís desapareix de totes les col·laboracions vinculades
+- Els permisos d'edició continuen regits per `EmpresaPolicy`
+
 ## Regles de negoci invariants
 
 - `sendTo` i `signed` no es poden modificar directament des de cap controlador sense passar per `SignaturaStatusService` o `EmailPostSendService`.
 - Abans d'enviar a instructor: verificar existència de `Fct`, `Instructor`, `email`, `nombre`.
 - Canvis a `sendTo`/`signed` requereixen revisar: `A1Finder`, `A2Finder`, `A3Finder`, `MailFinders/*`, `SignaturaStatusService`, `EmailPostSendService`.
 - En la pestanya **Grups** de l'Excel FE tutors, les mitjanes s'han d'exportar com a números, no com a text.
+- `gerente` conserva el nom complet i `nif_gerente` conserva l'identificador fiscal separat.
+- La migració només separa identificadors recognoscibles situats al principi de `gerente`; els valors ambigus no es modifiquen.
+- La falta de `nif_gerente` és un avís de fitxa incompleta, però no bloqueja el treball amb la col·laboració.

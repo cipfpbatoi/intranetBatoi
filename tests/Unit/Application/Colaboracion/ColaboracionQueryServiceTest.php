@@ -13,11 +13,18 @@ use Tests\TestCase;
 
 class ColaboracionQueryServiceTest extends TestCase
 {
-    private function fakeEmpresa(): object
+    private function fakeEmpresa(?string $nifGerente = '12345678Z'): object
     {
-        return new class() {
+        return new class($nifGerente) {
+            public int $id = 25;
             public string $concierto = 'OK';
             public string $fichero = 'empresa.pdf';
+            public ?string $nif_gerente;
+
+            public function __construct(?string $nifGerente)
+            {
+                $this->nif_gerente = $nifGerente;
+            }
 
             public function getRawOriginal(string $key): ?string
             {
@@ -85,5 +92,53 @@ class ColaboracionQueryServiceTest extends TestCase
             [$contacteRelacionat],
             $resultat->first()->relacionadas->first()->contactos->all()
         );
+    }
+
+    public function test_marca_i_enllaca_les_empreses_sense_nif_del_gerent(): void
+    {
+        $service = new ColaboracionQueryService(app(SeguimientoService::class));
+        $colaboracion = new Colaboracion();
+        $colaboracion->id = 3;
+        $colaboracion->idCentro = 30;
+        $colaboracion->contacto = 'Contacte';
+        $colaboracion->telefono = '600000000';
+        $colaboracion->email = 'empresa@test.local';
+        $colaboracion->setRelation('Centro', (object) [
+            'Empresa' => $this->fakeEmpresa(null),
+            'instructores' => collect([(object) ['id' => 1]]),
+        ]);
+        $colaboracion->setRelation('fcts', collect());
+
+        $resultat = $service->attachRelatedAndContacts(
+            collect([$colaboracion]),
+            collect(),
+            collect([3 => collect()])
+        )->first();
+
+        $badge = $resultat->fitxaBadges->firstWhere('label', 'Falta NIF del gerent');
+        $this->assertNotNull($badge);
+        $this->assertSame(route('empresa.edit', ['empresa' => 25]), $badge['url']);
+        $this->assertTrue($resultat->fitxaIncompleta);
+    }
+
+    public function test_no_marca_les_empreses_amb_nif_del_gerent(): void
+    {
+        $service = new ColaboracionQueryService(app(SeguimientoService::class));
+        $colaboracion = new Colaboracion();
+        $colaboracion->id = 4;
+        $colaboracion->idCentro = 40;
+        $colaboracion->setRelation('Centro', (object) [
+            'Empresa' => $this->fakeEmpresa(),
+            'instructores' => collect([(object) ['id' => 1]]),
+        ]);
+        $colaboracion->setRelation('fcts', collect());
+
+        $resultat = $service->attachRelatedAndContacts(
+            collect([$colaboracion]),
+            collect(),
+            collect([4 => collect()])
+        )->first();
+
+        $this->assertNull($resultat->fitxaBadges->firstWhere('label', 'Falta NIF del gerent'));
     }
 }

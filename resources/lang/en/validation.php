@@ -162,6 +162,7 @@ return [
                ,'fecha_baja' =>'Leaving date'
                ,'rol' =>'User role'
                ,'dni' =>"ID card"
+               ,'nif_gerente' =>'Manager tax ID'
                ,'nia' =>"NIA"
                ,'expediente' =>'File'
                ,'telef1' =>'Telephone'

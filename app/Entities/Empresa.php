@@ -7,7 +7,9 @@ use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
 
-
+/**
+ * Empresa col·laboradora i dades comunes dels seus centres.
+ */
 class Empresa extends Model
 {
 
@@ -16,7 +18,7 @@ class Empresa extends Model
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
         'dual', 'actividad', 'delitos', 'menores', 'observaciones',
-        'gerente', 'fichero', 'creador', 'idSao','data_signatura'];
+        'gerente', 'nif_gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
