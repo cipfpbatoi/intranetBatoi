@@ -101,6 +101,7 @@
                     <th>ID</th>
                     <th>Coordinador</th>
                     <th>Activitat</th>
+                    <th>Tipus</th>
                     <th>Des de</th>
                     <th>Ubicació</th>
                     <th>Estat</th>
@@ -113,6 +114,7 @@
                         <td>{{ $actividad['id'] }}</td>
                         <td>{{ $actividad['coordinador'] }}</td>
                         <td>{{ $actividad['name'] }}</td>
+                        <td>{{ $actividad['tipo'] }}</td>
                         <td>{{ $actividad['desde'] }}</td>
                         <td>{{ $actividad['ubicacio'] }}</td>
                         <td>{{ $actividad['situacion'] }}</td>
@@ -148,7 +150,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No hi ha activitats per als filtres actuals.</td>
+                        <td colspan="8" class="text-center text-muted">No hi ha activitats per als filtres actuals.</td>
                     </tr>
                 @endforelse
             </tbody>
