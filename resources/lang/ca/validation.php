@@ -176,6 +176,7 @@ return array(
                 'fecha_baja' => 'Data de Baixa',
                 'rol' => "Rol de la persona",
                 'dni' => 'DNI',
+                'nif_gerente' => 'NIF del gerent',
                 'nia' => 'NIA',
                 'expediente' => 'Expedient',
                 'telef1' => 'Telèfon',
