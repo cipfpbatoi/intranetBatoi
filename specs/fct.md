@@ -117,6 +117,24 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - L'avís desapareix de totes les col·laboracions vinculades
 - Els permisos d'edició continuen regits per `EmpresaPolicy`
 
+### Escenari 14: ✅ Guardar la dependència GVA d'una empresa
+
+**Given** que una empresa existent o nova es modifica des de la intranet
+**When** un usuari autoritzat marca o desmarca l'opció `dependent_gva`
+**Then** el valor es guarda com a booleà en la fitxa compartida de l'empresa
+
+### Escenari 15: ✅ Assignar el valor predeterminat de dependència GVA
+
+**Given** que existeixen empreses abans de la migració o se'n crea una sense informar el camp
+**When** s'aplica la migració o es desa l'alta
+**Then** `dependent_gva` queda amb el valor `false`
+
+### Escenari 16: ✅ Guardar coordenades d'un centre de treball
+
+**Given** que un centre de treball és nou o existent
+**When** l'usuari informa una latitud entre -90 i 90 i una longitud entre -180 i 180
+**Then** les coordenades opcionals es guarden amb doble precisió i es poden modificar des de la intranet
+
 ## Regles de negoci invariants
 
 - `sendTo` i `signed` no es poden modificar directament des de cap controlador sense passar per `SignaturaStatusService` o `EmailPostSendService`.
@@ -126,3 +144,5 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - `gerente` conserva el nom complet i `nif_gerente` conserva l'identificador fiscal separat.
 - La migració només separa identificadors recognoscibles situats al principi de `gerente`; els valors ambigus no es modifiquen.
 - La falta de `nif_gerente` és un avís de fitxa incompleta, però no bloqueja el treball amb la col·laboració.
+- `dependent_gva` és fals per defecte i editable des de la intranet mentre SAO Gestió no el proporcione automàticament.
+- `latitud` i `longitud` són opcionals; si s'informen, han d'estar dins dels límits geogràfics vàlids.

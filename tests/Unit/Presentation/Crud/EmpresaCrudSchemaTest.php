@@ -25,6 +25,14 @@ class EmpresaCrudSchemaTest extends TestCase
         }
     }
 
+    public function test_accepta_el_camp_dependent_gva_com_a_boolea(): void
+    {
+        $rules = EmpresaCrudSchema::requestRules(null);
+
+        $this->assertTrue(validator(['dependent_gva' => true], ['dependent_gva' => $rules['dependent_gva']])->passes());
+        $this->assertTrue(validator(['dependent_gva' => 'no'], ['dependent_gva' => $rules['dependent_gva']])->fails());
+    }
+
     /**
      * Crea el validador amb les dades mínimes obligatòries d'una empresa.
      */

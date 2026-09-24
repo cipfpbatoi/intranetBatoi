@@ -17,7 +17,7 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores', 'observaciones',
+        'dual', 'actividad', 'delitos', 'menores', 'dependent_gva', 'observaciones',
         'gerente', 'nif_gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
@@ -33,6 +33,7 @@ class Empresa extends Model
         'dual' => ['type' => 'checkbox'],
         'delitos' => ['type' => 'checkbox'],
         'menores' => ['type' => 'checkbox'],
+        'dependent_gva' => ['type' => 'checkbox'],
         'email' => ['type' => 'email'],
         'telefono' => ['type'=>'number'],
         'sao' => ['type' => 'checkbox'],
@@ -49,7 +50,7 @@ class Empresa extends Model
     ];
     protected $fileField = 'cif';
 
-    protected $attributes = ['europa'=>0,'sao'=>1,'data_signatura'=>null ];
+    protected $attributes = ['europa'=>0,'sao'=>1,'dependent_gva'=>false,'data_signatura'=>null ];
 
     public function centros()
     {

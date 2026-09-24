@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Exceptions\NotFoundDomainException;
+use Intranet\Http\Requests\CentroRequest;
 use DB;
 
 /**
@@ -15,6 +16,16 @@ class CentroController extends ApiResourceController
 {
 
     protected $model = 'Centro';
+
+    /**
+     * Valida els canvis de centre fets des del modal de la intranet.
+     *
+     * @return array<string, string>
+     */
+    protected function updateRules(): array
+    {
+        return CentroRequest::validationRules(false);
+    }
 
     /**
      * @param Request $request
