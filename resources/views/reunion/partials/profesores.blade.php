@@ -15,7 +15,18 @@
                     @else
                     <td><input type="checkbox" name="{{$profesor->dni}}" class="checkbox" ></td>
                     @endif
-                    <td><a href="{{ route('reunion.profesor.destroy', ['reunion' => $formulario->getElemento()->id, 'profesor' => $profesor->dni]) }}" class="delGrupo">{!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}</a></td>
+                    <td>
+                        <form method="POST"
+                              action="{{ route('reunion.profesor.destroy', ['reunion' => $formulario->getElemento()->id, 'profesor' => $profesor->dni]) }}"
+                              style="display: inline"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="delGrupo btn btn-link p-0">
+                                {!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
             </table>

@@ -86,7 +86,12 @@ class ReunionArchiveControllerTest extends TestCase
         $this->insertOrder(2, null);
         $this->actingAs(Profesor::query()->findOrFail('P1'), 'profesor');
 
-        (new ReunionController())->saveFile(2);
+        try {
+            (new ReunionController())->saveFile(2);
+            $this->fail("S'esperava una denegació en intentar arxivar de nou l'acta.");
+        } catch (AuthorizationException) {
+            // Una acta arxivada només admet l'acció explícita de desarxivament.
+        }
 
         $this->assertDatabaseHas('reuniones', ['id' => 2, 'archivada' => 1, 'fichero' => null]);
         $this->assertDatabaseHas('ordenes_reuniones', ['idReunion' => 2, 'resumen' => null]);

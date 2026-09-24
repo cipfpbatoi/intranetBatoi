@@ -98,6 +98,47 @@ class Reunion extends Model
             }
         });
     }
+
+    /**
+     * Limita les reunions a les que un professor pot consultar.
+     *
+     * Direcció i administració mantenen la visibilitat institucional completa.
+     * La resta només veu reunions pròpies, del seu grup tutor o on consta com
+     * a assistent.
+     *
+     * @param mixed $query
+     * @param Profesor $profesor
+     * @return mixed
+     */
+    public function scopeVisibleTo($query, Profesor $profesor)
+    {
+        $role = (int) $profesor->rol;
+        $directionRole = (int) config('roles.rol.direccion');
+        $adminRole = (int) config('roles.rol.administrador');
+
+        if (
+            ($directionRole > 0 && $role % $directionRole === 0)
+            || ($adminRole > 0 && $role % $adminRole === 0)
+        ) {
+            return $query;
+        }
+
+        $groups = Grupo::qTutor((string) $profesor->dni)->pluck('codigo')->all();
+        $meetings = Asistencia::query()
+            ->where('idProfesor', (string) $profesor->dni)
+            ->pluck('idReunion')
+            ->all();
+
+        return $query->where(function ($innerQuery) use ($profesor, $groups, $meetings): void {
+            $innerQuery->where('idProfesor', (string) $profesor->dni)
+                ->orWhereIn('id', $meetings);
+
+            if ($groups !== []) {
+                $innerQuery->orWhereIn('idGrupo', $groups);
+            }
+        });
+    }
+
     public function scopeConvocante($query, $dni=null)
     {
         $dni = $dni??authUser()->dni;

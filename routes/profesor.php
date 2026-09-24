@@ -50,32 +50,30 @@ Route::get('/actividad/{actividad}/showVal', ['as' => 'actividad.showVal', 'uses
 
 
 Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'store', 'update', 'show']]);
-Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
+Route::delete('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
 Route::post('/reunion', ['as' => 'reunion.store.resource', 'uses' => 'ReunionController@store']);
 Route::post('/reunion/create', ['as' => 'reunion.store', 'uses' => 'ReunionController@store']);
 Route::put('/reunion/{reunion}/edit', ['as' => 'reunion.update', 'uses' => 'ReunionController@update']);
 Route::post('/reunion/{reunion}/feNotes', ['as' => 'reunion.feNotes.store', 'uses' => 'ReunionController@storeFeNotes']);
 Route::post('/reunion/{reunion}/nuevoOrden', ['as' => 'reunion.orden.store', 'uses' => 'ReunionController@altaOrden']);
-Route::get(
+Route::delete(
     '/reunion/{reunion}/borrarOrden/{orden}',
     ['as' => 'reunion.orden.destroy', 'uses' => 'ReunionController@borrarOrden']
 );
 Route::post('/reunion/{reunion}/nuevoProfesor', ['as' => 'reunion.profesor.store', 'uses' => 'ReunionController@altaProfesor']);
 Route::post('/reunion/{reunion}/nuevoAlumno', ['as' => 'reunion.alumno.store', 'uses' => 'ReunionController@altaAlumno']);
-Route::get(
+Route::delete(
     '/reunion/{reunion}/borrarProfesor/{profesor}',
     ['as' => 'reunion.profesor.destroy', 'uses' => 'ReunionController@borrarProfesor']
 );
-Route::get(
+Route::delete(
     '/reunion/{reunion}/borrarAlumno/{alumno}',
     ['as' => 'reunion.alumno.destroy', 'uses' => 'ReunionController@borrarAlumno']
 );
-Route::get('/reunion/{reunion}/email', ['as' => 'reunion.email', 'uses' => 'ReunionController@email']);
+Route::post('/reunion/{reunion}/email', ['as' => 'reunion.email', 'uses' => 'ReunionController@email']);
 Route::get('/reunion/{reunion}/pdf', ['as' => 'reunion.pdf', 'uses' => 'ReunionController@pdf']);
-Route::get('/reunion/{reunion}/notification', ['as' => 'reunion.notificar', 'uses' => 'ReunionController@notify']);
-Route::get('/reunion/{reunion}/autorizacion', ['as' => 'reunion.autorizacion', 'uses' => 'ReunionController@autorizacion']);
-Route::get('/ordenreunion/update', ['as' => 'ordenreunion.update', 'uses' => 'ReunionController@oupdate']);
-Route::get('/reunion/{reunion}/saveFile', ['as' => 'reunion.saveFile', 'uses' => 'ReunionController@saveFile']);
+Route::post('/reunion/{reunion}/notification', ['as' => 'reunion.notificar', 'uses' => 'ReunionController@notify']);
+Route::post('/reunion/{reunion}/saveFile', ['as' => 'reunion.saveFile', 'uses' => 'ReunionController@saveFile']);
 Route::post('/reunion/{reunion}/deleteFile', ['as' => 'reunion.deleteFile', 'uses' => 'ReunionController@deleteFile']);
 Route::get('/reunion/{reunion}/ics', ['as' => 'reunion.ics', 'uses' => 'ReunionController@ics']);
 Route::get('/reunion/{reunion}/informe', ['as' => 'reunion.informeAlumno', 'uses' => 'ReunionController@printInformes']);
