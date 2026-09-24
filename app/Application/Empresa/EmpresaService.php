@@ -168,7 +168,7 @@ class EmpresaService
      */
     private function normalizeRequest(Request $request): Request
     {
-        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores'];
+        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores', 'dependent_gva'];
         $normalized = [];
 
         foreach ($checkboxes as $field) {

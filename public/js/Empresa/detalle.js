@@ -143,6 +143,8 @@
         setInputValue('direccionCentro', data.direccion);
         setInputValue('localidadCentro', data.localidad);
         setInputValue('idiomaCentro', data.idioma);
+        setInputValue('latitudCentro', data.latitud);
+        setInputValue('longitudCentro', data.longitud);
     }
 
     function centerDataFromButton(button) {
@@ -156,7 +158,9 @@
             codiPostal: button.getAttribute('data-centro-codi-postal') || '',
             direccion: button.getAttribute('data-centro-direccion') || '',
             localidad: button.getAttribute('data-centro-localidad') || '',
-            idioma: button.getAttribute('data-centro-idioma') || ''
+            idioma: button.getAttribute('data-centro-idioma') || '',
+            latitud: button.getAttribute('data-centro-latitud') || '',
+            longitud: button.getAttribute('data-centro-longitud') || ''
         };
     }
 
@@ -450,7 +454,9 @@
                     observaciones: byId('observacionesCentro').value,
                     horarios: byId('horariosCentro').value,
                     codiPostal: byId('codiPostalCentro').value,
-                    idioma: byId('idiomaCentro').value
+                    idioma: byId('idiomaCentro').value,
+                    latitud: byId('latitudCentro').value,
+                    longitud: byId('longitudCentro').value
                 }, true).then(function () {
                     hideModal('AddCenter');
                     window.location.reload();

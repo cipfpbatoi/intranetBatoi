@@ -25,7 +25,9 @@ class Centro extends Model
         'observaciones',
         'idioma',
         'codiPostal',
-        'idSao'];
+        'idSao',
+        'latitud',
+        'longitud'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
@@ -36,6 +38,8 @@ class Centro extends Model
         'idEmpresa' => ['disabled' => 'disabled'],
         'observaciones' => ['type' => 'textarea'],
         'idioma' => ['type' => 'select'],
+        'latitud' => ['type' => 'number'],
+        'longitud' => ['type' => 'number'],
     ];
     protected $hidden = ['created_at', 'updated_at'];
     protected $dispatchesEvents = [

@@ -120,5 +120,19 @@
             </textarea>
         </div>
     </div>
+    <div class="form-group item row">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="latitudCentro">Latitud:</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <input type="number" name="latitud" id="latitudCentro" step="any" min="-90" max="90"
+                   value="{{ old('latitud') }}" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group item row">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="longitudCentro">Longitud:</label>
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <input type="number" name="longitud" id="longitudCentro" step="any" min="-180" max="180"
+                   value="{{ old('longitud') }}" class="form-control" />
+        </div>
+    </div>
 
 </x-modal>

@@ -218,7 +218,9 @@
                                            data-centro-codi-postal="{{ $centro->codiPostal }}"
                                            data-centro-direccion="{{ $centro->direccion }}"
                                            data-centro-localidad="{{ $centro->localidad }}"
-                                           data-centro-idioma="{{ $centro->idioma }}">
+                                           data-centro-idioma="{{ $centro->idioma }}"
+                                           data-centro-latitud="{{ $centro->latitud }}"
+                                           data-centro-longitud="{{ $centro->longitud }}">
                                             <em class="fa fa-edit"></em>
                                         </a>
                                     </li>
