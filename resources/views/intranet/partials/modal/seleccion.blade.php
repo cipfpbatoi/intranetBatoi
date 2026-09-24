@@ -4,5 +4,5 @@
         <table id="tableSeleccion"></table>
 </x-modal>
 {{ Html::script("/js/common/api-auth.js", ['defer' => true]) }}
-{{ Html::script("/js/selecciona.js", ['defer' => true]) }}
+<script src="{{ asset_nocache('js/selecciona.js') }}" defer></script>
 {{ Html::script("/js/taulaCheck.js", ['defer' => true]) }}

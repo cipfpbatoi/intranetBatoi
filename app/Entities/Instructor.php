@@ -17,7 +17,10 @@ class Instructor extends Model
     protected $table = 'instructores';
     protected $primaryKey = 'dni';
     protected $keyType = 'string';
-    protected $fillable = ['dni', 'email', 'name','surnames','telefono','departamento'];
+    /** @var bool La clau primària és un DNI/NIE textual, no autoincremental. */
+    public $incrementing = false;
+    protected $fillable = ['dni', 'email', 'name','surnames','telefono','departamento', 'coordinador'];
+    protected $casts = ['coordinador' => 'boolean'];
     protected $rules = InstructorCrudSchema::RULES;
     protected $inputTypes = InstructorCrudSchema::INPUT_TYPES;
     

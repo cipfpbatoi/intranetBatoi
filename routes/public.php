@@ -42,6 +42,14 @@ Route::post(
 //Social Login
 Route::get('/login/{token}', ['as' => 'login.token', 'uses' => 'Auth\ExternLoginController@showExternLoginForm']);
 Route::post('/profesor/extern/login', ['as' => 'login.extern', 'uses' => 'Auth\ExternLoginController@login']);
+Route::get('/empresa/confirmacio/{token}', [
+    'as' => 'empresa.confirmacio.show',
+    'uses' => 'PublicEmpresaDataConfirmationController@show',
+])->middleware('throttle:30,1');
+Route::post('/empresa/confirmacio/{token}', [
+    'as' => 'empresa.confirmacio.update',
+    'uses' => 'PublicEmpresaDataConfirmationController@update',
+])->middleware('throttle:10,1');
 Route::get('social/google/{token?}', ['as' => 'social.google', 'uses' => 'Auth\Social\SocialController@getSocialAuth']);
 Route::get(
     'social/callback/google',

@@ -26,7 +26,7 @@ class ColaboracionQueryService
     {
         return Colaboracion::query()
             ->MiColaboracion(null, $dni)
-            ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'Ciclo', 'fcts' => function ($query): void {
+            ->with(['Propietario', 'Centro', 'Centro.Empresa.dataConfirmations', 'Centro.instructores', 'Ciclo', 'fcts' => function ($query): void {
                 $query->orderByDesc('id')->with('Instructor');
             }])
             ->withCount('fcts')
@@ -53,7 +53,7 @@ class ColaboracionQueryService
         }
 
         return Colaboracion::query()
-            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'fcts' => function ($query): void {
+            ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa.dataConfirmations', 'Centro.instructores', 'fcts' => function ($query): void {
                 $query->orderByDesc('id')->with('Instructor');
             }])
             ->withCount('fcts')
@@ -193,6 +193,27 @@ class ColaboracionQueryService
             ));
         }
 
+        $fitxaIncompleta = $badges->isNotEmpty();
+
+        $tutorDni = authUser()?->dni;
+        $lastConfirmation = collect(data_get($empresa, 'dataConfirmations', []))
+            ->when($tutorDni !== null, fn (Collection $items) => $items->where('tutor_dni', (string) $tutorDni))
+            ->sortByDesc('created_at')
+            ->first();
+        if ($lastConfirmation?->confirmed_at) {
+            $badges->push($this->panelBadge(
+                'Dades confirmades ' . $lastConfirmation->confirmed_at->format('d-m-Y'),
+                'bg-success',
+                'fa-check-circle'
+            ));
+        } elseif ($lastConfirmation?->sent_at && $lastConfirmation->expires_at->isFuture()) {
+            $badges->push($this->panelBadge(
+                'Confirmació enviada ' . $lastConfirmation->sent_at->format('d-m-Y'),
+                'bg-info',
+                'fa-envelope'
+            ));
+        }
+
         $prioritatFitxa = 0;
         $prioritatFitxa += $this->isBlankText($colaboracion->contacto ?? null) ? 5 : 0;
         $prioritatFitxa += !$hasInstructor ? 4 : 0;
@@ -204,9 +225,9 @@ class ColaboracionQueryService
         $colaboracion->conveniPendent = $conveniPendent;
         $colaboracion->prioritatFitxa = $prioritatFitxa;
         $colaboracion->fitxaBadges = $badges;
-        $colaboracion->fitxaIncompleta = $badges->isNotEmpty();
-        $colaboracion->estatFitxaLabel = $badges->isEmpty() ? 'Fitxa al dia' : 'Cal revisar';
-        $colaboracion->estatFitxaClass = $badges->isEmpty() ? 'bg-success' : 'bg-warning text-dark';
+        $colaboracion->fitxaIncompleta = $fitxaIncompleta;
+        $colaboracion->estatFitxaLabel = $fitxaIncompleta ? 'Cal revisar' : 'Fitxa al dia';
+        $colaboracion->estatFitxaClass = $fitxaIncompleta ? 'bg-warning text-dark' : 'bg-success';
         $colaboracion->annexIData = $conveniData?->format('d-m-Y');
         $colaboracion->annexITall = $conveniTall->format('d-m-Y');
         $colaboracion->proximaAccioText = $this->extractStructuredLine($colaboracion->ultimaActividad?->comentari, 'Pròxim pas: ');

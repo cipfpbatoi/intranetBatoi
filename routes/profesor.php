@@ -275,6 +275,14 @@ Route::get('/empresa/{empresa}/A1', ['as'=>'empresa.A1', 'uses'=>'EmpresaControl
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/liveColaboraciones', ['as' => 'colaboracion.live', 'uses' => 'PanelColaboracionController@live']);
+Route::get('/confirmacio-dades-empresa/options', [
+    'as' => 'empresa.confirmacio.options',
+    'uses' => 'EmpresaDataConfirmationController@options',
+]);
+Route::post('/confirmacio-dades-empresa', [
+    'as' => 'empresa.confirmacio.send',
+    'uses' => 'EmpresaDataConfirmationController@store',
+]);
 
 Route::get(
     '/documentacionFCT/{id}/{documento}',
