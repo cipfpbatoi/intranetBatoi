@@ -172,6 +172,19 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton(
             'pendiente',
             new BotonBasico(
+                "colaboracion.confirmarDadesEmpresa",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-envelope-o',
+                    'text' => 'Demanar confirmació de dades',
+                    'data-url' => '/confirmacio-dades-empresa/options',
+                    'data-submit-url' => '/confirmacio-dades-empresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'pendiente',
+            new BotonBasico(
                 "colaboracion.contacto",
                 [
                     'class' => 'btn-default selecciona',

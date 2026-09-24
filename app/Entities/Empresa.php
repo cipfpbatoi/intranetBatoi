@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Empresa col·laboradora i dades comunes dels seus centres.
@@ -58,6 +59,14 @@ class Empresa extends Model
     public function colaboraciones()
     {
         return $this->hasManyThrough(Colaboracion::class, Centro::class, 'idEmpresa', 'idCentro', 'id');
+    }
+
+    /**
+     * Sol·licituds enviades perquè l'empresa confirme les seues dades.
+     */
+    public function dataConfirmations(): HasMany
+    {
+        return $this->hasMany(EmpresaDataConfirmation::class, 'empresa_id');
     }
     
     public function scopeCiclo($query, $tutor)

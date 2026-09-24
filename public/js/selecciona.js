@@ -40,8 +40,11 @@
         openModal('seleccion');
 
         var url = button.getAttribute('data-url') || '';
+        var submitUrl = button.getAttribute('data-submit-url') || '';
         var formSeleccion = document.getElementById('formSeleccion');
-        if (formSeleccion && url.length >= 4) {
+        if (formSeleccion && submitUrl) {
+            formSeleccion.setAttribute('action', submitUrl);
+        } else if (formSeleccion && url.indexOf('/api/') === 0) {
             formSeleccion.setAttribute('action', url.substring(4));
         }
 

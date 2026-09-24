@@ -117,6 +117,73 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - L'avís desapareix de totes les col·laboracions vinculades
 - Els permisos d'edició continuen regits per `EmpresaPolicy`
 
+## Confirmació pública de dades de l'empresa
+
+### Escenari 14: ✅ Enviar una sol·licitud a una empresa assignada
+
+**Given** que un tutor té almenys una col·laboració assignada en una empresa
+**When** selecciona l'empresa i envia la sol·licitud
+**Then**
+- L'empresa rep un únic correu amb un enllaç públic temporal
+- No cal que la col·laboració estiga marcada prèviament com a acceptada
+- L'empresa queda desmarcada per defecte en enviaments posteriors
+
+### Escenari 15: ✅ Accedir al formulari mitjançant un token temporal
+
+**Given** que l'empresa disposa d'un token vigent i no utilitzat
+**When** obri l'enllaç sense iniciar sessió
+**Then** només veu les dades de la seua empresa i pot confirmar-les una vegada
+
+### Escenari 16: ✅ Confirmar empresa, gerent i centres amb formacions
+
+**Given** que la intranet ja disposa de dades de l'empresa
+**When** l'empresa revisa el formulari
+**Then**
+- Les dades apareixen preemplenades
+- Només es mostren els centres que tenen almenys una col·laboració amb un cicle
+- Cada centre mostra tots els cicles amb què col·labora, encara que siguen d'altres tutors
+- Els centres ocults no es modifiquen
+
+### Escenari 17: ✅ Organitzar instructors per centre i designar coordinador
+
+**Given** que els instructors estan vinculats als centres de treball
+**When** l'empresa revisa les dades
+**Then**
+- Els instructors apareixen ordenats i agrupats per centre visible
+- Les dades personals compartides s'editen una sola vegada
+- Cal conservar almenys un instructor i designar exactament un coordinador de l'empresa
+- Els instructors vinculats exclusivament a centres sense cicles no apareixen
+
+### Escenari 18: ✅ Desvincular un instructor d'un centre
+
+**Given** que un instructor ja no treballa en un centre
+**When** l'empresa marca que ja no hi està vinculat i confirma
+**Then**
+- Només s'elimina la vinculació amb eixe centre
+- Es conserven les vinculacions amb altres centres i l'històric d'FCT
+- No es pot eliminar el coordinador seleccionat sense designar-ne un altre
+
+### Escenari 19: ✅ Enviar el correu en nom del tutor i en dos idiomes
+
+**Given** que el tutor té un correu electrònic vàlid
+**When** envia la sol·licitud
+**Then**
+- El tutor figura com a remitent i adreça de resposta
+- El missatge agraïx la col·laboració en valencià i castellà
+- Explica el canvi de l'aplicació de pràctiques i el posterior accés del coordinador a la plataforma
+
+### Escenari 20: ✅ Avisar el tutor després de la confirmació
+
+**Given** que l'empresa confirma correctament les dades
+**When** finalitza la transacció
+**Then** el tutor rep un correu amb l'empresa i la data de confirmació
+
+### Escenari 21: ✅ Conservar la confirmació si falla l'avís al tutor
+
+**Given** que les dades ja s'han guardat correctament
+**When** falla l'enviament del correu al tutor
+**Then** la confirmació continua registrada i l'error queda anotat al log
+
 ## Regles de negoci invariants
 
 - `sendTo` i `signed` no es poden modificar directament des de cap controlador sense passar per `SignaturaStatusService` o `EmailPostSendService`.
@@ -126,3 +193,6 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - `gerente` conserva el nom complet i `nif_gerente` conserva l'identificador fiscal separat.
 - La migració només separa identificadors recognoscibles situats al principi de `gerente`; els valors ambigus no es modifiquen.
 - La falta de `nif_gerente` és un avís de fitxa incompleta, però no bloqueja el treball amb la col·laboració.
+- Els tokens públics són d'un sol ús, caduquen als quinze dies i només exposen una empresa.
+- Els centres sense col·laboracions i els seus instructors exclusius no formen part del formulari públic.
+- La fallada del correu posterior al tutor no pot revertir una confirmació ja guardada.
