@@ -31,9 +31,13 @@
                         <td><span class='textarea' name='resumen'>{!! $orden->resumen !!}</span></td>
                         <td><span class='botones'>
                                 @if ($formulario->getElemento()->modificable)
-                                    <a href="{{ route('reunion.orden.destroy', ['reunion' => $formulario->getElemento()->id, 'orden' => $orden->id]) }}"
-                                       class="delGrupo"
+                                    <form method="POST"
+                                          action="{{ route('reunion.orden.destroy', ['reunion' => $formulario->getElemento()->id, 'orden' => $orden->id]) }}"
+                                          style="display: inline"
                                     >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="delGrupo btn btn-link p-0">
                                         {!! Html::image(
                                                 'img/delete.png',
                                                 __("messages.buttons.delete"),
@@ -43,7 +47,8 @@
                                                     )
                                                 )
                                         !!}
-                                    </a>
+                                        </button>
+                                    </form>
                                 @endif
                                 <a href="#" class="editGrupo">
                                     {!! Html::image(

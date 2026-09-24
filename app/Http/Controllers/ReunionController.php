@@ -52,7 +52,9 @@ class ReunionController extends ModalController
      */
     private ?ReunionFeValuationService $feValuationService = null;
 
-    use Imprimir;
+    use Imprimir {
+        ics as protected imprimirIcs;
+    }
 
     const REUNION_UPDATE = 'reunion.update';
     protected $perfil = 'profesor';
@@ -134,6 +136,7 @@ class ReunionController extends ModalController
     public function store(ReunionStoreRequest $request)
     {
         $this->authorize('create', Reunion::class);
+        $request->merge(['idProfesor' => (string) authUser()->dni]);
         $this->normalitzaGrupoDocente($request);
 
         $elemento = DB::transaction(function() use ($request) {
@@ -162,7 +165,6 @@ class ReunionController extends ModalController
             return view('intranet.edit', compact('formulario', 'modelo'));
         }
 
-        $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
         $feNotesData = $elemento->avaluacioFinal ? $this->feValuations()->gradeInputData($elemento) : null;
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
         $activos = app(ProfesorService::class)->activosOrdered();
@@ -216,9 +218,24 @@ class ReunionController extends ModalController
     {
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
+        $request->merge(['idProfesor' => (string) $elemento->idProfesor]);
         $this->normalitzaGrupoDocente($request);
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina una reunió oberta després de comprovar-ne la propietat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        $reunion = Reunion::findOrFail($id);
+        $this->authorize('delete', $reunion);
+
+        return parent::destroy($id);
     }
 
     private function tAlumnos($reunion,$sAlumnos){
@@ -227,40 +244,94 @@ class ReunionController extends ModalController
     }
 
 
+    /**
+     * Afig un professor existent a una reunió autoritzada.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaProfesor(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
-        $this->reunionService()->addProfesor($reunion, (string) $request->idProfesor);
+        $validated = $request->validate([
+            'idProfesor' => 'required|string|exists:profesores,dni',
+        ]);
+        $this->reunionService()->addProfesor($reunion, (string) $validated['idProfesor']);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Elimina un professor que pertany a la reunió indicada.
+     *
+     * @param int|string $reunion_id
+     * @param string $profesor_id
+     */
     public function borrarProfesor($reunion_id, $profesor_id)
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
+
+        if (!$reunion->profesores()->where('profesores.dni', (string) $profesor_id)->exists()) {
+            throw new NotFoundDomainException(
+                'El professor no pertany a la reunió indicada.',
+                ['reunion_id' => $reunion_id, 'profesor_id' => $profesor_id]
+            );
+        }
+
         $this->reunionService()->removeProfesor($reunion, (string) $profesor_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Elimina un alumne que pertany a la reunió indicada.
+     *
+     * @param int|string $reunion_id
+     * @param string $alumno_id
+     */
     public function borrarAlumno($reunion_id, $alumno_id)
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
+
+        if (!$reunion->alumnos()->where('alumnos.nia', (string) $alumno_id)->exists()) {
+            throw new NotFoundDomainException(
+                "L'alumne no pertany a la reunió indicada.",
+                ['reunion_id' => $reunion_id, 'alumno_id' => $alumno_id]
+            );
+        }
+
         $this->reunionService()->removeAlumno($reunion, (string) $alumno_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Afig un alumne existent a una reunió autoritzada.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaAlumno(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
-        $this->reunionService()->addAlumno($reunion, (string) $request->idAlumno, (int) $request->capacitats);
+        $validated = $request->validate([
+            'idAlumno' => 'required|string|exists:alumnos,nia',
+            'capacitats' => 'required|integer',
+        ]);
+        $this->reunionService()->addAlumno(
+            $reunion,
+            (string) $validated['idAlumno'],
+            (int) $validated['capacitats']
+        );
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Afig un punt i força la reunió pare de la ruta.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaOrden(OrdenReunionStoreRequest $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
@@ -270,7 +341,12 @@ class ReunionController extends ModalController
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
             $request->merge(['orden' => $max + 1]);
         }
-        OrdenReunion::create($request->all());
+        OrdenReunion::create([
+            'idReunion' => $reunion->id,
+            'orden' => (int) $request->orden,
+            'descripcion' => (string) $request->descripcion,
+            'resumen' => $request->input('resumen'),
+        ]);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
@@ -328,7 +404,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageOrder', $reunion);
 
-        $orden = OrdenReunion::find($orden_id);
+        $orden = $reunion->ordenes()->whereKey($orden_id)->first();
 
         if (!$orden) {
             throw new NotFoundDomainException(
@@ -404,6 +480,9 @@ class ReunionController extends ModalController
         return back();
     }
 
+    /**
+     * Configura els botons de la graella amb verbs HTTP segurs.
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['pdf']);
@@ -415,17 +494,27 @@ class ReunionController extends ModalController
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.delete',
-                ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'archivada', '==', '0'],
+                    'data-method' => 'DELETE',
+                    'data-confirm' => 'Segur que vols eliminar esta reunió?',
+                ]
             )
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.notification',
-                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0'],
+                    'data-method' => 'POST',
+                ]
             )
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.email',
-                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'fichero', '==', ''],
+                    'data-method' => 'POST',
+                ]
             )
         );
         $this->panel->setBoton('grid',
@@ -440,7 +529,8 @@ class ReunionController extends ModalController
                         'idProfesor', '==', $actual,
                         'archivada', '==', '0',
                         'fecha', 'anterior', Carbon::yesterday()
-                    ]
+                    ],
+                    'data-method' => 'POST',
                 ]
             )
         );
@@ -472,6 +562,7 @@ class ReunionController extends ModalController
         if (!$elemento) {
             throw new NotFoundDomainException("No s'ha trobat la reunió #$id", ['reunion_id' => $id]);
         }
+        $this->authorize('view', $elemento);
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
@@ -557,13 +648,21 @@ class ReunionController extends ModalController
         return back();
     }
 
-    public function deleteFile(Request $request,$id)
+    /**
+     * Desarxiva una acta mitjançant una acció explícita i autoritzada.
+     *
+     * @param int|string $id
+     */
+    public function deleteFile(Request $request, $id)
     {
-        if ($request->pass == date('mdy')) {
-            $elemento = $this->class::find($id);
-            $document = Documento::where('tipoDocumento','Acta')
-                ->where('curso',Curso())
-                ->where('idDocumento',$elemento->id)
+        $elemento = $this->class::findOrFail($id);
+        $this->authorize('unarchive', $elemento);
+        $validated = $request->validate(['pass' => 'required|string']);
+
+        if ($validated['pass'] === date('mdy')) {
+            $document = Documento::where('tipoDocumento', 'Acta')
+                ->where('curso', Curso())
+                ->where('idDocumento', $elemento->id)
                 ->first();
             if ($elemento->fichero != '' && $document) {
                 DB::transaction(function () use ($elemento, $document) {
@@ -577,6 +676,21 @@ class ReunionController extends ModalController
             }
         }
         return back();
+    }
+
+    /**
+     * Genera l'iCalendar només per a usuaris que poden consultar la reunió.
+     *
+     * @param int|string $id
+     * @param string $descripcion
+     * @param string $objetivos
+     * @return mixed
+     */
+    public function ics($id, $descripcion = 'descripcion', $objetivos = 'objetivos')
+    {
+        $this->authorize('view', Reunion::findOrFail($id));
+
+        return $this->imprimirIcs($id, $descripcion, $objetivos);
     }
 
     public function listado($dia = null)

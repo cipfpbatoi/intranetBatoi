@@ -21,7 +21,18 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><a href="{{ route('reunion.alumno.destroy', ['reunion' => $formulario->getElemento()->id, 'alumno' => $alumno->nia]) }}" class="delGrupo">{!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}</a></td>
+                    <td>
+                        <form method="POST"
+                              action="{{ route('reunion.alumno.destroy', ['reunion' => $formulario->getElemento()->id, 'alumno' => $alumno->nia]) }}"
+                              style="display: inline"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="delGrupo btn btn-link p-0">
+                                {!! Html::image('img/delete.png',__("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>__("messages.buttons.delete"))) !!}
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
             </table>

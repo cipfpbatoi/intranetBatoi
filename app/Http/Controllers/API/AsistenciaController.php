@@ -3,12 +3,9 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Intranet\Entities\Asistencia;
 use Intranet\Entities\Reunion;
-use Intranet\Exceptions\NotFoundDomainException;
 
-/**
- * Controlador API per a l'assistència a reunions.
- */
 /**
  * Controlador API per a assistència.
  */
@@ -19,13 +16,36 @@ class AsistenciaController extends ApiResourceController
 
     /**
      * @param Request $request
-     * @throws NotFoundDomainException
      * @return \Illuminate\Http\JsonResponse
      */
     public function cambiar(Request $request)
     {
-        $reunion = $this->findModelOrFail(Reunion::class, $request->idReunion, 'Reunió no trobada', ['reunion_id' => $request->idReunion]);
-        $reunion->profesores()->updateExistingPivot($request->idProfesor, ['asiste' => $request->asiste]);
+        $validated = $request->validate([
+            'idReunion' => 'required|integer',
+            'idProfesor' => 'required|string',
+            'asiste' => 'required|boolean',
+        ]);
+        $reunion = $this->findModelOrFail(
+            Reunion::class,
+            $validated['idReunion'],
+            'Reunió no trobada',
+            ['reunion_id' => $validated['idReunion']]
+        );
+        $this->authorize('manageParticipants', $reunion);
+
+        $attendance = Asistencia::query()
+            ->where('idReunion', $reunion->id)
+            ->where('idProfesor', (string) $validated['idProfesor'])
+            ->first();
+
+        if ($attendance === null) {
+            return $this->sendNotFound('El professor no pertany a la reunió indicada.');
+        }
+
+        $reunion->profesores()->updateExistingPivot($validated['idProfesor'], [
+            'asiste' => (bool) $validated['asiste'],
+        ]);
+
         return $this->sendResponse(['updated' => true], $reunion);
     }
 

@@ -14,6 +14,36 @@ class ReunionPolicy
     use InteractsWithProfesorOwnership;
 
     /**
+     * Determina si l'usuari pot consultar el llistat de reunions.
+     *
+     * @param mixed $user
+     */
+    public function viewAny($user): bool
+    {
+        return $this->hasProfesorIdentity($user);
+    }
+
+    /**
+     * Determina si l'usuari pot consultar la reunió i els seus documents.
+     *
+     * @param mixed $user
+     */
+    public function view($user, Reunion $reunion): bool
+    {
+        if (!$this->hasProfesorIdentity($user)) {
+            return false;
+        }
+
+        if ($this->isOwner($user, $reunion) || $this->isDirectionOrAdmin($user)) {
+            return true;
+        }
+
+        return $reunion->profesores()
+            ->where('profesores.dni', (string) $user->dni)
+            ->exists();
+    }
+
+    /**
      * Determina si l'usuari pot crear reunions.
      *
      * @param mixed $user
@@ -30,7 +60,17 @@ class ReunionPolicy
      */
     public function update($user, Reunion $reunion): bool
     {
-        return $this->isOwner($user, $reunion);
+        return $this->canMutate($user, $reunion);
+    }
+
+    /**
+     * Determina si l'usuari pot eliminar una reunió oberta.
+     *
+     * @param mixed $user
+     */
+    public function delete($user, Reunion $reunion): bool
+    {
+        return $this->canMutate($user, $reunion);
     }
 
     /**
@@ -40,7 +80,7 @@ class ReunionPolicy
      */
     public function manageParticipants($user, Reunion $reunion): bool
     {
-        return $this->isOwner($user, $reunion);
+        return $this->canMutate($user, $reunion);
     }
 
     /**
@@ -50,7 +90,7 @@ class ReunionPolicy
      */
     public function manageOrder($user, Reunion $reunion): bool
     {
-        return $this->isOwner($user, $reunion);
+        return $this->canMutate($user, $reunion);
     }
 
     /**
@@ -60,7 +100,7 @@ class ReunionPolicy
      */
     public function notify($user, Reunion $reunion): bool
     {
-        return $this->isOwner($user, $reunion);
+        return $this->canMutate($user, $reunion);
     }
 
     /**
@@ -70,7 +110,17 @@ class ReunionPolicy
      */
     public function archive($user, Reunion $reunion): bool
     {
-        return $this->isOwner($user, $reunion);
+        return $this->canMutate($user, $reunion);
+    }
+
+    /**
+     * Determina si l'usuari pot desarxivar una reunió arxivada.
+     *
+     * @param mixed $user
+     */
+    public function unarchive($user, Reunion $reunion): bool
+    {
+        return $this->isOwner($user, $reunion) && (bool) $reunion->archivada;
     }
 
     /**
@@ -94,6 +144,16 @@ class ReunionPolicy
 
         return (string) $reunion->idProfesor === (string) $user->dni
             || $this->isTutorDelGrupo($user, $reunion);
+    }
+
+    /**
+     * Determina si l'usuari pot modificar una reunió encara oberta.
+     *
+     * @param mixed $user
+     */
+    private function canMutate($user, Reunion $reunion): bool
+    {
+        return $this->isOwner($user, $reunion) && !(bool) $reunion->archivada;
     }
 
     /**
