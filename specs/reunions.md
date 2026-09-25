@@ -92,6 +92,47 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 **Aleshores** la ruta exigeix `POST` o `DELETE` amb protecció CSRF
 **I** una petició `GET` no executa la mutació.
 
+### ✅ Escenari 13: Crear punts amb identitat estable
+
+**Donat** un tipus de reunió amb plantilles de punts configurades
+**Quan** es genera una reunió nova
+**Aleshores** cada punt generat guarda un codi intern estable
+**I** la descripció continua sent text de presentació editable.
+
+### ✅ Escenari 14: Mantindre la continuïtat després d'editar la descripció
+
+**Donat** un punt d'acords o seguiment NESE amb codi estable
+**Quan** s'edita la seua descripció visible i es genera l'acta següent
+**Aleshores** la continuïtat hereta el resum mitjançant el codi.
+
+### ✅ Escenari 15: Migrar només descripcions exactes conegudes
+
+**Donat** un conjunt de punts creats abans dels codis estables
+**Quan** s'executa la migració
+**Aleshores** només les descripcions exactes conegudes reben codi
+**I** els textos ambigus o editats mantenen el codi nul
+**I** cap descripció ni resum es modifica.
+
+### ✅ Escenari 16: Mantindre compatibilitat amb actes llegades
+
+**Donat** una acta anterior sense codis
+**Quan** es calcula la continuïtat dels acords o del seguiment NESE
+**Aleshores** el sistema usa temporalment les descripcions conegudes com a fallback.
+
+### ✅ Escenari 17: Resoldre el contingut inicial sense DSL dinàmic
+
+**Donat** un punt que necessita alumnat amb dificultats, alumnat LOE o projectes pendents
+**Quan** es genera el contingut inicial
+**Aleshores** s'utilitza un resolutor explícit i injectable
+**I** no es construïxen classes ni mètodes des de cadenes de configuració.
+
+### ✅ Escenari 18: Preservar el contingut de les actes de projectes
+
+**Donat** una acta de propostes o de defenses de projecte
+**Quan** es generen els seus punts
+**Aleshores** es mantenen l'alumnat, els resums, les dates i les hores actuals
+**I** cada punt rep el codi estable corresponent.
+
 ## Regles de negoci
 
 - La continuïtat només usa actes arxivades anteriors del mateix grup i curs.
@@ -104,3 +145,7 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 - Tot recurs fill s'ha de resoldre dins de la reunió pare indicada abans de modificar-lo.
 - Els payloads API no poden alterar camps de propietat, arxiu, fitxer ni relacions pare fora dels fluxos explícits.
 - Cap operació destructiva de reunions pot executar-se mitjançant `GET`.
+- El codi intern d'un punt generat és estable i no es pot modificar des de formularis ni API.
+- La descripció visible d'un punt pot canviar sense perdre la seua identitat ni la continuïtat.
+- Els punts manuals i les descripcions llegades ambigües poden mantindre el codi nul.
+- La generació de punts només usa resolutors explícits registrats i rep el convocant de manera explícita.
