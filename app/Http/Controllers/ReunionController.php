@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Reunion\ReunionArchiveService;
 use Intranet\Application\Reunion\ReunionContinuityService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Http\Controllers\Core\ModalController;
@@ -26,7 +27,6 @@ use Intranet\Jobs\SendEmail;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\UI\FormBuilder;
-use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
 use Illuminate\Support\Carbon;
@@ -43,6 +43,9 @@ class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
     private ?ReunionService $reunionService = null;
+
+    /** @var ReunionArchiveService|null */
+    private ?ReunionArchiveService $archiveService = null;
 
     /** @var ReunionContinuityService|null */
     private ?ReunionContinuityService $continuityService = null;
@@ -67,13 +70,15 @@ class ReunionController extends ModalController
         ?GrupoService $grupoService = null,
         ?ReunionService $reunionService = null,
         ?ReunionFeValuationService $feValuationService = null,
-        ?ReunionContinuityService $continuityService = null
+        ?ReunionContinuityService $continuityService = null,
+        ?ReunionArchiveService $archiveService = null
     ) {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->reunionService = $reunionService;
         $this->feValuationService = $feValuationService;
         $this->continuityService = $continuityService;
+        $this->archiveService = $archiveService;
     }
 
     private function grupos(): GrupoService
@@ -104,6 +109,18 @@ class ReunionController extends ModalController
         }
 
         return $this->continuityService;
+    }
+
+    /**
+     * Retorna el cas d'ús d'arxivament d'actes.
+     */
+    private function archives(): ReunionArchiveService
+    {
+        if ($this->archiveService === null) {
+            $this->archiveService = app(ReunionArchiveService::class);
+        }
+
+        return $this->archiveService;
     }
 
     /**
@@ -581,60 +598,22 @@ class ReunionController extends ModalController
     }
 
     /**
-     * Garantix que tots els punts tinguen contingut abans d'arxivar l'acta.
+     * Autoritza i delega l'arxivament de l'acta en el cas d'ús.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    private function normalitzaActa(Reunion $reunion): void
-    {
-        $this->continuity()->normaliseEmptySummaries($reunion);
-    }
-
     public function saveFile($id)
     {
         $elemento = $this->class::findOrFail($id);
         $this->authorize('archive', $elemento);
 
-        if ($elemento->archivada) {
-            Alert::warning("L'acta ja està arxivada i no es modificarà.");
-            return back();
-        }
-
-        $createdFile = null;
-
         try {
-            DB::transaction(function () use ($elemento, &$createdFile): void {
-                if ($elemento->fichero != '') {
-                    $nomComplet = $elemento->fichero;
-                } else {
-                    $this->normalitzaActa($elemento);
-                    $nom = 'Acta_' . $elemento->id . '.pdf';
-                    $directorio = 'gestor/' . Curso() . '/' . $this->model;
-                    $nomComplet = $directorio . '/' . $nom;
-                    $absolutePath = storage_path('/app/' . $nomComplet);
-                    if (!file_exists($absolutePath)) {
-                        $createdFile = $absolutePath;
-                        $this->construye_pdf($elemento->id)->save($absolutePath);
-                    }
-                }
-
-                $elemento->archivada = 1;
-                $elemento->fichero = $nomComplet;
-                $gestor = new GestorService($elemento);
-                $gestor->save(['propietario' => $elemento->Creador->FullName,
-                    'tipoDocumento' => 'Acta',
-                    'descripcion' => $elemento->descripcion,
-                    'fichero' => $elemento->fichero,
-                    'supervisor' => $elemento->Creador->FullName,
-                    'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                    'tags' => TipoReunionService::find($elemento->tipo)->vliteral,
-                    'created_at' => new Carbon($elemento->fecha),
-                    'rol' => config('roles.rol.profesor')]);
-                $elemento->save();
-            });
-        } catch (Throwable $e) {
-            if ($createdFile !== null && is_file($createdFile)) {
-                unlink($createdFile);
+            $result = $this->archives()->archive($elemento, Curso());
+            if ($result->wasAlreadyArchived()) {
+                Alert::warning("L'acta ja està arxivada i no es modificarà.");
             }
-
+        } catch (Throwable $e) {
             report($e);
             Log::warning('Error generant acta de reunió.', [
                 'reunion_id' => $id,

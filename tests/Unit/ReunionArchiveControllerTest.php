@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Intranet\Application\Reunion\ReunionContinuityService;
+use Intranet\Application\Reunion\ReunionArchiveService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\ReunionController;
 use Mockery;
@@ -97,21 +97,18 @@ class ReunionArchiveControllerTest extends TestCase
         $this->assertDatabaseHas('ordenes_reuniones', ['idReunion' => 2, 'resumen' => null]);
     }
 
-    public function test_revertix_la_normalitzacio_si_falla_l_arxivament(): void
+    public function test_informa_de_l_error_retornat_pel_cas_d_us(): void
     {
         $this->insertAct(3, 'P1', false);
         $this->insertOrder(3, null);
         $this->actingAs(Profesor::query()->findOrFail('P1'), 'profesor');
 
-        $continuity = Mockery::mock(ReunionContinuityService::class);
-        $continuity->shouldReceive('normaliseEmptySummaries')
+        $archive = Mockery::mock(ReunionArchiveService::class);
+        $archive->shouldReceive('archive')
             ->once()
-            ->andReturnUsing(function (): void {
-                DB::table('ordenes_reuniones')->where('idReunion', 3)->update(['resumen' => 'No procedeix']);
-                throw new RuntimeException('Error simulat de PDF');
-            });
+            ->andThrow(new RuntimeException('Error simulat de PDF'));
 
-        (new ReunionController(null, null, null, $continuity))->saveFile(3);
+        (new ReunionController(null, null, null, null, $archive))->saveFile(3);
 
         $this->assertDatabaseHas('reuniones', ['id' => 3, 'archivada' => 0, 'fichero' => null]);
         $this->assertDatabaseHas('ordenes_reuniones', ['idReunion' => 3, 'resumen' => null]);
