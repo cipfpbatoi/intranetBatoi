@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Reunion\ReunionContinuityService;
+use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Reunion;
 use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Tests\TestCase;
@@ -57,6 +58,7 @@ class ReunionContinuityServiceTest extends TestCase
         $schema->create('ordenes_reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idReunion');
+            $table->string('codigo', 64)->nullable();
             $table->unsignedTinyInteger('orden')->default(1);
             $table->string('descripcion', 120)->nullable();
             $table->text('resumen')->nullable();
@@ -105,11 +107,11 @@ class ReunionContinuityServiceTest extends TestCase
 
         $this->assertSame(
             '<p>Acord vigent</p>',
-            $summaries["Revisió d'acords adoptats a la sessió anterior"]
+            $summaries[OrdenReunion::CODE_PREVIOUS_AGREEMENTS_REVIEW]
         );
         $this->assertSame(
             'Seguiment NESE anterior',
-            $summaries['Alumnes amb dificultats acadèmiques i mesures a adoptar']
+            $summaries[OrdenReunion::CODE_NESE_FOLLOW_UP]
         );
     }
 
@@ -123,7 +125,7 @@ class ReunionContinuityServiceTest extends TestCase
 
         $this->assertSame(
             'Acord llegat',
-            $summaries["Revisió d'acords adoptats a la sessió anterior"]
+            $summaries[OrdenReunion::CODE_PREVIOUS_AGREEMENTS_REVIEW]
         );
     }
 
@@ -143,11 +145,13 @@ class ReunionContinuityServiceTest extends TestCase
 
         $this->assertDatabaseHas('ordenes_reuniones', [
             'idReunion' => $currentAct,
+            'codigo' => OrdenReunion::CODE_PREVIOUS_AGREEMENTS_REVIEW,
             'descripcion' => "Revisió d'acords adoptats a la sessió anterior",
             'resumen' => 'Revisar acord 20',
         ]);
         $this->assertDatabaseHas('ordenes_reuniones', [
             'idReunion' => $currentAct,
+            'codigo' => OrdenReunion::CODE_NESE_FOLLOW_UP,
             'descripcion' => 'Alumnes amb dificultats acadèmiques i mesures a adoptar',
             'resumen' => 'Revisar mesures 20',
         ]);
@@ -175,6 +179,30 @@ class ReunionContinuityServiceTest extends TestCase
                 ->where('resumen', '!=', ReunionContinuityService::DEFAULT_SUMMARY)
                 ->count()
         );
+    }
+
+    public function test_continuitat_usa_el_codi_encara_que_canvie_la_descripcio(): void
+    {
+        $previousAct = $this->insertAct(35, '2026-09-10 10:00:00', true);
+        $currentAct = $this->insertAct(36, '2026-09-20 10:00:00', false);
+        $this->insertOrder(
+            $previousAct,
+            'Acords de la reunió',
+            'Acord identificat pel codi',
+            1,
+            OrdenReunion::CODE_AGREEMENTS
+        );
+
+        (new MeetingOrderGenerateService(
+            Reunion::query()->findOrFail($currentAct),
+            $this->service
+        ))->exec();
+
+        $this->assertDatabaseHas('ordenes_reuniones', [
+            'idReunion' => $currentAct,
+            'codigo' => OrdenReunion::CODE_PREVIOUS_AGREEMENTS_REVIEW,
+            'resumen' => 'Acord identificat pel codi',
+        ]);
     }
 
     public function test_normalitza_text_null_espais_i_html_buit_abans_arxivar(): void
@@ -221,10 +249,17 @@ class ReunionContinuityServiceTest extends TestCase
         return $id;
     }
 
-    private function insertOrder(int $act, string $description, ?string $summary, int $order = 1): void
+    private function insertOrder(
+        int $act,
+        string $description,
+        ?string $summary,
+        int $order = 1,
+        ?string $code = null
+    ): void
     {
         DB::table('ordenes_reuniones')->insert([
             'idReunion' => $act,
+            'codigo' => $code,
             'orden' => $order,
             'descripcion' => $description,
             'resumen' => $summary,
