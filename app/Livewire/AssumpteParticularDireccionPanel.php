@@ -25,13 +25,21 @@ class AssumpteParticularDireccionPanel extends Component
      * @var array<int, array<string, mixed>>
      */
     public array $grups = [];
+    /** @var array<int, array<string, mixed>> */
+    public array $historial = [];
+    /** @var array<string, string> */
+    public array $professors = [];
     public string $filtreData = '';
+    public string $professorRegularitzacio = '';
+    public string $dataRegularitzacio = '';
+    public string $tipusRegularitzacio = AssumpteParticular::TIPUS_LECTIU;
     public ?int $peticioADenegar = null;
     public string $motiuDenegacio = '';
     public string $missatge = '';
     public string $error = '';
     public bool $potAutoritzar = false;
     public bool $teRubricaDirectora = false;
+    public bool $potRegularitzar = false;
 
     /**
      * Comprova l'accés i carrega les peticions pendents.
@@ -48,12 +56,25 @@ class AssumpteParticularDireccionPanel extends Component
         );
         $this->potAutoritzar = esRol($user->rol, config('roles.rol.direccion'))
             && filled(config('avisos.director'));
+        $this->potRegularitzar = esRol($user->rol, config('roles.rol.direccion'));
         $directora = $this->potAutoritzar
             ? Profesor::query()->find((string) config('avisos.director'))
             : null;
         $this->teRubricaDirectora = $directora !== null
             && app(RubricaAssumpteParticularService::class)->exists($directora);
         $this->filtreData = CarbonImmutable::today()->addDays(7)->toDateString();
+        if ($this->potRegularitzar) {
+            $this->professors = Profesor::query()
+                ->activo()
+                ->orderBy('apellido1')
+                ->orderBy('apellido2')
+                ->orderBy('nombre')
+                ->get()
+                ->mapWithKeys(static fn (Profesor $professor): array => [
+                    (string) $professor->dni => $professor->fullName,
+                ])
+                ->all();
+        }
 
         $this->recarregar();
     }
@@ -66,6 +87,41 @@ class AssumpteParticularDireccionPanel extends Component
         $this->grups = app(AssumpteParticularDireccionQueryService::class)->grupsPendents(
             filled($this->filtreData) ? $this->filtreData : null
         );
+        $this->historial = app(AssumpteParticularDireccionQueryService::class)->autoritzades(
+            app(AssumpteParticularService::class)->cursVigent()
+        );
+    }
+
+    /**
+     * Registra un dia ja gaudit i autoritzat fora de la intranet.
+     */
+    public function regularitzar(): void
+    {
+        Gate::authorize('regularize', AssumpteParticular::class);
+        $this->missatge = '';
+        $this->error = '';
+        $this->validate([
+            'professorRegularitzacio' => ['required', 'string', 'exists:profesores,dni'],
+            'dataRegularitzacio' => ['required', 'date'],
+            'tipusRegularitzacio' => ['required', 'in:lectiu,no_lectiu'],
+        ]);
+
+        try {
+            app(AssumpteParticularService::class)->regularitzar(
+                $this->professorRegularitzacio,
+                $this->dataRegularitzacio,
+                $this->tipusRegularitzacio,
+                (string) authUser()->dni
+            );
+        } catch (AssumpteParticularException $exception) {
+            $this->error = $exception->getMessage();
+            return;
+        }
+
+        $this->reset(['professorRegularitzacio', 'dataRegularitzacio']);
+        $this->tipusRegularitzacio = AssumpteParticular::TIPUS_LECTIU;
+        $this->missatge = 'El dia ja gaudit s’ha incorporat a l’històric i al saldo.';
+        $this->recarregar();
     }
 
     /**

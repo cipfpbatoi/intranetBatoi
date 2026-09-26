@@ -7,6 +7,7 @@ namespace Tests\Feature\AssumpteParticular;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\AssumpteParticular;
 use Tests\TestCase;
 
 /** Comprova la vinculació retroactiva de resolucions al circuit de faltes. */
@@ -32,6 +33,7 @@ class AssumpteParticularFaltaMigrationTest extends TestCase
             $table->id();
             $table->unsignedBigInteger('falta_id');
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->string('resolucio_document')->nullable();
         });
     }
