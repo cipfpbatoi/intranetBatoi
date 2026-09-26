@@ -139,6 +139,7 @@ class AssumpteParticularDocumentServiceTest extends TestCase
             $table->string('tipus');
             $table->string('torn');
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->timestamps();
         });
     }

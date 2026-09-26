@@ -46,6 +46,7 @@ class AssumpteParticularArchiveService
         AssumpteParticular::query()
             ->with('profesor')
             ->where('estat', AssumpteParticular::ESTAT_AUTORITZADA)
+            ->where('origen', AssumpteParticular::ORIGEN_SOLLICITUD)
             ->orderBy('id')
             ->chunk(100, function ($peticions): void {
                 foreach ($peticions as $peticio) {

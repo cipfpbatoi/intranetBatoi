@@ -75,6 +75,82 @@ class DireccionPanelTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_direccio_regularitza_un_dia_i_el_mostra_en_l_historic(): void
+    {
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSee('Incorporar un dia ja gaudit')
+            ->set('professorRegularitzacio', 'PROF01')
+            ->set('dataRegularitzacio', '2026-09-11')
+            ->set('tipusRegularitzacio', AssumpteParticular::TIPUS_LECTIU)
+            ->call('regularitzar')
+            ->assertSet('error', '')
+            ->assertSet('missatge', 'El dia ja gaudit s’ha incorporat a l’històric i al saldo.')
+            ->assertSee('Professor 01')
+            ->assertSee('11/09/2026')
+            ->assertSee('Regularització');
+
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'idProfesor' => 'PROF01',
+            'data_gaudi' => '2026-09-11 00:00:00',
+            'tipus' => AssumpteParticular::TIPUS_LECTIU,
+            'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+            'falta_id' => null,
+            'resolucio_document' => null,
+        ]);
+        $this->assertDatabaseCount('faltas', 0);
+        $this->assertDatabaseCount('documentos', 0);
+    }
+
+    public function test_administracio_no_pot_regularitzar_dies(): void
+    {
+        Livewire::actingAs($this->professor('ADM001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertDontSee('Incorporar un dia ja gaudit')
+            ->set('professorRegularitzacio', 'PROF01')
+            ->set('dataRegularitzacio', '2026-09-11')
+            ->call('regularitzar')
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('assumptes_particulars', 0);
+    }
+
+    public function test_historic_diferencia_sollicituds_i_regularitzacions(): void
+    {
+        $ordinaria = $this->crearPeticio(
+            'PROF01',
+            '2026-10-01',
+            AssumpteParticular::ESTAT_AUTORITZADA
+        );
+        $ordinaria->forceFill([
+            'resolta_per' => 'DIR001',
+            'resolta_at' => '2026-09-25 10:00:00',
+            'resolucio_document' => 'assumptes-particulars/resolucions/ordinaria.pdf',
+        ])->save();
+        $regularitzada = $this->crearPeticio(
+            'PROF02',
+            '2026-09-18',
+            AssumpteParticular::ESTAT_AUTORITZADA
+        );
+        $regularitzada->forceFill([
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+            'resolta_at' => '2026-09-26 10:00:00',
+        ])->save();
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSee('Històric d’autoritzacions del curs')
+            ->assertSee('Sol·licitud')
+            ->assertSee('Regularització')
+            ->assertSee('Direcció')
+            ->assertSeeHtml(route('assumptes-particulars.document', [
+                'assumpteParticular' => $ordinaria->id,
+            ]));
+    }
+
     /** El panell mostra per defecte el seté dia natural i manté el filtre manual. */
     public function test_filtra_per_defecte_el_sete_dia_natural(): void
     {
@@ -85,9 +161,11 @@ class DireccionPanelTest extends TestCase
             ->test(AssumpteParticularDireccionPanel::class)
             ->assertSet('filtreData', '2026-10-15')
             ->assertSee('Professor 01')
-            ->assertDontSee('Professor 02')
+            ->assertSet('grups', fn (array $grups): bool => count($grups) === 1
+                && $grups[0]['peticions'][0]['dni'] === 'PROF01')
             ->set('filtreData', '2026-10-16')
-            ->assertSee('Professor 02');
+            ->assertSet('grups', fn (array $grups): bool => count($grups) === 1
+                && $grups[0]['peticions'][0]['dni'] === 'PROF02');
     }
 
     /** El huité dia es pot consultar però no autoritzar des de la pantalla. */
@@ -251,7 +329,7 @@ class DireccionPanelTest extends TestCase
             ->set('motiuDenegacio', 'No es pot garantir el servei del centre.')
             ->call('denegar')
             ->assertSet('missatge', 'La petició s’ha denegat correctament.')
-            ->assertDontSee('Professor 01');
+            ->assertSet('grups', []);
 
         $this->assertDatabaseHas('assumptes_particulars', [
             'id' => 1,
@@ -414,6 +492,7 @@ class DireccionPanelTest extends TestCase
             $table->string('tipus');
             $table->string('torn');
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->text('motivacio_excepcional')->nullable();
             $table->text('pla_activitats')->nullable();
             $table->text('resolucio')->nullable();

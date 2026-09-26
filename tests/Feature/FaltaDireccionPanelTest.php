@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Mail\ReminderFaltaJustificant;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\FaltaDireccionPanel;
@@ -386,6 +387,7 @@ class FaltaDireccionPanelTest extends TestCase
             $table->unsignedBigInteger('falta_id')->nullable();
             $table->string('idProfesor', 10);
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->string('resolucio_document')->nullable();
         });
 
