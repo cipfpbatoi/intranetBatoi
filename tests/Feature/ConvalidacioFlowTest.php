@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioService;
+use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Profesor;
@@ -35,6 +36,8 @@ class ConvalidacioFlowTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
         Storage::fake('convalidacions');
+        Storage::fake('convalidacions_xml');
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', $this->academicXml());
         $this->createSchema();
         $this->seedAcademicData();
         $this->alumno = Alumno::query()->findOrFail('12345678');
@@ -53,7 +56,7 @@ class ConvalidacioFlowTest extends TestCase
     public function test_tramita_varies_peticions_amb_estat_per_item_i_es_idempotent(): void
     {
         $items = [
-            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1],
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
             [
                 'modulo_destino_id' => 'DEST2',
                 'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
@@ -69,7 +72,12 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(1, SollicitudConvalidacio::query()->count());
         $this->assertSame(2, Convalidacio::query()->count());
         $this->assertSame([Convalidacio::ESTAT_EN_PROCES], Convalidacio::query()->distinct()->pluck('estat')->all());
-        $this->assertSame(1, Convalidacio::query()->where('modulo_destino_id', 'DEST1')->value('ciclo_origen_id'));
+        $peticioPropiCentre = Convalidacio::query()->where('modulo_destino_id', 'DEST1')->firstOrFail();
+        $this->assertSame('ORIG1', $peticioPropiCentre->modulo_origen_codigo);
+        $this->assertSame('Origen 1', $peticioPropiCentre->modulo_origen_nombre);
+        $this->assertSame('ANT', $peticioPropiCentre->ciclo_origen_codigo);
+        $this->assertSame(7.0, $peticioPropiCentre->nota_origen);
+        $this->assertSame('ordinària (FI)', $peticioPropiCentre->convocatoria_origen);
         $externa = Convalidacio::query()->where('origen', Convalidacio::ORIGEN_ALTRE_CENTRE)->firstOrFail();
         Storage::disk('convalidacions')->assertExists($externa->document_path);
         $this->assertSame('certificat.pdf', $externa->document_original_name);
@@ -79,11 +87,11 @@ class ConvalidacioFlowTest extends TestCase
     {
         foreach ([
             [
-                ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1],
-                ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1],
+                ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+                ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
             ],
-            [['modulo_destino_id' => 'ALIEN', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1]],
-            [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 999]],
+            [['modulo_destino_id' => 'ALIEN', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()]],
+            [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => str_repeat('a', 64)]],
             [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_EOI, 'declaracio_responsable' => true]],
         ] as $index => $items) {
             try {
@@ -98,8 +106,8 @@ class ConvalidacioFlowTest extends TestCase
     public function test_direccio_revisa_una_peticio_sense_alterar_les_altres_i_realitzada_es_terminal(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'review', [
-            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1],
-            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1],
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
         ]);
         $direccio = Profesor::query()->findOrFail('DIR00001');
         $primera = $sollicitud->convalidacions[0];
@@ -150,7 +158,7 @@ class ConvalidacioFlowTest extends TestCase
     public function test_policy_denega_dades_alienes_i_reserva_la_revisio_a_direccio(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'policy', [[
-            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1,
+            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId(),
         ]]);
         $peticio = $sollicitud->convalidacions->first();
         $altre = Alumno::query()->findOrFail('87654321');
@@ -169,7 +177,7 @@ class ConvalidacioFlowTest extends TestCase
         $sollicitud = $this->service->tramitar($this->alumno, 'blocking', [[
             'modulo_destino_id' => 'DEST1',
             'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
-            'ciclo_origen_id' => 1,
+            'resultat_origen_id' => $this->resultatId(),
         ]]);
 
         $peticio = $sollicitud->convalidacions->first();
@@ -182,7 +190,7 @@ class ConvalidacioFlowTest extends TestCase
                 $this->service->tramitar($this->alumno, 'blocked-' . $estat, [[
                     'modulo_destino_id' => 'DEST1',
                     'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
-                    'ciclo_origen_id' => 1,
+                    'resultat_origen_id' => $this->resultatId(),
                 ]]);
                 $this->fail('Una petició no denegada havia de bloquejar el mòdul.');
             } catch (ConvalidacioException) {
@@ -197,7 +205,7 @@ class ConvalidacioFlowTest extends TestCase
         $nova = $this->service->tramitar($this->alumno, 'allowed-after-denied', [[
             'modulo_destino_id' => 'DEST1',
             'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
-            'ciclo_origen_id' => 1,
+            'resultat_origen_id' => $this->resultatId(),
         ]]);
         $this->assertNotSame($sollicitud->id, $nova->id);
     }
@@ -211,8 +219,10 @@ class ConvalidacioFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Nova sol·licitud de convalidació')
             ->assertSee('Destí 1')
-            ->assertSee('Estudi previ')
+            ->assertSee('Mòdul superat')
+            ->assertSee('Origen 1')
             ->assertSee('Cicle anterior')
+            ->assertDontSee('avaluacio-2025.xml')
             ->assertSee('Estudis o certificats acadèmics d&#039;un altre centre', false)
             ->assertSee('id="origen-group" class="mb-3" hidden', false)
             ->assertSee('id="convalidacio-layout"', false)
@@ -239,7 +249,7 @@ class ConvalidacioFlowTest extends TestCase
     public function test_controlador_denega_a_un_alumne_la_sollicitud_d_un_altre(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'private', [[
-            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'ciclo_origen_id' => 1,
+            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId(),
         ]]);
         $altre = Alumno::query()->findOrFail('87654321');
 
@@ -248,6 +258,52 @@ class ConvalidacioFlowTest extends TestCase
         auth()->shouldUse('profesor');
 
         $this->get('/alumno/convalidacions/' . $sollicitud->id)->assertForbidden();
+    }
+
+    public function test_la_copia_del_resultat_es_conserva_si_desapareix_l_xml(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'snapshot', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+
+        Storage::disk('convalidacions_xml')->delete('avaluacio-2025.xml');
+        $peticio = $sollicitud->convalidacions()->firstOrFail()->fresh();
+
+        $this->assertSame('ORIG1', $peticio->modulo_origen_codigo);
+        $this->assertSame('Cicle anterior', $peticio->ciclo_origen_nombre);
+        $this->assertSame(7.0, $peticio->nota_origen);
+    }
+
+    /** Retorna l'identificador opac del primer resultat sintètic. */
+    private function resultatId(): string
+    {
+        return app(ResultatsAcademicsXmlService::class)->aprovats('12345678')[0]['id'];
+    }
+
+    /** XML sintètic que evita usar exportacions o dades personals reals. */
+    private function academicXml(): string
+    {
+        return <<<'XML'
+<?xml version="1.0"?>
+<centro>
+  <cursos>
+    <curso codigo="FAMILIA" padre="" nombre_val="Família professional"/>
+    <curso codigo="ANT" padre="FAMILIA" nombre_val="Cicle anterior"/>
+    <curso codigo="ANT-1" padre="ANT" nombre_val="Primer"/>
+  </cursos>
+  <contenidos>
+    <contenido curso="ANT-1" codigo="ORIG1" nombre_val="Origen 1"/>
+    <contenido curso="ANT-1" codigo="SUSPES" nombre_val="Mòdul suspés"/>
+  </contenidos>
+  <calificaciones>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="ORIG1" evaluacion="FI" nota_numerica="7"/>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="SUSPES" evaluacion="FI" nota_numerica="4"/>
+    <calificacion alumno="87654321" curso="ANT-1" contenido="ORIG1" evaluacion="FI" nota_numerica="9"/>
+  </calificaciones>
+</centro>
+XML;
     }
 
     private function createSchema(): void
@@ -336,7 +392,12 @@ class ConvalidacioFlowTest extends TestCase
             $table->unsignedBigInteger('sollicitud_convalidacio_id');
             $table->string('modulo_destino_id');
             $table->string('origen');
-            $table->unsignedInteger('ciclo_origen_id')->nullable();
+            $table->string('modulo_origen_codigo')->nullable();
+            $table->string('modulo_origen_nombre')->nullable();
+            $table->string('ciclo_origen_codigo')->nullable();
+            $table->string('ciclo_origen_nombre')->nullable();
+            $table->decimal('nota_origen', 5, 2)->nullable();
+            $table->string('convocatoria_origen')->nullable();
             $table->string('document_path')->nullable();
             $table->string('document_original_name')->nullable();
             $table->string('document_mime')->nullable();

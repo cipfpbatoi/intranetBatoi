@@ -17,6 +17,10 @@ use Intranet\Entities\SollicitudConvalidacio;
 /** Casos d'ús del cicle de vida de les convalidacions. */
 class ConvalidacioService
 {
+    public function __construct(private readonly ResultatsAcademicsXmlService $resultatsAcademics)
+    {
+    }
+
     /**
      * Tramita de manera atòmica i idempotent una composició validada.
      *
@@ -47,7 +51,7 @@ class ConvalidacioService
                     return $existent->load('convalidacions');
                 }
 
-                $this->validarComposicio($alumno, $items);
+                $items = $this->validarComposicio($alumno, $items);
 
                 $sollicitud = SollicitudConvalidacio::query()->create([
                     'alumno_id' => $alumno->nia,
@@ -64,7 +68,12 @@ class ConvalidacioService
                     $sollicitud->convalidacions()->create(array_merge([
                         'modulo_destino_id' => $item['modulo_destino_id'],
                         'origen' => $item['origen'],
-                        'ciclo_origen_id' => $item['ciclo_origen_id'] ?? null,
+                        'modulo_origen_codigo' => $item['modulo_origen_codigo'] ?? null,
+                        'modulo_origen_nombre' => $item['modulo_origen_nombre'] ?? null,
+                        'ciclo_origen_codigo' => $item['ciclo_origen_codigo'] ?? null,
+                        'ciclo_origen_nombre' => $item['ciclo_origen_nombre'] ?? null,
+                        'nota_origen' => $item['nota_origen'] ?? null,
+                        'convocatoria_origen' => $item['convocatoria_origen'] ?? null,
                         'declaracio_responsable' => (bool) ($item['declaracio_responsable'] ?? false),
                         'estat' => Convalidacio::ESTAT_EN_PROCES,
                     ], $document));
@@ -159,8 +168,11 @@ class ConvalidacioService
         return $peticio->fresh();
     }
 
-    /** @param array<int, array<string, mixed>> $items */
-    private function validarComposicio(Alumno $alumno, array $items): void
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function validarComposicio(Alumno $alumno, array $items): array
     {
         if ($items === []) {
             throw new ConvalidacioException('Has d\'afegir almenys un mòdul.');
@@ -171,13 +183,18 @@ class ConvalidacioService
             throw new ConvalidacioException('No pots repetir el mateix mòdul destí.');
         }
 
-        foreach ($items as $item) {
-            $this->validarItem($alumno, $item);
+        foreach ($items as $index => $item) {
+            $items[$index] = $this->validarItem($alumno, $item);
         }
+
+        return $items;
     }
 
-    /** @param array<string, mixed> $item */
-    private function validarItem(Alumno $alumno, array $item): void
+    /**
+     * @param array<string, mixed> $item
+     * @return array<string, mixed>
+     */
+    private function validarItem(Alumno $alumno, array $item): array
     {
         $destino = (string) ($item['modulo_destino_id'] ?? '');
         $origen = (string) ($item['origen'] ?? '');
@@ -208,19 +225,24 @@ class ConvalidacioService
         }
 
         if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE) {
-            $cicloOrigen = (int) ($item['ciclo_origen_id'] ?? 0);
-            $origenValido = DB::table('alumno_resultados')
-                ->join('modulo_grupos', 'modulo_grupos.id', '=', 'alumno_resultados.idModuloGrupo')
-                ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
-                ->where('alumno_resultados.idAlumno', $alumno->nia)
-                ->where('modulo_ciclos.idCiclo', $cicloOrigen)
-                ->exists();
-
-            if (!$origenValido) {
-                throw new ConvalidacioException('L\'estudi previ no consta en l\'historial acadèmic de l\'alumne.');
+            $resultat = $this->resultatsAcademics->trobarAprovat(
+                (string) $alumno->nia,
+                (string) ($item['resultat_origen_id'] ?? '')
+            );
+            if ($resultat === null) {
+                throw new ConvalidacioException('El mòdul superat no consta en els resultats acadèmics disponibles.');
             }
 
-            return;
+            return array_merge($item, [
+                'modulo_origen_codigo' => $resultat['modul'],
+                'modulo_origen_nombre' => $resultat['nom_modul'],
+                'ciclo_origen_codigo' => $resultat['cicle'],
+                'ciclo_origen_nombre' => $resultat['nom_cicle'],
+                'nota_origen' => $resultat['nota'],
+                'convocatoria_origen' => $resultat['convocatoria'],
+                'document' => null,
+                'declaracio_responsable' => false,
+            ]);
         }
 
         if (($item['declaracio_responsable'] ?? false) !== true || !($item['document'] ?? null) instanceof UploadedFile) {
@@ -228,6 +250,8 @@ class ConvalidacioService
         }
 
         $this->validarDocument($item['document']);
+
+        return $item;
     }
 
     /** @return array{document_path: ?string, document_original_name: ?string, document_mime: ?string} */

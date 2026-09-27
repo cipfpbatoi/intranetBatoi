@@ -9,7 +9,11 @@
         <div class="card mb-3"><div class="card-body">
             <h2 class="h5">{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</h2>
             <p><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenOptions()[$peticio->origen] ?? $peticio->origen }}</p>
-            @if ($peticio->cicloOrigen)<p><strong>Estudi previ:</strong> {{ $peticio->cicloOrigen->literal }}</p>@endif
+            @if ($peticio->modulo_origen_codigo)
+                <p class="mb-1"><strong>Mòdul superat:</strong> {{ $peticio->modulo_origen_nombre ?: $peticio->modulo_origen_codigo }}</p>
+                <p class="mb-1"><strong>Cicle:</strong> {{ $peticio->ciclo_origen_nombre ?: $peticio->ciclo_origen_codigo }}</p>
+                <p><strong>Resultat:</strong> {{ number_format($peticio->nota_origen, 2, ',', '') }} · {{ $peticio->convocatoria_origen }}</p>
+            @endif
             <p><strong>Estat:</strong> {{ \Intranet\Entities\Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat }}</p>
             @if ($peticio->observacions)<div class="alert alert-info">{{ $peticio->observacions }}</div>@endif
             @if ($peticio->document_path)

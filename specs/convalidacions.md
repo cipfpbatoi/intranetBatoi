@@ -35,14 +35,16 @@ And el formulari comença buit i només mostra les dades de la petició que est�
 And en afegir un altre mòdul el resum conserva les peticions anteriors i confirma visualment quantes n'hi ha
 And en pantalles amples el compositor i el resum es mostren en paral·lel per mantindre visible el resultat de cada acció
 
-### Escenari 3: petició basada en estudis del propi centre
+### Escenari 3: petició basada en un mòdul aprovat al propi centre
 
 Given un alumne que ha seleccionat un mòdul destí de la seua matrícula vigent
-When indica que ha cursat al propi centre el mòdul o els estudis que aporta
-Then pot seleccionar com a «Estudi previ» un dels cicles que consten en el seu historial acadèmic del centre
-And el mòdul destí i el cicle origen queden identificats separadament
+When indica que aporta estudis cursats al propi centre
+Then pot seleccionar com a «Mòdul superat» un resultat aprovat que conste en els XML acadèmics privats
+And veu el mòdul, el cicle, la nota i la convocatòria, però no el fitxer XML d'origen
+And el mòdul destí i el resultat origen queden identificats separadament
 And pot afegir la petició sense document adjunt
-And el sistema valida en backend que el destí pertany a la matrícula vigent i que el cicle origen consta realment en l'historial de l'alumne
+And el sistema valida en backend que el destí pertany a la matrícula vigent i que el resultat aprovat correspon realment a l'alumne autenticat
+And la petició guarda una còpia immutable de les dades acadèmiques seleccionades
 
 ### Escenari 4: petició basada en estudis externs o certificats
 
@@ -110,13 +112,15 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 - El mateix mòdul destí no es pot repetir dins d'una mateixa sol·licitud.
 - Un alumne no pot crear una nova petició d'un mòdul si ja en té una anterior en qualsevol estat diferent de `Denegada`.
 - `Denegada` és l'únic estat que torna a habilitar el mòdul per a una nova sol·licitud; `Realitzada` el manté bloquejat fins i tot abans que desaparega de la matrícula.
-- El mòdul destí i, quan corresponga, el cicle d'estudi previ es validen en backend; no es confia en identificadors enviats pel navegador.
+- El mòdul destí i, quan corresponga, el mòdul aprovat d'origen es validen en backend; no es confia en identificadors enviats pel navegador.
 - La relació conceptual obligatòria és `1 sol·licitud : N peticions`, encara que la nomenclatura tècnica definitiva s'adapte als patrons del projecte.
 - No es poden editar ni cancel·lar sol·licituds ja tramitades, llevat de la substitució documental expressament permesa.
 
 ### Orígens i documentació
 
-- «Propi centre» requerix seleccionar com a «Estudi previ» un cicle cursat que conste en l'historial acadèmic de l'alumne i no exigix adjunt en l'MVP.
+- «Propi centre» requerix seleccionar un mòdul aprovat que conste en els XML acadèmics privats i no exigix adjunt en l'MVP.
+- El cicle, la nota i la convocatòria acompanyen el mòdul com a informació contextual i queden copiats en la petició.
+- El cas especial de convalidació basada en un cicle complet queda ajornat fins que es definisquen les seues regles.
 - Els orígens externs es presenten en tres opcions compactes: estudis o certificats acadèmics d'un altre centre, certificat d'EOI i prevenció de riscos LOGSE.
 - Els tres orígens externs admesos exigixen la declaració «Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen» i un únic adjunt.
 - La interfície mostra els formats admesos i el límit de mida configurat per l'aplicació.
@@ -157,6 +161,7 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 - Rutes d'alumnat en `routes/alumno.php` i rutes protegides en `routes/direccion.php`.
 - Entrada «Convalidar» al menú de l'alumnat i panells de presentació, consulta i revisió.
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
+- Gestor administratiu privat dels XML acadèmics, sense edició ni descàrrega del contingut.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
 
 ## Expressament posposat

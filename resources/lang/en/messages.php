@@ -194,6 +194,7 @@ return array(
     ),
     'menu' => array(
         'convalidar' => 'Credit transfer',
+        'ResultatsXml' => 'Credit transfer results',
         'Link' => 'External links',
         'Edit' => 'Faculty',
         'Institution' => 'Tutoring',

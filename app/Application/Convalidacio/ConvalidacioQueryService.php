@@ -7,7 +7,6 @@ namespace Intranet\Application\Convalidacio;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Ciclo;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\SollicitudConvalidacio;
@@ -15,11 +14,15 @@ use Intranet\Entities\SollicitudConvalidacio;
 /** Consultes de lectura del flux de convalidacions. */
 class ConvalidacioQueryService
 {
+    public function __construct(private readonly ResultatsAcademicsXmlService $resultatsAcademics)
+    {
+    }
+
     /** Retorna les sol·licituds d'un alumne amb totes les peticions. */
     public function sollicitudsAlumne(string $nia): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['convalidacions.moduloDestino', 'convalidacions.cicloOrigen'])
+            ->with(['convalidacions.moduloDestino'])
             ->where('alumno_id', $nia)
             ->latest('submitted_at')
             ->get();
@@ -29,7 +32,7 @@ class ConvalidacioQueryService
     public function sollicitudDetail(int $id): ?SollicitudConvalidacio
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.cicloOrigen', 'convalidacions.revisor'])
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.revisor'])
             ->find($id);
     }
 
@@ -37,7 +40,7 @@ class ConvalidacioQueryService
     public function sollicitudsDireccion(?string $estat = null, ?string $origen = null): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.cicloOrigen'])
+            ->with(['alumno', 'convalidacions.moduloDestino'])
             ->when($estat, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('estat', $estat)))
             ->when($origen, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('origen', $origen)))
             ->latest('submitted_at')
@@ -66,16 +69,9 @@ class ConvalidacioQueryService
             ->get();
     }
 
-    /** Retorna els cicles que consten en l'historial acadèmic de l'alumne. */
-    public function ciclesPrevis(Alumno $alumno): Collection
+    /** Retorna els mòduls aprovats que consten en els XML privats. */
+    public function modulsAprovats(Alumno $alumno): array
     {
-        $ids = $alumno->AlumnoResultado()
-            ->join('modulo_grupos', 'modulo_grupos.id', '=', 'alumno_resultados.idModuloGrupo')
-            ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
-            ->whereNotNull('modulo_ciclos.idCiclo')
-            ->distinct()
-            ->pluck('modulo_ciclos.idCiclo');
-
-        return Ciclo::query()->whereIn('id', $ids)->orderBy('vliteral')->get();
+        return $this->resultatsAcademics->aprovats((string) $alumno->nia);
     }
 }

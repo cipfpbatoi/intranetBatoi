@@ -48,13 +48,19 @@
                     </div>
 
                     <div id="propi-centre" class="mb-3" hidden>
-                        <label class="form-label" for="builder-cicle">Estudi previ</label>
-                        <select class="form-select" id="builder-cicle">
-                            <option value="">Selecciona un cicle cursat</option>
-                            @foreach ($ciclesPrevis as $cicle)<option value="{{ $cicle->id }}">{{ $cicle->literal }}</option>@endforeach
+                        <label class="form-label" for="builder-resultat">Mòdul superat</label>
+                        <select class="form-select" id="builder-resultat">
+                            <option value="">Selecciona un mòdul aprovat</option>
+                            @foreach ($modulsAprovats as $resultat)
+                                <option value="{{ $resultat['id'] }}">
+                                    {{ $resultat['nom_modul'] ?: $resultat['modul'] }} —
+                                    {{ $resultat['nom_cicle'] ?: $resultat['cicle'] }} ·
+                                    {{ number_format($resultat['nota'], 2, ',', '') }} · {{ $resultat['convocatoria'] }}
+                                </option>
+                            @endforeach
                         </select>
-                        @if ($ciclesPrevis->isEmpty())
-                            <div class="form-text text-warning">No consta cap cicle previ en el teu historial acadèmic.</div>
+                        @if ($modulsAprovats === [])
+                            <div class="form-text text-warning">No s'han trobat mòduls aprovats disponibles per a seleccionar.</div>
                         @endif
                     </div>
 
@@ -164,7 +170,7 @@
     if (!moduleSelect) return;
 
     const originSelect = document.getElementById('builder-origen');
-    const cycleSelect = document.getElementById('builder-cicle');
+    const resultSelect = document.getElementById('builder-resultat');
     const declaration = document.getElementById('builder-declaracio');
     const originGroup = document.getElementById('origen-group');
     const ownCenter = document.getElementById('propi-centre');
@@ -237,8 +243,8 @@
         const moduleId = moduleSelect.value;
         const origin = originSelect.value;
 
-        if (origin === 'propi_centre' && cycleSelect.value === '') {
-            setError('Selecciona el cicle que vols aportar com a estudi previ.');
+        if (origin === 'propi_centre' && resultSelect.value === '') {
+            setError('Selecciona el mòdul superat que vols aportar.');
             return;
         }
         if (externalOrigins.includes(origin) && (!fileInput.files.length || !declaration.checked)) {
@@ -264,8 +270,8 @@
         const detail = document.createElement('div');
         detail.className = 'text-muted small';
         if (origin === 'propi_centre') {
-            addHidden(item, `items[${index}][ciclo_origen_id]`, cycleSelect.value);
-            detail.textContent = `${originLabels[origin]} · ${selectedText(cycleSelect)}`;
+            addHidden(item, `items[${index}][resultat_origen_id]`, resultSelect.value);
+            detail.textContent = `${originLabels[origin]} · ${selectedText(resultSelect).trim()}`;
         } else {
             addHidden(item, `items[${index}][declaracio_responsable]`, '1');
             detail.textContent = `${originLabels[origin]} · ${fileInput.files[0].name}`;

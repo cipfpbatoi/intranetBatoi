@@ -193,6 +193,7 @@ return array(
     ),
     'menu' => array(
         'convalidar' => 'Convalidar',
+        'ResultatsXml' => 'Resultados de convalidaciones',
         'Link' => 'Enlaces externos',
         'Edit' => 'Docencia',
         'Institution' => 'Tutor',

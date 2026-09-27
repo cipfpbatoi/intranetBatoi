@@ -30,7 +30,12 @@ class Convalidacio extends Model
         'sollicitud_convalidacio_id',
         'modulo_destino_id',
         'origen',
-        'ciclo_origen_id',
+        'modulo_origen_codigo',
+        'modulo_origen_nombre',
+        'ciclo_origen_codigo',
+        'ciclo_origen_nombre',
+        'nota_origen',
+        'convocatoria_origen',
         'document_path',
         'document_original_name',
         'document_mime',
@@ -47,6 +52,7 @@ class Convalidacio extends Model
 
     protected $casts = [
         'declaracio_responsable' => 'boolean',
+        'nota_origen' => 'float',
         'revisat_at' => 'datetime',
     ];
 
@@ -62,12 +68,6 @@ class Convalidacio extends Model
     public function moduloDestino(): BelongsTo
     {
         return $this->belongsTo(Modulo::class, 'modulo_destino_id', 'codigo');
-    }
-
-    /** Cicle cursat al centre que s'aporta com a estudi previ. */
-    public function cicloOrigen(): BelongsTo
-    {
-        return $this->belongsTo(Ciclo::class, 'ciclo_origen_id', 'id');
     }
 
     /** Última persona de Direcció que ha revisat la petició. */
