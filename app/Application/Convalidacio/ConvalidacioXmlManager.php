@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Convalidacio;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,7 +17,7 @@ class ConvalidacioXmlManager
     {
     }
 
-    /** @return list<array{id:string, nom:string, mida:int, modificat:int}> */
+    /** @return list<array{id:string, nom:string, any:int, mida:int, modificat:int}> */
     public function all(): array
     {
         $disk = Storage::disk('convalidacions_xml');
@@ -26,10 +27,11 @@ class ConvalidacioXmlManager
             ->map(fn (string $path): array => [
                 'id' => $this->id($path),
                 'nom' => basename($path),
+                'any' => $this->year($disk, $path),
                 'mida' => $disk->size($path),
                 'modificat' => $disk->lastModified($path),
             ])
-            ->sortByDesc('modificat')
+            ->sort(static fn (array $a, array $b): int => [$b['any'], $b['modificat'], $a['nom']] <=> [$a['any'], $a['modificat'], $b['nom']])
             ->values()
             ->all();
     }
@@ -41,15 +43,6 @@ class ConvalidacioXmlManager
         $this->reader->validarContingut($contents);
         $name = $this->availableName($file->getClientOriginalName());
         $this->atomicWrite($name, $contents);
-    }
-
-    /** Substituïx atòmicament un XML existent. */
-    public function replace(string $id, UploadedFile $file): void
-    {
-        $path = $this->resolve($id);
-        $contents = $this->contents($file);
-        $this->reader->validarContingut($contents);
-        $this->atomicWrite($path, $contents);
     }
 
     /** Elimina una font perquè deixe de participar en consultes futures. */
@@ -101,6 +94,16 @@ class ConvalidacioXmlManager
         }
 
         return $name;
+    }
+
+    /** Llig l'any acadèmic de l'XML; la metadada desapareix en eliminar la font. */
+    private function year(Filesystem $disk, string $path): int
+    {
+        try {
+            return $this->reader->validarContingut($disk->get($path));
+        } catch (ConvalidacioException) {
+            return 0;
+        }
     }
 
     /** Escriu en el disc local privat i reemplaça el destí amb rename atòmic. */

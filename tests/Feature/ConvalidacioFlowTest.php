@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Convalidacio\ConvalidacioException;
@@ -76,11 +77,13 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame('ORIG1', $peticioPropiCentre->modulo_origen_codigo);
         $this->assertSame('Origen 1', $peticioPropiCentre->modulo_origen_nombre);
         $this->assertSame('ANT', $peticioPropiCentre->ciclo_origen_codigo);
+        $this->assertSame(2025, $peticioPropiCentre->any_origen);
         $this->assertSame(7.0, $peticioPropiCentre->nota_origen);
         $this->assertSame('ordinària (FI)', $peticioPropiCentre->convocatoria_origen);
         $externa = Convalidacio::query()->where('origen', Convalidacio::ORIGEN_ALTRE_CENTRE)->firstOrFail();
         Storage::disk('convalidacions')->assertExists($externa->document_path);
         $this->assertSame('certificat.pdf', $externa->document_original_name);
+        $this->assertTrue($externa->declaracio_responsable);
     }
 
     public function test_rebutja_destins_duplicats_ids_manipulats_i_externs_sense_document(): void
@@ -215,21 +218,65 @@ class ConvalidacioFlowTest extends TestCase
         $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
         auth()->shouldUse('profesor');
 
-        $this->get('/alumno/convalidacions/create')
+        $formulari = $this->get('/alumno/convalidacions/create');
+
+        $formulari
             ->assertOk()
-            ->assertSee('Nova sol·licitud de convalidació')
+            ->assertSee('Nova sol·licitud')
+            ->assertSee('Mòduls de la sol·licitud')
+            ->assertSee('Només es tramitaran els mòduls que apareguen en esta llista.')
             ->assertSee('Destí 1')
             ->assertSee('Mòdul superat')
             ->assertSee('Origen 1')
             ->assertSee('Cicle anterior')
+            ->assertSee('Any 2025')
+            ->assertSee('Nota 7')
+            ->assertDontSee('Nota 7,00')
+            ->assertSee('data-cicle-nom="Cicle anterior"', false)
+            ->assertDontSee('data-cicle-codi=', false)
+            ->assertSee('fillModuleReference')
+            ->assertSee('ensureExternalDeclaration')
+            ->assertDontSee('d-flex flex-column gap-1', false)
+            ->assertSee("appendLine(cell, `Any \${item.dataset.accreditationYear} · Nota \${item.dataset.accreditationNote}`, 'small mb-1');", false)
+            ->assertSee('data-nota="7"', false)
+            ->assertSee("const formatCode = (code) => code.replace(/^([A-Za-z]+)(\\d+)$/, '$1 $2');", false)
+            ->assertSee('fst-italic')
+            ->assertDontSee('ordinària (FI)')
             ->assertDontSee('avaluacio-2025.xml')
             ->assertSee('Estudis o certificats acadèmics d&#039;un altre centre', false)
             ->assertSee('id="origen-group" class="mb-3" hidden', false)
-            ->assertSee('id="convalidacio-layout"', false)
-            ->assertSee('id="resum-count"', false)
+            ->assertSee('id="afegir-modul-modal"', false)
+            ->assertSee('id="revisar-sollicitud-modal"', false)
+            ->assertSee('id="confirmar-presentacio-modal"', false)
+            ->assertSee('modal-dialog modal-lg modal-dialog-scrollable', false)
+            ->assertSee('id="resultat-detall"', false)
+            ->assertSeeText("Any d'aprovació")
+            ->assertSee('Mòdul a convalidar')
+            ->assertSee('Acreditació')
+            ->assertSee('Accions')
+            ->assertSee('id="sollicitud-taula" hidden', false)
+            ->assertSee('id="sollicitud-count"', false)
+            ->assertSee('Total de mòduls a convalidar: 0')
+            ->assertSee('id="builder-feedback" class="visually-hidden" role="status" aria-live="polite"', false)
+            ->assertDontSee('class="alert alert-success"', false)
+            ->assertSee('id="revisar-sollicitud"', false)
+            ->assertSee('Revisar sol·licitud')
             ->assertSee('Afegir a la sol·licitud')
+            ->assertSee('Tornar i modificar')
+            ->assertSee('id="presentar-sollicitud" type="button"', false)
+            ->assertSee('Presentar sol·licitud')
+            ->assertSee('Vas a presentar la sol·licitud.')
+            ->assertSee('Tornar al resum')
+            ->assertSee('id="confirmar-presentacio" type="submit"', false)
+            ->assertSee('Sí, presentar')
+            ->assertDontSee('id="tramitar"', false)
+            ->assertSee('id="cancel-sollicitud"', false)
+            ->assertSee('Vols cancel·lar la sol·licitud? Es perdrà la composició actual.', false)
             ->assertSee('convalidacio-item-afegit')
-            ->assertSee('el resum conserva els anteriors');
+            ->assertSee('replaceChildren')
+            ->assertDontSee('Prepara una petició');
+
+        $this->assertSame(1, substr_count($formulari->getContent(), 'type="submit"'));
 
         $response = $this->post('/alumno/convalidacions', [
             'submission_token' => 'http-token',
@@ -244,6 +291,61 @@ class ConvalidacioFlowTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertRedirect('/alumno/convalidacions/1');
         $this->assertDatabaseHas('sollicituds_convalidacions', ['alumno_id' => '12345678'], 'sqlite');
+    }
+
+    public function test_error_tecnic_en_tramitacio_no_exposa_el_detall_ni_deixa_dades_parcials(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        Log::spy();
+        app()->instance(ConvalidacioService::class, new class extends ConvalidacioService {
+            public function __construct()
+            {
+            }
+
+            /** Simula una fallada d'infraestructura posterior a la validació HTTP. */
+            public function tramitar(Alumno $alumno, string $token, array $items): SollicitudConvalidacio
+            {
+                throw new \RuntimeException('Disc privat no disponible.');
+            }
+        });
+
+        $response = $this->from('/alumno/convalidacions/create')->post('/alumno/convalidacions', [
+            'submission_token' => 'technical-error',
+            'items' => [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'declaracio_responsable' => '1',
+                'document' => UploadedFile::fake()->create('academic.pdf', 20, 'application/pdf'),
+            ]],
+        ]);
+
+        $response
+            ->assertRedirect('/alumno/convalidacions/create')
+            ->assertSessionHasErrors('items');
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+        $this->assertSame(0, Convalidacio::query()->count());
+        Log::shouldHaveReceived('error')->once();
+    }
+
+    public function test_origen_extern_sense_declaracio_retorn_a_un_error_funcional(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $response = $this->from('/alumno/convalidacions/create')->post('/alumno/convalidacions', [
+            'submission_token' => 'missing-declaration',
+            'items' => [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'document' => UploadedFile::fake()->create('academic.pdf', 20, 'application/pdf'),
+            ]],
+        ]);
+
+        $response
+            ->assertRedirect('/alumno/convalidacions/create')
+            ->assertSessionHasErrors(['items' => 'Els orígens externs requerixen declaració responsable i un document.']);
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
     }
 
     public function test_controlador_denega_a_un_alumne_la_sollicitud_d_un_altre(): void
@@ -273,7 +375,37 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->assertSame('ORIG1', $peticio->modulo_origen_codigo);
         $this->assertSame('Cicle anterior', $peticio->ciclo_origen_nombre);
+        $this->assertSame(2025, $peticio->any_origen);
         $this->assertSame(7.0, $peticio->nota_origen);
+
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $detallAlumne = $this->get('/alumno/convalidacions/' . $sollicitud->id);
+        $detallAlumne
+            ->assertOk()
+            ->assertSeeText("Any d'aprovació:")
+            ->assertSeeText('2025')
+            ->assertSeeText('Cicle anterior')
+            ->assertDontSee('ANT — Cicle anterior')
+            ->assertSeeText('Nota:')
+            ->assertSeeText('7')
+            ->assertDontSee('7,00')
+            ->assertDontSee('ordinària (FI)');
+
+        $direccio = Profesor::query()->findOrFail('DIR00001');
+        $this->actingAs($direccio, 'profesor');
+        $detallDireccio = $this->get('/direccion/convalidacions/' . $sollicitud->id);
+        $detallDireccio
+            ->assertOk()
+            ->assertSeeText("Any d'aprovació:")
+            ->assertSeeText('2025')
+            ->assertSeeText('Cicle anterior')
+            ->assertDontSee('ANT — Cicle anterior')
+            ->assertSeeText('Nota:')
+            ->assertSeeText('7')
+            ->assertDontSee('7,00')
+            ->assertDontSee('ordinària (FI)');
     }
 
     /** Retorna l'identificador opac del primer resultat sintètic. */
@@ -287,7 +419,7 @@ class ConvalidacioFlowTest extends TestCase
     {
         return <<<'XML'
 <?xml version="1.0"?>
-<centro>
+<centro curso="2025">
   <cursos>
     <curso codigo="FAMILIA" padre="" nombre_val="Família professional"/>
     <curso codigo="ANT" padre="FAMILIA" nombre_val="Cicle anterior"/>
@@ -340,8 +472,16 @@ XML;
             $table->string('dni')->primary();
             $table->string('nombre')->nullable();
             $table->string('password')->nullable();
+            $table->unsignedBigInteger('departamento')->nullable();
             $table->unsignedBigInteger('rol');
             $table->timestamps();
+        });
+        Schema::create('faltas_profesores', function (Blueprint $table) {
+            $table->id();
+            $table->string('idProfesor');
+            $table->date('dia');
+            $table->time('entrada')->nullable();
+            $table->time('salida')->nullable();
         });
         Schema::create('grupos', function (Blueprint $table) {
             $table->string('codigo')->primary();
@@ -396,6 +536,7 @@ XML;
             $table->string('modulo_origen_nombre')->nullable();
             $table->string('ciclo_origen_codigo')->nullable();
             $table->string('ciclo_origen_nombre')->nullable();
+            $table->unsignedSmallInteger('any_origen')->nullable();
             $table->decimal('nota_origen', 5, 2)->nullable();
             $table->string('convocatoria_origen')->nullable();
             $table->string('document_path')->nullable();

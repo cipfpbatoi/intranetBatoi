@@ -16,7 +16,7 @@ class ResultatsAcademicsXmlService
     /**
      * Retorna cada resultat aprovat com una opció independent.
      *
-     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, nota:float, convocatoria:string}>
+     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string}>
      */
     public function aprovats(string $nia): array
     {
@@ -40,9 +40,9 @@ class ResultatsAcademicsXmlService
         }
 
         usort($resultats, static fn (array $a, array $b): int => [
-            $a['nom_cicle'], $a['nom_modul'], $a['convocatoria'], $a['id'],
+            $a['nom_cicle'], $a['nom_modul'], $a['any'], $a['convocatoria'], $a['id'],
         ] <=> [
-            $b['nom_cicle'], $b['nom_modul'], $b['convocatoria'], $b['id'],
+            $b['nom_cicle'], $b['nom_modul'], $b['any'], $b['convocatoria'], $b['id'],
         ]);
 
         return $resultats;
@@ -51,7 +51,7 @@ class ResultatsAcademicsXmlService
     /**
      * Resol una selecció opaca i la torna a validar contra els XML actuals.
      *
-     * @return array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, nota:float, convocatoria:string}|null
+     * @return array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string}|null
      */
     public function trobarAprovat(string $nia, string $id): ?array
     {
@@ -64,14 +64,25 @@ class ResultatsAcademicsXmlService
         return null;
     }
 
-    /** Valida que el contingut siga un XML d'avaluació processable. */
-    public function validarContingut(string $contingut): void
+    /**
+     * Valida que el contingut siga un XML d'avaluació processable i en retorna l'any.
+     *
+     * @return int Any acadèmic declarat al node arrel.
+     */
+    public function validarContingut(string $contingut): int
     {
         try {
             $xpath = $this->xpath($contingut);
         } catch (RuntimeException) {
             throw new ConvalidacioException('El fitxer no és un XML d\'avaluació vàlid.');
         }
+
+        try {
+            $any = $this->anyAvaluacio($xpath);
+        } catch (RuntimeException) {
+            throw new ConvalidacioException('L\'avaluació no conté un curs acadèmic vàlid.');
+        }
+
         if (
             $xpath->query('//curso[@codigo]')->length === 0
             || $xpath->query('//contenido[@curso][@codigo]')->length === 0
@@ -79,6 +90,8 @@ class ResultatsAcademicsXmlService
         ) {
             throw new ConvalidacioException('El fitxer no té l\'estructura d\'avaluació esperada.');
         }
+
+        return $any;
     }
 
     /** @return Filesystem */
@@ -98,11 +111,12 @@ class ResultatsAcademicsXmlService
     }
 
     /**
-     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, nota:float, convocatoria:string, source:string}>
+     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string, source:string}>
      */
     private function parse(string $contingut, string $nia, string $source): array
     {
         $xpath = $this->xpath($contingut);
+        $any = $this->anyAvaluacio($xpath);
         $cursos = $this->indexCursos($xpath);
         $moduls = $this->indexModuls($xpath);
         $perModul = [];
@@ -132,13 +146,14 @@ class ResultatsAcademicsXmlService
             }
 
             $cicle = $this->cicleDelCurs($curs, $cursos);
-            $identity = implode('|', [$source, $curs, $modul, $convocatoria, (string) $nota]);
+            $identity = implode('|', [$source, (string) $any, $curs, $modul, $convocatoria, (string) $nota]);
             $resultats[] = [
                 'id' => hash_hmac('sha256', $identity, (string) config('app.key')),
                 'modul' => $modul,
                 'nom_modul' => $moduls[$clau] ?? '',
                 'cicle' => $cicle['codi'],
                 'nom_cicle' => $cicle['nom'],
+                'any' => $any,
                 'nota' => $nota,
                 'convocatoria' => $convocatoria,
                 'source' => $source,
@@ -146,6 +161,17 @@ class ResultatsAcademicsXmlService
         }
 
         return $resultats;
+    }
+
+    /** Retorna l'any acadèmic declarat per l'exportació d'ITACA. */
+    private function anyAvaluacio(DOMXPath $xpath): int
+    {
+        $any = trim((string) $xpath->evaluate('string(/centro/@curso)'));
+        if (preg_match('/^\d{4}$/', $any) !== 1) {
+            throw new RuntimeException('Curs acadèmic invàlid.');
+        }
+
+        return (int) $any;
     }
 
     /** Crea un XPath sense xarxa ni declaracions d'entitats. */

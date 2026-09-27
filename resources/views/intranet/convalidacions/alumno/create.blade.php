@@ -4,8 +4,10 @@
 
 @section('content')
 <div class="container">
-    <h1>Nova sol·licitud de convalidació</h1>
-    <p>Prepara cada petició per separat i comprova el resum abans de tramitar-la.</p>
+    <div class="mb-4">
+        <h1 class="mb-1">Nova sol·licitud</h1>
+        <p class="text-muted mb-0">Afig els mòduls que vols convalidar i revisa el conjunt abans de tramitar-lo.</p>
+    </div>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -17,96 +19,197 @@
         @csrf
         <input type="hidden" name="submission_token" value="{{ $submissionToken }}">
 
-        <div class="row g-4 align-items-start" id="convalidacio-layout">
-            <div class="col-lg-7">
-                <div class="card mb-3">
-                    <div class="card-header d-flex align-items-center gap-2">
-                        <span class="badge bg-primary rounded-pill">1</span>
-                        <strong>Prepara una petició</strong>
-                    </div>
-                    <div class="card-body">
+        <div class="card mb-3" id="sollicitud-composicio">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <strong class="d-block">Mòduls de la sol·licitud</strong>
+                    <small class="text-muted">Només es tramitaran els mòduls que apareguen en esta llista.</small>
+                </div>
+                <button
+                    class="btn btn-primary"
+                    id="obrir-afegir-modul"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#afegir-modul-modal"
+                    @disabled($modulsDisponibles->isEmpty())
+                >
+                    <i class="fa fa-plus" aria-hidden="true"></i> Afegir mòdul
+                </button>
+            </div>
+
+            <div class="card-body">
                 @if ($modulsDisponibles->isEmpty())
                     <div class="alert alert-info mb-0">No tens cap mòdul disponible per a una nova sol·licitud.</div>
                 @else
-                    <div class="mb-3">
-                        <label class="form-label" for="builder-modulo">Mòdul que vols convalidar</label>
-                        <select class="form-select" id="builder-modulo">
-                            <option value="">Selecciona un mòdul</option>
-                            @foreach ($modulsDisponibles as $modulo)
-                                <option value="{{ $modulo->codigo }}">{{ $modulo->literal }}</option>
-                            @endforeach
-                        </select>
+                    <div id="builder-feedback" class="visually-hidden" role="status" aria-live="polite"></div>
+                    <div id="sollicitud-buida" class="text-muted text-center py-5">
+                        <i class="fa fa-list-alt fa-2x mb-3 d-block" aria-hidden="true"></i>
+                        <p class="mb-1">Encara no has afegit cap mòdul.</p>
+                        <small>Prem «Afegir mòdul» per començar a preparar la sol·licitud.</small>
                     </div>
-
-                    <div id="origen-group" class="mb-3" hidden>
-                        <label class="form-label" for="builder-origen">Com vols justificar la convalidació?</label>
-                        <select class="form-select" id="builder-origen">
-                            <option value="">Selecciona una opció</option>
-                            @foreach ($origens as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach
-                            <option value="secretaria">Títol universitari o FP1/FP2</option>
-                        </select>
+                    <div class="table-responsive" id="sollicitud-taula" hidden>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mòdul a convalidar</th>
+                                    <th scope="col">Acreditació</th>
+                                    <th scope="col" class="text-end">Accions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="peticions"></tbody>
+                        </table>
                     </div>
-
-                    <div id="propi-centre" class="mb-3" hidden>
-                        <label class="form-label" for="builder-resultat">Mòdul superat</label>
-                        <select class="form-select" id="builder-resultat">
-                            <option value="">Selecciona un mòdul aprovat</option>
-                            @foreach ($modulsAprovats as $resultat)
-                                <option value="{{ $resultat['id'] }}">
-                                    {{ $resultat['nom_modul'] ?: $resultat['modul'] }} —
-                                    {{ $resultat['nom_cicle'] ?: $resultat['cicle'] }} ·
-                                    {{ number_format($resultat['nota'], 2, ',', '') }} · {{ $resultat['convocatoria'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($modulsAprovats === [])
-                            <div class="form-text text-warning">No s'han trobat mòduls aprovats disponibles per a seleccionar.</div>
-                        @endif
-                    </div>
-
-                    <div id="origen-extern" class="mb-3" hidden>
-                        <label class="form-label" for="builder-document">Document acreditatiu</label>
-                        <input type="file" class="form-control" id="builder-document" accept=".pdf,.jpg,.jpeg,.png">
-                        <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB.</div>
-                        <div class="form-check mt-2">
-                            <input type="checkbox" class="form-check-input" id="builder-declaracio" value="1">
-                            <label class="form-check-label" for="builder-declaracio">Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen.</label>
-                        </div>
-                    </div>
-
-                    <div id="avis-secretaria" class="alert alert-warning" hidden>
-                        Este tipus de convalidació no es tramita mitjançant este formulari. Consulta amb Secretaria el procediment que correspon.
-                    </div>
-
-                    <div id="builder-error" class="alert alert-danger" hidden></div>
-                    <div id="builder-feedback" class="alert alert-success" role="status" aria-live="polite" hidden></div>
-                    <button class="btn btn-outline-primary" id="add-peticio" type="button" hidden>
-                        <i class="fa fa-plus" aria-hidden="true"></i> Afegir a la sol·licitud
-                    </button>
                 @endif
+            </div>
+
+            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="fw-semibold" id="sollicitud-count" aria-live="polite">Total de mòduls a convalidar: 0</span>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-outline-secondary" id="cancel-sollicitud" href="{{ route('convalidacions.index') }}">Cancel·lar</a>
+                    <button
+                        class="btn btn-primary"
+                        id="revisar-sollicitud"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#revisar-sollicitud-modal"
+                        disabled
+                    >
+                        Revisar sol·licitud
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (!$modulsDisponibles->isEmpty())
+            <div class="modal fade" id="afegir-modul-modal" tabindex="-1" aria-labelledby="afegir-modul-titol" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title h5" id="afegir-modul-titol">Afegir mòdul a la sol·licitud</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tancar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="builder-modulo">Mòdul que vols convalidar</label>
+                                <select class="form-select" id="builder-modulo">
+                                    <option value="">Selecciona un mòdul</option>
+                                    @foreach ($modulsDisponibles as $modulo)
+                                        <option value="{{ $modulo->codigo }}">{{ $modulo->literal }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div id="origen-group" class="mb-3" hidden>
+                                <label class="form-label" for="builder-origen">Com vols justificar la convalidació?</label>
+                                <select class="form-select" id="builder-origen">
+                                    <option value="">Selecciona una opció</option>
+                                    @foreach ($origens as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach
+                                    <option value="secretaria">Títol universitari o FP1/FP2</option>
+                                </select>
+                            </div>
+
+                            <div id="propi-centre" class="mb-3" hidden>
+                                <label class="form-label" for="builder-resultat">Mòdul superat</label>
+                                <select class="form-select" id="builder-resultat">
+                                    <option value="">Selecciona un mòdul aprovat</option>
+                                    @foreach ($modulsAprovats as $resultat)
+                                        <option
+                                            value="{{ $resultat['id'] }}"
+                                            data-codi="{{ $resultat['modul'] }}"
+                                            data-modul="{{ $resultat['nom_modul'] ?: $resultat['modul'] }}"
+                                            data-cicle-nom="{{ $resultat['nom_cicle'] ?: $resultat['cicle'] }}"
+                                            data-any="{{ $resultat['any'] }}"
+                                            data-nota="{{ number_format($resultat['nota'], 0, ',', '') }}"
+                                        >
+                                            {{ $resultat['modul'] }} — {{ $resultat['nom_modul'] ?: $resultat['modul'] }} —
+                                            {{ $resultat['nom_cicle'] ?: $resultat['cicle'] }} ·
+                                            Any {{ $resultat['any'] }} ·
+                                            Nota {{ number_format($resultat['nota'], 0, ',', '') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="border rounded bg-light p-3 mt-2" id="resultat-detall" hidden>
+                                    <dl class="row g-2 mb-0 small">
+                                        <dt class="col-sm-3">Mòdul</dt><dd class="col-sm-9 mb-0" id="resultat-detall-modul"></dd>
+                                        <dt class="col-sm-3">Cicle</dt><dd class="col-sm-9 mb-0" id="resultat-detall-cicle"></dd>
+                                        <dt class="col-sm-3">Any d'aprovació</dt><dd class="col-sm-9 mb-0" id="resultat-detall-any"></dd>
+                                        <dt class="col-sm-3">Nota</dt><dd class="col-sm-9 mb-0" id="resultat-detall-resultat"></dd>
+                                    </dl>
+                                </div>
+                                @if ($modulsAprovats === [])
+                                    <div class="form-text text-warning">No s'han trobat mòduls aprovats disponibles per a seleccionar.</div>
+                                @endif
+                            </div>
+
+                            <div id="origen-extern" class="mb-3" hidden>
+                                <label class="form-label" for="builder-document">Document acreditatiu</label>
+                                <input type="file" class="form-control" id="builder-document" accept=".pdf,.jpg,.jpeg,.png">
+                                <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB.</div>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" id="builder-declaracio" value="1">
+                                    <label class="form-check-label" for="builder-declaracio">Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen.</label>
+                                </div>
+                            </div>
+
+                            <div id="avis-secretaria" class="alert alert-warning" hidden>
+                                Este tipus de convalidació no es tramita mitjançant este formulari. Consulta amb Secretaria el procediment que correspon.
+                            </div>
+
+                            <div id="builder-error" class="alert alert-danger mb-0" role="alert" hidden></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tancar</button>
+                            <button class="btn btn-primary" id="add-peticio" type="button" hidden>
+                                Afegir a la sol·licitud
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+        @endif
 
-            <div class="col-lg-5">
-                <div class="card mb-3 convalidacio-resum" id="resum-sollicitud">
-                    <div class="card-header d-flex align-items-center justify-content-between gap-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-primary rounded-pill">2</span>
-                            <strong>Revisa i tramita</strong>
-                        </div>
-                        <span class="badge bg-secondary" id="resum-count" aria-live="polite">0 mòduls</span>
+        <div class="modal fade" id="revisar-sollicitud-modal" tabindex="-1" aria-labelledby="revisar-sollicitud-titol" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="revisar-sollicitud-titol">Revisa la sol·licitud</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tancar"></button>
                     </div>
-                    <div class="card-body">
-                        <div id="resum-buit" class="text-muted py-3 text-center">
-                            <i class="fa fa-list-alt fa-2x mb-2 d-block" aria-hidden="true"></i>
-                            Els mòduls que afiges apareixeran ací sense substituir els anteriors.
+                    <div class="modal-body">
+                        <p class="text-muted">Comprova que tots els mòduls i les acreditacions són correctes abans de tramitar.</p>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mòdul a convalidar</th>
+                                        <th scope="col">Acreditació</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="revisio-peticions"></tbody>
+                            </table>
                         </div>
-                        <div class="list-group list-group-flush" id="peticions"></div>
                     </div>
-                    <div class="card-footer d-flex flex-wrap gap-2">
-                        <button class="btn btn-primary" id="tramitar" type="submit" disabled>Tramitar sol·licitud</button>
-                        <a class="btn btn-secondary" href="{{ route('convalidacions.index') }}">Cancel·lar</a>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tornar i modificar</button>
+                        <button class="btn btn-primary" id="presentar-sollicitud" type="button">Presentar sol·licitud</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmar-presentacio-modal" tabindex="-1" aria-labelledby="confirmar-presentacio-titol" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="confirmar-presentacio-titol">Presentar sol·licitud</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tancar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">Vas a presentar la sol·licitud. Després no podràs modificar els mòduls ni les acreditacions. Vols continuar?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tornar al resum</button>
+                        <button class="btn btn-primary" id="confirmar-presentacio" type="submit">Sí, presentar</button>
                     </div>
                 </div>
             </div>
@@ -117,13 +220,6 @@
 
 @push('styles')
 <style>
-@media (min-width: 992px) {
-    .convalidacio-resum {
-        position: sticky;
-        top: 1rem;
-    }
-}
-
 @keyframes convalidacio-item-afegit {
     0% {
         opacity: 0;
@@ -166,11 +262,26 @@
 @push('scripts')
 <script>
 (() => {
+    const cancelLink = document.getElementById('cancel-sollicitud');
+    cancelLink?.addEventListener('click', (event) => {
+        if (!window.confirm('Vols cancel·lar la sol·licitud? Es perdrà la composició actual.')) {
+            event.preventDefault();
+        }
+    });
+
     const moduleSelect = document.getElementById('builder-modulo');
     if (!moduleSelect) return;
 
+    const addModalElement = document.getElementById('afegir-modul-modal');
+    const reviewModalElement = document.getElementById('revisar-sollicitud-modal');
+    const confirmationModalElement = document.getElementById('confirmar-presentacio-modal');
     const originSelect = document.getElementById('builder-origen');
     const resultSelect = document.getElementById('builder-resultat');
+    const resultDetail = document.getElementById('resultat-detall');
+    const resultDetailModule = document.getElementById('resultat-detall-modul');
+    const resultDetailCycle = document.getElementById('resultat-detall-cicle');
+    const resultDetailYear = document.getElementById('resultat-detall-any');
+    const resultDetailResult = document.getElementById('resultat-detall-resultat');
     const declaration = document.getElementById('builder-declaracio');
     const originGroup = document.getElementById('origen-group');
     const ownCenter = document.getElementById('propi-centre');
@@ -179,23 +290,29 @@
     const error = document.getElementById('builder-error');
     const feedback = document.getElementById('builder-feedback');
     const addButton = document.getElementById('add-peticio');
+    const form = document.getElementById('convalidacio-form');
     const requests = document.getElementById('peticions');
-    const emptySummary = document.getElementById('resum-buit');
-    const summaryCount = document.getElementById('resum-count');
-    const submitButton = document.getElementById('tramitar');
+    const requestsTable = document.getElementById('sollicitud-taula');
+    const emptySummary = document.getElementById('sollicitud-buida');
+    const summaryCount = document.getElementById('sollicitud-count');
+    const reviewButton = document.getElementById('revisar-sollicitud');
+    const presentButton = document.getElementById('presentar-sollicitud');
+    const confirmPresentationButton = document.getElementById('confirmar-presentacio');
+    const reviewRequests = document.getElementById('revisio-peticions');
     const originLabels = @json($origens);
     const externalOrigins = ['altre_centre', 'certificat_eoi', 'prl_logse'];
     let fileInput = document.getElementById('builder-document');
     let nextIndex = 0;
+    let openingPresentationConfirmation = false;
+    let presentationConfirmed = false;
 
-    const selectedText = (select) => select.options[select.selectedIndex]?.text || '';
+    const selectedText = (select) => select.options[select.selectedIndex]?.text.trim() || '';
     const setError = (message = '') => {
         error.textContent = message;
         error.hidden = message === '';
     };
     const setFeedback = (message = '') => {
         feedback.textContent = message;
-        feedback.hidden = message === '';
     };
     const addHidden = (container, name, value) => {
         const input = document.createElement('input');
@@ -203,6 +320,17 @@
         input.name = name;
         input.value = value;
         container.appendChild(input);
+    };
+    const refreshResultDetail = () => {
+        const option = resultSelect.options[resultSelect.selectedIndex];
+        const visible = originSelect.value === 'propi_centre' && option?.value !== '';
+        resultDetail.hidden = !visible;
+        if (!visible) return;
+
+        fillModuleReference(resultDetailModule, option.dataset.codi, option.dataset.modul);
+        fillCycleName(resultDetailCycle, option.dataset.cicleNom);
+        resultDetailYear.textContent = option.dataset.any;
+        resultDetailResult.textContent = option.dataset.nota;
     };
     const refreshBuilder = () => {
         const hasModule = moduleSelect.value !== '';
@@ -212,16 +340,16 @@
         external.hidden = !hasModule || !externalOrigins.includes(origin);
         secretary.hidden = !hasModule || origin !== 'secretaria';
         addButton.hidden = !hasModule || origin === '' || origin === 'secretaria';
+        refreshResultDetail();
         setError();
     };
     const refreshSummary = () => {
         const count = requests.children.length;
         const hasRequests = count > 0;
         emptySummary.hidden = hasRequests;
-        submitButton.disabled = !hasRequests;
-        summaryCount.textContent = `${count} ${count === 1 ? 'mòdul' : 'mòduls'}`;
-        summaryCount.classList.toggle('bg-secondary', !hasRequests);
-        summaryCount.classList.toggle('bg-success', hasRequests);
+        requestsTable.hidden = !hasRequests;
+        reviewButton.disabled = !hasRequests;
+        summaryCount.textContent = `Total de mòduls a convalidar: ${count}`;
     };
     const animateAddition = (item) => {
         item.classList.add('convalidacio-item-nou');
@@ -232,13 +360,115 @@
     };
     const resetBuilder = () => {
         moduleSelect.value = '';
+        originSelect.value = '';
+        resultSelect.value = '';
         declaration.checked = false;
         fileInput.value = '';
         refreshBuilder();
     };
+    const formatCode = (code) => code.replace(/^([A-Za-z]+)(\d+)$/, '$1 $2');
+    const appendLine = (container, value, className = '') => {
+        const line = document.createElement('div');
+        line.className = className;
+        line.textContent = value;
+        container.appendChild(line);
+    };
+    const fillModuleReference = (container, code, name) => {
+        container.replaceChildren();
+        const moduleElement = document.createElement('strong');
+        moduleElement.textContent = formatCode(code);
+        if (name && name !== code) {
+            moduleElement.append(` — ${name}`);
+        }
+        container.appendChild(moduleElement);
+    };
+    const appendModuleLine = (container, code, name, className = '') => {
+        const line = document.createElement('div');
+        line.className = className;
+        fillModuleReference(line, code, name);
+        container.appendChild(line);
+    };
+    const fillCycleName = (container, name) => {
+        container.replaceChildren();
+        const nameElement = document.createElement('em');
+        nameElement.textContent = name;
+        container.appendChild(nameElement);
+    };
+    const fillModuleCell = (cell, item) => {
+        cell.replaceChildren();
+        appendModuleLine(cell, item.dataset.moduleId, item.dataset.moduleLabel);
+    };
+    const fillAccreditationCell = (cell, item) => {
+        const inputs = [...cell.querySelectorAll('input')];
+        cell.replaceChildren(...inputs);
+        if (item.dataset.accreditationSourceCode) {
+            appendModuleLine(
+                cell,
+                item.dataset.accreditationSourceCode,
+                item.dataset.accreditationSourceName,
+                'mb-1'
+            );
+            const cycle = document.createElement('div');
+            cycle.className = 'mb-1 fst-italic';
+            cycle.textContent = item.dataset.accreditationCycleName;
+            cell.appendChild(cycle);
+            appendLine(cell, `Any ${item.dataset.accreditationYear} · Nota ${item.dataset.accreditationNote}`, 'small mb-1');
+            appendLine(cell, item.dataset.modality, 'text-muted small fst-italic');
+            return;
+        }
+        appendLine(cell, item.dataset.accreditationTitle, 'fw-semibold mb-1');
+        appendLine(cell, item.dataset.accreditationMeta, 'small');
+    };
+    const buildReview = () => {
+        reviewRequests.replaceChildren();
+        [...requests.children].forEach((item) => {
+            const summary = document.createElement('tr');
+            const moduleCell = document.createElement('td');
+            const accreditationCell = document.createElement('td');
+            fillModuleCell(moduleCell, item);
+            fillAccreditationCell(accreditationCell, item);
+            summary.append(moduleCell, accreditationCell);
+            reviewRequests.appendChild(summary);
+        });
+    };
+    const ensureExternalDeclaration = (item) => {
+        if (item.dataset.requiresDeclaration !== 'true') return;
+
+        const name = `items[${item.dataset.index}][declaracio_responsable]`;
+        let declarationInput = item.querySelector(`input[name="${name}"]`);
+        if (!declarationInput) {
+            declarationInput = document.createElement('input');
+            declarationInput.type = 'hidden';
+            declarationInput.name = name;
+            item.querySelector('td:nth-child(2)')?.prepend(declarationInput);
+        }
+        declarationInput.value = '1';
+    };
 
     moduleSelect.addEventListener('change', refreshBuilder);
     originSelect.addEventListener('change', refreshBuilder);
+    resultSelect.addEventListener('change', refreshResultDetail);
+    reviewModalElement.addEventListener('show.bs.modal', buildReview);
+    reviewModalElement.addEventListener('hidden.bs.modal', () => {
+        if (!openingPresentationConfirmation) return;
+
+        openingPresentationConfirmation = false;
+        window.bootstrap?.Modal.getOrCreateInstance(confirmationModalElement).show();
+    });
+    confirmationModalElement.addEventListener('hidden.bs.modal', () => {
+        if (!presentationConfirmed) {
+            window.bootstrap?.Modal.getOrCreateInstance(reviewModalElement).show();
+        }
+    });
+    presentButton.addEventListener('click', () => {
+        openingPresentationConfirmation = true;
+        window.bootstrap?.Modal.getOrCreateInstance(reviewModalElement).hide();
+    });
+    confirmPresentationButton.addEventListener('click', () => {
+        presentationConfirmed = true;
+    });
+    addModalElement.addEventListener('hidden.bs.modal', () => document.getElementById('obrir-afegir-modul')?.focus());
+
     addButton.addEventListener('click', () => {
         const moduleId = moduleSelect.value;
         const origin = originSelect.value;
@@ -253,39 +483,51 @@
         }
 
         const moduleLabel = selectedText(moduleSelect);
+        const originLabel = originLabels[origin];
         const index = nextIndex++;
-        const item = document.createElement('div');
-        item.className = 'list-group-item px-0 py-3';
+        const item = document.createElement('tr');
         item.dataset.moduleId = moduleId;
         item.dataset.moduleLabel = moduleLabel;
-        addHidden(item, `items[${index}][modulo_destino_id]`, moduleId);
-        addHidden(item, `items[${index}][origen]`, origin);
+        item.dataset.originLabel = originLabel;
+        item.dataset.index = String(index);
 
-        const header = document.createElement('div');
-        header.className = 'd-flex justify-content-between align-items-start gap-3';
-        const title = document.createElement('strong');
-        title.textContent = moduleLabel;
-        header.appendChild(title);
+        const moduleCell = document.createElement('td');
+        moduleCell.className = 'w-25';
+        const accreditationCell = document.createElement('td');
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'text-end';
+        addHidden(accreditationCell, `items[${index}][modulo_destino_id]`, moduleId);
+        addHidden(accreditationCell, `items[${index}][origen]`, origin);
 
-        const detail = document.createElement('div');
-        detail.className = 'text-muted small';
         if (origin === 'propi_centre') {
-            addHidden(item, `items[${index}][resultat_origen_id]`, resultSelect.value);
-            detail.textContent = `${originLabels[origin]} · ${selectedText(resultSelect).trim()}`;
+            const result = resultSelect.options[resultSelect.selectedIndex];
+            item.dataset.accreditationSourceCode = result.dataset.codi;
+            item.dataset.accreditationSourceName = result.dataset.modul;
+            item.dataset.accreditationCycleName = result.dataset.cicleNom;
+            item.dataset.accreditationYear = result.dataset.any;
+            item.dataset.accreditationNote = result.dataset.nota;
+            item.dataset.modality = originLabel;
+            addHidden(accreditationCell, `items[${index}][resultat_origen_id]`, resultSelect.value);
         } else {
-            addHidden(item, `items[${index}][declaracio_responsable]`, '1');
-            detail.textContent = `${originLabels[origin]} · ${fileInput.files[0].name}`;
+            item.dataset.accreditationTitle = originLabel;
+            item.dataset.accreditationMeta = fileInput.files[0].name;
+            item.dataset.modality = '';
+            item.dataset.requiresDeclaration = 'true';
+            addHidden(accreditationCell, `items[${index}][declaracio_responsable]`, '1');
             const replacement = fileInput.cloneNode();
             fileInput.removeAttribute('id');
             fileInput.name = `items[${index}][document]`;
             fileInput.hidden = true;
-            item.appendChild(fileInput);
+            accreditationCell.appendChild(fileInput);
             fileInput = replacement;
             fileInput.id = 'builder-document';
             fileInput.removeAttribute('name');
             fileInput.hidden = false;
             external.insertBefore(fileInput, external.querySelector('.form-text'));
         }
+        fillModuleCell(moduleCell, item);
+        fillAccreditationCell(accreditationCell, item);
+
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'btn btn-sm btn-outline-danger flex-shrink-0';
@@ -295,27 +537,28 @@
             if (option) option.disabled = false;
             item.remove();
             refreshSummary();
-            setFeedback(`S'ha eliminat ${item.dataset.moduleLabel} del resum.`);
+            setFeedback(`S'ha eliminat ${item.dataset.moduleLabel} de la sol·licitud.`);
         });
-        header.appendChild(remove);
-        item.appendChild(header);
-        item.appendChild(detail);
+        actionsCell.appendChild(remove);
+        item.append(moduleCell, accreditationCell, actionsCell);
         requests.appendChild(item);
 
         moduleSelect.options[moduleSelect.selectedIndex].disabled = true;
         resetBuilder();
         refreshSummary();
         animateAddition(item);
-        setFeedback(`S'ha afegit ${moduleLabel}. Pots triar un altre mòdul; el resum conserva els anteriors.`);
-        moduleSelect.focus();
+        setFeedback(`S'ha afegit ${moduleLabel} a la sol·licitud.`);
+        window.bootstrap?.Modal.getOrCreateInstance(addModalElement).hide();
     });
 
-    document.getElementById('convalidacio-form').addEventListener('submit', (event) => {
+    form.addEventListener('submit', (event) => {
+        [...requests.children].forEach(ensureExternalDeclaration);
         if (!requests.children.length) {
             event.preventDefault();
-            setError('Has d\'afegir almenys un mòdul abans de tramitar.');
+            setFeedback('Has d\'afegir almenys un mòdul abans de tramitar.');
         }
     });
+
     refreshBuilder();
     refreshSummary();
 })();

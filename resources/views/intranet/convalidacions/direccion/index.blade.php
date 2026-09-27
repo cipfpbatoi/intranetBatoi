@@ -4,7 +4,12 @@
 
 @section('content')
 <div class="container">
-    <h1>Gestió de convalidacions</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="mb-0">Gestió de convalidacions</h1>
+        <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.xml.index') }}">
+            <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
+        </a>
+    </div>
     <form method="GET" class="row g-2 mb-3">
         <div class="col-md-4"><select name="estat" class="form-select"><option value="">Tots els estats</option>@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected(($filters['estat'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
         <div class="col-md-4"><select name="origen" class="form-select"><option value="">Tots els orígens</option>@foreach ($origens as $value => $label)<option value="{{ $value }}" @selected(($filters['origen'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>

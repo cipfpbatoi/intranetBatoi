@@ -10,8 +10,8 @@ use Illuminate\View\View;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioXmlManager;
 
-/** Gestor privat de les exportacions d'avaluació per a administració. */
-class AdministradorConvalidacioXmlController extends Controller
+/** Gestor privat de les exportacions d'avaluació dins del panell de Direcció. */
+class DireccionConvalidacioXmlController extends Controller
 {
     public function __construct(private readonly ConvalidacioXmlManager $manager)
     {
@@ -21,7 +21,7 @@ class AdministradorConvalidacioXmlController extends Controller
     /** Mostra únicament les metadades necessàries de les fonts carregades. */
     public function index(): View
     {
-        return view('intranet.convalidacions.administrador.xml', [
+        return view('intranet.convalidacions.direccion.xml', [
             'fitxers' => $this->manager->all(),
             'maxXmlKb' => (int) config('convalidacions.max_xml_kb', 20480),
         ]);
@@ -38,21 +38,7 @@ class AdministradorConvalidacioXmlController extends Controller
             return back()->withErrors(['xml' => $exception->getMessage()]);
         }
 
-        return back()->with('success', 'XML d\'avaluació incorporat correctament.');
-    }
-
-    /** Substituïx una font sense canviar-ne la identitat administrativa. */
-    public function replace(Request $request, string $fitxer): RedirectResponse
-    {
-        $validated = $request->validate(['xml' => $this->xmlRules()]);
-
-        try {
-            $this->manager->replace($fitxer, $validated['xml']);
-        } catch (ConvalidacioException $exception) {
-            return back()->withErrors(['xml' => $exception->getMessage()]);
-        }
-
-        return back()->with('success', 'XML d\'avaluació substituït correctament.');
+        return back()->with('success', 'Avaluació d\'ITACA afegida correctament.');
     }
 
     /** Elimina una font de les consultes futures. */
@@ -64,7 +50,7 @@ class AdministradorConvalidacioXmlController extends Controller
             return back()->withErrors(['xml' => $exception->getMessage()]);
         }
 
-        return back()->with('success', 'XML d\'avaluació eliminat correctament.');
+        return back()->with('success', 'Avaluació d\'ITACA eliminada correctament.');
     }
 
     /** @return array<int, string> */
@@ -73,7 +59,8 @@ class AdministradorConvalidacioXmlController extends Controller
         return [
             'required',
             'file',
-            'mimes:xml',
+            'extensions:xml',
+            'mimetypes:application/xml,text/xml,text/plain,application/octet-stream',
             'max:' . config('convalidacions.max_xml_kb', 20480),
         ];
     }

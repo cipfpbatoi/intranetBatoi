@@ -22,14 +22,6 @@ Route::post('/teacherImport/async', ['as' => 'teacherImport.storeAsync', 'uses' 
 Route::get('/importEmail', ['as' => 'importEmail.create', 'uses' => 'Deprecated\ImportEmailController@create']);
 Route::post('/importEmail', ['as' => 'importEmail.store', 'uses' => 'Deprecated\ImportEmailController@store']);
 
-// fonts XML privades per a convalidacions
-Route::prefix('convalidacions/xml')->name('convalidacions.xml.')->group(function () {
-    Route::get('/', ['as' => 'index', 'uses' => 'AdministradorConvalidacioXmlController@index']);
-    Route::post('/', ['as' => 'store', 'uses' => 'AdministradorConvalidacioXmlController@store']);
-    Route::put('/{fitxer}', ['as' => 'replace', 'uses' => 'AdministradorConvalidacioXmlController@replace']);
-    Route::delete('/{fitxer}', ['as' => 'destroy', 'uses' => 'AdministradorConvalidacioXmlController@destroy']);
-});
-
 //manteniment taula mòduls
 Route::resource('/modulo', 'ModuloController', ['except' => ['destroy', 'update', 'show', 'store']]);
 Route::put('/modulo/{modulo}/edit', ['as' => 'modulo.update', 'uses' => 'ModuloController@update']);

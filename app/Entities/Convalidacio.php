@@ -34,6 +34,7 @@ class Convalidacio extends Model
         'modulo_origen_nombre',
         'ciclo_origen_codigo',
         'ciclo_origen_nombre',
+        'any_origen',
         'nota_origen',
         'convocatoria_origen',
         'document_path',
@@ -52,6 +53,7 @@ class Convalidacio extends Model
 
     protected $casts = [
         'declaracio_responsable' => 'boolean',
+        'any_origen' => 'integer',
         'nota_origen' => 'float',
         'revisat_at' => 'datetime',
     ];

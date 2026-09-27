@@ -104,6 +104,11 @@ Route::view('/calendari',  'calendari.escolar');
 
 Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/', ['as' => 'direction.index', 'uses' => 'DireccionConvalidacioController@index']);
+    Route::prefix('xml')->name('direction.xml.')->group(function () {
+        Route::get('/', ['as' => 'index', 'uses' => 'DireccionConvalidacioXmlController@index']);
+        Route::post('/', ['as' => 'store', 'uses' => 'DireccionConvalidacioXmlController@store']);
+        Route::delete('/{fitxer}', ['as' => 'destroy', 'uses' => 'DireccionConvalidacioXmlController@destroy']);
+    });
     Route::get('/documents/{convalidacio}', ['as' => 'direction.download', 'uses' => 'DireccionConvalidacioController@download']);
     Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
     Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);

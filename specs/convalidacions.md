@@ -33,14 +33,14 @@ And no pot afegir dues vegades el mateix mòdul destí
 And abans de guardar veu un resum de totes les peticions incloses
 And el formulari comença buit i només mostra les dades de la petició que està component, no una targeta completa per cada mòdul matriculat
 And en afegir un altre mòdul el resum conserva les peticions anteriors i confirma visualment quantes n'hi ha
-And en pantalles amples el compositor i el resum es mostren en paral·lel per mantindre visible el resultat de cada acció
+And la composició es mostra en una taula i el resum final s'obri en un diàleg abans de tramitar
 
 ### Escenari 3: petició basada en un mòdul aprovat al propi centre
 
 Given un alumne que ha seleccionat un mòdul destí de la seua matrícula vigent
 When indica que aporta estudis cursats al propi centre
 Then pot seleccionar com a «Mòdul superat» un resultat aprovat que conste en els XML acadèmics privats
-And veu el mòdul, el cicle, la nota i la convocatòria, però no el fitxer XML d'origen
+And veu el mòdul, el cicle i la nota, però no la convocatòria ni el fitxer XML d'origen
 And el mòdul destí i el resultat origen queden identificats separadament
 And pot afegir la petició sense document adjunt
 And el sistema valida en backend que el destí pertany a la matrícula vigent i que el resultat aprovat correspon realment a l'alumne autenticat
@@ -76,12 +76,13 @@ And si la petició es resol com a `Realitzada`, el mòdul continua bloquejat enc
 ### Escenari 7: tramitació transaccional i idempotent
 
 Given una composició amb una o més peticions vàlides
-When l'alumne confirma «Tramitar sol·licitud»
+When l'alumne confirma «Sí, presentar» després de revisar la sol·licitud
 Then es crea una única capçalera associada a l'alumne autenticat
 And es creen totes les peticions associades inicialment en estat `En procés`
 And l'operació és transaccional i no deixa dades parcials si falla qualsevol part
 And un doble clic o un reintent de la mateixa tramitació no crea capçaleres ni peticions duplicades
 And el sistema mostra una confirmació de la tramitació
+But si ocorre una fallada tècnica inesperada, l'alumne torna al formulari amb un missatge segur i sense dades parcials
 
 ### Escenari 8: revisió manual per Direcció
 
@@ -119,7 +120,7 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 ### Orígens i documentació
 
 - «Propi centre» requerix seleccionar un mòdul aprovat que conste en els XML acadèmics privats i no exigix adjunt en l'MVP.
-- El cicle, la nota i la convocatòria acompanyen el mòdul com a informació contextual i queden copiats en la petició.
+- El cicle i la nota acompanyen el mòdul com a informació contextual visible; la nota d'ITACA es mostra sense decimals i la convocatòria queda copiada en la petició únicament per a traçabilitat interna.
 - El cas especial de convalidació basada en un cicle complet queda ajornat fins que es definisquen les seues regles.
 - Els orígens externs es presenten en tres opcions compactes: estudis o certificats acadèmics d'un altre centre, certificat d'EOI i prevenció de riscos LOGSE.
 - Els tres orígens externs admesos exigixen la declaració «Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen» i un únic adjunt.
@@ -161,7 +162,7 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 - Rutes d'alumnat en `routes/alumno.php` i rutes protegides en `routes/direccion.php`.
 - Entrada «Convalidar» al menú de l'alumnat i panells de presentació, consulta i revisió.
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
-- Gestor administratiu privat dels XML acadèmics, sense edició ni descàrrega del contingut.
+- Gestor privat dels XML acadèmics integrat en el panell de convalidacions de Direcció, sense edició ni descàrrega del contingut.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
 
 ## Expressament posposat

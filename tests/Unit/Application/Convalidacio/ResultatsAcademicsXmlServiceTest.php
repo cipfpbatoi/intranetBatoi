@@ -31,6 +31,7 @@ class ResultatsAcademicsXmlServiceTest extends TestCase
         $this->assertCount(2, $resultats);
         $this->assertSame('ordinària (FI)', $perModul['M1']['convocatoria']);
         $this->assertSame('extraordinària (EX)', $perModul['M2']['convocatoria']);
+        $this->assertSame(2024, $perModul['M1']['any']);
         $this->assertSame(7.0, $perModul['M2']['nota']);
         $this->assertArrayNotHasKey('source', $resultats[0]);
     }
@@ -61,6 +62,18 @@ class ResultatsAcademicsXmlServiceTest extends TestCase
         }
     }
 
+    public function test_rebutja_avaluacions_sense_un_any_valid(): void
+    {
+        foreach (['', '24', '2024-2025', 'dos mil vint-i-quatre'] as $any) {
+            try {
+                $this->service->validarContingut($this->xml('6', '4', '7', $any));
+                $this->fail('L\'avaluació sense un any de quatre dígits havia de ser rebutjada.');
+            } catch (ConvalidacioException $exception) {
+                $this->assertStringContainsString('curs acadèmic vàlid', $exception->getMessage());
+            }
+        }
+    }
+
     public function test_una_seleccio_opaca_de_un_altre_alumne_no_es_resol(): void
     {
         Storage::disk('convalidacions_xml')->put('2024.xml', $this->xml('6', '4', '7'));
@@ -70,11 +83,11 @@ class ResultatsAcademicsXmlServiceTest extends TestCase
     }
 
     /** Genera una font sintètica amb FI, EX i un suspés. */
-    private function xml(string $notaFiM1, string $notaFiM2, string $notaExM2): string
+    private function xml(string $notaFiM1, string $notaFiM2, string $notaExM2, string $any = '2024'): string
     {
         return <<<XML
 <?xml version="1.0"?>
-<centro>
+<centro curso="{$any}">
   <cursos>
     <curso codigo="CICLE" padre="" nombre_val="Cicle de prova"/>
     <curso codigo="CURS" padre="CICLE" nombre_val="Primer"/>

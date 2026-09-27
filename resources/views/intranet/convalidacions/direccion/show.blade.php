@@ -11,9 +11,10 @@
             <h2 class="h5">{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</h2>
             <p><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenOptions()[$peticio->origen] ?? $peticio->origen }}</p>
             @if ($peticio->modulo_origen_codigo)
-                <p class="mb-1"><strong>Mòdul superat:</strong> {{ $peticio->modulo_origen_nombre ?: $peticio->modulo_origen_codigo }}</p>
-                <p class="mb-1"><strong>Cicle:</strong> {{ $peticio->ciclo_origen_nombre ?: $peticio->ciclo_origen_codigo }}</p>
-                <p><strong>Resultat:</strong> {{ number_format($peticio->nota_origen, 2, ',', '') }} · {{ $peticio->convocatoria_origen }}</p>
+                <p class="mb-1"><strong>Mòdul superat:</strong> <strong>{{ preg_replace('/^([A-Za-z]+)(\d+)$/', '$1 $2', $peticio->modulo_origen_codigo) }}@if ($peticio->modulo_origen_nombre) — {{ $peticio->modulo_origen_nombre }}@endif</strong></p>
+                <p class="mb-1"><strong>Cicle:</strong> <em>{{ $peticio->ciclo_origen_nombre ?: $peticio->ciclo_origen_codigo }}</em></p>
+                <p class="mb-1"><strong>Any d'aprovació:</strong> {{ $peticio->any_origen }}</p>
+                <p><strong>Nota:</strong> {{ number_format($peticio->nota_origen, 0, ',', '') }}</p>
             @endif
             @if ($peticio->document_path)<a href="{{ route('convalidacions.direction.download', $peticio) }}">Descarregar {{ $peticio->document_original_name }}</a>@endif
             @if ($peticio->revisor)<p class="mt-2"><small>Últim canvi: {{ $peticio->revisor->fullName ?? $peticio->revisat_per }}, {{ $peticio->revisat_at?->format('d/m/Y H:i') }}</small></p>@endif

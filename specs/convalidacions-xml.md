@@ -1,7 +1,7 @@
 # Convalidacions — resultats acadèmics des d'XML privat
 
 Issue: #323
-Status: ready_to_commit
+Status: ready_for_review
 
 ## Relació amb la spec principal
 
@@ -14,10 +14,11 @@ El cas especial en què un mòdul es convalida per haver superat un cicle queda 
 ### ✅ Escenari 1: consulta dels mòduls aprovats al propi centre
 
 Given un alumne autenticat que prepara una petició amb origen «Estudis cursats al propi centre»
-And administració ha incorporat un o més XML anuals d'avaluació vàlids
+And Direcció ha incorporat una o més avaluacions anuals d'ITACA en format XML vàlid
 When el sistema busca el seu NIA en tots els XML disponibles
 Then mostra únicament els resultats amb nota igual o superior a 5 en l'avaluació final ordinària (`FI`) o extraordinària (`EX`)
-And cada opció identifica el mòdul aprovat i mostra també el cicle, la nota i la convocatòria
+And cada opció identifica el mòdul aprovat i mostra també el cicle i la nota
+And la convocatòria es conserva internament però no es mostra a l'alumnat ni a Direcció
 And no mostra el nom, la ruta ni cap altra dada identificativa del fitxer XML
 And si el mateix mòdul apareix en anys o cicles diferents, cada resultat es mostra com una opció diferenciada
 
@@ -37,22 +38,22 @@ When l'alumne tramita la sol·licitud
 Then la petició guarda una còpia del codi i nom del mòdul origen, el codi i nom del cicle, la nota i la convocatòria
 And la consulta posterior de la petició no depén de tornar a llegir l'XML original
 And l'alumne i Direcció poden consultar les dades acadèmiques copiades, però no el fitxer XML d'origen
-And si administració elimina o substituïx posteriorment l'XML, les sol·licituds ja tramitades conserven les dades originals
+And si Direcció elimina o substituïx posteriorment l'XML, les sol·licituds ja tramitades conserven les dades originals
 
-### ✅ Escenari 4: incorporació privada d'un XML anual
+### ✅ Escenari 4: incorporació privada d'una avaluació anual d'ITACA
 
-Given una persona amb rol d'administració
-When puja un fitxer XML d'avaluació
-Then el sistema valida l'extensió, el tipus, la mida configurada i l'estructura mínima esperada abans de conservar-lo
+Given una persona amb rol de Direcció o administració
+When puja el fitxer XML d'una avaluació d'ITACA
+Then el sistema valida l'extensió `.xml`, admet les deteccions MIME habituals de les exportacions d'ITACA —inclosa `text/plain`—, comprova la mida configurada i l'estructura mínima esperada abans de conservar-lo
 And el processa sense permetre xarxa ni resolució d'entitats externes
 And el guarda en emmagatzematge privat fora de `public/` i del control de versions
-And una persona sense rol d'administració no pot accedir a l'operació ni al llistat
+And una persona sense rol de Direcció ni administració no pot accedir a l'operació ni al llistat
 And un fitxer invàlid no substituïx ni deixa parcialment guardat cap fitxer anterior
 
-### ✅ Escenari 5: gestió administrativa sense exposició dels documents
+### ✅ Escenari 5: gestió des de Direcció sense exposició dels documents
 
-Given una persona amb rol d'administració i XML d'avaluació emmagatzemats
-When obri el gestor de resultats acadèmics
+Given una persona amb rol de Direcció o administració i avaluacions d'ITACA emmagatzemades
+When obri el gestor d'avaluacions d'ITACA
 Then veu només les metadades necessàries per identificar cada càrrega
 And pot pujar, substituir o eliminar un XML
 But no pot editar el contingut ni descarregar-lo des del navegador
@@ -71,12 +72,12 @@ And la resta d'orígens de convalidació continua disponible
 ## Regles de negoci
 
 - La unitat ordinària aportada com a estudi previ és un mòdul aprovat concret; el cicle és informació contextual.
-- Un resultat està aprovat quan `FI >= 5`; si no, pot estar aprovat quan `EX >= 5`. La convocatòria mostrada correspon a l'avaluació que acredita l'aprovat.
+- Un resultat està aprovat quan `FI >= 5`; si no, pot estar aprovat quan `EX >= 5`. La convocatòria que acredita l'aprovat es conserva internament per a traçabilitat.
 - Els resultats repetits en fitxers, anys o cicles diferents no es fusionen automàticament.
 - El servidor valida sempre el resultat contra el NIA de l'alumne autenticat abans de tramitar.
 - Les peticions guarden una còpia immutable de les dades acadèmiques necessàries i no una dependència viva amb el fitxer.
-- Els noms i les rutes dels XML són informació exclusiva del gestor d'administració i no es mostren a alumnat ni Direcció.
-- El gestor permet pujar, llistar metadades, substituir i eliminar; no permet editar ni descarregar el contingut.
+- Els noms dels XML només es mostren dins del gestor restringit de Direcció i les rutes no s'exposen mai.
+- El gestor permet pujar, llistar metadades i eliminar; no permet substituir, editar ni descarregar el contingut.
 - Els XML no es desen en un disc públic, no tenen URL de descàrrega i queden fora del control de versions.
 - Els tests del lector utilitzen XML sintètic autocontingut; no incorporen exportacions reals ni dades personals.
 - El cas especial de convalidació per cicle no forma part d'este canvi.
@@ -88,19 +89,19 @@ And la resta d'orígens de convalidació continua disponible
 - `app/Application/Convalidacio/ConvalidacioService.php` — revalidació de la selecció i còpia immutable en tramitar.
 - `app/Entities/Convalidacio.php` — atributs del mòdul origen i eliminació de la relació ordinària amb cicle.
 - `app/Http/Controllers/AlumnoConvalidacioController.php` — dades i validació de la selecció de mòdul aprovat.
-- `app/Http/Controllers/AdministradorConvalidacioXmlController.php` — càrrega, substitució i eliminació restringides.
-- `routes/administrador.php` — rutes exclusives del gestor privat.
+- `app/Http/Controllers/DireccionConvalidacioXmlController.php` — càrrega, substitució i eliminació restringides.
+- `routes/direccion.php` — rutes del gestor privat integrades en convalidacions.
 - `resources/views/intranet/convalidacions/alumno/create.blade.php` — selector dels resultats aprovats.
 - `resources/views/intranet/convalidacions/alumno/show.blade.php` — consulta de la còpia acadèmica.
 - `resources/views/intranet/convalidacions/direccion/show.blade.php` — consulta de la còpia acadèmica per Direcció.
-- `resources/views/intranet/convalidacions/administrador/xml.blade.php` — gestor de metadades i operacions permeses.
+- `resources/views/intranet/convalidacions/direccion/xml.blade.php` — gestor de metadades i operacions permeses.
 - `config/filesystems.php` i `config/convalidacions.php` — disc privat i límit de càrrega.
 - `.gitignore` — exclusió defensiva del directori d'XML, encara que `storage/` ja està ignorat.
 - `database/migrations/*_replace_ciclo_origen_with_modulo_snapshot.php` — substitució explícita del model de dades actual.
-- `database/migrations/*_add_convalidacions_xml_admin_menu.php` — accés al gestor per administració.
+- `database/migrations/*_remove_convalidacions_xml_main_menu.php` — retirada de l'accés principal incorrecte.
 - `tests/Unit/Application/Convalidacio/ResultatsAcademicsXmlServiceTest.php` — FI, EX, suspesos, jerarquia de cicle, múltiples fitxers i XML invàlid.
 - `tests/Feature/ConvalidacioFlowTest.php` — selecció, manipulació, còpia immutable i consulta posterior.
-- `tests/Feature/AdministradorConvalidacioXmlTest.php` — autorització, validació, substitució, eliminació i absència de descàrrega.
+- `tests/Feature/DireccionConvalidacioXmlTest.php` — autorització, validació, substitució, eliminació i absència de descàrrega.
 
 ## Riscos
 

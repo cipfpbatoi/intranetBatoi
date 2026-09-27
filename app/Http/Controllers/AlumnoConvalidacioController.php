@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ class AlumnoConvalidacioController extends Controller
             'items.*.modulo_destino_id' => ['required', 'string'],
             'items.*.origen' => ['required', 'string', Rule::in(array_keys(Convalidacio::origenOptions()))],
             'items.*.resultat_origen_id' => ['nullable', 'string', 'size:64'],
-            'items.*.declaracio_responsable' => ['nullable', 'accepted'],
+            'items.*.declaracio_responsable' => ['nullable', 'boolean'],
             'items.*.document' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:' . config('convalidacions.max_document_kb', 5120)],
         ]);
 
@@ -70,6 +71,12 @@ class AlumnoConvalidacioController extends Controller
             $sollicitud = $this->service->tramitar($this->alumno(), $validated['submission_token'], $items);
         } catch (ConvalidacioException $exception) {
             return back()->withErrors(['items' => $exception->getMessage()])->withInput();
+        } catch (\Throwable $exception) {
+            Log::error('Error tècnic en tramitar una sol·licitud de convalidació.', ['exception' => $exception]);
+
+            return back()->withErrors([
+                'items' => 'No s\'ha pogut tramitar la sol·licitud per un problema tècnic. No s\'ha guardat cap petició; torna-ho a intentar més tard.',
+            ])->withInput();
         }
 
         return redirect()->route('convalidacions.show', $sollicitud)->with('success', 'Sol·licitud tramitada correctament.');
