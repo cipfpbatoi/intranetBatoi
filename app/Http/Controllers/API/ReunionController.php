@@ -3,6 +3,8 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Intranet\Application\Reunion\CreateReunionData;
+use Intranet\Application\Reunion\CreateReunionService;
 use Intranet\Entities\Reunion;
 
 /**
@@ -52,8 +54,10 @@ class ReunionController extends ApiResourceController
     {
         $this->authorize('create', Reunion::class);
         $payload = $request->validate($this->storeRules());
-        $payload['idProfesor'] = (string) $request->user()->dni;
-        $reunion = Reunion::query()->create($payload);
+        $reunion = app(CreateReunionService::class)->create(
+            CreateReunionData::fromArray($payload),
+            $request->user()
+        );
 
         return $this->sendResponse(['created' => true, 'id' => $reunion->id], 'OK');
     }

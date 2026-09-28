@@ -105,17 +105,79 @@ class ReunionWebAuthorizationFeatureTest extends TestCase
         ]);
     }
 
+    public function test_store_crea_la_mateixa_reunio_completa_que_l_api(): void
+    {
+        DB::table('grupos')->insert([
+            'codigo' => 'G1',
+            'nombre' => 'Grup propi (LFP)',
+            'tutor' => 'P1',
+            'curso' => 1,
+        ]);
+        $this->actingAs(Profesor::query()->findOrFail('P1'), 'profesor');
+
+        $response = $this->post('/reunion/create', [
+            'tipo' => 2,
+            'curso' => '2026-2027',
+            'numero' => 1,
+            'fecha' => '2026-10-01 10:00:00',
+            'descripcion' => 'Reunió web completa',
+            'idEspacio' => 'A101',
+            'idProfesor' => 'P2',
+        ]);
+
+        $meetingId = (int) DB::table('reuniones')->max('id');
+        $response->assertRedirect(route('reunion.update', ['reunion' => $meetingId]));
+        $this->assertDatabaseHas('reuniones', [
+            'id' => $meetingId,
+            'idProfesor' => 'P1',
+            'descripcion' => 'Reunió web completa',
+        ]);
+        $this->assertSame(
+            count(config('tablas.tipoReunion.2.ordenes')),
+            DB::table('ordenes_reuniones')->where('idReunion', $meetingId)->count()
+        );
+    }
+
+    public function test_store_rebutja_una_acta_per_un_grup_alie(): void
+    {
+        DB::table('grupos')->insert([
+            ['codigo' => 'G1', 'tutor' => 'P1'],
+            ['codigo' => 'G2', 'tutor' => 'P2'],
+        ]);
+        $this->actingAs(Profesor::query()->findOrFail('P1'), 'profesor');
+
+        $this->post('/reunion/create', [
+            'tipo' => 7,
+            'idGrupo' => 'G2',
+            'curso' => '2026-2027',
+            'numero' => 31,
+            'fecha' => '2026-10-01 10:00:00',
+            'descripcion' => 'Acta manipulada web',
+            'idEspacio' => 'A101',
+        ])->assertForbidden();
+
+        $this->assertDatabaseMissing('reuniones', ['descripcion' => 'Acta manipulada web']);
+    }
+
     private function createSchema(): void
     {
         Schema::create('profesores', function (Blueprint $table): void {
             $table->string('dni', 10)->primary();
             $table->unsignedInteger('rol')->default(3);
+            $table->string('apellido1')->nullable();
+            $table->string('apellido2')->nullable();
+            $table->unsignedInteger('departamento')->nullable();
+            $table->boolean('activo')->default(true);
+            $table->date('fecha_baja')->nullable();
             $table->string('sustituye_a', 10)->nullable();
             $table->timestamps();
         });
         Schema::create('grupos', function (Blueprint $table): void {
             $table->string('codigo', 10)->primary();
+            $table->string('nombre')->nullable();
             $table->string('tutor', 10)->nullable();
+            $table->unsignedTinyInteger('curso')->nullable();
+            $table->unsignedInteger('idCiclo')->nullable();
         });
         Schema::create('alumnos', function (Blueprint $table): void {
             $table->string('nia', 15)->primary();
@@ -123,6 +185,10 @@ class ReunionWebAuthorizationFeatureTest extends TestCase
         Schema::create('alumnos_grupos', function (Blueprint $table): void {
             $table->string('idAlumno', 15);
             $table->string('idGrupo', 10);
+        });
+        Schema::create('horarios', function (Blueprint $table): void {
+            $table->string('idGrupo', 10)->nullable();
+            $table->string('idProfesor', 10)->nullable();
         });
         Schema::create('reuniones', function (Blueprint $table): void {
             $table->increments('id');
@@ -148,6 +214,7 @@ class ReunionWebAuthorizationFeatureTest extends TestCase
         Schema::create('ordenes_reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idReunion');
+            $table->string('codigo')->nullable();
             $table->unsignedTinyInteger('orden');
             $table->string('descripcion')->nullable();
             $table->text('resumen')->nullable();

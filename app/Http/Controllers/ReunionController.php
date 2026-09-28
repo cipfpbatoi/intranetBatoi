@@ -4,8 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Reunion\CreateReunionData;
+use Intranet\Application\Reunion\CreateReunionService;
 use Intranet\Application\Reunion\ReunionArchiveService;
-use Intranet\Application\Reunion\ReunionContinuityService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -27,7 +28,6 @@ use Intranet\Jobs\SendEmail;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\UI\FormBuilder;
-use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -46,9 +46,6 @@ class ReunionController extends ModalController
 
     /** @var ReunionArchiveService|null */
     private ?ReunionArchiveService $archiveService = null;
-
-    /** @var ReunionContinuityService|null */
-    private ?ReunionContinuityService $continuityService = null;
 
     /**
      * @var ReunionFeValuationService|null
@@ -70,14 +67,12 @@ class ReunionController extends ModalController
         ?GrupoService $grupoService = null,
         ?ReunionService $reunionService = null,
         ?ReunionFeValuationService $feValuationService = null,
-        ?ReunionContinuityService $continuityService = null,
         ?ReunionArchiveService $archiveService = null
     ) {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->reunionService = $reunionService;
         $this->feValuationService = $feValuationService;
-        $this->continuityService = $continuityService;
         $this->archiveService = $archiveService;
     }
 
@@ -97,18 +92,6 @@ class ReunionController extends ModalController
         }
 
         return $this->reunionService;
-    }
-
-    /**
-     * Retorna el servei de continuïtat de les actes.
-     */
-    private function continuity(): ReunionContinuityService
-    {
-        if ($this->continuityService === null) {
-            $this->continuityService = app(ReunionContinuityService::class);
-        }
-
-        return $this->continuityService;
     }
 
     /**
@@ -150,20 +133,16 @@ class ReunionController extends ModalController
         ]);
     }
 
-    public function store(ReunionStoreRequest $request)
+    /**
+     * Crea una reunió completa mitjançant el cas d'ús compartit amb l'API.
+     */
+    public function store(ReunionStoreRequest $request, CreateReunionService $createReunion)
     {
         $this->authorize('create', Reunion::class);
-        $request->merge(['idProfesor' => (string) authUser()->dni]);
-        $this->normalitzaGrupoDocente($request);
-
-        $elemento = DB::transaction(function() use ($request) {
-            $id = $this->persist($request);
-            $elemento = Reunion::findOrFail($id);
-            $service = new MeetingOrderGenerateService($elemento, $this->continuity());
-            $service->exec();
-            $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
-            return $elemento;
-        });
+        $elemento = $createReunion->create(
+            CreateReunionData::fromArray($request->validated()),
+            $request->user()
+        );
 
         if ($elemento->fichero != '') {
             return back();

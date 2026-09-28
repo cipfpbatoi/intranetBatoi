@@ -108,7 +108,7 @@ class ReunionArchiveControllerTest extends TestCase
             ->once()
             ->andThrow(new RuntimeException('Error simulat de PDF'));
 
-        (new ReunionController(null, null, null, null, $archive))->saveFile(3);
+        (new ReunionController(null, null, null, $archive))->saveFile(3);
 
         $this->assertDatabaseHas('reuniones', ['id' => 3, 'archivada' => 0, 'fichero' => null]);
         $this->assertDatabaseHas('ordenes_reuniones', ['idReunion' => 3, 'resumen' => null]);
