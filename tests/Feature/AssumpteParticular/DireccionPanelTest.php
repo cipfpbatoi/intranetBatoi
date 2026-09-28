@@ -16,6 +16,7 @@ use Intranet\Application\AssumpteParticular\AssumpteParticularDireccionQueryServ
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\AssumpteParticularDireccionPanel;
+use Intranet\Livewire\AssumpteParticularHistoricPanel;
 use Livewire\Livewire;
 use Mockery;
 use Tests\TestCase;
@@ -75,10 +76,20 @@ class DireccionPanelTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_direccio_regularitza_un_dia_i_el_mostra_en_l_historic(): void
+    public function test_el_panell_de_pendents_enllaca_l_historic_sense_carregar_lo(): void
     {
         Livewire::actingAs($this->professor('DIR001'), 'profesor')
             ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSee('Històric')
+            ->assertSeeHtml(route('assumptes-particulars.direccion.historic'))
+            ->assertDontSee('Històric d’autoritzacions del curs')
+            ->assertDontSee('Incorporar un dia ja gaudit');
+    }
+
+    public function test_direccio_regularitza_un_dia_i_el_mostra_en_l_historic(): void
+    {
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
             ->assertSee('Incorporar un dia ja gaudit')
             ->set('professorRegularitzacio', 'PROF01')
             ->set('dataRegularitzacio', '2026-09-11')
@@ -104,14 +115,14 @@ class DireccionPanelTest extends TestCase
         $this->assertDatabaseCount('documentos', 0);
     }
 
-    public function test_administracio_no_pot_regularitzar_dies(): void
+    public function test_nomes_direccio_pot_obrir_l_historic(): void
     {
         Livewire::actingAs($this->professor('ADM001'), 'profesor')
-            ->test(AssumpteParticularDireccionPanel::class)
-            ->assertDontSee('Incorporar un dia ja gaudit')
-            ->set('professorRegularitzacio', 'PROF01')
-            ->set('dataRegularitzacio', '2026-09-11')
-            ->call('regularitzar')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertForbidden();
+
+        Livewire::actingAs($this->professor('PROF01'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
             ->assertForbidden();
 
         $this->assertDatabaseCount('assumptes_particulars', 0);
@@ -141,7 +152,7 @@ class DireccionPanelTest extends TestCase
         ])->save();
 
         Livewire::actingAs($this->professor('DIR001'), 'profesor')
-            ->test(AssumpteParticularDireccionPanel::class)
+            ->test(AssumpteParticularHistoricPanel::class)
             ->assertSee('Històric d’autoritzacions del curs')
             ->assertSee('Sol·licitud')
             ->assertSee('Regularització')
@@ -149,6 +160,32 @@ class DireccionPanelTest extends TestCase
             ->assertSeeHtml(route('assumptes-particulars.document', [
                 'assumpteParticular' => $ordinaria->id,
             ]));
+    }
+
+    public function test_filtra_l_historic_per_professor_data_tipus_i_origen(): void
+    {
+        $ordinaria = $this->crearPeticio('PROF01', '2026-10-01', AssumpteParticular::ESTAT_AUTORITZADA);
+        $ordinaria->forceFill(['resolta_per' => 'DIR001'])->save();
+        $regularitzada = $this->crearPeticio('PROF02', '2026-09-18', AssumpteParticular::ESTAT_AUTORITZADA);
+        $regularitzada->forceFill([
+            'tipus' => AssumpteParticular::TIPUS_NO_LECTIU,
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+        ])->save();
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertSee('Professor 01')
+            ->assertSee('Professor 02')
+            ->set('filtreProfessor', 'PROF02')
+            ->set('filtreData', '2026-09-18')
+            ->set('filtreTipus', AssumpteParticular::TIPUS_NO_LECTIU)
+            ->set('filtreOrigen', AssumpteParticular::ORIGEN_REGULARITZACIO)
+            ->assertSee('18/09/2026')
+            ->assertDontSee('01/10/2026')
+            ->call('netejarFiltres')
+            ->assertSee('01/10/2026')
+            ->assertSee('18/09/2026');
     }
 
     /** El panell mostra per defecte el seté dia natural i manté el filtre manual. */

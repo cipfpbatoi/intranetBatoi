@@ -33,7 +33,8 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Una petició urgent confirmada avisa per correu la directora configurada i posa en còpia el cap d'estudis configurat, sense adjunts; la previsualització no envia cap avís.
 - La denegació comunica el motiu al professor i l'autorització li envia un enllaç autenticat a la resolució, sense adjuntar el PDF.
 - Cada transició genera com a màxim un registre de correu; una fallada d'enviament no desfà la petició i queda registrada per a reintents sense exposar dades sensibles als logs.
-- Direcció consulta totes les autoritzacions del curs i identifica qui les ha tramitades.
+- Direcció consulta totes les autoritzacions del curs en una pantalla separada, accessible des del panell de peticions pendents, i identifica qui les ha tramitades.
+- L'històric permet filtrar per professor, data de gaudi, tipus i origen.
 - Una regularització representa una autorització prèvia externa, consumix saldo i queda diferenciada de les sol·licituds ordinàries.
 - Les regularitzacions no creen `Falta`, PDF, entrada documental ni notificació; l'arxiu de curs les ignora.
 - Només Direcció pot regularitzar dies ja gaudits del curs vigent, amb saldo disponible i sense cap registre previ del professor en la mateixa data.
@@ -260,9 +261,33 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 
 **Given** peticions autoritzades durant el curs actual
 
-**When** Direcció obri el panell d'assumptes particulars
+**When** Direcció accedix a l'històric des del panell d'assumptes particulars
 
 **Then** veu el professor, la data de gaudi, el tipus, l'origen, la data de resolució i la persona que l'ha tramitada.
+
+### ✅ L'històric està separat del panell de pendents
+
+**Given** una persona amb rol de Direcció en el panell de peticions pendents
+
+**When** selecciona l'accés a l'històric
+
+**Then** obri una pantalla separada i el panell de pendents no carrega la taula històrica ni el formulari de regularització.
+
+### ✅ L'accés a l'històric està restringit a Direcció
+
+**Given** una persona sense rol de Direcció
+
+**When** intenta obrir directament la pantalla històrica
+
+**Then** rep una denegació d'accés i no pot consultar ni incorporar autoritzacions.
+
+### ✅ Direcció filtra l'històric d'autoritzacions
+
+**Given** autoritzacions del curs vigent de diferents professors, dates, tipus i orígens
+
+**When** Direcció aplica un o diversos filtres
+
+**Then** només veu els registres coincidents i pot netejar tots els filtres per recuperar l'històric complet.
 
 ### ✅ L'històric diferencia les regularitzacions
 

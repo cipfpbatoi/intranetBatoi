@@ -88,6 +88,14 @@ class RouteNameContractTest extends TestCase
             absolute: false
         ));
         $this->assertContains('role:direccion', $route->gatherMiddleware());
+
+        $historic = Route::getRoutes()->getByName('assumptes-particulars.direccion.historic');
+        $this->assertNotNull($historic);
+        $this->assertSame('/direccion/assumptes-particulars/historic', route(
+            'assumptes-particulars.direccion.historic',
+            absolute: false
+        ));
+        $this->assertContains('role:direccion', $historic->gatherMiddleware());
     }
 
     public function test_les_mutacions_de_reunions_no_accepten_get(): void

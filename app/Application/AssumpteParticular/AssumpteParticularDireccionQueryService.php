@@ -104,12 +104,22 @@ class AssumpteParticularDireccionQueryService
      *
      * @return array<int, array<string, mixed>>
      */
-    public function autoritzades(string $curs): array
+    public function autoritzades(
+        string $curs,
+        ?string $professor = null,
+        ?string $data = null,
+        ?string $tipus = null,
+        ?string $origen = null
+    ): array
     {
         return AssumpteParticular::query()
             ->with(['profesor', 'resolutor'])
             ->where('curs', $curs)
             ->where('estat', AssumpteParticular::ESTAT_AUTORITZADA)
+            ->when(filled($professor), static fn ($query) => $query->where('idProfesor', $professor))
+            ->when(filled($data), static fn ($query) => $query->whereDate('data_gaudi', $data))
+            ->when(filled($tipus), static fn ($query) => $query->where('tipus', $tipus))
+            ->when(filled($origen), static fn ($query) => $query->where('origen', $origen))
             ->orderByDesc('data_gaudi')
             ->orderByDesc('id')
             ->get()
