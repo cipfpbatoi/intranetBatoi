@@ -153,6 +153,72 @@ class AssumpteParticularService
     }
 
     /**
+     * Registra una autorització històrica sense crear falta, document ni notificació.
+     */
+    public function regularitzar(
+        string $dni,
+        CarbonInterface|string $dataGaudi,
+        string $tipus,
+        string $resoltaPer,
+        CarbonInterface|string|null $hui = null
+    ): AssumpteParticular {
+        if (!in_array($tipus, [
+            AssumpteParticular::TIPUS_LECTIU,
+            AssumpteParticular::TIPUS_NO_LECTIU,
+        ], true)) {
+            throw new AssumpteParticularException('El tipus de dia indicat no és vàlid.');
+        }
+
+        $data = $this->data($dataGaudi);
+        $avui = $hui === null ? CarbonImmutable::today() : $this->data($hui);
+        if ($data->greaterThan($avui)) {
+            throw new AssumpteParticularException('Només es poden regularitzar dies ja gaudits.');
+        }
+
+        $curs = $this->cursVigent($avui);
+        [$inici, $fi] = $this->limitsDelCurs($curs);
+        if ($data->lessThan($inici) || $data->greaterThan($fi)) {
+            throw new AssumpteParticularException('La data ha de pertànyer al curs vigent.');
+        }
+
+        return DB::transaction(function () use (
+            $dni,
+            $data,
+            $tipus,
+            $resoltaPer,
+            $curs,
+            $inici,
+            $fi
+        ): AssumpteParticular {
+            $professor = Profesor::query()->lockForUpdate()->findOrFail($dni);
+            $duplicada = AssumpteParticular::query()
+                ->where('idProfesor', $dni)
+                ->whereDate('data_gaudi', $data->toDateString())
+                ->lockForUpdate()
+                ->exists();
+            if ($duplicada) {
+                throw new AssumpteParticularException(
+                    'El professor ja té una petició o regularització per a esta data.'
+                );
+            }
+
+            $this->validarSaldo($professor, $curs, $tipus, $inici, $fi);
+
+            return AssumpteParticular::query()->create([
+                'idProfesor' => $dni,
+                'data_gaudi' => $data->toDateString(),
+                'curs' => $curs,
+                'tipus' => $tipus,
+                'torn' => $this->tornService->delProfessor($dni),
+                'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+                'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+                'resolta_per' => $resoltaPer,
+                'resolta_at' => now(),
+            ]);
+        }, 3);
+    }
+
+    /**
      * Autoritza una petició amb la falta i el document firmat dins d'una transacció.
      */
     public function autoritzar(int $id, string $resoltaPer, string $documentFirmat): AssumpteParticular

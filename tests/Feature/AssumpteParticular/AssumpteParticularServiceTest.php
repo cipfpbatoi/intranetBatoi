@@ -397,6 +397,107 @@ class AssumpteParticularServiceTest extends TestCase
         ));
     }
 
+    public function test_regularitzar_consumix_saldo_sense_generar_artefactes_ni_avisos(): void
+    {
+        Mail::fake();
+        $this->crearProfesor('PROF001');
+
+        $peticio = $this->service->regularitzar(
+            'PROF001',
+            '2026-09-11',
+            AssumpteParticular::TIPUS_LECTIU,
+            'DIRE001'
+        );
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->estat);
+        $this->assertSame(AssumpteParticular::ORIGEN_REGULARITZACIO, $peticio->origen);
+        $this->assertSame('DIRE001', $peticio->resolta_per);
+        $this->assertNull($peticio->falta_id);
+        $this->assertNull($peticio->resolucio_document);
+        $this->assertSame(2.0, $this->service->saldo(
+            'PROF001',
+            '2026-2027',
+            AssumpteParticular::TIPUS_LECTIU
+        ));
+        $this->assertDatabaseCount('faltas', 0);
+        $this->assertDatabaseCount('documentos', 0);
+        $this->assertDatabaseCount('assumpte_particular_mail_deliveries', 0);
+        Queue::assertNothingPushed();
+        Mail::assertSent(AssumpteParticularAvis::class, 0);
+    }
+
+    public function test_regularitzar_rebutja_duplicats_i_dies_sense_saldo(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearPeticio('PROF001', '2026-09-11', AssumpteParticular::ESTAT_DENEGADA);
+
+        try {
+            $this->service->regularitzar(
+                'PROF001',
+                '2026-09-11',
+                AssumpteParticular::TIPUS_LECTIU,
+                'DIRE001'
+            );
+            $this->fail('S’esperava un error per data duplicada.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('ja té una petició', $exception->getMessage());
+        }
+
+        foreach (['2026-09-14', '2026-09-16', '2026-09-18'] as $data) {
+            $this->crearPeticioAutoritzada('PROF001', $data);
+        }
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('No queda cap dia complet');
+        $this->service->regularitzar(
+            'PROF001',
+            '2026-09-21',
+            AssumpteParticular::TIPUS_LECTIU,
+            'DIRE001'
+        );
+    }
+
+    public function test_regularitzar_rebutja_dates_futures_o_fora_del_curs_vigent(): void
+    {
+        $this->crearProfesor('PROF001');
+
+        foreach (
+            [
+                ['2026-10-09', 'dies ja gaudits'],
+                ['2026-07-31', 'curs vigent'],
+            ] as [$data, $missatge]
+        ) {
+            try {
+                $this->service->regularitzar(
+                    'PROF001',
+                    $data,
+                    AssumpteParticular::TIPUS_NO_LECTIU,
+                    'DIRE001'
+                );
+                $this->fail('S’esperava una data de regularització invàlida.');
+            } catch (AssumpteParticularException $exception) {
+                $this->assertStringContainsString($missatge, $exception->getMessage());
+            }
+        }
+
+        $this->assertDatabaseCount('assumptes_particulars', 0);
+    }
+
+    public function test_l_arxiu_ignora_regularitzacions_sense_pdf(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->service->regularitzar(
+            'PROF001',
+            '2026-09-11',
+            AssumpteParticular::TIPUS_LECTIU,
+            'DIRE001'
+        );
+
+        app(AssumpteParticularArchiveService::class)->arxivarPendents();
+
+        $this->assertDatabaseCount('documentos', 0);
+    }
+
     public function test_nomes_autoritza_huit_peticions_del_mateix_dia(): void
     {
         for ($i = 1; $i <= 9; $i++) {
@@ -619,6 +720,7 @@ class AssumpteParticularServiceTest extends TestCase
             $table->string('tipus');
             $table->string('torn');
             $table->string('estat')->default(AssumpteParticular::ESTAT_PENDENT);
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->text('motivacio_excepcional')->nullable();
             $table->text('pla_activitats')->nullable();
             $table->text('resolucio')->nullable();

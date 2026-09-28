@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Entities\AssumpteParticular;
 use Tests\TestCase;
 
 /** Comprova que les resolucions existents entren en el gestor documental. */
@@ -48,6 +49,7 @@ class AssumpteParticularArchiveMigrationTest extends TestCase
             $table->date('data_gaudi');
             $table->string('curs');
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->string('resolucio_document')->nullable();
         });
     }

@@ -246,6 +246,7 @@ class AssumpteParticularProfessorPanelTest extends TestCase
             $table->string('tipus');
             $table->string('torn');
             $table->string('estat')->default(AssumpteParticular::ESTAT_PENDENT);
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->text('motivacio_excepcional')->nullable();
             $table->text('pla_activitats')->nullable();
             $table->text('resolucio')->nullable();

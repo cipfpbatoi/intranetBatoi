@@ -54,7 +54,6 @@ class AssumpteParticularDireccionPanel extends Component
         $this->teRubricaDirectora = $directora !== null
             && app(RubricaAssumpteParticularService::class)->exists($directora);
         $this->filtreData = CarbonImmutable::today()->addDays(7)->toDateString();
-
         $this->recarregar();
     }
 

@@ -33,6 +33,11 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Una petició urgent confirmada avisa per correu la directora configurada i posa en còpia el cap d'estudis configurat, sense adjunts; la previsualització no envia cap avís.
 - La denegació comunica el motiu al professor i l'autorització li envia un enllaç autenticat a la resolució, sense adjuntar el PDF.
 - Cada transició genera com a màxim un registre de correu; una fallada d'enviament no desfà la petició i queda registrada per a reintents sense exposar dades sensibles als logs.
+- Direcció consulta totes les autoritzacions del curs en una pantalla separada, accessible des del panell de peticions pendents, i identifica qui les ha tramitades.
+- L'històric permet filtrar per professor, data de gaudi, tipus i origen.
+- Una regularització representa una autorització prèvia externa, consumix saldo i queda diferenciada de les sol·licituds ordinàries.
+- Les regularitzacions no creen `Falta`, PDF, entrada documental ni notificació; l'arxiu de curs les ignora.
+- Només Direcció pot regularitzar dies ja gaudits del curs vigent, amb saldo disponible i sense cap registre previ del professor en la mateixa data.
 
 ## Escenaris
 
@@ -251,3 +256,91 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** es processa l'avís
 
 **Then** la denegació es conserva, l'error queda registrat sense dades sensibles i l'enviament fallit es pot reintentar.
+
+### ✅ Direcció consulta l'històric d'autoritzacions
+
+**Given** peticions autoritzades durant el curs actual
+
+**When** Direcció accedix a l'històric des del panell d'assumptes particulars
+
+**Then** veu el professor, la data de gaudi, el tipus, l'origen, la data de resolució i la persona que l'ha tramitada.
+
+### ✅ L'històric està separat del panell de pendents
+
+**Given** una persona amb rol de Direcció en el panell de peticions pendents
+
+**When** selecciona l'accés a l'històric
+
+**Then** obri una pantalla separada i el panell de pendents no carrega la taula històrica ni el formulari de regularització.
+
+### ✅ L'accés a l'històric està restringit a Direcció
+
+**Given** una persona sense rol de Direcció
+
+**When** intenta obrir directament la pantalla històrica
+
+**Then** rep una denegació d'accés i no pot consultar ni incorporar autoritzacions.
+
+### ✅ Direcció filtra l'històric d'autoritzacions
+
+**Given** autoritzacions del curs vigent de diferents professors, dates, tipus i orígens
+
+**When** Direcció aplica un o diversos filtres
+
+**Then** només veu els registres coincidents i pot netejar tots els filtres per recuperar l'històric complet.
+
+### ✅ L'històric diferencia les regularitzacions
+
+**Given** una autorització ordinària i una regularització històrica
+
+**When** Direcció consulta l'històric
+
+**Then** distingix els dos orígens i només veu l'enllaç de resolució quan existix un PDF.
+
+### ✅ Direcció registra un dia ja gaudit
+
+**Given** un professor amb saldo i un dia passat del curs vigent
+
+**When** Direcció confirma la regularització com a lectiva o no lectiva
+
+**Then** es crea una autorització històrica, s'identifica qui l'ha introduïda i el dia consumix saldo.
+
+### ✅ La regularització no crea artefactes ordinaris
+
+**Given** un dia autoritzat prèviament fora de la intranet
+
+**When** Direcció el regularitza
+
+**Then** no es crea cap `Falta`, PDF, entrada documental ni notificació.
+
+### ✅ No es dupliquen dies regularitzats
+
+**Given** que un professor ja té una petició o regularització en una data
+
+**When** Direcció intenta registrar de nou el mateix dia
+
+**Then** l'operació es rebutja sense modificar el saldo.
+
+### ✅ La regularització respecta el saldo
+
+**Given** un professor sense un dia complet disponible del tipus seleccionat
+
+**When** Direcció intenta regularitzar-lo
+
+**Then** l'operació es rebutja i no es crea cap registre.
+
+### ✅ La regularització està restringida a Direcció
+
+**Given** un professor ordinari o una persona administradora sense rol de Direcció
+
+**When** intenta executar una regularització
+
+**Then** rep una denegació d'accés i no es modifica cap dada.
+
+### ✅ Només es regularitzen dies ja gaudits del curs vigent
+
+**Given** una data futura o fora del curs vigent
+
+**When** Direcció intenta regularitzar-la
+
+**Then** l'operació es rebutja amb un missatge específic.

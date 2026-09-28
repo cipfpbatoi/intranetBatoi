@@ -100,6 +100,44 @@ class AssumpteParticularDireccionQueryService
     }
 
     /**
+     * Retorna totes les autoritzacions del curs per a l'històric de Direcció.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function autoritzades(
+        string $curs,
+        ?string $professor = null,
+        ?string $data = null,
+        ?string $tipus = null,
+        ?string $origen = null
+    ): array
+    {
+        return AssumpteParticular::query()
+            ->with(['profesor', 'resolutor'])
+            ->where('curs', $curs)
+            ->where('estat', AssumpteParticular::ESTAT_AUTORITZADA)
+            ->when(filled($professor), static fn ($query) => $query->where('idProfesor', $professor))
+            ->when(filled($data), static fn ($query) => $query->whereDate('data_gaudi', $data))
+            ->when(filled($tipus), static fn ($query) => $query->where('tipus', $tipus))
+            ->when(filled($origen), static fn ($query) => $query->where('origen', $origen))
+            ->orderByDesc('data_gaudi')
+            ->orderByDesc('id')
+            ->get()
+            ->map(static fn (AssumpteParticular $peticio): array => [
+                'id' => (int) $peticio->id,
+                'professor' => $peticio->profesor?->fullName ?? $peticio->idProfesor,
+                'dni' => $peticio->idProfesor,
+                'data_formatada' => $peticio->data_gaudi->format('d/m/Y'),
+                'tipus' => $peticio->tipus,
+                'origen' => $peticio->origen,
+                'resolta_at' => $peticio->resolta_at?->format('d/m/Y H:i') ?? '—',
+                'resolta_per' => $peticio->resolutor?->fullName ?? $peticio->resolta_per ?? '—',
+                'te_document' => filled($peticio->resolucio_document),
+            ])
+            ->all();
+    }
+
+    /**
      * @param Collection<int, AssumpteParticular> $peticions
      * @return array<string, int>
      */

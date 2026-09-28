@@ -17,6 +17,9 @@ class AssumpteParticular extends Model
     public const ESTAT_DENEGADA = 'denegada';
     public const ESTAT_CANCEL_LADA = 'cancel_lada';
 
+    public const ORIGEN_SOLLICITUD = 'sollicitud';
+    public const ORIGEN_REGULARITZACIO = 'regularitzacio';
+
     public const TIPUS_LECTIU = 'lectiu';
     public const TIPUS_NO_LECTIU = 'no_lectiu';
 
@@ -34,6 +37,7 @@ class AssumpteParticular extends Model
         'tipus',
         'torn',
         'estat',
+        'origen',
         'motivacio_excepcional',
         'pla_activitats',
         'resolucio',
@@ -47,6 +51,7 @@ class AssumpteParticular extends Model
 
     protected $attributes = [
         'estat' => self::ESTAT_PENDENT,
+        'origen' => self::ORIGEN_SOLLICITUD,
     ];
 
     protected $casts = [

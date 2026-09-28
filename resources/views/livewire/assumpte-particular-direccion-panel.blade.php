@@ -11,10 +11,18 @@
             <h2 class="h4 mb-1">Assumptes particulars pendents</h2>
             <p class="text-muted mb-0">Peticions agrupades per data i ordenades per prioritat.</p>
         </div>
-        <button type="button" class="btn btn-outline-primary" wire:click="recarregar" wire:loading.attr="disabled">
-            <i class="fa fa-refresh" aria-hidden="true"></i>
-            Actualitzar
-        </button>
+        <div class="d-flex gap-2">
+            @if ($potAutoritzar)
+                <a class="btn btn-outline-secondary" href="{{ route('assumptes-particulars.direccion.historic') }}">
+                    <i class="fa fa-history" aria-hidden="true"></i>
+                    Històric
+                </a>
+            @endif
+            <button type="button" class="btn btn-outline-primary" wire:click="recarregar" wire:loading.attr="disabled">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                Actualitzar
+            </button>
+        </div>
     </div>
 
     @unless ($potAutoritzar)
@@ -211,4 +219,5 @@
             </div>
         </section>
     @endforeach
+
 </div>

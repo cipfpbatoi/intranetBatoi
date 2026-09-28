@@ -77,4 +77,15 @@ class AssumpteParticularPolicy
             && filled(config('avisos.director'))
             && esRol($user->rol, config('roles.rol.direccion'));
     }
+
+    /**
+     * Només Direcció pot registrar autoritzacions històriques.
+     *
+     * @param mixed $user
+     */
+    public function regularize($user): bool
+    {
+        return $this->hasProfesorIdentity($user)
+            && esRol($user->rol, config('roles.rol.direccion'));
+    }
 }

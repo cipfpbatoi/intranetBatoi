@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
 use Tests\TestCase;
@@ -493,6 +494,7 @@ class FaltaControllerTest extends TestCase
             $table->id();
             $table->unsignedBigInteger('falta_id')->nullable();
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
         });
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
             Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
