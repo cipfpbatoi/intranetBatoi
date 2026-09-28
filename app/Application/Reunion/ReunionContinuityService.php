@@ -17,8 +17,6 @@ class ReunionContinuityService
 
     private const PREVIOUS_AGREEMENTS = 'Acords adoptats';
 
-    private const AGREEMENTS_REVIEW = "Revisió d'acords adoptats a la sessió anterior";
-
     private const NESE_FOLLOW_UP = 'Alumnes amb dificultats acadèmiques i mesures a adoptar';
 
     /**
@@ -33,19 +31,35 @@ class ReunionContinuityService
             return [];
         }
 
-        $summaries = $previous->ordenes()
-            ->whereIn('descripcion', [self::PREVIOUS_AGREEMENTS, self::NESE_FOLLOW_UP])
-            ->pluck('resumen', 'descripcion');
+        $orders = $previous->ordenes()
+            ->where(function ($query): void {
+                $query->whereIn('codigo', [
+                    OrdenReunion::CODE_AGREEMENTS,
+                    OrdenReunion::CODE_NESE_FOLLOW_UP,
+                ])->orWhere(function ($legacyQuery): void {
+                    $legacyQuery->whereNull('codigo')
+                        ->whereIn('descripcion', [self::PREVIOUS_AGREEMENTS, self::NESE_FOLLOW_UP]);
+                });
+            })
+            ->get();
 
         $inherited = [];
-        $agreements = $summaries->get(self::PREVIOUS_AGREEMENTS);
+        $agreements = $this->summaryFor(
+            $orders,
+            OrdenReunion::CODE_AGREEMENTS,
+            self::PREVIOUS_AGREEMENTS
+        );
         if ($this->hasMeaningfulContent($agreements)) {
-            $inherited[self::AGREEMENTS_REVIEW] = (string) $agreements;
+            $inherited[OrdenReunion::CODE_PREVIOUS_AGREEMENTS_REVIEW] = (string) $agreements;
         }
 
-        $nese = $summaries->get(self::NESE_FOLLOW_UP);
+        $nese = $this->summaryFor(
+            $orders,
+            OrdenReunion::CODE_NESE_FOLLOW_UP,
+            self::NESE_FOLLOW_UP
+        );
         if ($this->hasMeaningfulContent($nese)) {
-            $inherited[self::NESE_FOLLOW_UP] = (string) $nese;
+            $inherited[OrdenReunion::CODE_NESE_FOLLOW_UP] = (string) $nese;
         }
 
         return $inherited;
@@ -124,6 +138,21 @@ class ReunionContinuityService
             ->map(static fn (mixed $type): int => (int) $type)
             ->values()
             ->all();
+    }
+
+    /**
+     * Prioritza el codi estable i conserva el literal només com a fallback llegat.
+     *
+     * @param \Illuminate\Support\Collection<int, OrdenReunion> $orders
+     */
+    private function summaryFor($orders, string $code, string $legacyDescription): mixed
+    {
+        $coded = $orders->firstWhere('codigo', $code);
+        if ($coded !== null) {
+            return $coded->resumen;
+        }
+
+        return $orders->firstWhere('descripcion', $legacyDescription)?->resumen;
     }
 
     /**

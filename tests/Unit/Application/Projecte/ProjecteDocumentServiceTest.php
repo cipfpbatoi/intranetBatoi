@@ -71,6 +71,7 @@ class ProjecteDocumentServiceTest extends TestCase
         $schema->create('ordenes_reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idReunion');
+            $table->string('codigo', 64)->nullable();
             $table->string('descripcion');
             $table->string('resumen')->nullable();
             $table->unsignedInteger('orden');
@@ -92,12 +93,14 @@ class ProjecteDocumentServiceTest extends TestCase
         $this->assertSame('P001', (string) $acta->idProfesor);
         $this->assertDatabaseHas('ordenes_reuniones', [
             'idReunion' => $acta->id,
+            'codigo' => 'project_proposal_student',
             'descripcion' => 'Anna Test',
             'resumen' => 'Projecte 1 (Tutor individual)',
             'orden' => 1,
         ]);
         $this->assertDatabaseHas('ordenes_reuniones', [
             'idReunion' => $acta->id,
+            'codigo' => 'project_proposal_student',
             'descripcion' => 'Biel Test',
             'resumen' => 'Projecte 2 (Tutor individual)',
             'orden' => 2,
@@ -116,6 +119,7 @@ class ProjecteDocumentServiceTest extends TestCase
         $this->assertSame(12, (int) $acta->tipo);
         $this->assertDatabaseHas('ordenes_reuniones', [
             'idReunion' => $acta->id,
+            'codigo' => 'project_defense_student',
             'descripcion' => 'Carla Test',
             'resumen' => '(Projecte 3)20-05-2026(09:00)',
             'orden' => 1,
