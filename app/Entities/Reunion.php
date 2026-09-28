@@ -4,11 +4,11 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Reunion\ReunionCreationGroupResolver;
 use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\ReunionCreated;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 
 
@@ -42,7 +42,6 @@ class Reunion extends Model
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
-        'created' => ReunionCreated::class,
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -232,7 +231,15 @@ class Reunion extends Model
      */
     public function getIdGrupoOptions(): array
     {
-        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
+        $creator = authUser();
+        if (!$creator instanceof Profesor) {
+            return [];
+        }
+
+        $groups = app(ReunionCreationGroupResolver::class)
+            ->availableFor($creator, $this->idGrupo ? (string) $this->idGrupo : null);
+
+        return hazArray($groups, 'codigo', 'nombre');
     }
 
     public function getDepartamentoAttribute()

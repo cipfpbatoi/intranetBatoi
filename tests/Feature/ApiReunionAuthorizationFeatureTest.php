@@ -168,6 +168,12 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
 
     public function test_store_forca_el_convocant_autenticat(): void
     {
+        DB::table('grupos')->insert([
+            'codigo' => 'G1',
+            'nombre' => 'Grup propi (LFP)',
+            'tutor' => 'P1',
+            'curso' => 1,
+        ]);
         $this->authenticate('P1');
 
         $response = $this->postJson('/api/reunion', [
@@ -188,6 +194,33 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             'archivada' => false,
             'fichero' => null,
         ]);
+        $this->assertSame(
+            count(config('tablas.tipoReunion.2.ordenes')),
+            DB::table('ordenes_reuniones')
+                ->where('idReunion', $response->json('data.id'))
+                ->count()
+        );
+    }
+
+    public function test_store_rebutja_una_acta_per_un_grup_alie(): void
+    {
+        DB::table('grupos')->insert([
+            ['codigo' => 'G1', 'nombre' => 'Grup propi', 'tutor' => 'P1', 'curso' => 1],
+            ['codigo' => 'G2', 'nombre' => 'Grup alié', 'tutor' => 'P3', 'curso' => 1],
+        ]);
+        $this->authenticate('P1');
+
+        $this->postJson('/api/reunion', [
+            'tipo' => 7,
+            'idGrupo' => 'G2',
+            'curso' => '2026-2027',
+            'numero' => 31,
+            'fecha' => '2026-10-01 10:00:00',
+            'descripcion' => 'Acta manipulada API',
+            'idEspacio' => 'A101',
+        ])->assertForbidden();
+
+        $this->assertDatabaseMissing('reuniones', ['descripcion' => 'Acta manipulada API']);
     }
 
     private function authenticate(string $dni): void
@@ -200,14 +233,29 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
         Schema::create('profesores', function (Blueprint $table): void {
             $table->string('dni', 10)->primary();
             $table->unsignedInteger('rol')->default(3);
+            $table->string('apellido1')->nullable();
+            $table->string('apellido2')->nullable();
+            $table->unsignedInteger('departamento')->nullable();
+            $table->boolean('activo')->default(true);
+            $table->date('fecha_baja')->nullable();
             $table->string('sustituye_a', 10)->nullable();
             $table->string('api_token', 80)->nullable();
             $table->timestamps();
         });
         Schema::create('grupos', function (Blueprint $table): void {
             $table->string('codigo', 10)->primary();
+            $table->string('nombre')->nullable();
             $table->string('tutor', 10)->nullable();
+            $table->unsignedTinyInteger('curso')->nullable();
             $table->timestamps();
+        });
+        Schema::create('alumnos_grupos', function (Blueprint $table): void {
+            $table->string('idAlumno', 15);
+            $table->string('idGrupo', 10);
+        });
+        Schema::create('horarios', function (Blueprint $table): void {
+            $table->string('idGrupo', 10)->nullable();
+            $table->string('idProfesor', 10)->nullable();
         });
         Schema::create('reuniones', function (Blueprint $table): void {
             $table->increments('id');
@@ -233,6 +281,7 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
         Schema::create('ordenes_reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idReunion');
+            $table->string('codigo')->nullable();
             $table->unsignedTinyInteger('orden');
             $table->string('descripcion', 120);
             $table->text('resumen')->nullable();
