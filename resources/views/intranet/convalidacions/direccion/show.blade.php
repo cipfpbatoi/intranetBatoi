@@ -33,5 +33,10 @@
         </div></div>
     @endforeach
     <a class="btn btn-secondary" href="{{ route('convalidacions.direction.index') }}">Tornar</a>
+    <form class="d-inline" method="POST" action="{{ route('convalidacions.direction.destroy', $sollicitud) }}" onsubmit="return confirm(&quot;Una sol·licitud d&#39;un alumne no pot eliminar-se llevat que siga una prova, ja que elimina tota la traçabilitat. Vols continuar?&quot;)">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-outline-danger">Eliminar sol·licitud de prova</button>
+    </form>
 </div>
 @endsection

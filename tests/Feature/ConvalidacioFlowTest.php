@@ -8,9 +8,11 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Convalidacio\ConvalidacioException;
+use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
@@ -362,6 +364,78 @@ class ConvalidacioFlowTest extends TestCase
         $this->get('/alumno/convalidacions/' . $sollicitud->id)->assertForbidden();
     }
 
+    public function test_bloqueig_de_direccio_requerix_contrasenya_i_invalida_accessos_anteriors(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $access = app(ConvalidacioAccessService::class);
+        $access->setBlocked(true);
+
+        $this->get('/alumno/convalidacions/create')->assertRedirect('/alumno/convalidacions/acces');
+        $this->get('/alumno/convalidacions/acces')->assertOk()->assertDontSee('4 8 15 16 23 42');
+        $this->from('/alumno/convalidacions/acces')->post('/alumno/convalidacions/acces', ['password' => 'incorrecta'])
+            ->assertRedirect('/alumno/convalidacions/acces')
+            ->assertSessionHasErrors('password');
+        $this->post('/alumno/convalidacions/acces', ['password' => '4 8 15 16 23 42'])
+            ->assertRedirect('/alumno/convalidacions');
+        $this->get('/alumno/convalidacions')->assertOk();
+
+        $access->setBlocked(true);
+        $this->get('/alumno/convalidacions')->assertRedirect('/alumno/convalidacions/acces');
+
+        $access->setBlocked(false);
+        $this->get('/alumno/convalidacions')->assertOk();
+    }
+
+    public function test_panell_de_direccio_mostra_i_pot_canviar_el_bloqueig(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $route = Route::getRoutes()->getByName('convalidacions.direction.access');
+        $this->assertNotNull($route);
+        $this->assertContains('role:direccion', $route->gatherMiddleware());
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Accés de l')
+            ->assertSee('Bloquejar accés per a proves');
+
+        $this->put(route('convalidacions.direction.access'), ['blocked' => '1'])
+            ->assertRedirect(route('convalidacions.direction.index'))
+            ->assertSessionHas('success', 'Accés de l\'alumnat bloquejat.');
+        $this->assertTrue(app(ConvalidacioAccessService::class)->isBlocked());
+    }
+
+    public function test_direccio_pot_eliminar_una_sollicitud_i_els_documents_privats(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'delete-test', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('prova.pdf', 50, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $deleteRoute = Route::getRoutes()->getByName('convalidacions.direction.destroy');
+        $this->assertNotNull($deleteRoute);
+        $this->assertContains('role:direccion', $deleteRoute->gatherMiddleware());
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Eliminar sol·licitud de prova')
+            ->assertSee('elimina tota la traçabilitat', false);
+
+        $this->delete(route('convalidacions.direction.destroy', $sollicitud))
+            ->assertRedirect(route('convalidacions.direction.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseMissing('sollicituds_convalidacions', ['id' => $sollicitud->id], 'sqlite');
+        $this->assertDatabaseMissing('convalidacions', ['id' => $peticio->id], 'sqlite');
+        Storage::disk('convalidacions')->assertMissing($peticio->document_path);
+    }
+
     public function test_la_copia_del_resultat_es_conserva_si_desapareix_l_xml(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'snapshot', [[
@@ -467,6 +541,12 @@ XML;
             $table->text('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+        });
+        Schema::create('settings', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('collection');
+            $table->string('key');
+            $table->text('value');
         });
         Schema::create('profesores', function (Blueprint $table) {
             $table->string('dni')->primary();

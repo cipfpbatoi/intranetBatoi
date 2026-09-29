@@ -134,6 +134,32 @@ class ConvalidacioService
         });
     }
 
+    /** Elimina una sol·licitud de prova i els documents privats associats. */
+    public function eliminarSollicitud(SollicitudConvalidacio $sollicitud): void
+    {
+        $documents = DB::transaction(function () use ($sollicitud): array {
+            $actual = SollicitudConvalidacio::query()
+                ->with('convalidacions:id,sollicitud_convalidacio_id,document_path')
+                ->lockForUpdate()
+                ->findOrFail($sollicitud->id);
+
+            $paths = $actual->convalidacions
+                ->pluck('document_path')
+                ->filter()
+                ->values()
+                ->all();
+
+            $actual->convalidacions()->delete();
+            $actual->delete();
+
+            return $paths;
+        });
+
+        if ($documents !== [] && !Storage::disk('convalidacions')->delete($documents)) {
+            throw new ConvalidacioException('La sol·licitud s\'ha eliminat, però no s\'han pogut eliminar tots els documents privats.');
+        }
+    }
+
     /** Substituïx exclusivament el document requerit i reactiva la petició. */
     public function corregirDocument(Convalidacio $peticio, Alumno $alumno, UploadedFile $file): Convalidacio
     {

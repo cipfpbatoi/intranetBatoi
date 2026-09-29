@@ -10,6 +10,18 @@
             <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
         </a>
     </div>
+    @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
+    <div class="alert {{ $accessBlocked ? 'alert-warning' : 'alert-info' }} d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
+        <span>Accés de l'alumnat: <strong>{{ $accessBlocked ? 'bloquejat (cal contrasenya)' : 'obert' }}</strong></span>
+        <form method="POST" action="{{ route('convalidacions.direction.access') }}">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="blocked" value="{{ $accessBlocked ? 0 : 1 }}">
+            <button type="submit" class="btn {{ $accessBlocked ? 'btn-outline-warning' : 'btn-warning' }}">
+                {{ $accessBlocked ? 'Desbloquejar accés de l’alumnat' : 'Bloquejar accés per a proves' }}
+            </button>
+        </form>
+    </div>
     <form method="GET" class="row g-2 mb-3">
         <div class="col-md-4"><select name="estat" class="form-select"><option value="">Tots els estats</option>@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected(($filters['estat'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
         <div class="col-md-4"><select name="origen" class="form-select"><option value="">Tots els orígens</option>@foreach ($origens as $value => $label)<option value="{{ $value }}" @selected(($filters['origen'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>

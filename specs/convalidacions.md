@@ -1,7 +1,7 @@
 # Convalidacions — MVP de sol·licitud i gestió manual
 
 Issue: #323
-Status: ready_for_review
+Status: ready_to_commit
 
 ## Abast
 
@@ -104,6 +104,26 @@ And només eixa petició torna a `En procés`
 And no es poden modificar el mòdul destí, l'origen, el tipus ni altres dades ja tramitades
 But si la petició està en estat `Realitzada`, tant l'alumne com Direcció només poden consultar-la i no poden modificar-ne l'estat, les dades ni el document
 
+### ✅ Escenari 10: accés de proves bloquejat per Direcció
+
+Given una persona de Direcció al panell de convalidacions
+When activa el bloqueig temporal per a proves
+Then totes les rutes d'alumnat de convalidacions requerixen la contrasenya de proves, incloses les accions i descàrregues
+And l'alumnat que encara no haja introduït la contrasenya és redirigit a una pantalla d'accés
+And només una contrasenya correcta concedix accés durant la sessió actual
+And una contrasenya incorrecta no concedix accés i mostra un error
+And canviar l'estat del bloqueig invalida els accessos de prova concedits en el cicle anterior
+And quan Direcció desactiva el bloqueig, l'alumnat pot accedir sense contrasenya
+
+### ✅ Escenari 11: eliminació explícita d'una sol·licitud de prova
+
+Given una persona de Direcció que consulta una sol·licitud
+When selecciona «Eliminar sol·licitud de prova»
+Then el sistema demana confirmació i adverteix que només s'ha d'eliminar si és una prova perquè es perd tota la traçabilitat
+And si confirma, s'eliminen la capçalera, totes les peticions i els documents privats associats
+And si cancel·la, no s'elimina cap dada
+And cap persona que no siga de Direcció pot executar l'acció, encara que envie una petició directa
+
 ## Regles de negoci
 
 ### Model i composició
@@ -154,6 +174,11 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 - Direcció és l'únic perfil gestor de l'MVP.
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
+- El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
+- La contrasenya de proves es configura al servidor (`CONVALIDACIONS_ACCESS_PASSWORD`) i mai no s'inclou en HTML ni en missatges d'error.
+- Canviar el bloqueig genera un nou cicle i invalida les autoritzacions temporals de sessions anteriors.
+- L'eliminació de sol·licituds només està disponible per a Direcció i elimina també els documents privats de totes les peticions.
+- La confirmació d'eliminació avisa explícitament de la pèrdua irreversible de traçabilitat; l'eliminació no és una resolució ordinària.
 
 ## Components previstos
 
@@ -163,7 +188,10 @@ But si la petició està en estat `Realitzada`, tant l'alumne com Direcció nom�
 - Entrada «Convalidar» al menú de l'alumnat i panells de presentació, consulta i revisió.
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
 - Gestor privat dels XML acadèmics integrat en el panell de convalidacions de Direcció, sense edició ni descàrrega del contingut.
+- Control persistent del bloqueig d'accés de proves i middleware per protegir totes les rutes d'alumnat de convalidacions.
+- Eliminació de sol·licituds de prova per Direcció amb neteja transaccional de peticions i documents privats.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
+- Tests Feature per al cicle de bloqueig amb contrasenya i l'eliminació confirmada de sol·licituds de prova.
 
 ## Expressament posposat
 

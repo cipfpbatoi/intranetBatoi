@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 use Intranet\Application\Convalidacio\ConvalidacioException;
+use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\SollicitudConvalidacio;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Pantalles i accions de revisió reservades a Direcció. */
@@ -22,7 +24,8 @@ class DireccionConvalidacioController extends Controller
 {
     public function __construct(
         private readonly ConvalidacioService $service,
-        private readonly ConvalidacioQueryService $queries
+        private readonly ConvalidacioQueryService $queries,
+        private readonly ConvalidacioAccessService $access
     ) {
         parent::__construct();
     }
@@ -40,7 +43,30 @@ class DireccionConvalidacioController extends Controller
             'estats' => Convalidacio::estatOptions(),
             'origens' => Convalidacio::origenOptions(),
             'filters' => $filters,
+            'accessBlocked' => $this->access->isBlocked(),
         ]);
+    }
+
+    /** Canvia l'accés de proves de l'alumnat. */
+    public function access(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(['blocked' => ['required', 'boolean']]);
+        $blocked = (bool) $validated['blocked'];
+        $this->access->setBlocked($blocked);
+
+        return redirect()->route('convalidacions.direction.index')->with(
+            'success',
+            $blocked ? 'Accés de l\'alumnat bloquejat.' : 'Accés de l\'alumnat desbloquejat.'
+        );
+    }
+
+    /** Elimina una sol·licitud i els documents associats després de confirmació explícita. */
+    public function destroy(SollicitudConvalidacio $sollicitud): RedirectResponse
+    {
+        Gate::forUser($this->profesor())->authorize('view', $sollicitud);
+        $this->service->eliminarSollicitud($sollicitud);
+
+        return redirect()->route('convalidacions.direction.index')->with('success', 'Sol·licitud de prova eliminada.');
     }
 
     /** Mostra totes les peticions d'una sol·licitud. */

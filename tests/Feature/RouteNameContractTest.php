@@ -100,5 +100,17 @@ class RouteNameContractTest extends TestCase
         $this->assertContains('role:alumno', $alumno->gatherMiddleware());
         $this->assertContains('role:direccion', $direccion->gatherMiddleware());
         $this->assertNotContains('role:alumno', $direccion->gatherMiddleware());
+
+        foreach (['convalidacions.index', 'convalidacions.create', 'convalidacions.store', 'convalidacions.download', 'convalidacions.correct', 'convalidacions.show'] as $name) {
+            $this->assertContains('convalidacions.alumne.access', Route::getRoutes()->getByName($name)->gatherMiddleware());
+        }
+
+        foreach (['convalidacions.direction.access', 'convalidacions.direction.destroy'] as $name) {
+            $this->assertContains('role:direccion', Route::getRoutes()->getByName($name)->gatherMiddleware());
+        }
+
+        $accessForm = Route::getRoutes()->getByName('convalidacions.access');
+        $this->assertContains('role:alumno', $accessForm->gatherMiddleware());
+        $this->assertNotContains('convalidacions.alumne.access', $accessForm->gatherMiddleware());
     }
 }

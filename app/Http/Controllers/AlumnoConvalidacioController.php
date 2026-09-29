@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Intranet\Application\Convalidacio\ConvalidacioException;
+use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Entities\Convalidacio;
@@ -24,9 +25,33 @@ class AlumnoConvalidacioController extends Controller
 {
     public function __construct(
         private readonly ConvalidacioService $service,
-        private readonly ConvalidacioQueryService $queries
+        private readonly ConvalidacioQueryService $queries,
+        private readonly ConvalidacioAccessService $access
     ) {
         parent::__construct();
+    }
+
+    /** Mostra el formulari de contrasenya mentre Direcció manté el bloqueig actiu. */
+    public function accessForm(): View|RedirectResponse
+    {
+        if (!$this->access->isBlocked()) {
+            return redirect()->route('convalidacions.index');
+        }
+
+        return view('intranet.convalidacions.alumno.access');
+    }
+
+    /** Desbloqueja l'accés de proves per a la sessió actual. */
+    public function unlock(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(['password' => ['required', 'string', 'max:255']]);
+        if (!$this->access->isBlocked() || !$this->access->verifyPassword($validated['password'])) {
+            return back()->withErrors(['password' => 'La contrasenya no és correcta.']);
+        }
+
+        $this->access->unlockSession();
+
+        return redirect()->route('convalidacions.index');
     }
 
     /** Mostra exclusivament les sol·licituds de l'alumne autenticat. */
