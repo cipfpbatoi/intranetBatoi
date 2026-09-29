@@ -127,6 +127,7 @@ return [
                ,'medio' =>'Means of transport'
                ,'marca' =>'Make'
                ,'numero' =>'Model'
+               ,'numero_acta' =>'Minutes number'
                ,'matricula' =>'Vehicle registration'
                ,'alojamiento' =>'Accommodation expenses'
                ,'comida' =>'Meal expenses'
