@@ -44,7 +44,7 @@ And si Direcció elimina o substituïx posteriorment l'XML, les sol·licituds ja
 
 Given una persona amb rol de Direcció o administració
 When puja el fitxer XML d'una avaluació d'ITACA
-Then el sistema valida l'extensió `.xml`, admet les deteccions MIME habituals de les exportacions d'ITACA —inclosa `text/plain`—, comprova la mida configurada i l'estructura mínima esperada abans de conservar-lo
+Then el sistema valida l'extensió `.xml`, no depén del MIME informat pel navegador o el servidor, comprova la mida configurada i valida l'estructura mínima del contingut abans de conservar-lo
 And el processa sense permetre xarxa ni resolució d'entitats externes
 And el guarda en emmagatzematge privat fora de `public/` i del control de versions
 And una persona sense rol de Direcció ni administració no pot accedir a l'operació ni al llistat
@@ -69,6 +69,22 @@ And informa que no s'han trobat mòduls aprovats disponibles per a seleccionar
 And no exposa noms de fitxer, rutes internes, dades d'altres alumnes ni detalls tècnics de l'error
 And la resta d'orígens de convalidació continua disponible
 
+### Escenari 7: pujada d'una o més avaluacions des de Direcció
+
+Given una persona amb rol de Direcció i fitxers d'avaluació XML
+When selecciona un o més fitxers en el gestor, fins al màxim configurat per pujada
+Then pot completar la pujada amb un sol fitxer o amb diversos
+And el sistema valida i processa cada fitxer independentment
+And incorpora els XML vàlids i mostra quins fitxers han fallat i el motiu de cada error
+And si cap fitxer és vàlid, no incorpora cap i mostra els errors
+
+### Escenari 8: superació del màxim per pujada
+
+Given una persona amb rol de Direcció que selecciona més fitxers que el màxim configurat
+When intenta enviar la pujada
+Then la interfície l'avisa abans d'enviar-la i impedeix l'enviament
+And el servidor rebutja qualsevol petició que supere el màxim
+
 ## Regles de negoci
 
 - La unitat ordinària aportada com a estudi previ és un mòdul aprovat concret; el cicle és informació contextual.
@@ -79,6 +95,7 @@ And la resta d'orígens de convalidació continua disponible
 - Els noms dels XML només es mostren dins del gestor restringit de Direcció i les rutes no s'exposen mai.
 - El gestor permet pujar, llistar metadades i eliminar; no permet substituir, editar ni descarregar el contingut.
 - Els XML no es desen en un disc públic, no tenen URL de descàrrega i queden fora del control de versions.
+- El MIME reportat durant la pujada no és fiable ni uniforme; l'extensió i l'estructura real de l'avaluació XML determinen si s'accepta.
 - Els tests del lector utilitzen XML sintètic autocontingut; no incorporen exportacions reals ni dades personals.
 - El cas especial de convalidació per cicle no forma part d'este canvi.
 

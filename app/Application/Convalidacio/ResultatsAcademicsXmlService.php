@@ -16,7 +16,7 @@ class ResultatsAcademicsXmlService
     /**
      * Retorna cada resultat aprovat com una opció independent.
      *
-     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string}>
+     * @return list<array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, any:int, nota:float, convocatoria:string}>
      */
     public function aprovats(string $nia): array
     {
@@ -51,7 +51,7 @@ class ResultatsAcademicsXmlService
     /**
      * Resol una selecció opaca i la torna a validar contra els XML actuals.
      *
-     * @return array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string}|null
+     * @return array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, any:int, nota:float, convocatoria:string}|null
      */
     public function trobarAprovat(string $nia, string $id): ?array
     {
@@ -111,7 +111,7 @@ class ResultatsAcademicsXmlService
     }
 
     /**
-     * @return list<array{id:string, modul:string, nom_modul:string, cicle:string, nom_cicle:string, any:int, nota:float, convocatoria:string, source:string}>
+     * @return list<array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, any:int, nota:float, convocatoria:string, source:string}>
      */
     private function parse(string $contingut, string $nia, string $source): array
     {
@@ -145,14 +145,28 @@ class ResultatsAcademicsXmlService
                 continue;
             }
 
-            $cicle = $this->cicleDelCurs($curs, $cursos);
+            $modulDades = $moduls[$clau] ?? ['nom_val' => '', 'nom_cas' => '', 'curs' => $curs];
+            $cursContingut = $modulDades['curs'] ?: $curs;
+            $cicle = $this->cicleDelCurs($cursContingut, $cursos);
+            $familia = $this->familiaProfessionalDelCurs($cursContingut, $cursos);
+            $nivellFormatiu = $this->nivellFormatiuDelCurs($cursContingut, $cursos);
             $identity = implode('|', [$source, (string) $any, $curs, $modul, $convocatoria, (string) $nota]);
             $resultats[] = [
                 'id' => hash_hmac('sha256', $identity, (string) config('app.key')),
                 'modul' => $modul,
-                'nom_modul' => $moduls[$clau] ?? '',
+                'nom_modul' => trim($modulDades['nom_val']) ?: trim($modulDades['nom_cas']),
+                'nom_modul_val' => trim($modulDades['nom_val']),
+                'nom_modul_cas' => trim($modulDades['nom_cas']),
                 'cicle' => $cicle['codi'],
                 'nom_cicle' => $cicle['nom'],
+                'nom_cicle_val' => $cicle['nom_val'],
+                'nom_cicle_cas' => $cicle['nom_cas'],
+                'familia_professional' => $familia['codi'] ?? null,
+                'familia_professional_val' => $familia['nom_val'] ?? null,
+                'familia_professional_cas' => $familia['nom_cas'] ?? null,
+                'nivell_formatiu_origen' => $nivellFormatiu['codi'] ?? null,
+                'nivell_formatiu_origen_val' => $nivellFormatiu['nom_val'] ?? null,
+                'nivell_formatiu_origen_cas' => $nivellFormatiu['nom_cas'] ?? null,
                 'any' => $any,
                 'nota' => $nota,
                 'convocatoria' => $convocatoria,
@@ -193,35 +207,40 @@ class ResultatsAcademicsXmlService
         return new DOMXPath($xml);
     }
 
-    /** @return array<string, array{pare:string, nom:string}> */
+    /** @return array<string, array{pare:string, nom_val:string, nom_cas:string}> */
     private function indexCursos(DOMXPath $xpath): array
     {
         $cursos = [];
         foreach ($xpath->query('//curso[@codigo]') as $node) {
             $cursos[$node->getAttribute('codigo')] = [
                 'pare' => trim($node->getAttribute('padre')),
-                'nom' => trim($node->getAttribute('nombre_val')) ?: trim($node->getAttribute('nombre_cas')),
+                'nom_val' => trim($node->getAttribute('nombre_val')),
+                'nom_cas' => trim($node->getAttribute('nombre_cas')),
             ];
         }
 
         return $cursos;
     }
 
-    /** @return array<string, string> */
+    /** @return array<string, array{curs:string, nom_val:string, nom_cas:string}> */
     private function indexModuls(DOMXPath $xpath): array
     {
         $moduls = [];
         foreach ($xpath->query('//contenido[@curso][@codigo]') as $node) {
             $clau = $node->getAttribute('curso') . '|' . $node->getAttribute('codigo');
-            $moduls[$clau] = trim($node->getAttribute('nombre_val')) ?: trim($node->getAttribute('nombre_cas'));
+            $moduls[$clau] = [
+                'curs' => $node->getAttribute('curso'),
+                'nom_val' => trim($node->getAttribute('nombre_val')),
+                'nom_cas' => trim($node->getAttribute('nombre_cas')),
+            ];
         }
 
         return $moduls;
     }
 
     /**
-     * @param array<string, array{pare:string, nom:string}> $cursos
-     * @return array{codi:string, nom:string}
+     * @param array<string, array{pare:string, nom_val:string, nom_cas:string}> $cursos
+     * @return array{codi:string, nom:string, nom_val:string, nom_cas:string}
      */
     private function cicleDelCurs(string $curs, array $cursos): array
     {
@@ -230,6 +249,85 @@ class ResultatsAcademicsXmlService
             $cicle = $curs;
         }
 
-        return ['codi' => $cicle, 'nom' => $cursos[$cicle]['nom'] ?? ''];
+        $nomVal = $cursos[$cicle]['nom_val'] ?? '';
+        $nomCas = $cursos[$cicle]['nom_cas'] ?? '';
+
+        return [
+            'codi' => $cicle,
+            'nom' => $nomVal ?: $nomCas,
+            'nom_val' => $nomVal,
+            'nom_cas' => $nomCas,
+        ];
+    }
+
+    /**
+     * Puja per la jerarquia de cursos fins al node família sense pare.
+     *
+     * @param array<string, array{pare:string, nom_val:string, nom_cas:string}> $cursos
+     * @return array{codi:string, nom_val:string, nom_cas:string}|null
+     */
+    private function familiaProfessionalDelCurs(string $curs, array $cursos): ?array
+    {
+        $actual = $curs;
+        $visitats = [];
+
+        while (isset($cursos[$actual])) {
+            if (isset($visitats[$actual])) {
+                return null;
+            }
+            $visitats[$actual] = true;
+
+            $pare = $cursos[$actual]['pare'];
+            if ($pare === '') {
+                return [
+                    'codi' => $actual,
+                    'nom_val' => $cursos[$actual]['nom_val'],
+                    'nom_cas' => $cursos[$actual]['nom_cas'],
+                ];
+            }
+            if (!isset($cursos[$pare])) {
+                return null;
+            }
+
+            $actual = $pare;
+        }
+
+        return null;
+    }
+
+    /**
+     * Resol el node `curso` immediatament inferior a la família professional.
+     *
+     * @param array<string, array{pare:string, nom_val:string, nom_cas:string}> $cursos
+     * @return array{codi:string, nom_val:string, nom_cas:string}|null
+     */
+    private function nivellFormatiuDelCurs(string $curs, array $cursos): ?array
+    {
+        $actual = $curs;
+        $visitats = [];
+
+        while (isset($cursos[$actual])) {
+            if (isset($visitats[$actual])) {
+                return null;
+            }
+            $visitats[$actual] = true;
+
+            $pare = $cursos[$actual]['pare'];
+            if ($pare === '' || !isset($cursos[$pare])) {
+                return null;
+            }
+
+            if ($cursos[$pare]['pare'] === '') {
+                return [
+                    'codi' => $actual,
+                    'nom_val' => $cursos[$actual]['nom_val'],
+                    'nom_cas' => $cursos[$actual]['nom_cas'],
+                ];
+            }
+
+            $actual = $pare;
+        }
+
+        return null;
     }
 }

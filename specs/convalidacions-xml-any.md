@@ -26,6 +26,13 @@ When Direcció la consulta
 Then només veu l'acció Eliminar
 But no veu cap opció Substituir
 
+### Escenari 4: període acadèmic llegible
+
+Given una avaluació XML amb `centro@curso="2025"`
+When Direcció consulta el llistat
+Then la columna s'anomena «Període» i mostra «25-26»
+And el període accessible conserva els anys complets «2025-2026»
+
 ## Regles de negoci
 
 - L'any és metadada derivada de `centro@curso`; no es guarda en el títol ni en una taula separada.

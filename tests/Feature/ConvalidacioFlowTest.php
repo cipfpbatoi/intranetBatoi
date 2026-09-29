@@ -77,12 +77,39 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame([Convalidacio::ESTAT_EN_PROCES], Convalidacio::query()->distinct()->pluck('estat')->all());
         $peticioPropiCentre = Convalidacio::query()->where('modulo_destino_id', 'DEST1')->firstOrFail();
         $this->assertSame('ORIG1', $peticioPropiCentre->modulo_origen_codigo);
-        $this->assertSame('Origen 1', $peticioPropiCentre->modulo_origen_nombre);
+        $this->assertSame('Origen 1 val', $peticioPropiCentre->modulo_origen_nombre);
+        $this->assertSame('Origen 1 val', $peticioPropiCentre->modulo_origen_nombre_val);
+        $this->assertSame('Origen 1 cas', $peticioPropiCentre->modulo_origen_nombre_cas);
         $this->assertSame('ANT', $peticioPropiCentre->ciclo_origen_codigo);
+        $this->assertSame('Cicle anterior', $peticioPropiCentre->ciclo_origen_nombre_val);
+        $this->assertSame('Ciclo anterior', $peticioPropiCentre->ciclo_origen_nombre_cas);
+        $this->assertSame('FAMILIA', $peticioPropiCentre->familia_professional_codigo);
+        $this->assertSame('Família professional', $peticioPropiCentre->familia_professional_nombre_val);
+        $this->assertSame('Familia profesional', $peticioPropiCentre->familia_professional_nombre_cas);
+        $this->assertSame(2, $peticioPropiCentre->ciclo_matricula_id);
+        $this->assertSame('ACT', $peticioPropiCentre->ciclo_matricula_codigo);
+        $this->assertSame('Cicle matriculat val', $peticioPropiCentre->ciclo_matricula_nombre_val);
+        $this->assertSame('Ciclo matriculado cas', $peticioPropiCentre->ciclo_matricula_nombre_cas);
+        $this->assertSame(24, $peticioPropiCentre->departamento_matricula_id);
+        $this->assertSame('INFORMÀTICA I COMUNICACIONS', $peticioPropiCentre->familia_matricula_nombre_val);
+        $this->assertSame('INFORMÁTICA Y COMUNICACIONES', $peticioPropiCentre->familia_matricula_nombre_cas);
+        $this->assertSame('3306169525', $peticioPropiCentre->familia_matricula_codigo_xml);
+        $this->assertSame('190', $peticioPropiCentre->familia_matricula_abreviatura_xml);
+        $this->assertSame(2, $peticioPropiCentre->ciclo_matricula_tipo);
+        $this->assertSame('Cicle Formatiu de Grau Superior', $peticioPropiCentre->ciclo_matricula_tipo_nombre_val);
+        $this->assertSame('Ciclo Formativo de Grado Superior', $peticioPropiCentre->ciclo_matricula_tipo_nombre_cas);
+        $this->assertSame('LFP', $peticioPropiCentre->ciclo_matricula_normativa);
+        $this->assertSame('ANT', $peticioPropiCentre->nivel_origen_codigo);
+        $this->assertSame('Cicle anterior', $peticioPropiCentre->nivel_origen_nombre_val);
+        $this->assertSame('Ciclo anterior', $peticioPropiCentre->nivel_origen_nombre_cas);
         $this->assertSame(2025, $peticioPropiCentre->any_origen);
         $this->assertSame(7.0, $peticioPropiCentre->nota_origen);
         $this->assertSame('ordinària (FI)', $peticioPropiCentre->convocatoria_origen);
         $externa = Convalidacio::query()->where('origen', Convalidacio::ORIGEN_ALTRE_CENTRE)->firstOrFail();
+        $this->assertSame(2, $externa->ciclo_matricula_id);
+        $this->assertSame(24, $externa->departamento_matricula_id);
+        $this->assertSame(2, $externa->ciclo_matricula_tipo);
+        $this->assertNull($externa->nivel_origen_codigo);
         Storage::disk('convalidacions')->assertExists($externa->document_path);
         $this->assertSame('certificat.pdf', $externa->document_original_name);
         $this->assertTrue($externa->declaracio_responsable);
@@ -106,6 +133,65 @@ class ConvalidacioFlowTest extends TestCase
                 $this->assertSame(0, SollicitudConvalidacio::query()->count());
             }
         }
+    }
+
+    public function test_no_tramita_si_no_pot_resoldre_la_familia_professional(): void
+    {
+        Storage::disk('convalidacions_xml')->put(
+            'avaluacio-2025.xml',
+            str_replace('codigo="FAMILIA" padre=" "', 'codigo="FAMILIA" padre="INEXISTENT"', $this->academicXml())
+        );
+
+        try {
+            $this->service->tramitar($this->alumno, 'sense-familia', [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+            ]]);
+            $this->fail('La petició havia de rebutjar-se si la família professional no és identificable.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('família professional', $exception->getMessage());
+        }
+
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+        $this->assertSame(0, Convalidacio::query()->count());
+    }
+
+    public function test_rebutja_cicle_ambigu_o_familia_de_matricula_no_configurada(): void
+    {
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST1', 'idCiclo' => 1]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+
+        try {
+            $this->service->tramitar($this->alumno, 'cicle-ambigu', [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+            ]]);
+            $this->fail('No s\'havia d\'escollir aleatòriament entre dos cicles.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('únic cicle de matrícula', $exception->getMessage());
+        }
+
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+
+        DB::table('modulo_grupos')->where('id', 4)->delete();
+        DB::table('modulo_ciclos')->where('id', 4)->delete();
+        DB::table('departamentos')->where('id', 24)->update(['familia_professional_val' => null]);
+
+        try {
+            $this->service->tramitar($this->alumno, 'familia-no-configurada', [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+            ]]);
+            $this->fail('No s\'havia d\'acceptar una família de matrícula sense configurar.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('família professional del cicle de matrícula', $exception->getMessage());
+        }
+
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+        $this->assertSame(0, Convalidacio::query()->count());
     }
 
     public function test_direccio_revisa_una_peticio_sense_alterar_les_altres_i_realitzada_es_terminal(): void
@@ -450,12 +536,23 @@ class ConvalidacioFlowTest extends TestCase
         ]]);
 
         Storage::disk('convalidacions_xml')->delete('avaluacio-2025.xml');
+        DB::table('ciclos')->where('id', 2)->update(['ciclo' => 'CANVIAT', 'vliteral' => 'Canvi val', 'cliteral' => 'Cambio cas']);
+        DB::table('departamentos')->where('id', 24)->update([
+            'familia_professional_val' => 'Canvi família val',
+            'familia_professional_cas' => 'Cambio familia cas',
+        ]);
         $peticio = $sollicitud->convalidacions()->firstOrFail()->fresh();
 
         $this->assertSame('ORIG1', $peticio->modulo_origen_codigo);
         $this->assertSame('Cicle anterior', $peticio->ciclo_origen_nombre);
         $this->assertSame(2025, $peticio->any_origen);
         $this->assertSame(7.0, $peticio->nota_origen);
+        $this->assertSame(2, $peticio->ciclo_matricula_id);
+        $this->assertSame('ACT', $peticio->ciclo_matricula_codigo);
+        $this->assertSame('Cicle matriculat val', $peticio->ciclo_matricula_nombre_val);
+        $this->assertSame('Ciclo matriculado cas', $peticio->ciclo_matricula_nombre_cas);
+        $this->assertSame('INFORMÀTICA I COMUNICACIONS', $peticio->familia_matricula_nombre_val);
+        $this->assertSame('INFORMÁTICA Y COMUNICACIONES', $peticio->familia_matricula_nombre_cas);
 
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs($this->alumno, 'alumno');
@@ -466,7 +563,13 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSeeText("Any d'aprovació:")
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
-            ->assertDontSee('ANT — Cicle anterior')
+            ->assertSeeText('Família professional')
+            ->assertSeeText('Familia profesional')
+            ->assertSeeText('Cicle de matrícula: #2 · ACT — Cicle matriculat val / Ciclo matriculado cas')
+            ->assertSeeText('Departament #24 · INFORMÀTICA I COMUNICACIONS / INFORMÁTICA Y COMUNICACIONES')
+            ->assertSeeText('ITACA 3306169525 · 190')
+            ->assertSeeText('Cicle Formatiu de Grau Superior / Ciclo Formativo de Grado Superior · Normativa LFP')
+            ->assertSeeText('ANT — Cicle anterior / Ciclo anterior')
             ->assertSeeText('Nota:')
             ->assertSeeText('7')
             ->assertDontSee('7,00')
@@ -480,7 +583,13 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSeeText("Any d'aprovació:")
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
-            ->assertDontSee('ANT — Cicle anterior')
+            ->assertSeeText('Família professional')
+            ->assertSeeText('Familia profesional')
+            ->assertSeeText('Cicle de matrícula: #2 · ACT — Cicle matriculat val / Ciclo matriculado cas')
+            ->assertSeeText('Departament #24 · INFORMÀTICA I COMUNICACIONS / INFORMÁTICA Y COMUNICACIONES')
+            ->assertSeeText('ITACA 3306169525 · 190')
+            ->assertSeeText('Cicle Formatiu de Grau Superior / Ciclo Formativo de Grado Superior · Normativa LFP')
+            ->assertSeeText('ANT — Cicle anterior / Ciclo anterior')
             ->assertSeeText('Nota:')
             ->assertSeeText('7')
             ->assertDontSee('7,00')
@@ -500,13 +609,13 @@ class ConvalidacioFlowTest extends TestCase
 <?xml version="1.0"?>
 <centro curso="2025">
   <cursos>
-    <curso codigo="FAMILIA" padre="" nombre_val="Família professional"/>
-    <curso codigo="ANT" padre="FAMILIA" nombre_val="Cicle anterior"/>
-    <curso codigo="ANT-1" padre="ANT" nombre_val="Primer"/>
+    <curso codigo="FAMILIA" padre=" " nombre_val="Família professional" nombre_cas="Familia profesional"/>
+    <curso codigo="ANT" padre="FAMILIA" nombre_val="Cicle anterior" nombre_cas="Ciclo anterior"/>
+    <curso codigo="ANT-1" padre="ANT" nombre_val="Primer" nombre_cas="Primero"/>
   </cursos>
   <contenidos>
-    <contenido curso="ANT-1" codigo="ORIG1" nombre_val="Origen 1"/>
-    <contenido curso="ANT-1" codigo="SUSPES" nombre_val="Mòdul suspés"/>
+    <contenido curso="ANT-1" codigo="ORIG1" nombre_val="Origen 1 val" nombre_cas="Origen 1 cas"/>
+    <contenido curso="ANT-1" codigo="SUSPES" nombre_val="Mòdul suspés" nombre_cas="Módulo suspenso"/>
   </contenidos>
   <calificaciones>
     <calificacion alumno="12345678" curso="ANT-1" contenido="ORIG1" evaluacion="FI" nota_numerica="7"/>
@@ -578,6 +687,18 @@ XML;
             $table->string('ciclo')->nullable();
             $table->string('cliteral');
             $table->string('vliteral');
+            $table->unsignedTinyInteger('departamento')->nullable();
+            $table->unsignedTinyInteger('tipo')->default(2);
+            $table->string('normativa', 10)->default('LFP');
+        });
+        Schema::create('departamentos', function (Blueprint $table) {
+            $table->unsignedTinyInteger('id')->primary();
+            $table->string('cliteral');
+            $table->string('vliteral');
+            $table->string('familia_professional_val')->nullable();
+            $table->string('familia_professional_cas')->nullable();
+            $table->string('codigo_xml', 50)->nullable();
+            $table->string('abreviatura_xml', 50)->nullable();
         });
         Schema::create('alumnos_grupos', function (Blueprint $table) {
             $table->string('idAlumno');
@@ -619,8 +740,31 @@ XML;
             $table->string('origen');
             $table->string('modulo_origen_codigo')->nullable();
             $table->string('modulo_origen_nombre')->nullable();
+            $table->string('modulo_origen_nombre_val')->nullable();
+            $table->string('modulo_origen_nombre_cas')->nullable();
             $table->string('ciclo_origen_codigo')->nullable();
             $table->string('ciclo_origen_nombre')->nullable();
+            $table->string('ciclo_origen_nombre_val')->nullable();
+            $table->string('ciclo_origen_nombre_cas')->nullable();
+            $table->string('familia_professional_codigo')->nullable();
+            $table->string('familia_professional_nombre_val')->nullable();
+            $table->string('familia_professional_nombre_cas')->nullable();
+            $table->unsignedInteger('ciclo_matricula_id')->nullable();
+            $table->string('ciclo_matricula_codigo', 50)->nullable();
+            $table->string('ciclo_matricula_nombre_val')->nullable();
+            $table->string('ciclo_matricula_nombre_cas')->nullable();
+            $table->unsignedTinyInteger('departamento_matricula_id')->nullable();
+            $table->string('familia_matricula_nombre_val')->nullable();
+            $table->string('familia_matricula_nombre_cas')->nullable();
+            $table->string('familia_matricula_codigo_xml', 50)->nullable();
+            $table->string('familia_matricula_abreviatura_xml', 50)->nullable();
+            $table->unsignedTinyInteger('ciclo_matricula_tipo')->nullable();
+            $table->string('ciclo_matricula_tipo_nombre_val')->nullable();
+            $table->string('ciclo_matricula_tipo_nombre_cas')->nullable();
+            $table->string('ciclo_matricula_normativa', 20)->nullable();
+            $table->string('nivel_origen_codigo', 50)->nullable();
+            $table->string('nivel_origen_nombre_val')->nullable();
+            $table->string('nivel_origen_nombre_cas')->nullable();
             $table->unsignedSmallInteger('any_origen')->nullable();
             $table->decimal('nota_origen', 5, 2)->nullable();
             $table->string('convocatoria_origen')->nullable();
@@ -651,9 +795,13 @@ XML;
             'updated_at' => now(),
         ]);
         DB::table('grupos')->insert([['codigo' => 'ACTUAL', 'nombre' => 'Actual'], ['codigo' => 'ANTERIOR', 'nombre' => 'Anterior']]);
+        DB::table('departamentos')->insert([
+            ['id' => 6, 'cliteral' => 'Departamento sanitario', 'vliteral' => 'Departament sanitari', 'familia_professional_val' => 'SANITAT', 'familia_professional_cas' => 'SANIDAD', 'codigo_xml' => '3306170441', 'abreviatura_xml' => '061'],
+            ['id' => 24, 'cliteral' => 'Departamento informática', 'vliteral' => 'Departament informàtica', 'familia_professional_val' => 'INFORMÀTICA I COMUNICACIONS', 'familia_professional_cas' => 'INFORMÁTICA Y COMUNICACIONES', 'codigo_xml' => '3306169525', 'abreviatura_xml' => '190'],
+        ]);
         DB::table('ciclos')->insert([
-            ['id' => 1, 'ciclo' => 'ANT', 'cliteral' => 'Cicle anterior', 'vliteral' => 'Cicle anterior'],
-            ['id' => 2, 'ciclo' => 'ACT', 'cliteral' => 'Cicle actual', 'vliteral' => 'Cicle actual'],
+            ['id' => 1, 'ciclo' => 'ANT', 'cliteral' => 'Cicle anterior', 'vliteral' => 'Cicle anterior', 'departamento' => 6, 'tipo' => 1, 'normativa' => 'LOE'],
+            ['id' => 2, 'ciclo' => 'ACT', 'cliteral' => 'Ciclo matriculado cas', 'vliteral' => 'Cicle matriculat val', 'departamento' => 24, 'tipo' => 2, 'normativa' => 'LFP'],
         ]);
         DB::table('alumnos_grupos')->insert(['idAlumno' => '12345678', 'idGrupo' => 'ACTUAL']);
         DB::table('modulos')->insert([

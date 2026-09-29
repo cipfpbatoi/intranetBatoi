@@ -10,9 +10,20 @@
         <div class="card mb-3"><div class="card-body">
             <h2 class="h5">{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</h2>
             <p><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenOptions()[$peticio->origen] ?? $peticio->origen }}</p>
+            @if ($peticio->ciclo_matricula_id)
+                <p class="mb-1"><strong>Cicle de matrícula:</strong> #{{ $peticio->ciclo_matricula_id }} · {{ $peticio->ciclo_matricula_codigo }} — {{ $peticio->ciclo_matricula_nombre_val }} / {{ $peticio->ciclo_matricula_nombre_cas }}</p>
+                <p class="mb-1"><strong>Família professional:</strong> Departament #{{ $peticio->departamento_matricula_id }} · {{ $peticio->familia_matricula_nombre_val }} / {{ $peticio->familia_matricula_nombre_cas }} <small class="text-muted">(ITACA {{ $peticio->familia_matricula_codigo_xml }} · {{ $peticio->familia_matricula_abreviatura_xml }})</small></p>
+                <p class="mb-1"><strong>Formació del cicle actual:</strong> {{ $peticio->ciclo_matricula_tipo_nombre_val }} / {{ $peticio->ciclo_matricula_tipo_nombre_cas }} · Normativa {{ $peticio->ciclo_matricula_normativa }}</p>
+            @endif
             @if ($peticio->modulo_origen_codigo)
                 <p class="mb-1"><strong>Mòdul superat:</strong> <strong>{{ preg_replace('/^([A-Za-z]+)(\d+)$/', '$1 $2', $peticio->modulo_origen_codigo) }}@if ($peticio->modulo_origen_nombre) — {{ $peticio->modulo_origen_nombre }}@endif</strong></p>
                 <p class="mb-1"><strong>Cicle:</strong> <em>{{ $peticio->ciclo_origen_nombre ?: $peticio->ciclo_origen_codigo }}</em></p>
+                @if ($peticio->familia_professional_codigo)
+                    <p class="mb-1"><strong>Família professional:</strong> {{ $peticio->familia_professional_codigo }} — {{ $peticio->familia_professional_nombre_val ?: '—' }} / {{ $peticio->familia_professional_nombre_cas ?: '—' }}</p>
+                @endif
+                @if ($peticio->nivel_origen_codigo)
+                    <p class="mb-1"><strong>Nivell formatiu d'origen:</strong> {{ $peticio->nivel_origen_codigo }} — {{ $peticio->nivel_origen_nombre_val ?: '—' }} / {{ $peticio->nivel_origen_nombre_cas ?: '—' }}</p>
+                @endif
                 <p class="mb-1"><strong>Any d'aprovació:</strong> {{ $peticio->any_origen }}</p>
                 <p><strong>Nota:</strong> {{ number_format($peticio->nota_origen, 0, ',', '') }}</p>
             @endif

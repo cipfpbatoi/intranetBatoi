@@ -57,7 +57,7 @@ class DireccionConvalidacioXmlTest extends TestCase
         $this->assertSame([2025], array_column($this->manager->all(), 'any'));
     }
 
-    public function test_accepta_una_exportacio_xml_detectada_com_text_plain(): void
+    public function test_accepta_una_exportacio_xml_independentment_del_mime_informat(): void
     {
         $this->withoutMiddleware([RoleMiddleware::class, VerifyCsrfToken::class]);
         $temporal = tempnam(sys_get_temp_dir(), 'itaca-');
@@ -68,7 +68,7 @@ class DireccionConvalidacioXmlTest extends TestCase
             $fitxer = new UploadedFile(
                 $temporal,
                 'avaluacio-itaca.xml',
-                'text/plain',
+                'application/vnd.itaca+xml',
                 UPLOAD_ERR_OK,
                 true
             );
@@ -84,6 +84,52 @@ class DireccionConvalidacioXmlTest extends TestCase
         }
     }
 
+    public function test_la_nova_interficie_accepta_un_sol_xml_com_a_llista(): void
+    {
+        $this->withoutMiddleware([RoleMiddleware::class, VerifyCsrfToken::class]);
+
+        $this->post(route('convalidacions.direction.xml.store'), [
+            'xml' => [UploadedFile::fake()->createWithContent('unica.xml', $this->xml('7'))],
+        ])->assertSessionHasNoErrors();
+
+        Storage::disk('convalidacions_xml')->assertExists('unica.xml');
+        $this->assertSame(['unica.xml'], session('resultatPujadaXml.afegits'));
+    }
+
+    public function test_la_pujada_multiple_guarda_els_valids_i_retorna_errors_individuals(): void
+    {
+        $this->withoutMiddleware([RoleMiddleware::class, VerifyCsrfToken::class]);
+
+        $response = $this->post(route('convalidacions.direction.xml.store'), [
+            'xml' => [
+                UploadedFile::fake()->createWithContent('correcte.xml', $this->xml('6')),
+                UploadedFile::fake()->createWithContent('incorrecte.xml', '<xml/>'),
+            ],
+        ]);
+
+        $response->assertSessionHas('resultatPujadaXml', function (array $resultat): bool {
+            return $resultat['afegits'] === ['correcte.xml']
+                && count($resultat['errors']) === 1
+                && $resultat['errors'][0]['nom'] === 'incorrecte.xml';
+        });
+        Storage::disk('convalidacions_xml')->assertExists('correcte.xml');
+        Storage::disk('convalidacions_xml')->assertMissing('incorrecte.xml');
+    }
+
+    public function test_rebutja_una_pujada_que_supera_el_maxim_de_fitxers(): void
+    {
+        $this->withoutMiddleware([RoleMiddleware::class, VerifyCsrfToken::class]);
+        $files = [];
+        for ($i = 1; $i <= 21; $i++) {
+            $files[] = UploadedFile::fake()->createWithContent('avaluacio-' . $i . '.xml', $this->xml('6'));
+        }
+
+        $this->post(route('convalidacions.direction.xml.store'), ['xml' => $files])
+            ->assertSessionHasErrors('xml');
+
+        $this->assertSame([], $this->manager->all());
+    }
+
     public function test_rebutja_una_avaluacio_sense_curs_academic(): void
     {
         $this->withoutMiddleware([RoleMiddleware::class, VerifyCsrfToken::class]);
@@ -91,7 +137,11 @@ class DireccionConvalidacioXmlTest extends TestCase
 
         $this->post(route('convalidacions.direction.xml.store'), [
             'xml' => UploadedFile::fake()->createWithContent('sense-any.xml', $xml),
-        ])->assertSessionHasErrors('xml');
+        ])->assertSessionHas('resultatPujadaXml', function (array $resultat): bool {
+            return $resultat['afegits'] === []
+                && count($resultat['errors']) === 1
+                && $resultat['errors'][0]['nom'] === 'sense-any.xml';
+        });
 
         Storage::disk('convalidacions_xml')->assertMissing('sense-any.xml');
     }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioXmlManager;
@@ -24,21 +26,49 @@ class DireccionConvalidacioXmlController extends Controller
         return view('intranet.convalidacions.direccion.xml', [
             'fitxers' => $this->manager->all(),
             'maxXmlKb' => (int) config('convalidacions.max_xml_kb', 20480),
+            'maxXmlFilesPerUpload' => (int) config('convalidacions.max_xml_files_per_upload', 20),
         ]);
     }
 
-    /** Incorpora una exportació nova. */
+    /** Incorpora una o més exportacions i informa del resultat de cadascuna. */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate(['xml' => $this->xmlRules()]);
+        $uploads = $request->file('xml');
+        $files = $uploads instanceof UploadedFile ? [$uploads] : $uploads;
+        $files ??= [];
 
-        try {
-            $this->manager->store($validated['xml']);
-        } catch (ConvalidacioException $exception) {
-            return back()->withErrors(['xml' => $exception->getMessage()]);
+        $batchValidator = Validator::make(['xml' => $files], [
+            'xml' => ['required', 'array', 'min:1', 'max:' . $this->maxFilesPerUpload()],
+        ]);
+
+        if ($batchValidator->fails()) {
+            return back()->withErrors($batchValidator);
         }
 
-        return back()->with('success', 'Avaluació d\'ITACA afegida correctament.');
+        $resultat = ['afegits' => [], 'errors' => []];
+        foreach ($files as $index => $file) {
+            $nom = $file instanceof UploadedFile
+                ? $file->getClientOriginalName()
+                : 'Fitxer ' . ($index + 1);
+            $validator = Validator::make(['xml' => $file], ['xml' => $this->xmlRules()]);
+
+            if ($validator->fails()) {
+                $resultat['errors'][] = [
+                    'nom' => $nom,
+                    'missatge' => implode(' ', $validator->errors()->all()),
+                ];
+                continue;
+            }
+
+            try {
+                $this->manager->store($file);
+                $resultat['afegits'][] = $nom;
+            } catch (ConvalidacioException $exception) {
+                $resultat['errors'][] = ['nom' => $nom, 'missatge' => $exception->getMessage()];
+            }
+        }
+
+        return back()->with('resultatPujadaXml', $resultat);
     }
 
     /** Elimina una font de les consultes futures. */
@@ -60,8 +90,13 @@ class DireccionConvalidacioXmlController extends Controller
             'required',
             'file',
             'extensions:xml',
-            'mimetypes:application/xml,text/xml,text/plain,application/octet-stream',
             'max:' . config('convalidacions.max_xml_kb', 20480),
         ];
+    }
+
+    /** Nombre màxim de fitxers processats per petició. */
+    private function maxFilesPerUpload(): int
+    {
+        return max(1, (int) config('convalidacions.max_xml_files_per_upload', 20));
     }
 }

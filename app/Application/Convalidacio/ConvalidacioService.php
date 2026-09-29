@@ -70,8 +70,31 @@ class ConvalidacioService
                         'origen' => $item['origen'],
                         'modulo_origen_codigo' => $item['modulo_origen_codigo'] ?? null,
                         'modulo_origen_nombre' => $item['modulo_origen_nombre'] ?? null,
+                        'modulo_origen_nombre_val' => $item['modulo_origen_nombre_val'] ?? null,
+                        'modulo_origen_nombre_cas' => $item['modulo_origen_nombre_cas'] ?? null,
                         'ciclo_origen_codigo' => $item['ciclo_origen_codigo'] ?? null,
                         'ciclo_origen_nombre' => $item['ciclo_origen_nombre'] ?? null,
+                        'ciclo_origen_nombre_val' => $item['ciclo_origen_nombre_val'] ?? null,
+                        'ciclo_origen_nombre_cas' => $item['ciclo_origen_nombre_cas'] ?? null,
+                        'familia_professional_codigo' => $item['familia_professional_codigo'] ?? null,
+                        'familia_professional_nombre_val' => $item['familia_professional_nombre_val'] ?? null,
+                        'familia_professional_nombre_cas' => $item['familia_professional_nombre_cas'] ?? null,
+                        'ciclo_matricula_id' => $item['ciclo_matricula_id'],
+                        'ciclo_matricula_codigo' => $item['ciclo_matricula_codigo'],
+                        'ciclo_matricula_nombre_val' => $item['ciclo_matricula_nombre_val'],
+                        'ciclo_matricula_nombre_cas' => $item['ciclo_matricula_nombre_cas'],
+                        'departamento_matricula_id' => $item['departamento_matricula_id'],
+                        'familia_matricula_nombre_val' => $item['familia_matricula_nombre_val'],
+                        'familia_matricula_nombre_cas' => $item['familia_matricula_nombre_cas'],
+                        'familia_matricula_codigo_xml' => $item['familia_matricula_codigo_xml'],
+                        'familia_matricula_abreviatura_xml' => $item['familia_matricula_abreviatura_xml'],
+                        'ciclo_matricula_tipo' => $item['ciclo_matricula_tipo'],
+                        'ciclo_matricula_tipo_nombre_val' => $item['ciclo_matricula_tipo_nombre_val'],
+                        'ciclo_matricula_tipo_nombre_cas' => $item['ciclo_matricula_tipo_nombre_cas'],
+                        'ciclo_matricula_normativa' => $item['ciclo_matricula_normativa'],
+                        'nivel_origen_codigo' => $item['nivel_origen_codigo'] ?? null,
+                        'nivel_origen_nombre_val' => $item['nivel_origen_nombre_val'] ?? null,
+                        'nivel_origen_nombre_cas' => $item['nivel_origen_nombre_cas'] ?? null,
                         'any_origen' => $item['any_origen'] ?? null,
                         'nota_origen' => $item['nota_origen'] ?? null,
                         'convocatoria_origen' => $item['convocatoria_origen'] ?? null,
@@ -251,6 +274,8 @@ class ConvalidacioService
             throw new ConvalidacioException('Ja tens una petició oberta o resolta favorablement per a este mòdul.');
         }
 
+        $contextMatricula = $this->contextMatricula($alumno, $destino);
+
         if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE) {
             $resultat = $this->resultatsAcademics->trobarAprovat(
                 (string) $alumno->nia,
@@ -259,12 +284,25 @@ class ConvalidacioService
             if ($resultat === null) {
                 throw new ConvalidacioException('El mòdul superat no consta en els resultats acadèmics disponibles.');
             }
+            if (blank($resultat['familia_professional']) || blank($resultat['nivell_formatiu_origen'])) {
+                throw new ConvalidacioException('No s\'ha pogut identificar el nivell formatiu o la família professional del mòdul superat.');
+            }
 
-            return array_merge($item, [
+            return array_merge($item, $contextMatricula, [
                 'modulo_origen_codigo' => $resultat['modul'],
                 'modulo_origen_nombre' => $resultat['nom_modul'],
+                'modulo_origen_nombre_val' => $resultat['nom_modul_val'],
+                'modulo_origen_nombre_cas' => $resultat['nom_modul_cas'],
                 'ciclo_origen_codigo' => $resultat['cicle'],
                 'ciclo_origen_nombre' => $resultat['nom_cicle'],
+                'ciclo_origen_nombre_val' => $resultat['nom_cicle_val'],
+                'ciclo_origen_nombre_cas' => $resultat['nom_cicle_cas'],
+                'familia_professional_codigo' => $resultat['familia_professional'],
+                'familia_professional_nombre_val' => $resultat['familia_professional_val'],
+                'familia_professional_nombre_cas' => $resultat['familia_professional_cas'],
+                'nivel_origen_codigo' => $resultat['nivell_formatiu_origen'],
+                'nivel_origen_nombre_val' => $resultat['nivell_formatiu_origen_val'],
+                'nivel_origen_nombre_cas' => $resultat['nivell_formatiu_origen_cas'],
                 'any_origen' => $resultat['any'],
                 'nota_origen' => $resultat['nota'],
                 'convocatoria_origen' => $resultat['convocatoria'],
@@ -279,7 +317,71 @@ class ConvalidacioService
 
         $this->validarDocument($item['document']);
 
-        return $item;
+        return array_merge($item, $contextMatricula);
+    }
+
+    /**
+     * Resol el context vigent del cicle i la família del mòdul destí des de la matrícula.
+     *
+     * @return array{ciclo_matricula_id:int, ciclo_matricula_codigo:string, ciclo_matricula_nombre_val:string|null, ciclo_matricula_nombre_cas:string|null, departamento_matricula_id:int, familia_matricula_nombre_val:string, familia_matricula_nombre_cas:string, familia_matricula_codigo_xml:string, familia_matricula_abreviatura_xml:string, ciclo_matricula_tipo:int, ciclo_matricula_tipo_nombre_val:string|null, ciclo_matricula_tipo_nombre_cas:string|null, ciclo_matricula_normativa:string}
+     */
+    private function contextMatricula(Alumno $alumno, string $destino): array
+    {
+        $grups = $alumno->Grupo()->pluck('grupos.codigo');
+        $cicles = DB::table('modulo_grupos')
+            ->join('modulo_ciclos', 'modulo_ciclos.id', '=', 'modulo_grupos.idModuloCiclo')
+            ->join('ciclos', 'ciclos.id', '=', 'modulo_ciclos.idCiclo')
+            ->leftJoin('departamentos', 'departamentos.id', '=', 'ciclos.departamento')
+            ->whereIn('modulo_grupos.idGrupo', $grups)
+            ->where('modulo_ciclos.idModulo', $destino)
+            ->select([
+                'ciclos.id as ciclo_id',
+                'ciclos.ciclo as ciclo_codigo',
+                'ciclos.vliteral as ciclo_nombre_val',
+                'ciclos.cliteral as ciclo_nombre_cas',
+                'ciclos.tipo as ciclo_tipo',
+                'ciclos.normativa as ciclo_normativa',
+                'departamentos.id as departamento_id',
+                'departamentos.familia_professional_val',
+                'departamentos.familia_professional_cas',
+                'departamentos.codigo_xml',
+                'departamentos.abreviatura_xml',
+            ])
+            ->distinct()
+            ->get()
+            ->unique('ciclo_id')
+            ->values();
+
+        if ($cicles->count() !== 1) {
+            throw new ConvalidacioException("No s'ha pogut identificar un únic cicle de matrícula per al mòdul destí.");
+        }
+
+        $cicle = $cicles->first();
+        if (
+            $cicle->departamento_id === null
+            || blank($cicle->familia_professional_val)
+            || blank($cicle->familia_professional_cas)
+            || blank($cicle->codigo_xml)
+            || blank($cicle->abreviatura_xml)
+        ) {
+            throw new ConvalidacioException("No s'ha pogut identificar la família professional del cicle de matrícula.");
+        }
+
+        return [
+            'ciclo_matricula_id' => (int) $cicle->ciclo_id,
+            'ciclo_matricula_codigo' => $cicle->ciclo_codigo,
+            'ciclo_matricula_nombre_val' => $cicle->ciclo_nombre_val,
+            'ciclo_matricula_nombre_cas' => $cicle->ciclo_nombre_cas,
+            'departamento_matricula_id' => (int) $cicle->departamento_id,
+            'familia_matricula_nombre_val' => $cicle->familia_professional_val,
+            'familia_matricula_nombre_cas' => $cicle->familia_professional_cas,
+            'familia_matricula_codigo_xml' => $cicle->codigo_xml,
+            'familia_matricula_abreviatura_xml' => $cicle->abreviatura_xml,
+            'ciclo_matricula_tipo' => (int) $cicle->ciclo_tipo,
+            'ciclo_matricula_tipo_nombre_val' => config('auxiliares.tipoEstudio.' . $cicle->ciclo_tipo),
+            'ciclo_matricula_tipo_nombre_cas' => config('auxiliares.tipoEstudioC.' . $cicle->ciclo_tipo),
+            'ciclo_matricula_normativa' => $cicle->ciclo_normativa,
+        ];
     }
 
     /** @return array{document_path: ?string, document_original_name: ?string, document_mime: ?string} */
