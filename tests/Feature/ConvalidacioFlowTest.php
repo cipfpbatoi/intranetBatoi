@@ -369,6 +369,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
         auth()->shouldUse('profesor');
         $access = app(ConvalidacioAccessService::class);
+        $this->assertTrue($access->verifyPassword('4 8 15 16 23 42'));
         $access->setBlocked(true);
 
         $this->get('/alumno/convalidacions/create')->assertRedirect('/alumno/convalidacions/acces');
@@ -380,7 +381,8 @@ class ConvalidacioFlowTest extends TestCase
             ->assertRedirect('/alumno/convalidacions/acces')
             ->assertSessionHasErrors('password');
         $this->post('/alumno/convalidacions/acces', ['password' => '4 8 15 16 23 42'])
-            ->assertRedirect('/alumno/convalidacions');
+            ->assertRedirect('/alumno/convalidacions')
+            ->assertSessionHasNoErrors();
         $this->get('/alumno/convalidacions')->assertOk();
 
         $access->setBlocked(true);
