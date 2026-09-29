@@ -9,7 +9,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h1 class="h3">Accés a les convalidacions</h1>
-                    <p>Les convalidacions estan temporalment bloquejades mentre es fan proves. Introduïx la contrasenya facilitada per a continuar.</p>
+                    <p>Actualment, l’accés a les convalidacions està restringit perquè estem fent proves. Introduïx la contrasenya facilitada per a continuar.</p>
                     <form method="POST" action="{{ route('convalidacions.unlock') }}">
                         @csrf
                         <label for="password" class="form-label">Contrasenya</label>

@@ -372,7 +372,10 @@ class ConvalidacioFlowTest extends TestCase
         $access->setBlocked(true);
 
         $this->get('/alumno/convalidacions/create')->assertRedirect('/alumno/convalidacions/acces');
-        $this->get('/alumno/convalidacions/acces')->assertOk()->assertDontSee('4 8 15 16 23 42');
+        $this->get('/alumno/convalidacions/acces')
+            ->assertOk()
+            ->assertSeeText('Actualment, l’accés a les convalidacions està restringit perquè estem fent proves.')
+            ->assertDontSee('4 8 15 16 23 42');
         $this->from('/alumno/convalidacions/acces')->post('/alumno/convalidacions/acces', ['password' => 'incorrecta'])
             ->assertRedirect('/alumno/convalidacions/acces')
             ->assertSessionHasErrors('password');
