@@ -10,6 +10,7 @@
 
 <div class="container col-lg-12" >
     <br/>
+    <div>@include('pdf.reunion.partials.numero-acta')</div>
     <div style="width:55%;float:left"><strong>Tutor:</strong> {{$datosInforme->Responsable->nombre}} {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</div>
     <div style="width:45%;float:right;text-align: right"><strong>Grup:</strong> {{$datosInforme->Xgrupo}}</div>
     <div style="width:55%;float:left;clear:both"><strong>Curs:</strong> {{$datosInforme->curso}}</div>

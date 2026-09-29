@@ -8,6 +8,7 @@ use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
+use Intranet\Presentation\Crud\ReunionCrudSchema;
 use Intranet\Presentation\Crud\TutoriaCrudSchema;
 use Intranet\UI\Panels\Panel;
 use Tests\TestCase;
@@ -112,6 +113,44 @@ class GridTableComponentTest extends TestCase
         $table = (new DOMXPath($document))->query('//table[@id="datatable"]')->item(0);
 
         $this->assertSame('[[5,"desc"],[0,"desc"]]', $table?->getAttribute('data-order'));
+    }
+
+    public function test_graella_de_reunions_mostra_el_numero_visible_de_l_acta(): void
+    {
+        app()->setLocale('ca');
+        $panel = new Panel('Reunion', ReunionCrudSchema::GRID_FIELDS);
+        $pestana = $panel->getPestanas()[0];
+        $elemento = new class () {
+            public string $XGrupo = '1r DAM';
+            public string $XTipo = 'Avaluació';
+            public int $numero_acta = 4;
+            public string $descripcion = 'Segona avaluació';
+            public string $fecha = '10-06-2026';
+            public string $curso = '2026-2027';
+            public int $id = 1;
+
+            public function getKey(): int
+            {
+                return $this->id;
+            }
+        };
+
+        $html = Blade::render(
+            '<x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$elementos" />',
+            [
+                'panel' => $panel,
+                'pestana' => $pestana,
+                'elementos' => new Collection([$elemento]),
+            ]
+        );
+
+        $document = new DOMDocument();
+        @$document->loadHTML($html);
+        $number = (new DOMXPath($document))->query('//span[@name="numero_acta"]')->item(0);
+
+        $this->assertStringContainsString("Número d'acta", html_entity_decode($html));
+        $this->assertSame('4', trim($number?->textContent ?? ''));
+        $this->assertStringNotContainsString('name="Xnumero"', $html);
     }
 
     public function test_nom_edat_d_alumno_fct_renderitza_icona_controlada_sense_escapar_html(): void

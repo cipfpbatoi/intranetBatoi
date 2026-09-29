@@ -18,7 +18,8 @@ class CreateReunionService
         private readonly ReunionCreationGroupResolver $groupResolver,
         private readonly ReunionParticipantAssigner $participantAssigner,
         private readonly ReunionOrderGenerateService $orderGenerator,
-        private readonly ReunionFeValuationService $feValuationService
+        private readonly ReunionFeValuationService $feValuationService,
+        private readonly ReunionActNumberService $actNumberService
     ) {
     }
 
@@ -28,18 +29,28 @@ class CreateReunionService
     public function create(CreateReunionData $data, Profesor $creator): Reunion
     {
         return DB::transaction(function () use ($data, $creator): Reunion {
-            $reunion = Reunion::query()->create([
+            $groupCode = $this->resolveGroup($data, $creator);
+            $actNumber = $this->actNumberService->next(
+                $data->curso,
+                $data->tipo,
+                $groupCode,
+                $data->grupo,
+                $creator
+            );
+            $reunion = new Reunion([
                 'tipo' => $data->tipo,
                 'grupo' => $data->grupo,
-                'idGrupo' => $this->resolveGroup($data, $creator),
+                'idGrupo' => $groupCode,
                 'curso' => $data->curso,
-                'numero' => $data->numero,
+                'numero' => $this->functionalNumber($data),
                 'fecha' => $data->fecha,
                 'descripcion' => $data->descripcion,
                 'objetivos' => $data->objetivos,
                 'idProfesor' => (string) $creator->dni,
                 'idEspacio' => $data->idEspacio,
             ]);
+            $reunion->forceFill($actNumber);
+            $reunion->save();
 
             $this->participantAssigner->assign($reunion, $creator);
             $this->orderGenerator->generate($reunion);
@@ -60,5 +71,15 @@ class CreateReunionService
         }
 
         return $this->groupResolver->resolve($creator, $data->idGrupo);
+    }
+
+    /**
+     * Conserva el número llegat només quan identifica una fase funcional.
+     */
+    private function functionalNumber(CreateReunionData $data): ?int
+    {
+        return (bool) (new TipoReunionService($data->tipo))->numero_funcional
+            ? $data->numero
+            : null;
     }
 }

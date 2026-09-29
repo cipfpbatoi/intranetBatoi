@@ -141,6 +141,7 @@ return array(
                 'medio' => 'Mitjà de Locomoció',
                 'marca' => 'Marca',
                 'numero' => 'Nombre',
+                'numero_acta' => "Número d'acta",
                 'matricula' => 'Matrícula del Vehicle',
                 'alojamiento' => "Despeses d'allotjament",
                 'comida' => 'Despeses de menjar',

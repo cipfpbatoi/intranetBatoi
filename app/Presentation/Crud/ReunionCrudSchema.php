@@ -17,7 +17,7 @@ final class ReunionCrudSchema
     public const GRID_FIELDS = [
         'XGrupo',
         'XTipo',
-        'Xnumero',
+        'numero_acta',
         'descripcion',
         'fecha',
         'curso',

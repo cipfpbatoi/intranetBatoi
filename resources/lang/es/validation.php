@@ -141,6 +141,7 @@ return array(
                 'medio' => 'Medio de Locomoción',
                 'marca' => 'Marca',
                 'numero' => 'Número',
+                'numero_acta' => 'Número de acta',
                 'matricula' => 'Matricula del Vehículo',
                 'alojamiento' => 'Dieta de alojamiento',
                 'comida' => 'Dieta de comida',

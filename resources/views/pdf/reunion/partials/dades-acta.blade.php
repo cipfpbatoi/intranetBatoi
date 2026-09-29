@@ -1,5 +1,5 @@
 <div class="container col-lg-12">
-    Acta número <strong>{{ $datosInforme->numero }}</strong>
+    @include('pdf.reunion.partials.numero-acta')
     curs <strong>{{ $datosInforme->curso }}</strong>
     del dia <strong>{{ $datosInforme->dia }}</strong>
     a les <strong>{{ $datosInforme->hora }}</strong>

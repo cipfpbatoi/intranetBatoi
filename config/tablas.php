@@ -70,6 +70,7 @@ return [
             'convocatoria' => 'citacion', 'acta' => 'actaReunio','numeracion' => [0=>'--']],
         ['index' => '7', 'vliteral' => 'Reunió Avaluació', 'cliteral' => 'Reunión de evaluación', 'colectivo' => 'Grupo', 'rol' => '17', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'actaAvaluacio','modificable' => 0,
+            'numero_funcional' => true,
             'ordenes' => [
                 ['code' => 'student_opinion', 'description' => 'Opinió dels alumnes'],
                 ['code' => 'previous_agreements_review', 'description' => "Revisió d'acords adoptats a la sessió anterior"],
@@ -100,6 +101,7 @@ return [
             'ordenes' => [],
             'numeracion' => [0=>'--']],
         ['index' => '10', 'vliteral' => 'Memòria del departament', 'cliteral' => 'Memoria Trimestral del departament', 'colectivo' => 'Departamento', 'rol' => '13', 'select' => '0','modificable' => 1,
+            'numero_funcional' => true,
             'numeracion' => [21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
             'ocultar' => true],
         ['index' => '11', 'vliteral' => 'Acta de la reunió de valoració de les propostes de projectes', 'cliteral' => 'Acta aceptación proyectos', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0','modificable' => 1,

@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Reunion\CreateReunionData;
 use Intranet\Application\Reunion\CreateReunionService;
+use Intranet\Application\Reunion\ReunionActNumberService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Application\Reunion\ReunionOrderGenerateService;
 use Intranet\Application\Reunion\ReunionParticipantAssigner;
@@ -52,6 +53,8 @@ class CreateReunionServiceTest extends TestCase
             $table->string('grupo')->nullable();
             $table->string('idGrupo', 10)->nullable();
             $table->string('curso', 20);
+            $table->string('organo_acta', 100)->nullable();
+            $table->unsignedInteger('numero_acta')->nullable();
             $table->unsignedTinyInteger('numero')->nullable();
             $table->dateTime('fecha');
             $table->string('descripcion', 120);
@@ -61,6 +64,12 @@ class CreateReunionServiceTest extends TestCase
             $table->boolean('archivada')->default(false);
             $table->string('fichero')->nullable();
             $table->timestamps();
+        });
+        Schema::create('reunion_acta_counters', function (Blueprint $table): void {
+            $table->string('curso', 20);
+            $table->string('organo', 100);
+            $table->unsignedInteger('ultimo_numero')->default(0);
+            $table->primary(['curso', 'organo']);
         });
         Schema::create('asistencias', function (Blueprint $table): void {
             $table->unsignedInteger('idReunion');
@@ -110,12 +119,15 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $participants,
             $orders,
-            $fe
+            $fe,
+            new ReunionActNumberService()
         ))
             ->create($this->data(), $this->creator());
 
         $this->assertSame('P1', $reunion->idProfesor);
         $this->assertSame('G1', $reunion->idGrupo);
+        $this->assertSame(1, $reunion->numero_acta);
+        $this->assertNull($reunion->numero);
         $this->assertDatabaseHas('reuniones', [
             'id' => $reunion->id,
             'idProfesor' => 'P1',
@@ -147,11 +159,51 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $participants,
             $orders,
-            $fe
+            $fe,
+            new ReunionActNumberService()
         ))
             ->create($data, $this->creator());
 
         $this->assertNull($reunion->idGrupo);
+        $this->assertNull($reunion->numero);
+    }
+
+    public function test_conserva_el_numero_funcional_de_l_avaluacio(): void
+    {
+        DB::table('grupos')->insert([
+            'codigo' => 'G1',
+            'nombre' => '1r DAM (LFP)',
+            'tutor' => 'P1',
+            'curso' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $groupService = $this->createMock(GrupoService::class);
+        $groupService->method('largestByTutor')->willReturn(Grupo::query()->findOrFail('G1'));
+        $service = new CreateReunionService(
+            new ReunionCreationGroupResolver($groupService),
+            $this->createMock(ReunionParticipantAssigner::class),
+            $this->createMock(ReunionOrderGenerateService::class),
+            $this->createMock(ReunionFeValuationService::class),
+            new ReunionActNumberService()
+        );
+        $data = new CreateReunionData(
+            7,
+            null,
+            null,
+            '2026-2027',
+            34,
+            '2026-10-01 10:00:00',
+            'Avaluació final',
+            null,
+            'A101'
+        );
+
+        $reunion = $service->create($data, $this->creator());
+
+        $this->assertSame(34, $reunion->numero);
+        $this->assertSame(1, $reunion->numero_acta);
     }
 
     public function test_desfa_tota_la_creacio_si_falla_un_pas(): void
@@ -193,7 +245,8 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $participants,
             $orders,
-            $fe
+            $fe,
+            new ReunionActNumberService()
         );
 
         try {
@@ -204,6 +257,7 @@ class CreateReunionServiceTest extends TestCase
         }
 
         $this->assertDatabaseCount('reuniones', 0);
+        $this->assertDatabaseCount('reunion_acta_counters', 0);
         $this->assertDatabaseCount('asistencias', 0);
         $this->assertDatabaseCount('ordenes_reuniones', 0);
     }
@@ -237,7 +291,8 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $this->createMock(ReunionParticipantAssigner::class),
             $this->createMock(ReunionOrderGenerateService::class),
-            $this->createMock(ReunionFeValuationService::class)
+            $this->createMock(ReunionFeValuationService::class),
+            new ReunionActNumberService()
         );
 
         try {
@@ -270,7 +325,8 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $this->createMock(ReunionParticipantAssigner::class),
             $this->createMock(ReunionOrderGenerateService::class),
-            $this->createMock(ReunionFeValuationService::class)
+            $this->createMock(ReunionFeValuationService::class),
+            new ReunionActNumberService()
         );
 
         $reunion = $service->create(
@@ -289,7 +345,8 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $this->createMock(ReunionParticipantAssigner::class),
             $this->createMock(ReunionOrderGenerateService::class),
-            $this->createMock(ReunionFeValuationService::class)
+            $this->createMock(ReunionFeValuationService::class),
+            new ReunionActNumberService()
         );
 
         try {
@@ -310,7 +367,8 @@ class CreateReunionServiceTest extends TestCase
             new ReunionCreationGroupResolver($groupService),
             $this->createMock(ReunionParticipantAssigner::class),
             $this->createMock(ReunionOrderGenerateService::class),
-            $this->createMock(ReunionFeValuationService::class)
+            $this->createMock(ReunionFeValuationService::class),
+            new ReunionActNumberService()
         );
 
         try {

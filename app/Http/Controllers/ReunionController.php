@@ -156,7 +156,11 @@ class ReunionController extends ModalController
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
         if ($elemento->fichero != '') {
-            $formulario = new FormBuilder($elemento, $this->formFields);
+            $formFields = $this->formFields;
+            if (!(bool) $elemento->Tipos()->numero_funcional) {
+                unset($formFields['numero']);
+            }
+            $formulario = new FormBuilder($elemento, $formFields);
             $modelo = $this->model;
             return view('intranet.edit', compact('formulario', 'modelo'));
         }
@@ -170,7 +174,7 @@ class ReunionController extends ModalController
             ->orderBy('apellido1')
             ->orderBy('apellido2')
             ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
-        $formulario = new FormBuilder($elemento,[
+        $formFields = [
             'idProfesor' => ['type' => 'hidden'],
             'tipo' => ['type' => 'hidden'],
             'numero' => ['type' => 'select'],
@@ -182,7 +186,11 @@ class ReunionController extends ModalController
             'objetivos' => ['type' => 'textarea'],
             'idEspacio' => ['type' => 'select'],
             'fichero' => ['type' => 'file'],
-        ]);
+        ];
+        if (!(bool) $elemento->Tipos()->numero_funcional) {
+            unset($formFields['numero']);
+        }
+        $formulario = new FormBuilder($elemento, $formFields);
         $modelo = $this->model;
         if ($elemento->informe){
             $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
@@ -215,6 +223,9 @@ class ReunionController extends ModalController
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
         $request->merge(['idProfesor' => (string) $elemento->idProfesor]);
+        if (!(bool) $elemento->Tipos()->numero_funcional) {
+            $request->request->remove('numero');
+        }
         $this->normalitzaGrupoDocente($request);
         $this->persist($request, $id);
         return $this->redirect();

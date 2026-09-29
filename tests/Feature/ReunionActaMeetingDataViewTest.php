@@ -15,7 +15,7 @@ class ReunionActaMeetingDataViewTest extends TestCase
     {
         $html = view('pdf.reunion.partials.dades-acta', [
             'datosInforme' => (object) [
-                'numero' => 3,
+                'numero_acta' => 3,
                 'curso' => '2026-2027',
                 'dia' => '23 de setembre de 2026',
                 'hora' => '10:30',
@@ -24,6 +24,7 @@ class ReunionActaMeetingDataViewTest extends TestCase
         ])->render();
 
         $this->assertStringContainsString('Acta número', $html);
+        $this->assertStringContainsString('<strong>3</strong>', $html);
         $this->assertStringContainsString('al lloc', $html);
         $this->assertStringContainsString('Sala de reunions', $html);
     }

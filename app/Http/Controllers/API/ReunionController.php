@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Intranet\Application\Reunion\CreateReunionData;
 use Intranet\Application\Reunion\CreateReunionService;
 use Intranet\Entities\Reunion;
+use Intranet\Services\Document\TipoReunionService;
 
 /**
  * Controlador API per a reunions amb autorització explícita.
@@ -71,7 +72,12 @@ class ReunionController extends ApiResourceController
     {
         $reunion = $this->findReunion($id);
         $this->authorize('update', $reunion);
-        $reunion->update($request->validate($this->updateRules()));
+        $payload = $request->validate($this->updateRules());
+        $type = (int) ($payload['tipo'] ?? $reunion->tipo);
+        if (!(bool) (new TipoReunionService($type))->numero_funcional) {
+            unset($payload['numero']);
+        }
+        $reunion->update($payload);
 
         return $this->sendResponse(['updated' => true], 'OK');
     }

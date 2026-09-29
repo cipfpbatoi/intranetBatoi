@@ -85,6 +85,9 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             'idProfesor' => 'P3',
             'archivada' => true,
             'fichero' => 'injectat.pdf',
+            'numero_acta' => 99,
+            'organo_acta' => 'injectat',
+            'numero' => 99,
         ])->assertOk();
 
         $this->assertDatabaseHas('reuniones', [
@@ -93,6 +96,9 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             'idProfesor' => 'P1',
             'archivada' => false,
             'fichero' => null,
+            'numero' => null,
+            'numero_acta' => 1,
+            'organo_acta' => 'grup:llegat-P1',
         ]);
     }
 
@@ -185,6 +191,7 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             'idProfesor' => 'P3',
             'archivada' => true,
             'fichero' => 'injectat.pdf',
+            'numero' => 99,
         ]);
 
         $response->assertOk();
@@ -193,6 +200,7 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             'idProfesor' => 'P1',
             'archivada' => false,
             'fichero' => null,
+            'numero' => null,
         ]);
         $this->assertSame(
             count(config('tablas.tipoReunion.2.ordenes')),
@@ -263,6 +271,8 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             $table->string('grupo')->nullable();
             $table->string('idGrupo', 10)->nullable();
             $table->string('curso')->nullable();
+            $table->string('organo_acta', 100)->nullable();
+            $table->unsignedInteger('numero_acta')->nullable();
             $table->unsignedTinyInteger('numero')->nullable();
             $table->dateTime('fecha')->nullable();
             $table->string('descripcion', 120);
@@ -272,6 +282,12 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
             $table->boolean('archivada')->default(false);
             $table->string('fichero')->nullable();
             $table->timestamps();
+        });
+        Schema::create('reunion_acta_counters', function (Blueprint $table): void {
+            $table->string('curso', 20);
+            $table->string('organo', 100);
+            $table->unsignedInteger('ultimo_numero')->default(0);
+            $table->primary(['curso', 'organo']);
         });
         Schema::create('asistencias', function (Blueprint $table): void {
             $table->unsignedInteger('idReunion');
@@ -309,6 +325,8 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
                 'id' => 1,
                 'tipo' => 2,
                 'curso' => '2026-2027',
+                'organo_acta' => 'grup:llegat-P1',
+                'numero_acta' => 1,
                 'fecha' => '2026-09-01 10:00:00',
                 'descripcion' => 'Reunió pròpia',
                 'idProfesor' => 'P1',
@@ -321,6 +339,8 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
                 'id' => 2,
                 'tipo' => 2,
                 'curso' => '2026-2027',
+                'organo_acta' => 'grup:llegat-P3',
+                'numero_acta' => 1,
                 'fecha' => '2026-09-02 10:00:00',
                 'descripcion' => 'Reunió aliena',
                 'idProfesor' => 'P3',
@@ -333,6 +353,8 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
                 'id' => 3,
                 'tipo' => 2,
                 'curso' => '2026-2027',
+                'organo_acta' => 'grup:llegat-P1',
+                'numero_acta' => 2,
                 'fecha' => '2026-09-03 10:00:00',
                 'descripcion' => 'Reunió arxivada',
                 'idProfesor' => 'P1',

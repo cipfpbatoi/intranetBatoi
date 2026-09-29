@@ -49,7 +49,7 @@
                 @foreach ($xgrupo as $xtipo)
                 <td style="padding: 3px">
                         @foreach ($xtipo as $reunion)
-                        <a href='/reunion/{{$reunion->id}}/pdf'>{{substr($reunion->fecha,0,10)}} - {{ $reunion->Xnumero }}<br/></a>
+                        <a href='/reunion/{{$reunion->id}}/pdf'>{{substr($reunion->fecha,0,10)}} - Acta {{ $reunion->numero_acta }}<br/></a>
                         @endforeach
                     </td>
                 @endforeach
