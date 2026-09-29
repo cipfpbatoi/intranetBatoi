@@ -27,19 +27,20 @@ class ReunionArchivePdfService
      */
     public function save(Reunion $reunion, string $absolutePath): void
     {
-        $meetingDate = new Carbon($reunion->fecha);
-        $reunion->dia = FechaString($meetingDate);
-        $reunion->hora = $meetingDate->format('H:i');
+        $viewData = clone $reunion;
+        $meetingDate = new Carbon($viewData->fecha);
+        $viewData->dia = FechaString($meetingDate);
+        $viewData->hora = $meetingDate->format('H:i');
 
-        $updatedAt = new Carbon($reunion->updated_at);
-        $reunion->hoy = haVencido($reunion->fecha)
-            ? $reunion->dia
+        $updatedAt = new Carbon($viewData->updated_at);
+        $viewData->hoy = haVencido($viewData->fecha)
+            ? $viewData->dia
             : FechaString($updatedAt);
 
         $this->pdfService->hazPdf(
-            $this->view($reunion),
+            $this->view($viewData),
             OrdenReunion::query()->where('idReunion', $reunion->id)->get(),
-            $reunion,
+            $viewData,
             'portrait',
             'a4'
         )->save($absolutePath);
