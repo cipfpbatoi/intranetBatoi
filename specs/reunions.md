@@ -133,6 +133,52 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 **Aleshores** es mantenen l'alumnat, els resums, les dates i les hores actuals
 **I** cada punt rep el codi estable corresponent.
 
+### ✅ Escenari 19: Numerar consecutivament les actes d'un òrgan
+
+**Donat** un curs i un òrgan amb actes de tipus diferents
+**Quan** es creen noves reunions amb acta
+**Aleshores** totes reben el següent número consecutiu compartit per l'òrgan.
+
+### ✅ Escenari 20: Mantindre una sèrie per òrgan i curs
+
+**Donat** reunions de cursos o òrgans diferents
+**Quan** es numeren les seues actes
+**Aleshores** cada combinació de curs i òrgan manté una sèrie independent.
+
+### ✅ Escenari 21: Conservar la fase d'avaluació separada del número d'acta
+
+**Donat** una reunió d'avaluació amb la fase indicada en el camp `numero`
+**Quan** es crea o s'edita la reunió
+**Aleshores** la fase es conserva i l'acta rep també el seu número consecutiu propi.
+
+### ✅ Escenari 22: No reutilitzar el número d'una acta eliminada
+
+**Donat** una acta ja numerada que s'ha eliminat
+**Quan** es crea una nova acta del mateix òrgan i curs
+**Aleshores** rep el número següent disponible i no reutilitza el suprimit.
+
+### ✅ Escenari 23: Numerar les actes històriques en la migració
+
+**Donat** reunions prèvies a la numeració d'actes
+**Quan** s'executa la migració
+**Aleshores** s'assignen òrgan i número en ordre de data i identificador, mantenint la compatibilitat amb les reunions llegades.
+
+### ✅ Escenari 24: Mostrar el número d'acta gestionat pel servidor
+
+**Donat** una reunió amb acta numerada
+**Quan** es consulta la graella o es genera el PDF
+**Aleshores** es mostra el número d'acta i cap formulari ni API el pot modificar directament.
+
+### ✅ Escenari 25: Mostrar el camp número només quan té ús funcional
+
+**Donat** una reunió ordinària
+**Quan** es crea o s'edita
+**Aleshores** el camp `numero` no es mostra ni es desa.
+
+**Donat** una reunió d'avaluació
+**Quan** es crea o s'edita
+**Aleshores** el camp `numero` mostra i conserva la fase d'avaluació.
+
 ## Regles de negoci
 
 - La continuïtat només usa actes arxivades anteriors del mateix grup i curs.
@@ -149,3 +195,5 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 - La descripció visible d'un punt pot canviar sense perdre la seua identitat ni la continuïtat.
 - Els punts manuals i les descripcions llegades ambigües poden mantindre el codi nul.
 - La generació de punts només usa resolutors explícits registrats i rep el convocant de manera explícita.
+- El número d'acta l'assigna exclusivament el servidor per la combinació de curs i òrgan, i el seu comptador no retrocedeix.
+- El camp `numero` només representa una fase funcional per a les reunions d'avaluació; no forma part de les reunions ordinàries.
