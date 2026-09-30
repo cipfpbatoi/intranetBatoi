@@ -20,21 +20,21 @@ Especificació del seguiment de feedback de tutories i dels avisos interns als t
 **When** es calcula el progrés o els pendents  
 **Then** s'aplica la correspondència `0` tots, `1` grau mitjà i `2` grau superior.
 
-## Escenari 4: avís setmanal després del termini
+## ✅ Escenari 4: avís setmanal després del termini
 
 **Given** una tutoria finalitzada i un grup aplicable sense feedback vàlid
 **When** s'executa la comprovació programada del divendres
 **Then** el tutor rep una notificació interna amb enllaç al formulari de feedback
 **And** no s'envia cap correu electrònic.
 
-## Escenari 5: execució idempotent dins de la setmana
+## ✅ Escenari 5: execució idempotent dins de la setmana
 
 **Given** que ja consta un avís per a una combinació de tutoria, grup i setmana
 **When** la comprovació torna a executar-se durant la mateixa setmana
 **Then** no es crea una altra notificació per a la mateixa combinació
 **And** si continua pendent la setmana següent, es crea un nou recordatori.
 
-## Escenari 6: cessament dels recordatoris
+## ✅ Escenari 6: cessament dels recordatoris
 
 **Given** que un grup ja té feedback vàlid
 **When** s'executa la comprovació d'un divendres posterior
