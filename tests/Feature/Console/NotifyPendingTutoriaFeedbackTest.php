@@ -37,7 +37,7 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_ordre_notifica_una_sola_vegada_amb_enllac_al_formulari(): void
+    public function test_ordre_notifica_una_vegada_per_setmana_fins_que_arriba_el_feedback(): void
     {
         DB::table('ciclos')->insert(['id' => 1, 'tipo' => 1]);
         DB::table('profesores')->insert([
@@ -60,7 +60,7 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
 
         $notifications = Mockery::mock(NotificationService::class);
         $notifications->shouldReceive('send')
-            ->once()
+            ->twice()
             ->with(
                 'TUTOR1',
                 Mockery::on(static fn (string $message): bool => str_contains($message, 'Convivència')),
@@ -76,10 +76,31 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
             ->expectsOutput("S'han enviat 0 avisos de feedback pendent.")
             ->assertSuccessful();
 
-        $this->assertDatabaseCount('tutoria_feedback_notifications', 1);
+        Carbon::setTestNow('2026-10-09 07:15:00');
+        $this->artisan('tutories:notifica-feedback-pendent')
+            ->expectsOutput("S'han enviat 1 avisos de feedback pendent.")
+            ->assertSuccessful();
+
+        DB::table('tutorias_grupos')->insert([
+            'idTutoria' => 20,
+            'idGrupo' => 'G1',
+            'observaciones' => 'Feedback completat',
+        ]);
+        Carbon::setTestNow('2026-10-16 07:15:00');
+        $this->artisan('tutories:notifica-feedback-pendent')
+            ->expectsOutput("S'han enviat 0 avisos de feedback pendent.")
+            ->assertSuccessful();
+
+        $this->assertDatabaseCount('tutoria_feedback_notifications', 2);
         $this->assertDatabaseHas('tutoria_feedback_notifications', [
             'idTutoria' => 20,
             'idGrupo' => 'G1',
+            'week_start' => '2026-09-28',
+        ]);
+        $this->assertDatabaseHas('tutoria_feedback_notifications', [
+            'idTutoria' => 20,
+            'idGrupo' => 'G1',
+            'week_start' => '2026-10-05',
         ]);
     }
 
@@ -117,8 +138,9 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
             $table->id();
             $table->unsignedInteger('idTutoria');
             $table->string('idGrupo', 10);
+            $table->date('week_start');
             $table->timestamps();
-            $table->unique(['idTutoria', 'idGrupo']);
+            $table->unique(['idTutoria', 'idGrupo', 'week_start']);
         });
     }
 }

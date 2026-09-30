@@ -14,9 +14,13 @@ return new class extends Migration {
             $table->id();
             $table->unsignedInteger('idTutoria');
             $table->string('idGrupo', 10);
+            $table->date('week_start');
             $table->timestamps();
 
-            $table->unique(['idTutoria', 'idGrupo'], 'tutoria_feedback_notification_unique');
+            $table->unique(
+                ['idTutoria', 'idGrupo', 'week_start'],
+                'tutoria_feedback_notification_unique'
+            );
             $table->foreign('idTutoria')->references('id')->on('tutorias')->cascadeOnDelete();
             $table->foreign('idGrupo')->references('codigo')->on('grupos')->cascadeOnDelete()->cascadeOnUpdate();
         });

@@ -6,6 +6,7 @@ namespace Intranet\Application\Tutoria;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Grupo;
@@ -77,6 +78,9 @@ class TutoriaFeedbackService
      */
     public function notifyPending(DateTimeInterface $today): int
     {
+        $weekStart = Carbon::parse($today->format('Y-m-d'))
+            ->startOfWeek(Carbon::MONDAY)
+            ->toDateString();
         $tutories = Tutoria::query()
             ->whereDate('hasta', '<', $today->format('Y-m-d'))
             ->get();
@@ -106,10 +110,11 @@ class TutoriaFeedbackService
                     continue;
                 }
 
-                $notified = DB::transaction(function () use ($tutoria, $group, $tutor): bool {
+                $notified = DB::transaction(function () use ($tutoria, $group, $tutor, $weekStart): bool {
                     $created = TutoriaFeedbackNotification::query()->insertOrIgnore([
                         'idTutoria' => $tutoria->getKey(),
                         'idGrupo' => $group->codigo,
+                        'week_start' => $weekStart,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

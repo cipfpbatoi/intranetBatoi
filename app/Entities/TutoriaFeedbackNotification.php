@@ -18,5 +18,6 @@ class TutoriaFeedbackNotification extends Model
     protected $fillable = [
         'idTutoria',
         'idGrupo',
+        'week_start',
     ];
 }

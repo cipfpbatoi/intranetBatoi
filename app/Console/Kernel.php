@@ -59,7 +59,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
         $schedule->command('sao:sync-company-data')->weekly()->fridays()->at('9:30');
         $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
-        $schedule->command('tutories:notifica-feedback-pendent')->dailyAt('7:15');
+        $schedule->command('tutories:notifica-feedback-pendent')->weekly()->fridays()->at('7:15');
     }
 
     /**
