@@ -40,6 +40,38 @@ class GridTableComponentTest extends TestCase
         $this->assertSame(0, $rows?->length);
     }
 
+    public function test_graella_orientacio_mostra_el_resum_de_feedback(): void
+    {
+        app()->setLocale('ca');
+        $panel = new Panel('Tutoria', TutoriaCrudSchema::ORIENTACION_GRID_FIELDS);
+        $pestana = $panel->getPestanas()[0];
+        $elemento = new class () {
+            public string $descripcion = 'Convivència';
+            public string $tipos = 'Grupal';
+            public string $hasta = '30-09-2026';
+            public string $Xobligatoria = 'X';
+            public string $Grupo = 'Tots els grups';
+            public string $feedbackProgress = '3 / 4 (75%)';
+
+            public function getKey(): int
+            {
+                return 1;
+            }
+        };
+
+        $html = Blade::render(
+            '<x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$elementos" />',
+            [
+                'panel' => $panel,
+                'pestana' => $pestana,
+                'elementos' => new Collection([$elemento]),
+            ]
+        );
+
+        $this->assertStringContainsString('Feedback realitzat', $html);
+        $this->assertStringContainsString('3 / 4 (75%)', $html);
+    }
+
     public function test_celles_de_data_inclouen_valor_iso_per_ordenacio(): void
     {
         $panel = new Panel('Task', ['vencimiento']);

@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Tutoria\TutoriaFeedbackService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Response;
@@ -12,18 +13,41 @@ use Intranet\Presentation\Crud\TutoriaCrudSchema;
 use Intranet\Services\UI\AppAlert as Alert;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Gestiona les tutories, el feedback dels tutors i el seguiment d'Orientació.
+ */
 class TutoriaController extends IntranetController
 {
     private ?GrupoService $grupoService = null;
+    private ?TutoriaFeedbackService $feedbackService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Tutoria';
     protected $gridFields = TutoriaCrudSchema::GRID_FIELDS;
 
-    public function __construct(?GrupoService $grupoService = null)
+    /**
+     * Crea el controlador amb els serveis de grups i feedback substituïbles.
+     */
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?TutoriaFeedbackService $feedbackService = null
+    )
     {
         parent::__construct();
         $this->grupoService = $grupoService;
+        $this->feedbackService = $feedbackService;
+    }
+
+    /**
+     * Resol el servei de seguiment del feedback de tutories.
+     */
+    private function feedback(): TutoriaFeedbackService
+    {
+        if ($this->feedbackService === null) {
+            $this->feedbackService = app(TutoriaFeedbackService::class);
+        }
+
+        return $this->feedbackService;
     }
 
     private function grupos(): GrupoService
@@ -64,8 +88,10 @@ class TutoriaController extends IntranetController
     public function indexTutoria()
     {
         $todos = Tutoria::all();
+        $this->feedback()->attachProgress($todos);
         $this->titulo = ['que' => __('messages.menu.Orientacion')];
         $this->iniTutBotones();
+        $this->panel->setRejilla(TutoriaCrudSchema::ORIENTACION_GRID_FIELDS);
         return $this->grid($todos, false);
     }
 

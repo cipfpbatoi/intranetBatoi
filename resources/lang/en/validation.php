@@ -107,6 +107,7 @@ return [
     */
 
     'attributes' => array(
+                'feedbackProgress' =>'Completed feedback',
                 'read_at' =>'read in',
 		'username' =>'username',
 		'password' =>'password'

@@ -121,6 +121,7 @@ return array(
 	*/
 
 	'attributes' => array(
+                'feedbackProgress' => 'Feedback realizado',
                 'read_at' => 'leído en',
                 'username' => 'usuario',
                 'password' => 'contraseña',
