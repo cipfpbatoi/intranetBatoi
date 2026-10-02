@@ -15,6 +15,7 @@ use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Entities\Convalidacio;
+use Intranet\Entities\DocumentConvalidacio;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -103,6 +104,25 @@ class DireccionConvalidacioController extends Controller
         abort_unless($convalidacio->document_path && Storage::disk('convalidacions')->exists($convalidacio->document_path), 404);
 
         return Storage::disk('convalidacions')->download($convalidacio->document_path, $convalidacio->document_original_name);
+    }
+
+    /** Descarrega el certificat PRL privat després d'autoritzar la petició. */
+    public function downloadPrl(Convalidacio $convalidacio): StreamedResponse
+    {
+        Gate::forUser($this->profesor())->authorize('viewPeticio', $convalidacio);
+        abort_unless($convalidacio->document_prl_path && Storage::disk('convalidacions')->exists($convalidacio->document_prl_path), 404);
+
+        return Storage::disk('convalidacions')->download($convalidacio->document_prl_path, $convalidacio->document_prl_original_name);
+    }
+
+    /** Descarrega un adjunt genèric després de validar-ne la relació amb la petició. */
+    public function downloadAttachment(Convalidacio $convalidacio, DocumentConvalidacio $document): StreamedResponse
+    {
+        Gate::forUser($this->profesor())->authorize('viewPeticio', $convalidacio);
+        abort_unless((int) $document->convalidacio_id === (int) $convalidacio->id, 404);
+        abort_unless(Storage::disk('convalidacions')->exists($document->path), 404);
+
+        return Storage::disk('convalidacions')->download($document->path, $document->original_name);
     }
 
     /** Retorna la identitat autenticada pel guard de professorat. */

@@ -112,6 +112,8 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
         Route::delete('/{fitxer}', ['as' => 'destroy', 'uses' => 'DireccionConvalidacioXmlController@destroy']);
     });
     Route::get('/documents/{convalidacio}', ['as' => 'direction.download', 'uses' => 'DireccionConvalidacioController@download']);
+    Route::get('/documents/{convalidacio}/prl', ['as' => 'direction.download-prl', 'uses' => 'DireccionConvalidacioController@downloadPrl']);
+    Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'direction.download-attachment', 'uses' => 'DireccionConvalidacioController@downloadAttachment']);
     Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
     Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);
 });

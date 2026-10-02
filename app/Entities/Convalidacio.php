@@ -6,6 +6,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Petició individual d'una sol·licitud de convalidació.
@@ -64,7 +65,14 @@ class Convalidacio extends Model
         'document_path',
         'document_original_name',
         'document_mime',
+        'document_prl_path',
+        'document_prl_original_name',
+        'document_prl_mime',
         'declaracio_responsable',
+        'fol_logse',
+        'modulo_origen_es_fol',
+        'fol_logse_cicle',
+        'fol_logse_nivell',
         'estat',
         'observacions',
         'revisat_per',
@@ -77,10 +85,18 @@ class Convalidacio extends Model
 
     protected $casts = [
         'declaracio_responsable' => 'boolean',
+        'fol_logse' => 'boolean',
+        'modulo_origen_es_fol' => 'boolean',
         'any_origen' => 'integer',
         'nota_origen' => 'float',
         'revisat_at' => 'datetime',
     ];
+
+    /** Documents de suport adjunts a esta petició. */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(DocumentConvalidacio::class, 'convalidacio_id');
+    }
 
     /**
      * Sol·licitud de convalidació a la que pertany.
@@ -113,8 +129,14 @@ class Convalidacio extends Model
             self::ORIGEN_PROPI_CENTRE => 'Estudis cursats al propi centre',
             self::ORIGEN_ALTRE_CENTRE => 'Estudis o certificats acadèmics d\'un altre centre',
             self::ORIGEN_EOI => 'Certificat d\'escola oficial d\'idiomes',
-            self::ORIGEN_PRL_LOGSE => 'Prevenció de riscos (LOGSE)',
         ];
+    }
+
+    /** Retorna també l'etiqueta de modalitats antigues ja retirades. */
+    public static function origenLabel(string $origen): string
+    {
+        return self::origenOptions()[$origen]
+            ?? ($origen === self::ORIGEN_PRL_LOGSE ? 'Prevenció de riscos (LOGSE) — opció antiga' : $origen);
     }
 
     /**

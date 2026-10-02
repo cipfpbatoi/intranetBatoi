@@ -22,7 +22,7 @@ class ConvalidacioQueryService
     public function sollicitudsAlumne(string $nia): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['convalidacions.moduloDestino'])
+            ->with(['convalidacions.moduloDestino', 'convalidacions.documents'])
             ->where('alumno_id', $nia)
             ->latest('submitted_at')
             ->get();
@@ -32,7 +32,7 @@ class ConvalidacioQueryService
     public function sollicitudDetail(int $id): ?SollicitudConvalidacio
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.revisor'])
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.revisor', 'convalidacions.documents'])
             ->find($id);
     }
 
@@ -40,7 +40,7 @@ class ConvalidacioQueryService
     public function sollicitudsDireccion(?string $estat = null, ?string $origen = null): Collection
     {
         return SollicitudConvalidacio::query()
-            ->with(['alumno', 'convalidacions.moduloDestino'])
+            ->with(['alumno', 'convalidacions.moduloDestino', 'convalidacions.documents'])
             ->when($estat, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('estat', $estat)))
             ->when($origen, fn ($query) => $query->whereHas('convalidacions', fn ($q) => $q->where('origen', $origen)))
             ->latest('submitted_at')

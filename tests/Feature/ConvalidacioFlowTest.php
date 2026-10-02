@@ -105,6 +105,8 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(2025, $peticioPropiCentre->any_origen);
         $this->assertSame(7.0, $peticioPropiCentre->nota_origen);
         $this->assertSame('ordinària (FI)', $peticioPropiCentre->convocatoria_origen);
+        $this->assertNull($peticioPropiCentre->fol_logse);
+        $this->assertNull($peticioPropiCentre->modulo_origen_es_fol);
         $externa = Convalidacio::query()->where('origen', Convalidacio::ORIGEN_ALTRE_CENTRE)->firstOrFail();
         $this->assertSame(2, $externa->ciclo_matricula_id);
         $this->assertSame(24, $externa->departamento_matricula_id);
@@ -124,7 +126,7 @@ class ConvalidacioFlowTest extends TestCase
             ],
             [['modulo_destino_id' => 'ALIEN', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()]],
             [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => str_repeat('a', 64)]],
-            [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_EOI, 'declaracio_responsable' => true]],
+            [['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE, 'declaracio_responsable' => true]],
         ] as $index => $items) {
             try {
                 $this->service->tramitar($this->alumno, 'invalid-' . $index, $items);
@@ -133,6 +135,148 @@ class ConvalidacioFlowTest extends TestCase
                 $this->assertSame(0, SollicitudConvalidacio::query()->count());
             }
         }
+    }
+
+    public function test_exigix_certificat_prl_quan_el_codi_exacte_es_fol_logse_i_el_destí_es_ipe_i(): void
+    {
+        DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        $xml = str_replace('ORIG1', '009001', $this->academicXml());
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', $xml);
+
+        try {
+            $this->service->tramitar($this->alumno, 'fol-logse-sense-prl', [[
+                'modulo_destino_id' => '1709',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+                'fol_logse' => true,
+            ]]);
+            $this->fail('La petició sense certificat PRL havia de ser rebutjada.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('certificat', $exception->getMessage());
+            $this->assertSame(0, SollicitudConvalidacio::query()->count());
+        }
+
+        $sollicitud = $this->service->tramitar($this->alumno, 'fol-logse-amb-prl', [[
+            'modulo_destino_id' => '1709',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+            'fol_logse' => true,
+            'documents' => [[
+                'descripcio' => 'Certificat PRL',
+                'fitxer' => UploadedFile::fake()->create('certificat-prl.pdf', 80, 'application/pdf'),
+            ]],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+
+        $this->assertTrue($peticio->fol_logse);
+        $this->assertNull($peticio->document_path);
+        $this->assertSame('certificat-prl.pdf', $peticio->document_prl_original_name);
+        Storage::disk('convalidacions')->assertExists($peticio->document_prl_path);
+    }
+
+    public function test_un_altre_centre_pot_aportar_fins_a_tres_documents_descrits(): void
+    {
+        $documents = [];
+        foreach ([['certificat.pdf', 'Certificat acadèmic'], ['prl.pdf', 'Certificat PRL'], ['notes.png', 'Certificat de notes']] as [$nom, $descripcio]) {
+            $documents[] = ['descripcio' => $descripcio, 'fitxer' => UploadedFile::fake()->create($nom, 40, 'application/pdf')];
+        }
+        $sollicitud = $this->service->tramitar($this->alumno, 'three-docs', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'fol_logse' => false,
+            'documents' => $documents,
+        ]]);
+
+        $peticio = $sollicitud->convalidacions->firstOrFail()->load('documents');
+        $this->assertTrue($peticio->declaracio_responsable);
+        $this->assertCount(3, $peticio->documents);
+        $this->assertSame(['Certificat acadèmic', 'Certificat PRL', 'Certificat de notes'], $peticio->documents->pluck('descripcio')->all());
+        foreach ($peticio->documents as $document) {
+            Storage::disk('convalidacions')->assertExists($document->path);
+        }
+
+        $firstDocument = $peticio->documents->firstOrFail();
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->get(route('convalidacions.download-attachment', [$peticio, $firstDocument]))->assertOk();
+        $this->actingAs(Alumno::query()->findOrFail('87654321'), 'alumno');
+        $this->get(route('convalidacions.download-attachment', [$peticio, $firstDocument]))->assertForbidden();
+    }
+
+    public function test_rebutja_mes_de_tres_documents_en_una_peticio(): void
+    {
+        $documents = [];
+        for ($index = 1; $index <= 4; $index++) {
+            $documents[] = [
+                'descripcio' => 'Certificat acadèmic ' . $index,
+                'fitxer' => UploadedFile::fake()->create('document-' . $index . '.pdf', 10, 'application/pdf'),
+            ];
+        }
+
+        try {
+            $this->service->tramitar($this->alumno, 'four-docs', [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'declaracio_responsable' => true,
+                'fol_logse' => false,
+                'documents' => $documents,
+            ]]);
+            $this->fail('No s’havien d’acceptar més de tres adjunts.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('màxim tres', $exception->getMessage());
+        }
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+    }
+
+    public function test_fol_logse_extern_per_a_ipe_i_requerix_documents_academic_i_prl_separats(): void
+    {
+        DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        $document = static fn (string $name, string $label): array => [
+            'descripcio' => $label,
+            'fitxer' => UploadedFile::fake()->create($name, 50, 'application/pdf'),
+        ];
+
+        $sollicitud = $this->service->tramitar($this->alumno, 'external-fol-logse', [[
+            'modulo_destino_id' => '1709',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'modulo_origen_es_fol' => true,
+            'fol_logse' => true,
+            'documents' => [
+                $document('expedient.pdf', 'Certificat acadèmic'),
+                $document('prevencio.pdf', 'Certificat PRL'),
+            ],
+        ]]);
+
+        $peticio = $sollicitud->convalidacions->firstOrFail()->load('documents');
+        $this->assertTrue($peticio->modulo_origen_es_fol);
+        $this->assertTrue($peticio->fol_logse);
+        $this->assertSame(['Certificat acadèmic', 'Certificat PRL'], $peticio->documents->pluck('descripcio')->all());
+    }
+
+    public function test_higiene_del_medi_hospitalari_es_tramitable_pel_flux_general(): void
+    {
+        DB::table('modulos')->insert(['codigo' => '028503', 'cliteral' => 'Higiene del medi hospitalari i neteja del material', 'vliteral' => 'Higiene del medi hospitalari i neteja del material']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '028503', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+
+        $sollicitud = $this->service->tramitar($this->alumno, 'higiene-independent', [[
+            'modulo_destino_id' => '028503',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'fol_logse' => false,
+            'documents' => [[
+                'descripcio' => 'Certificat acadèmic',
+                'fitxer' => UploadedFile::fake()->create('higiene.pdf', 30, 'application/pdf'),
+            ]],
+        ]]);
+
+        $this->assertSame('028503', $sollicitud->convalidacions->firstOrFail()->modulo_destino_id);
     }
 
     public function test_no_tramita_si_no_pot_resoldre_la_familia_professional(): void
@@ -404,6 +548,7 @@ class ConvalidacioFlowTest extends TestCase
                 'modulo_destino_id' => 'DEST1',
                 'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
                 'declaracio_responsable' => '1',
+                'fol_logse' => '0',
                 'document' => UploadedFile::fake()->create('academic.pdf', 20, 'application/pdf'),
             ]],
         ]);
@@ -426,13 +571,14 @@ class ConvalidacioFlowTest extends TestCase
             'items' => [[
                 'modulo_destino_id' => 'DEST1',
                 'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'fol_logse' => '0',
                 'document' => UploadedFile::fake()->create('academic.pdf', 20, 'application/pdf'),
             ]],
         ]);
 
         $response
             ->assertRedirect('/alumno/convalidacions/create')
-            ->assertSessionHasErrors(['items' => 'Els orígens externs requerixen declaració responsable i un document.']);
+            ->assertSessionHasErrors('items');
         $this->assertSame(0, SollicitudConvalidacio::query()->count());
     }
 
@@ -507,6 +653,9 @@ class ConvalidacioFlowTest extends TestCase
             'document' => UploadedFile::fake()->create('prova.pdf', 50, 'application/pdf'),
         ]]);
         $peticio = $sollicitud->convalidacions->firstOrFail();
+        $prlPath = '12345678/' . $sollicitud->id . '/prl.pdf';
+        Storage::disk('convalidacions')->put($prlPath, 'contingut de prova');
+        $peticio->forceFill(['document_prl_path' => $prlPath])->save();
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
@@ -525,6 +674,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertDatabaseMissing('sollicituds_convalidacions', ['id' => $sollicitud->id], 'sqlite');
         $this->assertDatabaseMissing('convalidacions', ['id' => $peticio->id], 'sqlite');
         Storage::disk('convalidacions')->assertMissing($peticio->document_path);
+        Storage::disk('convalidacions')->assertMissing($prlPath);
     }
 
     public function test_la_copia_del_resultat_es_conserva_si_desapareix_l_xml(): void
@@ -771,13 +921,40 @@ XML;
             $table->string('document_path')->nullable();
             $table->string('document_original_name')->nullable();
             $table->string('document_mime')->nullable();
+            $table->string('document_prl_path')->nullable();
+            $table->string('document_prl_original_name')->nullable();
+            $table->string('document_prl_mime')->nullable();
             $table->boolean('declaracio_responsable')->default(false);
+            $table->boolean('fol_logse')->nullable();
+            $table->boolean('modulo_origen_es_fol')->nullable();
+            $table->string('fol_logse_cicle')->nullable();
+            $table->string('fol_logse_nivell', 2)->nullable();
             $table->string('estat');
             $table->text('observacions')->nullable();
             $table->string('revisat_per')->nullable();
             $table->timestamp('revisat_at')->nullable();
             $table->timestamps();
             $table->unique(['sollicitud_convalidacio_id', 'modulo_destino_id']);
+        });
+        Schema::create('convalidacions_moduls_fol_logse', function (Blueprint $table) {
+            $table->string('codigo', 6)->primary();
+            $table->string('modul');
+            $table->string('cicle');
+            $table->string('nivell', 2);
+            $table->string('sistema', 10);
+        });
+        DB::table('convalidacions_moduls_fol_logse')->insert([
+            ['codigo' => '009001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Desenvolupament d\'Aplicacions Informàtiques', 'nivell' => 'GS', 'sistema' => 'LOGSE'],
+            ['codigo' => '028001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Cures Auxiliars d\'Infermeria', 'nivell' => 'GM', 'sistema' => 'LOGSE'],
+        ]);
+        Schema::create('documents_convalidacions', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('convalidacio_id');
+            $table->string('descripcio', 120);
+            $table->string('path');
+            $table->string('original_name');
+            $table->string('mime', 100);
+            $table->timestamps();
         });
     }
 

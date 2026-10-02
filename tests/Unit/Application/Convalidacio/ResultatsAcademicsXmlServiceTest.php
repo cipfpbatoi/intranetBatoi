@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Convalidacio;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Tests\TestCase;
@@ -18,6 +21,19 @@ class ResultatsAcademicsXmlServiceTest extends TestCase
     {
         parent::setUp();
         Storage::fake('convalidacions_xml');
+        if (!Schema::hasTable('convalidacions_moduls_fol_logse')) {
+            Schema::create('convalidacions_moduls_fol_logse', function (Blueprint $table): void {
+                $table->string('codigo', 6)->primary();
+                $table->string('modul');
+                $table->string('cicle');
+                $table->string('nivell', 2);
+                $table->string('sistema', 10);
+            });
+        }
+        DB::table('convalidacions_moduls_fol_logse')->delete();
+        DB::table('convalidacions_moduls_fol_logse')->insert([
+            'codigo' => 'M1', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Cicle de prova', 'nivell' => 'GM', 'sistema' => 'LOGSE',
+        ]);
         $this->service = app(ResultatsAcademicsXmlService::class);
     }
 
@@ -68,11 +84,36 @@ class ResultatsAcademicsXmlServiceTest extends TestCase
         );
         Storage::disk('convalidacions_xml')->put('2024.xml', $xml);
 
-        $resultat = $this->service->aprovats('12345678')[0];
+        $resultat = collect($this->service->aprovats('12345678'))->firstWhere('modul', 'M1');
 
         $this->assertSame('NIVELL', $resultat['nivell_formatiu_origen']);
         $this->assertSame('Grau superior', $resultat['nivell_formatiu_origen_val']);
         $this->assertSame('Grado superior', $resultat['nivell_formatiu_origen_cas']);
+    }
+
+    public function test_classifica_fol_logse_només_per_coincidencia_exacta_de_codi(): void
+    {
+        $xml = str_replace(
+            '<curso codigo="CICLE" padre="FAM" nombre_val="Cicle de prova" nombre_cas="Ciclo de prueba"/>',
+            '<curso codigo="CICLE" padre="FAM" normativa="LOGSE" nombre_val="Cicle de prova" nombre_cas="Ciclo de prueba"/>',
+            $this->xml('6', '4', '7')
+        );
+        Storage::disk('convalidacions_xml')->put('2024.xml', $xml);
+
+        $resultat = collect($this->service->aprovats('12345678'))->firstWhere('modul', 'M1');
+
+        $this->assertTrue($resultat['fol_logse_catalog']);
+        $this->assertSame('Cicle de prova', $resultat['fol_logse_cicle']);
+        $this->assertSame('GM', $resultat['fol_logse_nivell']);
+    }
+
+    public function test_ignora_els_atributs_de_normativa_de_l_xml(): void
+    {
+        Storage::disk('convalidacions_xml')->put('2024.xml', $this->xml('6', '4', '7'));
+
+        $resultat = collect($this->service->aprovats('12345678'))->firstWhere('modul', 'M2');
+
+        $this->assertFalse($resultat['fol_logse_catalog']);
     }
 
     public function test_mante_separat_el_mateix_resultat_de_dos_fitxers(): void

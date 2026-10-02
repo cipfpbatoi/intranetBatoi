@@ -120,6 +120,10 @@
                                             data-cicle-nom="{{ $resultat['nom_cicle'] ?: $resultat['cicle'] }}"
                                             data-any="{{ $resultat['any'] }}"
                                             data-nota="{{ number_format($resultat['nota'], 0, ',', '') }}"
+                                            data-es-fol="{{ $resultat['fol_logse_catalog'] ? '1' : '0' }}"
+                                            data-fol-logse="{{ $resultat['fol_logse_catalog'] ? '1' : '' }}"
+                                            data-fol-cicle="{{ $resultat['fol_logse_cicle'] ?? '' }}"
+                                            data-fol-nivell="{{ $resultat['fol_logse_nivell'] ?? '' }}"
                                         >
                                             {{ $resultat['modul'] }} — {{ $resultat['nom_modul'] ?: $resultat['modul'] }} —
                                             {{ $resultat['nom_cicle'] ?: $resultat['cicle'] }} ·
@@ -141,10 +145,34 @@
                                 @endif
                             </div>
 
+                            <div id="fol-logse-section" class="border rounded p-3 mb-3" hidden>
+                                <label class="form-label" for="builder-fol-logse">Revisa el certificat acadèmic o l’expedient: els estudis d’origen són LOGSE?</label>
+                                <select class="form-select" id="builder-fol-logse" required>
+                                    <option value="">Selecciona sí o no</option>
+                                    <option value="1">Sí, són LOGSE</option>
+                                    <option value="0">No, no són LOGSE</option>
+                                </select>
+                                <div id="fol-logse-catalog-notice" class="form-text" hidden>El codi d’este mòdul apareix al catàleg FOL LOGSE. Confirma la informació revisant el teu expedient.</div>
+                            </div>
+
+                            <div id="fol-origen-section" class="mb-3" hidden>
+                                <label class="form-label" for="builder-es-fol">Estàs demanant esta convalidació a partir del mòdul Formació i Orientació Laboral (FOL)?</label>
+                                <select class="form-select" id="builder-es-fol">
+                                    <option value="">Selecciona sí o no</option>
+                                    <option value="1">Sí, és FOL</option>
+                                    <option value="0">No és FOL</option>
+                                </select>
+                            </div>
+
+                            <div id="documents-builder" class="mb-3">
+                                <label class="form-label">Documents de suport (màxim 3)</label>
+                                <p class="form-text">Pots adjuntar documents en qualsevol modalitat. En cada fitxer indica de quin document es tracta.</p>
+                                <div id="builder-documents-list"></div>
+                                <button class="btn btn-sm btn-outline-secondary mt-2" type="button" id="add-document">Afegir document</button>
+                                <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB per fitxer.</div>
+                            </div>
+
                             <div id="origen-extern" class="mb-3" hidden>
-                                <label class="form-label" for="builder-document">Document acreditatiu</label>
-                                <input type="file" class="form-control" id="builder-document" accept=".pdf,.jpg,.jpeg,.png">
-                                <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB.</div>
                                 <div class="form-check mt-2">
                                     <input type="checkbox" class="form-check-input" id="builder-declaracio" value="1">
                                     <label class="form-check-label" for="builder-declaracio">Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen.</label>
@@ -283,6 +311,13 @@
     const resultDetailYear = document.getElementById('resultat-detall-any');
     const resultDetailResult = document.getElementById('resultat-detall-resultat');
     const declaration = document.getElementById('builder-declaracio');
+    const folSection = document.getElementById('fol-logse-section');
+    const folSelect = document.getElementById('builder-fol-logse');
+    const folCatalogNotice = document.getElementById('fol-logse-catalog-notice');
+    const folOriginSection = document.getElementById('fol-origen-section');
+    const folOriginSelect = document.getElementById('builder-es-fol');
+    const documentsList = document.getElementById('builder-documents-list');
+    const addDocumentButton = document.getElementById('add-document');
     const originGroup = document.getElementById('origen-group');
     const ownCenter = document.getElementById('propi-centre');
     const external = document.getElementById('origen-extern');
@@ -300,8 +335,8 @@
     const confirmPresentationButton = document.getElementById('confirmar-presentacio');
     const reviewRequests = document.getElementById('revisio-peticions');
     const originLabels = @json($origens);
-    const externalOrigins = ['altre_centre', 'certificat_eoi', 'prl_logse'];
-    let fileInput = document.getElementById('builder-document');
+    const externalOrigins = ['altre_centre', 'certificat_eoi'];
+    let documentRows = [];
     let nextIndex = 0;
     let openingPresentationConfirmation = false;
     let presentationConfirmed = false;
@@ -339,6 +374,18 @@
         ownCenter.hidden = !hasModule || origin !== 'propi_centre';
         external.hidden = !hasModule || !externalOrigins.includes(origin);
         secretary.hidden = !hasModule || origin !== 'secretaria';
+        const isIpeI = moduleSelect.value === '1709';
+        const selectedResult = resultSelect.options[resultSelect.selectedIndex];
+        const ownFol = isIpeI && origin === 'propi_centre' && selectedResult?.dataset.esFol === '1';
+        const folApplicable = isIpeI && hasModule && origin !== '' && origin !== 'secretaria';
+        const xmlClassification = ownFol ? selectedResult.dataset.folLogse : '';
+        folSection.hidden = !folApplicable;
+        folCatalogNotice.hidden = !(ownFol && xmlClassification !== '');
+        if (!folApplicable) folSelect.value = '';
+        else if (ownFol && xmlClassification !== '') folSelect.value = xmlClassification;
+        folOriginSection.hidden = !isIpeI || origin !== 'altre_centre';
+        document.getElementById('documents-builder').hidden = !hasModule || origin === '' || origin === 'secretaria';
+        addDocumentButton.disabled = documentRows.length >= 3;
         addButton.hidden = !hasModule || origin === '' || origin === 'secretaria';
         refreshResultDetail();
         setError();
@@ -363,7 +410,11 @@
         originSelect.value = '';
         resultSelect.value = '';
         declaration.checked = false;
-        fileInput.value = '';
+        documentRows = [];
+        documentsList.replaceChildren();
+        folSelect.value = '';
+        folOriginSelect.value = '';
+        addDocumentRow();
         refreshBuilder();
     };
     const formatCode = (code) => code.replace(/^([A-Za-z]+)(\d+)$/, '$1 $2');
@@ -414,10 +465,41 @@
             cell.appendChild(cycle);
             appendLine(cell, `Any ${item.dataset.accreditationYear} · Nota ${item.dataset.accreditationNote}`, 'small mb-1');
             appendLine(cell, item.dataset.modality, 'text-muted small fst-italic');
+            JSON.parse(item.dataset.documents || '[]').forEach((doc) => appendLine(cell, `${doc.descripcio}: ${doc.nom}`, 'small mt-1'));
             return;
         }
         appendLine(cell, item.dataset.accreditationTitle, 'fw-semibold mb-1');
         appendLine(cell, item.dataset.accreditationMeta, 'small');
+        JSON.parse(item.dataset.documents || '[]').forEach((doc) => appendLine(cell, `${doc.descripcio}: ${doc.nom}`, 'small mt-1'));
+    };
+    const addDocumentRow = () => {
+        if (documentRows.length >= 3) return;
+        const row = document.createElement('div');
+        row.className = 'border rounded p-2 mb-2';
+        const description = document.createElement('input');
+        description.type = 'text';
+        description.className = 'form-control mb-2';
+        description.maxLength = 120;
+        description.placeholder = 'Tipus de document (p. ex. certificat acadèmic o certificat PRL)';
+        description.setAttribute('aria-label', 'Descripció del document');
+        const file = document.createElement('input');
+        file.type = 'file';
+        file.className = 'form-control';
+        file.accept = '.pdf,.jpg,.jpeg,.png';
+        file.setAttribute('aria-label', 'Fitxer adjunt');
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-sm btn-link text-danger px-0';
+        remove.textContent = 'Llevar document';
+        remove.addEventListener('click', () => {
+            documentRows = documentRows.filter((entry) => entry.row !== row);
+            row.remove();
+            addDocumentButton.disabled = documentRows.length >= 3;
+        });
+        row.append(description, file, remove);
+        documentsList.appendChild(row);
+        documentRows.push({ row, description, file });
+        addDocumentButton.disabled = documentRows.length >= 3;
     };
     const buildReview = () => {
         reviewRequests.replaceChildren();
@@ -448,6 +530,9 @@
     moduleSelect.addEventListener('change', refreshBuilder);
     originSelect.addEventListener('change', refreshBuilder);
     resultSelect.addEventListener('change', refreshResultDetail);
+    folSelect.addEventListener('change', refreshBuilder);
+    folOriginSelect.addEventListener('change', refreshBuilder);
+    addDocumentButton.addEventListener('click', addDocumentRow);
     reviewModalElement.addEventListener('show.bs.modal', buildReview);
     reviewModalElement.addEventListener('hidden.bs.modal', () => {
         if (!openingPresentationConfirmation) return;
@@ -477,8 +562,35 @@
             setError('Selecciona el mòdul superat que vols aportar.');
             return;
         }
-        if (externalOrigins.includes(origin) && (!fileInput.files.length || !declaration.checked)) {
-            setError('Adjunta el document i accepta la declaració responsable.');
+        const attached = documentRows.filter((entry) => entry.file.files.length > 0);
+        if (externalOrigins.includes(origin) && (!attached.length || !declaration.checked)) {
+            setError('Adjunta almenys un document i accepta la declaració responsable.');
+            return;
+        }
+        if (documentRows.some((entry) => entry.file.files.length && !entry.description.value.trim())) {
+            setError('Indica de quin tipus és cada document adjunt.');
+            return;
+        }
+        const isIpeI = moduleId === '1709';
+        const result = origin === 'propi_centre' ? resultSelect.options[resultSelect.selectedIndex] : null;
+        const folApplicable = isIpeI && origin !== 'secretaria';
+        if (folApplicable && folSelect.value === '') {
+            setError('Revisa el certificat acadèmic i indica si els estudis d’origen són LOGSE.');
+            return;
+        }
+        if (isIpeI && origin === 'altre_centre' && folOriginSelect.value === '') {
+            setError('Indica si l’origen és el mòdul FOL.');
+            return;
+        }
+        const isFolLogseIpe = isIpeI && folSelect.value === '1' && (origin === 'propi_centre' ? result?.dataset.esFol === '1' : folOriginSelect.value === '1');
+        const hasPrl = attached.some((entry) => /prl|prevenci[oó]n?.*riesgos/i.test(entry.description.value));
+        const hasAcademic = attached.some((entry) => /certificat.*(acad[eè]mic|estudis|notes)|expedient/i.test(entry.description.value));
+        if (isFolLogseIpe && !hasPrl) {
+            setError('Adjunta un document identificat com a certificat PRL.');
+            return;
+        }
+        if (isFolLogseIpe && origin === 'altre_centre' && !hasAcademic) {
+            setError('Adjunta també el certificat acadèmic, separat del certificat PRL.');
             return;
         }
 
@@ -499,8 +611,8 @@
         addHidden(accreditationCell, `items[${index}][modulo_destino_id]`, moduleId);
         addHidden(accreditationCell, `items[${index}][origen]`, origin);
 
+        const docsSummary = [];
         if (origin === 'propi_centre') {
-            const result = resultSelect.options[resultSelect.selectedIndex];
             item.dataset.accreditationSourceCode = result.dataset.codi;
             item.dataset.accreditationSourceName = result.dataset.modul;
             item.dataset.accreditationCycleName = result.dataset.cicleNom;
@@ -510,20 +622,32 @@
             addHidden(accreditationCell, `items[${index}][resultat_origen_id]`, resultSelect.value);
         } else {
             item.dataset.accreditationTitle = originLabel;
-            item.dataset.accreditationMeta = fileInput.files[0].name;
+            item.dataset.accreditationMeta = attached.map((entry) => entry.file.files[0].name).join(', ');
             item.dataset.modality = '';
             item.dataset.requiresDeclaration = 'true';
             addHidden(accreditationCell, `items[${index}][declaracio_responsable]`, '1');
-            const replacement = fileInput.cloneNode();
-            fileInput.removeAttribute('id');
-            fileInput.name = `items[${index}][document]`;
-            fileInput.hidden = true;
-            accreditationCell.appendChild(fileInput);
-            fileInput = replacement;
-            fileInput.id = 'builder-document';
-            fileInput.removeAttribute('name');
-            fileInput.hidden = false;
-            external.insertBefore(fileInput, external.querySelector('.form-text'));
+        }
+        if (folApplicable) addHidden(accreditationCell, `items[${index}][fol_logse]`, folSelect.value);
+        if (isIpeI && origin === 'altre_centre') addHidden(accreditationCell, `items[${index}][modulo_origen_es_fol]`, folOriginSelect.value);
+        attached.forEach((entry, docIndex) => {
+            const description = entry.description.value.trim();
+            const clone = entry.file.cloneNode();
+            entry.file.name = `items[${index}][documents][${docIndex}][fitxer]`;
+            entry.file.hidden = true;
+            accreditationCell.appendChild(entry.file);
+            addHidden(accreditationCell, `items[${index}][documents][${docIndex}][descripcio]`, description);
+            docsSummary.push({ descripcio: description, nom: entry.file.files[0].name });
+            entry.row.replaceChildren(description, clone);
+            entry.description = document.createElement('input');
+        });
+        item.dataset.documents = JSON.stringify(docsSummary);
+        documentRows = [];
+        documentsList.replaceChildren();
+        addDocumentRow();
+        if (folApplicable && origin === 'propi_centre') {
+            item.dataset.folLogse = folSelect.value;
+            item.dataset.folCicle = result?.dataset.folCicle || '';
+            item.dataset.folNivell = result?.dataset.folNivell || '';
         }
         fillModuleCell(moduleCell, item);
         fillAccreditationCell(accreditationCell, item);
@@ -561,6 +685,7 @@
 
     refreshBuilder();
     refreshSummary();
+    addDocumentRow();
 })();
 </script>
 @endpush

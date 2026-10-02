@@ -11,12 +11,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Convalidacio;
+use Intranet\Entities\DocumentConvalidacio;
+use Intranet\Entities\ModulFolLogse;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
 
 /** Casos d'ús del cicle de vida de les convalidacions. */
 class ConvalidacioService
 {
+    private const MODUL_IPE_I = '1709';
+
     public function __construct(private readonly ResultatsAcademicsXmlService $resultatsAcademics)
     {
     }
@@ -60,12 +64,7 @@ class ConvalidacioService
                 ]);
 
                 foreach ($items as $item) {
-                    $document = $this->guardarDocument($alumno, $sollicitud, $item['document'] ?? null);
-                    if ($document['document_path']) {
-                        $storedPaths[] = $document['document_path'];
-                    }
-
-                    $sollicitud->convalidacions()->create(array_merge([
+                    $peticio = $sollicitud->convalidacions()->create([
                         'modulo_destino_id' => $item['modulo_destino_id'],
                         'origen' => $item['origen'],
                         'modulo_origen_codigo' => $item['modulo_origen_codigo'] ?? null,
@@ -99,8 +98,34 @@ class ConvalidacioService
                         'nota_origen' => $item['nota_origen'] ?? null,
                         'convocatoria_origen' => $item['convocatoria_origen'] ?? null,
                         'declaracio_responsable' => (bool) ($item['declaracio_responsable'] ?? false),
+                        'fol_logse' => $item['fol_logse'] ?? null,
+                        'modulo_origen_es_fol' => $item['modulo_origen_es_fol'] ?? null,
+                        'fol_logse_cicle' => $item['fol_logse_cicle'] ?? null,
+                        'fol_logse_nivell' => $item['fol_logse_nivell'] ?? null,
                         'estat' => Convalidacio::ESTAT_EN_PROCES,
-                    ], $document));
+                    ]);
+                    foreach ($item['documents'] ?? [] as $adjunt) {
+                        if (!($adjunt['fitxer'] ?? null) instanceof UploadedFile) {
+                            continue;
+                        }
+                        $saved = $this->guardarAdjunt($alumno, $sollicitud, $adjunt['fitxer']);
+                        $storedPaths[] = $saved['path'];
+                        $descripcio = trim((string) $adjunt['descripcio']);
+                        $peticio->documents()->create(['descripcio' => $descripcio, ...$saved]);
+                        if (preg_match('/prl|prevenci[oó]n?.*riesgos/i', $descripcio)) {
+                            $peticio->forceFill([
+                                'document_prl_path' => $saved['path'],
+                                'document_prl_original_name' => $saved['original_name'],
+                                'document_prl_mime' => $saved['mime'],
+                            ])->save();
+                        } elseif (!$peticio->document_path) {
+                            $peticio->forceFill([
+                                'document_path' => $saved['path'],
+                                'document_original_name' => $saved['original_name'],
+                                'document_mime' => $saved['mime'],
+                            ])->save();
+                        }
+                    }
                 }
 
                 return $sollicitud->load('convalidacions');
@@ -162,13 +187,17 @@ class ConvalidacioService
     {
         $documents = DB::transaction(function () use ($sollicitud): array {
             $actual = SollicitudConvalidacio::query()
-                ->with('convalidacions:id,sollicitud_convalidacio_id,document_path')
+                ->with(['convalidacions:id,sollicitud_convalidacio_id,document_path,document_prl_path', 'convalidacions.documents:id,convalidacio_id,path'])
                 ->lockForUpdate()
                 ->findOrFail($sollicitud->id);
 
             $paths = $actual->convalidacions
-                ->pluck('document_path')
+                ->flatMap(fn (Convalidacio $peticio): array => [
+                    $peticio->document_path, $peticio->document_prl_path,
+                    ...$peticio->documents->pluck('path')->all(),
+                ])
                 ->filter()
+                ->unique()
                 ->values()
                 ->all();
 
@@ -218,6 +247,55 @@ class ConvalidacioService
         return $peticio->fresh();
     }
 
+    /** Substituïx només el fitxer triat i conserva la descripció de l'adjunt. */
+    public function corregirAdjunt(Convalidacio $peticio, DocumentConvalidacio $document, Alumno $alumno, UploadedFile $file): Convalidacio
+    {
+        if ((int) $document->convalidacio_id !== (int) $peticio->id
+            || (string) $peticio->sollicitud->alumno_id !== (string) $alumno->nia
+            || !$peticio->esOrigenExtern()
+            || $peticio->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+            throw new ConvalidacioException('Esta petició no admet una correcció d’este document.');
+        }
+
+        $saved = $this->guardarAdjunt($alumno, $peticio->sollicitud, $file);
+        $oldPath = $document->path;
+        try {
+            DB::transaction(function () use ($peticio, $document, $saved, $oldPath): void {
+                $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
+                if ($actual->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                    throw new ConvalidacioException('Esta petició ja no admet una correcció documental.');
+                }
+                $documentActual = DocumentConvalidacio::query()
+                    ->where('convalidacio_id', $actual->id)
+                    ->lockForUpdate()
+                    ->findOrFail($document->id);
+                $documentActual->forceFill($saved)->save();
+                $canvis = ['estat' => Convalidacio::ESTAT_EN_PROCES];
+                if ($actual->document_path === $oldPath) {
+                    $canvis += [
+                        'document_path' => $saved['path'],
+                        'document_original_name' => $saved['original_name'],
+                        'document_mime' => $saved['mime'],
+                    ];
+                }
+                if ($actual->document_prl_path === $oldPath) {
+                    $canvis += [
+                        'document_prl_path' => $saved['path'],
+                        'document_prl_original_name' => $saved['original_name'],
+                        'document_prl_mime' => $saved['mime'],
+                    ];
+                }
+                $actual->forceFill($canvis)->save();
+            });
+        } catch (\Throwable $exception) {
+            Storage::disk('convalidacions')->delete($saved['path']);
+            throw $exception;
+        }
+        Storage::disk('convalidacions')->delete($oldPath);
+
+        return $peticio->fresh();
+    }
+
     /**
      * @param array<int, array<string, mixed>> $items
      * @return array<int, array<string, mixed>>
@@ -246,12 +324,27 @@ class ConvalidacioService
      */
     private function validarItem(Alumno $alumno, array $item): array
     {
+        if (empty($item['documents'])) {
+            $legacyDocs = [];
+            if (($item['document'] ?? null) instanceof UploadedFile) {
+                $legacyDocs[] = ['descripcio' => 'Certificat acadèmic', 'fitxer' => $item['document']];
+            }
+            if (($item['document_prl'] ?? null) instanceof UploadedFile) {
+                $legacyDocs[] = ['descripcio' => 'Certificat PRL', 'fitxer' => $item['document_prl']];
+            }
+            $item['documents'] = $legacyDocs;
+        }
         $destino = (string) ($item['modulo_destino_id'] ?? '');
         $origen = (string) ($item['origen'] ?? '');
 
         if (!array_key_exists($origen, Convalidacio::origenOptions())) {
             throw new ConvalidacioException('L\'origen indicat no és vàlid.');
         }
+        $esIpeI = $destino === self::MODUL_IPE_I;
+        if ($esIpeI && !is_bool($item['fol_logse'] ?? null)) {
+            throw new ConvalidacioException('Revisa el certificat acadèmic i indica si els estudis d’origen són LOGSE.');
+        }
+        $folLogse = $esIpeI ? $item['fol_logse'] : null;
 
         $grups = $alumno->Grupo()->pluck('grupos.codigo');
         $destinoValido = DB::table('modulo_grupos')
@@ -288,6 +381,12 @@ class ConvalidacioService
                 throw new ConvalidacioException('No s\'ha pogut identificar el nivell formatiu o la família professional del mòdul superat.');
             }
 
+            $catalog = $esIpeI ? ModulFolLogse::query()->find((string) $resultat['modul']) : null;
+            $esFol = $catalog !== null;
+            $documents = $this->validarDocuments($item, false);
+            $esIPEIFol = $destino === self::MODUL_IPE_I && $esFol && $folLogse === true;
+            $this->validarDocumentPrl($documents, $esIPEIFol, false);
+
             return array_merge($item, $contextMatricula, [
                 'modulo_origen_codigo' => $resultat['modul'],
                 'modulo_origen_nombre' => $resultat['nom_modul'],
@@ -308,16 +407,34 @@ class ConvalidacioService
                 'convocatoria_origen' => $resultat['convocatoria'],
                 'document' => null,
                 'declaracio_responsable' => false,
+                'fol_logse' => $folLogse,
+                'modulo_origen_es_fol' => $esIpeI ? $esFol : null,
+                'fol_logse_cicle' => $catalog?->cicle,
+                'fol_logse_nivell' => $catalog?->nivell,
+                'documents' => $documents,
             ]);
         }
 
-        if (($item['declaracio_responsable'] ?? false) !== true || !($item['document'] ?? null) instanceof UploadedFile) {
-            throw new ConvalidacioException('Els orígens externs requerixen declaració responsable i un document.');
+        $esIPEIAltresEstudis = $destino === self::MODUL_IPE_I && $origen === Convalidacio::ORIGEN_ALTRE_CENTRE;
+        if ($esIPEIAltresEstudis && !is_bool($item['modulo_origen_es_fol'] ?? null)) {
+            throw new ConvalidacioException('Indica si l’origen de la petició és el mòdul FOL.');
         }
+        if ($origen !== Convalidacio::ORIGEN_PROPI_CENTRE && ($item['declaracio_responsable'] ?? false) !== true) {
+            throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
+        }
+        $documents = $this->validarDocuments($item, true);
+        if ($origen === Convalidacio::ORIGEN_ALTRE_CENTRE && !$this->teDocumentAcademic($documents)) {
+            throw new ConvalidacioException('Identifica almenys un document com a certificat acadèmic o expedient.');
+        }
+        $esFol = $origen === Convalidacio::ORIGEN_ALTRE_CENTRE && ($item['modulo_origen_es_fol'] ?? false);
+        $esIPEIFol = $esIPEIAltresEstudis && $esFol && $folLogse === true;
+        $this->validarDocumentPrl($documents, $esIPEIFol, $origen === Convalidacio::ORIGEN_ALTRE_CENTRE);
 
-        $this->validarDocument($item['document']);
-
-        return array_merge($item, $contextMatricula);
+        return array_merge($item, $contextMatricula, [
+            'fol_logse' => $folLogse,
+            'modulo_origen_es_fol' => $esIPEIAltresEstudis ? $esFol : null,
+            'documents' => $documents,
+        ]);
     }
 
     /**
@@ -384,25 +501,86 @@ class ConvalidacioService
         ];
     }
 
-    /** @return array{document_path: ?string, document_original_name: ?string, document_mime: ?string} */
-    private function guardarDocument(Alumno $alumno, SollicitudConvalidacio $sollicitud, ?UploadedFile $file): array
+    /** Guarda un adjunt amb nom opac en l'emmagatzematge privat. */
+    private function guardarAdjunt(Alumno $alumno, SollicitudConvalidacio $sollicitud, UploadedFile $file): array
     {
-        if (!$file) {
-            return ['document_path' => null, 'document_original_name' => null, 'document_mime' => null];
-        }
-
+        $this->validarDocument($file);
         $name = Str::uuid() . '.' . strtolower($file->getClientOriginalExtension());
         $path = $file->storeAs($alumno->nia . '/' . $sollicitud->id, $name, 'convalidacions');
-
         if (!$path) {
             throw new ConvalidacioException('No s\'ha pogut guardar el document.');
         }
 
         return [
-            'document_path' => $path,
-            'document_original_name' => mb_substr($file->getClientOriginalName(), 0, 255),
-            'document_mime' => $file->getMimeType(),
+            'path' => $path,
+            'original_name' => mb_substr($file->getClientOriginalName(), 0, 255),
+            'mime' => $file->getMimeType(),
         ];
+    }
+
+    /** Guarda fitxers per a les rutes de correcció llegades. */
+    private function guardarDocument(Alumno $alumno, SollicitudConvalidacio $sollicitud, ?UploadedFile $file): array
+    {
+        if (!$file) {
+            return ['document_path' => null, 'document_original_name' => null, 'document_mime' => null];
+        }
+        $saved = $this->guardarAdjunt($alumno, $sollicitud, $file);
+
+        return [
+            'document_path' => $saved['path'],
+            'document_original_name' => $saved['original_name'],
+            'document_mime' => $saved['mime'],
+        ];
+    }
+
+    /** Comprova nombre, descripcions i fitxers abans d'escriure la petició. */
+    private function validarDocuments(array $item, bool $obligatoris): array
+    {
+        $documents = array_values($item['documents'] ?? []);
+        if (count($documents) > 3 || ($obligatoris && $documents === [])) {
+            throw new ConvalidacioException($obligatoris
+                ? 'Adjunta almenys un document (màxim tres).'
+                : 'Pots adjuntar un màxim de tres documents.');
+        }
+        foreach ($documents as $document) {
+            if (!($document['fitxer'] ?? null) instanceof UploadedFile || blank($document['descripcio'] ?? null)) {
+                throw new ConvalidacioException('Cada document adjunt necessita un fitxer i una descripció.');
+            }
+            $this->validarDocument($document['fitxer']);
+        }
+
+        return $documents;
+    }
+
+    /** Exigix evidència acadèmica i PRL separades per al cas FOL LOGSE → IPE I. */
+    private function validarDocumentPrl(array $documents, bool $requereixPrl, bool $extern): void
+    {
+        if (!$requereixPrl) {
+            return;
+        }
+        $prl = array_filter($documents, static fn (array $document): bool =>
+            preg_match('/prevenci[oó]n?.*riesgos|prl/u', mb_strtolower((string) ($document['descripcio'] ?? ''))) === 1
+        );
+        $academics = array_filter($documents, static fn (array $document): bool =>
+            preg_match('/certificat.*(acad[eè]mic|notes|estudis)|expedient/u', mb_strtolower((string) ($document['descripcio'] ?? ''))) === 1
+        );
+        if ($prl === [] || ($extern && $academics === [])) {
+            throw new ConvalidacioException($extern
+                ? 'Adjunta per separat el certificat acadèmic i el certificat PRL.'
+                : 'Adjunta el certificat de Prevenció de Riscos Laborals.');
+        }
+    }
+
+    /** Indica si hi ha un adjunt identificat com a document acadèmic. */
+    private function teDocumentAcademic(array $documents): bool
+    {
+        foreach ($documents as $document) {
+            if (preg_match('/certificat.*(acad[eè]mic|notes|estudis)|expedient/u', mb_strtolower((string) ($document['descripcio'] ?? '')))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** Valida el document també en la frontera de domini. */

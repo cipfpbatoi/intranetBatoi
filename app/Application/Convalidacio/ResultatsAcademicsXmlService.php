@@ -8,6 +8,7 @@ use DOMDocument;
 use DOMXPath;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Entities\ModulFolLogse;
 use RuntimeException;
 
 /** Consulta de manera segura els resultats acadèmics guardats en XML privats. */
@@ -16,7 +17,7 @@ class ResultatsAcademicsXmlService
     /**
      * Retorna cada resultat aprovat com una opció independent.
      *
-     * @return list<array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, any:int, nota:float, convocatoria:string}>
+     * @return list<array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, fol_logse_catalog:bool, fol_logse_cicle:string|null, fol_logse_nivell:string|null, any:int, nota:float, convocatoria:string}>
      */
     public function aprovats(string $nia): array
     {
@@ -51,7 +52,7 @@ class ResultatsAcademicsXmlService
     /**
      * Resol una selecció opaca i la torna a validar contra els XML actuals.
      *
-     * @return array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, any:int, nota:float, convocatoria:string}|null
+     * @return array{id:string, modul:string, nom_modul:string, nom_modul_val:string, nom_modul_cas:string, cicle:string, nom_cicle:string, nom_cicle_val:string, nom_cicle_cas:string, familia_professional:string|null, familia_professional_val:string|null, familia_professional_cas:string|null, nivell_formatiu_origen:string|null, nivell_formatiu_origen_val:string|null, nivell_formatiu_origen_cas:string|null, fol_logse_catalog:bool, fol_logse_cicle:string|null, fol_logse_nivell:string|null, any:int, nota:float, convocatoria:string}|null
      */
     public function trobarAprovat(string $nia, string $id): ?array
     {
@@ -150,6 +151,7 @@ class ResultatsAcademicsXmlService
             $cicle = $this->cicleDelCurs($cursContingut, $cursos);
             $familia = $this->familiaProfessionalDelCurs($cursContingut, $cursos);
             $nivellFormatiu = $this->nivellFormatiuDelCurs($cursContingut, $cursos);
+            $catalog = ModulFolLogse::query()->find($modul);
             $identity = implode('|', [$source, (string) $any, $curs, $modul, $convocatoria, (string) $nota]);
             $resultats[] = [
                 'id' => hash_hmac('sha256', $identity, (string) config('app.key')),
@@ -167,6 +169,9 @@ class ResultatsAcademicsXmlService
                 'nivell_formatiu_origen' => $nivellFormatiu['codi'] ?? null,
                 'nivell_formatiu_origen_val' => $nivellFormatiu['nom_val'] ?? null,
                 'nivell_formatiu_origen_cas' => $nivellFormatiu['nom_cas'] ?? null,
+                'fol_logse_catalog' => $catalog !== null,
+                'fol_logse_cicle' => $catalog?->cicle,
+                'fol_logse_nivell' => $catalog?->nivell,
                 'any' => $any,
                 'nota' => $nota,
                 'convocatoria' => $convocatoria,
