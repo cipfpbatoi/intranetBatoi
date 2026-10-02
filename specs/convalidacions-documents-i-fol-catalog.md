@@ -91,8 +91,12 @@ And les peticions antigues amb eixe origen continuen llegibles per Direcció
 ### Escenari 7: consulta i cicle de vida dels adjunts
 
 Given una petició conté diversos documents
-When l'alumne revisa el resum o Direcció consulta la petició
-Then cada mòdul de la sol·licitud apareix en una fila d'una taula amb el mòdul, l'acreditació i l'estat o la gestió corresponent
+When l'alumne consulta la seua sol·licitud o Direcció revisa el detall
+Then cada mòdul de la sol·licitud apareix en una fila d'una taula
+And la columna esquerra agrupa el mòdul destí i les dades de matrícula actual
+And la columna central mostra l'origen, les dades acadèmiques aportades i els documents
+And la columna dreta mostra l'estat i el comentari de Direcció, i a Direcció també permet seleccionar el nou estat
+And els camps de nivell i família professional es mostren amb noms llegibles, sense codis interns ni duplicació dels noms en dos idiomes
 And cada document es mostra amb el tipus indicat i es pot descarregar per separat amb les autoritzacions actuals
 And els fitxers continuen en emmagatzematge privat
 And eliminar una petició elimina tots els seus adjunts

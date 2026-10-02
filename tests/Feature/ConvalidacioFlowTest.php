@@ -514,9 +514,9 @@ class ConvalidacioFlowTest extends TestCase
         $this->get('/alumno/convalidacions/1')
             ->assertOk()
             ->assertSee('<table class="table table-hover align-middle">', false)
-            ->assertSee('Mòdul a convalidar')
-            ->assertSee('Acreditació')
-            ->assertSee('Estat');
+            ->assertSee('Mòdul que vol convalidar')
+            ->assertSee('Estudis i documents aportats')
+            ->assertSee('Estat i comentari');
     }
 
     public function test_error_tecnic_en_tramitacio_no_exposa_el_detall_ni_deixa_dades_parcials(): void
@@ -731,9 +731,9 @@ class ConvalidacioFlowTest extends TestCase
         $this->get(route('convalidacions.direction.show', $sollicitud))
             ->assertOk()
             ->assertSee('<table class="table table-hover align-middle">', false)
-            ->assertSee('Mòdul a convalidar')
-            ->assertSee('Acreditació')
-            ->assertSee('Resolució')
+            ->assertSee('Mòdul que vol convalidar')
+            ->assertSee('Estudis i documents aportats')
+            ->assertSee('Estat i comentari')
             ->assertSee('Eliminar sol·licitud de prova')
             ->assertSee('elimina tota la traçabilitat', false);
 
@@ -762,6 +762,7 @@ class ConvalidacioFlowTest extends TestCase
             'familia_professional_cas' => 'Cambio familia cas',
         ]);
         $peticio = $sollicitud->convalidacions()->firstOrFail()->fresh();
+        $peticio->forceFill(['observacions' => 'Documentació revisada'])->save();
 
         $this->assertSame('ORIG1', $peticio->modulo_origen_codigo);
         $this->assertSame('Cicle anterior', $peticio->ciclo_origen_nombre);
@@ -780,16 +781,34 @@ class ConvalidacioFlowTest extends TestCase
         $detallAlumne = $this->get('/alumno/convalidacions/' . $sollicitud->id);
         $detallAlumne
             ->assertOk()
+            ->assertSeeInOrder([
+                'Mòdul que vol convalidar',
+                'Estudis i documents aportats',
+                'Estat i comentari',
+                'Destí 1',
+                'Cicle de matrícula:',
+                '#2 · ACT',
+                'Origen:',
+                'Mòdul superat:',
+                'Estat actual:',
+                'Comentari de Direcció:',
+            ])
             ->assertSeeText('Any d’aprovació:')
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
-            ->assertSeeText('Família professional')
-            ->assertSeeText('Familia profesional')
             ->assertSeeText('Cicle de matrícula: #2 · ACT — Cicle matriculat val / Ciclo matriculado cas')
-            ->assertSeeText('Departament #24 · INFORMÀTICA I COMUNICACIONS / INFORMÁTICA Y COMUNICACIONES')
-            ->assertSeeText('ITACA 3306169525 · 190')
-            ->assertSeeText('Cicle Formatiu de Grau Superior / Ciclo Formativo de Grado Superior · Normativa LFP')
-            ->assertSeeText('ANT — Cicle anterior / Ciclo anterior')
+            ->assertSeeText('Família professional: INFORMÀTICA I COMUNICACIONS')
+            ->assertSeeText('Nivell: Grau Superior')
+            ->assertSeeText('Família professional: Família professional')
+            ->assertSeeText('Nivell: Cicle anterior')
+            ->assertSeeText('Comentari de Direcció:')
+            ->assertSeeText('Documentació revisada')
+            ->assertDontSeeText('Departament #24')
+            ->assertDontSeeText('ITACA 3306169525')
+            ->assertDontSeeText('FAMILIA —')
+            ->assertDontSeeText('ANT — Cicle anterior')
+            ->assertDontSeeText('Familia profesional')
+            ->assertDontSeeText('Nivell formatiu d’origen')
             ->assertSeeText('Nota:')
             ->assertSeeText('7')
             ->assertDontSee('7,00')
@@ -800,16 +819,36 @@ class ConvalidacioFlowTest extends TestCase
         $detallDireccio = $this->get('/direccion/convalidacions/' . $sollicitud->id);
         $detallDireccio
             ->assertOk()
+            ->assertSeeInOrder([
+                'Mòdul que vol convalidar',
+                'Estudis i documents aportats',
+                'Estat i comentari',
+                'Destí 1',
+                'Cicle de matrícula:',
+                '#2 · ACT',
+                'Origen:',
+                'Mòdul superat:',
+                'Estat actual:',
+                'Nou estat',
+                'Comentari de Direcció',
+            ])
             ->assertSeeText('Any d’aprovació:')
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
             ->assertSeeText('Família professional')
-            ->assertSeeText('Familia profesional')
+            ->assertSeeText('Família professional: INFORMÀTICA I COMUNICACIONS')
+            ->assertSeeText('Nivell: Grau Superior')
+            ->assertSeeText('Família professional: Família professional')
+            ->assertSeeText('Nivell: Cicle anterior')
+            ->assertSeeText('Documentació revisada')
+            ->assertDontSeeText('Departament #24')
+            ->assertDontSeeText('ITACA 3306169525')
+            ->assertDontSeeText('3162079904')
+            ->assertDontSeeText('FAMILIA —')
+            ->assertDontSeeText('ANT — Cicle anterior')
+            ->assertDontSeeText('Familia profesional')
+            ->assertDontSeeText('Nivell formatiu d’origen')
             ->assertSeeText('Cicle de matrícula: #2 · ACT — Cicle matriculat val / Ciclo matriculado cas')
-            ->assertSeeText('Departament #24 · INFORMÀTICA I COMUNICACIONS / INFORMÁTICA Y COMUNICACIONES')
-            ->assertSeeText('ITACA 3306169525 · 190')
-            ->assertSeeText('Cicle Formatiu de Grau Superior / Ciclo Formativo de Grado Superior · Normativa LFP')
-            ->assertSeeText('ANT — Cicle anterior / Ciclo anterior')
             ->assertSeeText('Nota:')
             ->assertSeeText('7')
             ->assertDontSee('7,00')

@@ -10,15 +10,29 @@
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th scope="col">Mòdul a convalidar</th>
-                    <th scope="col">Acreditació</th>
-                    <th scope="col">Resolució</th>
+                    <th scope="col">Mòdul que vol convalidar</th>
+                    <th scope="col">Estudis i documents aportats</th>
+                    <th scope="col">Estat i comentari</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($sollicitud->convalidacions as $peticio)
+                    @php
+                        $familiaMatricula = $peticio->familia_matricula_nombre_val ?: $peticio->familia_matricula_nombre_cas;
+                        $familiaOrigen = $peticio->familia_professional_nombre_val ?: $peticio->familia_professional_nombre_cas;
+                        $nivellMatricula = $peticio->ciclo_matricula_tipo_nombre_val ?: $peticio->ciclo_matricula_tipo_nombre_cas;
+                        $nivellMatricula = preg_replace('/^(?:Cicle Formatiu(?: de)?|Ciclo Formativo(?: de)?)\s+/u', '', (string) $nivellMatricula);
+                        $nivellOrigen = $peticio->nivel_origen_nombre_val ?: $peticio->nivel_origen_nombre_cas;
+                    @endphp
                     <tr>
-                        <td class="w-25"><strong>{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</strong></td>
+                        <td class="w-25">
+                            <div class="mb-2"><strong>{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</strong></div>
+                            @if ($peticio->ciclo_matricula_id)
+                                <div class="mb-1"><strong>Cicle de matrícula:</strong> #{{ $peticio->ciclo_matricula_id }} · {{ $peticio->ciclo_matricula_codigo }} — {{ $peticio->ciclo_matricula_nombre_val }} / {{ $peticio->ciclo_matricula_nombre_cas }}</div>
+                                <div class="mb-1"><strong>Família professional:</strong> {{ $familiaMatricula }}</div>
+                                <div class="mb-1"><strong>Nivell:</strong> {{ $nivellMatricula }}</div>
+                            @endif
+                        </td>
                         <td>
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
                             @if (!is_null($peticio->fol_logse))
@@ -33,19 +47,14 @@
                             @if ($peticio->fol_logse_cicle)
                                 <div class="mb-1"><strong>Catàleg FOL:</strong> {{ $peticio->fol_logse_cicle }} ({{ $peticio->fol_logse_nivell }})</div>
                             @endif
-                            @if ($peticio->ciclo_matricula_id)
-                                <div class="mb-1"><strong>Cicle de matrícula:</strong> #{{ $peticio->ciclo_matricula_id }} · {{ $peticio->ciclo_matricula_codigo }} — {{ $peticio->ciclo_matricula_nombre_val }} / {{ $peticio->ciclo_matricula_nombre_cas }}</div>
-                                <div class="mb-1"><strong>Família professional:</strong> Departament #{{ $peticio->departamento_matricula_id }} · {{ $peticio->familia_matricula_nombre_val }} / {{ $peticio->familia_matricula_nombre_cas }} <small class="text-muted">(ITACA {{ $peticio->familia_matricula_codigo_xml }} · {{ $peticio->familia_matricula_abreviatura_xml }})</small></div>
-                                <div class="mb-1"><strong>Formació del cicle actual:</strong> {{ $peticio->ciclo_matricula_tipo_nombre_val }} / {{ $peticio->ciclo_matricula_tipo_nombre_cas }} · Normativa {{ $peticio->ciclo_matricula_normativa }}</div>
-                            @endif
                             @if ($peticio->modulo_origen_codigo)
                                 <div class="mb-1"><strong>Mòdul superat:</strong> <strong>{{ preg_replace('/^([A-Za-z]+)(\d+)$/', '$1 $2', $peticio->modulo_origen_codigo) }}@if ($peticio->modulo_origen_nombre) — {{ $peticio->modulo_origen_nombre }}@endif</strong></div>
                                 <div class="mb-1"><strong>Cicle d’origen:</strong> <em>{{ $peticio->ciclo_origen_nombre ?: $peticio->ciclo_origen_codigo }}</em></div>
                                 @if ($peticio->familia_professional_codigo)
-                                    <div class="mb-1"><strong>Família professional:</strong> {{ $peticio->familia_professional_codigo }} — {{ $peticio->familia_professional_nombre_val ?: '—' }} / {{ $peticio->familia_professional_nombre_cas ?: '—' }}</div>
+                                    <div class="mb-1"><strong>Família professional:</strong> {{ $familiaOrigen ?: '—' }}</div>
                                 @endif
                                 @if ($peticio->nivel_origen_codigo)
-                                    <div class="mb-1"><strong>Nivell formatiu d’origen:</strong> {{ $peticio->nivel_origen_codigo }} — {{ $peticio->nivel_origen_nombre_val ?: '—' }} / {{ $peticio->nivel_origen_nombre_cas ?: '—' }}</div>
+                                    <div class="mb-1"><strong>Nivell:</strong> {{ $nivellOrigen ?: '—' }}</div>
                                 @endif
                                 <div class="mb-1"><strong>Any d’aprovació:</strong> {{ $peticio->any_origen }}</div>
                                 <div class="mb-1"><strong>Nota:</strong> {{ number_format($peticio->nota_origen, 0, ',', '') }}</div>
@@ -72,22 +81,23 @@
                             @if ($peticio->modulo_destino_id === '1709' && $peticio->modulo_origen_es_fol && $peticio->fol_logse)
                                 <div class="small text-muted">Comprova que la documentació incloga el certificat de Prevenció de Riscos Laborals i les hores exigides: 30 h per a grau mitjà o 50 h per a grau superior.</div>
                             @endif
-                            @if ($peticio->revisor)
-                                <div class="mt-2"><small>Últim canvi: {{ $peticio->revisor->fullName ?? $peticio->revisat_per }}, {{ $peticio->revisat_at?->format('d/m/Y H:i') }}</small></div>
-                            @endif
                         </td>
                         <td>
                             @if ($peticio->esTerminal())
                                 <div class="alert alert-success mb-0">Realitzada — petició de només consulta.</div>
                             @else
+                                <div class="mb-2"><strong>Estat actual:</strong> <span class="badge bg-secondary">{{ $estats[$peticio->estat] ?? $peticio->estat }}</span></div>
                                 <form method="POST" action="{{ route('convalidacions.direction.resolve', $peticio) }}">
                                     @csrf @method('PUT')
-                                    <label class="form-label" for="estat-{{ $peticio->id }}">Estat</label>
+                                    <label class="form-label" for="estat-{{ $peticio->id }}">Nou estat</label>
                                     <select class="form-select mb-2" id="estat-{{ $peticio->id }}" name="estat">@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected($peticio->estat === $value)>{{ $label }}</option>@endforeach</select>
-                                    <label class="form-label" for="observacions-{{ $peticio->id }}">Observació</label>
-                                    <textarea class="form-control mb-2" id="observacions-{{ $peticio->id }}" name="observacions">{{ $peticio->observacions }}</textarea>
+                                    <label class="form-label" for="observacions-{{ $peticio->id }}">Comentari de Direcció</label>
+                                    <textarea class="form-control mb-2" id="observacions-{{ $peticio->id }}" name="observacions" rows="4">{{ $peticio->observacions }}</textarea>
                                     <button class="btn btn-primary" type="submit">Guardar esta petició</button>
                                 </form>
+                                @if ($peticio->revisor)
+                                    <div class="mt-2"><small>Últim canvi: {{ $peticio->revisor->fullName ?? $peticio->revisat_per }}, {{ $peticio->revisat_at?->format('d/m/Y H:i') }}</small></div>
+                                @endif
                             @endif
                         </td>
                     </tr>
