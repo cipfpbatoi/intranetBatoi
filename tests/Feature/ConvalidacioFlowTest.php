@@ -137,7 +137,7 @@ class ConvalidacioFlowTest extends TestCase
         }
     }
 
-    public function test_exigix_certificat_prl_quan_el_codi_exacte_es_fol_logse_i_el_destí_es_ipe_i(): void
+    public function test_fol_logse_del_propi_centre_exigix_documentacio_sense_validar_ne_el_tipus(): void
     {
         DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
         DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
@@ -152,7 +152,7 @@ class ConvalidacioFlowTest extends TestCase
                 'resultat_origen_id' => $this->resultatId(),
                 'fol_logse' => true,
             ]]);
-            $this->fail('La petició sense certificat PRL havia de ser rebutjada.');
+            $this->fail('La petició sense documentació havia de ser rebutjada.');
         } catch (ConvalidacioException $exception) {
             $this->assertStringContainsString('certificat', $exception->getMessage());
             $this->assertSame(0, SollicitudConvalidacio::query()->count());
@@ -165,16 +165,18 @@ class ConvalidacioFlowTest extends TestCase
             'fol_logse' => true,
             'declaracio_responsable' => true,
             'documents' => [[
-                'descripcio' => 'Certificat PRL',
+                'descripcio' => 'Documentació aportada',
                 'fitxer' => UploadedFile::fake()->create('certificat-prl.pdf', 80, 'application/pdf'),
             ]],
         ]]);
         $peticio = $sollicitud->convalidacions->firstOrFail();
 
         $this->assertTrue($peticio->fol_logse);
-        $this->assertNull($peticio->document_path);
-        $this->assertSame('certificat-prl.pdf', $peticio->document_prl_original_name);
-        Storage::disk('convalidacions')->assertExists($peticio->document_prl_path);
+        $peticio->load('documents');
+        $this->assertSame('certificat-prl.pdf', $peticio->documents->firstOrFail()->original_name);
+        $this->assertSame($peticio->documents->firstOrFail()->path, $peticio->document_path);
+        $this->assertNull($peticio->document_prl_path);
+        Storage::disk('convalidacions')->assertExists($peticio->documents->firstOrFail()->path);
     }
 
     public function test_un_altre_centre_pot_aportar_fins_a_tres_documents_descrits(): void
@@ -232,7 +234,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(0, SollicitudConvalidacio::query()->count());
     }
 
-    public function test_fol_logse_extern_per_a_ipe_i_requerix_documents_academic_i_prl_separats(): void
+    public function test_fol_logse_extern_per_a_ipe_i_no_interpreta_ni_exigix_documents_separats(): void
     {
         DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
         DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
@@ -249,35 +251,14 @@ class ConvalidacioFlowTest extends TestCase
             'modulo_origen_es_fol' => true,
             'fol_logse' => true,
             'documents' => [
-                $document('expedient.pdf', 'Certificat acadèmic'),
-                $document('prevencio.pdf', 'Certificat PRL'),
+                $document('expedient.pdf', 'Carpeta de papers'),
             ],
         ]]);
 
         $peticio = $sollicitud->convalidacions->firstOrFail()->load('documents');
         $this->assertTrue($peticio->modulo_origen_es_fol);
         $this->assertTrue($peticio->fol_logse);
-        $this->assertSame(['Certificat acadèmic', 'Certificat PRL'], $peticio->documents->pluck('descripcio')->all());
-    }
-
-    public function test_higiene_del_medi_hospitalari_es_tramitable_pel_flux_general(): void
-    {
-        DB::table('modulos')->insert(['codigo' => '028503', 'cliteral' => 'Higiene del medi hospitalari i neteja del material', 'vliteral' => 'Higiene del medi hospitalari i neteja del material']);
-        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '028503', 'idCiclo' => 2]);
-        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
-
-        $sollicitud = $this->service->tramitar($this->alumno, 'higiene-independent', [[
-            'modulo_destino_id' => '028503',
-            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
-            'declaracio_responsable' => true,
-            'fol_logse' => false,
-            'documents' => [[
-                'descripcio' => 'Certificat acadèmic',
-                'fitxer' => UploadedFile::fake()->create('higiene.pdf', 30, 'application/pdf'),
-            ]],
-        ]]);
-
-        $this->assertSame('028503', $sollicitud->convalidacions->firstOrFail()->modulo_destino_id);
+        $this->assertSame(['Carpeta de papers'], $peticio->documents->pluck('descripcio')->all());
     }
 
     public function test_no_tramita_si_no_pot_resoldre_la_familia_professional(): void
@@ -474,6 +455,10 @@ class ConvalidacioFlowTest extends TestCase
             ->assertDontSee('d-flex flex-column gap-1', false)
             ->assertSee("appendLine(cell, `Any \${item.dataset.accreditationYear} · Nota \${item.dataset.accreditationNote}`, 'small mb-1');", false)
             ->assertSee('data-nota="7"', false)
+            ->assertSee('id="builder-fol-logse"', false)
+            ->assertDontSee('id="builder-fol-logse" required', false)
+            ->assertSee('id="fol-logse-document-notice"', false)
+            ->assertSee('Exemples: certificat acadèmic, expedient o certificat PRL')
             ->assertSee("const formatCode = (code) => code.replace(/^([A-Za-z]+)(\\d+)$/, '$1 $2');", false)
             ->assertSee('fst-italic')
             ->assertDontSee('ordinària (FI)')
@@ -526,6 +511,12 @@ class ConvalidacioFlowTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertRedirect('/alumno/convalidacions/1');
         $this->assertDatabaseHas('sollicituds_convalidacions', ['alumno_id' => '12345678'], 'sqlite');
+        $this->get('/alumno/convalidacions/1')
+            ->assertOk()
+            ->assertSee('<table class="table table-hover align-middle">', false)
+            ->assertSee('Mòdul a convalidar')
+            ->assertSee('Acreditació')
+            ->assertSee('Estat');
     }
 
     public function test_error_tecnic_en_tramitacio_no_exposa_el_detall_ni_deixa_dades_parcials(): void
@@ -739,6 +730,10 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertContains('role:direccion', $deleteRoute->gatherMiddleware());
         $this->get(route('convalidacions.direction.show', $sollicitud))
             ->assertOk()
+            ->assertSee('<table class="table table-hover align-middle">', false)
+            ->assertSee('Mòdul a convalidar')
+            ->assertSee('Acreditació')
+            ->assertSee('Resolució')
             ->assertSee('Eliminar sol·licitud de prova')
             ->assertSee('elimina tota la traçabilitat', false);
 
@@ -785,7 +780,7 @@ class ConvalidacioFlowTest extends TestCase
         $detallAlumne = $this->get('/alumno/convalidacions/' . $sollicitud->id);
         $detallAlumne
             ->assertOk()
-            ->assertSeeText("Any d'aprovació:")
+            ->assertSeeText('Any d’aprovació:')
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
             ->assertSeeText('Família professional')
@@ -805,7 +800,7 @@ class ConvalidacioFlowTest extends TestCase
         $detallDireccio = $this->get('/direccion/convalidacions/' . $sollicitud->id);
         $detallDireccio
             ->assertOk()
-            ->assertSeeText("Any d'aprovació:")
+            ->assertSeeText('Any d’aprovació:')
             ->assertSeeText('2025')
             ->assertSeeText('Cicle anterior')
             ->assertSeeText('Família professional')

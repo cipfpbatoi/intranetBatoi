@@ -146,13 +146,14 @@
                             </div>
 
                             <div id="fol-logse-section" class="border rounded p-3 mb-3" hidden>
-                                <label class="form-label" for="builder-fol-logse">Revisa el certificat acadèmic o l’expedient: els estudis d’origen són LOGSE?</label>
-                                <select class="form-select" id="builder-fol-logse" required>
+                                <label class="form-label" for="builder-fol-logse">Revisa el certificat acadèmic o l’expedient: els estudis d’origen són LOGSE? La resposta és responsabilitat teua.</label>
+                                <select class="form-select" id="builder-fol-logse">
                                     <option value="">Selecciona sí o no</option>
                                     <option value="1">Sí, són LOGSE</option>
                                     <option value="0">No, no són LOGSE</option>
                                 </select>
                                 <div id="fol-logse-catalog-notice" class="form-text" hidden>El codi d’este mòdul apareix al catàleg FOL LOGSE. Confirma la informació revisant el teu expedient.</div>
+                                <div id="fol-logse-document-notice" class="form-text text-warning" hidden>Si indiques que els estudis són LOGSE, adjunta el certificat corresponent. Eres responsable de comprovar que presentes la documentació necessària; Direcció revisarà els fitxers.</div>
                             </div>
 
                             <div id="fol-origen-section" class="mb-3" hidden>
@@ -314,6 +315,7 @@
     const folSection = document.getElementById('fol-logse-section');
     const folSelect = document.getElementById('builder-fol-logse');
     const folCatalogNotice = document.getElementById('fol-logse-catalog-notice');
+    const folDocumentNotice = document.getElementById('fol-logse-document-notice');
     const folOriginSection = document.getElementById('fol-origen-section');
     const folOriginSelect = document.getElementById('builder-es-fol');
     const documentsList = document.getElementById('builder-documents-list');
@@ -381,6 +383,8 @@
         folCatalogNotice.hidden = !(ownFol && xmlClassification !== '');
         if (!folApplicable) folSelect.value = '';
         else if (ownFol && xmlClassification !== '') folSelect.value = xmlClassification;
+        const isFolOrigin = origin === 'propi_centre' ? ownFol : folOriginSelect.value === '1';
+        folDocumentNotice.hidden = !folApplicable || folSelect.value !== '1' || !isFolOrigin;
         folOriginSection.hidden = !isIpeI || origin !== 'altre_centre';
         document.getElementById('documents-builder').hidden = !hasModule || origin === '' || origin === 'secretaria';
         addDocumentButton.disabled = documentRows.length >= 3;
@@ -484,7 +488,7 @@
         description.type = 'text';
         description.className = 'form-control mb-2';
         description.maxLength = 120;
-        description.placeholder = 'Tipus de document (p. ex. certificat acadèmic o certificat PRL)';
+        description.placeholder = 'Exemples: certificat acadèmic, expedient o certificat PRL';
         description.setAttribute('aria-label', 'Descripció del document');
         const file = document.createElement('input');
         file.type = 'file';
@@ -597,18 +601,6 @@
             setError('Indica si l’origen és el mòdul FOL.');
             return;
         }
-        const isFolLogseIpe = isIpeI && folSelect.value === '1' && (origin === 'propi_centre' ? result?.dataset.esFol === '1' : folOriginSelect.value === '1');
-        const hasPrl = attached.some((entry) => /prl|prevenci[oó]n?.*riesgos/i.test(entry.description.value));
-        const hasAcademic = attached.some((entry) => /certificat.*(acad[eè]mic|estudis|notes)|expedient/i.test(entry.description.value));
-        if (isFolLogseIpe && !hasPrl) {
-            setError('Adjunta un document identificat com a certificat PRL.');
-            return;
-        }
-        if (isFolLogseIpe && origin === 'altre_centre' && !hasAcademic) {
-            setError('Adjunta també el certificat acadèmic, separat del certificat PRL.');
-            return;
-        }
-
         const moduleLabel = selectedText(moduleSelect);
         const originLabel = originLabels[origin];
         const index = nextIndex++;

@@ -112,13 +112,7 @@ class ConvalidacioService
                         $storedPaths[] = $saved['path'];
                         $descripcio = trim((string) $adjunt['descripcio']);
                         $peticio->documents()->create(['descripcio' => $descripcio, ...$saved]);
-                        if (preg_match('/prl|prevenci[oó]n?.*riesgos/i', $descripcio)) {
-                            $peticio->forceFill([
-                                'document_prl_path' => $saved['path'],
-                                'document_prl_original_name' => $saved['original_name'],
-                                'document_prl_mime' => $saved['mime'],
-                            ])->save();
-                        } elseif (!$peticio->document_path) {
+                        if (!$peticio->document_path) {
                             $peticio->forceFill([
                                 'document_path' => $saved['path'],
                                 'document_original_name' => $saved['original_name'],
@@ -388,7 +382,7 @@ class ConvalidacioService
                 throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
             }
             $esIPEIFol = $destino === self::MODUL_IPE_I && $esFol && $folLogse === true;
-            $this->validarDocumentPrl($documents, $esIPEIFol, false);
+            $this->validarDocumentacioFolLogse($documents, $esIPEIFol);
 
             return array_merge($item, $contextMatricula, [
                 'modulo_origen_codigo' => $resultat['modul'],
@@ -426,12 +420,7 @@ class ConvalidacioService
             throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
         }
         $documents = $this->validarDocuments($item, true);
-        if ($origen === Convalidacio::ORIGEN_ALTRE_CENTRE && !$this->teDocumentAcademic($documents)) {
-            throw new ConvalidacioException('Identifica almenys un document com a certificat acadèmic o expedient.');
-        }
         $esFol = $origen === Convalidacio::ORIGEN_ALTRE_CENTRE && ($item['modulo_origen_es_fol'] ?? false);
-        $esIPEIFol = $esIPEIAltresEstudis && $esFol && $folLogse === true;
-        $this->validarDocumentPrl($documents, $esIPEIFol, $origen === Convalidacio::ORIGEN_ALTRE_CENTRE);
 
         return array_merge($item, $contextMatricula, [
             'fol_logse' => $folLogse,
@@ -555,35 +544,13 @@ class ConvalidacioService
         return $documents;
     }
 
-    /** Exigix evidència acadèmica i PRL separades per al cas FOL LOGSE → IPE I. */
-    private function validarDocumentPrl(array $documents, bool $requereixPrl, bool $extern): void
+    /** Exigix adjuntar documentació en FOL LOGSE del propi centre per a IPE I. */
+    private function validarDocumentacioFolLogse(array $documents, bool $requereixDocumentacio): void
     {
-        if (!$requereixPrl) {
+        if (!$requereixDocumentacio || $documents !== []) {
             return;
         }
-        $prl = array_filter($documents, static fn (array $document): bool =>
-            preg_match('/prevenci[oó]n?.*riesgos|prl/u', mb_strtolower((string) ($document['descripcio'] ?? ''))) === 1
-        );
-        $academics = array_filter($documents, static fn (array $document): bool =>
-            preg_match('/certificat.*(acad[eè]mic|notes|estudis)|expedient/u', mb_strtolower((string) ($document['descripcio'] ?? ''))) === 1
-        );
-        if ($prl === [] || ($extern && $academics === [])) {
-            throw new ConvalidacioException($extern
-                ? 'Adjunta per separat el certificat acadèmic i el certificat PRL.'
-                : 'Adjunta el certificat de Prevenció de Riscos Laborals.');
-        }
-    }
-
-    /** Indica si hi ha un adjunt identificat com a document acadèmic. */
-    private function teDocumentAcademic(array $documents): bool
-    {
-        foreach ($documents as $document) {
-            if (preg_match('/certificat.*(acad[eè]mic|notes|estudis)|expedient/u', mb_strtolower((string) ($document['descripcio'] ?? '')))) {
-                return true;
-            }
-        }
-
-        return false;
+        throw new ConvalidacioException('Adjunta el certificat de Prevenció de Riscos Laborals.');
     }
 
     /** Valida el document també en la frontera de domini. */
