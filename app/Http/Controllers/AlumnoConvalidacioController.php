@@ -85,6 +85,7 @@ class AlumnoConvalidacioController extends Controller
             'items.*.origen' => ['required', 'string', Rule::in(array_keys(Convalidacio::origenOptions()))],
             'items.*.resultat_origen_id' => ['nullable', 'string', 'size:64'],
             'items.*.declaracio_responsable' => ['nullable', 'boolean'],
+            'declaracio_responsable_sollicitud' => ['nullable', 'boolean'],
             'items.*.fol_logse' => ['nullable', 'boolean'],
             'items.*.modulo_origen_es_fol' => ['nullable', 'boolean'],
             'items.*.documents' => ['nullable', 'array', 'max:3'],
@@ -95,8 +96,17 @@ class AlumnoConvalidacioController extends Controller
         ]);
 
         $items = array_values($validated['items']);
+        $declaracioResponsableSollicitud = filter_var(
+            $validated['declaracio_responsable_sollicitud'] ?? false,
+            FILTER_VALIDATE_BOOL
+        );
         foreach ($items as &$item) {
-            $item['declaracio_responsable'] = filter_var($item['declaracio_responsable'] ?? false, FILTER_VALIDATE_BOOL);
+            $declaracioItem = filter_var($item['declaracio_responsable'] ?? false, FILTER_VALIDATE_BOOL);
+            $teAdjunts = !empty($item['documents']) || isset($item['document']) || isset($item['document_prl']);
+            $requereixDeclaracio = $item['origen'] !== Convalidacio::ORIGEN_PROPI_CENTRE || $teAdjunts;
+            $item['declaracio_responsable'] = $requereixDeclaracio
+                ? ($declaracioResponsableSollicitud || $declaracioItem)
+                : false;
             if (array_key_exists('fol_logse', $item)) {
                 $item['fol_logse'] = filter_var($item['fol_logse'], FILTER_VALIDATE_BOOL);
             }

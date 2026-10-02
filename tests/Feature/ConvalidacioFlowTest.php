@@ -163,6 +163,7 @@ class ConvalidacioFlowTest extends TestCase
             'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
             'resultat_origen_id' => $this->resultatId(),
             'fol_logse' => true,
+            'declaracio_responsable' => true,
             'documents' => [[
                 'descripcio' => 'Certificat PRL',
                 'fitxer' => UploadedFile::fake()->create('certificat-prl.pdf', 80, 'application/pdf'),
@@ -467,7 +468,9 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('data-cicle-nom="Cicle anterior"', false)
             ->assertDontSee('data-cicle-codi=', false)
             ->assertSee('fillModuleReference')
-            ->assertSee('ensureExternalDeclaration')
+            ->assertSee('ensureDeclaration')
+            ->assertSee('declaracio-responsable-sollicitud')
+            ->assertDontSee('builder-declaracio')
             ->assertDontSee('d-flex flex-column gap-1', false)
             ->assertSee("appendLine(cell, `Any \${item.dataset.accreditationYear} · Nota \${item.dataset.accreditationNote}`, 'small mb-1');", false)
             ->assertSee('data-nota="7"', false)
@@ -559,6 +562,78 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(0, SollicitudConvalidacio::query()->count());
         $this->assertSame(0, Convalidacio::query()->count());
         Log::shouldHaveReceived('error')->once();
+    }
+
+    public function test_una_declaracio_responsable_cobreix_tots_els_items_externs_de_la_sollicitud(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $response = $this->post('/alumno/convalidacions', [
+            'submission_token' => 'global-declaration',
+            'declaracio_responsable_sollicitud' => '1',
+            'items' => [
+                [
+                    'modulo_destino_id' => 'DEST1',
+                    'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                    'documents' => [[
+                        'descripcio' => 'Certificat acadèmic',
+                        'fitxer' => UploadedFile::fake()->create('academic-1.pdf', 20, 'application/pdf'),
+                    ]],
+                ],
+                [
+                    'modulo_destino_id' => 'DEST2',
+                    'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                    'documents' => [[
+                        'descripcio' => 'Certificat acadèmic',
+                        'fitxer' => UploadedFile::fake()->create('academic-2.pdf', 20, 'application/pdf'),
+                    ]],
+                ],
+            ],
+        ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect('/alumno/convalidacions/1');
+        $this->assertSame(2, Convalidacio::query()->where('declaracio_responsable', true)->count());
+        $this->assertSame(2, DB::table('documents_convalidacions')->count());
+    }
+
+    public function test_declaracio_responsable_tambe_s_exigix_i_es_guarda_amb_documents_del_propi_centre(): void
+    {
+        try {
+            $this->service->tramitar($this->alumno, 'own-doc-without-declaration', [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+                'documents' => [[
+                    'descripcio' => 'Document original',
+                    'fitxer' => UploadedFile::fake()->create('original.pdf', 20, 'application/pdf'),
+                ]],
+            ]]);
+            $this->fail('La petició amb adjunt sense declaració havia de ser rebutjada.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('declaració responsable', $exception->getMessage());
+        }
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $response = $this->post('/alumno/convalidacions', [
+            'submission_token' => 'own-doc-with-declaration',
+            'declaracio_responsable_sollicitud' => '1',
+            'items' => [[
+                'modulo_destino_id' => 'DEST1',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+                'documents' => [[
+                    'descripcio' => 'Document original',
+                    'fitxer' => UploadedFile::fake()->create('original.pdf', 20, 'application/pdf'),
+                ]],
+            ]],
+        ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect('/alumno/convalidacions/1');
+        $peticio = Convalidacio::query()->firstOrFail();
+        $this->assertTrue($peticio->declaracio_responsable);
+        $this->assertSame(1, DB::table('documents_convalidacions')->count());
     }
 
     public function test_origen_extern_sense_declaracio_retorn_a_un_error_funcional(): void

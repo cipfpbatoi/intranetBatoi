@@ -172,13 +172,6 @@
                                 <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB per fitxer.</div>
                             </div>
 
-                            <div id="origen-extern" class="mb-3" hidden>
-                                <div class="form-check mt-2">
-                                    <input type="checkbox" class="form-check-input" id="builder-declaracio" value="1">
-                                    <label class="form-check-label" for="builder-declaracio">Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen.</label>
-                                </div>
-                            </div>
-
                             <div id="avis-secretaria" class="alert alert-warning" hidden>
                                 Este tipus de convalidació no es tramita mitjançant este formulari. Consulta amb Secretaria el procediment que correspon.
                             </div>
@@ -216,6 +209,11 @@
                                 <tbody id="revisio-peticions"></tbody>
                             </table>
                         </div>
+                        <div class="form-check mt-3" id="declaracio-responsable-sollicitud-group" hidden>
+                            <input type="checkbox" class="form-check-input" id="declaracio-responsable-sollicitud" name="declaracio_responsable_sollicitud" value="1">
+                            <label class="form-check-label" for="declaracio-responsable-sollicitud">Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen. Esta declaració s'aplica a tots els documents de la sol·licitud.</label>
+                        </div>
+        <div class="text-danger small mt-2" id="declaracio-responsable-error" role="alert" hidden>Accepta la declaració responsable abans de continuar.</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tornar i modificar</button>
@@ -310,7 +308,9 @@
     const resultDetailCycle = document.getElementById('resultat-detall-cicle');
     const resultDetailYear = document.getElementById('resultat-detall-any');
     const resultDetailResult = document.getElementById('resultat-detall-resultat');
-    const declaration = document.getElementById('builder-declaracio');
+    const declaration = document.getElementById('declaracio-responsable-sollicitud');
+    const declarationGroup = document.getElementById('declaracio-responsable-sollicitud-group');
+    const declarationError = document.getElementById('declaracio-responsable-error');
     const folSection = document.getElementById('fol-logse-section');
     const folSelect = document.getElementById('builder-fol-logse');
     const folCatalogNotice = document.getElementById('fol-logse-catalog-notice');
@@ -320,7 +320,6 @@
     const addDocumentButton = document.getElementById('add-document');
     const originGroup = document.getElementById('origen-group');
     const ownCenter = document.getElementById('propi-centre');
-    const external = document.getElementById('origen-extern');
     const secretary = document.getElementById('avis-secretaria');
     const error = document.getElementById('builder-error');
     const feedback = document.getElementById('builder-feedback');
@@ -372,7 +371,6 @@
         const origin = originSelect.value;
         originGroup.hidden = !hasModule;
         ownCenter.hidden = !hasModule || origin !== 'propi_centre';
-        external.hidden = !hasModule || !externalOrigins.includes(origin);
         secretary.hidden = !hasModule || origin !== 'secretaria';
         const isIpeI = moduleSelect.value === '1709';
         const selectedResult = resultSelect.options[resultSelect.selectedIndex];
@@ -393,9 +391,15 @@
     const refreshSummary = () => {
         const count = requests.children.length;
         const hasRequests = count > 0;
+        const hasDeclarationItems = [...requests.children].some((item) => item.dataset.requiresDeclaration === 'true');
         emptySummary.hidden = hasRequests;
         requestsTable.hidden = !hasRequests;
         reviewButton.disabled = !hasRequests;
+        declarationGroup.hidden = !hasDeclarationItems;
+        if (!hasDeclarationItems) {
+            declaration.checked = false;
+            declarationError.hidden = true;
+        }
         summaryCount.textContent = `Total de mòduls a convalidar: ${count}`;
     };
     const animateAddition = (item) => {
@@ -513,7 +517,7 @@
             reviewRequests.appendChild(summary);
         });
     };
-    const ensureExternalDeclaration = (item) => {
+    const ensureDeclaration = (item, accepted) => {
         if (item.dataset.requiresDeclaration !== 'true') return;
 
         const name = `items[${item.dataset.index}][declaracio_responsable]`;
@@ -524,7 +528,7 @@
             declarationInput.name = name;
             item.querySelector('td:nth-child(2)')?.prepend(declarationInput);
         }
-        declarationInput.value = '1';
+        declarationInput.value = accepted ? '1' : '0';
     };
 
     moduleSelect.addEventListener('change', refreshBuilder);
@@ -546,8 +550,19 @@
         }
     });
     presentButton.addEventListener('click', () => {
+        const hasItemsRequiringDeclaration = [...requests.children].some((item) => item.dataset.requiresDeclaration === 'true');
+        if (hasItemsRequiringDeclaration && !declaration.checked) {
+            declarationError.hidden = false;
+            declaration.focus();
+            return;
+        }
+
+        declarationError.hidden = true;
         openingPresentationConfirmation = true;
         window.bootstrap?.Modal.getOrCreateInstance(reviewModalElement).hide();
+    });
+    declaration.addEventListener('change', () => {
+        if (declaration.checked) declarationError.hidden = true;
     });
     confirmPresentationButton.addEventListener('click', () => {
         presentationConfirmed = true;
@@ -563,8 +578,8 @@
             return;
         }
         const attached = documentRows.filter((entry) => entry.file.files.length > 0);
-        if (externalOrigins.includes(origin) && (!attached.length || !declaration.checked)) {
-            setError('Adjunta almenys un document i accepta la declaració responsable.');
+        if (externalOrigins.includes(origin) && !attached.length) {
+            setError('Adjunta almenys un document per a esta modalitat.');
             return;
         }
         if (documentRows.some((entry) => entry.file.files.length && !entry.description.value.trim())) {
@@ -624,9 +639,8 @@
             item.dataset.accreditationTitle = originLabel;
             item.dataset.accreditationMeta = attached.map((entry) => entry.file.files[0].name).join(', ');
             item.dataset.modality = '';
-            item.dataset.requiresDeclaration = 'true';
-            addHidden(accreditationCell, `items[${index}][declaracio_responsable]`, '1');
         }
+        if (origin !== 'propi_centre' || attached.length > 0) item.dataset.requiresDeclaration = 'true';
         if (folApplicable) addHidden(accreditationCell, `items[${index}][fol_logse]`, folSelect.value);
         if (isIpeI && origin === 'altre_centre') addHidden(accreditationCell, `items[${index}][modulo_origen_es_fol]`, folOriginSelect.value);
         attached.forEach((entry, docIndex) => {
@@ -660,6 +674,8 @@
             const option = [...moduleSelect.options].find((candidate) => candidate.value === item.dataset.moduleId);
             if (option) option.disabled = false;
             item.remove();
+            declaration.checked = false;
+            declarationError.hidden = true;
             refreshSummary();
             setFeedback(`S'ha eliminat ${item.dataset.moduleLabel} de la sol·licitud.`);
         });
@@ -668,6 +684,8 @@
         requests.appendChild(item);
 
         moduleSelect.options[moduleSelect.selectedIndex].disabled = true;
+        declaration.checked = false;
+        declarationError.hidden = true;
         resetBuilder();
         refreshSummary();
         animateAddition(item);
@@ -676,11 +694,20 @@
     });
 
     form.addEventListener('submit', (event) => {
-        [...requests.children].forEach(ensureExternalDeclaration);
         if (!requests.children.length) {
             event.preventDefault();
             setFeedback('Has d\'afegir almenys un mòdul abans de tramitar.');
+            return;
         }
+        const declarationItems = [...requests.children].filter((item) => item.dataset.requiresDeclaration === 'true');
+        if (declarationItems.length && !declaration.checked) {
+            event.preventDefault();
+            declarationError.hidden = false;
+            window.bootstrap?.Modal.getOrCreateInstance(reviewModalElement).show();
+            return;
+        }
+        declarationError.hidden = true;
+        declarationItems.forEach((item) => ensureDeclaration(item, declaration.checked));
     });
 
     refreshBuilder();

@@ -56,7 +56,7 @@ When prepara la petició
 Then pot adjuntar entre un i tres documents
 And cada fitxer inclou un camp de text obligatori que n'indica el tipus o contingut
 And es manté la declaració responsable existent
-And una única acceptació de la declaració responsable cobreix tots els fitxers adjunts de la petició
+And l'acceptació única de la declaració responsable es demana en el resum final i cobreix tots els fitxers adjunts de la petició
 
 ### Escenari 4: l'alumne declara si els estudis d'origen són LOGSE per a IPE I
 
@@ -109,6 +109,7 @@ And els documents existents abans d'esta funcionalitat continuen accessibles
 - La regla especial de PRL s'aplica únicament a IPE I (1709) quan l'origen és FOL LOGSE. En FOL LOGSE extern, cal conservar l'evidència acadèmica i el PRL en fitxers diferenciats; els textos descriptius els aporta l'alumne i Direcció en comprova el contingut.
 - En estudis d'un altre centre per a IPE I, l'alumne identifica explícitament si l'origen és FOL; no s'inferix esta dada dels noms lliures dels documents.
 - En estudis d'un altre centre continua sent obligatori aportar almenys un document acadèmic i acceptar una declaració responsable que cobreix tots els fitxers adjunts. El màxim total és de tres fitxers per petició individual.
+- Si s'adjunten documents en qualsevol modalitat, inclosos els estudis del propi centre, la declaració responsable es demana una sola vegada en el resum final i cobreix tots els fitxers de la sol·licitud; en el propi centre sense adjunts no es demana.
 - Per a les altres modalitats, els adjunts són opcionals i tenen el mateix màxim de tres fitxers. Si s'adjunta un fitxer, el seu text descriptiu és obligatori.
 - Cada fitxer i descripció formen una unitat; no s'accepten més de tres ni descripcions buides, i es mantenen els límits actuals de tipus i mida.
 - L'opció `prl_logse` deixa d'estar disponible per a noves peticions, però els registres antics no s'eliminen ni perden una etiqueta llegible.

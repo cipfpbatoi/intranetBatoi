@@ -384,6 +384,9 @@ class ConvalidacioService
             $catalog = $esIpeI ? ModulFolLogse::query()->find((string) $resultat['modul']) : null;
             $esFol = $catalog !== null;
             $documents = $this->validarDocuments($item, false);
+            if ($documents !== [] && ($item['declaracio_responsable'] ?? false) !== true) {
+                throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
+            }
             $esIPEIFol = $destino === self::MODUL_IPE_I && $esFol && $folLogse === true;
             $this->validarDocumentPrl($documents, $esIPEIFol, false);
 
@@ -406,7 +409,7 @@ class ConvalidacioService
                 'nota_origen' => $resultat['nota'],
                 'convocatoria_origen' => $resultat['convocatoria'],
                 'document' => null,
-                'declaracio_responsable' => false,
+                'declaracio_responsable' => $documents !== [] && ($item['declaracio_responsable'] ?? false) === true,
                 'fol_logse' => $folLogse,
                 'modulo_origen_es_fol' => $esIpeI ? $esFol : null,
                 'fol_logse_cicle' => $catalog?->cicle,
