@@ -42,6 +42,26 @@ class ConvalidacioReglesManager
         ];
     }
 
+    /** Retorna els bytes exactes del catàleg actiu o null si no n'hi ha cap. */
+    public function contingutActual(): ?string
+    {
+        $disk = Storage::disk('convalidacions');
+        if ($disk->exists(self::PATH)) {
+            $contingut = $disk->get(self::PATH);
+
+            return trim($contingut) === '' ? null : $contingut;
+        }
+
+        $rutaInicial = resource_path('convalidacions/regles-lfp.yaml');
+        if (!is_file($rutaInicial)) {
+            return null;
+        }
+
+        $contingut = file_get_contents($rutaInicial);
+
+        return $contingut === false || trim($contingut) === '' ? null : $contingut;
+    }
+
     /** Valida el contingut abans de substituir el catàleg actiu. */
     public function guardar(UploadedFile $fitxer): array
     {

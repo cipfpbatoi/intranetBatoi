@@ -741,7 +741,8 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Regles de convalidació')
             ->assertSee('versió 0.4')
             ->assertSee('catàleg inicial de l’aplicació')
-            ->assertSee('Anglés professional GM LFP');
+            ->assertSee('Anglés professional GM LFP')
+            ->assertSee('Descarregar YAML actual');
 
         $this->post(route('convalidacions.direction.rules.store'), [
             'yaml' => UploadedFile::fake()->createWithContent('regles.yaml', $this->automaticRulesYaml()),
@@ -753,6 +754,57 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('versió 0.4')
             ->assertSee('Destí automàtic')
             ->assertSee('Aplicar convalidacions');
+
+        $resposta = $this->get(route('convalidacions.direction.rules.download'))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/yaml; charset=UTF-8')
+            ->assertHeader('content-disposition', 'attachment; filename="convalidacions.yaml"');
+        $this->assertSame($this->automaticRulesYaml(), $resposta->getContent());
+    }
+
+    public function test_descàrrega_de_regles_usa_el_yaml_inicial_si_no_hi_ha_substitut(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+        $contingutInicial = file_get_contents(resource_path('convalidacions/regles-lfp.yaml'));
+
+        $resposta = $this->get(route('convalidacions.direction.rules.download'))
+            ->assertOk()
+            ->assertHeader('content-disposition', 'attachment; filename="convalidacions.yaml"');
+
+        $this->assertSame($contingutInicial, $resposta->getContent());
+    }
+
+    public function test_descàrrega_de_regles_està_protegida_i_no_revela_el_yaml_a_un_alumne(): void
+    {
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $this->automaticRulesYaml());
+        $this->actingAs($this->alumno, 'alumno');
+
+        $ruta = Route::getRoutes()->getByName('convalidacions.direction.rules.download');
+        $this->assertNotNull($ruta);
+        $this->assertContains('role:direccion', $ruta->gatherMiddleware());
+        $this->get(route('convalidacions.direction.rules.download'))
+            ->assertForbidden()
+            ->assertDontSee('regla-orig1-desti-auto');
+    }
+
+    public function test_descàrrega_de_regles_informa_si_no_hi_ha_cap_catàleg(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', '   ');
+        $this->app->instance(ConvalidacioReglesManager::class, new class extends ConvalidacioReglesManager {
+            /** Impedix que el recurs inicial del repositori participe en este escenari. */
+            public function contingutActual(): ?string
+            {
+                return null;
+            }
+        });
+
+        $this->from(route('convalidacions.direction.rules.index'))
+            ->get(route('convalidacions.direction.rules.download'))
+            ->assertRedirect(route('convalidacions.direction.rules.index'))
+            ->assertSessionHasErrors('yaml');
     }
 
     public function test_panell_principal_mostra_elegibilitat_parcial_i_permet_aplicar_la_part_elegible(): void

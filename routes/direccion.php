@@ -107,6 +107,7 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::put('/acces-alumnat', ['as' => 'direction.access', 'uses' => 'DireccionConvalidacioController@access']);
     Route::delete('/{sollicitud}', ['as' => 'direction.destroy', 'uses' => 'DireccionConvalidacioController@destroy']);
     Route::get('/regles', ['as' => 'direction.rules.index', 'uses' => 'DireccionConvalidacioReglesController@index']);
+    Route::get('/regles/descarregar', ['as' => 'direction.rules.download', 'uses' => 'DireccionConvalidacioReglesController@download']);
     Route::post('/regles', ['as' => 'direction.rules.store', 'uses' => 'DireccionConvalidacioReglesController@store']);
     Route::post('/regles/aplicar', ['as' => 'direction.rules.apply', 'uses' => 'DireccionConvalidacioReglesController@apply']);
     Route::get('/angles', ['as' => 'direction.angles.index', 'uses' => 'DireccionConvalidacioAnglesController@index']);

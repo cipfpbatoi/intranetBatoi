@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
@@ -27,6 +28,22 @@ class DireccionConvalidacioReglesController extends Controller
     {
         return view('intranet.convalidacions.direccion.regles', [
             'preview' => $this->automatitzacions->previsualitzar(),
+        ]);
+    }
+
+    /** Descarrega literalment el catàleg de regles actiu. */
+    public function download(): Response|RedirectResponse
+    {
+        $contingut = $this->regles->contingutActual();
+        if ($contingut === null) {
+            return redirect()->route('convalidacions.direction.rules.index')
+                ->withErrors(['yaml' => 'No hi ha cap catàleg YAML disponible per a descarregar.']);
+        }
+
+        return response($contingut, 200, [
+            'Content-Type' => 'application/yaml; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="convalidacions.yaml"',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
