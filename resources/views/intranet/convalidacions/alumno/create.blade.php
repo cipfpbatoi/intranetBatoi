@@ -337,6 +337,8 @@
     const reviewRequests = document.getElementById('revisio-peticions');
     const originLabels = @json($origens);
     const externalOrigins = ['altre_centre', 'certificat_eoi'];
+    const maxDocumentBytes = {{ $maxDocumentKb * 1024 }};
+    const maxDocumentMegabytes = {{ round($maxDocumentKb / 1024, 1) }};
     let documentRows = [];
     let nextIndex = 0;
     let openingPresentationConfirmation = false;
@@ -495,6 +497,12 @@
         file.className = 'form-control';
         file.accept = '.pdf,.jpg,.jpeg,.png';
         file.setAttribute('aria-label', 'Fitxer adjunt');
+        file.addEventListener('change', () => {
+            const selectedFile = file.files[0];
+            setError(selectedFile && selectedFile.size > maxDocumentBytes
+                ? `El fitxer supera el límit de ${maxDocumentMegabytes} MB. Tria un fitxer més menut.`
+                : '');
+        });
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'btn btn-sm btn-link text-danger px-0';
@@ -582,6 +590,10 @@
             return;
         }
         const attached = documentRows.filter((entry) => entry.file.files.length > 0);
+        if (attached.some((entry) => entry.file.files[0].size > maxDocumentBytes)) {
+            setError(`Cada fitxer ha de tindre una mida màxima de ${maxDocumentMegabytes} MB. Tria fitxers més menuts.`);
+            return;
+        }
         if (externalOrigins.includes(origin) && !attached.length) {
             setError('Adjunta almenys un document per a esta modalitat.');
             return;

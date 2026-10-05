@@ -64,6 +64,13 @@ convalidations:
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}
     legal_basis: [{reference: art. 127.5}]
+  - id: 1709-from-1709
+    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
+    source: {type: module, code: '1709', name: IPE I}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.5}, {reference: art. 127.1.a}]
   - id: 1709-from-fol-gm-logse-prl30
     target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
     source:
@@ -98,6 +105,13 @@ convalidations:
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}
     legal_basis: [{reference: art. 127.5}]
+  - id: 1710-from-1710
+    target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
+    source: {type: module, code: '1710', name: IPE II}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.5}, {reference: art. 127.1.a}]
   - id: 1710-from-eie-gs-loe
     target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
     source: {type: module, name: EIE GS LOE}
