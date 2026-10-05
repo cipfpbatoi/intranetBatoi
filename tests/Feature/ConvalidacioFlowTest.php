@@ -463,6 +463,9 @@ class ConvalidacioFlowTest extends TestCase
             ->assertDontSee('id="builder-fol-logse" required', false)
             ->assertSee('id="fol-logse-document-notice"', false)
             ->assertSee('Exemples: certificat acadèmic, expedient o certificat PRL')
+            ->assertSee('const maxDocumentBytes = 5242880;', false)
+            ->assertSee('selectedFile.size > maxDocumentBytes', false)
+            ->assertSee('entry.file.files[0].size > maxDocumentBytes', false)
             ->assertSee("const formatCode = (code) => code.replace(/^([A-Za-z]+)(\\d+)$/, '$1 $2');", false)
             ->assertSee('fst-italic')
             ->assertDontSee('ordinària (FI)')
@@ -521,6 +524,25 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Mòdul que vol convalidar')
             ->assertSee('Estudis i documents aportats')
             ->assertSee('Estat i comentari');
+    }
+
+    public function test_rebutja_fitxer_massa_gran_al_servidor_com_a_ultima_validacio(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $this->post('/alumno/convalidacions', [
+            'submission_token' => 'fitxer-massa-gran',
+            'items' => [[
+                'modulo_destino_id' => 'DEST2',
+                'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'declaracio_responsable' => '1',
+                'document' => UploadedFile::fake()->create('academic.pdf', 5121, 'application/pdf'),
+            ]],
+        ])->assertSessionHasErrors('items.0.document');
+
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+        $this->assertSame(0, Convalidacio::query()->count());
     }
 
     public function test_error_tecnic_en_tramitacio_no_exposa_el_detall_ni_deixa_dades_parcials(): void
@@ -1076,6 +1098,58 @@ XML);
         $this->assertSame('FAMILIA', $peticioFamilia->familia_professional_codigo);
         $peticioAnglesGs = Convalidacio::query()->where('modulo_origen_codigo', '0179')->firstOrFail();
         $this->assertCount(2, $peticioAnglesGs->regla_automatica_snapshot['equivalent_matching_rules']);
+    }
+
+    public function test_ipe_i_i_ipe_ii_de_mateix_codi_s_apliquen_automaticament(): void
+    {
+        DB::table('modulos')->insert([
+            ['codigo' => '1709', 'cliteral' => 'IPE I GS', 'vliteral' => 'IPE I GS'],
+            ['codigo' => '1710', 'cliteral' => 'IPE II GS', 'vliteral' => 'IPE II GS'],
+        ]);
+        DB::table('modulo_ciclos')->insert([
+            ['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2],
+            ['id' => 5, 'idModulo' => '1710', 'idCiclo' => 2],
+        ]);
+        DB::table('modulo_grupos')->insert([
+            ['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4],
+            ['id' => 5, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 5],
+        ]);
+        $xml = str_replace(
+            '    <contenido curso="ANT-1" codigo="SUSPES" nombre_val="Mòdul suspés" nombre_cas="Módulo suspenso"/>',
+            "    <contenido curso=\"ANT-1\" codigo=\"SUSPES\" nombre_val=\"Mòdul suspés\" nombre_cas=\"Módulo suspenso\"/>\n"
+                . "    <contenido curso=\"ANT-1\" codigo=\"1709\" nombre_val=\"IPE I\" nombre_cas=\"IPE I\"/>\n"
+                . "    <contenido curso=\"ANT-1\" codigo=\"1710\" nombre_val=\"IPE II\" nombre_cas=\"IPE II\"/>",
+            $this->academicXml()
+        );
+        $xml = str_replace(
+            '    <calificacion alumno="12345678" curso="ANT-1" contenido="SUSPES" evaluacion="FI" nota_numerica="4"/>',
+            "    <calificacion alumno=\"12345678\" curso=\"ANT-1\" contenido=\"SUSPES\" evaluacion=\"FI\" nota_numerica=\"4\"/>\n"
+                . "    <calificacion alumno=\"12345678\" curso=\"ANT-1\" contenido=\"1709\" evaluacion=\"FI\" nota_numerica=\"8\"/>\n"
+                . "    <calificacion alumno=\"12345678\" curso=\"ANT-1\" contenido=\"1710\" evaluacion=\"FI\" nota_numerica=\"9\"/>",
+            $xml
+        );
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', $xml);
+        $resultats = app(ResultatsAcademicsXmlService::class)->aprovats('12345678');
+
+        $this->service->tramitar($this->alumno, 'sollicitud-ipe-mateix-codi', [
+            ['modulo_destino_id' => '1709', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultats, '1709'), 'fol_logse' => false],
+            ['modulo_destino_id' => '1710', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultats, '1710')],
+        ]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertCount(2, $preview['casos']);
+        $this->assertSame(['1709-from-1709', '1710-from-1710'], array_column(array_column($preview['casos'], 'regla'), 'id'));
+
+        app(ConvalidacioAutomaticaService::class)->aplicar(Profesor::query()->findOrFail('DIR00001'));
+
+        foreach ([['1709', '1709-from-1709', 8.0], ['1710', '1710-from-1710', 9.0]] as [$code, $rule, $grade]) {
+            $peticio = Convalidacio::query()->where('modulo_destino_id', $code)->firstOrFail();
+            $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+            $this->assertSame('AA', $peticio->resultat_automatic);
+            $this->assertSame($grade, $peticio->nota_resultat_automatic);
+            $this->assertSame($rule, $peticio->regla_automatica_id);
+            $this->assertSame('art. 126.5', $peticio->base_normativa_automatica[0]['reference']);
+        }
     }
 
     public function test_cataleg_yaml_invalid_no_substituix_el_cataleg_actiu(): void
