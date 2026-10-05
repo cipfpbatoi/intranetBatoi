@@ -48,6 +48,10 @@
                                     <strong>Disponible per a resolució automàtica</strong>
                                     <div>Regla: {{ $reglaCandidata['id'] }} — {{ $reglaCandidata['source']['name'] ?? 'Origen' }} → {{ $reglaCandidata['target']['name'] ?? 'Destí' }}</div>
                                     <div>Resultat {{ $reglaCandidata['result']['status'] ?? '—' }} · base normativa {{ collect($reglaCandidata['legal_basis'] ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
+                                    @if ($correspondenciaAngles = ($casAutomatic['correspondencia_angles'] ?? null))
+                                        <div class="mt-1">Cicle d’anglés: <code>{{ $correspondenciaAngles['codi_cicle_angles'] }}</code> — {{ $correspondenciaAngles['nom_cicle_angles_val'] }} / {{ $correspondenciaAngles['nom_cicle_angles_cas'] }}</div>
+                                        <div>Cicle contenidor: <code>{{ $correspondenciaAngles['codi_cicle_contenidor'] }}</code> — {{ $correspondenciaAngles['nom_cicle_contenidor_val'] }} / {{ $correspondenciaAngles['nom_cicle_contenidor_cas'] }} · {{ $correspondenciaAngles['es_grau_superior'] ? 'Grau superior' : 'No és grau superior' }}</div>
+                                    @endif
                                 </div>
                             @elseif ($peticio->estat !== \Intranet\Entities\Convalidacio::ESTAT_DENEGADA && !$peticio->esTerminal())
                                 <div class="small text-muted mb-2">Sense regla automàtica aplicable ara; requerix revisió manual.</div>

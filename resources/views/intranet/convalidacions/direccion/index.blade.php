@@ -23,6 +23,9 @@
             <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.rules.index') }}">
                 <i class="fa fa-check-circle" aria-hidden="true"></i> Gestionar regles automàtiques
             </a>
+            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.angles.index') }}">
+                <i class="fa fa-language" aria-hidden="true"></i> Gestionar correspondències d’anglés
+            </a>
             <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.xml.index') }}">
                 <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
             </a>

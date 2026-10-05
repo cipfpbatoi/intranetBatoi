@@ -77,6 +77,13 @@
                         @if (!empty($rule['source']['code']))<div class="small">Codi: {{ $rule['source']['code'] }}</div>@endif
                         @if (!empty($rule['source']['conditions']))<div class="small text-muted">{{ json_encode($rule['source']['conditions'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</div>@endif
                         @if (!empty($rule['comment']))<div class="small text-info">{{ $rule['comment'] }}</div>@endif
+                        @foreach ($item['correspondencies_angles'] as $correspondencia)
+                            <div class="small text-success mt-1">
+                                Cicle d’anglés validat: <code>{{ $correspondencia['codi_cicle_angles'] }}</code> — {{ $correspondencia['nom_cicle_angles_val'] }} / {{ $correspondencia['nom_cicle_angles_cas'] }}
+                                · cicle contenidor <code>{{ $correspondencia['codi_cicle_contenidor'] }}</code> — {{ $correspondencia['nom_cicle_contenidor_val'] }} / {{ $correspondencia['nom_cicle_contenidor_cas'] }}
+                                · {{ $correspondencia['es_grau_superior'] ? 'GS' : 'no GS' }}
+                            </div>
+                        @endforeach
                     </td>
                     <td>
                         @if (is_array($rule['result'] ?? null))

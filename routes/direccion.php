@@ -109,6 +109,13 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/regles', ['as' => 'direction.rules.index', 'uses' => 'DireccionConvalidacioReglesController@index']);
     Route::post('/regles', ['as' => 'direction.rules.store', 'uses' => 'DireccionConvalidacioReglesController@store']);
     Route::post('/regles/aplicar', ['as' => 'direction.rules.apply', 'uses' => 'DireccionConvalidacioReglesController@apply']);
+    Route::get('/angles', ['as' => 'direction.angles.index', 'uses' => 'DireccionConvalidacioAnglesController@index']);
+    Route::post('/angles/importar', ['as' => 'direction.angles.import', 'uses' => 'DireccionConvalidacioAnglesController@import']);
+    Route::get('/angles/crear', ['as' => 'direction.angles.create', 'uses' => 'DireccionConvalidacioAnglesController@create']);
+    Route::post('/angles', ['as' => 'direction.angles.store', 'uses' => 'DireccionConvalidacioAnglesController@store']);
+    Route::get('/angles/{correspondencia}/editar', ['as' => 'direction.angles.edit', 'uses' => 'DireccionConvalidacioAnglesController@edit']);
+    Route::put('/angles/{correspondencia}', ['as' => 'direction.angles.update', 'uses' => 'DireccionConvalidacioAnglesController@update']);
+    Route::delete('/angles/{correspondencia}', ['as' => 'direction.angles.destroy', 'uses' => 'DireccionConvalidacioAnglesController@destroy']);
     Route::prefix('xml')->name('direction.xml.')->group(function () {
         Route::get('/', ['as' => 'index', 'uses' => 'DireccionConvalidacioXmlController@index']);
         Route::post('/', ['as' => 'store', 'uses' => 'DireccionConvalidacioXmlController@store']);

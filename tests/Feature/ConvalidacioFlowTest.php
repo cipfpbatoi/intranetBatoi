@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
+use Intranet\Application\Convalidacio\ConvalidacioAnglesCorrespondenciesService;
 use Intranet\Application\Convalidacio\ConvalidacioReglesManager;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Convalidacio;
+use Intranet\Entities\CorrespondenciaCicleAngles;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
 use Intranet\Http\Middleware\RoleMiddleware;
@@ -1058,8 +1060,167 @@ XML);
         $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
 
         $this->assertSame([], $preview['casos']);
-        $this->assertStringContainsString('Pendent de la correspondència', $preview['regles'][0]['motiu']);
+        $this->assertStringContainsString('No hi ha una correspondència validada', $preview['regles'][0]['motiu']);
         $this->assertSame(1, Convalidacio::query()->where('estat', Convalidacio::ESTAT_EN_PROCES)->count());
+    }
+
+    public function test_import_csv_reemplaça_només_els_cicles_contenidors_inclosos_i_preserva_zeros(): void
+    {
+        CorrespondenciaCicleAngles::query()->create([
+            'codi_cicle_angles' => '0001',
+            'nom_cicle_angles_val' => 'Antiga val',
+            'nom_cicle_angles_cas' => 'Antigua cas',
+            'codi_cicle_contenidor' => 'CONT-A',
+            'nom_cicle_contenidor_val' => 'Contenidor A val',
+            'nom_cicle_contenidor_cas' => 'Contenedor A cas',
+            'es_grau_superior' => false,
+        ]);
+        CorrespondenciaCicleAngles::query()->create([
+            'codi_cicle_angles' => '0009',
+            'nom_cicle_angles_val' => 'Sense canvis val',
+            'nom_cicle_angles_cas' => 'Sin cambios cas',
+            'codi_cicle_contenidor' => 'CONT-B',
+            'nom_cicle_contenidor_val' => 'Contenidor B val',
+            'nom_cicle_contenidor_cas' => 'Contenedor B cas',
+            'es_grau_superior' => true,
+        ]);
+
+        $csv = implode("\n", [
+            'codi_cicle_angles,nom_cicle_angles_val,nom_cicle_angles_cas,codi_cicle_contenidor,nom_cicle_contenidor_val,nom_cicle_contenidor_cas,es_grau_superior',
+            '0017,Anglés nou,Inglés nuevo,CONT-A,Cicle A,Ciclo A,si',
+            '0018,Anglés altre,Inglés otro,CONT-A,Cicle A,Ciclo A,no',
+        ]);
+        $filesImportats = app(ConvalidacioAnglesCorrespondenciesService::class)->importar(
+            UploadedFile::fake()->createWithContent('correspondencies.csv', $csv)
+        );
+
+        $this->assertSame(2, $filesImportats);
+        $this->assertSame(['0017', '0018'], CorrespondenciaCicleAngles::query()
+            ->where('codi_cicle_contenidor', 'CONT-A')
+            ->orderBy('codi_cicle_angles')
+            ->pluck('codi_cicle_angles')
+            ->all());
+        $this->assertSame('0009', CorrespondenciaCicleAngles::query()
+            ->where('codi_cicle_contenidor', 'CONT-B')
+            ->value('codi_cicle_angles'));
+    }
+
+    public function test_import_csv_invalid_no_modifica_cap_correspondencia(): void
+    {
+        CorrespondenciaCicleAngles::query()->create([
+            'codi_cicle_angles' => 'ANT',
+            'nom_cicle_angles_val' => 'Anglés existent',
+            'nom_cicle_angles_cas' => 'Inglés existente',
+            'codi_cicle_contenidor' => 'CONT-A',
+            'nom_cicle_contenidor_val' => 'Cicle existent',
+            'nom_cicle_contenidor_cas' => 'Ciclo existente',
+            'es_grau_superior' => true,
+        ]);
+        $csv = implode("\n", [
+            'codi_cicle_angles,nom_cicle_angles_val,nom_cicle_angles_cas,codi_cicle_contenidor,nom_cicle_contenidor_val,nom_cicle_contenidor_cas,es_grau_superior',
+            'NOU,Anglés nou,Inglés nuevo,CONT-A,Cicle A,Ciclo A,potser',
+        ]);
+
+        try {
+            app(ConvalidacioAnglesCorrespondenciesService::class)->importar(
+                UploadedFile::fake()->createWithContent('correspondencies.csv', $csv)
+            );
+            $this->fail('El CSV amb un indicador desconegut havia de ser rebutjat.');
+        } catch (ConvalidacioException) {
+            $this->assertSame(['ANT'], CorrespondenciaCicleAngles::query()->pluck('codi_cicle_angles')->all());
+        }
+    }
+
+    public function test_correspondencies_angles_es_gestiona_des_de_direccio_i_el_crud_guarda_codis(): void
+    {
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Gestionar correspondències d’anglés');
+        $this->get(route('convalidacions.direction.angles.index'))
+            ->assertOk()
+            ->assertSee('Importar CSV');
+        $importRoute = Route::getRoutes()->getByName('convalidacions.direction.angles.import');
+        $this->assertNotNull($importRoute);
+        $this->assertContains('role:direccion', $importRoute->gatherMiddleware());
+        $this->post(route('convalidacions.direction.angles.import'), [
+            'csv' => UploadedFile::fake()->createWithContent('correspondencies.csv', implode("\n", [
+                'codi_cicle_angles,nom_cicle_angles_val,nom_cicle_angles_cas,codi_cicle_contenidor,nom_cicle_contenidor_val,nom_cicle_contenidor_cas,es_grau_superior',
+                '00017,Anglés professional,Inglés profesional,00042,Sistemes,Sistemas,1',
+            ])),
+        ])->assertRedirect(route('convalidacions.direction.angles.index'));
+        $this->post(route('convalidacions.direction.angles.store'), [
+            'codi_cicle_angles' => '00018',
+            'nom_cicle_angles_val' => 'Anglés afegit',
+            'nom_cicle_angles_cas' => 'Inglés añadido',
+            'codi_cicle_contenidor' => '00042',
+            'nom_cicle_contenidor_val' => 'Sistemes',
+            'nom_cicle_contenidor_cas' => 'Sistemas',
+            'es_grau_superior' => '0',
+        ])->assertRedirect(route('convalidacions.direction.angles.index'));
+
+        $editada = CorrespondenciaCicleAngles::query()->where('codi_cicle_angles', '00018')->firstOrFail();
+        $this->put(route('convalidacions.direction.angles.update', $editada), [
+            'codi_cicle_angles' => '00018',
+            'nom_cicle_angles_val' => 'Anglés editat',
+            'nom_cicle_angles_cas' => 'Inglés editado',
+            'codi_cicle_contenidor' => '00042',
+            'nom_cicle_contenidor_val' => 'Sistemes',
+            'nom_cicle_contenidor_cas' => 'Sistemas',
+            'es_grau_superior' => '1',
+        ])->assertRedirect(route('convalidacions.direction.angles.index'));
+
+        $this->assertDatabaseHas('convalidacions_correspondencies_angles', [
+            'codi_cicle_angles' => '00017',
+            'codi_cicle_contenidor' => '00042',
+            'es_grau_superior' => true,
+        ]);
+        $this->assertDatabaseHas('convalidacions_correspondencies_angles', [
+            'codi_cicle_angles' => '00018',
+            'nom_cicle_angles_val' => 'Anglés editat',
+            'es_grau_superior' => true,
+        ]);
+        $this->delete(route('convalidacions.direction.angles.destroy', $editada))
+            ->assertRedirect(route('convalidacions.direction.angles.index'));
+        $this->assertDatabaseMissing('convalidacions_correspondencies_angles', ['id' => $editada->id]);
+    }
+
+    public function test_condicio_horaria_s_aplica_amb_correspondencia_i_guarda_la_seua_evidencia(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', str_replace(
+            "      name: Origen de prova\n",
+            "      name: Origen de prova\n      conditions:\n        minimum_weekly_hours: 5\n",
+            $this->automaticRulesYaml()
+        ));
+        CorrespondenciaCicleAngles::query()->create([
+            'codi_cicle_angles' => 'ANT',
+            'nom_cicle_angles_val' => 'Anglés del cicle',
+            'nom_cicle_angles_cas' => 'Inglés del ciclo',
+            'codi_cicle_contenidor' => 'ACT',
+            'nom_cicle_contenidor_val' => 'Cicle contenidor',
+            'nom_cicle_contenidor_cas' => 'Ciclo contenedor',
+            'es_grau_superior' => true,
+        ]);
+        $this->service->tramitar($this->alumno, 'sollicitud-regla-hores-validada', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+
+        $this->assertCount(1, $preview['casos']);
+        $this->assertSame('ANT', $preview['casos'][0]['correspondencia_angles']['codi_cicle_angles']);
+        $director = Profesor::query()->findOrFail('DIR00001');
+        app(ConvalidacioAutomaticaService::class)->aplicar($director);
+        $peticio = Convalidacio::query()->where('modulo_destino_id', 'DEST_AUTO')->firstOrFail();
+        $this->assertSame('Inglés del ciclo', $peticio->evidencia_automatica_snapshot['correspondencia_angles']['nom_cicle_angles_cas']);
+        $this->assertTrue($peticio->evidencia_automatica_snapshot['correspondencia_angles']['es_grau_superior']);
     }
 
     public function test_la_copia_del_resultat_es_conserva_si_desapareix_l_xml(): void
@@ -1442,6 +1603,18 @@ XML;
             ['codigo' => '009001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Desenvolupament d\'Aplicacions Informàtiques', 'nivell' => 'GS', 'sistema' => 'LOGSE'],
             ['codigo' => '028001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Cures Auxiliars d\'Infermeria', 'nivell' => 'GM', 'sistema' => 'LOGSE'],
         ]);
+        Schema::create('convalidacions_correspondencies_angles', function (Blueprint $table) {
+            $table->id();
+            $table->string('codi_cicle_angles', 50);
+            $table->string('nom_cicle_angles_val', 255);
+            $table->string('nom_cicle_angles_cas', 255);
+            $table->string('codi_cicle_contenidor', 50);
+            $table->string('nom_cicle_contenidor_val', 255);
+            $table->string('nom_cicle_contenidor_cas', 255);
+            $table->boolean('es_grau_superior');
+            $table->timestamps();
+            $table->unique(['codi_cicle_angles', 'codi_cicle_contenidor']);
+        });
         Schema::create('documents_convalidacions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('convalidacio_id');

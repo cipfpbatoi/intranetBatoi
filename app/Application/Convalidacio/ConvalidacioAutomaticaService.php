@@ -11,8 +11,10 @@ use Intranet\Entities\Profesor;
 /** Avalua i aplica les regles del catàleg sobre sol·licituds ja presentades. */
 class ConvalidacioAutomaticaService
 {
-    public function __construct(private readonly ConvalidacioReglesManager $regles)
-    {
+    public function __construct(
+        private readonly ConvalidacioReglesManager $regles,
+        private readonly ConvalidacioAnglesCorrespondenciesService $correspondenciesAngles
+    ) {
     }
 
     /** Retorna les regles i les peticions presentades que coincidixen amb elles. */
@@ -30,6 +32,7 @@ class ConvalidacioAutomaticaService
                 'habilitada' => ($regla['enabled'] ?? true) === true,
                 'casos' => 0,
                 'motiu' => $motiu,
+                'correspondencies_angles' => [],
             ];
             if ($motiu === null) {
                 $preparades[$regla['id']] = $index;
@@ -81,6 +84,7 @@ class ConvalidacioAutomaticaService
                     'nia' => (string) $peticio->sollicitud->alumno_id,
                     'peticio' => $peticio,
                     'resultat_origen' => $resultatRegla['resultat_origen'],
+                    'correspondencia_angles' => $resultatRegla['correspondencia_angles'] ?? null,
                     'regla' => $regla,
                     'index_regla' => $index,
                 ];
@@ -108,6 +112,11 @@ class ConvalidacioAutomaticaService
             $perSollicitud[$sollicitudId]['elegibles']++;
             foreach ($unics as $coincident) {
                 $resum[$coincident['index_regla']]['casos']++;
+                if ($coincident['correspondencia_angles'] !== null) {
+                    $correspondencia = $coincident['correspondencia_angles'];
+                    $clauCorrespondencia = $correspondencia['codi_cicle_angles'] . '|' . $correspondencia['codi_cicle_contenidor'];
+                    $resum[$coincident['index_regla']]['correspondencies_angles'][$clauCorrespondencia] = $correspondencia;
+                }
             }
         }
 
@@ -174,6 +183,7 @@ class ConvalidacioAutomaticaService
                             'nota' => $peticio->nota_origen,
                             'convocatoria' => $peticio->convocatoria_origen,
                         ],
+                        'correspondencia_angles' => $cas['correspondencia_angles'] ?? null,
                         'matricula_destinacio' => [
                             'modulo_destino_id' => $peticio->modulo_destino_id,
                             'ciclo_matricula_id' => $peticio->ciclo_matricula_id,
@@ -243,10 +253,7 @@ class ConvalidacioAutomaticaService
         }
 
         $condicions = $source['conditions'] ?? [];
-        if (array_key_exists('minimum_weekly_hours', $condicions)) {
-            return ['resultat_origen' => null, 'motiu' => 'Pendent de la correspondència de cicles i hores setmanals.'];
-        }
-        if (array_diff(array_keys($condicions), ['same_professional_family']) !== []) {
+        if (array_diff(array_keys($condicions), ['same_professional_family', 'minimum_weekly_hours']) !== []) {
             return ['resultat_origen' => null, 'motiu' => 'La regla inclou una condició encara no implementada.'];
         }
 
@@ -255,6 +262,29 @@ class ConvalidacioAutomaticaService
             : $this->nomCoincideixExacte((string) ($source['name'] ?? ''), $peticio);
         if (!$coincideix) {
             return ['resultat_origen' => null, 'motiu' => 'sense_coincidencia'];
+        }
+
+        $correspondenciaAngles = null;
+        if (array_key_exists('minimum_weekly_hours', $condicions)) {
+            $horesMinimes = filter_var($condicions['minimum_weekly_hours'], FILTER_VALIDATE_INT);
+            if ($horesMinimes === false || $horesMinimes < 0 || $horesMinimes > 5) {
+                return ['resultat_origen' => null, 'motiu' => 'La correspondència només acredita un mínim de 5 hores setmanals.'];
+            }
+
+            $correspondencia = $this->correspondenciesAngles->trobarPerCicleAngles((string) $peticio->ciclo_origen_codigo);
+            if ($correspondencia === null) {
+                return ['resultat_origen' => null, 'motiu' => 'No hi ha una correspondència validada per al cicle d’anglés d’origen.'];
+            }
+
+            $correspondenciaAngles = [
+                'codi_cicle_angles' => $correspondencia->codi_cicle_angles,
+                'nom_cicle_angles_val' => $correspondencia->nom_cicle_angles_val,
+                'nom_cicle_angles_cas' => $correspondencia->nom_cicle_angles_cas,
+                'codi_cicle_contenidor' => $correspondencia->codi_cicle_contenidor,
+                'nom_cicle_contenidor_val' => $correspondencia->nom_cicle_contenidor_val,
+                'nom_cicle_contenidor_cas' => $correspondencia->nom_cicle_contenidor_cas,
+                'es_grau_superior' => (bool) $correspondencia->es_grau_superior,
+            ];
         }
 
         if (($condicions['same_professional_family'] ?? false) === true) {
@@ -278,6 +308,7 @@ class ConvalidacioAutomaticaService
                 'any' => $peticio->any_origen,
                 'nota' => $peticio->nota_origen,
             ],
+            'correspondencia_angles' => $correspondenciaAngles,
             'motiu' => null,
         ];
     }
