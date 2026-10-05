@@ -164,6 +164,17 @@ When Direcció consulta el panell protegit
 Then veu eixa contrasenya per poder comunicar-la a l'alumnat mentre dure el bloqueig
 But l'alumnat no la rep en les seues pàgines, missatges o respostes
 
+### ✅ Escenari 17: descarregar el YAML actual de regles
+
+Given una persona de Direcció consulta la gestió de regles automàtiques
+And hi ha un catàleg vàlid carregat o el catàleg inicial de l'aplicació està disponible
+When selecciona «Descarregar YAML actual»
+Then rep com a adjunt privat el contingut literal del catàleg actiu, sense perdre comentaris ni format
+And si no hi ha un catàleg carregat, rep el YAML inicial que utilitza l'aplicació
+And la descàrrega no canvia ni activa cap versió del catàleg
+But una persona sense rol de Direcció no pot obtindre el fitxer
+And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i no un fitxer buit ni una excepció tècnica
+
 ## Regles de negoci
 
 ### Model i composició

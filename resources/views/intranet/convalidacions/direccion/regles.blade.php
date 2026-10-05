@@ -43,6 +43,9 @@
             @else
                 <div class="alert alert-warning">Encara no hi ha cap catàleg de regles disponible. Carrega un fitxer YAML per començar.</div>
             @endif
+            <a class="btn btn-outline-secondary mb-3" href="{{ route('convalidacions.direction.rules.download') }}">
+                Descarregar YAML actual
+            </a>
             <form method="POST" action="{{ route('convalidacions.direction.rules.store') }}" enctype="multipart/form-data">
                 @csrf
                 <label class="form-label" for="yaml-regles">Carregar o substituir el YAML de regles</label>
