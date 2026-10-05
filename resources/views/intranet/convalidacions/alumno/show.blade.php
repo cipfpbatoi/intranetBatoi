@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="container">
-    <h1>Sol·licitud del {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</h1>
+    @php
+        $sollicitudAutomatica = $sollicitud->convalidacions->contains(fn ($item) => filled($item->regla_automatica_id));
+    @endphp
+    <h1>{{ $sollicitudAutomatica ? 'Sol·licitud amb resolucions automàtiques' : 'Sol·licitud' }} del {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</h1>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
@@ -34,6 +37,11 @@
                         </td>
                         <td>
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
+                            @if (filled($peticio->regla_automatica_id))
+                                <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
+                                <div class="mb-1"><strong>Resultat:</strong> {{ $peticio->resultat_automatic }}@if ($peticio->mode_nota_automatic === 'preserve') · Nota {{ number_format((float) $peticio->nota_resultat_automatic, 0, ',', '') }}@endif</div>
+                                <div class="mb-1"><strong>Base normativa:</strong> {{ collect($peticio->base_normativa_automatica ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
+                            @endif
                             @if (!is_null($peticio->fol_logse))
                                 <div class="mb-1"><strong>Estudis d’origen segons LOGSE:</strong> {{ $peticio->fol_logse ? 'Sí' : 'No' }}</div>
                             @endif

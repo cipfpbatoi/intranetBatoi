@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioAccessService;
+use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
+use Intranet\Application\Convalidacio\ConvalidacioReglesManager;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
@@ -710,6 +712,30 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertTrue(app(ConvalidacioAccessService::class)->isBlocked());
     }
 
+    public function test_panell_de_direccio_permet_carregar_i_consultar_el_cataleg_yaml(): void
+    {
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.rules.index'))
+            ->assertOk()
+            ->assertSee('Regles de convalidació')
+            ->assertSee('versió 0.4')
+            ->assertSee('catàleg inicial de l’aplicació')
+            ->assertSee('Anglés professional GM LFP');
+
+        $this->post(route('convalidacions.direction.rules.store'), [
+            'yaml' => UploadedFile::fake()->createWithContent('regles.yaml', $this->automaticRulesYaml()),
+        ])->assertRedirect(route('convalidacions.direction.rules.index'))
+            ->assertSessionHas('success');
+
+        $this->get(route('convalidacions.direction.rules.index'))
+            ->assertOk()
+            ->assertSee('versió 0.4')
+            ->assertSee('Destí automàtic')
+            ->assertSee('Aplicar convalidacions');
+    }
+
     public function test_direccio_pot_eliminar_una_sollicitud_i_els_documents_privats(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'delete-test', [[
@@ -745,6 +771,224 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertDatabaseMissing('convalidacions', ['id' => $peticio->id], 'sqlite');
         Storage::disk('convalidacions')->assertMissing($peticio->document_path);
         Storage::disk('convalidacions')->assertMissing($prlPath);
+    }
+
+    public function test_regla_yaml_coincident_crea_una_convalidacio_resolta_idempotent(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $this->automaticRulesYaml());
+        $sollicitud = $this->service->tramitar($this->alumno, 'sollicitud-automatica', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticioOriginal = $sollicitud->convalidacions()->firstOrFail();
+
+        $service = app(ConvalidacioAutomaticaService::class);
+        $preview = $service->previsualitzar();
+        $this->assertCount(1, $preview['casos']);
+        $this->assertSame('regla-orig1-desti-auto', $preview['casos'][0]['regla']['id']);
+
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $first = $service->aplicar($director);
+        $second = $service->aplicar($director);
+
+        $this->assertSame(['aplicats' => 1, 'ja_existien' => 0, 'errors' => []], $first);
+        $this->assertSame(['aplicats' => 0, 'ja_existien' => 0, 'errors' => []], $second);
+        $peticio = Convalidacio::query()->where('modulo_destino_id', 'DEST_AUTO')->firstOrFail();
+        $this->assertSame($peticioOriginal->id, $peticio->id);
+        $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+        $this->assertSame(Convalidacio::ORIGEN_PROPI_CENTRE, $peticio->origen);
+        $this->assertSame($sollicitud->id, $peticio->sollicitud_convalidacio_id);
+        $this->assertSame(1, SollicitudConvalidacio::query()->count());
+        $this->assertSame('CO', $peticio->resultat_automatic);
+        $this->assertSame(7.0, $peticio->nota_resultat_automatic);
+        $this->assertSame('art. 126.3.b', $peticio->base_normativa_automatica[0]['reference']);
+        $this->assertSame('regla-orig1-desti-auto', $peticio->regla_automatica_snapshot['rule']['id']);
+        $this->assertSame('ORIG1', $peticio->evidencia_automatica_snapshot['resultat_origen']['modul']);
+        $this->assertSame('ACT', $peticio->evidencia_automatica_snapshot['matricula_destinacio']['ciclo_matricula_codigo']);
+    }
+
+    public function test_regles_equivalents_no_bloquegen_una_convalidacio_i_queden_a_la_instantania(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        $duplicada = <<<'YAML'
+  - id: regla-orig1-desti-auto-equivalent
+    target:
+      code: DEST_AUTO
+      name: Destí automàtic
+      level: GS
+    source:
+      type: module
+      code: ORIG1
+      name: Origen de prova amb un altre àlies
+    proposal:
+      action: convalidate
+    resolution:
+      authority: centre
+    result:
+      status: CO
+      grade:
+        mode: preserve
+    legal_basis:
+      - reference: art. 126.3.b
+YAML;
+        Storage::disk('convalidacions')->put(
+            'regles-automatiques/convalidacions.yaml',
+            $this->automaticRulesYaml() . "\n" . $duplicada
+        );
+        $this->service->tramitar($this->alumno, 'sollicitud-regles-equivalents', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+
+        $service = app(ConvalidacioAutomaticaService::class);
+        $preview = $service->previsualitzar();
+        $this->assertCount(1, $preview['casos']);
+        $this->assertSame([1, 1], array_column($preview['regles'], 'casos'));
+
+        $service->aplicar(Profesor::query()->findOrFail('DIR00001'));
+        $peticio = Convalidacio::query()->where('modulo_destino_id', 'DEST_AUTO')->firstOrFail();
+        $this->assertCount(2, $peticio->regla_automatica_snapshot['equivalent_matching_rules']);
+    }
+
+    public function test_regles_verificables_del_cataleg_inicial_es_poden_aplicar(): void
+    {
+        DB::table('modulos')->insert([
+            ['codigo' => '0156', 'cliteral' => 'Anglés professional GM', 'vliteral' => 'Anglés professional GM'],
+            ['codigo' => '0179', 'cliteral' => 'Anglés professional GS', 'vliteral' => 'Anglés professional GS'],
+            ['codigo' => '1708', 'cliteral' => 'Sostenibilitat', 'vliteral' => 'Sostenibilitat'],
+        ]);
+        DB::table('ciclos')->insert([
+            'id' => 3,
+            'ciclo' => 'GM-ACT',
+            'cliteral' => 'Cicle GM matriculat cas',
+            'vliteral' => 'Cicle GM matriculat val',
+            'departamento' => 24,
+            'tipo' => 1,
+            'normativa' => 'LFP',
+        ]);
+        DB::table('departamentos')->where('id', 24)->update(['codigo_xml' => 'FAMILIA']);
+        DB::table('grupos')->insert(['codigo' => 'GM-ACT', 'nombre' => 'Grup GM']);
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => $this->alumno->nia, 'idGrupo' => 'GM-ACT'],
+            ['idAlumno' => '87654321', 'idGrupo' => 'ACTUAL'],
+            ['idAlumno' => '87654321', 'idGrupo' => 'GM-ACT'],
+        ]);
+        DB::table('modulo_ciclos')->insert([
+            ['id' => 4, 'idModulo' => '0179', 'idCiclo' => 2],
+            ['id' => 5, 'idModulo' => '0156', 'idCiclo' => 3],
+            ['id' => 6, 'idModulo' => '1708', 'idCiclo' => 3],
+        ]);
+        DB::table('modulo_grupos')->insert([
+            ['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4],
+            ['id' => 5, 'idGrupo' => 'GM-ACT', 'idModuloCiclo' => 5],
+            ['id' => 6, 'idGrupo' => 'GM-ACT', 'idModuloCiclo' => 6],
+        ]);
+
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', <<<'XML'
+<?xml version="1.0"?>
+<centro curso="2025">
+  <cursos>
+    <curso codigo="FAMILIA" padre=" " nombre_val="Família" nombre_cas="Familia"/>
+    <curso codigo="CICLE-GS" padre="FAMILIA" nombre_val="Cicle GS" nombre_cas="Ciclo GS"/>
+    <curso codigo="CICLE-GM" padre="FAMILIA" nombre_val="Cicle GM" nombre_cas="Ciclo GM"/>
+    <curso codigo="CURS-GS" padre="CICLE-GS" nombre_val="Primer GS" nombre_cas="Primero GS"/>
+    <curso codigo="CURS-GM" padre="CICLE-GM" nombre_val="Primer GM" nombre_cas="Primero GM"/>
+  </cursos>
+  <contenidos>
+    <contenido curso="CURS-GS" codigo="0179" nombre_val="Anglés professional GS" nombre_cas="Inglés profesional GS"/>
+    <contenido curso="CURS-GS" codigo="CV0003" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
+    <contenido curso="CURS-GM" codigo="0156" nombre_val="Anglés professional GM" nombre_cas="Inglés profesional GM"/>
+    <contenido curso="CURS-GM" codigo="CV0001" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
+    <contenido curso="CURS-GM" codigo="1708" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
+  </contenidos>
+  <calificaciones>
+    <calificacion alumno="12345678" curso="CURS-GS" contenido="0179" evaluacion="FI" nota_numerica="7"/>
+    <calificacion alumno="12345678" curso="CURS-GM" contenido="0156" evaluacion="FI" nota_numerica="8"/>
+    <calificacion alumno="12345678" curso="CURS-GM" contenido="1708" evaluacion="FI" nota_numerica="9"/>
+    <calificacion alumno="87654321" curso="CURS-GS" contenido="CV0003" evaluacion="FI" nota_numerica="6"/>
+    <calificacion alumno="87654321" curso="CURS-GM" contenido="CV0001" evaluacion="FI" nota_numerica="8"/>
+  </calificaciones>
+</centro>
+XML);
+
+        $resultatsJo = app(ResultatsAcademicsXmlService::class)->aprovats('12345678');
+        $this->service->tramitar($this->alumno, 'sollicitud-automatica-jo', [
+            ['modulo_destino_id' => '0156', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0156')],
+            ['modulo_destino_id' => '0179', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0179')],
+            ['modulo_destino_id' => '1708', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1708')],
+        ]);
+        $resultatsAltreAlumne = app(ResultatsAcademicsXmlService::class)->aprovats('87654321');
+        $altreAlumne = Alumno::query()->findOrFail('87654321');
+        $this->service->tramitar($altreAlumne, 'sollicitud-automatica-segon-alumne', [
+            ['modulo_destino_id' => '0156', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsAltreAlumne, 'CV0001')],
+            ['modulo_destino_id' => '0179', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsAltreAlumne, 'CV0003')],
+        ]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertSame('0.4', $preview['catalog']['version']);
+        $this->assertCount(5, $preview['casos']);
+        $ids = array_column(array_column($preview['casos'], 'regla'), 'id');
+        $this->assertContains('0156-from-0156', $ids);
+        $this->assertContains('0156-from-cv0001', $ids);
+        $this->assertContains('1708-from-1708-gm-same-family', $ids);
+        $this->assertContains('0179-from-0179-loe', $ids);
+        $this->assertContains('0179-from-cv0003', $ids);
+
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $resultat = app(ConvalidacioAutomaticaService::class)->aplicar($director);
+        $this->assertSame(['aplicats' => 5, 'ja_existien' => 0, 'errors' => []], $resultat);
+        $this->assertSame(5, Convalidacio::query()->where('estat', Convalidacio::ESTAT_RESOLTA)->count());
+        $this->assertSame(2, SollicitudConvalidacio::query()->count());
+        $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
+        $this->assertSame('1708-from-1708-gm-same-family', $peticioFamilia->regla_automatica_id);
+        $this->assertSame('FAMILIA', $peticioFamilia->familia_professional_codigo);
+        $peticioAnglesGs = Convalidacio::query()->where('modulo_origen_codigo', '0179')->firstOrFail();
+        $this->assertCount(2, $peticioAnglesGs->regla_automatica_snapshot['equivalent_matching_rules']);
+    }
+
+    public function test_cataleg_yaml_invalid_no_substituix_el_cataleg_actiu(): void
+    {
+        $manager = app(ConvalidacioReglesManager::class);
+        $manager->guardar(UploadedFile::fake()->createWithContent('regles.yaml', $this->automaticRulesYaml()));
+        $versionActiva = $manager->actual()['version'];
+
+        try {
+            $manager->guardar(UploadedFile::fake()->createWithContent('incorrecte.yaml', "version: '0.5'\nconvalidations: ["));
+            $this->fail('El YAML mal format havia de ser rebutjat.');
+        } catch (ConvalidacioException) {
+            $this->assertSame($versionActiva, $manager->actual()['version']);
+        }
+    }
+
+    public function test_condicio_horaria_queda_pendent_sense_correspondencia_de_cicles(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        $yaml = str_replace(
+            "      name: Origen de prova\n",
+            "      name: Origen de prova\n      conditions:\n        minimum_weekly_hours: 5\n",
+            $this->automaticRulesYaml()
+        );
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $yaml);
+        $this->service->tramitar($this->alumno, 'sollicitud-regla-hores', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+
+        $this->assertSame([], $preview['casos']);
+        $this->assertStringContainsString('Pendent de la correspondència', $preview['regles'][0]['motiu']);
+        $this->assertSame(1, Convalidacio::query()->where('estat', Convalidacio::ESTAT_EN_PROCES)->count());
     }
 
     public function test_la_copia_del_resultat_es_conserva_si_desapareix_l_xml(): void
@@ -855,10 +1099,72 @@ class ConvalidacioFlowTest extends TestCase
             ->assertDontSee('ordinària (FI)');
     }
 
+    /** Retorna un catàleg YAML coherent per a les proves d'aplicació automàtica. */
+    private function automaticRulesYaml(): string
+    {
+        return <<<'YAML'
+version: '0.4'
+metadata:
+  title: Regles de prova
+convalidations:
+  - id: regla-orig1-desti-auto
+    target:
+      code: DEST_AUTO
+      name: Destí automàtic
+      level: GS
+    source:
+      type: module
+      code: ORIG1
+      name: Origen de prova
+    proposal:
+      action: convalidate
+    resolution:
+      authority: centre
+      automatic: false
+    result:
+      status: CO
+      grade:
+        mode: preserve
+    legal_basis:
+      - reference: art. 126.3.b
+YAML;
+    }
+
     /** Retorna l'identificador opac del primer resultat sintètic. */
     private function resultatId(): string
     {
         return app(ResultatsAcademicsXmlService::class)->aprovats('12345678')[0]['id'];
+    }
+
+    /** Retorna l'identificador opac del resultat amb el codi indicat. */
+    private function idResultat(array $resultats, string $modul): string
+    {
+        foreach ($resultats as $resultat) {
+            if ($resultat['modul'] === $modul) {
+                return $resultat['id'];
+            }
+        }
+
+        $this->fail('No s’ha trobat el mòdul d’origen ' . $modul . ' en les dades de prova.');
+    }
+
+    public function test_previsualitzacio_usa_les_dades_guardades_i_no_rellig_els_xml(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $this->automaticRulesYaml());
+        $this->service->tramitar($this->alumno, 'sollicitud-sense-xml-en-preview', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        Storage::disk('convalidacions_xml')->delete('avaluacio-2025.xml');
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+
+        $this->assertCount(1, $preview['casos']);
+        $this->assertSame(1, $preview['regles'][0]['casos']);
     }
 
     /** XML sintètic que evita usar exportacions o dades personals reals. */
@@ -1038,6 +1344,15 @@ XML;
             $table->boolean('modulo_origen_es_fol')->nullable();
             $table->string('fol_logse_cicle')->nullable();
             $table->string('fol_logse_nivell', 2)->nullable();
+            $table->string('regla_automatica_id', 120)->nullable();
+            $table->string('regla_automatica_version', 40)->nullable();
+            $table->string('regla_automatica_hash', 64)->nullable();
+            $table->longText('regla_automatica_snapshot')->nullable();
+            $table->longText('evidencia_automatica_snapshot')->nullable();
+            $table->longText('base_normativa_automatica')->nullable();
+            $table->string('resultat_automatic', 2)->nullable();
+            $table->string('mode_nota_automatic', 20)->nullable();
+            $table->decimal('nota_resultat_automatic', 5, 2)->nullable();
             $table->string('estat');
             $table->text('observacions')->nullable();
             $table->string('revisat_per')->nullable();

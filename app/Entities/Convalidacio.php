@@ -17,6 +17,7 @@ class Convalidacio extends Model
     public const ORIGEN_ALTRE_CENTRE = 'altre_centre';
     public const ORIGEN_EOI = 'certificat_eoi';
     public const ORIGEN_PRL_LOGSE = 'prl_logse';
+    public const ORIGEN_AUTOMATICA = 'automatica';
 
     public const ESTAT_EN_PROCES = 'en_proces';
     public const ESTAT_REALITZADA = 'realitzada';
@@ -24,6 +25,7 @@ class Convalidacio extends Model
     public const ESTAT_DENEGADA = 'denegada';
     public const ESTAT_REVISAR_DOCUMENTACIO = 'revisar_documentacio';
     public const ESTAT_APORTAR_ORIGINAL = 'aportar_original_secretaria';
+    public const ESTAT_RESOLTA = 'resolta';
 
     protected $table = 'convalidacions';
 
@@ -73,6 +75,15 @@ class Convalidacio extends Model
         'modulo_origen_es_fol',
         'fol_logse_cicle',
         'fol_logse_nivell',
+        'regla_automatica_id',
+        'regla_automatica_version',
+        'regla_automatica_hash',
+        'regla_automatica_snapshot',
+        'evidencia_automatica_snapshot',
+        'base_normativa_automatica',
+        'resultat_automatic',
+        'mode_nota_automatic',
+        'nota_resultat_automatic',
         'estat',
         'observacions',
         'revisat_per',
@@ -90,6 +101,10 @@ class Convalidacio extends Model
         'any_origen' => 'integer',
         'nota_origen' => 'float',
         'revisat_at' => 'datetime',
+        'regla_automatica_snapshot' => 'array',
+        'evidencia_automatica_snapshot' => 'array',
+        'base_normativa_automatica' => 'array',
+        'nota_resultat_automatic' => 'float',
     ];
 
     /** Documents de suport adjunts a esta petició. */
@@ -136,7 +151,11 @@ class Convalidacio extends Model
     public static function origenLabel(string $origen): string
     {
         return self::origenOptions()[$origen]
-            ?? ($origen === self::ORIGEN_PRL_LOGSE ? 'Prevenció de riscos (LOGSE) — opció antiga' : $origen);
+            ?? match ($origen) {
+                self::ORIGEN_PRL_LOGSE => 'Prevenció de riscos (LOGSE) — opció antiga',
+                self::ORIGEN_AUTOMATICA => 'Convalidació automàtica',
+                default => $origen,
+            };
     }
 
     /**
@@ -153,7 +172,14 @@ class Convalidacio extends Model
             self::ESTAT_DENEGADA => 'Denegada',
             self::ESTAT_REVISAR_DOCUMENTACIO => 'Revisar documentació',
             self::ESTAT_APORTAR_ORIGINAL => 'Aportar documentació original a Secretaria',
+            self::ESTAT_RESOLTA => 'Resolta',
         ];
+    }
+
+    /** Retorna els estats que Direcció pot assignar manualment. */
+    public static function estatManualOptions(): array
+    {
+        return array_diff_key(self::estatOptions(), [self::ESTAT_RESOLTA => true]);
     }
 
     /** Indica si l'origen necessita documentació. */
@@ -165,6 +191,6 @@ class Convalidacio extends Model
     /** Indica si la petició ja no admet cap canvi. */
     public function esTerminal(): bool
     {
-        return $this->estat === self::ESTAT_REALITZADA;
+        return in_array($this->estat, [self::ESTAT_REALITZADA, self::ESTAT_RESOLTA], true);
     }
 }

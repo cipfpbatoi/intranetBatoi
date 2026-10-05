@@ -145,7 +145,7 @@ class ConvalidacioService
     /** Canvia l'estat d'una sola petició i conserva la traçabilitat. */
     public function revisar(Convalidacio $peticio, Profesor $revisor, string $estat, ?string $observacions): Convalidacio
     {
-        if (!array_key_exists($estat, Convalidacio::estatOptions())) {
+        if (!array_key_exists($estat, Convalidacio::estatManualOptions())) {
             throw new ConvalidacioException('L\'estat indicat no és vàlid.');
         }
 
@@ -179,6 +179,15 @@ class ConvalidacioService
     /** Elimina una sol·licitud de prova i els documents privats associats. */
     public function eliminarSollicitud(SollicitudConvalidacio $sollicitud): void
     {
+        if ($sollicitud->convalidacions()
+            ->where(function ($query): void {
+                $query->whereNotNull('regla_automatica_id')
+                    ->orWhere('origen', Convalidacio::ORIGEN_AUTOMATICA);
+            })
+            ->exists()) {
+            throw new ConvalidacioException('Les convalidacions automàtiques no es poden eliminar des del panell de proves.');
+        }
+
         $documents = DB::transaction(function () use ($sollicitud): array {
             $actual = SollicitudConvalidacio::query()
                 ->with(['convalidacions:id,sollicitud_convalidacio_id,document_path,document_prl_path', 'convalidacions.documents:id,convalidacio_id,path'])

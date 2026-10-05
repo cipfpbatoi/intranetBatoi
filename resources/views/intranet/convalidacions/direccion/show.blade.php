@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="container">
-    <h1>Sol·licitud de {{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</h1>
+    @php
+        $sollicitudAutomatica = $sollicitud->convalidacions->contains(fn ($item) => filled($item->regla_automatica_id));
+    @endphp
+    <h1>{{ $sollicitudAutomatica ? 'Sol·licitud amb resolucions automàtiques' : 'Sol·licitud' }} de {{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</h1>
     <p>Tramitada el {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</p>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -35,6 +38,11 @@
                         </td>
                         <td>
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
+                            @if (filled($peticio->regla_automatica_id))
+                                <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
+                                <div class="mb-1"><strong>Catàleg:</strong> {{ $peticio->regla_automatica_version }} · resultat {{ $peticio->resultat_automatic }}@if ($peticio->mode_nota_automatic === 'preserve') · nota {{ number_format((float) $peticio->nota_resultat_automatic, 0, ',', '') }}@endif</div>
+                                <div class="mb-1"><strong>Base normativa:</strong> {{ collect($peticio->base_normativa_automatica ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
+                            @endif
                             @if (!is_null($peticio->fol_logse))
                                 <div class="mb-1"><strong>Estudis d’origen segons LOGSE:</strong> {{ $peticio->fol_logse ? 'Sí' : 'No' }}</div>
                             @endif
@@ -84,7 +92,7 @@
                         </td>
                         <td>
                             @if ($peticio->esTerminal())
-                                <div class="alert alert-success mb-0">Realitzada — petició de només consulta.</div>
+                                <div class="alert alert-success mb-0">{{ $estats[$peticio->estat] ?? $peticio->estat }} — registre de només consulta.</div>
                             @else
                                 <div class="mb-2"><strong>Estat actual:</strong> <span class="badge bg-secondary">{{ $estats[$peticio->estat] ?? $peticio->estat }}</span></div>
                                 <form method="POST" action="{{ route('convalidacions.direction.resolve', $peticio) }}">
@@ -106,10 +114,12 @@
         </table>
     </div>
     <a class="btn btn-secondary" href="{{ route('convalidacions.direction.index') }}">Tornar</a>
-    <form class="d-inline" method="POST" action="{{ route('convalidacions.direction.destroy', $sollicitud) }}" onsubmit="return confirm(&quot;Una sol·licitud d&#39;un alumne no pot eliminar-se llevat que siga una prova, ja que elimina tota la traçabilitat. Vols continuar?&quot;)">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="btn btn-outline-danger">Eliminar sol·licitud de prova</button>
-    </form>
+    @unless ($sollicitudAutomatica)
+        <form class="d-inline" method="POST" action="{{ route('convalidacions.direction.destroy', $sollicitud) }}" onsubmit="return confirm(&quot;Una sol·licitud d&#39;un alumne no pot eliminar-se llevat que siga una prova, ja que elimina tota la traçabilitat. Vols continuar?&quot;)">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger">Eliminar sol·licitud de prova</button>
+        </form>
+    @endunless
 </div>
 @endsection

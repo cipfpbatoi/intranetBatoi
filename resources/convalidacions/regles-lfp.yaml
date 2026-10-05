@@ -1,0 +1,218 @@
+version: '0.4'
+metadata:
+  title: Regles de convalidació LFP
+  source:
+    description: Transcripció estructurada de les fulles de convalidació del CIP FP Batoi
+    ignore_handwritten_annotations: true
+  conventions:
+    proposal_actions:
+      convalidate: Es pot proposar la convalidació o reconeixement
+      refer: Cal trametre el cas perquè el resolga l'òrgan competent
+    resolution_authorities:
+      centre: Resolució pel centre
+      ministry: Reservat per als casos competència del Ministeri (p. ex. estudis universitaris o FP1/FP2)
+    result_statuses:
+      AA: Aprovat amb anterioritat
+      CO: Convalidat
+    grade_modes:
+      preserve: Manté la qualificació numèrica aportada
+      none: Sense qualificació numèrica
+    notes:
+      - En les regles d'aquest document, la resolució correspon al centre.
+      - La menció «Circular Ministeri» és una referència/instrucció aplicable, no l'òrgan resolutor.
+      - La competència del Ministeri es reserva per a altres supòsits, com estudis universitaris o FP1/FP2.
+      - Els únics resultats finals modelats són AA i CO.
+      - No s'han incorporat anotacions manuscrites.
+      - Els noms dels mòduls es mantenen amb normalització mínima respecte de les fulles originals.
+convalidations:
+  - id: 1664-from-1664-same-family
+    target: {code: '1664', name: Digitalització GM, level: GM}
+    source: {type: module, code: '1664', name: Digitalització GM, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.b}]
+  - id: 1664-from-1665-same-family
+    target: {code: '1664', name: Digitalització GM, level: GM}
+    source: {type: module, code: '1665', name: Digitalització GS, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
+    result: null
+  - id: 1665-from-1665-same-family
+    target: {code: '1665', name: Digitalització GS, level: GS}
+    source: {type: module, code: '1665', name: Digitalització GS, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+  - id: 1708-from-1708-gm-same-family
+    target: {code: '1708', name: Sostenibilitat GM i GS, level: GM_GS}
+    source: {type: module, code: '1708', name: Sostenibilitat GM, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.c}]
+  - id: 1708-from-1708-gs-same-family
+    target: {code: '1708', name: Sostenibilitat GM i GS, level: GM_GS}
+    source: {type: module, code: '1708', name: Sostenibilitat GS}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+  - id: 1709-from-fol-gm-loe
+    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
+    source: {type: module, name: FOL GM LOE}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 127.5}]
+  - id: 1709-from-fol-gm-logse-prl30
+    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
+    source:
+      type: all_of
+      items:
+        - {type: module, name: FOL GM LOGSE}
+        - {type: certificate, name: PRL, minimum_hours: 30}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 127.5}]
+  - id: 1709-from-fol-gs-loe
+    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
+    source: {type: module, name: FOL GS LOE}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
+    result: null
+  - id: 1709-from-fol-gs-logse-prl50
+    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
+    source:
+      type: all_of
+      items:
+        - {type: module, name: FOL GS LOGSE}
+        - {type: certificate, name: PRL, minimum_hours: 50}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
+    result: null
+  - id: 1710-from-eie-gm-loe
+    target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
+    source: {type: module, name: EIE GM LOE}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 127.5}]
+  - id: 1710-from-eie-gs-loe
+    target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
+    source: {type: module, name: EIE GS LOE}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 127.5}]
+  - id: 0156-from-0156
+    target: {code: '0156', name: Anglés professional GM LFP, level: GM}
+    source: {type: module, code: '0156', name: Anglés GM LOE/LFP}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.a}]
+  - id: 0156-from-0179
+    target: {code: '0156', name: Anglés professional GM LFP, level: GM}
+    source: {type: module, code: '0179', name: Anglés GS LOE/LFP}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
+    result: null
+  - id: 0156-from-eoi-b1
+    target: {code: '0156', name: Anglés professional GM LFP, level: GM}
+    source: {type: language_certificate, institution: EOI, minimum_level: B1}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: none}}
+    legal_basis: [{reference: art. 3.7 RD 1085/2020}]
+  - id: 0156-from-cv0001
+    target: {code: '0156', name: Anglés professional GM LFP, level: GM}
+    source: {type: module, code: CV0001, name: Anglés tècnic}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: 0179-from-0179-loe
+    target: {code: '0179', name: Anglés professional GS LFP, level: GS}
+    source: {type: module, code: '0179', name: Anglés GS LOE}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.a}]
+  - id: 0179-from-0179-lfp
+    target: {code: '0179', name: Anglés professional GS LFP, level: GS}
+    source: {type: module, code: '0179', name: Anglés professional GS LFP}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.a}]
+  - id: 0179-from-eoi-b2
+    target: {code: '0179', name: Anglés professional GS LFP, level: GS}
+    source: {type: language_certificate, institution: EOI, minimum_level: B2}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: none}}
+    legal_basis: [{reference: art. 3.7 RD 1085/2020}]
+  - id: 0179-from-cv0003
+    target: {code: '0179', name: Anglés professional GS LFP, level: GS}
+    source: {type: module, code: CV0003, name: Anglés tècnic}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0014-from-cv0014
+    target: {code: CV0014, name: Aprofundiment Anglés professional GM, level: GM}
+    source: {type: module, code: CV0014, name: Aprofundiment Anglés professional GM}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0014-from-cv0015
+    target: {code: CV0014, name: Aprofundiment Anglés professional GM, level: GM}
+    source: {type: module, code: CV0015, name: Aprofundiment Anglés professional GS}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0014-from-0156-5h
+    target: {code: CV0014, name: Aprofundiment Anglés professional GM, level: GM}
+    source: {type: module, code: '0156', name: Anglés GM LOE/LFP, conditions: {minimum_weekly_hours: 5}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0014-from-0179-5h
+    target: {code: CV0014, name: Aprofundiment Anglés professional GM, level: GM}
+    source: {type: module, code: '0179', name: Anglés GS LOE/LFP, conditions: {minimum_weekly_hours: 5}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0014-from-eoi-b2
+    target: {code: CV0014, name: Aprofundiment Anglés professional GM, level: GM}
+    source: {type: language_certificate, institution: EOI, minimum_level: B2}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: none}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0015-from-cv0015
+    target: {code: CV0015, name: Aprofundiment Anglés professional GS, level: GS}
+    source: {type: module, code: CV0015, name: Aprofundiment Anglés professional GS}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0015-from-0179-5h
+    target: {code: CV0015, name: Aprofundiment Anglés professional GS, level: GS}
+    source: {type: module, code: '0179', name: Anglés GS LOE/LFP, conditions: {minimum_weekly_hours: 5}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: Instruccions DGFP}]
+  - id: cv0015-from-eoi-c1
+    target: {code: CV0015, name: Aprofundiment Anglés professional GS, level: GS}
+    source: {type: language_certificate, institution: EOI, minimum_level: C1}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: none}}
+    legal_basis: [{reference: Instruccions DGFP}]

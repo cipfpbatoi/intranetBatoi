@@ -36,13 +36,15 @@ class DireccionConvalidacioController extends Controller
     {
         $filters = $request->validate([
             'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
-            'origen' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::origenOptions()))],
+            'origen' => ['nullable', 'string', Rule::in(array_merge(array_keys(Convalidacio::origenOptions()), [Convalidacio::ORIGEN_AUTOMATICA]))],
         ]);
+        $origens = Convalidacio::origenOptions();
+        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
 
         return view('intranet.convalidacions.direccion.index', [
             'sollicituds' => $this->queries->sollicitudsDireccion($filters['estat'] ?? null, $filters['origen'] ?? null),
             'estats' => Convalidacio::estatOptions(),
-            'origens' => Convalidacio::origenOptions(),
+            'origens' => $origens,
             'filters' => $filters,
             'accessBlocked' => $this->access->isBlocked(),
         ]);
@@ -65,6 +67,16 @@ class DireccionConvalidacioController extends Controller
     public function destroy(SollicitudConvalidacio $sollicitud): RedirectResponse
     {
         Gate::forUser($this->profesor())->authorize('view', $sollicitud);
+        abort_if(
+            $sollicitud->convalidacions()
+                ->where(function ($query): void {
+                    $query->whereNotNull('regla_automatica_id')
+                        ->orWhere('origen', Convalidacio::ORIGEN_AUTOMATICA);
+                })
+                ->exists(),
+            403,
+            'Les convalidacions automàtiques no es poden eliminar des del panell de proves.'
+        );
         $this->service->eliminarSollicitud($sollicitud);
 
         return redirect()->route('convalidacions.direction.index')->with('success', 'Sol·licitud de prova eliminada.');
@@ -76,7 +88,7 @@ class DireccionConvalidacioController extends Controller
         $model = $this->queries->sollicitudDetail($sollicitud) ?? abort(404);
         Gate::forUser($this->profesor())->authorize('view', $model);
 
-        return view('intranet.convalidacions.direccion.show', ['sollicitud' => $model, 'estats' => Convalidacio::estatOptions()]);
+        return view('intranet.convalidacions.direccion.show', ['sollicitud' => $model, 'estats' => Convalidacio::estatManualOptions() + [Convalidacio::ESTAT_RESOLTA => Convalidacio::estatOptions()[Convalidacio::ESTAT_RESOLTA]]]);
     }
 
     /** Canvia l'estat d'una única petició. */
@@ -84,7 +96,7 @@ class DireccionConvalidacioController extends Controller
     {
         Gate::forUser($this->profesor())->authorize('resolve', $convalidacio);
         $validated = $request->validate([
-            'estat' => ['required', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
+            'estat' => ['required', 'string', Rule::in(array_keys(Convalidacio::estatManualOptions()))],
             'observacions' => ['nullable', 'string', 'max:2000'],
         ]);
 

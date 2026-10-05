@@ -6,9 +6,14 @@
 <div class="container">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <h1 class="mb-0">Gestió de convalidacions</h1>
-        <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.xml.index') }}">
-            <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.rules.index') }}">
+                <i class="fa fa-check-circle" aria-hidden="true"></i> Regles i convalidacions automàtiques
+            </a>
+            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.xml.index') }}">
+                <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
+            </a>
+        </div>
     </div>
     @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
     <div class="alert {{ $accessBlocked ? 'alert-warning' : 'alert-info' }} d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
