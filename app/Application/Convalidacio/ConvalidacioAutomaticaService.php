@@ -36,16 +36,29 @@ class ConvalidacioAutomaticaService
             }
         }
 
-        if ($preparades === []) {
-            return ['catalog' => $catalog, 'regles' => array_values($resum), 'casos' => [], 'bloquejats' => []];
-        }
-
         $peticions = Convalidacio::query()
             ->with('sollicitud')
             ->whereNull('regla_automatica_id')
             ->whereNotIn('estat', [Convalidacio::ESTAT_REALITZADA, Convalidacio::ESTAT_RESOLTA, Convalidacio::ESTAT_DENEGADA])
             ->whereHas('sollicitud', static fn ($query) => $query->whereNotNull('submitted_at'))
             ->get();
+
+        $perSollicitud = [];
+        foreach ($peticions as $peticio) {
+            $sollicitudId = (int) $peticio->sollicitud_convalidacio_id;
+            $perSollicitud[$sollicitudId] ??= ['pendents' => 0, 'elegibles' => 0];
+            $perSollicitud[$sollicitudId]['pendents']++;
+        }
+
+        if ($preparades === []) {
+            return [
+                'catalog' => $catalog,
+                'regles' => array_values($resum),
+                'casos' => [],
+                'bloquejats' => [],
+                'per_sollicitud' => $perSollicitud,
+            ];
+        }
 
         $coincidencies = [];
         $bloquejats = [];
@@ -91,6 +104,8 @@ class ConvalidacioAutomaticaService
             $cas = $unics->first();
             $cas['regles_coincidents'] = $unics->map(fn (array $item): array => $item['regla'])->all();
             $casos[] = $cas;
+            $sollicitudId = (int) $cas['peticio']->sollicitud_convalidacio_id;
+            $perSollicitud[$sollicitudId]['elegibles']++;
             foreach ($unics as $coincident) {
                 $resum[$coincident['index_regla']]['casos']++;
             }
@@ -104,7 +119,13 @@ class ConvalidacioAutomaticaService
             }
         }
 
-        return ['catalog' => $catalog, 'regles' => array_values($resum), 'casos' => $casos, 'bloquejats' => $bloquejats];
+        return [
+            'catalog' => $catalog,
+            'regles' => array_values($resum),
+            'casos' => $casos,
+            'bloquejats' => $bloquejats,
+            'per_sollicitud' => $perSollicitud,
+        ];
     }
 
     /** Resol les peticions ja presentades i conserva la seua traçabilitat original. */

@@ -124,6 +124,46 @@ And si confirma, s'eliminen la capçalera, totes les peticions i els documents p
 And si cancel·la, no s'elimina cap dada
 And cap persona que no siga de Direcció pot executar l'acció, encara que envie una petició directa
 
+### ✅ Escenari 12: resum de l'automatització al llistat de Direcció
+
+Given una persona de Direcció consulta les sol·licituds presentades
+When hi ha peticions pendents elegibles segons el YAML actiu
+Then el llistat identifica cada sol·licitud com a «Automàtica», «Parcialment automàtica» o «Revisió manual» segons les peticions pendents
+And mostra el nombre d'elegibles sobre el total pendent
+And consultar o refrescar el llistat no resol cap petició
+
+### ✅ Escenari 13: aplicar les peticions elegibles des del llistat
+
+Given hi ha una o més peticions elegibles en sol·licituds ja presentades
+When Direcció prem «Aplicar convalidacions automàtiques» en el llistat principal
+Then confirma l'acció després de veure quantes peticions s'aplicaran
+And només en confirmar s'apliquen les peticions que continuen sent elegibles
+And les peticions no elegibles de la mateixa sol·licitud continuen pendents per a revisió manual
+And si cancel·la, cap petició canvia d'estat
+
+### ✅ Escenari 14: identificar la regla candidata o aplicada
+
+Given Direcció consulta el detall d'una sol·licitud
+When una petició és elegible o ja s'ha resolt automàticament
+Then veu la regla candidata o la regla realment aplicada, respectivament
+And les resolucions aplicades conserven visible la versió, el resultat i la base normativa guardats
+And una petició sense regla coincident no es presenta com a automàtica
+
+### ✅ Escenari 15: control d'accés amb interruptor
+
+Given una persona de Direcció consulta el panell de convalidacions
+When activa o desactiva el control d'accés de proves
+Then un interruptor accessible reflectix l'estat actual i el canvi conserva el mecanisme de bloqueig existent
+And quan l'accés està bloquejat es mostra un avís groc explícit
+And quan l'accés està obert desapareix l'avís de bloqueig
+
+### ✅ Escenari 16: mostrar la contrasenya només a Direcció
+
+Given la contrasenya de proves efectiva està configurada al servidor
+When Direcció consulta el panell protegit
+Then veu eixa contrasenya per poder comunicar-la a l'alumnat mentre dure el bloqueig
+But l'alumnat no la rep en les seues pàgines, missatges o respostes
+
 ## Regles de negoci
 
 ### Model i composició
@@ -175,7 +215,7 @@ And cap persona que no siga de Direcció pot executar l'acció, encara que envie
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
 - El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
-- La contrasenya de proves es configura al servidor (`CONVALIDACIONS_ACCESS_PASSWORD`) i mai no s'inclou en HTML ni en missatges d'error.
+- La contrasenya de proves es configura al servidor (`CONVALIDACIONS_ACCESS_PASSWORD`); només es mostra en clar en el panell privat protegit per rol de Direcció, i mai en HTML de l'alumnat, superfícies públiques o missatges d'error.
 - Canviar el bloqueig genera un nou cicle i invalida les autoritzacions temporals de sessions anteriors.
 - L'eliminació de sol·licituds només està disponible per a Direcció i elimina també els documents privats de totes les peticions.
 - La confirmació d'eliminació avisa explícitament de la pèrdua irreversible de traçabilitat; l'eliminació no és una resolució ordinària.

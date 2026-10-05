@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioAccessService;
+use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Entities\Convalidacio;
@@ -26,7 +27,8 @@ class DireccionConvalidacioController extends Controller
     public function __construct(
         private readonly ConvalidacioService $service,
         private readonly ConvalidacioQueryService $queries,
-        private readonly ConvalidacioAccessService $access
+        private readonly ConvalidacioAccessService $access,
+        private readonly ConvalidacioAutomaticaService $automatitzacions
     ) {
         parent::__construct();
     }
@@ -41,12 +43,17 @@ class DireccionConvalidacioController extends Controller
         $origens = Convalidacio::origenOptions();
         $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
 
+        $preview = $this->automatitzacions->previsualitzar();
+
         return view('intranet.convalidacions.direccion.index', [
             'sollicituds' => $this->queries->sollicitudsDireccion($filters['estat'] ?? null, $filters['origen'] ?? null),
             'estats' => Convalidacio::estatOptions(),
             'origens' => $origens,
             'filters' => $filters,
             'accessBlocked' => $this->access->isBlocked(),
+            'accessPassword' => (string) config('convalidacions_access.password'),
+            'automatitzacions' => $preview['per_sollicitud'],
+            'peticionsAutomatiquesElegibles' => count($preview['casos']),
         ]);
     }
 
@@ -87,8 +94,15 @@ class DireccionConvalidacioController extends Controller
     {
         $model = $this->queries->sollicitudDetail($sollicitud) ?? abort(404);
         Gate::forUser($this->profesor())->authorize('view', $model);
+        $peticionsElegibles = collect($this->automatitzacions->previsualitzar()['casos'])
+            ->filter(fn (array $cas): bool => (int) $cas['peticio']->sollicitud_convalidacio_id === (int) $model->id)
+            ->keyBy('peticio_id');
 
-        return view('intranet.convalidacions.direccion.show', ['sollicitud' => $model, 'estats' => Convalidacio::estatManualOptions() + [Convalidacio::ESTAT_RESOLTA => Convalidacio::estatOptions()[Convalidacio::ESTAT_RESOLTA]]]);
+        return view('intranet.convalidacions.direccion.show', [
+            'sollicitud' => $model,
+            'estats' => Convalidacio::estatManualOptions() + [Convalidacio::ESTAT_RESOLTA => Convalidacio::estatOptions()[Convalidacio::ESTAT_RESOLTA]],
+            'peticionsElegibles' => $peticionsElegibles,
+        ]);
     }
 
     /** Canvia l'estat d'una única petició. */

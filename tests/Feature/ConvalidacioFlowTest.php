@@ -676,7 +676,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->get('/alumno/convalidacions/acces')
             ->assertOk()
             ->assertSeeText('Actualment, l’accés a les convalidacions està restringit perquè estem fent proves.')
-            ->assertDontSee('4 8 15 16 23 42');
+            ->assertDontSee((string) config('convalidacions_access.password'));
         $this->from('/alumno/convalidacions/acces')->post('/alumno/convalidacions/acces', ['password' => 'incorrecta'])
             ->assertRedirect('/alumno/convalidacions/acces')
             ->assertSessionHasErrors('password');
@@ -703,13 +703,30 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
-            ->assertSee('Accés de l')
-            ->assertSee('Bloquejar accés per a proves');
+            ->assertSee('role="switch"', false)
+            ->assertSee('Restringir temporalment l’accés de l’alumnat')
+            ->assertSee('Contrasenya per a l’alumnat:')
+            ->assertSee((string) config('convalidacions_access.password'))
+            ->assertSee('Obert')
+            ->assertDontSee('Accés restringit per a proves.');
 
         $this->put(route('convalidacions.direction.access'), ['blocked' => '1'])
             ->assertRedirect(route('convalidacions.direction.index'))
             ->assertSessionHas('success', 'Accés de l\'alumnat bloquejat.');
         $this->assertTrue(app(ConvalidacioAccessService::class)->isBlocked());
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Accés restringit per a proves.')
+            ->assertSee('Bloquejat')
+            ->assertSee((string) config('convalidacions_access.password'));
+
+        $this->put(route('convalidacions.direction.access'), ['blocked' => '0'])
+            ->assertRedirect(route('convalidacions.direction.index'));
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Obert')
+            ->assertDontSee('Accés restringit per a proves.');
     }
 
     public function test_panell_de_direccio_permet_carregar_i_consultar_el_cataleg_yaml(): void
@@ -734,6 +751,60 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('versió 0.4')
             ->assertSee('Destí automàtic')
             ->assertSee('Aplicar convalidacions');
+    }
+
+    public function test_panell_principal_mostra_elegibilitat_parcial_i_permet_aplicar_la_part_elegible(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $this->automaticRulesYaml());
+        $sollicitud = $this->service->tramitar($this->alumno, 'sollicitud-automatica-parcial', [
+            [
+                'modulo_destino_id' => 'DEST_AUTO',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'resultat_origen_id' => $this->resultatId(),
+            ],
+            [
+                'modulo_destino_id' => 'DEST2',
+                'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+                'declaracio_responsable' => true,
+                'document' => UploadedFile::fake()->create('certificat.pdf', 50, 'application/pdf'),
+            ],
+        ]);
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Aplicar 1 convalidació automàtica')
+            ->assertSee('Gestionar regles automàtiques')
+            ->assertSee('Parcialment automàtica')
+            ->assertSee('1/2')
+            ->assertSee('name="return_to" value="index"', false);
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Disponible per a resolució automàtica')
+            ->assertSee('Regla: regla-orig1-desti-auto')
+            ->assertSee('Sense regla automàtica aplicable ara; requerix revisió manual.');
+
+        $this->post(route('convalidacions.direction.rules.apply'), ['return_to' => 'index'])
+            ->assertRedirect(route('convalidacions.direction.index'))
+            ->assertSessionHas('resultatAutomatic.aplicats', 1);
+
+        $this->assertDatabaseHas('convalidacions', [
+            'sollicitud_convalidacio_id' => $sollicitud->id,
+            'modulo_destino_id' => 'DEST_AUTO',
+            'estat' => Convalidacio::ESTAT_RESOLTA,
+            'regla_automatica_id' => 'regla-orig1-desti-auto',
+        ], 'sqlite');
+        $this->assertDatabaseHas('convalidacions', [
+            'sollicitud_convalidacio_id' => $sollicitud->id,
+            'modulo_destino_id' => 'DEST2',
+            'estat' => Convalidacio::ESTAT_EN_PROCES,
+            'regla_automatica_id' => null,
+        ], 'sqlite');
     }
 
     public function test_direccio_pot_eliminar_una_sollicitud_i_els_documents_privats(): void

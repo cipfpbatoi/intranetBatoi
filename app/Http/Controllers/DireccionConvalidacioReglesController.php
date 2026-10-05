@@ -50,13 +50,17 @@ class DireccionConvalidacioReglesController extends Controller
     }
 
     /** Aplica de manera idempotent els casos verificables pel catàleg actiu. */
-    public function apply(): RedirectResponse
+    public function apply(Request $request): RedirectResponse
     {
         $responsable = auth('profesor')->user();
         abort_unless($responsable instanceof Profesor, 401);
 
         $resultat = $this->automatitzacions->aplicar($responsable);
 
-        return redirect()->route('convalidacions.direction.rules.index')->with('resultatAutomatic', $resultat);
+        $destinacio = $request->input('return_to') === 'index'
+            ? 'convalidacions.direction.index'
+            : 'convalidacions.direction.rules.index';
+
+        return redirect()->route($destinacio)->with('resultatAutomatic', $resultat);
     }
 }

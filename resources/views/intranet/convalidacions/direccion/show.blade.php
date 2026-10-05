@@ -42,6 +42,15 @@
                                 <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
                                 <div class="mb-1"><strong>Catàleg:</strong> {{ $peticio->regla_automatica_version }} · resultat {{ $peticio->resultat_automatic }}@if ($peticio->mode_nota_automatic === 'preserve') · nota {{ number_format((float) $peticio->nota_resultat_automatic, 0, ',', '') }}@endif</div>
                                 <div class="mb-1"><strong>Base normativa:</strong> {{ collect($peticio->base_normativa_automatica ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
+                            @elseif ($casAutomatic = ($peticionsElegibles[$peticio->id] ?? null))
+                                @php($reglaCandidata = $casAutomatic['regla'])
+                                <div class="alert alert-info py-2 px-3 mt-2 mb-2">
+                                    <strong>Disponible per a resolució automàtica</strong>
+                                    <div>Regla: {{ $reglaCandidata['id'] }} — {{ $reglaCandidata['source']['name'] ?? 'Origen' }} → {{ $reglaCandidata['target']['name'] ?? 'Destí' }}</div>
+                                    <div>Resultat {{ $reglaCandidata['result']['status'] ?? '—' }} · base normativa {{ collect($reglaCandidata['legal_basis'] ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
+                                </div>
+                            @elseif ($peticio->estat !== \Intranet\Entities\Convalidacio::ESTAT_DENEGADA && !$peticio->esTerminal())
+                                <div class="small text-muted mb-2">Sense regla automàtica aplicable ara; requerix revisió manual.</div>
                             @endif
                             @if (!is_null($peticio->fol_logse))
                                 <div class="mb-1"><strong>Estudis d’origen segons LOGSE:</strong> {{ $peticio->fol_logse ? 'Sí' : 'No' }}</div>
