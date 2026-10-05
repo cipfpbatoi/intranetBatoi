@@ -5,6 +5,53 @@ const minDiasReserva = 3;
 const esDireccion = 2;
 
 let clickOrigin = 0;
+let reservaEnCurs = false;
+
+/** Espera abans de continuar la cua de reserves. */
+function esperaReserva(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
+/** Executa les reserves en sèrie i reprén només les peticions rebutjades amb 429. */
+async function processaReserves(peticiones, enviar) {
+    var results = [];
+    reservaEnCurs = true;
+    ['reservar', 'liberar'].forEach(function (id) { if (getEl(id)) getEl(id).disabled = true; });
+    try {
+        for (var index = 0; index < peticiones.length; index += 1) {
+            while (true) {
+                await esperaReserva(210);
+                try {
+                    var value = await enviar(peticiones[index]);
+                    results.push({ status: 'fulfilled', value: value });
+                    break;
+                } catch (error) {
+                    if (error.status !== 429) {
+                        results.push({ status: 'rejected', reason: error });
+                        return results;
+                    }
+                    showMessage(['Límit temporal de peticions. Esperant per continuar…'], 'error');
+                    await esperaReserva(error.retryAfterMs || 60000);
+                }
+            }
+        }
+        return results;
+    } finally {
+        reservaEnCurs = false;
+        ['reservar', 'liberar'].forEach(function (id) { if (getEl(id)) getEl(id).disabled = false; });
+    }
+}
+
+/** Mostra el nombre d'operacions confirmades, incloent resultats parcials. */
+function mostraResultatReserves(results, total) {
+    var completed = results.filter(function (result) {
+        return result.status === 'fulfilled' && result.value && result.value.success === true;
+    }).length;
+    showMessage(['Operacions confirmades: ' + completed + ' de ' + total + '.'
+        + (completed < total ? ' Revisa les reserves abans de tornar-ho a intentar.' : '')],
+    completed === total ? 'ok' : 'error');
+    triggerDiaChange();
+}
 
 function apiAuthOptions(extraData) {
     var bearerMeta = document.querySelector('meta[name="user-bearer-token"]');
@@ -44,7 +91,7 @@ function apiRequest(method, url, extraData) {
     var auth = apiAuthOptions(extraData);
     var options = {
         method: method,
-        headers: Object.assign({}, auth.headers),
+        headers: Object.assign({ Accept: 'application/json' }, auth.headers),
         credentials: 'same-origin'
     };
 
@@ -60,6 +107,11 @@ function apiRequest(method, url, extraData) {
             var error = new Error('HTTP ' + response.status);
             error.status = response.status;
             error.statusText = response.statusText;
+            var retryAfter = response.headers.get('Retry-After');
+            var seconds = retryAfter === null ? NaN : Number(retryAfter);
+            error.retryAfterMs = Number.isFinite(seconds)
+                ? Math.max(1000, seconds * 1000)
+                : Math.max(1000, Date.parse(retryAfter) - Date.now()) || 60000;
             throw error;
         }
         return parseJsonSafe(response);
@@ -279,6 +331,7 @@ function loadReservas() {
 }
 
 function modDatos(accion) {
+    if (reservaEnCurs) return false;
     var dia = getEl('dia');
     var recurso = getEl('recurso');
     var idProfesor = getEl('idProfesor');
@@ -324,28 +377,13 @@ function modDatos(accion) {
             return false;
         }
 
-        Promise.allSettled(peticiones.map(function (peticion) {
+        return processaReserves(peticiones, function (peticion) {
             return apiRequest('POST', 'api/reserva', Object.assign({}, datosBase, {
                 dia: peticion.fecha,
                 hora: peticion.hora
             }));
-        })).then(function (results) {
-            var hasErrors = results.some(function (result) {
-                if (result.status !== 'fulfilled') {
-                    return true;
-                }
-                if (result.value && Object.prototype.hasOwnProperty.call(result.value, 'success')) {
-                    return result.value.success !== true;
-                }
-                return false;
-            });
-
-            if (hasErrors) {
-                showMessage(['Algunas horas no se han podido reservar'], 'error');
-            } else {
-                showMessage(['El recurso se ha reservado correctamente'], 'ok');
-            }
-            triggerDiaChange();
+        }).then(function (results) {
+            mostraResultatReserves(results, peticiones.length);
         });
     } else {
         for (var j = Number(desde.value); j <= Number(hasta.value); j += 1) {
@@ -361,25 +399,10 @@ function modDatos(accion) {
             return false;
         }
 
-        Promise.allSettled(peticiones.map(function (peticion) {
+        return processaReserves(peticiones, function (peticion) {
             return apiRequest('DELETE', 'api/reserva/' + peticion.hora, {});
-        })).then(function (results) {
-            var hasErrors = results.some(function (result) {
-                if (result.status !== 'fulfilled') {
-                    return true;
-                }
-                if (result.value && Object.prototype.hasOwnProperty.call(result.value, 'success')) {
-                    return result.value.success !== true;
-                }
-                return false;
-            });
-
-            if (hasErrors) {
-                showMessage(['Algunas horas no se han podido liberar'], 'error');
-            } else {
-                showMessage(['El recurso se ha liberado correctamente'], 'ok');
-            }
-            triggerDiaChange();
+        }).then(function (results) {
+            mostraResultatReserves(results, peticiones.length);
         });
     }
 

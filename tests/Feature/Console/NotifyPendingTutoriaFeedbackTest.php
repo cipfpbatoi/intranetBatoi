@@ -55,7 +55,8 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
             'id' => 20,
             'descripcion' => 'Convivència',
             'grupos' => 0,
-            'hasta' => '2026-09-29',
+            'desde' => '2026-09-30',
+            'hasta' => '2026-10-31',
         ]);
 
         $notifications = Mockery::mock(NotificationService::class);
@@ -104,6 +105,66 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
         ]);
     }
 
+    public function test_ordre_notifica_nomes_tutories_actives_incloent_els_limits(): void
+    {
+        DB::table('ciclos')->insert(['id' => 1, 'tipo' => 1]);
+        DB::table('profesores')->insert([
+            'dni' => 'TUTOR1',
+            'nombre' => 'Anna',
+            'sustituye_a' => null,
+        ]);
+        DB::table('grupos')->insert([
+            'codigo' => 'G1',
+            'nombre' => 'Grup 1',
+            'idCiclo' => 1,
+            'tutor' => 'TUTOR1',
+        ]);
+        DB::table('tutorias')->insert([
+            [
+                'id' => 21,
+                'descripcion' => 'Tutoria finalitzada',
+                'grupos' => 0,
+                'desde' => '2026-09-01',
+                'hasta' => '2026-09-29',
+            ],
+            [
+                'id' => 22,
+                'descripcion' => 'Tutoria futura',
+                'grupos' => 0,
+                'desde' => '2026-10-01',
+                'hasta' => '2026-10-31',
+            ],
+            [
+                'id' => 23,
+                'descripcion' => 'Tutoria que acaba hui',
+                'grupos' => 0,
+                'desde' => '2026-09-01',
+                'hasta' => '2026-09-30',
+            ],
+        ]);
+
+        $notifications = Mockery::mock(NotificationService::class);
+        $notifications->shouldReceive('send')
+            ->once()
+            ->with(
+                'TUTOR1',
+                Mockery::on(static fn (string $message): bool => str_contains($message, 'Tutoria que acaba hui')),
+                '/tutoria/23/anexo',
+                'Sistema'
+            );
+        $this->app->instance(NotificationService::class, $notifications);
+
+        $this->artisan('tutories:notifica-feedback-pendent')
+            ->expectsOutput("S'han enviat 1 avisos de feedback pendent.")
+            ->assertSuccessful();
+
+        $this->assertDatabaseCount('tutoria_feedback_notifications', 1);
+        $this->assertDatabaseHas('tutoria_feedback_notifications', [
+            'idTutoria' => 23,
+            'idGrupo' => 'G1',
+        ]);
+    }
+
     private function createSchema(): void
     {
         Schema::create('ciclos', function (Blueprint $table): void {
@@ -126,6 +187,7 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
             $table->increments('id');
             $table->string('descripcion');
             $table->unsignedTinyInteger('grupos')->default(0);
+            $table->date('desde');
             $table->date('hasta');
         });
         Schema::create('tutorias_grupos', function (Blueprint $table): void {

@@ -82,7 +82,8 @@ class TutoriaFeedbackService
             ->startOfWeek(Carbon::MONDAY)
             ->toDateString();
         $tutories = Tutoria::query()
-            ->whereDate('hasta', '<', $today->format('Y-m-d'))
+            ->whereDate('desde', '<=', $today->format('Y-m-d'))
+            ->whereDate('hasta', '>=', $today->format('Y-m-d'))
             ->get();
 
         if ($tutories->isEmpty()) {
