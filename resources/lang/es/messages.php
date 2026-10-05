@@ -190,6 +190,8 @@ return array(
         'itaca' => 'Pasar datos a Itaca',
     ),
     'menu' => array(
+        'convalidar' => 'Convalidar',
+        'ResultatsXml' => 'Resultados de convalidaciones',
         'Link' => 'Enlaces externos',
         'Edit' => 'Docencia',
         'Institution' => 'Tutor',

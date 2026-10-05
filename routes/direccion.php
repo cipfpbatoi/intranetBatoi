@@ -103,3 +103,29 @@ Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'Panel
 
 Route::view('/guardia/control', 'guardias.control');
 Route::view('/calendari',  'calendari.escolar');
+
+Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
+    Route::get('/', ['as' => 'direction.index', 'uses' => 'DireccionConvalidacioController@index']);
+    Route::put('/acces-alumnat', ['as' => 'direction.access', 'uses' => 'DireccionConvalidacioController@access']);
+    Route::delete('/{sollicitud}', ['as' => 'direction.destroy', 'uses' => 'DireccionConvalidacioController@destroy']);
+    Route::get('/regles', ['as' => 'direction.rules.index', 'uses' => 'DireccionConvalidacioReglesController@index']);
+    Route::post('/regles', ['as' => 'direction.rules.store', 'uses' => 'DireccionConvalidacioReglesController@store']);
+    Route::post('/regles/aplicar', ['as' => 'direction.rules.apply', 'uses' => 'DireccionConvalidacioReglesController@apply']);
+    Route::get('/angles', ['as' => 'direction.angles.index', 'uses' => 'DireccionConvalidacioAnglesController@index']);
+    Route::post('/angles/importar', ['as' => 'direction.angles.import', 'uses' => 'DireccionConvalidacioAnglesController@import']);
+    Route::get('/angles/crear', ['as' => 'direction.angles.create', 'uses' => 'DireccionConvalidacioAnglesController@create']);
+    Route::post('/angles', ['as' => 'direction.angles.store', 'uses' => 'DireccionConvalidacioAnglesController@store']);
+    Route::get('/angles/{correspondencia}/editar', ['as' => 'direction.angles.edit', 'uses' => 'DireccionConvalidacioAnglesController@edit']);
+    Route::put('/angles/{correspondencia}', ['as' => 'direction.angles.update', 'uses' => 'DireccionConvalidacioAnglesController@update']);
+    Route::delete('/angles/{correspondencia}', ['as' => 'direction.angles.destroy', 'uses' => 'DireccionConvalidacioAnglesController@destroy']);
+    Route::prefix('xml')->name('direction.xml.')->group(function () {
+        Route::get('/', ['as' => 'index', 'uses' => 'DireccionConvalidacioXmlController@index']);
+        Route::post('/', ['as' => 'store', 'uses' => 'DireccionConvalidacioXmlController@store']);
+        Route::delete('/{fitxer}', ['as' => 'destroy', 'uses' => 'DireccionConvalidacioXmlController@destroy']);
+    });
+    Route::get('/documents/{convalidacio}', ['as' => 'direction.download', 'uses' => 'DireccionConvalidacioController@download']);
+    Route::get('/documents/{convalidacio}/prl', ['as' => 'direction.download-prl', 'uses' => 'DireccionConvalidacioController@downloadPrl']);
+    Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'direction.download-attachment', 'uses' => 'DireccionConvalidacioController@downloadAttachment']);
+    Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
+    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);
+});

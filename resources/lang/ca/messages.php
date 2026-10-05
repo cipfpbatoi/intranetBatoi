@@ -192,6 +192,8 @@ return array(
 
     ),
     'menu' => array(
+        'convalidar' => 'Convalidar',
+        'ResultatsXml' => 'Resultats de convalidacions',
         'Link' => 'Enllaços externs',
         'Edit' => 'Docència',
         'Institution' => 'Tutoria',

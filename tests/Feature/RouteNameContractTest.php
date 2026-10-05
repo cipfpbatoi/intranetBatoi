@@ -119,4 +119,28 @@ class RouteNameContractTest extends TestCase
             $this->assertNotContains('GET', $route->methods());
         }
     }
+
+    public function test_rutes_de_convalidacions_separen_alumnat_i_direccio(): void
+    {
+        $alumno = Route::getRoutes()->getByName('convalidacions.index');
+        $direccion = Route::getRoutes()->getByName('convalidacions.direction.index');
+
+        $this->assertSame('/alumno/convalidacions', route('convalidacions.index', absolute: false));
+        $this->assertSame('/direccion/convalidacions', route('convalidacions.direction.index', absolute: false));
+        $this->assertContains('role:alumno', $alumno->gatherMiddleware());
+        $this->assertContains('role:direccion', $direccion->gatherMiddleware());
+        $this->assertNotContains('role:alumno', $direccion->gatherMiddleware());
+
+        foreach (['convalidacions.index', 'convalidacions.create', 'convalidacions.store', 'convalidacions.download', 'convalidacions.correct', 'convalidacions.show'] as $name) {
+            $this->assertContains('convalidacions.alumne.access', Route::getRoutes()->getByName($name)->gatherMiddleware());
+        }
+
+        foreach (['convalidacions.direction.access', 'convalidacions.direction.destroy'] as $name) {
+            $this->assertContains('role:direccion', Route::getRoutes()->getByName($name)->gatherMiddleware());
+        }
+
+        $accessForm = Route::getRoutes()->getByName('convalidacions.access');
+        $this->assertContains('role:alumno', $accessForm->gatherMiddleware());
+        $this->assertNotContains('convalidacions.alumne.access', $accessForm->gatherMiddleware());
+    }
 }

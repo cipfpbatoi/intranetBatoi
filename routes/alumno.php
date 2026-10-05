@@ -17,3 +17,20 @@ Route::get('/A3',['as' => 'signatura.alumne','uses' => 'SignaturaAlumneControlle
 Route::post('/A3/upload',['as' => 'signatura.alumne.upload','uses' => 'SignaturaAlumneController@uploadPost']);
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
+
+Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
+    Route::get('/acces', ['as' => 'access', 'uses' => 'AlumnoConvalidacioController@accessForm']);
+    Route::post('/acces', ['as' => 'unlock', 'uses' => 'AlumnoConvalidacioController@unlock'])->middleware('throttle:6,1');
+
+    Route::middleware('convalidacions.alumne.access')->group(function () {
+        Route::get('/', ['as' => 'index', 'uses' => 'AlumnoConvalidacioController@index']);
+        Route::get('/create', ['as' => 'create', 'uses' => 'AlumnoConvalidacioController@create']);
+        Route::post('/', ['as' => 'store', 'uses' => 'AlumnoConvalidacioController@store']);
+        Route::get('/documents/{convalidacio}', ['as' => 'download', 'uses' => 'AlumnoConvalidacioController@download']);
+        Route::get('/documents/{convalidacio}/prl', ['as' => 'download-prl', 'uses' => 'AlumnoConvalidacioController@downloadPrl']);
+        Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'download-attachment', 'uses' => 'AlumnoConvalidacioController@downloadAttachment']);
+        Route::put('/{convalidacio}/adjunt/{document}', ['as' => 'correct-attachment', 'uses' => 'AlumnoConvalidacioController@correctAttachment']);
+        Route::put('/{convalidacio}/document', ['as' => 'correct', 'uses' => 'AlumnoConvalidacioController@correct']);
+        Route::get('/{sollicitud}', ['as' => 'show', 'uses' => 'AlumnoConvalidacioController@show']);
+    });
+});

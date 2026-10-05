@@ -76,5 +76,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'role' => \Intranet\Http\Middleware\RoleMiddleware::class,
         'owner' => \Intranet\Http\Middleware\OwnerMiddleware::class,
+        'convalidacions.alumne.access' => \Intranet\Http\Middleware\ConvalidacioAlumnoAccessMiddleware::class,
     ];
 }
