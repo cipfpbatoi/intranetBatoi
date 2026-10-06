@@ -20,12 +20,24 @@ Especificació del seguiment de feedback de tutories i dels avisos interns als t
 **When** es calcula el progrés o els pendents  
 **Then** s'aplica la correspondència `0` tots, `1` grau mitjà i `2` grau superior.
 
-## ✅ Escenari 4: avís setmanal després del termini
+## ✅ Escenari 4: avís setmanal durant el període actiu
 
-**Given** una tutoria finalitzada i un grup aplicable sense feedback vàlid
+**Given** una tutoria activa i un grup aplicable sense feedback vàlid
 **When** s'executa la comprovació programada del divendres
 **Then** el tutor rep una notificació interna amb enllaç al formulari de feedback
 **And** no s'envia cap correu electrònic.
+
+## ✅ Escenari 7: tutoria encara no iniciada
+
+**Given** una tutoria amb `desde` posterior a hui
+**When** s'executa la comprovació programada del divendres
+**Then** no s'envia cap avís de feedback pendent.
+
+## ✅ Escenari 8: tutoria finalitzada
+
+**Given** una tutoria amb `hasta` anterior a hui
+**When** s'executa la comprovació programada del divendres
+**Then** no s'envia cap avís de feedback pendent.
 
 ## ✅ Escenari 5: execució idempotent dins de la setmana
 
@@ -44,6 +56,6 @@ Especificació del seguiment de feedback de tutories i dels avisos interns als t
 
 - Un feedback només és vàlid si conserva text després d'eliminar HTML, entitats i espais invisibles.
 - El mateix conjunt de grups aplicables s'utilitza en la graella i en els avisos.
-- Les tutories amb `hasta` anterior a hui es revisen els divendres a les 07:15.
+- Les tutories actives, amb `desde` anterior o igual a hui i `hasta` posterior o igual a hui, es revisen els divendres a les 07:15.
 - Els grups sense tutor compten en el progrés, però no generen notificació.
 - La unicitat de l'avís es garanteix en base de dades per tutoria, grup i setmana.
