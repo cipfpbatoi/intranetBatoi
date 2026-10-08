@@ -6,6 +6,7 @@ namespace Intranet\Application\Convalidacio;
 
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Convalidacio;
+use Intranet\Entities\Departamento;
 use Intranet\Entities\Profesor;
 
 /** Avalua i aplica les regles del catàleg sobre sol·licituds ja presentades. */
@@ -172,6 +173,7 @@ class ConvalidacioAutomaticaService
                         'origen' => $peticio->origen,
                         'resultat_origen' => [
                             'modul' => $peticio->modulo_origen_codigo,
+                            'coincidencia_codi_origen' => $cas['resultat_origen']['coincidencia_codi_origen'] ?? null,
                             'nom_modul_val' => $peticio->modulo_origen_nombre_val,
                             'nom_modul_cas' => $peticio->modulo_origen_nombre_cas,
                             'cicle' => $peticio->ciclo_origen_codigo,
@@ -257,8 +259,11 @@ class ConvalidacioAutomaticaService
             return ['resultat_origen' => null, 'motiu' => 'La regla inclou una condició encara no implementada.'];
         }
 
+        $coincidenciaCodiOrigen = isset($source['code'])
+            ? $this->coincidenciaCodiOrigen((string) $source['code'], $peticio)
+            : null;
         $coincideix = isset($source['code'])
-            ? (string) $source['code'] === (string) $peticio->modulo_origen_codigo
+            ? $coincidenciaCodiOrigen !== null
             : $this->nomCoincideixExacte((string) ($source['name'] ?? ''), $peticio);
         if (!$coincideix) {
             return ['resultat_origen' => null, 'motiu' => 'sense_coincidencia'];
@@ -298,6 +303,7 @@ class ConvalidacioAutomaticaService
         return [
             'resultat_origen' => [
                 'modul' => $peticio->modulo_origen_codigo,
+                'coincidencia_codi_origen' => $coincidenciaCodiOrigen,
                 'nom_modul_val' => $peticio->modulo_origen_nombre_val,
                 'nom_modul_cas' => $peticio->modulo_origen_nombre_cas,
                 'cicle' => $peticio->ciclo_origen_codigo,
@@ -310,6 +316,48 @@ class ConvalidacioAutomaticaService
             ],
             'correspondencia_angles' => $correspondenciaAngles,
             'motiu' => null,
+        ];
+    }
+
+    /**
+     * Comprova el codi literal o la forma base + abreviatura XML de la família d'origen.
+     *
+     * @return array{tipus:string,codi_regla:string,codi_origen:string,abreviatura_familia:?string}|null
+     */
+    private function coincidenciaCodiOrigen(string $codiRegla, Convalidacio $peticio): ?array
+    {
+        $codiOrigen = (string) $peticio->modulo_origen_codigo;
+        if ($codiOrigen === $codiRegla) {
+            return [
+                'tipus' => 'exacta',
+                'codi_regla' => $codiRegla,
+                'codi_origen' => $codiOrigen,
+                'abreviatura_familia' => null,
+            ];
+        }
+
+        if (!in_array($codiRegla, ['1708', '1664', '1665'], true)) {
+            return null;
+        }
+
+        $codigoFamiliaOrigen = (string) ($peticio->familia_professional_codigo ?? '');
+        if ($codigoFamiliaOrigen === '') {
+            return null;
+        }
+
+        $abreviaturaFamilia = Departamento::query()
+            ->where('codigo_xml', $codigoFamiliaOrigen)
+            ->value('abreviatura_xml');
+        if (!is_string($abreviaturaFamilia) || $abreviaturaFamilia === ''
+            || $codiOrigen !== $codiRegla . $abreviaturaFamilia) {
+            return null;
+        }
+
+        return [
+            'tipus' => 'codi_base_i_abreviatura_familia',
+            'codi_regla' => $codiRegla,
+            'codi_origen' => $codiOrigen,
+            'abreviatura_familia' => $abreviaturaFamilia,
         ];
     }
 

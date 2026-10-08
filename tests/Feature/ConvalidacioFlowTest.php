@@ -1020,7 +1020,10 @@ YAML;
             'tipo' => 1,
             'normativa' => 'LFP',
         ]);
-        DB::table('departamentos')->where('id', 24)->update(['codigo_xml' => 'FAMILIA']);
+        DB::table('departamentos')->where('id', 24)->update([
+            'codigo_xml' => 'FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
         DB::table('grupos')->insert(['codigo' => 'GM-ACT', 'nombre' => 'Grup GM']);
         DB::table('alumnos_grupos')->insert([
             ['idAlumno' => $this->alumno->nia, 'idGrupo' => 'GM-ACT'],
@@ -1053,12 +1056,12 @@ YAML;
     <contenido curso="CURS-GS" codigo="CV0003" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
     <contenido curso="CURS-GM" codigo="0156" nombre_val="Anglés professional GM" nombre_cas="Inglés profesional GM"/>
     <contenido curso="CURS-GM" codigo="CV0001" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
-    <contenido curso="CURS-GM" codigo="1708" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
+    <contenido curso="CURS-GM" codigo="1708130" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
   </contenidos>
   <calificaciones>
     <calificacion alumno="12345678" curso="CURS-GS" contenido="0179" evaluacion="FI" nota_numerica="7"/>
     <calificacion alumno="12345678" curso="CURS-GM" contenido="0156" evaluacion="FI" nota_numerica="8"/>
-    <calificacion alumno="12345678" curso="CURS-GM" contenido="1708" evaluacion="FI" nota_numerica="9"/>
+    <calificacion alumno="12345678" curso="CURS-GM" contenido="1708130" evaluacion="FI" nota_numerica="9"/>
     <calificacion alumno="87654321" curso="CURS-GS" contenido="CV0003" evaluacion="FI" nota_numerica="6"/>
     <calificacion alumno="87654321" curso="CURS-GM" contenido="CV0001" evaluacion="FI" nota_numerica="8"/>
   </calificaciones>
@@ -1069,7 +1072,7 @@ XML);
         $this->service->tramitar($this->alumno, 'sollicitud-automatica-jo', [
             ['modulo_destino_id' => '0156', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0156')],
             ['modulo_destino_id' => '0179', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0179')],
-            ['modulo_destino_id' => '1708', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1708')],
+            ['modulo_destino_id' => '1708', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1708130')],
         ]);
         $resultatsAltreAlumne = app(ResultatsAcademicsXmlService::class)->aprovats('87654321');
         $altreAlumne = Alumno::query()->findOrFail('87654321');
@@ -1088,6 +1091,32 @@ XML);
         $this->assertContains('0179-from-0179-loe', $ids);
         $this->assertContains('0179-from-cv0003', $ids);
 
+        $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
+        $this->assertSame('1708130', $peticioFamilia->modulo_origen_codigo);
+        DB::table('departamentos')->where('id', 24)->update(['abreviatura_xml' => '190']);
+        $previewAbreviaturaIncorrecta = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertNotContains(
+            '1708-from-1708-gm-same-family',
+            array_column(array_column($previewAbreviaturaIncorrecta['casos'], 'regla'), 'id')
+        );
+        DB::table('departamentos')->where('id', 24)->update(['abreviatura_xml' => '130']);
+        DB::table('departamentos')->insert([
+            'id' => 3,
+            'cliteral' => 'Departamento de otra familia',
+            'vliteral' => 'Departament d’altra família',
+            'familia_professional_val' => 'ALTRA FAMÍLIA',
+            'familia_professional_cas' => 'OTRA FAMILIA',
+            'codigo_xml' => 'ALTRA-FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
+        $peticioFamilia->forceFill(['familia_professional_codigo' => 'ALTRA-FAMILIA'])->save();
+        $previewFamiliaDiferent = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertNotContains(
+            '1708-from-1708-gm-same-family',
+            array_column(array_column($previewFamiliaDiferent['casos'], 'regla'), 'id')
+        );
+        $peticioFamilia->forceFill(['familia_professional_codigo' => 'FAMILIA'])->save();
+
         $director = Profesor::query()->findOrFail('DIR00001');
         $resultat = app(ConvalidacioAutomaticaService::class)->aplicar($director);
         $this->assertSame(['aplicats' => 5, 'ja_existien' => 0, 'errors' => []], $resultat);
@@ -1096,6 +1125,13 @@ XML);
         $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
         $this->assertSame('1708-from-1708-gm-same-family', $peticioFamilia->regla_automatica_id);
         $this->assertSame('FAMILIA', $peticioFamilia->familia_professional_codigo);
+        $this->assertSame('1708130', $peticioFamilia->evidencia_automatica_snapshot['resultat_origen']['modul']);
+        $this->assertSame([
+            'tipus' => 'codi_base_i_abreviatura_familia',
+            'codi_regla' => '1708',
+            'codi_origen' => '1708130',
+            'abreviatura_familia' => '130',
+        ], $peticioFamilia->evidencia_automatica_snapshot['resultat_origen']['coincidencia_codi_origen']);
         $peticioAnglesGs = Convalidacio::query()->where('modulo_origen_codigo', '0179')->firstOrFail();
         $this->assertCount(2, $peticioAnglesGs->regla_automatica_snapshot['equivalent_matching_rules']);
     }
@@ -1150,6 +1186,171 @@ XML);
             $this->assertSame($rule, $peticio->regla_automatica_id);
             $this->assertSame('art. 126.5', $peticio->base_normativa_automatica[0]['reference']);
         }
+    }
+
+    public function test_sufix_de_familia_compost_es_restringix_a_sostenibilitat_i_digitalitzacio(): void
+    {
+        DB::table('departamentos')->where('id', 24)->update([
+            'codigo_xml' => 'FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
+        DB::table('ciclos')->insert([
+            'id' => 3,
+            'ciclo' => 'GM-ACT',
+            'cliteral' => 'Cicle GM matriculat cas',
+            'vliteral' => 'Cicle GM matriculat val',
+            'departamento' => 24,
+            'tipo' => 1,
+            'normativa' => 'LFP',
+        ]);
+        DB::table('grupos')->insert(['codigo' => 'GM-ACT', 'nombre' => 'Grup GM']);
+        DB::table('alumnos_grupos')->insert([
+            'idAlumno' => $this->alumno->nia,
+            'idGrupo' => 'GM-ACT',
+        ]);
+
+        $moduls = ['1708', '1664', '1665', '1709'];
+        DB::table('modulos')->insert(array_map(
+            static fn (string $codigo): array => ['codigo' => $codigo, 'cliteral' => $codigo, 'vliteral' => $codigo],
+            $moduls
+        ));
+        DB::table('modulo_ciclos')->insert([
+            ['id' => 4, 'idModulo' => '1708', 'idCiclo' => 3],
+            ['id' => 5, 'idModulo' => '1664', 'idCiclo' => 3],
+            ['id' => 6, 'idModulo' => '1665', 'idCiclo' => 2],
+            ['id' => 7, 'idModulo' => '1709', 'idCiclo' => 2],
+        ]);
+        DB::table('modulo_grupos')->insert([
+            ['id' => 4, 'idGrupo' => 'GM-ACT', 'idModuloCiclo' => 4],
+            ['id' => 5, 'idGrupo' => 'GM-ACT', 'idModuloCiclo' => 5],
+            ['id' => 6, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 6],
+            ['id' => 7, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 7],
+        ]);
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', <<<'XML'
+<?xml version="1.0"?>
+<centro curso="2025">
+  <cursos>
+    <curso codigo="FAMILIA" padre=" " nombre_val="Família" nombre_cas="Familia"/>
+    <curso codigo="ANT" padre="FAMILIA" nombre_val="Cicle anterior" nombre_cas="Ciclo anterior"/>
+    <curso codigo="ANT-1" padre="ANT" nombre_val="Primer" nombre_cas="Primero"/>
+  </cursos>
+  <contenidos>
+    <contenido curso="ANT-1" codigo="1708130" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
+    <contenido curso="ANT-1" codigo="1664130" nombre_val="Digitalització GM" nombre_cas="Digitalización GM"/>
+    <contenido curso="ANT-1" codigo="1665130" nombre_val="Digitalització GS" nombre_cas="Digitalización GS"/>
+    <contenido curso="ANT-1" codigo="1709130" nombre_val="IPE I" nombre_cas="IPE I"/>
+  </contenidos>
+  <calificaciones>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="1708130" evaluacion="FI" nota_numerica="8"/>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="1664130" evaluacion="FI" nota_numerica="7"/>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="1665130" evaluacion="FI" nota_numerica="6"/>
+    <calificacion alumno="12345678" curso="ANT-1" contenido="1709130" evaluacion="FI" nota_numerica="9"/>
+  </calificaciones>
+</centro>
+XML);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', <<<'YAML'
+version: '0.4'
+metadata:
+  title: Regles de prova de codis compostos
+convalidations:
+  - id: sostenibilitat-gm
+    target: {code: '1708', name: Sostenibilitat GM, level: GM}
+    source: {type: module, code: '1708', name: Sostenibilitat, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.c}]
+  - id: digitalitzacio-gm
+    target: {code: '1664', name: Digitalització GM, level: GM}
+    source: {type: module, code: '1664', name: Digitalització GM, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.b}]
+  - id: digitalitzacio-gs
+    target: {code: '1665', name: Digitalització GS, level: GS}
+    source: {type: module, code: '1665', name: Digitalització GS, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.b}]
+  - id: ipe-i-no-sufix
+    target: {code: '1709', name: IPE I, level: GS}
+    source: {type: module, code: '1709', name: IPE I}
+    proposal: {action: convalidate}
+    resolution: {authority: centre}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.5}]
+YAML);
+
+        $resultats = app(ResultatsAcademicsXmlService::class)->aprovats($this->alumno->nia);
+        $this->service->tramitar($this->alumno, 'codis-compostos-permesos', array_map(
+            function (string $modul) use ($resultats): array {
+                $item = [
+                    'modulo_destino_id' => $modul,
+                    'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                    'resultat_origen_id' => $this->idResultat($resultats, $modul . '130'),
+                ];
+                if ($modul === '1709') {
+                    $item['fol_logse'] = false;
+                }
+
+                return $item;
+            },
+            $moduls
+        ));
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $ids = array_column(array_column($preview['casos'], 'regla'), 'id');
+
+        $this->assertEqualsCanonicalizing(['sostenibilitat-gm', 'digitalitzacio-gm', 'digitalitzacio-gs'], $ids);
+        $this->assertNotContains('ipe-i-no-sufix', $ids);
+    }
+
+    public function test_sostenibilitat_amb_sufix_de_familia_tambe_coincideix_en_grau_superior(): void
+    {
+        DB::table('departamentos')->where('id', 24)->update([
+            'codigo_xml' => 'FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
+        DB::table('modulos')->insert([
+            'codigo' => '1708',
+            'cliteral' => 'Sostenibilitat',
+            'vliteral' => 'Sostenibilitat',
+        ]);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1708', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+
+        $xml = str_replace(
+            ['codigo="ORIG1"', 'contenido="ORIG1"'],
+            ['codigo="1708130"', 'contenido="1708130"'],
+            $this->academicXml()
+        );
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', $xml);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', <<<'YAML'
+version: '0.4'
+metadata:
+  title: Regla de Sostenibilitat GS
+convalidations:
+  - id: sostenibilitat-gs
+    target: {code: '1708', name: Sostenibilitat GS, level: GS}
+    source: {type: module, code: '1708', name: Sostenibilitat, conditions: {same_professional_family: true}}
+    proposal: {action: convalidate}
+    resolution: {authority: centre}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.c}]
+YAML);
+
+        $resultats = app(ResultatsAcademicsXmlService::class)->aprovats($this->alumno->nia);
+        $this->service->tramitar($this->alumno, 'sostenibilitat-composta-gs', [[
+            'modulo_destino_id' => '1708',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->idResultat($resultats, '1708130'),
+        ]]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+
+        $this->assertSame(['sostenibilitat-gs'], array_column(array_column($preview['casos'], 'regla'), 'id'));
     }
 
     public function test_cataleg_yaml_invalid_no_substituix_el_cataleg_actiu(): void
