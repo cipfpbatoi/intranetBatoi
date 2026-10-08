@@ -36,14 +36,16 @@ convalidations:
     target: {code: '1664', name: Digitalització GM, level: GM}
     source: {type: module, code: '1665', name: Digitalització GS, conditions: {same_professional_family: true}}
     proposal: {action: convalidate}
-    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
-    result: null
+    resolution: {authority: centre, automatic: true}
+    result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.b}]
   - id: 1665-from-1665-same-family
     target: {code: '1665', name: Digitalització GS, level: GS}
     source: {type: module, code: '1665', name: Digitalització GS, conditions: {same_professional_family: true}}
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: true}
     result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.b}]
   - id: 1708-from-1708-gm-same-family
     target: {code: '1708', name: Sostenibilitat GM i GS, level: GM_GS}
     source: {type: module, code: '1708', name: Sostenibilitat GM, conditions: {same_professional_family: true}}
@@ -53,10 +55,11 @@ convalidations:
     legal_basis: [{reference: art. 126.3.c}]
   - id: 1708-from-1708-gs-same-family
     target: {code: '1708', name: Sostenibilitat GM i GS, level: GM_GS}
-    source: {type: module, code: '1708', name: Sostenibilitat GS}
+    source: {type: module, code: '1708', name: Sostenibilitat GS, conditions: {same_professional_family: true}}
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: true}
     result: {status: AA, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 126.3.c}]
   - id: 1709-from-fol-gm-loe
     target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
     source: {type: module, name: FOL GM LOE}

@@ -1353,6 +1353,128 @@ YAML);
         $this->assertSame(['sostenibilitat-gs'], array_column(array_column($preview['casos'], 'regla'), 'id'));
     }
 
+    public function test_regles_digitalitzacio_permeten_les_direccions_confirmades_i_rebutgen_gm_a_gs(): void
+    {
+        DB::table('departamentos')->where('id', 24)->update([
+            'codigo_xml' => 'FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
+        DB::table('ciclos')->insert([
+            'id' => 3,
+            'ciclo' => 'GM-ACT',
+            'cliteral' => 'Cicle GM matriculat cas',
+            'vliteral' => 'Cicle GM matriculat val',
+            'departamento' => 24,
+            'tipo' => 1,
+            'normativa' => 'LFP',
+        ]);
+        DB::table('grupos')->insert(['codigo' => 'GM-ACT', 'nombre' => 'Grup GM']);
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => '12345678', 'idGrupo' => 'GM-ACT'],
+            ['idAlumno' => '87654321', 'idGrupo' => 'ACTUAL'],
+            ['idAlumno' => '87654321', 'idGrupo' => 'GM-ACT'],
+        ]);
+        DB::table('modulos')->insert([
+            ['codigo' => '1664', 'cliteral' => 'Digitalització GM', 'vliteral' => 'Digitalització GM'],
+            ['codigo' => '1665', 'cliteral' => 'Digitalització GS', 'vliteral' => 'Digitalització GS'],
+        ]);
+        DB::table('modulo_ciclos')->insert([
+            ['id' => 4, 'idModulo' => '1664', 'idCiclo' => 3],
+            ['id' => 5, 'idModulo' => '1665', 'idCiclo' => 2],
+        ]);
+        DB::table('modulo_grupos')->insert([
+            ['id' => 4, 'idGrupo' => 'GM-ACT', 'idModuloCiclo' => 4],
+            ['id' => 5, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 5],
+        ]);
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', <<<'XML'
+<?xml version="1.0"?>
+<centro curso="2025">
+  <cursos>
+    <curso codigo="FAMILIA" padre=" " nombre_val="Família" nombre_cas="Familia"/>
+    <curso codigo="SRC-GM" padre="FAMILIA" nombre_val="Cicle GM origen" nombre_cas="Ciclo GM origen"/>
+    <curso codigo="SRC-GS" padre="FAMILIA" nombre_val="Cicle GS origen" nombre_cas="Ciclo GS origen"/>
+    <curso codigo="SRC-GM-1" padre="SRC-GM" nombre_val="Primer GM" nombre_cas="Primero GM"/>
+    <curso codigo="SRC-GS-1" padre="SRC-GS" nombre_val="Primer GS" nombre_cas="Primero GS"/>
+  </cursos>
+  <contenidos>
+    <contenido curso="SRC-GM-1" codigo="1664130" nombre_val="Digitalització GM" nombre_cas="Digitalización GM"/>
+    <contenido curso="SRC-GS-1" codigo="1665130" nombre_val="Digitalització GS" nombre_cas="Digitalización GS"/>
+  </contenidos>
+  <calificaciones>
+    <calificacion alumno="12345678" curso="SRC-GM-1" contenido="1664130" evaluacion="FI" nota_numerica="7"/>
+    <calificacion alumno="12345678" curso="SRC-GS-1" contenido="1665130" evaluacion="FI" nota_numerica="8"/>
+    <calificacion alumno="87654321" curso="SRC-GM-1" contenido="1664130" evaluacion="FI" nota_numerica="9"/>
+    <calificacion alumno="87654321" curso="SRC-GS-1" contenido="1665130" evaluacion="FI" nota_numerica="6"/>
+  </calificaciones>
+</centro>
+XML);
+
+        $resultatsJo = app(ResultatsAcademicsXmlService::class)->aprovats('12345678');
+        $sollicitudJo = $this->service->tramitar($this->alumno, 'digitalitzacio-regles-jo', [
+            ['modulo_destino_id' => '1664', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1664130')],
+            ['modulo_destino_id' => '1665', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1665130')],
+        ]);
+        $alumneAltre = Alumno::query()->findOrFail('87654321');
+        $resultatsAltre = app(ResultatsAcademicsXmlService::class)->aprovats('87654321');
+        $sollicitudAltre = $this->service->tramitar($alumneAltre, 'digitalitzacio-regles-altre', [
+            ['modulo_destino_id' => '1664', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsAltre, '1665130')],
+            ['modulo_destino_id' => '1665', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsAltre, '1664130')],
+        ]);
+
+        $automatitzacions = app(ConvalidacioAutomaticaService::class);
+        $preview = $automatitzacions->previsualitzar();
+        $this->assertEqualsCanonicalizing(
+            ['1664-from-1664-same-family', '1665-from-1665-same-family', '1664-from-1665-same-family'],
+            array_column(array_column($preview['casos'], 'regla'), 'id')
+        );
+
+        foreach ([
+            [$sollicitudJo, '1664'],
+            [$sollicitudJo, '1665'],
+            [$sollicitudAltre, '1664'],
+        ] as [$sollicitud, $destinacio]) {
+            $sollicitud->convalidacions()
+                ->where('modulo_destino_id', $destinacio)
+                ->firstOrFail()
+                ->forceFill(['familia_professional_codigo' => 'ALTRA-FAMILIA'])
+                ->save();
+        }
+
+        $previewFamiliaDiferent = $automatitzacions->previsualitzar();
+        $this->assertSame([], $previewFamiliaDiferent['casos']);
+
+        foreach ([
+            [$sollicitudJo, '1664'],
+            [$sollicitudJo, '1665'],
+            [$sollicitudAltre, '1664'],
+        ] as [$sollicitud, $destinacio]) {
+            $sollicitud->convalidacions()
+                ->where('modulo_destino_id', $destinacio)
+                ->firstOrFail()
+                ->forceFill(['familia_professional_codigo' => 'FAMILIA'])
+                ->save();
+        }
+
+        $this->assertSame(['aplicats' => 3, 'ja_existien' => 0, 'errors' => []], $automatitzacions->aplicar(Profesor::query()->findOrFail('DIR00001')));
+
+        foreach ([
+            [$sollicitudJo, '1664', '1664-from-1664-same-family', 7.0],
+            [$sollicitudJo, '1665', '1665-from-1665-same-family', 8.0],
+            [$sollicitudAltre, '1664', '1664-from-1665-same-family', 6.0],
+        ] as [$sollicitud, $destinacio, $regla, $nota]) {
+            $peticio = $sollicitud->convalidacions()->where('modulo_destino_id', $destinacio)->firstOrFail();
+            $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+            $this->assertSame('AA', $peticio->resultat_automatic);
+            $this->assertSame($nota, $peticio->nota_resultat_automatic);
+            $this->assertSame($regla, $peticio->regla_automatica_id);
+            $this->assertSame('art. 126.3.b', $peticio->base_normativa_automatica[0]['reference']);
+        }
+
+        $noValida = $sollicitudAltre->convalidacions()->where('modulo_destino_id', '1665')->firstOrFail();
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $noValida->estat);
+        $this->assertNull($noValida->regla_automatica_id);
+    }
+
     public function test_cataleg_yaml_invalid_no_substituix_el_cataleg_actiu(): void
     {
         $manager = app(ConvalidacioReglesManager::class);
