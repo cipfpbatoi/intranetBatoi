@@ -168,7 +168,14 @@ class PerfilController extends Perfil
         }
     }
 
-    private function updateSignature(PerfilFilesRequest $request, Profesor $profesor)
+    /**
+     * Guarda la rúbrica i, si falta la foto de perfil, en genera una còpia.
+     *
+     * @param PerfilFilesRequest $request
+     * @param Profesor $profesor
+     * @return void
+     */
+    private function updateSignature(PerfilFilesRequest $request, Profesor $profesor): void
     {
         if (!$request->hasFile('signatura')) {
             return;
@@ -180,9 +187,41 @@ class PerfilController extends Perfil
             return;
         }
 
-        // Si vols guardar-ho amb el mateix nom que la foto (segons el teu codi original):
-        ImageService::toPng($signatura, storage_path('app/public/signatures/' . $profesor->foto));
-        Alert::info('Signatura guardada amb èxit');
+        $newPhoto = null;
+
+        try {
+            if (empty($profesor->foto)) {
+                $newPhoto = basename(ImageService::newPhotoCarnet(
+                    $signatura,
+                    storage_path('app/public/fotos')
+                ));
+            }
+
+            $fileName = $newPhoto ?? basename((string) $profesor->foto);
+            ImageService::toPng(
+                $signatura,
+                storage_path('app/public/signatures/' . $fileName)
+            );
+
+            if ($newPhoto !== null) {
+                $profesor->foto = $newPhoto;
+                $profesor->save();
+            }
+
+            Alert::info('Signatura guardada amb èxit');
+        } catch (\RuntimeException $e) {
+            if ($newPhoto !== null) {
+                @unlink(storage_path('app/public/fotos/' . $newPhoto));
+                @unlink(storage_path('app/public/signatures/' . $newPhoto));
+            }
+
+            report($e);
+            Log::error('Error actualitzant la rúbrica del professor.', [
+                'professor_id' => $profesor->dni ?? null,
+                'error' => $e->getMessage(),
+            ]);
+            Alert::info($e->getMessage());
+        }
     }
 
     private function updatePeu(PerfilFilesRequest $request, Profesor $profesor)

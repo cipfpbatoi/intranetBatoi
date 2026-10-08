@@ -182,6 +182,83 @@ class PerfilControllerTest extends TestCase
         $this->assertNull(Profesor::on('sqlite')->findOrFail('PROFLOC')->localitat);
     }
 
+    public function test_rubrica_genera_foto_quan_el_professor_no_en_te(): void
+    {
+        $this->requireGd();
+        $profesor = $this->createProfesor('PROFRUB1', (int) config('roles.rol.profesor'));
+
+        $this->uploadProfileFiles($profesor, [
+            'signatura' => UploadedFile::fake()->image('rubrica.png', 200, 80),
+        ]);
+
+        $fresh = Profesor::on('sqlite')->findOrFail($profesor->dni);
+        $this->assertNotEmpty($fresh->foto);
+        $this->assertFileExists(storage_path('app/public/fotos/' . $fresh->foto));
+        $this->assertFileExists(storage_path('app/public/signatures/' . $fresh->foto));
+
+        $this->deleteProfileAssets($fresh->foto);
+    }
+
+    public function test_rubrica_no_modifica_una_foto_existent(): void
+    {
+        $this->requireGd();
+        $profesor = $this->createProfesor('PROFRUB2', (int) config('roles.rol.profesor'));
+        $profesor->foto = 'foto-existent.png';
+        $profesor->save();
+
+        $this->uploadProfileFiles($profesor, [
+            'signatura' => UploadedFile::fake()->image('rubrica.png', 200, 80),
+        ]);
+
+        $fresh = Profesor::on('sqlite')->findOrFail($profesor->dni);
+        $this->assertSame('foto-existent.png', $fresh->foto);
+        $this->assertFileExists(storage_path('app/public/signatures/foto-existent.png'));
+
+        $this->deleteProfileAssets($fresh->foto);
+    }
+
+    public function test_foto_i_rubrica_pujades_juntes_es_guarden_separadament(): void
+    {
+        $this->requireGd();
+        $profesor = $this->createProfesor('PROFRUB3', (int) config('roles.rol.profesor'));
+
+        $this->uploadProfileFiles($profesor, [
+            'foto' => UploadedFile::fake()->image('foto.png', 180, 240),
+            'signatura' => UploadedFile::fake()->image('rubrica.png', 220, 70),
+        ]);
+
+        $fresh = Profesor::on('sqlite')->findOrFail($profesor->dni);
+        $photoSize = getimagesize(storage_path('app/public/fotos/' . $fresh->foto));
+        $signatureSize = getimagesize(storage_path('app/public/signatures/' . $fresh->foto));
+        $this->assertSame([68, 90], [$photoSize[0], $photoSize[1]]);
+        $this->assertSame([220, 70], [$signatureSize[0], $signatureSize[1]]);
+
+        $this->deleteProfileAssets($fresh->foto);
+    }
+
+    public function test_una_foto_posterior_conserva_la_rubrica_amb_el_nom_nou(): void
+    {
+        $this->requireGd();
+        $profesor = $this->createProfesor('PROFRUB4', (int) config('roles.rol.profesor'));
+
+        $this->uploadProfileFiles($profesor, [
+            'signatura' => UploadedFile::fake()->image('rubrica.png', 200, 80),
+        ]);
+        $oldName = Profesor::on('sqlite')->findOrFail($profesor->dni)->foto;
+
+        $this->uploadProfileFiles($profesor->fresh(), [
+            'foto' => UploadedFile::fake()->image('foto.png', 180, 240),
+        ]);
+
+        $fresh = Profesor::on('sqlite')->findOrFail($profesor->dni);
+        $this->assertNotSame($oldName, $fresh->foto);
+        $this->assertFileDoesNotExist(storage_path('app/public/signatures/' . $oldName));
+        $this->assertFileExists(storage_path('app/public/signatures/' . $fresh->foto));
+
+        $this->deleteProfileAssets($oldName);
+        $this->deleteProfileAssets($fresh->foto);
+    }
+
     public function test_usuari_sense_permis_no_veu_controls_de_rols(): void
     {
         $profesor = $this->createProfesor('PROF002', (int) config('roles.rol.profesor'));
@@ -248,6 +325,7 @@ class PerfilControllerTest extends TestCase
             $table->string('dni')->primary();
             $table->string('email')->nullable();
             $table->string('emailItaca')->nullable();
+            $table->string('foto')->nullable();
             $table->string('password')->nullable();
             $table->string('movil1')->nullable();
             $table->string('movil2')->nullable();
@@ -288,5 +366,40 @@ class PerfilControllerTest extends TestCase
         ]);
 
         return Profesor::on('sqlite')->findOrFail($dni);
+    }
+
+    /** Envia fitxers al formulari del perfil del professor. */
+    private function uploadProfileFiles(Profesor $profesor, array $files): void
+    {
+        $this->withoutMiddleware([RoleMiddleware::class])
+            ->withoutMiddleware([VerifyCsrfToken::class])
+            ->actingAs($profesor, 'profesor')
+            ->from('/files')
+            ->put('/files', $files)
+            ->assertRedirect('/files')
+            ->assertSessionHasNoErrors();
+    }
+
+    /** Elimina els fitxers creats per una prova de perfil. */
+    private function deleteProfileAssets(?string $fileName): void
+    {
+        if (empty($fileName)) {
+            return;
+        }
+
+        foreach (['fotos', 'signatures', 'peus'] as $folder) {
+            $path = storage_path('app/public/' . $folder . '/' . basename($fileName));
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+    }
+
+    /** Omet les proves d'imatge quan GD no està disponible. */
+    private function requireGd(): void
+    {
+        if (!extension_loaded('gd')) {
+            $this->markTestSkipped('GD no disponible en l\'entorn de test.');
+        }
     }
 }
