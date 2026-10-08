@@ -1020,7 +1020,10 @@ YAML;
             'tipo' => 1,
             'normativa' => 'LFP',
         ]);
-        DB::table('departamentos')->where('id', 24)->update(['codigo_xml' => 'FAMILIA']);
+        DB::table('departamentos')->where('id', 24)->update([
+            'codigo_xml' => 'FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
         DB::table('grupos')->insert(['codigo' => 'GM-ACT', 'nombre' => 'Grup GM']);
         DB::table('alumnos_grupos')->insert([
             ['idAlumno' => $this->alumno->nia, 'idGrupo' => 'GM-ACT'],
@@ -1053,12 +1056,12 @@ YAML;
     <contenido curso="CURS-GS" codigo="CV0003" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
     <contenido curso="CURS-GM" codigo="0156" nombre_val="Anglés professional GM" nombre_cas="Inglés profesional GM"/>
     <contenido curso="CURS-GM" codigo="CV0001" nombre_val="Anglés tècnic" nombre_cas="Inglés técnico"/>
-    <contenido curso="CURS-GM" codigo="1708" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
+    <contenido curso="CURS-GM" codigo="1708130" nombre_val="Sostenibilitat" nombre_cas="Sostenibilidad"/>
   </contenidos>
   <calificaciones>
     <calificacion alumno="12345678" curso="CURS-GS" contenido="0179" evaluacion="FI" nota_numerica="7"/>
     <calificacion alumno="12345678" curso="CURS-GM" contenido="0156" evaluacion="FI" nota_numerica="8"/>
-    <calificacion alumno="12345678" curso="CURS-GM" contenido="1708" evaluacion="FI" nota_numerica="9"/>
+    <calificacion alumno="12345678" curso="CURS-GM" contenido="1708130" evaluacion="FI" nota_numerica="9"/>
     <calificacion alumno="87654321" curso="CURS-GS" contenido="CV0003" evaluacion="FI" nota_numerica="6"/>
     <calificacion alumno="87654321" curso="CURS-GM" contenido="CV0001" evaluacion="FI" nota_numerica="8"/>
   </calificaciones>
@@ -1069,7 +1072,7 @@ XML);
         $this->service->tramitar($this->alumno, 'sollicitud-automatica-jo', [
             ['modulo_destino_id' => '0156', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0156')],
             ['modulo_destino_id' => '0179', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '0179')],
-            ['modulo_destino_id' => '1708', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1708')],
+            ['modulo_destino_id' => '1708', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->idResultat($resultatsJo, '1708130')],
         ]);
         $resultatsAltreAlumne = app(ResultatsAcademicsXmlService::class)->aprovats('87654321');
         $altreAlumne = Alumno::query()->findOrFail('87654321');
@@ -1088,6 +1091,32 @@ XML);
         $this->assertContains('0179-from-0179-loe', $ids);
         $this->assertContains('0179-from-cv0003', $ids);
 
+        $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
+        $this->assertSame('1708130', $peticioFamilia->modulo_origen_codigo);
+        DB::table('departamentos')->where('id', 24)->update(['abreviatura_xml' => '190']);
+        $previewAbreviaturaIncorrecta = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertNotContains(
+            '1708-from-1708-gm-same-family',
+            array_column(array_column($previewAbreviaturaIncorrecta['casos'], 'regla'), 'id')
+        );
+        DB::table('departamentos')->where('id', 24)->update(['abreviatura_xml' => '130']);
+        DB::table('departamentos')->insert([
+            'id' => 3,
+            'cliteral' => 'Departamento de otra familia',
+            'vliteral' => 'Departament d’altra família',
+            'familia_professional_val' => 'ALTRA FAMÍLIA',
+            'familia_professional_cas' => 'OTRA FAMILIA',
+            'codigo_xml' => 'ALTRA-FAMILIA',
+            'abreviatura_xml' => '130',
+        ]);
+        $peticioFamilia->forceFill(['familia_professional_codigo' => 'ALTRA-FAMILIA'])->save();
+        $previewFamiliaDiferent = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertNotContains(
+            '1708-from-1708-gm-same-family',
+            array_column(array_column($previewFamiliaDiferent['casos'], 'regla'), 'id')
+        );
+        $peticioFamilia->forceFill(['familia_professional_codigo' => 'FAMILIA'])->save();
+
         $director = Profesor::query()->findOrFail('DIR00001');
         $resultat = app(ConvalidacioAutomaticaService::class)->aplicar($director);
         $this->assertSame(['aplicats' => 5, 'ja_existien' => 0, 'errors' => []], $resultat);
@@ -1096,6 +1125,13 @@ XML);
         $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
         $this->assertSame('1708-from-1708-gm-same-family', $peticioFamilia->regla_automatica_id);
         $this->assertSame('FAMILIA', $peticioFamilia->familia_professional_codigo);
+        $this->assertSame('1708130', $peticioFamilia->evidencia_automatica_snapshot['resultat_origen']['modul']);
+        $this->assertSame([
+            'tipus' => 'codi_base_i_abreviatura_familia',
+            'codi_regla' => '1708',
+            'codi_origen' => '1708130',
+            'abreviatura_familia' => '130',
+        ], $peticioFamilia->evidencia_automatica_snapshot['resultat_origen']['coincidencia_codi_origen']);
         $peticioAnglesGs = Convalidacio::query()->where('modulo_origen_codigo', '0179')->firstOrFail();
         $this->assertCount(2, $peticioAnglesGs->regla_automatica_snapshot['equivalent_matching_rules']);
     }
