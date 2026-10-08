@@ -88,6 +88,49 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
         $metaResponse->assertSee('content="'.$bearerToken.'"', false);
     }
 
+    public function test_canvi_password_retorna_error_si_el_correu_no_es_de_professorat(): void
+    {
+        $response = $this->from('/password/reset')
+            ->withoutMiddleware([VerifyCsrfToken::class])
+            ->post('/password/email', [
+                'email' => 'alumne@test.local',
+            ]);
+
+        $response->assertRedirect('/password/reset');
+        $response->assertSessionHasErrors([
+            'email' => 'No s\'ha trobat cap professor amb este correu.',
+        ]);
+        $response->assertSessionHasInput('email', 'alumne@test.local');
+    }
+
+    public function test_canvi_password_reinicia_professor_i_mostra_instruccions(): void
+    {
+        $this->insertProfesor([
+            'dni' => '10203040H',
+            'codigo' => 2007,
+            'email' => 'prof7@test.local',
+            'changePassword' => '2026-01-01',
+        ]);
+
+        $response = $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post('/password/email', [
+                'email' => 'prof7@test.local',
+            ]);
+
+        $response->assertRedirect('/profesor/login');
+        $response->assertSessionHas('status', function (string $message): bool {
+            return str_contains($message, 'codi d\'usuari')
+                && str_contains($message, 'DNI')
+                && str_contains($message, 'contrasenya');
+        });
+        $this->assertNull(DB::table('profesores')->where('codigo', 2007)->value('changePassword'));
+
+        $this->get('/profesor/login')
+            ->assertOk()
+            ->assertSee('Identifica\'t amb el teu codi d\'usuari')
+            ->assertSee('DNI');
+    }
+
     public function test_plogin_mostra_first_login_quan_canvi_password_no_establit_i_dni_coincidix(): void
     {
         $this->insertProfesor([

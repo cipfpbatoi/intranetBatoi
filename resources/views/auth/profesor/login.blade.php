@@ -35,6 +35,11 @@
                     <form method="post" action="{{ url('/profesor/login') }}">
                         <h1>Login Profesor</h1>
                         {!! csrf_field() !!}
+                        @if (session('status'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
                         <div class="form-group">
                             <input type="text" class="form-control {{ $errors->has('codigo') ? 'is-invalid' : '' }}" name="codigo" value="{{ old('codigo') }}" placeholder="Codi o email">
                             <span class="fa fa-envelope form-control-feedback"></span>
