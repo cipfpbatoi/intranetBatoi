@@ -126,6 +126,9 @@ And la generació de l'informe i la comunicació posterior a ITACA són fases se
 - La previsualització i l'aplicació no recorren els XML: contrasten el catàleg YAML amb les dades persistides de cada petició. Els XML només intervenen quan l'alumne selecciona i tramita estudis aprovats al propi centre.
 - Els codis de mòdul són cadenes per preservar zeros inicials. Quan la regla no conté codi d'origen, no s'accepta una coincidència aproximada: només es podrà aplicar si hi ha un identificador de catàleg inequívoc i verificable.
 - Quan una regla inclou codi d'origen, s'accepta sempre la coincidència literal exacta. La forma composta codi base + `departamentos.abreviatura_xml` només s'accepta per als codis `1708` (Sostenibilitat GM/GS), `1664` (Digitalització GM) i `1665` (Digitalització GS), i l'abreviatura ha de pertànyer al departament amb el mateix `codigo_xml` que la família professional d'origen guardada en la petició. No s'accepten prefixos parcials ni sufixos desconeguts. La resolució conserva tant el codi literal com el detall de la coincidència utilitzada.
+- Totes les regles automàtiques de Digitalització i Sostenibilitat exigeixen que la família professional d'origen coincidisca amb la del cicle de matrícula; si no coincideix o no es pot identificar, la regla no s'aplica.
+- Digitalització es convalida amb mateixa família per a `1664` GM → GM, `1665` GS → GS i `1665` GS → `1664` GM; no es convalida `1664` GM → `1665` GS. Els casos vàlids donen `AA`, conserven la nota i registren l'art. `126.3.b`.
+- Sostenibilitat `1708` es convalida en qualsevol direcció GM/GS si la família és la mateixa, amb resultat `AA`, nota conservada i base normativa art. `126.3.c`.
 - Les condicions `same_professional_family` i `minimum_weekly_hours` només es consideren si cada dada es pot obtindre d'una font fiable i documentada. La família del destí prové de la relació autoritativa cicle-departament de la intranet, no de la jerarquia XML.
 - La condició `minimum_weekly_hours: 5` significa almenys 5 hores setmanals (`>= 5`). Per als mòduls d'anglés que poden donar accés a Aprofundiment d'anglés, el cicle d'origen es valida mitjançant una correspondència de cicles de la Comunitat Valenciana que proporcionarà l'usuari.
 - Les regles d'Aprofundiment d'anglés que depenen d'esta correspondència queden pendents fins que s'incorpore; això no bloqueja altres regles d'anglés que no depenguen de les hores ni d'eixa correspondència.
@@ -148,7 +151,7 @@ And la generació de l'informe i la comunicació posterior a ITACA són fases se
 
 ## Riscos i punts a validar
 
-- El YAML actual conté regles sense `legal_basis` (per exemple, algunes entrades de 1665 i 1708); no s'aplicaran fins que s'indique la base normativa o es deshabiliten explícitament amb `enabled: false`.
+- Una regla automàtica sense `legal_basis` no s'aplica; cada regla d'automatització ha d'incloure la seua base normativa explícita.
 - Diverses regles identifiquen l'origen només pel nom, sense codi. Cal un mapa inequívoc contra les dades reals d'ITACA abans d'aplicar-les.
 - Les regles `all_of` que exigixen PRL i les de certificats EOI no es poden verificar només amb les qualificacions XML. No s'inclouran fins que hi haja una font d'evidència explícita; OCR queda fora d'esta fase.
 - Falta rebre la correspondència entre cicles d'origen i les hores setmanals dels mòduls d'anglés a la Comunitat Valenciana. Fins que s'incorpore, només les regles d'Aprofundiment d'anglés que depenen d'esta correspondència quedaran pendents.
