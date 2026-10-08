@@ -57,7 +57,7 @@ When el sistema avalua la regla
 Then només considera la petició elegible si coincidixen el codi del mòdul destí, la identificació de l'origen guardada i totes les condicions comprovables
 
 And les condicions de família comparen la família d'origen amb la família autoritativa del cicle de matrícula actual
-And si el codi del mòdul d'origen és el codi base de la regla més l'abreviatura XML de la família d'origen, es considera coincidència només quan l'abreviatura està guardada per al codi XML d'eixa família
+And per a Sostenibilitat (`1708`) i Digitalització GM (`1664`) o GS (`1665`), el codi d'origen pot ser el codi base més l'abreviatura XML de la família d'origen
 
 And una condició `minimum_weekly_hours: 5` només es complix quan la correspondència del cicle d'origen identifica el mòdul d'anglés amb almenys 5 hores setmanals en la Comunitat Valenciana
 
@@ -125,7 +125,7 @@ And la generació de l'informe i la comunicació posterior a ITACA són fases se
 - Només s'avaluen peticions que formen part d'una sol·licitud presentada per l'alumne i que continuen pendents. El mòdul destí, l'origen aprovat i el context de matrícula s'han validat en tramitar la sol·licitud i es reutilitzen des de la còpia immutable guardada en la petició.
 - La previsualització i l'aplicació no recorren els XML: contrasten el catàleg YAML amb les dades persistides de cada petició. Els XML només intervenen quan l'alumne selecciona i tramita estudis aprovats al propi centre.
 - Els codis de mòdul són cadenes per preservar zeros inicials. Quan la regla no conté codi d'origen, no s'accepta una coincidència aproximada: només es podrà aplicar si hi ha un identificador de catàleg inequívoc i verificable.
-- Quan una regla inclou codi d'origen, s'accepta el codi literal o exactament el codi base concatenat amb `departamentos.abreviatura_xml` del departament que té el mateix `codigo_xml` que la família professional d'origen guardada en la petició. No s'accepten prefixos parcials ni sufixos desconeguts. La resolució conserva tant el codi literal com el detall de la coincidència utilitzada.
+- Quan una regla inclou codi d'origen, s'accepta sempre la coincidència literal exacta. La forma composta codi base + `departamentos.abreviatura_xml` només s'accepta per als codis `1708` (Sostenibilitat GM/GS), `1664` (Digitalització GM) i `1665` (Digitalització GS), i l'abreviatura ha de pertànyer al departament amb el mateix `codigo_xml` que la família professional d'origen guardada en la petició. No s'accepten prefixos parcials ni sufixos desconeguts. La resolució conserva tant el codi literal com el detall de la coincidència utilitzada.
 - Les condicions `same_professional_family` i `minimum_weekly_hours` només es consideren si cada dada es pot obtindre d'una font fiable i documentada. La família del destí prové de la relació autoritativa cicle-departament de la intranet, no de la jerarquia XML.
 - La condició `minimum_weekly_hours: 5` significa almenys 5 hores setmanals (`>= 5`). Per als mòduls d'anglés que poden donar accés a Aprofundiment d'anglés, el cicle d'origen es valida mitjançant una correspondència de cicles de la Comunitat Valenciana que proporcionarà l'usuari.
 - Les regles d'Aprofundiment d'anglés que depenen d'esta correspondència queden pendents fins que s'incorpore; això no bloqueja altres regles d'anglés que no depenguen de les hores ni d'eixa correspondència.

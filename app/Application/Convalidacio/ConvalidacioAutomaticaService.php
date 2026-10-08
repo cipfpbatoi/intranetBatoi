@@ -336,6 +336,10 @@ class ConvalidacioAutomaticaService
             ];
         }
 
+        if (!in_array($codiRegla, ['1708', '1664', '1665'], true)) {
+            return null;
+        }
+
         $codigoFamiliaOrigen = (string) ($peticio->familia_professional_codigo ?? '');
         if ($codigoFamiliaOrigen === '') {
             return null;
