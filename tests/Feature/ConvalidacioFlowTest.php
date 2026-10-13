@@ -743,7 +743,7 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('id="builder-feedback" class="visually-hidden" role="status" aria-live="polite"', false)
             ->assertDontSee('class="alert alert-success"', false)
             ->assertSee('id="revisar-sollicitud"', false)
-            ->assertSee('Revisar sol·licitud')
+            ->assertSee('Enviar sol·licitud')
             ->assertSee('Afegir a la sol·licitud')
             ->assertSee('Tornar i modificar')
             ->assertSee('id="presentar-sollicitud" type="button"', false)

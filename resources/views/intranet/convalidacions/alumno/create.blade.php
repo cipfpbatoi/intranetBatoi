@@ -74,7 +74,7 @@
                         data-bs-target="#revisar-sollicitud-modal"
                         disabled
                     >
-                        Revisar sol·licitud
+                        Enviar sol·licitud
                     </button>
                 </div>
             </div>
