@@ -1,4 +1,11 @@
 @extends('layouts.pdf')
+@section('css')
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+@endsection
 @section('content')
     @foreach ($todos as $elemento)
         @php
