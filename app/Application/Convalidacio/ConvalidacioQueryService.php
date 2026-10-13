@@ -47,6 +47,28 @@ class ConvalidacioQueryService
             ->get();
     }
 
+    /** Retorna totes les capçaleres sense filtrar-les pels estats de les peticions. */
+    public function totesSollicitudsDireccion(): Collection
+    {
+        return SollicitudConvalidacio::query()
+            ->with(['alumno', 'convalidacions.moduloDestino'])
+            ->latest('submitted_at')
+            ->get();
+    }
+
+    /** Retorna una fila per petició, amb filtres aplicats al mòdul concret. */
+    public function peticionsDireccion(array $filters = []): Collection
+    {
+        return Convalidacio::query()
+            ->with(['sollicitud.alumno', 'moduloDestino'])
+            ->when($filters['estat'] ?? null, fn ($query, $estat) => $query->where('estat', $estat))
+            ->when($filters['origen'] ?? null, fn ($query, $origen) => $query->where('origen', $origen))
+            ->when($filters['nia'] ?? null, fn ($query, $nia) => $query->whereHas('sollicitud', fn ($q) => $q->where('alumno_id', $nia)))
+            ->when($filters['modul'] ?? null, fn ($query, $modul) => $query->where('modulo_destino_id', $modul))
+            ->latest('created_at')
+            ->get();
+    }
+
     /** Retorna els mòduls de la matrícula vigent de l'alumne. */
     public function modulsActuals(Alumno $alumno): Collection
     {

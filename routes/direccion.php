@@ -126,5 +126,5 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/documents/{convalidacio}/prl', ['as' => 'direction.download-prl', 'uses' => 'DireccionConvalidacioController@downloadPrl']);
     Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'direction.download-attachment', 'uses' => 'DireccionConvalidacioController@downloadAttachment']);
     Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
-    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);
+    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show'])->whereNumber('sollicitud');
 });

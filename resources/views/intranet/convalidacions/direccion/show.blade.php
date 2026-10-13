@@ -8,6 +8,8 @@
         $sollicitudAutomatica = $sollicitud->convalidacions->contains(fn ($item) => filled($item->regla_automatica_id));
     @endphp
     <h1>{{ $sollicitudAutomatica ? 'Sol·licitud amb resolucions automàtiques' : 'Sol·licitud' }} de {{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</h1>
+    @if (session('warning'))<div class="alert alert-warning" role="alert">{{ session('warning') }}</div>@endif
+    @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
     <p>Tramitada el {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</p>
     <div class="table-responsive">
         <table class="table table-hover align-middle">

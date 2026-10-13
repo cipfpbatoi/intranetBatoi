@@ -8,6 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 use Intranet\Application\Convalidacio\ConvalidacioException;
@@ -19,9 +22,11 @@ use Intranet\Entities\Convalidacio;
 use Intranet\Entities\DocumentConvalidacio;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
+use Intranet\Mail\ConvalidacioEstatActualitzat;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
-/** Pantalles i accions de revisió reservades a Direcció. */
+/** Gestió de Direcció i consultes/registre operatiu per al càrrec de Secretaria. */
 class DireccionConvalidacioController extends Controller
 {
     public function __construct(
@@ -33,28 +38,89 @@ class DireccionConvalidacioController extends Controller
         parent::__construct();
     }
 
-    /** Mostra el panell amb filtres d'estat i origen. */
+    /** Mostra una fila per sol·licitud, sense filtrar capçaleres pels estats dels mòduls. */
     public function index(Request $request): View
     {
-        $filters = $request->validate([
-            'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
-            'origen' => ['nullable', 'string', Rule::in(array_merge(array_keys(Convalidacio::origenOptions()), [Convalidacio::ORIGEN_AUTOMATICA]))],
-        ]);
-        $origens = Convalidacio::origenOptions();
-        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
-
         $preview = $this->automatitzacions->previsualitzar();
 
         return view('intranet.convalidacions.direccion.index', [
-            'sollicituds' => $this->queries->sollicitudsDireccion($filters['estat'] ?? null, $filters['origen'] ?? null),
-            'estats' => Convalidacio::estatOptions(),
-            'origens' => $origens,
-            'filters' => $filters,
+            'sollicituds' => $this->queries->totesSollicitudsDireccion(),
             'accessBlocked' => $this->access->isBlocked(),
             'accessPassword' => (string) config('convalidacions_access.password'),
             'automatitzacions' => $preview['per_sollicitud'],
             'peticionsAutomatiquesElegibles' => count($preview['casos']),
         ]);
+    }
+
+    /** Mostra una fila i estat independents per cada mòdul sol·licitat. */
+    public function moduleRequests(Request $request): View
+    {
+        Gate::forUser($this->profesor())->authorize('viewModuleRequests', Convalidacio::class);
+        $origens = Convalidacio::origenOptions();
+        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
+        $filters = $request->validate([
+            'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
+            'origen' => ['nullable', 'string', Rule::in(array_keys($origens))],
+            'nia' => ['nullable', 'string', 'max:30'],
+            'modul' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        return view('intranet.convalidacions.direccion.moduls', [
+            'peticions' => $this->queries->peticionsDireccion($filters),
+            'estats' => Convalidacio::estatOptions(),
+            'origens' => $origens,
+            'filters' => $filters,
+        ]);
+    }
+
+    /** Genera el PDF de les peticions que coincideixen amb els mateixos filtres del llistat. */
+    public function moduleRequestsPdf(Request $request)
+    {
+        Gate::forUser($this->profesor())->authorize('viewModuleRequests', Convalidacio::class);
+        $origens = Convalidacio::origenOptions();
+        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
+        $filters = $request->validate([
+            'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
+            'origen' => ['nullable', 'string', Rule::in(array_keys($origens))],
+            'nia' => ['nullable', 'string', 'max:30'],
+            'modul' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        return Pdf::loadView('intranet.convalidacions.direccion.moduls-pdf', [
+            'peticions' => $this->queries->peticionsDireccion($filters),
+            'generat' => now(),
+        ])->setPaper('a4', 'landscape')->stream('convalidacions-per-modul.pdf');
+    }
+
+    /** Marca conjuntament com a convalidades en ITACA les peticions encara Acceptada. */
+    public function registerAccepted(Request $request): RedirectResponse
+    {
+        $responsable = $this->profesor();
+        Gate::forUser($responsable)->authorize('registerModuleRequests', Convalidacio::class);
+        $validated = $request->validate([
+            'peticions' => ['required', 'array', 'min:1'],
+            'peticions.*' => ['required', 'integer', 'distinct'],
+        ]);
+
+        try {
+            $peticions = $this->service->registrarAcceptades($validated['peticions'], $responsable);
+        } catch (ConvalidacioException $exception) {
+            return back()->withErrors(['peticions' => $exception->getMessage()]);
+        }
+
+        $errorsCorreu = 0;
+        foreach ($peticions as $peticio) {
+            if (!$this->notificarCanvi($peticio)) {
+                $errorsCorreu++;
+            }
+        }
+
+        $missatge = count($peticions) . ' peticions registrades com a convalidades en ITACA.';
+        if ($errorsCorreu > 0) {
+            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} peticions.");
+        }
+
+        return back()->with('success', $missatge . ' S’ha notificat cada alumne.');
     }
 
     /** Canvia l'accés de proves de l'alumnat. */
@@ -115,12 +181,57 @@ class DireccionConvalidacioController extends Controller
         ]);
 
         try {
-            $this->service->revisar($convalidacio, $this->profesor(), $validated['estat'], $validated['observacions'] ?? null);
+            $peticioActualitzada = $this->service->revisar(
+                $convalidacio,
+                $this->profesor(),
+                $validated['estat'],
+                $validated['observacions'] ?? null
+            );
         } catch (ConvalidacioException $exception) {
             return back()->withErrors(['estat' => $exception->getMessage()]);
         }
 
-        return back()->with('success', 'Petició actualitzada correctament.');
+        if (!$peticioActualitzada->wasChanged(['estat', 'observacions'])) {
+            return back()->with('success', 'La petició no ha canviat; no s’ha enviat cap correu.');
+        }
+
+        $peticioActualitzada->loadMissing(['sollicitud.alumno', 'moduloDestino']);
+        $alumne = $peticioActualitzada->sollicitud?->alumno;
+        if (!$alumne || !filter_var(trim((string) ($alumne->email ?? '')), FILTER_VALIDATE_EMAIL)) {
+            return back()->with('warning', 'La petició s’ha actualitzat, però l’alumne no té una adreça de correu vàlida. No s’ha enviat cap notificació.');
+        }
+        if (!$this->notificarCanvi($peticioActualitzada)) {
+            return back()->with('warning', 'La petició s’ha actualitzat, però no s’ha pogut enviar el correu a l’alumne.');
+        }
+
+        return back()->with('success', 'Petició actualitzada i correu enviat a l’alumne.');
+    }
+
+    /** Envia una notificació individual d'estat i retorna si s'ha pogut enviar. */
+    private function notificarCanvi(Convalidacio $peticio): bool
+    {
+        $peticio->loadMissing(['sollicitud.alumno', 'moduloDestino']);
+        $alumne = $peticio->sollicitud?->alumno;
+        $correu = trim((string) ($alumne?->email ?? ''));
+        if (!$alumne || !filter_var($correu, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        try {
+            Mail::to($correu)->send(new ConvalidacioEstatActualitzat(
+                nomAlumne: filled($alumne->fullName) ? $alumne->fullName : $alumne->nia,
+                modul: $peticio->moduloDestino?->vliteral ?? $peticio->modulo_destino_id,
+                estat: Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat,
+                observacions: $peticio->observacions
+            ));
+        } catch (Throwable $exception) {
+            Log::warning('No s’ha pogut enviar la notificació d’una petició de convalidació.', [
+                'convalidacio_id' => $peticio->id,
+            ]);
+            return false;
+        }
+
+        return true;
     }
 
     /** Descarrega un adjunt autoritzat des del disc privat. */

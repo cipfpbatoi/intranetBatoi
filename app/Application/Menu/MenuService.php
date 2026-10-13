@@ -229,6 +229,16 @@ class MenuService
             }
         }
 
+        if ($nom === 'general'
+            && trim((string) config('avisos.secretario', '')) !== ''
+            && (string) ($user->dni ?? '') === trim((string) config('avisos.secretario'))) {
+            $menu['Convalidacions per mòdul'] = [
+                'url' => route('convalidacions.direction.modules.index'),
+                'class' => 'fa-check-square',
+                'secure' => true,
+            ];
+        }
+
         return $menu;
     }
 

@@ -43,7 +43,13 @@ class ConvalidacioAutomaticaService
         $peticions = Convalidacio::query()
             ->with('sollicitud')
             ->whereNull('regla_automatica_id')
-            ->whereNotIn('estat', [Convalidacio::ESTAT_REALITZADA, Convalidacio::ESTAT_RESOLTA, Convalidacio::ESTAT_DENEGADA])
+            ->whereNotIn('estat', [
+                Convalidacio::ESTAT_REALITZADA,
+                Convalidacio::ESTAT_RESOLTA,
+                Convalidacio::ESTAT_DENEGADA,
+                Convalidacio::ESTAT_ACCEPTADA,
+                Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            ])
             ->whereHas('sollicitud', static fn ($query) => $query->whereNotNull('submitted_at'))
             ->get();
 
