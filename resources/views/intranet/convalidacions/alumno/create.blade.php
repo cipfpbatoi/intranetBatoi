@@ -492,6 +492,16 @@
         description.maxLength = 120;
         description.placeholder = 'Exemples: certificat acadèmic, expedient o certificat PRL';
         description.setAttribute('aria-label', 'Descripció del document');
+        const descriptionError = document.createElement('div');
+        descriptionError.className = 'invalid-feedback';
+        descriptionError.textContent = 'Indica de quin tipus és el document adjunt.';
+        descriptionError.hidden = true;
+        description.addEventListener('input', () => {
+            if (description.value.trim()) {
+                description.classList.remove('is-invalid');
+                descriptionError.hidden = true;
+            }
+        });
         const file = document.createElement('input');
         file.type = 'file';
         file.className = 'form-control';
@@ -512,9 +522,9 @@
             row.remove();
             addDocumentButton.disabled = documentRows.length >= 3;
         });
-        row.append(description, file, remove);
+        row.append(description, descriptionError, file, remove);
         documentsList.appendChild(row);
-        documentRows.push({ row, description, file });
+        documentRows.push({ row, description, descriptionError, file });
         addDocumentButton.disabled = documentRows.length >= 3;
     };
     const buildReview = () => {
@@ -598,8 +608,15 @@
             setError('Adjunta almenys un document per a esta modalitat.');
             return;
         }
-        if (documentRows.some((entry) => entry.file.files.length && !entry.description.value.trim())) {
-            setError('Indica de quin tipus és cada document adjunt.');
+        const documentsWithoutDescription = documentRows.filter(
+            (entry) => entry.file.files.length && !entry.description.value.trim()
+        );
+        if (documentsWithoutDescription.length) {
+            documentsWithoutDescription.forEach((entry) => {
+                entry.description.classList.add('is-invalid');
+                entry.descriptionError.hidden = false;
+            });
+            documentsWithoutDescription[0].description.focus();
             return;
         }
         const isIpeI = moduleId === '1709';
