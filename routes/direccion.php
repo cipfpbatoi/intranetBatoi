@@ -106,6 +106,7 @@ Route::view('/calendari',  'calendari.escolar');
 
 Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/', ['as' => 'direction.index', 'uses' => 'DireccionConvalidacioController@index']);
+    Route::get('/configuracio', ['as' => 'direction.configuracio', 'uses' => 'DireccionConvalidacioController@configuracio']);
     Route::put('/acces-alumnat', ['as' => 'direction.access', 'uses' => 'DireccionConvalidacioController@access']);
     Route::delete('/{sollicitud}', ['as' => 'direction.destroy', 'uses' => 'DireccionConvalidacioController@destroy']);
     Route::get('/regles', ['as' => 'direction.rules.index', 'uses' => 'DireccionConvalidacioReglesController@index']);
@@ -128,5 +129,5 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/documents/{convalidacio}/prl', ['as' => 'direction.download-prl', 'uses' => 'DireccionConvalidacioController@downloadPrl']);
     Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'direction.download-attachment', 'uses' => 'DireccionConvalidacioController@downloadAttachment']);
     Route::put('/peticions/{convalidacio}', ['as' => 'direction.resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
-    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show']);
+    Route::get('/{sollicitud}', ['as' => 'direction.show', 'uses' => 'DireccionConvalidacioController@show'])->whereNumber('sollicitud');
 });

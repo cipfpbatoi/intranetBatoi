@@ -42,6 +42,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->profesorRoutes();
         $this->todosRoutes();
         $this->direccionRoutes();
+        $this->convalidacioModuleRoutes();
         $this->adminRoutes();
         $this->alumnoRoutes();
         $this->consergeRoutes();
@@ -138,6 +139,17 @@ class RouteServiceProvider extends ServiceProvider
             'prefix' => 'direccion'
                 ], function ($router) {
             require base_path('routes/direccion.php');
+        });
+    }
+
+    /** Rutes de consulta i anotació de mòduls accessibles a Direcció i a la Secretaria designada. */
+    protected function convalidacioModuleRoutes()
+    {
+        Route::group([
+            'middleware' => ['web', 'auth:profesor'],
+            'namespace' => $this->namespace,
+        ], function ($router) {
+            require base_path('routes/convalidacions-moduls.php');
         });
     }
 

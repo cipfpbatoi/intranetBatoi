@@ -1,7 +1,7 @@
 # Convalidacions — MVP de sol·licitud i gestió manual
 
 Issue: #323
-Status: ready_to_commit
+Status: ready_for_review
 
 ## Abast
 
@@ -78,7 +78,7 @@ And si la petició es resol com a `Realitzada`, el mòdul continua bloquejat enc
 Given una composició amb una o més peticions vàlides
 When l'alumne confirma «Sí, presentar» després de revisar la sol·licitud
 Then es crea una única capçalera associada a l'alumne autenticat
-And es creen totes les peticions associades inicialment en estat `En procés`
+And es creen totes les peticions associades inicialment en estat `Enviada`
 And l'operació és transaccional i no deixa dades parcials si falla qualsevol part
 And un doble clic o un reintent de la mateixa tramitació no crea capçaleres ni peticions duplicades
 And el sistema mostra una confirmació de la tramitació
@@ -93,7 +93,7 @@ And pot assignar qualsevol estat admés
 And l'observació és obligatòria per a `Denegada`, `Revisar documentació` i `Aportar documentació original a Secretaria`
 And es guarden en la petició l'última persona responsable, la data del canvi i l'observació
 And el canvi no altera l'estat de les altres peticions de la mateixa sol·licitud
-And el panell permet filtrar les sol·licituds pels estats i orígens de les peticions associades
+And el llistat de mòduls permet filtrar per l'estat i l'origen de cada petició
 
 ### Escenari 9: correcció documental i petició terminal
 
@@ -175,6 +175,51 @@ And la descàrrega no canvia ni activa cap versió del catàleg
 But una persona sense rol de Direcció no pot obtindre el fitxer
 And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i no un fitxer buit ni una excepció tècnica
 
+### Escenari 18: notificar per correu cada canvi individual de mòdul
+
+Given una persona de Direcció canvia vàlidament l'estat o l'observació d'una petició
+When el canvi efectiu queda guardat
+Then s'envia un correu a l'alumne titular amb el mòdul afectat, el nou estat i l'observació si n'hi ha
+And la resta de peticions de la sol·licitud no canvien
+And el missatge no inclou adjunts ni informació d'altres mòduls o alumnes
+But si es torna a guardar exactament el mateix estat i observació, no s'envia un altre correu
+And si no hi ha una adreça vàlida o falla l'enviament, es conserva el canvi i Direcció rep un avís
+
+### ✅ Escenari 19: llistats separats de sol·licituds i convalidacions
+
+Given una persona autoritzada de Direcció o Secretaria consulta la gestió de convalidacions
+When obri el llistat de sol·licituds
+Then veu una fila per sol·licitud amb la referència, l'alumne, la data i el nombre de mòduls
+And el llistat no presenta ni filtra per un estat únic de sol·licitud
+When obri el llistat de convalidacions per mòdul
+Then veu una fila per cada mòdul sol·licitat amb l'alumne, el mòdul, l'estat individual i la sol·licitud a què pertany
+And pot filtrar este llistat únicament per l'estat del mòdul
+And el filtre retorna només els mòduls coincidents, sense incloure com a coincidents els altres mòduls de la mateixa sol·licitud
+And no es mostren filtres per origen, NIA ni codi de mòdul
+And Direcció pot obrir la sol·licitud completa per consultar-ne el context
+
+### ✅ Escenari 20: PDF del llistat de convalidacions
+
+Given hi ha un llistat de mòduls per Direcció o Secretaria
+When selecciona «Descarregar PDF» i tria un estat en el diàleg
+Then el document inclou una entrada independent per cada mòdul que coincidix amb els filtres
+And cada entrada identifica l'alumne, el mòdul, el seu estat i la sol·licitud de referència amb la data
+And el PDF manté visibles els estats diferents dels mòduls d'una mateixa sol·licitud
+And el PDF no tracta ni presenta la sol·licitud com si tinguera un estat propi
+And el PDF no incorpora ni exposa els fitxers adjunts de l'alumnat
+And si no se selecciona cap estat, el PDF inclou tots els estats
+And cancel·lar el diàleg no inicia la descàrrega
+
+### Escenari 21: marcar mòduls acceptats com a registrats en ITACA
+
+Given hi ha una o més convalidacions de mòdul en estat `Acceptada`
+When una persona autoritzada de Secretaria o Direcció les marca com a registrades en ITACA
+Then només els mòduls seleccionats passen a `Acceptada (Convalidada)`
+And les altres convalidacions de la mateixa sol·licitud mantenen el seu estat
+And el sistema demana confirmació abans d'aplicar el canvi
+And cada canvi efectiu conserva la traçabilitat i genera la notificació individual prevista
+And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en estat `Acceptada`
+
 ## Regles de negoci
 
 ### Model i composició
@@ -206,23 +251,37 @@ And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i n
 
 - L'estat pertany a cada petició, no a la capçalera de la sol·licitud.
 - Els estats admesos són:
-  1. `En procés`.
-  2. `Realitzada`.
-  3. `Realitzada pendent de revisió`.
-  4. `Denegada`.
-  5. `Revisar documentació`.
-  6. `Aportar documentació original a Secretaria`.
-- `En procés` és l'estat inicial de tota petició tramitada.
+  1. `Enviada`.
+  2. `En procés`.
+  3. `Realitzada`.
+  4. `Realitzada pendent de revisió`.
+  5. `Denegada`.
+  6. `Revisar documentació`.
+  7. `Aportar documentació original a Secretaria`.
+  8. `Resolta` (resolució automàtica).
+  9. `Acceptada`.
+  10. `Acceptada (Convalidada)`.
+- `Enviada` és l'estat inicial de tota petició nova tramitada; els registres anteriors mantenen l'estat que ja tenien.
 - `Realitzada` és terminal i de només consulta.
+- `Acceptada (Convalidada)` és terminal perquè indica que la convalidació ja s'ha gravat en ITACA.
+- `Acceptada` no és terminal i pot passar individualment a `Acceptada (Convalidada)` quan s'haja completat el registre en ITACA.
 - Direcció pot canviar manualment qualsevol petició no terminal a un altre estat admés.
 - L'observació és obligatòria en passar a `Denegada`, `Revisar documentació` o `Aportar documentació original a Secretaria`.
 - Cada petició conserva, com a mínim, l'última persona que ha canviat l'estat, la data del canvi i l'observació.
 - Una mateixa sol·licitud pot contindre peticions en estats diferents.
+- La sol·licitud és una agrupació de peticions i no té un estat únic; les consultes i filtres per estat s'apliquen a cada petició de mòdul.
+- El llistat de sol·licituds mostra una fila per capçalera i no es filtra per estat de mòdul; el llistat de convalidacions mostra una fila per mòdul i és el lloc dels filtres i operacions per estat.
+- La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul, al seu PDF i a l'acció de registre en ITACA; no pot obrir el detall ni gestionar la configuració de Direcció.
+- El llistat per mòdul només es filtra per estat; el PDF operatiu permet triar l'estat en un diàleg i l'opció buida inclou tots els estats. Els PDF sempre identifiquen la sol·licitud d'origen i no incorporen fitxers adjunts.
+- La transició a `Acceptada (Convalidada)` només es pot fer per als mòduls seleccionats que continuen en `Acceptada`; no modifica cap altra petició de la sol·licitud.
+- Cada canvi efectiu d'estat o observació es notifica per correu de manera individual a l'alumne titular; no es crea un estat global de sol·licitud.
+- Desar sense canvis en l'estat ni en l'observació no envia un correu duplicat. Si l'adreça no és vàlida o falla el correu, el canvi ja guardat no es desfà i Direcció rep un avís funcional.
+- Els correus de canvi d'estat no inclouen documents adjunts ni informació de les altres peticions de la sol·licitud.
 
 ### Autorització i seguretat
 
 - L'alumne només pot consultar, tramitar i corregir les seues pròpies sol·licituds i peticions.
-- Direcció és l'únic perfil gestor de l'MVP.
+- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats, PDF i a l'acció de registre en ITACA descrits en els escenaris 19–21, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves.
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
 - El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
@@ -239,6 +298,8 @@ And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i n
 - Entrada «Convalidar» al menú de l'alumnat i panells de presentació, consulta i revisió.
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
 - Gestor privat dels XML acadèmics integrat en el panell de convalidacions de Direcció, sense edició ni descàrrega del contingut.
+- Vistes separades de sol·licituds i convalidacions per mòdul per a Direcció i Secretaria, amb filtres individuals i PDF operatiu a nivell de mòdul.
+- Acció confirmada per marcar els mòduls acceptats seleccionats com a registrats en ITACA.
 - Control persistent del bloqueig d'accés de proves i middleware per protegir totes les rutes d'alumnat de convalidacions.
 - Eliminació de sol·licituds de prova per Direcció amb neteja transaccional de peticions i documents privats.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
@@ -248,10 +309,10 @@ And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i n
 
 - Càlcul automàtic d'equivalències i taules de correspondències.
 - Tasques nocturnes i qualsevol processament automàtic.
-- Aprovació o altres accions massives.
+- Accions massives sobre sol·licituds o sobre estats diferents de la transició seleccionada de mòduls `Acceptada` a `Acceptada (Convalidada)`.
 - OCR, IA, models en la DGX Spark i fine-tuning.
-- Notificacions de panell o correu.
-- Rol o permisos específics de Secretaria.
+- Altres notificacions de panell o correus diferents de l'avís per canvi individual d'estat definit en l'escenari 18.
+- Gestió general de permisos de Secretaria fora dels llistats, PDF i transició d'estat descrits en els escenaris 19–21.
 - Historial complet de transicions.
 - Múltiples documents per petició i versionat documental.
 - Edició o cancel·lació d'una sol·licitud ja tramitada.

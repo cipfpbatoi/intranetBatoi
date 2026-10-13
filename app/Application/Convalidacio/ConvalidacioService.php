@@ -102,7 +102,7 @@ class ConvalidacioService
                         'modulo_origen_es_fol' => $item['modulo_origen_es_fol'] ?? null,
                         'fol_logse_cicle' => $item['fol_logse_cicle'] ?? null,
                         'fol_logse_nivell' => $item['fol_logse_nivell'] ?? null,
-                        'estat' => Convalidacio::ESTAT_EN_PROCES,
+                        'estat' => Convalidacio::ESTAT_ENVIADA,
                     ]);
                     foreach ($item['documents'] ?? [] as $adjunt) {
                         if (!($adjunt['fitxer'] ?? null) instanceof UploadedFile) {
@@ -165,15 +165,52 @@ class ConvalidacioService
                 throw new ConvalidacioException('Una petició realitzada és de només consulta.');
             }
 
+            $observacions = filled($observacions) ? trim((string) $observacions) : null;
+            if ($actual->estat === $estat && $actual->observacions === $observacions) {
+                return $actual;
+            }
+
             $actual->forceFill([
                 'estat' => $estat,
-                'observacions' => filled($observacions) ? trim((string) $observacions) : null,
+                'observacions' => $observacions,
                 'revisat_per' => $revisor->dni,
                 'revisat_at' => now(),
             ])->save();
 
-            return $actual->fresh();
+            return $actual;
         });
+    }
+
+    /** Registra en una sola transacció les peticions Acceptada seleccionades com a anotades a ITACA. */
+    public function registrarAcceptades(array $ids, Profesor $responsable): \Illuminate\Database\Eloquent\Collection
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        if ($ids === []) {
+            throw new ConvalidacioException('Selecciona almenys una petició.');
+        }
+
+        return DB::transaction(function () use ($ids, $responsable): \Illuminate\Database\Eloquent\Collection {
+            $peticions = Convalidacio::query()
+                ->whereIn('id', $ids)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get();
+
+            if ($peticions->count() !== count($ids)
+                || $peticions->contains(fn (Convalidacio $peticio): bool => $peticio->estat !== Convalidacio::ESTAT_ACCEPTADA)) {
+                throw new ConvalidacioException('La selecció ha canviat: només es poden registrar peticions que continuen en estat «Acceptada». No s’ha canviat cap petició.');
+            }
+
+            foreach ($peticions as $peticio) {
+                $peticio->forceFill([
+                    'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+                    'revisat_per' => $responsable->dni,
+                    'revisat_at' => now(),
+                ])->save();
+            }
+
+            return $peticions->load(['sollicitud.alumno', 'moduloDestino']);
+        }, 3);
     }
 
     /** Elimina una sol·licitud de prova i els documents privats associats. */
