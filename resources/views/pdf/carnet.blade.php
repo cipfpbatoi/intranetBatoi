@@ -28,7 +28,7 @@
                 $backgroundColor = 'yellow'; // PAS
             }
         @endphp
-    <div class="page" @if ($loop->last) style="page-break-after: avoid;" @endif>
+    <div class="page" style="page-break-after: auto; @unless ($loop->first) page-break-before: always; @endunless">
         <div class="container col-lg-12" style="margin-bottom: 0px;" >
             <div style="float:left;width:26%;margin-left:15px"><img src="{{public_path('/img/pdf/logo.png')}}" width="60px" height="60px" alt="Logo Insti"/></div>
             <div style="float:left;width:26%;margin-left:15px"><img style="margin: auto" src="{{public_path('img/pdf/conselleria.png')}} " width="125px" height="60px" alt="Logo Conselleria"/></div>
