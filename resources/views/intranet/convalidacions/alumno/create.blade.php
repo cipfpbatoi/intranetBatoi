@@ -282,6 +282,17 @@
     box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
 
+.convalidacio-document-descripcio-missatge {
+    color: #dc3545;
+    display: block;
+    font-size: 0.875em;
+    margin-bottom: 0.5rem;
+}
+
+.convalidacio-document-descripcio-missatge[hidden] {
+    display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .convalidacio-item-nou,
     .convalidacio-comptador-actualitzat {
@@ -498,12 +509,13 @@
         description.placeholder = 'Exemples: certificat acadèmic, expedient o certificat PRL';
         description.setAttribute('aria-label', 'Descripció del document');
         const descriptionError = document.createElement('div');
-        descriptionError.className = 'text-danger small mb-2 d-none';
+        descriptionError.className = 'convalidacio-document-descripcio-missatge';
         descriptionError.textContent = 'Indica de quin tipus és el document adjunt.';
+        descriptionError.hidden = true;
         description.addEventListener('input', () => {
             if (description.value.trim()) {
                 description.classList.remove('convalidacio-document-descripcio-error');
-                descriptionError.classList.replace('d-block', 'd-none');
+                descriptionError.hidden = true;
             }
         });
         const file = document.createElement('input');
@@ -618,7 +630,7 @@
         if (documentsWithoutDescription.length) {
             documentsWithoutDescription.forEach((entry) => {
                 entry.description.classList.add('convalidacio-document-descripcio-error');
-                entry.descriptionError.classList.replace('d-none', 'd-block');
+                entry.descriptionError.hidden = false;
             });
             documentsWithoutDescription[0].description.focus();
             return;
