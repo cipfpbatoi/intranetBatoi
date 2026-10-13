@@ -6,7 +6,6 @@ namespace Tests\Unit\Services;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Services\HR\FitxatgeService;
@@ -33,8 +32,6 @@ class FitxatgeServiceTest extends TestCase
 
     protected function tearDown(): void
     {
-        Carbon::setTestNow();
-
         if ($this->previousRemoteAddr === null) {
             unset($_SERVER['REMOTE_ADDR']);
         } else {
@@ -78,7 +75,6 @@ class FitxatgeServiceTest extends TestCase
     public function test_fitxar_retornar_null_si_ultim_es_menys_de_10_minuts(): void
     {
         $_SERVER['REMOTE_ADDR'] = '10.0.0.2';
-        Carbon::setTestNow(now()->startOfDay()->addHours(12));
 
         DB::table('faltas_profesores')->insert([
             'idProfesor' => 'P102',
