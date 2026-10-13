@@ -75,7 +75,7 @@ Given una o més peticions elegibles dins de sol·licituds ja presentades segons
 
 When Direcció confirma «Aplicar convalidacions automàtiques»
 
-Then cada petició elegible existent passa a l'estat terminal «Resolta»
+Then cada petició elegible existent passa a l'estat «Acceptada»
 
 And conserva la capçalera de sol·licitud, l'origen i els documents originals presentats per l'alumne
 
@@ -133,8 +133,8 @@ And la generació de l'informe i la comunicació posterior a ITACA són fases se
 - La condició `minimum_weekly_hours: 5` significa almenys 5 hores setmanals (`>= 5`). Per als mòduls d'anglés que poden donar accés a Aprofundiment d'anglés, el cicle d'origen es valida mitjançant una correspondència de cicles de la Comunitat Valenciana que proporcionarà l'usuari.
 - Les regles d'Aprofundiment d'anglés que depenen d'esta correspondència queden pendents fins que s'incorpore; això no bloqueja altres regles d'anglés que no depenguen de les hores ni d'eixa correspondència.
 - Els requisits de certificat PRL, EOI o altra documentació no es deduïxen d'un XML d'avaluacions ni del nom d'un mòdul; sense evidència comprovable queden fora de l'aplicació automàtica.
-- `Resolta` és un nou estat terminal per a les convalidacions automàtiques; no canvia ni substituïx els estats del flux manual, inclòs `Realitzada`.
-- Cada convalidació automàtica guarda una instantània completa de la regla YAML, metadades i versió del catàleg, base normativa, dades de matrícula/destí, dades acadèmiques d'origen, criteris aplicats, estat intern `Resolta`, resultat (`AA` o `CO`) i qualificació quan corresponga.
+- Les convalidacions automàtiques passen a `Acceptada`, igual que les resolucions manuals favorables; l'estat no és terminal perquè encara queda el registre posterior en ITACA.
+- Cada convalidació automàtica guarda una instantània completa de la regla YAML, metadades i versió del catàleg, base normativa, dades de matrícula/destí, dades acadèmiques d'origen, criteris aplicats, estat intern `Acceptada`, resultat (`AA` o `CO`) i qualificació quan corresponga.
 - L'aplicació de cada cas és transaccional i idempotent: un error no deixa registres parcials ni una reexecució crea duplicats.
 - L'acció resol la petició existent dins de la sol·licitud presentada; no crea cap capçalera ni cap petició nova, no altera l'origen ni els documents de l'alumne i no modifica matrícula. Tampoc interactua amb ITACA.
 - Les dades i instantànies són privades i només accessibles a Direcció; no s'exposen els XML originals.

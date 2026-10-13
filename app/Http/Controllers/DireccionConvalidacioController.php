@@ -42,13 +42,29 @@ class DireccionConvalidacioController extends Controller
     public function index(Request $request): View
     {
         $preview = $this->automatitzacions->previsualitzar();
+        $filters = $request->validate([
+            'pendent_direccio' => ['nullable', 'boolean'],
+        ]);
+        $sollicituds = $this->queries->totesSollicitudsDireccion();
+        $pendentDireccio = filter_var($filters['pendent_direccio'] ?? false, FILTER_VALIDATE_BOOL);
+
+        if ($pendentDireccio) {
+            $sollicituds = $sollicituds->filter(static fn (SollicitudConvalidacio $sollicitud): bool =>
+                $sollicitud->convalidacions->contains(static fn (Convalidacio $peticio): bool => in_array(
+                    $peticio->estat,
+                    [Convalidacio::ESTAT_ENVIADA, Convalidacio::ESTAT_EN_PROCES],
+                    true
+                ))
+            )->values();
+        }
 
         return view('intranet.convalidacions.direccion.index', [
-            'sollicituds' => $this->queries->totesSollicitudsDireccion(),
+            'sollicituds' => $sollicituds,
             'accessBlocked' => $this->access->isBlocked(),
             'accessPassword' => (string) config('convalidacions_access.password'),
             'automatitzacions' => $preview['per_sollicitud'],
             'peticionsAutomatiquesElegibles' => count($preview['casos']),
+            'filters' => ['pendent_direccio' => $pendentDireccio],
         ]);
     }
 
@@ -161,9 +177,39 @@ class DireccionConvalidacioController extends Controller
 
         return view('intranet.convalidacions.direccion.show', [
             'sollicitud' => $model,
-            'estats' => Convalidacio::estatManualOptions() + [Convalidacio::ESTAT_RESOLTA => Convalidacio::estatOptions()[Convalidacio::ESTAT_RESOLTA]],
+            'estats' => Convalidacio::estatManualOptions(),
             'peticionsElegibles' => $peticionsElegibles,
         ]);
+    }
+
+    /** Inicia la revisió i passa a En procés únicament els mòduls que estaven Enviada. */
+    public function review(SollicitudConvalidacio $sollicitud): RedirectResponse
+    {
+        $revisor = $this->profesor();
+        Gate::forUser($revisor)->authorize('view', $sollicitud);
+
+        $peticions = $this->service->iniciarRevisio($sollicitud, $revisor);
+        if ($peticions->isEmpty()) {
+            return redirect()->route('convalidacions.direction.show', $sollicitud)
+                ->with('success', 'No hi havia cap mòdul en estat Enviada; no s’ha canviat cap estat.');
+        }
+
+        $errorsCorreu = 0;
+        foreach ($peticions as $peticio) {
+            if (!$this->notificarCanvi($peticio)) {
+                $errorsCorreu++;
+            }
+        }
+
+        $quantitat = $peticions->count();
+        $missatge = $quantitat . ' ' . ($quantitat === 1 ? 'mòdul ha passat' : 'mòduls han passat') . ' a En procés.';
+        if ($errorsCorreu > 0) {
+            return redirect()->route('convalidacions.direction.show', $sollicitud)
+                ->with('warning', $missatge . " No s’ha pogut notificar {$errorsCorreu} mòduls.");
+        }
+
+        return redirect()->route('convalidacions.direction.show', $sollicitud)
+            ->with('success', $missatge . ' S’ha notificat l’alumnat.');
     }
 
     /** Canvia l'estat d'una única petició. */
