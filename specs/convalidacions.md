@@ -1,7 +1,7 @@
 # Convalidacions — MVP de sol·licitud i gestió manual
 
 Issue: #323
-Status: ready_for_review
+Status: ready_to_commit
 
 ## Abast
 
@@ -71,7 +71,7 @@ When la petició anterior està en qualsevol estat diferent de `Denegada`
 Then el mòdul no apareix entre els destins disponibles d'una nova sol·licitud
 And el backend rebutja igualment un identificador manipulat que intente tornar-lo a sol·licitar
 But si l'última petició aplicable està `Denegada`, l'alumne pot tornar a sol·licitar el mòdul
-And si la petició es resol com a `Realitzada`, el mòdul continua bloquejat encara que la baixa de matrícula encara no s'haja sincronitzat
+And si la petició es resol com a `Acceptada`, el mòdul continua bloquejat encara que la baixa de matrícula encara no s'haja sincronitzat
 
 ### Escenari 7: tramitació transaccional i idempotent
 
@@ -95,6 +95,21 @@ And es guarden en la petició l'última persona responsable, la data del canvi i
 And el canvi no altera l'estat de les altres peticions de la mateixa sol·licitud
 And el llistat de mòduls permet filtrar per l'estat i l'origen de cada petició
 
+### ✅ Escenari 8a: iniciar la revisió d'una sol·licitud
+
+Given una sol·licitud conté peticions en diferents estats
+When Direcció selecciona «Revisar» des del llistat de sol·licituds
+Then només les peticions que estaven en estat `Enviada` passen a `En procés`
+And les peticions en qualsevol altre estat conserven l'estat, les observacions i la traçabilitat existents
+And s'envia a l'alumne una notificació per cada petició que haja canviat
+
+### ✅ Escenari 8b: identificar les sol·licituds pendents de Direcció
+
+Given Direcció consulta el llistat de sol·licituds
+When activa el filtre «Només amb acció pendent de Direcció»
+Then només veu sol·licituds amb almenys una petició `Enviada` o `En procés`
+And cada fila mostra el recompte total de mòduls pendents i un hint accessible amb el desglossament entre revisió i resolució
+
 ### Escenari 9: correcció documental i petició terminal
 
 Given una petició externa en estat `Revisar documentació`
@@ -102,7 +117,14 @@ When l'alumne consulta l'observació de Direcció, substituïx únicament el fit
 Then el nou document queda en emmagatzematge privat
 And només eixa petició torna a `En procés`
 And no es poden modificar el mòdul destí, l'origen, el tipus ni altres dades ja tramitades
-But si la petició està en estat `Realitzada`, tant l'alumne com Direcció només poden consultar-la i no poden modificar-ne l'estat, les dades ni el document
+But si la petició està en estat `Acceptada (Convalidada)`, tant l'alumne com Direcció només poden consultar-la i no poden modificar-ne l'estat, les dades ni el document
+
+### ✅ Escenari 9a: l'alumne pot actualitzar documents mentre la petició està Enviada
+
+Given una petició de l'alumne està en estat `Enviada`
+When l'alumne substituïx un document adjunt
+Then es conserva l'estat `Enviada` i només canvia el document seleccionat
+And l'alumne no pot modificar la documentació en cap altre estat llevat de `Revisar documentació`
 
 ### ✅ Escenari 10: accés de proves bloquejat per Direcció
 
@@ -128,9 +150,25 @@ And cap persona que no siga de Direcció pot executar l'acció, encara que envie
 
 Given una persona de Direcció consulta les sol·licituds presentades
 When hi ha peticions pendents elegibles segons el YAML actiu
-Then el llistat identifica cada sol·licitud com a «Automàtica», «Parcialment automàtica» o «Revisió manual» segons les peticions pendents
-And mostra el nombre d'elegibles sobre el total pendent
+Then el llistat mostra 🤖 si totes les peticions pendents són elegibles, ✍️ si totes requerixen revisió manual, o 🤖✍️ si la resolució és mixta
+And el hint accessible de cada icona n'explica el significat i els recomptes automàtics i manuals
+And si no hi ha peticions pendents, la cel·la d'automatització queda buida
 And consultar o refrescar el llistat no resol cap petició
+
+### ✅ Escenari 12a: resumir l'acció pendent de Direcció
+
+Given una persona de Direcció consulta el llistat de sol·licituds
+When una sol·licitud té mòduls `Enviada` o `En procés`
+Then la cel·la mostra el recompte total dins d'una etiqueta destacada, sense desglossament textual visible
+And un hint accessible explica quants mòduls estan `Enviada` i quants `En procés`
+And si no hi ha mòduls pendents d'acció, la cel·la queda buida
+And el botó de la fila continua dient «Revisar»
+
+### ✅ Escenari 12b: aplicar immediatament el filtre del llistat
+
+Given Direcció està veient el llistat de sol·licituds
+When canvia el desplegable entre totes les sol·licituds i les que tenen acció pendent
+Then el llistat s'actualitza immediatament sense cap botó «Filtrar»
 
 ### ✅ Escenari 13: aplicar les peticions elegibles des del llistat
 
@@ -228,7 +266,7 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Cada petició correspon a un únic mòdul destí de la matrícula vigent de l'alumne.
 - El mateix mòdul destí no es pot repetir dins d'una mateixa sol·licitud.
 - Un alumne no pot crear una nova petició d'un mòdul si ja en té una anterior en qualsevol estat diferent de `Denegada`.
-- `Denegada` és l'únic estat que torna a habilitar el mòdul per a una nova sol·licitud; `Realitzada` el manté bloquejat fins i tot abans que desaparega de la matrícula.
+- `Denegada` és l'únic estat que torna a habilitar el mòdul per a una nova sol·licitud; `Acceptada` i `Acceptada (Convalidada)` el mantenen bloquejat.
 - El mòdul destí i, quan corresponga, el mòdul aprovat d'origen es validen en backend; no es confia en identificadors enviats pel navegador.
 - La relació conceptual obligatòria és `1 sol·licitud : N peticions`, encara que la nomenclatura tècnica definitiva s'adapte als patrons del projecte.
 - No es poden editar ni cancel·lar sol·licituds ja tramitades, llevat de la substitució documental expressament permesa.
@@ -253,19 +291,20 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Els estats admesos són:
   1. `Enviada`.
   2. `En procés`.
-  3. `Realitzada`.
-  4. `Realitzada pendent de revisió`.
-  5. `Denegada`.
-  6. `Revisar documentació`.
-  7. `Aportar documentació original a Secretaria`.
-  8. `Resolta` (resolució automàtica).
-  9. `Acceptada`.
-  10. `Acceptada (Convalidada)`.
+  3. `Denegada`.
+  4. `Revisar documentació`.
+  5. `Aportar documentació original a Secretaria`.
+  6. `Acceptada`.
+  7. `Acceptada (Convalidada)`.
 - `Enviada` és l'estat inicial de tota petició nova tramitada; els registres anteriors mantenen l'estat que ja tenien.
-- `Realitzada` és terminal i de només consulta.
+- Les peticions antigues en estat `Resolta` es normalitzen a `Acceptada` amb una actualització de dades; no s'elimina cap petició ni sol·licitud. Els estats `Realitzada` i `Realitzada pendent de revisió` deixen d'estar disponibles i no s'inclouen en cap neteja de registres.
 - `Acceptada (Convalidada)` és terminal perquè indica que la convalidació ja s'ha gravat en ITACA.
 - `Acceptada` no és terminal i pot passar individualment a `Acceptada (Convalidada)` quan s'haja completat el registre en ITACA.
 - Direcció pot canviar manualment qualsevol petició no terminal a un altre estat admés.
+- En iniciar la revisió d'una sol·licitud, només les peticions `Enviada` passen a `En procés`; les que ja han avançat no es modifiquen.
+- L'alumnat pot substituir documentació només en `Enviada` o `Revisar documentació`; en el primer cas l'estat es manté, i en el segon torna a `En procés`.
+- El filtre del llistat s'aplica automàticament en canviar el desplegable.
+- El llistat usa una etiqueta destacada per al recompte de mòduls pendents i icones accessibles per al resum de l'automatització; sense accions o peticions pendents, les cel·les corresponents queden buides.
 - L'observació és obligatòria en passar a `Denegada`, `Revisar documentació` o `Aportar documentació original a Secretaria`.
 - Cada petició conserva, com a mínim, l'última persona que ha canviat l'estat, la data del canvi i l'observació.
 - Una mateixa sol·licitud pot contindre peticions en estats diferents.
@@ -317,7 +356,6 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Múltiples documents per petició i versionat documental.
 - Edició o cancel·lació d'una sol·licitud ja tramitada.
 - Text normatiu definitiu i enllaços oficials sobre titulacions universitàries.
-- Automatització específica per a `Realitzada pendent de revisió`.
 
 ## Criteri global de finalització
 

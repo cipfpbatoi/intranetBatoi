@@ -59,7 +59,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
         <h2 class="h4 mb-0">Aplicabilitat de les regles</h2>
         @if ($preview['casos'] !== [])
-            <form method="POST" action="{{ route('convalidacions.direction.rules.apply') }}" onsubmit="return confirm('S’aplicaran {{ count($preview['casos']) }} convalidacions i quedaran en estat Resolta. No s’actualitzarà ITACA. Vols continuar?')">
+            <form method="POST" action="{{ route('convalidacions.direction.rules.apply') }}" onsubmit="return confirm('S’aplicaran {{ count($preview['casos']) }} convalidacions i quedaran en estat Acceptada. No s’actualitzarà ITACA. Vols continuar?')">
                 @csrf
                 <button class="btn btn-primary" type="submit">Aplicar {{ count($preview['casos']) }} {{ count($preview['casos']) === 1 ? 'convalidació' : 'convalidacions' }}</button>
             </form>

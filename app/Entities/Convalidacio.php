@@ -21,12 +21,9 @@ class Convalidacio extends Model
 
     public const ESTAT_EN_PROCES = 'en_proces';
     public const ESTAT_ENVIADA = 'enviada';
-    public const ESTAT_REALITZADA = 'realitzada';
-    public const ESTAT_REALITZADA_PENDENT_REVISIO = 'realitzada_pendent_revisio';
     public const ESTAT_DENEGADA = 'denegada';
     public const ESTAT_REVISAR_DOCUMENTACIO = 'revisar_documentacio';
     public const ESTAT_APORTAR_ORIGINAL = 'aportar_original_secretaria';
-    public const ESTAT_RESOLTA = 'resolta';
     public const ESTAT_ACCEPTADA = 'acceptada';
     public const ESTAT_ACCEPTADA_CONVALIDADA = 'acceptada_convalidada';
 
@@ -171,12 +168,9 @@ class Convalidacio extends Model
         return [
             self::ESTAT_ENVIADA => 'Enviada',
             self::ESTAT_EN_PROCES => 'En procés',
-            self::ESTAT_REALITZADA => 'Realitzada',
-            self::ESTAT_REALITZADA_PENDENT_REVISIO => 'Realitzada pendent de revisió',
             self::ESTAT_DENEGADA => 'Denegada',
             self::ESTAT_REVISAR_DOCUMENTACIO => 'Revisar documentació',
             self::ESTAT_APORTAR_ORIGINAL => 'Aportar documentació original a Secretaria',
-            self::ESTAT_RESOLTA => 'Resolta',
             self::ESTAT_ACCEPTADA => 'Acceptada',
             self::ESTAT_ACCEPTADA_CONVALIDADA => 'Acceptada (Convalidada)',
         ];
@@ -185,7 +179,7 @@ class Convalidacio extends Model
     /** Retorna els estats que Direcció pot assignar manualment. */
     public static function estatManualOptions(): array
     {
-        return array_diff_key(self::estatOptions(), [self::ESTAT_RESOLTA => true]);
+        return self::estatOptions();
     }
 
     /** Indica si l'origen necessita documentació. */
@@ -198,8 +192,6 @@ class Convalidacio extends Model
     public function esTerminal(): bool
     {
         return in_array($this->estat, [
-            self::ESTAT_REALITZADA,
-            self::ESTAT_RESOLTA,
             self::ESTAT_ACCEPTADA_CONVALIDADA,
         ], true);
     }

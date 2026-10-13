@@ -44,8 +44,6 @@ class ConvalidacioAutomaticaService
             ->with('sollicitud')
             ->whereNull('regla_automatica_id')
             ->whereNotIn('estat', [
-                Convalidacio::ESTAT_REALITZADA,
-                Convalidacio::ESTAT_RESOLTA,
                 Convalidacio::ESTAT_DENEGADA,
                 Convalidacio::ESTAT_ACCEPTADA,
                 Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
@@ -210,7 +208,7 @@ class ConvalidacioAutomaticaService
                         : null;
 
                     $peticio->forceFill([
-                        'estat' => Convalidacio::ESTAT_RESOLTA,
+                        'estat' => Convalidacio::ESTAT_ACCEPTADA,
                         'observacions' => 'Convalidació resolta automàticament segons la regla ' . $regla['id'] . '.',
                         'revisat_per' => $responsable->dni,
                         'revisat_at' => now(),
