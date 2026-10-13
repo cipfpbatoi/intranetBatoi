@@ -56,15 +56,12 @@ class ConvalidacioQueryService
             ->get();
     }
 
-    /** Retorna una fila per petició, amb filtres aplicats al mòdul concret. */
+    /** Retorna una fila per petició, opcionalment filtrada pel seu estat. */
     public function peticionsDireccion(array $filters = []): Collection
     {
         return Convalidacio::query()
             ->with(['sollicitud.alumno', 'moduloDestino'])
             ->when($filters['estat'] ?? null, fn ($query, $estat) => $query->where('estat', $estat))
-            ->when($filters['origen'] ?? null, fn ($query, $origen) => $query->where('origen', $origen))
-            ->when($filters['nia'] ?? null, fn ($query, $nia) => $query->whereHas('sollicitud', fn ($q) => $q->where('alumno_id', $nia)))
-            ->when($filters['modul'] ?? null, fn ($query, $modul) => $query->where('modulo_destino_id', $modul))
             ->latest('created_at')
             ->get();
     }

@@ -104,6 +104,7 @@ Route::view('/calendari',  'calendari.escolar');
 
 Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/', ['as' => 'direction.index', 'uses' => 'DireccionConvalidacioController@index']);
+    Route::get('/configuracio', ['as' => 'direction.configuracio', 'uses' => 'DireccionConvalidacioController@configuracio']);
     Route::put('/acces-alumnat', ['as' => 'direction.access', 'uses' => 'DireccionConvalidacioController@access']);
     Route::delete('/{sollicitud}', ['as' => 'direction.destroy', 'uses' => 'DireccionConvalidacioController@destroy']);
     Route::get('/regles', ['as' => 'direction.rules.index', 'uses' => 'DireccionConvalidacioReglesController@index']);

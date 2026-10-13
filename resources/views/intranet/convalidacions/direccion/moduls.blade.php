@@ -13,7 +13,7 @@
             @if (esRol((int) auth('profesor')->user()->rol, (int) config('roles.rol.direccion')))
                 <a class="btn btn-outline-secondary" href="{{ route('convalidacions.direction.index') }}">Sol·licituds</a>
             @endif
-            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.modules.pdf', request()->query()) }}" target="_blank" rel="noopener">Descarregar PDF</a>
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#pdf-convalidacions-modal">Descarregar PDF</button>
         </div>
     </div>
 
@@ -21,13 +21,56 @@
     @if (session('warning'))<div class="alert alert-warning" role="status">{{ session('warning') }}</div>@endif
     @if ($errors->any())<div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>@endif
 
-    <form method="GET" action="{{ route('convalidacions.direction.modules.index') }}" class="row g-2 mb-3">
-        <div class="col-md-3"><label class="form-label" for="filter-estat">Estat</label><select id="filter-estat" name="estat" class="form-select"><option value="">Tots els estats</option>@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected(($filters['estat'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
-        <div class="col-md-3"><label class="form-label" for="filter-origen">Origen</label><select id="filter-origen" name="origen" class="form-select"><option value="">Tots els orígens</option>@foreach ($origens as $value => $label)<option value="{{ $value }}" @selected(($filters['origen'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div>
-        <div class="col-md-2"><label class="form-label" for="filter-nia">NIA</label><input id="filter-nia" name="nia" value="{{ $filters['nia'] ?? '' }}" class="form-control"></div>
-        <div class="col-md-2"><label class="form-label" for="filter-modul">Codi del mòdul</label><input id="filter-modul" name="modul" value="{{ $filters['modul'] ?? '' }}" class="form-control"></div>
-        <div class="col-md-2 d-flex align-items-end gap-2"><button class="btn btn-primary">Filtrar</button><a class="btn btn-secondary" href="{{ route('convalidacions.direction.modules.index') }}">Netejar</a></div>
+    <form method="GET" action="{{ route('convalidacions.direction.modules.index') }}" class="row">
+        <div class="col-md-4 col-sm-6">
+            <div class="form-group">
+                <label for="filter-estat">Estat</label>
+                <select id="filter-estat" name="estat" class="form-control">
+                    <option value="">Tots els estats</option>
+                    @foreach ($estats as $value => $label)
+                        <option value="{{ $value }}" @selected(($filters['estat'] ?? '') === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="form-group">
+                <div style="padding-top: 25px">
+                    <button class="btn btn-primary" type="submit">Filtrar</button>
+                    <a class="btn btn-default" href="{{ route('convalidacions.direction.modules.index') }}">Netejar</a>
+                </div>
+            </div>
+        </div>
     </form>
+
+    <div class="modal fade" id="pdf-convalidacions-modal" tabindex="-1" aria-labelledby="pdf-convalidacions-titol" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="GET" action="{{ route('convalidacions.direction.modules.pdf') }}" target="_blank" rel="noopener">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Tancar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="pdf-convalidacions-titol">Descarregar PDF</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="pdf-estat">Estat de les convalidacions</label>
+                            <select id="pdf-estat" name="estat" class="form-control">
+                                <option value="">Tots els estats</option>
+                                @foreach ($estats as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <p class="help-block">Si no selecciones cap estat, el PDF inclourà totes les convalidacions.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Generar PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <form method="POST" action="{{ route('convalidacions.direction.modules.register-accepted') }}" onsubmit="return confirm('Es marcaran com a Acceptada (Convalidada) únicament els mòduls seleccionats que continuen en estat Acceptada. L’alumnat rebrà un correu individual. Vols continuar?')">
         @csrf

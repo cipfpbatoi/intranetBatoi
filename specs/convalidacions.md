@@ -185,7 +185,7 @@ And el missatge no inclou adjunts ni informació d'altres mòduls o alumnes
 But si es torna a guardar exactament el mateix estat i observació, no s'envia un altre correu
 And si no hi ha una adreça vàlida o falla l'enviament, es conserva el canvi i Direcció rep un avís
 
-### Escenari 19: llistats separats de sol·licituds i convalidacions
+### ✅ Escenari 19: llistats separats de sol·licituds i convalidacions
 
 Given una persona autoritzada de Direcció o Secretaria consulta la gestió de convalidacions
 When obri el llistat de sol·licituds
@@ -193,19 +193,22 @@ Then veu una fila per sol·licitud amb la referència, l'alumne, la data i el no
 And el llistat no presenta ni filtra per un estat únic de sol·licitud
 When obri el llistat de convalidacions per mòdul
 Then veu una fila per cada mòdul sol·licitat amb l'alumne, el mòdul, l'estat individual i la sol·licitud a què pertany
-And pot filtrar este llistat per l'estat del mòdul i altres camps disponibles
+And pot filtrar este llistat únicament per l'estat del mòdul
 And el filtre retorna només els mòduls coincidents, sense incloure com a coincidents els altres mòduls de la mateixa sol·licitud
+And no es mostren filtres per origen, NIA ni codi de mòdul
 And Direcció pot obrir la sol·licitud completa per consultar-ne el context
 
-### Escenari 20: PDF del llistat de convalidacions
+### ✅ Escenari 20: PDF del llistat de convalidacions
 
-Given hi ha un llistat de mòduls filtrat per Direcció o Secretaria
-When genera el PDF del llistat
+Given hi ha un llistat de mòduls per Direcció o Secretaria
+When selecciona «Descarregar PDF» i tria un estat en el diàleg
 Then el document inclou una entrada independent per cada mòdul que coincidix amb els filtres
 And cada entrada identifica l'alumne, el mòdul, el seu estat i la sol·licitud de referència amb la data
 And el PDF manté visibles els estats diferents dels mòduls d'una mateixa sol·licitud
 And el PDF no tracta ni presenta la sol·licitud com si tinguera un estat propi
 And el PDF no incorpora ni exposa els fitxers adjunts de l'alumnat
+And si no se selecciona cap estat, el PDF inclou tots els estats
+And cancel·lar el diàleg no inicia la descàrrega
 
 ### Escenari 21: marcar mòduls acceptats com a registrats en ITACA
 
@@ -269,7 +272,7 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - La sol·licitud és una agrupació de peticions i no té un estat únic; les consultes i filtres per estat s'apliquen a cada petició de mòdul.
 - El llistat de sol·licituds mostra una fila per capçalera i no es filtra per estat de mòdul; el llistat de convalidacions mostra una fila per mòdul i és el lloc dels filtres i operacions per estat.
 - La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul, al seu PDF i a l'acció de registre en ITACA; no pot obrir el detall ni gestionar la configuració de Direcció.
-- Els PDF operatius de Direcció i Secretaria es generen a partir dels mòduls coincidents amb els filtres i sempre identifiquen la sol·licitud d'origen; no incorporen fitxers adjunts.
+- El llistat per mòdul només es filtra per estat; el PDF operatiu permet triar l'estat en un diàleg i l'opció buida inclou tots els estats. Els PDF sempre identifiquen la sol·licitud d'origen i no incorporen fitxers adjunts.
 - La transició a `Acceptada (Convalidada)` només es pot fer per als mòduls seleccionats que continuen en `Acceptada`; no modifica cap altra petició de la sol·licitud.
 - Cada canvi efectiu d'estat o observació es notifica per correu de manera individual a l'alumne titular; no es crea un estat global de sol·licitud.
 - Desar sense canvis en l'estat ni en l'observació no envia un correu duplicat. Si l'adreça no és vàlida o falla el correu, el canvi ja guardat no es desfà i Direcció rep un avís funcional.

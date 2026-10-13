@@ -1,38 +1,19 @@
 @extends('layouts.intranet')
 
-@section('titulo', 'Gestió de convalidacions')
+@section('titulo', 'Sol·licituds de convalidació')
 
 @section('content')
 <div class="container">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h1 class="mb-0">Gestió de convalidacions</h1>
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-success" href="{{ route('convalidacions.direction.modules.index') }}">Veure convalidacions per mòdul</a>
-            @if ($peticionsAutomatiquesElegibles > 0)
-                <form method="POST" action="{{ route('convalidacions.direction.rules.apply') }}"
-                    data-confirm="S’aplicaran {{ $peticionsAutomatiquesElegibles }} peticions elegibles del catàleg actiu. Les peticions no elegibles continuaran pendents per a revisió manual. No s’actualitzarà ITACA. Vols continuar?"
-                    onsubmit="return confirm(this.dataset.confirm)">
-                    @csrf
-                    <input type="hidden" name="return_to" value="index">
-                    <button class="btn btn-primary" type="submit">
-                        Aplicar {{ $peticionsAutomatiquesElegibles }} {{ $peticionsAutomatiquesElegibles === 1 ? 'convalidació automàtica' : 'convalidacions automàtiques' }}
-                    </button>
-                </form>
-            @else
-                <button class="btn btn-primary" type="button" disabled>Aplicar convalidacions automàtiques</button>
-            @endif
-            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.rules.index') }}">
-                <i class="fa fa-check-circle" aria-hidden="true"></i> Gestionar regles automàtiques
-            </a>
-            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.angles.index') }}">
-                <i class="fa fa-language" aria-hidden="true"></i> Gestionar correspondències d’anglés
-            </a>
-            <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.xml.index') }}">
-                <i class="fa fa-list-alt" aria-hidden="true"></i> Gestionar avaluacions d'ITACA
-            </a>
-        </div>
-    </div>
+    <nav aria-label="Vistes de convalidacions">
+        <ul class="nav nav-tabs bar_tabs">
+            <li class="active"><a href="{{ route('convalidacions.direction.index') }}" aria-current="page">Sol·licituds</a></li>
+            <li><a href="{{ route('convalidacions.direction.modules.index') }}">Convalidacions per mòdul</a></li>
+            <li><a href="{{ route('convalidacions.direction.configuracio') }}">Configuració de convalidacions</a></li>
+        </ul>
+    </nav>
+    <p>Cada fila agrupa una sol·licitud de l’alumne i tots els mòduls que ha demanat.</p>
     @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
+    @if (session('warning'))<div class="alert alert-warning" role="status">{{ session('warning') }}</div>@endif
     @if ($resultat = session('resultatAutomatic'))
         <div class="alert {{ $resultat['errors'] === [] ? 'alert-success' : 'alert-warning' }}" role="status">
             Convalidacions automàtiques aplicades: <strong>{{ $resultat['aplicats'] }}</strong>.
@@ -43,41 +24,62 @@
             @endif
         </div>
     @endif
-    @if ($accessBlocked)
-        <div class="alert alert-warning py-2 mb-2" role="status">
-            <strong>Accés restringit per a proves.</strong>
-            L’alumnat necessita la contrasenya que s’indica més avall per accedir a les convalidacions.
-        </div>
-    @endif
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border rounded p-3 mb-3">
-        <div>
-            <label class="form-label fw-semibold mb-1" for="convalidacions-access-switch">Restringir temporalment l’accés de l’alumnat</label>
-            <div class="form-text" id="convalidacions-access-help">Activa-ho durant les proves de la funcionalitat.</div>
-            <div class="mt-2">
-                <span class="text-muted">Contrasenya per a l’alumnat:</span>
-                <code>{{ $accessPassword }}</code>
+    <details class="panel panel-default">
+        <summary class="panel-heading" style="cursor:pointer">
+            <strong>Entorn de proves</strong>
+            @if ($accessBlocked)
+                <span class="label label-warning pull-right">Accés restringit</span>
+            @else
+                <span class="label label-success pull-right">Accés obert</span>
+            @endif
+        </summary>
+        <div class="panel-body">
+            <div>
+                <p id="convalidacions-access-help">En restringir-lo, l’alumnat necessitarà la contrasenya de proves per accedir-hi.</p>
+                <p><span class="text-muted">Contrasenya de proves:</span> <code>{{ $accessPassword }}</code></p>
+                @if ($accessBlocked)
+                    <div class="alert alert-warning" role="status"><strong>Les convalidacions estan restringides per a l’alumnat.</strong></div>
+                @endif
             </div>
-        </div>
-        <form method="POST" action="{{ route('convalidacions.direction.access') }}">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="blocked" value="{{ $accessBlocked ? 1 : 0 }}">
-            <div class="form-check form-switch mb-0">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="convalidacions-access-switch"
-                    aria-describedby="convalidacions-access-help"
-                    @checked($accessBlocked)
-                    onchange="this.form.querySelector('input[name=blocked]').value = this.checked ? '1' : '0'; this.form.requestSubmit()"
-                >
-                <label class="form-check-label" for="convalidacions-access-switch">
+            <form method="POST" action="{{ route('convalidacions.direction.access') }}">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="blocked" value="{{ $accessBlocked ? 1 : 0 }}">
+                <div class="checkbox">
+                    <label for="convalidacions-access-switch">
+                    <input type="checkbox" role="switch" id="convalidacions-access-switch"
+                        aria-describedby="convalidacions-access-help" @checked($accessBlocked)
+                        onchange="this.form.querySelector('input[name=blocked]').value = this.checked ? '1' : '0'; this.form.requestSubmit()">
                     {{ $accessBlocked ? 'Bloquejat' : 'Obert' }}
-                </label>
+                    </label>
+                </div>
+            </form>
+        </div>
+    </details>
+    <section class="x_panel" aria-labelledby="automatic-action-heading">
+        <div class="x_title">
+            <h2 id="automatic-action-heading">Resolució automàtica</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div>
+                <p class="text-muted">Només s’aplicarà a les peticions que complisquen les regles actuals; la resta continuarà pendent de revisió manual.</p>
             </div>
-        </form>
-    </div>
+            @if ($peticionsAutomatiquesElegibles > 0)
+                <form method="POST" action="{{ route('convalidacions.direction.rules.apply') }}"
+                    data-confirm="S’aplicaran {{ $peticionsAutomatiquesElegibles }} peticions elegibles del catàleg actiu. Les peticions no elegibles continuaran pendents per a revisió manual. No s’actualitzarà ITACA. Vols continuar?"
+                    onsubmit="return confirm(this.dataset.confirm)">
+                    @csrf
+                    <input type="hidden" name="return_to" value="index">
+                    <button class="btn btn-primary btn-lg" type="submit">
+                        <i class="fa fa-play" aria-hidden="true"></i> Aplicar ara {{ $peticionsAutomatiquesElegibles }} {{ $peticionsAutomatiquesElegibles === 1 ? 'convalidació automàtica' : 'convalidacions automàtiques' }}
+                    </button>
+                </form>
+            @else
+                <p class="alert alert-info" role="status">Ara mateix no hi ha convalidacions automàtiques elegibles.</p>
+            @endif
+        </div>
+    </section>
     <div class="table-responsive"><table class="table table-striped">
         <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Automatització</th><th></th></tr></thead>
         <tbody>
@@ -90,13 +92,13 @@
                     <td>{{ $sollicitud->convalidacions->count() }}</td>
                     <td>
                         @if ($automatitzacio['pendents'] === 0)
-                            <span class="badge bg-secondary">Sense peticions pendents</span>
+                            <span class="label label-default">Sense peticions pendents</span>
                         @elseif ($automatitzacio['elegibles'] === 0)
-                            <span class="badge bg-secondary">Revisió manual</span>
+                            <span class="label label-default">Revisió manual</span>
                         @elseif ($automatitzacio['elegibles'] === $automatitzacio['pendents'])
-                            <span class="badge bg-success">Automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
+                            <span class="label label-success">Automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
                         @else
-                            <span class="badge bg-warning text-dark">Parcialment automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
+                            <span class="label label-warning">Parcialment automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
                         @endif
                     </td>
                     <td><a href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a></td>

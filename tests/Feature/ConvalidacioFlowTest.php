@@ -16,6 +16,7 @@ use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
 use Intranet\Application\Convalidacio\ConvalidacioAnglesCorrespondenciesService;
+use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioReglesManager;
 use Intranet\Application\Convalidacio\ConvalidacioService;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
@@ -887,11 +888,11 @@ class ConvalidacioFlowTest extends TestCase
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
             ->assertSee('role="switch"', false)
-            ->assertSee('Restringir temporalment l’accés de l’alumnat')
-            ->assertSee('Contrasenya per a l’alumnat:')
+            ->assertSee('Entorn de proves')
+            ->assertSee('Accés obert')
+            ->assertSee('Contrasenya de proves:')
             ->assertSee((string) config('convalidacions_access.password'))
-            ->assertSee('Obert')
-            ->assertDontSee('Accés restringit per a proves.');
+            ->assertSee('Convalidacions per mòdul');
 
         $this->put(route('convalidacions.direction.access'), ['blocked' => '1'])
             ->assertRedirect(route('convalidacions.direction.index'))
@@ -900,7 +901,7 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
-            ->assertSee('Accés restringit per a proves.')
+            ->assertSee('Accés restringit')
             ->assertSee('Bloquejat')
             ->assertSee((string) config('convalidacions_access.password'));
 
@@ -909,7 +910,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
             ->assertSee('Obert')
-            ->assertDontSee('Accés restringit per a proves.');
+            ->assertSee('Accés obert');
     }
 
     public function test_llistat_per_modul_filtra_cada_peticio_i_no_les_seues_germanes(): void
@@ -924,12 +925,33 @@ class ConvalidacioFlowTest extends TestCase
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
-        $this->get(route('convalidacions.direction.modules.index', ['estat' => Convalidacio::ESTAT_ACCEPTADA]))
+        $this->get(route('convalidacions.direction.modules.index', [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'nia' => 'NIA-QUE-NO-CORRESPON',
+            'modul' => 'CODI-QUE-NO-CORRESPON',
+        ]))
             ->assertOk()
             ->assertSee('Convalidacions per mòdul')
             ->assertSee('DEST1')
             ->assertDontSee('DEST2')
-            ->assertSee('#' . $sollicitud->id);
+            ->assertSee('#' . $sollicitud->id)
+            ->assertSee('pdf-convalidacions-modal')
+            ->assertSee('pdf-estat')
+            ->assertSee('Tots els estats')
+            ->assertSee('Cancel·lar')
+            ->assertDontSee('filter-origen')
+            ->assertDontSee('filter-nia')
+            ->assertDontSee('filter-modul');
+
+        $this->get(route('convalidacions.direction.modules.index', [
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'nia' => 'NIA-QUE-NO-CORRESPON',
+            'modul' => 'CODI-QUE-NO-CORRESPON',
+        ]))
+            ->assertOk()
+            ->assertSee('DEST1')
+            ->assertSee('DEST2');
         $this->get(route('convalidacions.direction.index', ['estat' => Convalidacio::ESTAT_ACCEPTADA]))
             ->assertOk()
             ->assertSee('#' . $sollicitud->id)
@@ -937,7 +959,7 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Automatització');
     }
 
-    public function test_pdf_per_modul_no_inclou_adjunts_i_utilitza_els_filtres(): void
+    public function test_pdf_per_modul_filtra_per_estat_i_no_inclou_adjunts(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'pdf-per-modul', [[
             'modulo_destino_id' => 'DEST2',
@@ -945,13 +967,41 @@ class ConvalidacioFlowTest extends TestCase
             'declaracio_responsable' => true,
             'document' => UploadedFile::fake()->create('confidencial.pdf', 20, 'application/pdf'),
         ]]);
+        $sollicitudAlt = $this->service->tramitar($this->alumno, 'pdf-per-modul-alt', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $sollicitudAlt->convalidacions->first()->forceFill(['estat' => Convalidacio::ESTAT_DENEGADA])->save();
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
-        $response = $this->get(route('convalidacions.direction.modules.pdf', ['nia' => $this->alumno->nia]))
+        $this->assertCount(1, app(ConvalidacioQueryService::class)->peticionsDireccion([
+            'estat' => Convalidacio::ESTAT_ENVIADA,
+        ]));
+        $this->assertCount(1, app(ConvalidacioQueryService::class)->peticionsDireccion([
+            'estat' => Convalidacio::ESTAT_DENEGADA,
+        ]));
+        $this->assertCount(2, app(ConvalidacioQueryService::class)->peticionsDireccion());
+
+        $response = $this->get(route('convalidacions.direction.modules.pdf', [
+            'estat' => Convalidacio::ESTAT_ENVIADA,
+            'nia' => 'NIA-QUE-NO-CORRESPON',
+            'modul' => 'CODI-QUE-NO-CORRESPON',
+        ]))
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
         $this->assertStringStartsWith('%PDF', $response->getContent());
+
+        $this->from(route('convalidacions.direction.modules.index'))
+            ->get(route('convalidacions.direction.modules.pdf', ['estat' => 'estat-no-valid']))
+            ->assertRedirect(route('convalidacions.direction.modules.index'))
+            ->assertSessionHasErrors('estat');
+
+        $this->get(route('convalidacions.direction.modules.pdf'))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
         $this->assertDatabaseHas('convalidacions', [
             'sollicitud_convalidacio_id' => $sollicitud->id,
             'document_original_name' => 'confidencial.pdf',
@@ -1124,8 +1174,10 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
-            ->assertSee('Aplicar 1 convalidació automàtica')
-            ->assertSee('Gestionar regles automàtiques')
+            ->assertSee('Aplicar ara 1 convalidació automàtica')
+            ->assertSee('Resolució automàtica')
+            ->assertSee('Configuració de convalidacions')
+            ->assertDontSee('Gestionar regles automàtiques')
             ->assertSee('Parcialment automàtica')
             ->assertSee('1/2')
             ->assertSee('name="return_to" value="index"', false);
@@ -1858,7 +1910,16 @@ XML);
 
         $this->get(route('convalidacions.direction.index'))
             ->assertOk()
-            ->assertSee('Gestionar correspondències d’anglés');
+            ->assertSee('Configuració de convalidacions')
+            ->assertDontSee('Gestionar correspondències d’anglés');
+        $this->get(route('convalidacions.direction.configuracio'))
+            ->assertOk()
+            ->assertSee('Regles automàtiques')
+            ->assertSee('Correspondències d’anglés')
+            ->assertSee('Avaluacions d’ITACA')
+            ->assertSee('Configurar regles')
+            ->assertSee('Configurar correspondències')
+            ->assertSee('Gestionar avaluacions');
         $this->get(route('convalidacions.direction.angles.index'))
             ->assertOk()
             ->assertSee('Importar CSV');

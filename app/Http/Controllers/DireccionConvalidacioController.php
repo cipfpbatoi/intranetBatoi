@@ -52,23 +52,23 @@ class DireccionConvalidacioController extends Controller
         ]);
     }
 
+    /** Mostra els accessos a les ferramentes de configuració de convalidacions. */
+    public function configuracio(): View
+    {
+        return view('intranet.convalidacions.direccion.configuracio');
+    }
+
     /** Mostra una fila i estat independents per cada mòdul sol·licitat. */
     public function moduleRequests(Request $request): View
     {
         Gate::forUser($this->profesor())->authorize('viewModuleRequests', Convalidacio::class);
-        $origens = Convalidacio::origenOptions();
-        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
         $filters = $request->validate([
             'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
-            'origen' => ['nullable', 'string', Rule::in(array_keys($origens))],
-            'nia' => ['nullable', 'string', 'max:30'],
-            'modul' => ['nullable', 'string', 'max:30'],
         ]);
 
         return view('intranet.convalidacions.direccion.moduls', [
             'peticions' => $this->queries->peticionsDireccion($filters),
             'estats' => Convalidacio::estatOptions(),
-            'origens' => $origens,
             'filters' => $filters,
         ]);
     }
@@ -77,13 +77,8 @@ class DireccionConvalidacioController extends Controller
     public function moduleRequestsPdf(Request $request)
     {
         Gate::forUser($this->profesor())->authorize('viewModuleRequests', Convalidacio::class);
-        $origens = Convalidacio::origenOptions();
-        $origens[Convalidacio::ORIGEN_AUTOMATICA] = Convalidacio::origenLabel(Convalidacio::ORIGEN_AUTOMATICA);
         $filters = $request->validate([
             'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
-            'origen' => ['nullable', 'string', Rule::in(array_keys($origens))],
-            'nia' => ['nullable', 'string', 'max:30'],
-            'modul' => ['nullable', 'string', 'max:30'],
         ]);
 
         return Pdf::loadView('intranet.convalidacions.direccion.moduls-pdf', [
