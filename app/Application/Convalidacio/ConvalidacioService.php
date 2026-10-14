@@ -203,7 +203,7 @@ class ConvalidacioService
         }, 3);
     }
 
-    /** Registra en una sola transacció les peticions Acceptada seleccionades com a anotades a ITACA. */
+    /** Marca en una transacció les peticions Acceptada seleccionades com a anotades manualment en ITACA. */
     public function registrarAcceptades(array $ids, Profesor $responsable): \Illuminate\Database\Eloquent\Collection
     {
         $ids = array_values(array_unique(array_map('intval', $ids)));

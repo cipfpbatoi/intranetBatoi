@@ -211,6 +211,13 @@ class ConvalidacioFlowTest extends TestCase
             ->assertRedirect(route('convalidacions.direction.show', $sollicitud))
             ->assertSessionHas('success', '1 mòdul ha passat a En procés. S’ha notificat l’alumnat.');
 
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee(
+                'class="btn btn-primary btn-sm" href="' . route('convalidacions.direction.show', $sollicitud) . '"',
+                false
+            );
+
         $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $enviada->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $jaRevisada->fresh()->estat);
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
@@ -1029,6 +1036,13 @@ class ConvalidacioFlowTest extends TestCase
         ]))
             ->assertOk()
             ->assertSee('Convalidacions per mòdul')
+            ->assertSee('id="itaca-registration-pending-help"', false)
+            ->assertSee('Funcionalitat pendent de definir.')
+            ->assertSee('El procediment per registrar les convalidacions en ITACA encara no està determinat.')
+            ->assertSee('Marcar com a registrades en ITACA')
+            ->assertSee('Anotada en ITACA')
+            ->assertSee('class="btn btn-success"', false)
+            ->assertSee('disabled', false)
             ->assertSee('DEST1')
             ->assertDontSee('DEST2')
             ->assertSee('#' . $sollicitud->id)
@@ -1105,7 +1119,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertStringNotContainsString('confidencial.pdf', $response->getContent());
     }
 
-    public function test_registre_massiu_en_itaca_actualitza_i_notifica_només_peticions_acceptades(): void
+    public function test_registre_en_itaca_desactivat_rebutja_peticio_directa_sense_canvis_ni_correus(): void
     {
         Mail::fake();
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca', [
@@ -1122,15 +1136,15 @@ class ConvalidacioFlowTest extends TestCase
         $this->post(route('convalidacions.direction.modules.register-accepted'), [
             'peticions' => [$peticions[0]->id],
         ])->assertRedirect()
-            ->assertSessionHas('success');
+            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
 
-        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $peticions[0]->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
-        $this->assertSame('DIR00001', $peticions[0]->fresh()->revisat_per);
-        Mail::assertSent(ConvalidacioEstatActualitzat::class, 1);
+        $this->assertNull($peticions[0]->fresh()->revisat_per);
+        Mail::assertNothingSent();
     }
 
-    public function test_registre_massiu_en_itaca_rebutja_tota_la_seleccio_si_un_modul_ja_no_es_acceptat(): void
+    public function test_registre_en_itaca_desactivat_rebutja_tambe_una_seleccio_mixta(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca-concurrent', [
             ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
@@ -1146,7 +1160,7 @@ class ConvalidacioFlowTest extends TestCase
             ->post(route('convalidacions.direction.modules.register-accepted'), [
                 'peticions' => [$peticions[0]->id, $peticions[1]->id],
             ])->assertRedirect(route('convalidacions.direction.modules.index'))
-            ->assertSessionHasErrors('peticions');
+            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
