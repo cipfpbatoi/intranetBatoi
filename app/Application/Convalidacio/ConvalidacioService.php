@@ -142,8 +142,15 @@ class ConvalidacioService
         }
     }
 
-    /** Canvia l'estat d'una sola petició i conserva la traçabilitat. */
-    public function revisar(Convalidacio $peticio, Profesor $revisor, string $estat, ?string $observacions): Convalidacio
+    /** Canvia l'estat d'una petició i guarda el resultat i la nota si queda acceptada. */
+    public function revisar(
+        Convalidacio $peticio,
+        Profesor $revisor,
+        string $estat,
+        ?string $observacions,
+        ?string $resultatResolucio = null,
+        ?string $modeNotaResolucio = null
+    ): Convalidacio
     {
         if (!array_key_exists($estat, Convalidacio::estatManualOptions())) {
             throw new ConvalidacioException('L\'estat indicat no és vàlid.');
@@ -159,20 +166,63 @@ class ConvalidacioService
             throw new ConvalidacioException('L\'observació és obligatòria per a l\'estat seleccionat.');
         }
 
-        return DB::transaction(function () use ($peticio, $revisor, $estat, $observacions): Convalidacio {
+        $notaResultatResolucio = null;
+        $estatResolutiu = in_array($estat, [
+            Convalidacio::ESTAT_ACCEPTADA,
+            Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+        ], true);
+        if ($estatResolutiu) {
+            if (!in_array($resultatResolucio, ['CO', 'AA'], true)) {
+                throw new ConvalidacioException('Indica si el resultat de la convalidació és CO o AA.');
+            }
+            if (!in_array($modeNotaResolucio, ['preserve', 'none'], true)) {
+                throw new ConvalidacioException('Indica si es conserva la nota d’origen o si la resolució no porta nota.');
+            }
+            if ($modeNotaResolucio === 'preserve' && $peticio->nota_origen === null) {
+                throw new ConvalidacioException('No es pot conservar la nota perquè la petició no en té cap d’origen.');
+            }
+            if ($modeNotaResolucio === 'preserve') {
+                $notaResultatResolucio = $peticio->nota_origen;
+            }
+        }
+
+        return DB::transaction(function () use (
+            $peticio,
+            $revisor,
+            $estat,
+            $observacions,
+            $resultatResolucio,
+            $modeNotaResolucio,
+            $notaResultatResolucio
+        ): Convalidacio {
             $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
             if ($actual->esTerminal()) {
                 throw new ConvalidacioException('Una petició ja convalidada en ITACA és de només consulta.');
             }
 
             $observacions = filled($observacions) ? trim((string) $observacions) : null;
-            if ($actual->estat === $estat && $actual->observacions === $observacions) {
+            $estatResolutiu = in_array($estat, [
+                Convalidacio::ESTAT_ACCEPTADA,
+                Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            ], true);
+            $resultatResolucio = $estatResolutiu ? $resultatResolucio : null;
+            $modeNotaResolucio = $estatResolutiu ? $modeNotaResolucio : null;
+            $notaResultatResolucio = $estatResolutiu ? $notaResultatResolucio : null;
+
+            if ($actual->estat === $estat
+                && $actual->observacions === $observacions
+                && $actual->resultat_resolucio === $resultatResolucio
+                && $actual->mode_nota_resolucio === $modeNotaResolucio
+                && $actual->nota_resultat_resolucio === $notaResultatResolucio) {
                 return $actual;
             }
 
             $actual->forceFill([
                 'estat' => $estat,
                 'observacions' => $observacions,
+                'resultat_resolucio' => $resultatResolucio,
+                'mode_nota_resolucio' => $modeNotaResolucio,
+                'nota_resultat_resolucio' => $notaResultatResolucio,
                 'revisat_per' => $revisor->dni,
                 'revisat_at' => now(),
             ])->save();
@@ -203,7 +253,7 @@ class ConvalidacioService
         }, 3);
     }
 
-    /** Marca en una transacció les peticions Acceptada seleccionades com a anotades manualment en ITACA. */
+    /** Marca en la intranet les peticions acceptades incloses en l'informe com a convalidades. */
     public function registrarAcceptades(array $ids, Profesor $responsable): \Illuminate\Database\Eloquent\Collection
     {
         $ids = array_values(array_unique(array_map('intval', $ids)));
@@ -220,7 +270,7 @@ class ConvalidacioService
 
             if ($peticions->count() !== count($ids)
                 || $peticions->contains(fn (Convalidacio $peticio): bool => $peticio->estat !== Convalidacio::ESTAT_ACCEPTADA)) {
-                throw new ConvalidacioException('La selecció ha canviat: només es poden registrar peticions que continuen en estat «Acceptada». No s’ha canviat cap petició.');
+                throw new ConvalidacioException('La selecció ha canviat: només es poden marcar com a convalidades en la intranet les peticions que continuen en estat «Acceptada». No s’ha canviat cap petició.');
             }
 
             foreach ($peticions as $peticio) {

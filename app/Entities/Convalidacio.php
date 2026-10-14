@@ -29,7 +29,7 @@ class Convalidacio extends Model
 
     protected $table = 'convalidacions';
 
-    /** @var list<string> Camps editables i instantànies acadèmiques de la petició. */
+    /** @var list<string> Camps editables, dades de resolució i instantànies acadèmiques de la petició. */
     protected $fillable = [
         'sollicitud_convalidacio_id',
         'modulo_destino_id',
@@ -84,6 +84,9 @@ class Convalidacio extends Model
         'resultat_automatic',
         'mode_nota_automatic',
         'nota_resultat_automatic',
+        'resultat_resolucio',
+        'mode_nota_resolucio',
+        'nota_resultat_resolucio',
         'estat',
         'observacions',
         'revisat_per',
@@ -101,11 +104,23 @@ class Convalidacio extends Model
         'any_origen' => 'integer',
         'nota_origen' => 'float',
         'revisat_at' => 'datetime',
+        'estat_canviat_at' => 'datetime',
         'regla_automatica_snapshot' => 'array',
         'evidencia_automatica_snapshot' => 'array',
         'base_normativa_automatica' => 'array',
         'nota_resultat_automatic' => 'float',
+        'nota_resultat_resolucio' => 'float',
     ];
+
+    /** Actualitza la data específica quan canvia l'estat, incloses les creacions. */
+    protected static function booted(): void
+    {
+        static::saving(static function (self $peticio): void {
+            if (!$peticio->exists || $peticio->isDirty('estat')) {
+                $peticio->estat_canviat_at = now();
+            }
+        });
+    }
 
     /** Documents de suport adjunts a esta petició. */
     public function documents(): HasMany

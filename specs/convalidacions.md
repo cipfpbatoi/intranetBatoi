@@ -92,6 +92,7 @@ Then pot veure l'alumne, el mòdul destí, l'origen, la data, l'estat, l'observa
 And pot assignar qualsevol estat admés
 And l'observació és obligatòria per a `Denegada`, `Revisar documentació` i `Aportar documentació original a Secretaria`
 And es guarden en la petició l'última persona responsable, la data del canvi i l'observació
+And s'actualitza la data específica de l'últim canvi d'estat només si l'estat ha canviat, no quan només canvia l'observació
 And el canvi no altera l'estat de les altres peticions de la mateixa sol·licitud
 And el llistat de mòduls permet filtrar per l'estat i l'origen de cada petició
 
@@ -242,21 +243,40 @@ Given hi ha un llistat de mòduls per Direcció o Secretaria
 When selecciona «Descarregar PDF» i tria un estat en el diàleg
 Then el document inclou una entrada independent per cada mòdul que coincidix amb els filtres
 And cada entrada identifica l'alumne, el mòdul, el seu estat i la sol·licitud de referència amb la data
+And les entrades s'ordenen alfabèticament pel nom de l'alumne
+And el PDF mostra el resultat `CO` o `AA` i la nota només quan consten guardats en la petició
+And mostra la data de l'últim canvi d'estat del mòdul
 And el PDF manté visibles els estats diferents dels mòduls d'una mateixa sol·licitud
 And el PDF no tracta ni presenta la sol·licitud com si tinguera un estat propi
 And el PDF no incorpora ni exposa els fitxers adjunts de l'alumnat
 And si no se selecciona cap estat, el PDF inclou tots els estats
 And cancel·lar el diàleg no inicia la descàrrega
 
-### Escenari 21: registre en ITACA pendent de definició
+### Escenari 21: marcar les acceptades en la intranet i assumir-ne el registre en ITACA
 
-Given el procediment per a registrar les convalidacions en ITACA encara no està definit
-When una persona autoritzada de Secretaria o Direcció consulta les convalidacions per mòdul
-Then veu l'avís «Funcionalitat pendent de definir»
-And el botó «Marcar com a registrades en ITACA» i les caselles de selecció estan deshabilitats
-And la consulta, els filtres i la descàrrega del PDF continuen disponibles
-When envia directament una petició al servidor per a registrar mòduls en ITACA
-Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni enviar correus
+Given una persona autoritzada de Secretaria o Direcció genera un PDF filtrat per `Acceptada`
+When marca l'opció que confirma que vol marcar ara les peticions de l'informe com a `Acceptada (Convalidada)` en la intranet i que n'assumeix la responsabilitat de registrar-les en ITACA
+Then només les peticions que formen part del resultat filtrat i continuen en `Acceptada` passen a `Acceptada (Convalidada)`
+And la mateixa transacció guarda la persona responsable i la data del canvi d'estat de cada mòdul
+And s'envia la notificació individual prevista per a cada petició que ha canviat
+And el PDF identifica la persona responsable de registrar-les en ITACA i deixa constància que s'han marcat en la intranet
+And l'acció no registra ni modifica dades en ITACA
+But si l'opció no està marcada, només es genera el PDF i no canvia cap petició
+And el servidor rebutja marcar-les si el filtre no és `Acceptada`
+
+### ✅ Escenari 22: guardar resultat, nota i procedència de la resolució per mòdul
+
+Given Direcció resol manualment una petició com a `Acceptada` o `Acceptada (Convalidada)`
+When confirma la resolució
+Then indica si el resultat és `CO` o `AA` i si es conserva la nota d'origen o no hi ha nota
+And si conserva la nota, el sistema guarda la nota d'origen com a nota resultant
+And no es pot conservar una nota si la petició no en té cap d'origen
+And el resultat i el tractament de la nota queden guardats en la petició individual
+When Direcció aplica una regla automàtica vàlida
+Then la petició guarda també en els camps comuns el resultat i el tractament de nota definits per la regla
+And conserva separadament la instantània de la regla i la base normativa aplicada
+And el llistat per mòdul mostra 🤖 amb un hint accessible només quan la regla automàtica s'ha aplicat realment
+And el detall i el PDF per mòdul mostren el resultat i la nota quan consten guardats
 
 ## Regles de negoci
 
@@ -298,21 +318,24 @@ Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni en
   7. `Acceptada (Convalidada)`.
 - `Enviada` és l'estat inicial de tota petició nova tramitada; els registres anteriors mantenen l'estat que ja tenien.
 - Les peticions antigues en estat `Resolta` es normalitzen a `Acceptada` amb una actualització de dades; no s'elimina cap petició ni sol·licitud. Els estats `Realitzada` i `Realitzada pendent de revisió` deixen d'estar disponibles i no s'inclouen en cap neteja de registres.
-- `Acceptada (Convalidada)` és terminal perquè indica que la convalidació ja s'ha gravat en ITACA.
-- `Acceptada` no és terminal; tanmateix, la transició a `Acceptada (Convalidada)` des del llistat per mòdul està deshabilitada mentre el procediment d'ITACA estiga pendent de definició.
+- `Acceptada (Convalidada)` és terminal perquè indica que la petició s'ha marcada com a convalidada en la intranet; el registre en ITACA és una tasca manual posterior de la persona responsable.
+- `Acceptada` no és terminal; només les peticions incloses en un informe filtrat per `Acceptada` poden passar a `Acceptada (Convalidada)` amb la confirmació explícita descrita en l'escenari 21.
 - Direcció pot canviar manualment qualsevol petició no terminal a un altre estat admés.
 - En iniciar la revisió d'una sol·licitud, només les peticions `Enviada` passen a `En procés`; les que ja han avançat no es modifiquen.
 - L'alumnat pot substituir documentació només en `Enviada` o `Revisar documentació`; en el primer cas l'estat es manté, i en el segon torna a `En procés`.
 - El filtre del llistat s'aplica automàticament en canviar el desplegable.
 - El llistat usa una etiqueta destacada per al recompte de mòduls pendents i icones accessibles per al resum de l'automatització; sense accions o peticions pendents, les cel·les corresponents queden buides.
 - L'observació és obligatòria en passar a `Denegada`, `Revisar documentació` o `Aportar documentació original a Secretaria`.
-- Cada petició conserva, com a mínim, l'última persona que ha canviat l'estat, la data del canvi i l'observació.
+- Cada petició conserva l'última persona que ha canviat l'estat, la data específica de l'últim canvi d'estat i l'observació. Un canvi només d'observacions o documentació no modifica la data d'estat.
 - Una mateixa sol·licitud pot contindre peticions en estats diferents.
 - La sol·licitud és una agrupació de peticions i no té un estat únic; les consultes i filtres per estat s'apliquen a cada petició de mòdul.
 - El llistat de sol·licituds mostra una fila per capçalera i no es filtra per estat de mòdul; el llistat de convalidacions mostra una fila per mòdul i és el lloc dels filtres i operacions per estat.
 - La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul i al seu PDF; no pot obrir el detall ni gestionar la configuració de Direcció.
 - El llistat per mòdul només es filtra per estat; el PDF operatiu permet triar l'estat en un diàleg i l'opció buida inclou tots els estats. Els PDF sempre identifiquen la sol·licitud d'origen i no incorporen fitxers adjunts.
-- Mentre el procediment d'ITACA estiga pendent de definició, el servidor rebutja les peticions de transició a `Acceptada (Convalidada)` des del llistat sense canviar dades ni notificar l'alumnat.
+- El PDF amb confirmació de registre en ITACA obté els identificadors exclusivament del filtre aplicat; no accepta una llista d'identificadors enviada pel navegador i no modifica peticions que ja no estiguen `Acceptada`.
+- `Acceptada` no determina per si sola el resultat de la convalidació ni el tractament de la nota; cada petició acceptada guarda `CO` o `AA` i si conserva la nota d'origen.
+- Les resolucions automàtiques copien el resultat i la nota de la regla als camps comuns de resolució, mantenint la instantània i la base normativa per a traçabilitat.
+- El robot del llistat identifica una resolució automàtica aplicada, no una regla candidata ni una petició merament elegible.
 - Cada canvi efectiu d'estat o observació es notifica per correu de manera individual a l'alumne titular; no es crea un estat global de sol·licitud.
 - Desar sense canvis en l'estat ni en l'observació no envia un correu duplicat. Si l'adreça no és vàlida o falla el correu, el canvi ja guardat no es desfà i Direcció rep un avís funcional.
 - Els correus de canvi d'estat no inclouen documents adjunts ni informació de les altres peticions de la sol·licitud.
@@ -320,7 +343,7 @@ Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni en
 ### Autorització i seguretat
 
 - L'alumne només pot consultar, tramitar i corregir les seues pròpies sol·licituds i peticions.
-- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats i PDF descrits en els escenaris 19–21, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves. El registre en ITACA continua desactivat fins que se'n definisca el procediment.
+- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats i PDF descrits en els escenaris 19–21, inclosa la confirmació de registre en ITACA, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves.
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
 - El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
@@ -338,7 +361,7 @@ Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni en
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
 - Gestor privat dels XML acadèmics integrat en el panell de convalidacions de Direcció, sense edició ni descàrrega del contingut.
 - Vistes separades de sol·licituds i convalidacions per mòdul per a Direcció i Secretaria, amb filtres individuals i PDF operatiu a nivell de mòdul.
-- Registre en ITACA posposat fins que se'n definisca el procediment; la interfície i el servidor mantenen deshabilitada l'acció.
+- Confirmació de registre manual en ITACA incorporada al formulari del PDF de peticions acceptades.
 - Control persistent del bloqueig d'accés de proves i middleware per protegir totes les rutes d'alumnat de convalidacions.
 - Eliminació de sol·licituds de prova per Direcció amb neteja transaccional de peticions i documents privats.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
@@ -348,7 +371,7 @@ Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni en
 
 - Càlcul automàtic d'equivalències i taules de correspondències.
 - Tasques nocturnes i qualsevol processament automàtic.
-- Accions massives sobre sol·licituds o estats, inclosa la transició de mòduls `Acceptada` a `Acceptada (Convalidada)`, mentre el procediment d'ITACA estiga pendent de definició.
+- Accions massives fora de les peticions `Acceptada` incloses en el PDF i confirmades expressament per l'usuari responsable.
 - OCR, IA, models en la DGX Spark i fine-tuning.
 - Altres notificacions de panell o correus diferents de l'avís per canvi individual d'estat definit en l'escenari 18.
 - Gestió general de permisos de Secretaria fora dels llistats i PDF descrits en els escenaris 19–21.

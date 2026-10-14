@@ -52,7 +52,7 @@ And una petició sense canvi efectiu no genera un correu duplicat.
 - Es conserven tots els estats actuals, inclosos els que no apareixen en la llista de l’acta.
 - Direcció pot assignar els estats nous per a cada mòdul des del seu selector individual.
 - Les peticions noves s’inicien en `Enviada`; no es migra, reescriu ni normalitza cap dada existent.
-- `Acceptada (Convalidada)` és terminal perquè indica que la convalidació ja s’ha gravat en ITACA; `Acceptada` continua editable per Direcció per a completar el procés posterior.
+- `Acceptada (Convalidada)` és terminal perquè indica que la petició s'ha marcada com a convalidada en la intranet; el registre en ITACA és una tasca manual posterior. `Acceptada` continua editable per Direcció per a completar el procés posterior.
 - Els canvis efectius als estats nous reutilitzen la notificació individual per correu ja definida.
 
 ## Fitxers afectats previstos

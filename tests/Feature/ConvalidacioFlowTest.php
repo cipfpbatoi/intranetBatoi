@@ -440,7 +440,7 @@ class ConvalidacioFlowTest extends TestCase
         try {
             $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_DENEGADA, null);
         } finally {
-            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, null);
+            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, null, 'AA', 'none');
             $this->assertSame(Convalidacio::ESTAT_ENVIADA, $segona->fresh()->estat);
             $this->assertSame('DIR00001', $primera->fresh()->revisat_per);
             try {
@@ -491,6 +491,8 @@ class ConvalidacioFlowTest extends TestCase
             ->put(route('convalidacions.direction.resolve', $segona), [
                 'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
+                'resultat_resolucio' => 'AA',
+                'mode_nota_resolucio' => 'none',
             ])
             ->assertSessionHas('success', 'Petició actualitzada i correu enviat a l’alumne.');
         Mail::assertSent(ConvalidacioEstatActualitzat::class, 'alumne@example.test');
@@ -525,16 +527,97 @@ class ConvalidacioFlowTest extends TestCase
         $this->put(route('convalidacions.direction.resolve', $primera), [
             'estat' => Convalidacio::ESTAT_ACCEPTADA,
             'observacions' => '',
+            'resultat_resolucio' => 'CO',
+            'mode_nota_resolucio' => 'preserve',
         ])->assertRedirect();
         $this->put(route('convalidacions.direction.resolve', $segona), [
             'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
             'observacions' => '',
+            'resultat_resolucio' => 'AA',
+            'mode_nota_resolucio' => 'none',
         ])->assertRedirect();
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $primera->fresh()->estat);
+        $this->assertSame('CO', $primera->fresh()->resultat_resolucio);
+        $this->assertSame('preserve', $primera->fresh()->mode_nota_resolucio);
+        $this->assertSame(7.0, $primera->fresh()->nota_resultat_resolucio);
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $segona->fresh()->estat);
         $this->assertTrue($segona->fresh()->esTerminal());
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 2);
+    }
+
+    public function test_resolucio_manual_acceptada_exigix_resultat_i_guarda_si_conserva_nota(): void
+    {
+        DB::table('alumnos')->where('nia', $this->alumno->nia)->update(['email' => 'alumne@example.test']);
+        $sollicitud = $this->service->tramitar($this->alumno, 'resolucio-manual', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $peticio), [
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
+                'observacions' => '',
+            ])
+            ->assertSessionHasErrors(['resultat_resolucio', 'mode_nota_resolucio']);
+        $this->assertSame(Convalidacio::ESTAT_ENVIADA, $peticio->fresh()->estat);
+
+        Mail::fake();
+        $this->put(route('convalidacions.direction.resolve', $peticio), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'observacions' => '',
+            'resultat_resolucio' => 'CO',
+            'mode_nota_resolucio' => 'preserve',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('convalidacions', [
+            'id' => $peticio->id,
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'resultat_resolucio' => 'CO',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 7,
+        ], 'sqlite');
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Resolució:')
+            ->assertSee('CO')
+            ->assertSee('Nota conservada:')
+            ->assertSee('7');
+        $this->get(route('convalidacions.direction.modules.index', ['estat' => Convalidacio::ESTAT_ACCEPTADA]))
+            ->assertOk()
+            ->assertSee('Resultat CO')
+            ->assertSee('Nota 7')
+            ->assertDontSee('🤖');
+        Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
+    }
+
+    public function test_resolucio_manual_no_permet_conservar_una_nota_inexistent(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'resolucio-sense-nota', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['nota_origen' => null])->save();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $peticio), [
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
+                'observacions' => '',
+                'resultat_resolucio' => 'AA',
+                'mode_nota_resolucio' => 'preserve',
+            ])
+            ->assertSessionHasErrors('estat');
+
+        $this->assertSame(Convalidacio::ESTAT_ENVIADA, $peticio->fresh()->estat);
+        $this->assertNull($peticio->fresh()->resultat_resolucio);
     }
 
     public function test_canvi_de_peticio_es_guarda_si_no_hi_ha_correu_valid(): void
@@ -560,6 +643,8 @@ class ConvalidacioFlowTest extends TestCase
             ->put(route('convalidacions.direction.resolve', $peticio), [
                 'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
+                'resultat_resolucio' => 'AA',
+                'mode_nota_resolucio' => 'none',
             ])
             ->assertSessionHas('warning', 'La petició s’ha actualitzat, però l’alumne no té una adreça de correu vàlida. No s’ha enviat cap notificació.');
 
@@ -583,10 +668,14 @@ class ConvalidacioFlowTest extends TestCase
             ->put(route('convalidacions.direction.resolve', $peticio), [
                 'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
+                'resultat_resolucio' => 'AA',
+                'mode_nota_resolucio' => 'none',
             ])
             ->assertSessionHas('warning', 'La petició s’ha actualitzat, però no s’ha pogut enviar el correu a l’alumne.');
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->fresh()->estat);
+        $this->assertSame('AA', $peticio->fresh()->resultat_resolucio);
+        $this->assertNull($peticio->fresh()->nota_resultat_resolucio);
     }
 
     public function test_alumne_substituix_nomes_el_document_requerit(): void
@@ -1036,14 +1125,13 @@ class ConvalidacioFlowTest extends TestCase
         ]))
             ->assertOk()
             ->assertSee('Convalidacions per mòdul')
-            ->assertSee('id="itaca-registration-pending-help"', false)
-            ->assertSee('Funcionalitat pendent de definir.')
-            ->assertSee('El procediment per registrar les convalidacions en ITACA encara no està determinat.')
-            ->assertSee('Marcar com a registrades en ITACA')
-            ->assertSee('Anotada en ITACA')
-            ->assertSee('class="btn btn-success"', false)
-            ->assertSee('disabled', false)
+            ->assertSee('En generar l’informe, marcaré ara aquestes peticions com a')
+            ->assertSee('no es registra res automàticament en ITACA')
+            ->assertSee('Acceptada (Convalidada)')
+            ->assertDontSee('Funcionalitat pendent de definir.')
+            ->assertDontSee('register-accepted')
             ->assertSee('DEST1')
+            ->assertDontSee('🤖')
             ->assertDontSee('DEST2')
             ->assertSee('#' . $sollicitud->id)
             ->assertSee('pdf-convalidacions-modal')
@@ -1119,7 +1207,39 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertStringNotContainsString('confidencial.pdf', $response->getContent());
     }
 
-    public function test_registre_en_itaca_desactivat_rebutja_peticio_directa_sense_canvis_ni_correus(): void
+    public function test_pdf_ordena_les_peticions_pel_nom_visible_de_l_alumne(): void
+    {
+        DB::table('alumnos')->where('nia', '12345678')->update([
+            'nombre' => 'Zara', 'apellido1' => 'Zeta', 'apellido2' => '',
+        ]);
+        DB::table('alumnos')->where('nia', '87654321')->update([
+            'nombre' => 'Aina', 'apellido1' => 'Alba', 'apellido2' => '',
+        ]);
+        DB::table('alumnos_grupos')->insert(['idAlumno' => '87654321', 'idGrupo' => 'ACTUAL']);
+
+        $sollicitudZ = $this->service->tramitar($this->alumno, 'pdf-ordre-z', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $alumneA = Alumno::query()->findOrFail('87654321');
+        $sollicitudA = $this->service->tramitar($alumneA, 'pdf-ordre-a', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => app(ResultatsAcademicsXmlService::class)->aprovats('87654321')[0]['id'],
+        ]]);
+
+        $ordenades = app(ConvalidacioQueryService::class)->ordenarPerNomAlumne(
+            app(ConvalidacioQueryService::class)->peticionsDireccion()
+        );
+
+        $this->assertSame([
+            $sollicitudA->convalidacions->first()->id,
+            $sollicitudZ->convalidacions->first()->id,
+        ], $ordenades->pluck('id')->all());
+    }
+
+    public function test_pdf_d_acceptades_marca_només_les_peticions_incloses_com_a_convalidades_en_itaca(): void
     {
         Mail::fake();
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca', [
@@ -1127,24 +1247,48 @@ class ConvalidacioFlowTest extends TestCase
             ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
         ]);
         $peticions = $sollicitud->convalidacions;
-        $peticions[0]->forceFill(['estat' => Convalidacio::ESTAT_ACCEPTADA])->save();
+        $peticions[0]->forceFill([
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'resultat_automatic' => 'AA',
+            'nota_resultat_automatic' => 9,
+            'resultat_resolucio' => 'AA',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 9,
+        ])->save();
         $peticions[1]->forceFill(['estat' => Convalidacio::ESTAT_DENEGADA])->save();
         $this->alumno->forceFill(['email' => 'alumne@example.test'])->save();
+        $dataAnterior = $peticions[0]->fresh()->estat_canviat_at;
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
-        $this->post(route('convalidacions.direction.modules.register-accepted'), [
-            'peticions' => [$peticions[0]->id],
-        ])->assertRedirect()
-            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
+        $response = $this->post(route('convalidacions.direction.modules.pdf.post'), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'marcar_itaca' => '1',
+        ])->assertOk()->assertHeader('content-type', 'application/pdf');
 
-        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
-        $this->assertNull($peticions[0]->fresh()->revisat_per);
-        Mail::assertNothingSent();
+        $this->assertSame('DIR00001', $peticions[0]->fresh()->revisat_per);
+        $this->assertNotNull($peticions[0]->fresh()->estat_canviat_at);
+        $this->assertGreaterThanOrEqual($dataAnterior->getTimestamp(), $peticions[0]->fresh()->estat_canviat_at->getTimestamp());
+        Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
+
+        $vistaPdf = view('intranet.convalidacions.direccion.moduls-pdf', [
+            'peticions' => collect([$peticions[0]->fresh()->load(['sollicitud.alumno', 'moduloDestino'])]),
+            'generat' => now(),
+            'generatPer' => Profesor::query()->findOrFail('DIR00001'),
+            'registreItacaConfirmat' => true,
+            'estatInforme' => Convalidacio::ESTAT_ACCEPTADA,
+            'errorsCorreu' => 0,
+        ])->render();
+        $this->assertStringContainsString('AA', $vistaPdf);
+        $this->assertStringContainsString('9', $vistaPdf);
+        $this->assertStringContainsString('Marcades com a «Acceptada (Convalidada)» en la intranet per:', $vistaPdf);
+        $this->assertStringContainsString('responsable de registrar-les en ITACA', $vistaPdf);
     }
 
-    public function test_registre_en_itaca_desactivat_rebutja_tambe_una_seleccio_mixta(): void
+    public function test_pdf_només_permet_marcar_itaca_si_el_filtre_es_acceptada(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca-concurrent', [
             ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
@@ -1157,13 +1301,44 @@ class ConvalidacioFlowTest extends TestCase
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
         $this->from(route('convalidacions.direction.modules.index'))
-            ->post(route('convalidacions.direction.modules.register-accepted'), [
-                'peticions' => [$peticions[0]->id, $peticions[1]->id],
+            ->post(route('convalidacions.direction.modules.pdf.post'), [
+                'estat' => '',
+                'marcar_itaca' => '1',
             ])->assertRedirect(route('convalidacions.direction.modules.index'))
-            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
+            ->assertSessionHasErrors('estat');
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
+    }
+
+    public function test_data_d_estat_canvia_només_quan_canvia_l_estat(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'data-estat', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->first();
+        $dataInicial = $peticio->fresh()->estat_canviat_at;
+        $director = Profesor::query()->findOrFail('DIR00001');
+
+        \Illuminate\Support\Carbon::setTestNow($dataInicial->copy()->addDay());
+        try {
+            $this->service->revisar($peticio, $director, Convalidacio::ESTAT_ENVIADA, 'Observació sense canvi d’estat.');
+            $this->assertSame(
+                $dataInicial->getTimestamp(),
+                $peticio->fresh()->estat_canviat_at->getTimestamp()
+            );
+
+            \Illuminate\Support\Carbon::setTestNow($dataInicial->copy()->addDays(2));
+            $this->service->revisar($peticio->fresh(), $director, Convalidacio::ESTAT_EN_PROCES, '');
+            $this->assertSame(
+                $dataInicial->copy()->addDays(2)->getTimestamp(),
+                $peticio->fresh()->estat_canviat_at->getTimestamp()
+            );
+        } finally {
+            \Illuminate\Support\Carbon::setTestNow();
+        }
     }
 
     public function test_secretaria_configurada_accedix_al_llistat_per_modul_pero_no_a_la_configuracio_de_direccio(): void
@@ -1425,9 +1600,19 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(1, SollicitudConvalidacio::query()->count());
         $this->assertSame('CO', $peticio->resultat_automatic);
         $this->assertSame(7.0, $peticio->nota_resultat_automatic);
+        $this->assertSame('CO', $peticio->resultat_resolucio);
+        $this->assertSame('preserve', $peticio->mode_nota_resolucio);
+        $this->assertSame(7.0, $peticio->nota_resultat_resolucio);
         $this->assertSame('art. 126.3.b', $peticio->base_normativa_automatica[0]['reference']);
         $this->assertSame('regla-orig1-desti-auto', $peticio->regla_automatica_snapshot['rule']['id']);
         $this->assertSame('ORIG1', $peticio->evidencia_automatica_snapshot['resultat_origen']['modul']);
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+        $this->get(route('convalidacions.direction.modules.index'))
+            ->assertOk()
+            ->assertSee('🤖')
+            ->assertSee('aria-label="Resolució automàtica"', false)
+            ->assertSee('Resultat CO');
         $this->assertSame('ACT', $peticio->evidencia_automatica_snapshot['matricula_destinacio']['ciclo_matricula_codigo']);
     }
 
@@ -2359,6 +2544,9 @@ XML;
         Schema::create('alumnos', function (Blueprint $table) {
             $table->string('nia')->primary();
             $table->string('dni')->nullable();
+            $table->string('nombre')->nullable();
+            $table->string('apellido1')->nullable();
+            $table->string('apellido2')->nullable();
             $table->string('email')->nullable();
             $table->string('password')->nullable();
             $table->unsignedBigInteger('rol')->default(1);
@@ -2517,10 +2705,14 @@ XML;
             $table->string('resultat_automatic', 2)->nullable();
             $table->string('mode_nota_automatic', 20)->nullable();
             $table->decimal('nota_resultat_automatic', 5, 2)->nullable();
+            $table->string('resultat_resolucio', 2)->nullable();
+            $table->string('mode_nota_resolucio', 20)->nullable();
+            $table->decimal('nota_resultat_resolucio', 5, 2)->nullable();
             $table->string('estat');
             $table->text('observacions')->nullable();
             $table->string('revisat_per')->nullable();
             $table->timestamp('revisat_at')->nullable();
+            $table->timestamp('estat_canviat_at')->nullable();
             $table->timestamps();
             $table->unique(['sollicitud_convalidacio_id', 'modulo_destino_id']);
         });

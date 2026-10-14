@@ -42,7 +42,7 @@
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
                             @if (filled($peticio->regla_automatica_id))
                                 <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
-                                <div class="mb-1"><strong>Catàleg:</strong> {{ $peticio->regla_automatica_version }} · resultat {{ $peticio->resultat_automatic }}@if ($peticio->mode_nota_automatic === 'preserve') · nota {{ number_format((float) $peticio->nota_resultat_automatic, 0, ',', '') }}@endif</div>
+                                <div class="mb-1"><strong>Catàleg:</strong> {{ $peticio->regla_automatica_version }}</div>
                                 <div class="mb-1"><strong>Base normativa:</strong> {{ collect($peticio->base_normativa_automatica ?? [])->pluck('reference')->filter()->implode(', ') }}</div>
                             @elseif ($casAutomatic = ($peticionsElegibles[$peticio->id] ?? null))
                                 @php($reglaCandidata = $casAutomatic['regla'])
@@ -57,6 +57,18 @@
                                 </div>
                             @elseif ($peticio->estat !== \Intranet\Entities\Convalidacio::ESTAT_DENEGADA && !$peticio->esTerminal())
                                 <div class="small text-muted mb-2">Sense regla automàtica aplicable ara; requerix revisió manual.</div>
+                            @endif
+                            @if (in_array($peticio->estat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true) && $peticio->resultat_resolucio)
+                                <div class="alert alert-info py-2 px-3 mb-2">
+                                    <strong>Resolució:</strong> {{ $peticio->resultat_resolucio }}
+                                    @if ($peticio->mode_nota_resolucio === 'preserve' && $peticio->nota_resultat_resolucio !== null)
+                                        · <strong>Nota conservada:</strong> {{ number_format((float) $peticio->nota_resultat_resolucio, 0, ',', '') }}
+                                    @elseif ($peticio->mode_nota_resolucio === 'none')
+                                        · Sense nota
+                                    @elseif ($peticio->mode_nota_resolucio === 'preserve')
+                                        · Nota d’origen no disponible
+                                    @endif
+                                </div>
                             @endif
                             @if (!is_null($peticio->fol_logse))
                                 <div class="mb-1"><strong>Estudis d’origen segons LOGSE:</strong> {{ $peticio->fol_logse ? 'Sí' : 'No' }}</div>
@@ -110,10 +122,25 @@
                                 <div class="alert alert-success mb-0">{{ $estats[$peticio->estat] ?? $peticio->estat }} — registre de només consulta.</div>
                             @else
                                 <div class="mb-2"><strong>Estat actual:</strong> <span class="badge bg-secondary">{{ $estats[$peticio->estat] ?? $peticio->estat }}</span></div>
+                                @php($estatSeleccionat = old('estat', $peticio->estat))
                                 <form method="POST" action="{{ route('convalidacions.direction.resolve', $peticio) }}">
                                     @csrf @method('PUT')
                                     <label class="form-label" for="estat-{{ $peticio->id }}">Nou estat</label>
-                                    <select class="form-select mb-2" id="estat-{{ $peticio->id }}" name="estat">@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected($peticio->estat === $value)>{{ $label }}</option>@endforeach</select>
+                                    <select class="form-select mb-2" id="estat-{{ $peticio->id }}" name="estat">@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected($estatSeleccionat === $value)>{{ $label }}</option>@endforeach</select>
+                                    <div id="resolucio-{{ $peticio->id }}" @if (!in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true)) hidden @endif>
+                                        <label class="form-label" for="resultat-resolucio-{{ $peticio->id }}">Resultat de la convalidació</label>
+                                        <select class="form-select mb-2" id="resultat-resolucio-{{ $peticio->id }}" name="resultat_resolucio" @required(in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true))>
+                                            <option value="">Selecciona CO o AA</option>
+                                            <option value="CO" @selected(old('resultat_resolucio', $peticio->resultat_resolucio) === 'CO')>CO</option>
+                                            <option value="AA" @selected(old('resultat_resolucio', $peticio->resultat_resolucio) === 'AA')>AA</option>
+                                        </select>
+                                        <label class="form-label" for="mode-nota-resolucio-{{ $peticio->id }}">Tractament de la nota</label>
+                                        <select class="form-select mb-2" id="mode-nota-resolucio-{{ $peticio->id }}" name="mode_nota_resolucio" @required(in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true))>
+                                            <option value="">Selecciona què fer amb la nota</option>
+                                            <option value="preserve" @selected(old('mode_nota_resolucio', $peticio->mode_nota_resolucio) === 'preserve') @disabled($peticio->nota_origen === null)>Conservar la nota d’origen{{ $peticio->nota_origen !== null ? ' (' . number_format((float) $peticio->nota_origen, 0, ',', '') . ')' : '' }}</option>
+                                            <option value="none" @selected(old('mode_nota_resolucio', $peticio->mode_nota_resolucio) === 'none')>La resolució no porta nota</option>
+                                        </select>
+                                    </div>
                                     <label class="form-label" for="observacions-{{ $peticio->id }}">Comentari de Direcció</label>
                                     <textarea class="form-control mb-2" id="observacions-{{ $peticio->id }}" name="observacions" rows="4">{{ $peticio->observacions }}</textarea>
                                     <button class="btn btn-primary" type="submit">Guardar esta petició</button>
@@ -137,4 +164,26 @@
         </form>
     @endunless
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('select[id^="estat-"]').forEach(function (estat) {
+            const peticioId = estat.id.replace('estat-', '');
+            const campsResolucio = document.getElementById('resolucio-' + peticioId);
+            const controls = campsResolucio.querySelectorAll('select');
+            const actualitzarCampsResolucio = function () {
+                const esAcceptada = [
+                    @json(\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA),
+                    @json(\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA),
+                ].includes(estat.value);
+                campsResolucio.hidden = !esAcceptada;
+                controls.forEach(function (control) {
+                    control.required = esAcceptada;
+                    control.disabled = !esAcceptada;
+                });
+            };
+            estat.addEventListener('change', actualitzarCampsResolucio);
+            actualitzarCampsResolucio();
+        });
+    });
+</script>
 @endsection
