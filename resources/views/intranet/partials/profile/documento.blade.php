@@ -2,7 +2,7 @@
     $direccion = esRol(authUser()->rol, config('roles.rol.direccion'));
     $colors = ['blue', 'green', 'yellow', 'brown', 'purple', 'orange'];
 @endphp
-<div class="container bootstrap snippets bootdeys">
+<div class="bootstrap snippets bootdeys documento-ticket-container">
         <div class="documento-ticket-list">
             @foreach ($panel->getElementos($pestana) as $elemento)
                 @php

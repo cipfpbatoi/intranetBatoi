@@ -123,16 +123,26 @@ div.dt-container div.dt-paging ul.pagination .page-item.disabled .page-link {
 }
 
 /* Llista compacta de documents agrupats. */
+.bootdeys.documento-ticket-container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
 .bootdeys .documento-ticket-list {
   display: grid;
   gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .bootdeys .documento-ticket {
   display: flex;
   align-items: center;
   gap: 1rem;
+  width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   padding: 0.75rem 1rem;
   border-left: 0.35rem solid #b8d8d8;
   background: #fff;
