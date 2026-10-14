@@ -1,18 +1,19 @@
-<div class="col-md-4 col-sm-6 content-card documento-ticket">
-<div class="card-big-shadow">
-    <div class="card card-just-text" data-background="color" data-color="{{$color}}" data-radius="none">
-        <div class="content">
-            <h6 class="category" style="text-align:left;margin-bottom: 20px;margin-top: -20px" >
-                {{$name}}
-                @if ($linkEdit != "#")
-                    <a href="{{$linkEdit}}"><em class="fa fa-edit"> </em></a>
-                @endif
-            </h6>
-            <a href="{{$linkShow}}">
-                <h4 class="title"><em class="fa fa-paperclip"> {{$title}} </em></h4>
-                <p class="description">{{$message}}</p>
+<article class="documento-ticket" data-color="{{ $color }}">
+    <div class="documento-ticket-content">
+        <span class="documento-ticket-type">{{ $name }}</span>
+        <a class="documento-ticket-description" href="{{ $linkShow }}">{{ $message }}</a>
+        @if ($title)
+            <span class="documento-ticket-course">{{ $title }}</span>
+        @endif
+    </div>
+    <div class="documento-ticket-actions">
+        <a href="{{ $linkShow }}" title="Obrir document" aria-label="Obrir document">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+        </a>
+        @if ($linkEdit !== '#')
+            <a href="{{ $linkEdit }}" title="Editar document" aria-label="Editar document">
+                <i class="fa fa-edit" aria-hidden="true"></i>
             </a>
-        </div>
-    </div> <!-- end card -->
-</div>
-</div>
+        @endif
+    </div>
+</article>
