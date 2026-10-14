@@ -142,17 +142,19 @@ class ConvalidacioService
         }
     }
 
-    /** Canvia l'estat d'una petició i guarda el resultat i la nota si queda acceptada. */
+    /** Canvia l'estat individual i guarda el resultat i la nota d'una resolució manual acceptada. */
     public function revisar(
         Convalidacio $peticio,
         Profesor $revisor,
         string $estat,
         ?string $observacions,
         ?string $resultatResolucio = null,
-        ?string $modeNotaResolucio = null
+        ?string $modeNotaResolucio = null,
+        ?string $notaManualResolucio = null
     ): Convalidacio
     {
-        if (!array_key_exists($estat, Convalidacio::estatManualOptions())) {
+        if (!array_key_exists($estat, Convalidacio::estatManualOptions())
+            && $estat !== Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA) {
             throw new ConvalidacioException('L\'estat indicat no és vàlid.');
         }
 
@@ -167,10 +169,7 @@ class ConvalidacioService
         }
 
         $notaResultatResolucio = null;
-        $estatResolutiu = in_array($estat, [
-            Convalidacio::ESTAT_ACCEPTADA,
-            Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
-        ], true);
+        $estatResolutiu = $estat === Convalidacio::ESTAT_ACCEPTADA;
         if ($estatResolutiu) {
             if (!in_array($resultatResolucio, ['CO', 'AA'], true)) {
                 throw new ConvalidacioException('Indica si el resultat de la convalidació és CO o AA.');
@@ -178,11 +177,14 @@ class ConvalidacioService
             if (!in_array($modeNotaResolucio, ['preserve', 'none'], true)) {
                 throw new ConvalidacioException('Indica si es conserva la nota d’origen o si la resolució no porta nota.');
             }
-            if ($modeNotaResolucio === 'preserve' && $peticio->nota_origen === null) {
-                throw new ConvalidacioException('No es pot conservar la nota perquè la petició no en té cap d’origen.');
-            }
             if ($modeNotaResolucio === 'preserve') {
-                $notaResultatResolucio = $peticio->nota_origen;
+                $notaValidada = filter_var($notaManualResolucio, FILTER_VALIDATE_INT, [
+                    'options' => ['min_range' => 5, 'max_range' => 10],
+                ]);
+                if ($notaValidada === false) {
+                    throw new ConvalidacioException('La nota que consta en la documentació ha de ser un enter entre 5 i 10.');
+                }
+                $notaResultatResolucio = (float) $notaValidada;
             }
         }
 
@@ -199,15 +201,23 @@ class ConvalidacioService
             if ($actual->esTerminal()) {
                 throw new ConvalidacioException('Una petició ja convalidada en ITACA és de només consulta.');
             }
+            if ($estat === Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA
+                && $actual->estat !== Convalidacio::ESTAT_ACCEPTADA) {
+                throw new ConvalidacioException('Una petició només pot passar a «Acceptada (Convalidada)» des de l’estat «Acceptada».');
+            }
 
             $observacions = filled($observacions) ? trim((string) $observacions) : null;
-            $estatResolutiu = in_array($estat, [
-                Convalidacio::ESTAT_ACCEPTADA,
-                Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
-            ], true);
-            $resultatResolucio = $estatResolutiu ? $resultatResolucio : null;
-            $modeNotaResolucio = $estatResolutiu ? $modeNotaResolucio : null;
-            $notaResultatResolucio = $estatResolutiu ? $notaResultatResolucio : null;
+            $estatResolutiu = $estat === Convalidacio::ESTAT_ACCEPTADA;
+            $esMarcaConvalidada = $estat === Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA;
+            $resultatResolucio = $estatResolutiu
+                ? $resultatResolucio
+                : ($esMarcaConvalidada ? $actual->resultat_resolucio : null);
+            $modeNotaResolucio = $estatResolutiu
+                ? $modeNotaResolucio
+                : ($esMarcaConvalidada ? $actual->mode_nota_resolucio : null);
+            $notaResultatResolucio = $estatResolutiu
+                ? $notaResultatResolucio
+                : ($esMarcaConvalidada ? $actual->nota_resultat_resolucio : null);
 
             if ($actual->estat === $estat
                 && $actual->observacions === $observacions

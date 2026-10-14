@@ -126,20 +126,26 @@
                                 <form method="POST" action="{{ route('convalidacions.direction.resolve', $peticio) }}">
                                     @csrf @method('PUT')
                                     <label class="form-label" for="estat-{{ $peticio->id }}">Nou estat</label>
-                                    <select class="form-select mb-2" id="estat-{{ $peticio->id }}" name="estat">@foreach ($estats as $value => $label)<option value="{{ $value }}" @selected($estatSeleccionat === $value)>{{ $label }}</option>@endforeach</select>
-                                    <div id="resolucio-{{ $peticio->id }}" @if (!in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true)) hidden @endif>
+                                    <select class="form-select mb-2" id="estat-{{ $peticio->id }}" name="estat">@foreach (\Intranet\Entities\Convalidacio::estatManualOptions() as $value => $label)<option value="{{ $value }}" @selected($estatSeleccionat === $value)>{{ $label }}</option>@endforeach @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA)<option value="{{ \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA }}" @selected($estatSeleccionat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA)>Acceptada (Convalidada)</option>@endif</select>
+                                    <div id="resolucio-{{ $peticio->id }}" @if ($estatSeleccionat !== \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA) hidden @endif>
                                         <label class="form-label" for="resultat-resolucio-{{ $peticio->id }}">Resultat de la convalidació</label>
-                                        <select class="form-select mb-2" id="resultat-resolucio-{{ $peticio->id }}" name="resultat_resolucio" @required(in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true))>
+                                        <select class="form-select mb-2" id="resultat-resolucio-{{ $peticio->id }}" name="resultat_resolucio" @required($estatSeleccionat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA)>
                                             <option value="">Selecciona CO o AA</option>
                                             <option value="CO" @selected(old('resultat_resolucio', $peticio->resultat_resolucio) === 'CO')>CO</option>
                                             <option value="AA" @selected(old('resultat_resolucio', $peticio->resultat_resolucio) === 'AA')>AA</option>
                                         </select>
                                         <label class="form-label" for="mode-nota-resolucio-{{ $peticio->id }}">Tractament de la nota</label>
-                                        <select class="form-select mb-2" id="mode-nota-resolucio-{{ $peticio->id }}" name="mode_nota_resolucio" @required(in_array($estatSeleccionat, [\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA, \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA], true))>
+                                        <select class="form-select mb-2" id="mode-nota-resolucio-{{ $peticio->id }}" name="mode_nota_resolucio" @required($estatSeleccionat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA)>
                                             <option value="">Selecciona què fer amb la nota</option>
-                                            <option value="preserve" @selected(old('mode_nota_resolucio', $peticio->mode_nota_resolucio) === 'preserve') @disabled($peticio->nota_origen === null)>Conservar la nota d’origen{{ $peticio->nota_origen !== null ? ' (' . number_format((float) $peticio->nota_origen, 0, ',', '') . ')' : '' }}</option>
+                                            <option value="preserve" @selected(old('mode_nota_resolucio', $peticio->mode_nota_resolucio) === 'preserve')>Conservar la nota que consta en la documentació</option>
                                             <option value="none" @selected(old('mode_nota_resolucio', $peticio->mode_nota_resolucio) === 'none')>La resolució no porta nota</option>
                                         </select>
+                                        @php($notaResolucio = old('nota_resultat_resolucio', $peticio->nota_resultat_resolucio ?? $peticio->nota_origen))
+                                        <div id="nota-resolucio-container-{{ $peticio->id }}" @if (old('mode_nota_resolucio', $peticio->mode_nota_resolucio) !== 'preserve') hidden @endif>
+                                            <label class="form-label" for="nota-resultat-resolucio-{{ $peticio->id }}">Nota acreditada</label>
+                                            <input class="form-control mb-1" type="number" id="nota-resultat-resolucio-{{ $peticio->id }}" name="nota_resultat_resolucio" min="5" max="10" step="1" value="{{ $notaResolucio }}" placeholder="De 5 a 10">
+                                            <div class="form-text mb-2">Transcriu la nota que consta en la documentació. Ha de ser un enter entre 5 i 10.</div>
+                                        </div>
                                     </div>
                                     <label class="form-label" for="observacions-{{ $peticio->id }}">Comentari de Direcció</label>
                                     <textarea class="form-control mb-2" id="observacions-{{ $peticio->id }}" name="observacions" rows="4">{{ $peticio->observacions }}</textarea>
@@ -170,18 +176,23 @@
             const peticioId = estat.id.replace('estat-', '');
             const campsResolucio = document.getElementById('resolucio-' + peticioId);
             const controls = campsResolucio.querySelectorAll('select');
+            const modeNota = document.getElementById('mode-nota-resolucio-' + peticioId);
+            const notaContainer = document.getElementById('nota-resolucio-container-' + peticioId);
+            const notaInput = document.getElementById('nota-resultat-resolucio-' + peticioId);
             const actualitzarCampsResolucio = function () {
-                const esAcceptada = [
-                    @json(\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA),
-                    @json(\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA),
-                ].includes(estat.value);
+                const esAcceptada = estat.value === @json(\Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA);
                 campsResolucio.hidden = !esAcceptada;
                 controls.forEach(function (control) {
                     control.required = esAcceptada;
                     control.disabled = !esAcceptada;
                 });
+                const conservaNota = esAcceptada && modeNota.value === 'preserve';
+                notaContainer.hidden = !conservaNota;
+                notaInput.required = conservaNota;
+                notaInput.disabled = !conservaNota;
             };
             estat.addEventListener('change', actualitzarCampsResolucio);
+            modeNota.addEventListener('change', actualitzarCampsResolucio);
             actualitzarCampsResolucio();
         });
     });

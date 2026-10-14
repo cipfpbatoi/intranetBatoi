@@ -219,10 +219,11 @@ class DireccionConvalidacioController extends Controller
     {
         Gate::forUser($this->profesor())->authorize('resolve', $convalidacio);
         $validated = $request->validate([
-            'estat' => ['required', 'string', Rule::in(array_keys(Convalidacio::estatManualOptions()))],
+            'estat' => ['required', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
             'observacions' => ['nullable', 'string', 'max:2000'],
-            'resultat_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA . ',' . Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, 'nullable', Rule::in(['CO', 'AA'])],
-            'mode_nota_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA . ',' . Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, 'nullable', Rule::in(['preserve', 'none'])],
+            'resultat_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA, 'nullable', Rule::in(['CO', 'AA'])],
+            'mode_nota_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA, 'nullable', Rule::in(['preserve', 'none'])],
+            'nota_resultat_resolucio' => ['exclude_unless:estat,' . Convalidacio::ESTAT_ACCEPTADA, 'exclude_unless:mode_nota_resolucio,preserve', 'required', 'integer', 'min:5', 'max:10'],
         ]);
 
         try {
@@ -232,7 +233,8 @@ class DireccionConvalidacioController extends Controller
                 $validated['estat'],
                 $validated['observacions'] ?? null,
                 $validated['resultat_resolucio'] ?? null,
-                $validated['mode_nota_resolucio'] ?? null
+                $validated['mode_nota_resolucio'] ?? null,
+                isset($validated['nota_resultat_resolucio']) ? (string) $validated['nota_resultat_resolucio'] : null
             );
         } catch (ConvalidacioException $exception) {
             return back()->withErrors(['estat' => $exception->getMessage()]);

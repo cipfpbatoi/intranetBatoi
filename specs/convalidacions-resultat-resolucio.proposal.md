@@ -7,10 +7,11 @@ Esta proposta complementa [`convalidacions.md`](convalidacions.md). Ha sigut apr
 ### Escenari 1: Direcció resol manualment una petició com a acceptada
 
 Given Direcció revisa una petició de convalidació que encara no té resolució
-When selecciona l'estat `Acceptada` (o assigna directament `Acceptada (Convalidada)`)
+When selecciona l'estat `Acceptada`
 Then ha d'indicar el resultat de la convalidació: `CO` o `AA`
 And ha d'indicar si es conserva la nota d'origen o si la resolució no porta nota
-And si es conserva, la nota resultant és la nota d'origen guardada en la petició
+And si es conserva, Direcció transcriu la nota acreditada en la documentació com a enter entre 5 i 10
+And si la petició té nota d'origen, es mostra com a valor inicial editable
 And la resolució, la persona responsable i la data queden guardades en eixa petició, sense alterar les altres de la sol·licitud
 
 ### Escenari 2: una regla automàtica resol una petició
@@ -33,10 +34,11 @@ And una regla només candidata o disponible, però no aplicada, no es presenta c
 ## Regles de negoci
 
 - `Acceptada` no és suficient per a deduir el resultat de la convalidació ni si s'aplica una nota.
-- En una resolució manual, `CO`/`AA` i el tractament de la nota són obligatoris quan es marca una petició com a `Acceptada` o s'assigna directament `Acceptada (Convalidada)`.
+- En una resolució manual, `CO`/`AA` i el tractament de la nota són obligatoris quan es marca una petició com a `Acceptada`.
+- `Acceptada (Convalidada)` és una transició posterior, individual o en bloc, que només parteix de `Acceptada` i conserva el resultat i la nota existents.
 - En una resolució automàtica, el resultat i el tractament de la nota provenen de la regla YAML aplicada; no es demana una segona decisió manual.
 - El robotet identifica únicament una resolució amb una regla automàtica aplicada i guardada; no indica elegibilitat ni una regla candidata.
-- Si es conserva la nota, s'utilitza la nota d'origen registrada en la petició. Si no hi ha nota d'origen, no es pot presentar una nota resultant.
+- En una resolució manual, Direcció pot transcriure la nota acreditada en la documentació; si la petició ja té nota d'origen, es mostra com a valor inicial editable.
 - El resultat i la nota pertanyen a cada petició de mòdul, no a la sol·licitud global.
 
 ## Fitxers afectats previstos
@@ -52,6 +54,6 @@ And una regla només candidata o disponible, però no aplicada, no es presenta c
 
 - Els camps existents `resultat_automatic` i `nota_resultat_automatic` només descriuen actualment l'automatització; reutilitzar-los per a decisions manuals seria semànticament confús. La proposta preveu camps comuns i conservar les instantànies automàtiques per a traçabilitat.
 - S'assumix que en producció no hi haurà resolucions manuals acceptades anteriors a este canvi; si se'n detecta alguna, es revisarà com una incidència separada, sense inferir-ne ni migrar-ne el resultat.
-- Si la nota d'origen és nul·la i Direcció selecciona conservar-la, el sistema ha de rebutjar la resolució amb un missatge clar.
+- La nota manual només s'accepta com a enter entre 5 i 10, i no s'altera la nota d'origen registrada.
 
 Status: ready_to_commit
