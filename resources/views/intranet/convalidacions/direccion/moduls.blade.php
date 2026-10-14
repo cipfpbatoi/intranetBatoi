@@ -21,6 +21,13 @@
     @if (session('warning'))<div class="alert alert-warning" role="status">{{ session('warning') }}</div>@endif
     @if ($errors->any())<div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>@endif
 
+    @if (!$itacaRegistrationEnabled)
+        <div class="alert alert-warning" id="itaca-registration-pending-help" role="status">
+            <strong>Funcionalitat pendent de definir.</strong>
+            El procediment per registrar les convalidacions en ITACA encara no està determinat. De moment, no es pot completar aquest pas des de la intranet.
+        </div>
+    @endif
+
     <form method="GET" action="{{ route('convalidacions.direction.modules.index') }}" class="row">
         <div class="col-md-4 col-sm-6">
             <div class="form-group">
@@ -72,18 +79,22 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('convalidacions.direction.modules.register-accepted') }}" onsubmit="return confirm('Es marcaran com a Acceptada (Convalidada) únicament els mòduls seleccionats que continuen en estat Acceptada. L’alumnat rebrà un correu individual. Vols continuar?')">
+    <form method="POST" action="{{ route('convalidacions.direction.modules.register-accepted') }}" onsubmit="return confirm('Es marcaran en la intranet com a registrats en ITACA únicament els mòduls seleccionats que continuen en estat Acceptada. L’alumnat rebrà un correu individual. Vols continuar?')">
         @csrf
         <div class="d-flex justify-content-between align-items-center mb-2">
             <span>{{ $peticions->count() }} {{ $peticions->count() === 1 ? 'mòdul' : 'mòduls' }}</span>
-            <button type="submit" class="btn btn-success">Registrar com a convalidats en ITACA</button>
+            <button type="submit" class="btn btn-success"
+                @disabled(!$itacaRegistrationEnabled)
+                @if (!$itacaRegistrationEnabled) aria-describedby="itaca-registration-pending-help" title="Funcionalitat pendent de definir" @endif>
+                Marcar com a registrades en ITACA
+            </button>
         </div>
         <div class="table-responsive"><table class="table table-striped align-middle">
-            <thead><tr><th scope="col">Selecció</th><th scope="col">Alumne</th><th scope="col">Mòdul que vol convalidar</th><th scope="col">Origen i mòdul aportat</th><th scope="col">Estat</th><th scope="col">Sol·licitud</th><th scope="col">Data</th></tr></thead>
+            <thead><tr><th scope="col">Anotada en ITACA</th><th scope="col">Alumne</th><th scope="col">Mòdul que vol convalidar</th><th scope="col">Origen i mòdul aportat</th><th scope="col">Estat</th><th scope="col">Sol·licitud</th><th scope="col">Data</th></tr></thead>
             <tbody>
                 @forelse ($peticions as $peticio)
                     <tr>
-                        <td>@if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA)<input class="form-check-input" type="checkbox" name="peticions[]" value="{{ $peticio->id }}" aria-label="Selecciona {{ $peticio->moduloDestino?->vliteral ?? $peticio->modulo_destino_id }} per a registrar-la en ITACA">@else<span class="text-muted">—</span>@endif</td>
+                        <td>@if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ACCEPTADA)<input class="form-check-input" type="checkbox" name="peticions[]" value="{{ $peticio->id }}" aria-label="Marca {{ $peticio->moduloDestino?->vliteral ?? $peticio->modulo_destino_id }} com a ja registrada manualment en ITACA" @disabled(!$itacaRegistrationEnabled)>@else<span class="text-muted">—</span>@endif</td>
                         <td>{{ $peticio->sollicitud?->alumno?->fullName ?? $peticio->sollicitud?->alumno_id }}<br><small class="text-muted">NIA {{ $peticio->sollicitud?->alumno_id }}</small></td>
                         <td><strong>{{ $peticio->moduloDestino?->vliteral ?? $peticio->modulo_destino_id }}</strong><br><small class="text-muted">{{ $peticio->modulo_destino_id }}</small></td>
                         <td>{{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}<br>@if ($peticio->modulo_origen_codigo || $peticio->modulo_origen_nombre)<small>{{ $peticio->modulo_origen_codigo }} — {{ $peticio->modulo_origen_nombre }}</small>@endif</td>

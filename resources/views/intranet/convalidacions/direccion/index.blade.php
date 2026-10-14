@@ -136,7 +136,7 @@
                                 <button class="btn btn-primary btn-sm" type="submit">Revisar</button>
                             </form>
                         @else
-                            <a href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a>
                         @endif
                     </td>
                 </tr>

@@ -86,6 +86,7 @@ class DireccionConvalidacioController extends Controller
             'peticions' => $this->queries->peticionsDireccion($filters),
             'estats' => Convalidacio::estatOptions(),
             'filters' => $filters,
+            'itacaRegistrationEnabled' => (bool) config('convalidacions.itaca_registration_enabled', false),
         ]);
     }
 
@@ -103,11 +104,16 @@ class DireccionConvalidacioController extends Controller
         ])->setPaper('a4', 'landscape')->stream('convalidacions-per-modul.pdf');
     }
 
-    /** Marca conjuntament com a convalidades en ITACA les peticions encara Acceptada. */
+    /** Deixa constància en la intranet que les peticions Acceptada ja s'han anotat manualment en ITACA. */
     public function registerAccepted(Request $request): RedirectResponse
     {
         $responsable = $this->profesor();
         Gate::forUser($responsable)->authorize('registerModuleRequests', Convalidacio::class);
+
+        if (!(bool) config('convalidacions.itaca_registration_enabled', false)) {
+            return back()->with('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
+        }
+
         $validated = $request->validate([
             'peticions' => ['required', 'array', 'min:1'],
             'peticions.*' => ['required', 'integer', 'distinct'],
@@ -126,9 +132,13 @@ class DireccionConvalidacioController extends Controller
             }
         }
 
-        $missatge = count($peticions) . ' peticions registrades com a convalidades en ITACA.';
+        $quantitat = count($peticions);
+        $missatge = $quantitat . ' ' . ($quantitat === 1 ? 'petició marcada' : 'peticions marcades')
+            . ' en la intranet com a registrades en ITACA.';
         if ($errorsCorreu > 0) {
-            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} peticions.");
+            $detallCorreu = $errorsCorreu === 1 ? 'petició' : 'peticions';
+
+            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} {$detallCorreu}.");
         }
 
         return back()->with('success', $missatge . ' S’ha notificat cada alumne.');
