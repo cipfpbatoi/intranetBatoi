@@ -144,6 +144,85 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(Convalidacio::ESTAT_ENVIADA, $segona->convalidacions->firstOrFail()->estat);
     }
 
+    public function test_migracio_normalitza_resolta_sense_esborrar_registres(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'migracio-estats', [
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+        ]);
+        $sollicitud->convalidacions[0]->forceFill(['estat' => 'resolta'])->save();
+        $sollicitud->convalidacions[1]->forceFill(['estat' => Convalidacio::ESTAT_EN_PROCES])->save();
+        $sollicitudsAbans = SollicitudConvalidacio::query()->count();
+        $peticionsAbans = Convalidacio::query()->count();
+
+        $migration = require database_path('migrations/2026_10_13_160000_normalize_convalidacio_states.php');
+        $migration->up();
+
+        $this->assertSame('acceptada', $sollicitud->convalidacions[0]->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $sollicitud->convalidacions[1]->fresh()->estat);
+        $this->assertSame($sollicitudsAbans, SollicitudConvalidacio::query()->count());
+        $this->assertSame($peticionsAbans, Convalidacio::query()->count());
+    }
+
+    public function test_revisar_sollicitud_canvia_nomes_les_peticions_enviades(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'iniciar-revisio', [
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+        ]);
+        [$enviada, $jaRevisada] = $sollicitud->convalidacions;
+        $jaRevisada->forceFill([
+            'estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+            'observacions' => 'Aportar el document complet.',
+        ])->save();
+        $director = Profesor::query()->findOrFail('DIR00001');
+
+        $canviades = $this->service->iniciarRevisio($sollicitud, $director);
+
+        $this->assertSame([$enviada->id], $canviades->pluck('id')->all());
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $enviada->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_REVISAR_DOCUMENTACIO, $jaRevisada->fresh()->estat);
+        $this->assertSame('Aportar el document complet.', $jaRevisada->fresh()->observacions);
+    }
+
+    public function test_panell_de_direccio_filtra_i_inicia_revisio_de_sollicituds_pendents(): void
+    {
+        DB::table('alumnos')->where('nia', $this->alumno->nia)->update(['email' => 'alumne@example.test']);
+        $sollicitud = $this->service->tramitar($this->alumno, 'panell-pendents', [
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+        ]);
+        [$enviada, $jaRevisada] = $sollicitud->convalidacions;
+        $jaRevisada->forceFill(['estat' => Convalidacio::ESTAT_DENEGADA, 'observacions' => 'No correspon.'])->save();
+        $director = Profesor::query()->findOrFail('DIR00001');
+        Mail::fake();
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.index', ['pendent_direccio' => 1]))
+            ->assertOk()
+            ->assertSee('Només amb acció pendent de Direcció')
+            ->assertSee('onchange="this.form.submit()"', false)
+            ->assertDontSee('>Filtrar</button>', false)
+            ->assertSee('1 mòdul')
+            ->assertSee('aria-label="1 mòdul amb acció pendent de Direcció: 1 Enviada."', false)
+            ->assertSee(route('convalidacions.direction.review', $sollicitud));
+
+        $this->post(route('convalidacions.direction.review', $sollicitud))
+            ->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHas('success', '1 mòdul ha passat a En procés. S’ha notificat l’alumnat.');
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee(
+                'class="btn btn-primary btn-sm" href="' . route('convalidacions.direction.show', $sollicitud) . '"',
+                false
+            );
+
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $enviada->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_DENEGADA, $jaRevisada->fresh()->estat);
+        Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
+    }
+
     public function test_rebutja_destins_duplicats_ids_manipulats_i_externs_sense_document(): void
     {
         foreach ([
@@ -347,7 +426,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(0, Convalidacio::query()->count());
     }
 
-    public function test_direccio_revisa_una_peticio_sense_alterar_les_altres_i_realitzada_es_terminal(): void
+    public function test_direccio_revisa_una_peticio_sense_alterar_les_altres_i_acceptada_itaca_es_terminal(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'review', [
             ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
@@ -361,7 +440,7 @@ class ConvalidacioFlowTest extends TestCase
         try {
             $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_DENEGADA, null);
         } finally {
-            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_REALITZADA, null);
+            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, null);
             $this->assertSame(Convalidacio::ESTAT_ENVIADA, $segona->fresh()->estat);
             $this->assertSame('DIR00001', $primera->fresh()->revisat_per);
             try {
@@ -410,7 +489,7 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->from(route('convalidacions.direction.show', $sollicitud))
             ->put(route('convalidacions.direction.resolve', $segona), [
-                'estat' => Convalidacio::ESTAT_REALITZADA,
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
             ])
             ->assertSessionHas('success', 'Petició actualitzada i correu enviat a l’alumne.');
@@ -479,12 +558,12 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->from(route('convalidacions.direction.show', $sollicitud))
             ->put(route('convalidacions.direction.resolve', $peticio), [
-                'estat' => Convalidacio::ESTAT_REALITZADA,
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
             ])
             ->assertSessionHas('warning', 'La petició s’ha actualitzat, però l’alumne no té una adreça de correu vàlida. No s’ha enviat cap notificació.');
 
-        $this->assertSame(Convalidacio::ESTAT_REALITZADA, $peticio->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->fresh()->estat);
         Mail::assertNothingSent();
     }
 
@@ -502,12 +581,12 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->from(route('convalidacions.direction.show', $sollicitud))
             ->put(route('convalidacions.direction.resolve', $peticio), [
-                'estat' => Convalidacio::ESTAT_REALITZADA,
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
                 'observacions' => '',
             ])
             ->assertSessionHas('warning', 'La petició s’ha actualitzat, però no s’ha pogut enviar el correu a l’alumne.');
 
-        $this->assertSame(Convalidacio::ESTAT_REALITZADA, $peticio->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->fresh()->estat);
     }
 
     public function test_alumne_substituix_nomes_el_document_requerit(): void
@@ -551,6 +630,30 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertFalse($policy->viewPeticio($altre, $peticio));
         $this->assertTrue($policy->viewPeticio($direccio, $peticio));
         $this->assertTrue($policy->resolve($direccio, $peticio));
+    }
+
+    public function test_alumne_pot_actualitzar_un_document_enviat_sense_canviar_estat(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'document-enviat', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat-inicial.pdf', 50, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $policy = new ConvalidacioPolicy();
+
+        $this->assertTrue($policy->correct($this->alumno, $peticio));
+        $this->assertFalse($policy->correct(Alumno::query()->findOrFail('87654321'), $peticio));
+
+        $actualitzada = $this->service->corregirDocument(
+            $peticio,
+            $this->alumno,
+            UploadedFile::fake()->create('certificat-actualitzat.pdf', 60, 'application/pdf')
+        );
+
+        $this->assertSame(Convalidacio::ESTAT_ENVIADA, $actualitzada->estat);
+        $this->assertSame('certificat-actualitzat.pdf', $actualitzada->document_original_name);
     }
 
     public function test_una_peticio_no_denegada_bloqueja_el_modul_i_denegada_el_torna_a_habilitar(): void
@@ -647,7 +750,7 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('id="builder-feedback" class="visually-hidden" role="status" aria-live="polite"', false)
             ->assertDontSee('class="alert alert-success"', false)
             ->assertSee('id="revisar-sollicitud"', false)
-            ->assertSee('Revisar sol·licitud')
+            ->assertSee('Enviar sol·licitud')
             ->assertSee('Afegir a la sol·licitud')
             ->assertSee('Tornar i modificar')
             ->assertSee('id="presentar-sollicitud" type="button"', false)
@@ -933,6 +1036,13 @@ class ConvalidacioFlowTest extends TestCase
         ]))
             ->assertOk()
             ->assertSee('Convalidacions per mòdul')
+            ->assertSee('id="itaca-registration-pending-help"', false)
+            ->assertSee('Funcionalitat pendent de definir.')
+            ->assertSee('El procediment per registrar les convalidacions en ITACA encara no està determinat.')
+            ->assertSee('Marcar com a registrades en ITACA')
+            ->assertSee('Anotada en ITACA')
+            ->assertSee('class="btn btn-success"', false)
+            ->assertSee('disabled', false)
             ->assertSee('DEST1')
             ->assertDontSee('DEST2')
             ->assertSee('#' . $sollicitud->id)
@@ -1009,7 +1119,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertStringNotContainsString('confidencial.pdf', $response->getContent());
     }
 
-    public function test_registre_massiu_en_itaca_actualitza_i_notifica_només_peticions_acceptades(): void
+    public function test_registre_en_itaca_desactivat_rebutja_peticio_directa_sense_canvis_ni_correus(): void
     {
         Mail::fake();
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca', [
@@ -1026,15 +1136,15 @@ class ConvalidacioFlowTest extends TestCase
         $this->post(route('convalidacions.direction.modules.register-accepted'), [
             'peticions' => [$peticions[0]->id],
         ])->assertRedirect()
-            ->assertSessionHas('success');
+            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
 
-        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $peticions[0]->fresh()->estat);
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
-        $this->assertSame('DIR00001', $peticions[0]->fresh()->revisat_per);
-        Mail::assertSent(ConvalidacioEstatActualitzat::class, 1);
+        $this->assertNull($peticions[0]->fresh()->revisat_per);
+        Mail::assertNothingSent();
     }
 
-    public function test_registre_massiu_en_itaca_rebutja_tota_la_seleccio_si_un_modul_ja_no_es_acceptat(): void
+    public function test_registre_en_itaca_desactivat_rebutja_tambe_una_seleccio_mixta(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'registre-itaca-concurrent', [
             ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
@@ -1050,7 +1160,7 @@ class ConvalidacioFlowTest extends TestCase
             ->post(route('convalidacions.direction.modules.register-accepted'), [
                 'peticions' => [$peticions[0]->id, $peticions[1]->id],
             ])->assertRedirect(route('convalidacions.direction.modules.index'))
-            ->assertSessionHasErrors('peticions');
+            ->assertSessionHas('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
@@ -1178,8 +1288,9 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Resolució automàtica')
             ->assertSee('Configuració de convalidacions')
             ->assertDontSee('Gestionar regles automàtiques')
-            ->assertSee('Parcialment automàtica')
-            ->assertSee('1/2')
+            ->assertSee('🤖✍️')
+            ->assertSee('title="Resolució mixta: 1 de 2 peticions pendents es poden resoldre automàticament; 1 requerix revisió manual."', false)
+            ->assertSee('class="label label-primary" role="img"', false)
             ->assertSee('name="return_to" value="index"', false);
 
         $this->get(route('convalidacions.direction.show', $sollicitud))
@@ -1195,7 +1306,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertDatabaseHas('convalidacions', [
             'sollicitud_convalidacio_id' => $sollicitud->id,
             'modulo_destino_id' => 'DEST_AUTO',
-            'estat' => Convalidacio::ESTAT_RESOLTA,
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
             'regla_automatica_id' => 'regla-orig1-desti-auto',
         ], 'sqlite');
         $this->assertDatabaseHas('convalidacions', [
@@ -1204,6 +1315,45 @@ class ConvalidacioFlowTest extends TestCase
             'estat' => Convalidacio::ESTAT_ENVIADA,
             'regla_automatica_id' => null,
         ], 'sqlite');
+    }
+
+    public function test_llistat_de_direccio_deixa_buides_les_accions_i_automatitzacio_sense_pendents(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'sense-pendents-llistat', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $sollicitud->convalidacions->firstOrFail()->forceFill([
+            'estat' => Convalidacio::ESTAT_DENEGADA,
+            'observacions' => 'No correspon.',
+        ])->save();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertDontSee('Cap acció pendent de Direcció')
+            ->assertDontSee('Sense peticions pendents')
+            ->assertDontSee('Revisió manual:');
+    }
+
+    public function test_llistat_de_direccio_mostra_la_icona_de_revisio_manual_amb_hint(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'revisio-manual-llistat', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat.pdf', 50, 'application/pdf'),
+        ]]);
+        $sollicitud->convalidacions->firstOrFail()->forceFill(['estat' => Convalidacio::ESTAT_EN_PROCES])->save();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('✍️')
+            ->assertSee('title="Revisió manual: no hi ha cap regla automàtica aplicable a 1 petició pendent."', false);
     }
 
     public function test_direccio_pot_eliminar_una_sollicitud_i_els_documents_privats(): void
@@ -1243,7 +1393,7 @@ class ConvalidacioFlowTest extends TestCase
         Storage::disk('convalidacions')->assertMissing($prlPath);
     }
 
-    public function test_regla_yaml_coincident_crea_una_convalidacio_resolta_idempotent(): void
+    public function test_regla_yaml_coincident_crea_una_convalidacio_acceptada_idempotent(): void
     {
         DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
         DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
@@ -1269,7 +1419,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(['aplicats' => 0, 'ja_existien' => 0, 'errors' => []], $second);
         $peticio = Convalidacio::query()->where('modulo_destino_id', 'DEST_AUTO')->firstOrFail();
         $this->assertSame($peticioOriginal->id, $peticio->id);
-        $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->estat);
         $this->assertSame(Convalidacio::ORIGEN_PROPI_CENTRE, $peticio->origen);
         $this->assertSame($sollicitud->id, $peticio->sollicitud_convalidacio_id);
         $this->assertSame(1, SollicitudConvalidacio::query()->count());
@@ -1443,7 +1593,7 @@ XML);
         $director = Profesor::query()->findOrFail('DIR00001');
         $resultat = app(ConvalidacioAutomaticaService::class)->aplicar($director);
         $this->assertSame(['aplicats' => 5, 'ja_existien' => 0, 'errors' => []], $resultat);
-        $this->assertSame(5, Convalidacio::query()->where('estat', Convalidacio::ESTAT_RESOLTA)->count());
+        $this->assertSame(5, Convalidacio::query()->where('estat', Convalidacio::ESTAT_ACCEPTADA)->count());
         $this->assertSame(2, SollicitudConvalidacio::query()->count());
         $peticioFamilia = Convalidacio::query()->where('modulo_destino_id', '1708')->firstOrFail();
         $this->assertSame('1708-from-1708-gm-same-family', $peticioFamilia->regla_automatica_id);
@@ -1503,7 +1653,7 @@ XML);
 
         foreach ([['1709', '1709-from-1709', 8.0], ['1710', '1710-from-1710', 9.0]] as [$code, $rule, $grade]) {
             $peticio = Convalidacio::query()->where('modulo_destino_id', $code)->firstOrFail();
-            $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+            $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->estat);
             $this->assertSame('AA', $peticio->resultat_automatic);
             $this->assertSame($grade, $peticio->nota_resultat_automatic);
             $this->assertSame($rule, $peticio->regla_automatica_id);
@@ -1786,7 +1936,7 @@ XML);
             [$sollicitudAltre, '1664', '1664-from-1665-same-family', 6.0],
         ] as [$sollicitud, $destinacio, $regla, $nota]) {
             $peticio = $sollicitud->convalidacions()->where('modulo_destino_id', $destinacio)->firstOrFail();
-            $this->assertSame(Convalidacio::ESTAT_RESOLTA, $peticio->estat);
+            $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->estat);
             $this->assertSame('AA', $peticio->resultat_automatic);
             $this->assertSame($nota, $peticio->nota_resultat_automatic);
             $this->assertSame($regla, $peticio->regla_automatica_id);

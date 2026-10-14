@@ -20,6 +20,10 @@
             <tbody>
                 @foreach ($sollicitud->convalidacions as $peticio)
                     @php
+                        $potEditarDocumentacio = in_array($peticio->estat, [
+                            \Intranet\Entities\Convalidacio::ESTAT_ENVIADA,
+                            \Intranet\Entities\Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+                        ], true);
                         $familiaMatricula = $peticio->familia_matricula_nombre_val ?: $peticio->familia_matricula_nombre_cas;
                         $familiaOrigen = $peticio->familia_professional_nombre_val ?: $peticio->familia_professional_nombre_cas;
                         $nivellMatricula = $peticio->ciclo_matricula_tipo_nombre_val ?: $peticio->ciclo_matricula_tipo_nombre_cas;
@@ -72,11 +76,11 @@
                                         @foreach ($peticio->documents as $document)
                                             <li class="mb-1">
                                                 {{ $document->descripcio }} — <a href="{{ route('convalidacions.download-attachment', [$peticio, $document]) }}">Descarregar {{ $document->original_name }}</a>
-                                                @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_REVISAR_DOCUMENTACIO && $peticio->esOrigenExtern())
+                                                @if ($potEditarDocumentacio)
                                                     <form class="d-inline-flex gap-2 mt-1" method="POST" enctype="multipart/form-data" action="{{ route('convalidacions.correct-attachment', [$peticio, $document]) }}">
                                                         @csrf @method('PUT')
                                                         <input class="form-control form-control-sm" type="file" name="fitxer" accept=".pdf,.jpg,.jpeg,.png" required>
-                                                        <button class="btn btn-sm btn-warning" type="submit">Substituir</button>
+                                                        <button class="btn btn-sm btn-warning" type="submit">{{ $peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ENVIADA ? 'Canviar document' : 'Enviar correcció' }}</button>
                                                     </form>
                                                 @endif
                                             </li>
@@ -89,12 +93,12 @@
                             @if ($peticio->document_prl_path)
                                 <div class="mt-1"><a href="{{ route('convalidacions.download-prl', $peticio) }}">Descarregar certificat PRL: {{ $peticio->document_prl_original_name }}</a></div>
                             @endif
-                            @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_REVISAR_DOCUMENTACIO)
+                            @if ($potEditarDocumentacio && $peticio->documents->isEmpty())
                                 <form class="mt-3" method="POST" enctype="multipart/form-data" action="{{ route('convalidacions.correct', $peticio) }}">
                                     @csrf @method('PUT')
-                                    <label class="form-label">Substituïx el document</label>
+                                    <label class="form-label">{{ $peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ENVIADA ? 'Canvia el document' : 'Substituïx el document requerit' }}</label>
                                     <input class="form-control mb-2" type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
-                                    <button class="btn btn-warning" type="submit">Enviar correcció</button>
+                                    <button class="btn btn-warning" type="submit">{{ $peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_ENVIADA ? 'Canviar document' : 'Enviar correcció' }}</button>
                                 </form>
                             @endif
                         </td>

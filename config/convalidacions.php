@@ -9,4 +9,7 @@ return [
 
     /* Nombre màxim d'exportacions XML acceptades en una mateixa pujada. */
     'max_xml_files_per_upload' => (int) env('CONVALIDACIONS_MAX_XML_FILES_PER_UPLOAD', 20),
+
+    /* El procediment de registre de convalidacions en ITACA està pendent de definir. */
+    'itaca_registration_enabled' => false,
 ];

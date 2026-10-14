@@ -162,7 +162,7 @@ class ConvalidacioService
         return DB::transaction(function () use ($peticio, $revisor, $estat, $observacions): Convalidacio {
             $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
             if ($actual->esTerminal()) {
-                throw new ConvalidacioException('Una petició realitzada és de només consulta.');
+                throw new ConvalidacioException('Una petició ja convalidada en ITACA és de només consulta.');
             }
 
             $observacions = filled($observacions) ? trim((string) $observacions) : null;
@@ -181,7 +181,29 @@ class ConvalidacioService
         });
     }
 
-    /** Registra en una sola transacció les peticions Acceptada seleccionades com a anotades a ITACA. */
+    /** Inicia la revisió de la sol·licitud sense alterar peticions que ja han avançat de fase. */
+    public function iniciarRevisio(SollicitudConvalidacio $sollicitud, Profesor $revisor): \Illuminate\Database\Eloquent\Collection
+    {
+        return DB::transaction(function () use ($sollicitud, $revisor): \Illuminate\Database\Eloquent\Collection {
+            $peticions = $sollicitud->convalidacions()
+                ->where('estat', Convalidacio::ESTAT_ENVIADA)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($peticions as $peticio) {
+                $peticio->forceFill([
+                    'estat' => Convalidacio::ESTAT_EN_PROCES,
+                    'revisat_per' => $revisor->dni,
+                    'revisat_at' => now(),
+                ])->save();
+            }
+
+            return $peticions->load(['sollicitud.alumno', 'moduloDestino']);
+        }, 3);
+    }
+
+    /** Marca en una transacció les peticions Acceptada seleccionades com a anotades manualment en ITACA. */
     public function registrarAcceptades(array $ids, Profesor $responsable): \Illuminate\Database\Eloquent\Collection
     {
         $ids = array_values(array_unique(array_map('intval', $ids)));
@@ -259,7 +281,7 @@ class ConvalidacioService
             throw new ConvalidacioException('No pots modificar esta petició.');
         }
 
-        if (!$peticio->esOrigenExtern() || $peticio->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+        if (!$this->estatAdmetEdicioDocumental($peticio->estat)) {
             throw new ConvalidacioException('Esta petició no admet una correcció documental.');
         }
 
@@ -270,10 +292,14 @@ class ConvalidacioService
         try {
             DB::transaction(function () use ($peticio, $document): void {
                 $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
-                if ($actual->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO || !$actual->esOrigenExtern()) {
+                if (!$this->estatAdmetEdicioDocumental($actual->estat)) {
                     throw new ConvalidacioException('Esta petició ja no admet una correcció documental.');
                 }
-                $actual->forceFill(array_merge($document, ['estat' => Convalidacio::ESTAT_EN_PROCES]))->save();
+                $canvis = $document;
+                if ($actual->estat === Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                    $canvis['estat'] = Convalidacio::ESTAT_EN_PROCES;
+                }
+                $actual->forceFill($canvis)->save();
             });
         } catch (\Throwable $exception) {
             Storage::disk('convalidacions')->delete($document['document_path']);
@@ -292,8 +318,7 @@ class ConvalidacioService
     {
         if ((int) $document->convalidacio_id !== (int) $peticio->id
             || (string) $peticio->sollicitud->alumno_id !== (string) $alumno->nia
-            || !$peticio->esOrigenExtern()
-            || $peticio->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+            || !$this->estatAdmetEdicioDocumental($peticio->estat)) {
             throw new ConvalidacioException('Esta petició no admet una correcció d’este document.');
         }
 
@@ -302,7 +327,7 @@ class ConvalidacioService
         try {
             DB::transaction(function () use ($peticio, $document, $saved, $oldPath): void {
                 $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
-                if ($actual->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                if (!$this->estatAdmetEdicioDocumental($actual->estat)) {
                     throw new ConvalidacioException('Esta petició ja no admet una correcció documental.');
                 }
                 $documentActual = DocumentConvalidacio::query()
@@ -310,7 +335,10 @@ class ConvalidacioService
                     ->lockForUpdate()
                     ->findOrFail($document->id);
                 $documentActual->forceFill($saved)->save();
-                $canvis = ['estat' => Convalidacio::ESTAT_EN_PROCES];
+                $canvis = [];
+                if ($actual->estat === Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                    $canvis['estat'] = Convalidacio::ESTAT_EN_PROCES;
+                }
                 if ($actual->document_path === $oldPath) {
                     $canvis += [
                         'document_path' => $saved['path'],
@@ -334,6 +362,15 @@ class ConvalidacioService
         Storage::disk('convalidacions')->delete($oldPath);
 
         return $peticio->fresh();
+    }
+
+    /** Determina en quins estats l'alumnat pot substituir la documentació. */
+    private function estatAdmetEdicioDocumental(string $estat): bool
+    {
+        return in_array($estat, [
+            Convalidacio::ESTAT_ENVIADA,
+            Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+        ], true);
     }
 
     /**

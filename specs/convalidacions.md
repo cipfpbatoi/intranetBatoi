@@ -1,7 +1,7 @@
 # Convalidacions — MVP de sol·licitud i gestió manual
 
 Issue: #323
-Status: ready_for_review
+Status: ready_to_commit
 
 ## Abast
 
@@ -71,7 +71,7 @@ When la petició anterior està en qualsevol estat diferent de `Denegada`
 Then el mòdul no apareix entre els destins disponibles d'una nova sol·licitud
 And el backend rebutja igualment un identificador manipulat que intente tornar-lo a sol·licitar
 But si l'última petició aplicable està `Denegada`, l'alumne pot tornar a sol·licitar el mòdul
-And si la petició es resol com a `Realitzada`, el mòdul continua bloquejat encara que la baixa de matrícula encara no s'haja sincronitzat
+And si la petició es resol com a `Acceptada`, el mòdul continua bloquejat encara que la baixa de matrícula encara no s'haja sincronitzat
 
 ### Escenari 7: tramitació transaccional i idempotent
 
@@ -95,6 +95,21 @@ And es guarden en la petició l'última persona responsable, la data del canvi i
 And el canvi no altera l'estat de les altres peticions de la mateixa sol·licitud
 And el llistat de mòduls permet filtrar per l'estat i l'origen de cada petició
 
+### ✅ Escenari 8a: iniciar la revisió d'una sol·licitud
+
+Given una sol·licitud conté peticions en diferents estats
+When Direcció selecciona «Revisar» des del llistat de sol·licituds
+Then només les peticions que estaven en estat `Enviada` passen a `En procés`
+And les peticions en qualsevol altre estat conserven l'estat, les observacions i la traçabilitat existents
+And s'envia a l'alumne una notificació per cada petició que haja canviat
+
+### ✅ Escenari 8b: identificar les sol·licituds pendents de Direcció
+
+Given Direcció consulta el llistat de sol·licituds
+When activa el filtre «Només amb acció pendent de Direcció»
+Then només veu sol·licituds amb almenys una petició `Enviada` o `En procés`
+And cada fila mostra el recompte total de mòduls pendents i un hint accessible amb el desglossament entre revisió i resolució
+
 ### Escenari 9: correcció documental i petició terminal
 
 Given una petició externa en estat `Revisar documentació`
@@ -102,7 +117,14 @@ When l'alumne consulta l'observació de Direcció, substituïx únicament el fit
 Then el nou document queda en emmagatzematge privat
 And només eixa petició torna a `En procés`
 And no es poden modificar el mòdul destí, l'origen, el tipus ni altres dades ja tramitades
-But si la petició està en estat `Realitzada`, tant l'alumne com Direcció només poden consultar-la i no poden modificar-ne l'estat, les dades ni el document
+But si la petició està en estat `Acceptada (Convalidada)`, tant l'alumne com Direcció només poden consultar-la i no poden modificar-ne l'estat, les dades ni el document
+
+### ✅ Escenari 9a: l'alumne pot actualitzar documents mentre la petició està Enviada
+
+Given una petició de l'alumne està en estat `Enviada`
+When l'alumne substituïx un document adjunt
+Then es conserva l'estat `Enviada` i només canvia el document seleccionat
+And l'alumne no pot modificar la documentació en cap altre estat llevat de `Revisar documentació`
 
 ### ✅ Escenari 10: accés de proves bloquejat per Direcció
 
@@ -128,9 +150,25 @@ And cap persona que no siga de Direcció pot executar l'acció, encara que envie
 
 Given una persona de Direcció consulta les sol·licituds presentades
 When hi ha peticions pendents elegibles segons el YAML actiu
-Then el llistat identifica cada sol·licitud com a «Automàtica», «Parcialment automàtica» o «Revisió manual» segons les peticions pendents
-And mostra el nombre d'elegibles sobre el total pendent
+Then el llistat mostra 🤖 si totes les peticions pendents són elegibles, ✍️ si totes requerixen revisió manual, o 🤖✍️ si la resolució és mixta
+And el hint accessible de cada icona n'explica el significat i els recomptes automàtics i manuals
+And si no hi ha peticions pendents, la cel·la d'automatització queda buida
 And consultar o refrescar el llistat no resol cap petició
+
+### ✅ Escenari 12a: resumir l'acció pendent de Direcció
+
+Given una persona de Direcció consulta el llistat de sol·licituds
+When una sol·licitud té mòduls `Enviada` o `En procés`
+Then la cel·la mostra el recompte total dins d'una etiqueta destacada, sense desglossament textual visible
+And un hint accessible explica quants mòduls estan `Enviada` i quants `En procés`
+And si no hi ha mòduls pendents d'acció, la cel·la queda buida
+And el botó de la fila continua dient «Revisar»
+
+### ✅ Escenari 12b: aplicar immediatament el filtre del llistat
+
+Given Direcció està veient el llistat de sol·licituds
+When canvia el desplegable entre totes les sol·licituds i les que tenen acció pendent
+Then el llistat s'actualitza immediatament sense cap botó «Filtrar»
 
 ### ✅ Escenari 13: aplicar les peticions elegibles des del llistat
 
@@ -210,15 +248,15 @@ And el PDF no incorpora ni exposa els fitxers adjunts de l'alumnat
 And si no se selecciona cap estat, el PDF inclou tots els estats
 And cancel·lar el diàleg no inicia la descàrrega
 
-### Escenari 21: marcar mòduls acceptats com a registrats en ITACA
+### Escenari 21: registre en ITACA pendent de definició
 
-Given hi ha una o més convalidacions de mòdul en estat `Acceptada`
-When una persona autoritzada de Secretaria o Direcció les marca com a registrades en ITACA
-Then només els mòduls seleccionats passen a `Acceptada (Convalidada)`
-And les altres convalidacions de la mateixa sol·licitud mantenen el seu estat
-And el sistema demana confirmació abans d'aplicar el canvi
-And cada canvi efectiu conserva la traçabilitat i genera la notificació individual prevista
-And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en estat `Acceptada`
+Given el procediment per a registrar les convalidacions en ITACA encara no està definit
+When una persona autoritzada de Secretaria o Direcció consulta les convalidacions per mòdul
+Then veu l'avís «Funcionalitat pendent de definir»
+And el botó «Marcar com a registrades en ITACA» i les caselles de selecció estan deshabilitats
+And la consulta, els filtres i la descàrrega del PDF continuen disponibles
+When envia directament una petició al servidor per a registrar mòduls en ITACA
+Then el servidor rebutja l'acció sense modificar cap estat, traçabilitat ni enviar correus
 
 ## Regles de negoci
 
@@ -228,7 +266,7 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Cada petició correspon a un únic mòdul destí de la matrícula vigent de l'alumne.
 - El mateix mòdul destí no es pot repetir dins d'una mateixa sol·licitud.
 - Un alumne no pot crear una nova petició d'un mòdul si ja en té una anterior en qualsevol estat diferent de `Denegada`.
-- `Denegada` és l'únic estat que torna a habilitar el mòdul per a una nova sol·licitud; `Realitzada` el manté bloquejat fins i tot abans que desaparega de la matrícula.
+- `Denegada` és l'únic estat que torna a habilitar el mòdul per a una nova sol·licitud; `Acceptada` i `Acceptada (Convalidada)` el mantenen bloquejat.
 - El mòdul destí i, quan corresponga, el mòdul aprovat d'origen es validen en backend; no es confia en identificadors enviats pel navegador.
 - La relació conceptual obligatòria és `1 sol·licitud : N peticions`, encara que la nomenclatura tècnica definitiva s'adapte als patrons del projecte.
 - No es poden editar ni cancel·lar sol·licituds ja tramitades, llevat de la substitució documental expressament permesa.
@@ -253,27 +291,28 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Els estats admesos són:
   1. `Enviada`.
   2. `En procés`.
-  3. `Realitzada`.
-  4. `Realitzada pendent de revisió`.
-  5. `Denegada`.
-  6. `Revisar documentació`.
-  7. `Aportar documentació original a Secretaria`.
-  8. `Resolta` (resolució automàtica).
-  9. `Acceptada`.
-  10. `Acceptada (Convalidada)`.
+  3. `Denegada`.
+  4. `Revisar documentació`.
+  5. `Aportar documentació original a Secretaria`.
+  6. `Acceptada`.
+  7. `Acceptada (Convalidada)`.
 - `Enviada` és l'estat inicial de tota petició nova tramitada; els registres anteriors mantenen l'estat que ja tenien.
-- `Realitzada` és terminal i de només consulta.
+- Les peticions antigues en estat `Resolta` es normalitzen a `Acceptada` amb una actualització de dades; no s'elimina cap petició ni sol·licitud. Els estats `Realitzada` i `Realitzada pendent de revisió` deixen d'estar disponibles i no s'inclouen en cap neteja de registres.
 - `Acceptada (Convalidada)` és terminal perquè indica que la convalidació ja s'ha gravat en ITACA.
-- `Acceptada` no és terminal i pot passar individualment a `Acceptada (Convalidada)` quan s'haja completat el registre en ITACA.
+- `Acceptada` no és terminal; tanmateix, la transició a `Acceptada (Convalidada)` des del llistat per mòdul està deshabilitada mentre el procediment d'ITACA estiga pendent de definició.
 - Direcció pot canviar manualment qualsevol petició no terminal a un altre estat admés.
+- En iniciar la revisió d'una sol·licitud, només les peticions `Enviada` passen a `En procés`; les que ja han avançat no es modifiquen.
+- L'alumnat pot substituir documentació només en `Enviada` o `Revisar documentació`; en el primer cas l'estat es manté, i en el segon torna a `En procés`.
+- El filtre del llistat s'aplica automàticament en canviar el desplegable.
+- El llistat usa una etiqueta destacada per al recompte de mòduls pendents i icones accessibles per al resum de l'automatització; sense accions o peticions pendents, les cel·les corresponents queden buides.
 - L'observació és obligatòria en passar a `Denegada`, `Revisar documentació` o `Aportar documentació original a Secretaria`.
 - Cada petició conserva, com a mínim, l'última persona que ha canviat l'estat, la data del canvi i l'observació.
 - Una mateixa sol·licitud pot contindre peticions en estats diferents.
 - La sol·licitud és una agrupació de peticions i no té un estat únic; les consultes i filtres per estat s'apliquen a cada petició de mòdul.
 - El llistat de sol·licituds mostra una fila per capçalera i no es filtra per estat de mòdul; el llistat de convalidacions mostra una fila per mòdul i és el lloc dels filtres i operacions per estat.
-- La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul, al seu PDF i a l'acció de registre en ITACA; no pot obrir el detall ni gestionar la configuració de Direcció.
+- La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul i al seu PDF; no pot obrir el detall ni gestionar la configuració de Direcció.
 - El llistat per mòdul només es filtra per estat; el PDF operatiu permet triar l'estat en un diàleg i l'opció buida inclou tots els estats. Els PDF sempre identifiquen la sol·licitud d'origen i no incorporen fitxers adjunts.
-- La transició a `Acceptada (Convalidada)` només es pot fer per als mòduls seleccionats que continuen en `Acceptada`; no modifica cap altra petició de la sol·licitud.
+- Mentre el procediment d'ITACA estiga pendent de definició, el servidor rebutja les peticions de transició a `Acceptada (Convalidada)` des del llistat sense canviar dades ni notificar l'alumnat.
 - Cada canvi efectiu d'estat o observació es notifica per correu de manera individual a l'alumne titular; no es crea un estat global de sol·licitud.
 - Desar sense canvis en l'estat ni en l'observació no envia un correu duplicat. Si l'adreça no és vàlida o falla el correu, el canvi ja guardat no es desfà i Direcció rep un avís funcional.
 - Els correus de canvi d'estat no inclouen documents adjunts ni informació de les altres peticions de la sol·licitud.
@@ -281,7 +320,7 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 ### Autorització i seguretat
 
 - L'alumne només pot consultar, tramitar i corregir les seues pròpies sol·licituds i peticions.
-- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats, PDF i a l'acció de registre en ITACA descrits en els escenaris 19–21, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves.
+- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats i PDF descrits en els escenaris 19–21, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves. El registre en ITACA continua desactivat fins que se'n definisca el procediment.
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
 - El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
@@ -299,7 +338,7 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 - Emmagatzematge privat i descàrrega mitjançant un controlador amb autorització.
 - Gestor privat dels XML acadèmics integrat en el panell de convalidacions de Direcció, sense edició ni descàrrega del contingut.
 - Vistes separades de sol·licituds i convalidacions per mòdul per a Direcció i Secretaria, amb filtres individuals i PDF operatiu a nivell de mòdul.
-- Acció confirmada per marcar els mòduls acceptats seleccionats com a registrats en ITACA.
+- Registre en ITACA posposat fins que se'n definisca el procediment; la interfície i el servidor mantenen deshabilitada l'acció.
 - Control persistent del bloqueig d'accés de proves i middleware per protegir totes les rutes d'alumnat de convalidacions.
 - Eliminació de sol·licituds de prova per Direcció amb neteja transaccional de peticions i documents privats.
 - Tests Unit i Feature per a propietat, autorització, validació, estats, adjunts, transaccionalitat, idempotència i contracte de rutes.
@@ -309,15 +348,14 @@ And el servidor rebutja l'acció si algun mòdul seleccionat ja no està en esta
 
 - Càlcul automàtic d'equivalències i taules de correspondències.
 - Tasques nocturnes i qualsevol processament automàtic.
-- Accions massives sobre sol·licituds o sobre estats diferents de la transició seleccionada de mòduls `Acceptada` a `Acceptada (Convalidada)`.
+- Accions massives sobre sol·licituds o estats, inclosa la transició de mòduls `Acceptada` a `Acceptada (Convalidada)`, mentre el procediment d'ITACA estiga pendent de definició.
 - OCR, IA, models en la DGX Spark i fine-tuning.
 - Altres notificacions de panell o correus diferents de l'avís per canvi individual d'estat definit en l'escenari 18.
-- Gestió general de permisos de Secretaria fora dels llistats, PDF i transició d'estat descrits en els escenaris 19–21.
+- Gestió general de permisos de Secretaria fora dels llistats i PDF descrits en els escenaris 19–21.
 - Historial complet de transicions.
 - Múltiples documents per petició i versionat documental.
 - Edició o cancel·lació d'una sol·licitud ja tramitada.
 - Text normatiu definitiu i enllaços oficials sobre titulacions universitàries.
-- Automatització específica per a `Realitzada pendent de revisió`.
 
 ## Criteri global de finalització
 

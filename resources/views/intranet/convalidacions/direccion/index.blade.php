@@ -80,31 +80,68 @@
             @endif
         </div>
     </section>
+    <form method="GET" action="{{ route('convalidacions.direction.index') }}" class="form-inline mb-3">
+        <label for="filter-pendent-direccio" class="mr-2">Mostrar</label>
+        <select id="filter-pendent-direccio" name="pendent_direccio" class="form-control mr-2" onchange="this.form.submit()">
+            <option value="0" @selected(!$filters['pendent_direccio'])>Totes les sol·licituds</option>
+            <option value="1" @selected($filters['pendent_direccio'])>Només amb acció pendent de Direcció</option>
+        </select>
+    </form>
     <div class="table-responsive"><table class="table table-striped">
-        <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Automatització</th><th></th></tr></thead>
+        <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Acció pendent de Direcció</th><th>Automatització</th><th></th></tr></thead>
         <tbody>
             @forelse ($sollicituds as $sollicitud)
                 @php($automatitzacio = $automatitzacions[$sollicitud->id] ?? ['pendents' => 0, 'elegibles' => 0])
+                @php($enviades = $sollicitud->convalidacions->where('estat', \Intranet\Entities\Convalidacio::ESTAT_ENVIADA)->count())
+                @php($enProces = $sollicitud->convalidacions->where('estat', \Intranet\Entities\Convalidacio::ESTAT_EN_PROCES)->count())
+                @php($accionsPendents = $enviades + $enProces)
+                @php($peticionsPendentsAuto = $automatitzacio['pendents'])
+                @php($peticionsAuto = $automatitzacio['elegibles'])
+                @php($peticionsManuals = $peticionsPendentsAuto - $peticionsAuto)
                 <tr>
                     <td>#{{ $sollicitud->id }}</td>
                     <td>{{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</td>
                     <td>{{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</td>
                     <td>{{ $sollicitud->convalidacions->count() }}</td>
                     <td>
-                        @if ($automatitzacio['pendents'] === 0)
-                            <span class="label label-default">Sense peticions pendents</span>
-                        @elseif ($automatitzacio['elegibles'] === 0)
-                            <span class="label label-default">Revisió manual</span>
-                        @elseif ($automatitzacio['elegibles'] === $automatitzacio['pendents'])
-                            <span class="label label-success">Automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
-                        @else
-                            <span class="label label-warning">Parcialment automàtica · {{ $automatitzacio['elegibles'] }}/{{ $automatitzacio['pendents'] }}</span>
+                        @if ($accionsPendents > 0)
+                            @php($desglossament = trim(($enviades > 0 ? $enviades . ' Enviada' : '') . ($enviades > 0 && $enProces > 0 ? ', ' : '') . ($enProces > 0 ? $enProces . ' En procés' : '')))
+                            <span class="label label-primary" role="img" title="Acció pendent: {{ $desglossament }}."
+                                  aria-label="{{ $accionsPendents }} {{ $accionsPendents === 1 ? 'mòdul' : 'mòduls' }} amb acció pendent de Direcció: {{ $desglossament }}.">
+                                {{ $accionsPendents }} {{ $accionsPendents === 1 ? 'mòdul' : 'mòduls' }}
+                            </span>
                         @endif
                     </td>
-                    <td><a href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a></td>
+                    <td>
+                        @if ($peticionsPendentsAuto > 0 && $peticionsAuto === 0)
+                            <span role="img"
+                                  aria-label="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}."
+                                  title="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}.">✍️</span>
+                        @elseif ($peticionsAuto === $peticionsPendentsAuto)
+                            @if ($peticionsPendentsAuto > 0)
+                                <span role="img"
+                                      aria-label="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica."
+                                      title="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica.">🤖</span>
+                            @endif
+                        @elseif ($peticionsPendentsAuto > 0)
+                            <span role="img"
+                                  aria-label="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual."
+                                  title="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual.">🤖✍️</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if ($enviades > 0)
+                            <form method="POST" action="{{ route('convalidacions.direction.review', $sollicitud) }}">
+                                @csrf
+                                <button class="btn btn-primary btn-sm" type="submit">Revisar</button>
+                            </form>
+                        @else
+                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a>
+                        @endif
+                    </td>
                 </tr>
             @empty
-                <tr><td colspan="6">No hi ha sol·licituds.</td></tr>
+                <tr><td colspan="7">No hi ha sol·licituds.</td></tr>
             @endforelse
         </tbody>
     </table></div>

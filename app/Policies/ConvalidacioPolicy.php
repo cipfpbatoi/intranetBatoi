@@ -26,13 +26,15 @@ class ConvalidacioPolicy
             || ($user instanceof Alumno && (string) $user->nia === (string) $peticio->sollicitud->alumno_id);
     }
 
-    /** Només l'alumne propietari pot corregir documentació requerida. */
+    /** L'alumne propietari pot modificar documents només abans de revisar o quan se li demana una correcció. */
     public function correct($user, Convalidacio $peticio): bool
     {
         return $user instanceof Alumno
             && (string) $user->nia === (string) $peticio->sollicitud->alumno_id
-            && $peticio->esOrigenExtern()
-            && $peticio->estat === Convalidacio::ESTAT_REVISAR_DOCUMENTACIO;
+            && in_array($peticio->estat, [
+                Convalidacio::ESTAT_ENVIADA,
+                Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+            ], true);
     }
 
     /** Només Direcció pot revisar una petició no terminal. */

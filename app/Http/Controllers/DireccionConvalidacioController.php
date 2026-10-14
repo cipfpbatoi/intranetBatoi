@@ -42,13 +42,29 @@ class DireccionConvalidacioController extends Controller
     public function index(Request $request): View
     {
         $preview = $this->automatitzacions->previsualitzar();
+        $filters = $request->validate([
+            'pendent_direccio' => ['nullable', 'boolean'],
+        ]);
+        $sollicituds = $this->queries->totesSollicitudsDireccion();
+        $pendentDireccio = filter_var($filters['pendent_direccio'] ?? false, FILTER_VALIDATE_BOOL);
+
+        if ($pendentDireccio) {
+            $sollicituds = $sollicituds->filter(static fn (SollicitudConvalidacio $sollicitud): bool =>
+                $sollicitud->convalidacions->contains(static fn (Convalidacio $peticio): bool => in_array(
+                    $peticio->estat,
+                    [Convalidacio::ESTAT_ENVIADA, Convalidacio::ESTAT_EN_PROCES],
+                    true
+                ))
+            )->values();
+        }
 
         return view('intranet.convalidacions.direccion.index', [
-            'sollicituds' => $this->queries->totesSollicitudsDireccion(),
+            'sollicituds' => $sollicituds,
             'accessBlocked' => $this->access->isBlocked(),
             'accessPassword' => (string) config('convalidacions_access.password'),
             'automatitzacions' => $preview['per_sollicitud'],
             'peticionsAutomatiquesElegibles' => count($preview['casos']),
+            'filters' => ['pendent_direccio' => $pendentDireccio],
         ]);
     }
 
@@ -70,6 +86,7 @@ class DireccionConvalidacioController extends Controller
             'peticions' => $this->queries->peticionsDireccion($filters),
             'estats' => Convalidacio::estatOptions(),
             'filters' => $filters,
+            'itacaRegistrationEnabled' => (bool) config('convalidacions.itaca_registration_enabled', false),
         ]);
     }
 
@@ -87,11 +104,16 @@ class DireccionConvalidacioController extends Controller
         ])->setPaper('a4', 'landscape')->stream('convalidacions-per-modul.pdf');
     }
 
-    /** Marca conjuntament com a convalidades en ITACA les peticions encara Acceptada. */
+    /** Deixa constància en la intranet que les peticions Acceptada ja s'han anotat manualment en ITACA. */
     public function registerAccepted(Request $request): RedirectResponse
     {
         $responsable = $this->profesor();
         Gate::forUser($responsable)->authorize('registerModuleRequests', Convalidacio::class);
+
+        if (!(bool) config('convalidacions.itaca_registration_enabled', false)) {
+            return back()->with('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
+        }
+
         $validated = $request->validate([
             'peticions' => ['required', 'array', 'min:1'],
             'peticions.*' => ['required', 'integer', 'distinct'],
@@ -110,9 +132,13 @@ class DireccionConvalidacioController extends Controller
             }
         }
 
-        $missatge = count($peticions) . ' peticions registrades com a convalidades en ITACA.';
+        $quantitat = count($peticions);
+        $missatge = $quantitat . ' ' . ($quantitat === 1 ? 'petició marcada' : 'peticions marcades')
+            . ' en la intranet com a registrades en ITACA.';
         if ($errorsCorreu > 0) {
-            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} peticions.");
+            $detallCorreu = $errorsCorreu === 1 ? 'petició' : 'peticions';
+
+            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} {$detallCorreu}.");
         }
 
         return back()->with('success', $missatge . ' S’ha notificat cada alumne.');
@@ -161,9 +187,39 @@ class DireccionConvalidacioController extends Controller
 
         return view('intranet.convalidacions.direccion.show', [
             'sollicitud' => $model,
-            'estats' => Convalidacio::estatManualOptions() + [Convalidacio::ESTAT_RESOLTA => Convalidacio::estatOptions()[Convalidacio::ESTAT_RESOLTA]],
+            'estats' => Convalidacio::estatManualOptions(),
             'peticionsElegibles' => $peticionsElegibles,
         ]);
+    }
+
+    /** Inicia la revisió i passa a En procés únicament els mòduls que estaven Enviada. */
+    public function review(SollicitudConvalidacio $sollicitud): RedirectResponse
+    {
+        $revisor = $this->profesor();
+        Gate::forUser($revisor)->authorize('view', $sollicitud);
+
+        $peticions = $this->service->iniciarRevisio($sollicitud, $revisor);
+        if ($peticions->isEmpty()) {
+            return redirect()->route('convalidacions.direction.show', $sollicitud)
+                ->with('success', 'No hi havia cap mòdul en estat Enviada; no s’ha canviat cap estat.');
+        }
+
+        $errorsCorreu = 0;
+        foreach ($peticions as $peticio) {
+            if (!$this->notificarCanvi($peticio)) {
+                $errorsCorreu++;
+            }
+        }
+
+        $quantitat = $peticions->count();
+        $missatge = $quantitat . ' ' . ($quantitat === 1 ? 'mòdul ha passat' : 'mòduls han passat') . ' a En procés.';
+        if ($errorsCorreu > 0) {
+            return redirect()->route('convalidacions.direction.show', $sollicitud)
+                ->with('warning', $missatge . " No s’ha pogut notificar {$errorsCorreu} mòduls.");
+        }
+
+        return redirect()->route('convalidacions.direction.show', $sollicitud)
+            ->with('success', $missatge . ' S’ha notificat l’alumnat.');
     }
 
     /** Canvia l'estat d'una única petició. */
