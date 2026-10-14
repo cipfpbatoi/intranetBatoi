@@ -221,6 +221,9 @@ class ConvalidacioAutomaticaService
                         'resultat_automatic' => $regla['result']['status'],
                         'mode_nota_automatic' => $regla['result']['grade']['mode'],
                         'nota_resultat_automatic' => $nota,
+                        'resultat_resolucio' => $regla['result']['status'],
+                        'mode_nota_resolucio' => $regla['result']['grade']['mode'],
+                        'nota_resultat_resolucio' => $nota,
                     ])->save();
 
                     return 'aplicat';

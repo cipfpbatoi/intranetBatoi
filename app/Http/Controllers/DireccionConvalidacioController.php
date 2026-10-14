@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\View\View;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
@@ -86,62 +87,53 @@ class DireccionConvalidacioController extends Controller
             'peticions' => $this->queries->peticionsDireccion($filters),
             'estats' => Convalidacio::estatOptions(),
             'filters' => $filters,
-            'itacaRegistrationEnabled' => (bool) config('convalidacions.itaca_registration_enabled', false),
         ]);
     }
 
-    /** Genera el PDF de les peticions que coincideixen amb els mateixos filtres del llistat. */
+    /** Genera el PDF i, si l'usuari ho confirma, marca les peticions incloses com a convalidades en la intranet. */
     public function moduleRequestsPdf(Request $request)
     {
-        Gate::forUser($this->profesor())->authorize('viewModuleRequests', Convalidacio::class);
+        $responsable = $this->profesor();
+        Gate::forUser($responsable)->authorize('viewModuleRequests', Convalidacio::class);
         $filters = $request->validate([
             'estat' => ['nullable', 'string', Rule::in(array_keys(Convalidacio::estatOptions()))],
+            'marcar_itaca' => ['nullable', 'boolean'],
         ]);
-
-        return Pdf::loadView('intranet.convalidacions.direccion.moduls-pdf', [
-            'peticions' => $this->queries->peticionsDireccion($filters),
-            'generat' => now(),
-        ])->setPaper('a4', 'landscape')->stream('convalidacions-per-modul.pdf');
-    }
-
-    /** Deixa constància en la intranet que les peticions Acceptada ja s'han anotat manualment en ITACA. */
-    public function registerAccepted(Request $request): RedirectResponse
-    {
-        $responsable = $this->profesor();
-        Gate::forUser($responsable)->authorize('registerModuleRequests', Convalidacio::class);
-
-        if (!(bool) config('convalidacions.itaca_registration_enabled', false)) {
-            return back()->with('warning', 'La funcionalitat de registre en ITACA està pendent de definir. No s’ha modificat cap petició ni s’ha enviat cap correu.');
-        }
-
-        $validated = $request->validate([
-            'peticions' => ['required', 'array', 'min:1'],
-            'peticions.*' => ['required', 'integer', 'distinct'],
-        ]);
-
-        try {
-            $peticions = $this->service->registrarAcceptades($validated['peticions'], $responsable);
-        } catch (ConvalidacioException $exception) {
-            return back()->withErrors(['peticions' => $exception->getMessage()]);
-        }
-
+        $peticions = $this->queries->peticionsDireccion($filters);
+        $marcarItaca = $request->isMethod('post') && $request->boolean('marcar_itaca');
         $errorsCorreu = 0;
-        foreach ($peticions as $peticio) {
-            if (!$this->notificarCanvi($peticio)) {
-                $errorsCorreu++;
+
+        if ($marcarItaca) {
+            Gate::forUser($responsable)->authorize('registerModuleRequests', Convalidacio::class);
+            if (($filters['estat'] ?? null) !== Convalidacio::ESTAT_ACCEPTADA) {
+                throw ValidationException::withMessages([
+                    'estat' => 'Només es poden marcar com a convalidades en la intranet les peticions incloses en un informe d’acceptades.',
+                ]);
+            }
+
+            try {
+                $peticions = $this->service->registrarAcceptades($peticions->modelKeys(), $responsable);
+            } catch (ConvalidacioException $exception) {
+                throw ValidationException::withMessages(['estat' => $exception->getMessage()]);
+            }
+
+            foreach ($peticions as $peticio) {
+                if (!$this->notificarCanvi($peticio)) {
+                    $errorsCorreu++;
+                }
             }
         }
 
-        $quantitat = count($peticions);
-        $missatge = $quantitat . ' ' . ($quantitat === 1 ? 'petició marcada' : 'peticions marcades')
-            . ' en la intranet com a registrades en ITACA.';
-        if ($errorsCorreu > 0) {
-            $detallCorreu = $errorsCorreu === 1 ? 'petició' : 'peticions';
+        $peticions = $this->queries->ordenarPerNomAlumne($peticions);
 
-            return back()->with('warning', $missatge . " No s’ha pogut enviar el correu de {$errorsCorreu} {$detallCorreu}.");
-        }
-
-        return back()->with('success', $missatge . ' S’ha notificat cada alumne.');
+        return Pdf::loadView('intranet.convalidacions.direccion.moduls-pdf', [
+            'peticions' => $peticions,
+            'generat' => now(),
+            'generatPer' => $responsable,
+            'registreItacaConfirmat' => $marcarItaca,
+            'estatInforme' => $filters['estat'] ?? null,
+            'errorsCorreu' => $errorsCorreu,
+        ])->setPaper('a4', 'landscape')->stream('convalidacions-per-modul.pdf');
     }
 
     /** Canvia l'accés de proves de l'alumnat. */
@@ -229,6 +221,8 @@ class DireccionConvalidacioController extends Controller
         $validated = $request->validate([
             'estat' => ['required', 'string', Rule::in(array_keys(Convalidacio::estatManualOptions()))],
             'observacions' => ['nullable', 'string', 'max:2000'],
+            'resultat_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA . ',' . Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, 'nullable', Rule::in(['CO', 'AA'])],
+            'mode_nota_resolucio' => ['required_if:estat,' . Convalidacio::ESTAT_ACCEPTADA . ',' . Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, 'nullable', Rule::in(['preserve', 'none'])],
         ]);
 
         try {
@@ -236,13 +230,15 @@ class DireccionConvalidacioController extends Controller
                 $convalidacio,
                 $this->profesor(),
                 $validated['estat'],
-                $validated['observacions'] ?? null
+                $validated['observacions'] ?? null,
+                $validated['resultat_resolucio'] ?? null,
+                $validated['mode_nota_resolucio'] ?? null
             );
         } catch (ConvalidacioException $exception) {
             return back()->withErrors(['estat' => $exception->getMessage()]);
         }
 
-        if (!$peticioActualitzada->wasChanged(['estat', 'observacions'])) {
+        if (!$peticioActualitzada->wasChanged(['estat', 'observacions', 'resultat_resolucio', 'mode_nota_resolucio', 'nota_resultat_resolucio'])) {
             return back()->with('success', 'La petició no ha canviat; no s’ha enviat cap correu.');
         }
 

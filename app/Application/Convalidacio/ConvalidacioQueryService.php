@@ -66,6 +66,18 @@ class ConvalidacioQueryService
             ->get();
     }
 
+    /** Ordena una col·lecció carregada per al nom visible i desempata per NIA i identificador. */
+    public function ordenarPerNomAlumne(Collection $peticions): Collection
+    {
+        return $peticions->sort(static function (Convalidacio $a, Convalidacio $b): int {
+            $nomA = mb_strtolower((string) ($a->sollicitud?->alumno?->fullName ?? $a->sollicitud?->alumno_id));
+            $nomB = mb_strtolower((string) ($b->sollicitud?->alumno?->fullName ?? $b->sollicitud?->alumno_id));
+
+            return [$nomA, (string) $a->sollicitud?->alumno_id, (int) $a->id]
+                <=> [$nomB, (string) $b->sollicitud?->alumno_id, (int) $b->id];
+        })->values();
+    }
+
     /** Retorna els mòduls de la matrícula vigent de l'alumne. */
     public function modulsActuals(Alumno $alumno): Collection
     {
