@@ -1,5 +1,5 @@
 @php
-    $direccion = esRol(authUser()->rol, config('roles.rol.direccion'))
+    $direccion = esRol(authUser()->rol, config('roles.rol.direccion'));
     $colors = ['blue', 'green', 'yellow', 'brown', 'purple', 'orange'];
 @endphp
 <div class="container bootstrap snippets bootdeys">
