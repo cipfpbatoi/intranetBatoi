@@ -252,7 +252,7 @@ And el PDF no incorpora ni exposa els fitxers adjunts de l'alumnat
 And si no se selecciona cap estat, el PDF inclou tots els estats
 And cancel·lar el diàleg no inicia la descàrrega
 
-### Escenari 21: marcar les acceptades en la intranet i assumir-ne el registre en ITACA
+### ✅ Escenari 21: marcar les acceptades en la intranet i assumir-ne el registre en ITACA
 
 Given una persona autoritzada de Secretaria o Direcció genera un PDF filtrat per `Acceptada`
 When marca l'opció que confirma que vol marcar ara les peticions de l'informe com a `Acceptada (Convalidada)` en la intranet i que n'assumeix la responsabilitat de registrar-les en ITACA
@@ -263,14 +263,18 @@ And el PDF identifica la persona responsable de registrar-les en ITACA i deixa c
 And l'acció no registra ni modifica dades en ITACA
 But si l'opció no està marcada, només es genera el PDF i no canvia cap petició
 And el servidor rebutja marcar-les si el filtre no és `Acceptada`
+And Direcció també pot marcar individualment com a `Acceptada (Convalidada)` una petició que ja estiga en `Acceptada`, sense generar el PDF
+And este canvi individual conserva el resultat i la nota ja guardats, tant si la resolució va ser manual com automàtica
+But no es pot fer el canvi individual des de cap altre estat
 
 ### ✅ Escenari 22: guardar resultat, nota i procedència de la resolució per mòdul
 
-Given Direcció resol manualment una petició com a `Acceptada` o `Acceptada (Convalidada)`
+Given Direcció resol manualment una petició com a `Acceptada`
 When confirma la resolució
 Then indica si el resultat és `CO` o `AA` i si es conserva la nota d'origen o no hi ha nota
-And si conserva la nota, el sistema guarda la nota d'origen com a nota resultant
-And no es pot conservar una nota si la petició no en té cap d'origen
+And si conserva la nota, Direcció pot transcriure-la des de la documentació i el sistema guarda un enter entre 5 i 10 com a nota resultant
+And si la petició ja té nota d'origen, esta es mostra com a valor inicial editable
+And si la resolució no porta nota, no es guarda cap nota resultant
 And el resultat i el tractament de la nota queden guardats en la petició individual
 When Direcció aplica una regla automàtica vàlida
 Then la petició guarda també en els camps comuns el resultat i el tractament de nota definits per la regla
@@ -319,7 +323,8 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 - `Enviada` és l'estat inicial de tota petició nova tramitada; els registres anteriors mantenen l'estat que ja tenien.
 - Les peticions antigues en estat `Resolta` es normalitzen a `Acceptada` amb una actualització de dades; no s'elimina cap petició ni sol·licitud. Els estats `Realitzada` i `Realitzada pendent de revisió` deixen d'estar disponibles i no s'inclouen en cap neteja de registres.
 - `Acceptada (Convalidada)` és terminal perquè indica que la petició s'ha marcada com a convalidada en la intranet; el registre en ITACA és una tasca manual posterior de la persona responsable.
-- `Acceptada` no és terminal; només les peticions incloses en un informe filtrat per `Acceptada` poden passar a `Acceptada (Convalidada)` amb la confirmació explícita descrita en l'escenari 21.
+- `Acceptada` no és terminal; pot passar a `Acceptada (Convalidada)` individualment des del detall de la sol·licitud o en bloc amb la confirmació explícita del PDF, sempre que en el moment del canvi continue en `Acceptada`.
+- El pas individual a `Acceptada (Convalidada)` no depén de si la resolució va ser manual o automàtica i conserva el resultat i la nota ja guardats.
 - Direcció pot canviar manualment qualsevol petició no terminal a un altre estat admés.
 - En iniciar la revisió d'una sol·licitud, només les peticions `Enviada` passen a `En procés`; les que ja han avançat no es modifiquen.
 - L'alumnat pot substituir documentació només en `Enviada` o `Revisar documentació`; en el primer cas l'estat es manté, i en el segon torna a `En procés`.

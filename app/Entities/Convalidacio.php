@@ -194,7 +194,10 @@ class Convalidacio extends Model
     /** Retorna els estats que Direcció pot assignar manualment. */
     public static function estatManualOptions(): array
     {
-        return self::estatOptions();
+        $estats = self::estatOptions();
+        unset($estats[self::ESTAT_ACCEPTADA_CONVALIDADA]);
+
+        return $estats;
     }
 
     /** Indica si l'origen necessita documentació. */

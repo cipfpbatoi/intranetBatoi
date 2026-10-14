@@ -440,7 +440,8 @@ class ConvalidacioFlowTest extends TestCase
         try {
             $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_DENEGADA, null);
         } finally {
-            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, null, 'AA', 'none');
+            $this->service->revisar($primera, $direccio, Convalidacio::ESTAT_ACCEPTADA, null, 'AA', 'none');
+            $this->service->registrarAcceptades([$primera->id], $direccio);
             $this->assertSame(Convalidacio::ESTAT_ENVIADA, $segona->fresh()->estat);
             $this->assertSame('DIR00001', $primera->fresh()->revisat_per);
             try {
@@ -522,20 +523,32 @@ class ConvalidacioFlowTest extends TestCase
         $this->get(route('convalidacions.direction.show', $sollicitud))
             ->assertOk()
             ->assertSee('Enviada')
-            ->assertSee('Acceptada (Convalidada)');
+            ->assertDontSee('Acceptada (Convalidada)');
 
         $this->put(route('convalidacions.direction.resolve', $primera), [
             'estat' => Convalidacio::ESTAT_ACCEPTADA,
             'observacions' => '',
             'resultat_resolucio' => 'CO',
             'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 7,
         ])->assertRedirect();
+
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $segona), [
+                'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+                'observacions' => '',
+            ])
+            ->assertSessionHasErrors('estat');
+        $this->assertSame(Convalidacio::ESTAT_ENVIADA, $segona->fresh()->estat);
+
         $this->put(route('convalidacions.direction.resolve', $segona), [
-            'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
             'observacions' => '',
             'resultat_resolucio' => 'AA',
             'mode_nota_resolucio' => 'none',
         ])->assertRedirect();
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $segona->fresh()->estat);
+        $this->service->registrarAcceptades([$segona->id], $director);
 
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $primera->fresh()->estat);
         $this->assertSame('CO', $primera->fresh()->resultat_resolucio);
@@ -544,6 +557,71 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $segona->fresh()->estat);
         $this->assertTrue($segona->fresh()->esTerminal());
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 2);
+    }
+
+    public function test_direccio_pot_marcar_individualment_com_a_convalidada_una_acceptada_manual_o_automatica(): void
+    {
+        DB::table('alumnos')->where('nia', $this->alumno->nia)->update(['email' => 'alumne@example.test']);
+        $sollicitud = $this->service->tramitar($this->alumno, 'convalidar-individualment', [
+            ['modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+            ['modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE, 'resultat_origen_id' => $this->resultatId()],
+        ]);
+        [$manual, $automatica] = $sollicitud->convalidacions;
+        $director = Profesor::query()->findOrFail('DIR00001');
+        Mail::fake();
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertDontSee('Acceptada (Convalidada)');
+
+        $this->put(route('convalidacions.direction.resolve', $manual), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'observacions' => '',
+            'resultat_resolucio' => 'CO',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 8,
+        ])->assertRedirect();
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Acceptada (Convalidada)');
+
+        $this->put(route('convalidacions.direction.resolve', $manual), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            'observacions' => '',
+        ])->assertRedirect();
+
+        $automatica->forceFill([
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'resultat_automatic' => 'AA',
+            'mode_nota_automatic' => 'preserve',
+            'nota_resultat_automatic' => 9,
+            'resultat_resolucio' => 'AA',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 9,
+        ])->save();
+
+        $this->put(route('convalidacions.direction.resolve', $automatica), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            'observacions' => '',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('convalidacions', [
+            'id' => $manual->id,
+            'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            'resultat_resolucio' => 'CO',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 8,
+        ], 'sqlite');
+        $this->assertDatabaseHas('convalidacions', [
+            'id' => $automatica->id,
+            'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            'resultat_resolucio' => 'AA',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 9,
+        ], 'sqlite');
+        Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 3);
     }
 
     public function test_resolucio_manual_acceptada_exigix_resultat_i_guarda_si_conserva_nota(): void
@@ -572,6 +650,7 @@ class ConvalidacioFlowTest extends TestCase
             'observacions' => '',
             'resultat_resolucio' => 'CO',
             'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 7,
         ])->assertRedirect();
 
         $this->assertDatabaseHas('convalidacions', [
@@ -595,15 +674,16 @@ class ConvalidacioFlowTest extends TestCase
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
     }
 
-    public function test_resolucio_manual_no_permet_conservar_una_nota_inexistent(): void
+    public function test_resolucio_manual_permet_transcriure_la_nota_d_un_certificat_extern(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'resolucio-sense-nota', [[
             'modulo_destino_id' => 'DEST1',
-            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
-            'resultat_origen_id' => $this->resultatId(),
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat-notes.pdf', 50, 'application/pdf'),
         ]]);
         $peticio = $sollicitud->convalidacions->firstOrFail();
-        $peticio->forceFill(['nota_origen' => null])->save();
+        $this->assertNull($peticio->nota_origen);
         $this->withoutMiddleware(RoleMiddleware::class)
             ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
 
@@ -613,11 +693,30 @@ class ConvalidacioFlowTest extends TestCase
                 'observacions' => '',
                 'resultat_resolucio' => 'AA',
                 'mode_nota_resolucio' => 'preserve',
+                'nota_resultat_resolucio' => 4,
             ])
-            ->assertSessionHasErrors('estat');
+            ->assertSessionHasErrors('nota_resultat_resolucio');
 
         $this->assertSame(Convalidacio::ESTAT_ENVIADA, $peticio->fresh()->estat);
         $this->assertNull($peticio->fresh()->resultat_resolucio);
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Conservar la nota que consta en la documentació')
+            ->assertSee('option value="preserve"', false)
+            ->assertSee('min="5" max="10" step="1"', false)
+            ->assertSee('name="nota_resultat_resolucio"', false);
+
+        $this->put(route('convalidacions.direction.resolve', $peticio), [
+            'estat' => Convalidacio::ESTAT_ACCEPTADA,
+            'observacions' => '',
+            'resultat_resolucio' => 'AA',
+            'mode_nota_resolucio' => 'preserve',
+            'nota_resultat_resolucio' => 8,
+        ])->assertRedirect();
+
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->fresh()->estat);
+        $this->assertSame(8.0, $peticio->fresh()->nota_resultat_resolucio);
     }
 
     public function test_canvi_de_peticio_es_guarda_si_no_hi_ha_correu_valid(): void
