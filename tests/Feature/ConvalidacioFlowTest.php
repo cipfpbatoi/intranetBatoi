@@ -23,6 +23,7 @@ use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\CorrespondenciaCicleAngles;
+use Intranet\Entities\ModulFolLoe;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\SollicitudConvalidacio;
 use Intranet\Http\Middleware\RoleMiddleware;
@@ -2561,6 +2562,134 @@ XML);
         $this->assertDatabaseMissing('convalidacions_correspondencies_angles', ['id' => $editada->id]);
     }
 
+    public function test_cataleg_fol_loe_es_gestiona_des_de_direccio_i_rebutja_codis_naturalment_duplicats(): void
+    {
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $this->get(route('convalidacions.direction.configuracio'))
+            ->assertOk()
+            ->assertSee('Mòduls FOL LOE')
+            ->assertSee('Gestionar catàleg FOL LOE');
+        $this->get(route('convalidacions.direction.fol-loe.index'))
+            ->assertOk()
+            ->assertSee('Cicle en castellà');
+        $ruta = Route::getRoutes()->getByName('convalidacions.direction.fol-loe.store');
+        $this->assertNotNull($ruta);
+        $this->assertContains('role:direccion', $ruta->gatherMiddleware());
+
+        $this->post(route('convalidacions.direction.fol-loe.store'), [
+            'codigo' => ' 0021 ',
+            'cicle_cas' => 'Educación Infantil',
+            'cicle_val' => 'Educació Infantil',
+            'nivell' => 'GS',
+        ])->assertRedirect(route('convalidacions.direction.fol-loe.index'));
+
+        $modul = ModulFolLoe::query()->firstOrFail();
+        $this->assertSame('0021', $modul->codigo);
+        $this->assertSame('21', $modul->codigo_normalitzat);
+        $this->assertSame('12345678901234567890123', ModulFolLoe::normalitzarCodi('00012345678901234567890123'));
+        $this->assertSame('0', ModulFolLoe::normalitzarCodi('0000'));
+
+        $this->from(route('convalidacions.direction.fol-loe.index'))
+            ->post(route('convalidacions.direction.fol-loe.store'), [
+                'codigo' => '00021',
+                'cicle_cas' => 'Un altre cicle',
+                'cicle_val' => 'Un altre cicle',
+                'nivell' => 'GM',
+            ])->assertSessionHasErrors('codigo_normalitzat');
+
+        $this->put(route('convalidacions.direction.fol-loe.update', $modul), [
+            'codigo' => '21',
+            'cicle_cas' => 'Educación Infantil editada',
+            'cicle_val' => 'Educació Infantil editada',
+            'nivell' => 'GS',
+        ])->assertRedirect(route('convalidacions.direction.fol-loe.index'));
+        $this->assertDatabaseHas('convalidacions_moduls_fol_loe', [
+            'id' => $modul->id,
+            'codigo' => '21',
+            'codigo_normalitzat' => '21',
+            'cicle_val' => 'Educació Infantil editada',
+        ]);
+
+        $this->delete(route('convalidacions.direction.fol-loe.destroy', $modul))
+            ->assertRedirect(route('convalidacions.direction.fol-loe.index'));
+        $this->assertDatabaseMissing('convalidacions_moduls_fol_loe', ['id' => $modul->id]);
+    }
+
+    public function test_migracio_inicialitza_el_cataleg_fol_loe_amb_les_dades_contrastades(): void
+    {
+        Schema::drop('convalidacions_moduls_fol_loe');
+        $migracio = require database_path('migrations/2026_10_16_000002_create_convalidacions_moduls_fol_loe_table.php');
+        $migracio->up();
+
+        $this->assertSame(22, DB::table('convalidacions_moduls_fol_loe')->count());
+        $this->assertDatabaseHas('convalidacions_moduls_fol_loe', [
+            'codigo' => '0106',
+            'codigo_normalitzat' => '106',
+            'cicle_cas' => 'Farmacia y Parafarmacia',
+            'nivell' => 'GM',
+        ]);
+        $migracio->down();
+    }
+
+    public function test_regla_fol_loe_usa_el_cataleg_i_compara_codis_sense_zeros_inicials(): void
+    {
+        DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        DB::table('convalidacions_moduls_fol_loe')->insert([
+            'codigo' => '21', 'codigo_normalitzat' => '21',
+            'cicle_cas' => 'Educación Infantil', 'cicle_val' => 'Educació Infantil',
+            'nivell' => 'GS', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', <<<'YAML'
+version: '0.4'
+metadata: {title: Prova FOL LOE}
+convalidations:
+  - id: 1709-from-fol-loe
+    target: {code: '1709', name: IPE I, level: GM_GS}
+    source: {type: module, catalog: fol_loe}
+    proposal: {action: convalidate}
+    resolution: {authority: centre, automatic: true}
+    result: {status: CO, grade: {mode: preserve}}
+    legal_basis: [{reference: art. 127.5}]
+YAML);
+        Storage::disk('convalidacions_xml')->put('avaluacio-2025.xml', str_replace('ORIG1', '0021', $this->academicXml()));
+
+        $resultat = app(ResultatsAcademicsXmlService::class)->aprovats('12345678')[0];
+        $this->assertSame('0021', $resultat['modul']);
+        $this->service->tramitar($this->alumno, 'sollicitud-fol-loe-ipe-i', [[
+            'modulo_destino_id' => '1709',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $resultat['id'],
+            'fol_logse' => false,
+        ]]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+        $this->assertCount(1, $preview['casos']);
+        $this->assertSame('1709-from-fol-loe', $preview['casos'][0]['regla']['id']);
+        $this->assertSame('21', $preview['casos'][0]['resultat_origen']['coincidencia_codi_origen']['codi_normalitzat']);
+
+        DB::table('convalidacions')->where('modulo_destino_id', '1709')->update(['modulo_origen_codigo' => '00021']);
+        $this->assertCount(1, app(ConvalidacioAutomaticaService::class)->previsualitzar()['casos']);
+        DB::table('convalidacions')->where('modulo_destino_id', '1709')->update(['modulo_origen_codigo' => '21']);
+        $this->assertCount(1, app(ConvalidacioAutomaticaService::class)->previsualitzar()['casos']);
+        DB::table('convalidacions')->where('modulo_destino_id', '1709')->update(['ciclo_matricula_tipo' => 1]);
+        $this->assertCount(1, app(ConvalidacioAutomaticaService::class)->previsualitzar()['casos']);
+        DB::table('convalidacions')->where('modulo_destino_id', '1709')->update(['modulo_origen_codigo' => '9999']);
+        $this->assertCount(0, app(ConvalidacioAutomaticaService::class)->previsualitzar()['casos']);
+        DB::table('convalidacions')->where('modulo_destino_id', '1709')->update(['modulo_origen_codigo' => '0021']);
+        $aplicat = app(ConvalidacioAutomaticaService::class)->aplicar(Profesor::query()->findOrFail('DIR00001'));
+        $this->assertSame(1, $aplicat['aplicats']);
+        $peticio = Convalidacio::query()->where('modulo_destino_id', '1709')->firstOrFail();
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->estat);
+        $this->assertSame('CO', $peticio->resultat_resolucio);
+        $this->assertSame('preserve', $peticio->mode_nota_resolucio);
+        $this->assertSame(7.0, (float) $peticio->nota_resultat_resolucio);
+        $this->assertSame('0021', $peticio->evidencia_automatica_snapshot['resultat_origen']['modul']);
+    }
+
     public function test_condicio_horaria_s_aplica_amb_correspondencia_i_guarda_la_seua_evidencia(): void
     {
         DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
@@ -2987,6 +3116,15 @@ XML;
             ['codigo' => '009001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Desenvolupament d\'Aplicacions Informàtiques', 'nivell' => 'GS', 'sistema' => 'LOGSE'],
             ['codigo' => '028001', 'modul' => 'Formació i orientació laboral', 'cicle' => 'Cures Auxiliars d\'Infermeria', 'nivell' => 'GM', 'sistema' => 'LOGSE'],
         ]);
+        Schema::create('convalidacions_moduls_fol_loe', function (Blueprint $table) {
+            $table->id();
+            $table->string('codigo', 30)->unique();
+            $table->string('codigo_normalitzat', 30)->unique();
+            $table->string('cicle_cas', 255);
+            $table->string('cicle_val', 255);
+            $table->string('nivell', 2);
+            $table->timestamps();
+        });
         Schema::create('convalidacions_correspondencies_angles', function (Blueprint $table) {
             $table->id();
             $table->string('codi_cicle_angles', 50);

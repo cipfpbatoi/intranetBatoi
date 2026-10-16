@@ -60,9 +60,9 @@ convalidations:
     resolution: {authority: centre, automatic: true}
     result: {status: AA, grade: {mode: preserve}}
     legal_basis: [{reference: art. 126.3.c}]
-  - id: 1709-from-fol-gm-loe
+  - id: 1709-from-fol-loe
     target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
-    source: {type: module, name: FOL GM LOE}
+    source: {type: module, catalog: fol_loe}
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}
@@ -85,12 +85,6 @@ convalidations:
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}
     legal_basis: [{reference: art. 127.5}]
-  - id: 1709-from-fol-gs-loe
-    target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
-    source: {type: module, name: FOL GS LOE}
-    proposal: {action: convalidate}
-    resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
-    result: null
   - id: 1709-from-fol-gs-logse-prl50
     target: {code: '1709', name: IPE I GM i GS, level: GM_GS}
     source:

@@ -25,6 +25,15 @@
         <div class="col-md-4">
             <section class="card h-100">
                 <div class="card-body">
+                    <h2 class="h5">Mòduls FOL LOE</h2>
+                    <p class="text-muted">Mantín els codis de FOL LOE que s’utilitzen per identificar estudis d’origen.</p>
+                    <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.fol-loe.index') }}">Gestionar catàleg FOL LOE</a>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-4">
+            <section class="card h-100">
+                <div class="card-body">
                     <h2 class="h5">Correspondències d’anglés</h2>
                     <p class="text-muted">Gestiona els cicles d’anglés i les correspondències amb els cicles contenidors.</p>
                     <a class="btn btn-outline-primary" href="{{ route('convalidacions.direction.angles.index') }}">Configurar correspondències</a>

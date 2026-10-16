@@ -7,6 +7,7 @@ namespace Intranet\Application\Convalidacio;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Departamento;
+use Intranet\Entities\ModulFolLoe;
 use Intranet\Entities\Profesor;
 
 /** Avalua i aplica les regles del catàleg sobre sol·licituds ja presentades. */
@@ -270,10 +271,12 @@ class ConvalidacioAutomaticaService
             return ['resultat_origen' => null, 'motiu' => 'La regla inclou una condició encara no implementada.'];
         }
 
-        $coincidenciaCodiOrigen = isset($source['code'])
+        $coincidenciaCodiOrigen = isset($source['catalog'])
+            ? $this->coincidenciaCatalegOrigen((string) $source['catalog'], $peticio)
+            : (isset($source['code'])
             ? $this->coincidenciaCodiOrigen((string) $source['code'], $peticio)
-            : null;
-        $coincideix = isset($source['code'])
+            : null);
+        $coincideix = isset($source['catalog']) || isset($source['code'])
             ? $coincidenciaCodiOrigen !== null
             : $this->nomCoincideixExacte((string) ($source['name'] ?? ''), $peticio);
         if (!$coincideix) {
@@ -327,6 +330,33 @@ class ConvalidacioAutomaticaService
             ],
             'correspondencia_angles' => $correspondenciaAngles,
             'motiu' => null,
+        ];
+    }
+
+    /** Verifica que el codi d'origen pertany al catàleg indicat per la regla. */
+    private function coincidenciaCatalegOrigen(string $cataleg, Convalidacio $peticio): ?array
+    {
+        if ($cataleg !== 'fol_loe') {
+            return null;
+        }
+
+        $codiOrigen = trim((string) $peticio->modulo_origen_codigo);
+        if ($codiOrigen === '' || preg_match('/^\d+$/', $codiOrigen) !== 1) {
+            return null;
+        }
+
+        $codiNormalitzat = ModulFolLoe::normalitzarCodi($codiOrigen);
+        $modul = ModulFolLoe::query()->where('codigo_normalitzat', $codiNormalitzat)->first();
+        if ($modul === null) {
+            return null;
+        }
+
+        return [
+            'tipus' => 'cataleg_fol_loe',
+            'cataleg' => $cataleg,
+            'codi_catalog' => $modul->codigo,
+            'codi_normalitzat' => $codiNormalitzat,
+            'codi_origen' => $peticio->modulo_origen_codigo,
         ];
     }
 
