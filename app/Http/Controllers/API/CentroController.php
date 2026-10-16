@@ -24,7 +24,7 @@ class CentroController extends ApiResourceController
      */
     protected function updateRules(): array
     {
-        return CentroRequest::validationRules(false);
+        return CentroRequest::sharedRules(false);
     }
 
     /**
