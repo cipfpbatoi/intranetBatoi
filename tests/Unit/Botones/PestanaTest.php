@@ -56,4 +56,10 @@ class PestanaTest extends TestCase
 
         $this->assertSame('clau_que_no_existeix', $pestana->getLabel());
     }
+
+    public function test_get_label_reutilitza_el_cataleg_de_menu(): void
+    {
+        $this->assertSame(__('messages.menu.Alumno'), (new Pestana('Alumno'))->getLabel());
+        $this->assertSame(__('messages.menu.Departamento'), (new Pestana('Departamento'))->getLabel());
+    }
 }

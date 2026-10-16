@@ -65,4 +65,27 @@ class AssumpteParticularPolicy
     {
         return $peticio->estaPendent() && $this->isDirectionOrAdmin($user);
     }
+
+    /**
+     * Qualsevol membre de Direcció pot autoritzar amb la rúbrica de la directora configurada.
+     *
+     * @param mixed $user
+     */
+    public function approve($user, AssumpteParticular $peticio): bool
+    {
+        return $this->resolve($user, $peticio)
+            && filled(config('avisos.director'))
+            && esRol($user->rol, config('roles.rol.direccion'));
+    }
+
+    /**
+     * Només Direcció pot registrar autoritzacions històriques.
+     *
+     * @param mixed $user
+     */
+    public function regularize($user): bool
+    {
+        return $this->hasProfesorIdentity($user)
+            && esRol($user->rol, config('roles.rol.direccion'));
+    }
 }

@@ -3,6 +3,22 @@
         <div class="alert alert-danger">{{ $error }}</div>
     @endif
 
+    @if ($anullarId !== null)
+        <div class="card border-danger" style="margin-top: 20px;">
+            <div class="card-header"><strong>Anul·lar falta #{{ $anullarId }}</strong></div>
+            <div class="card-body">
+                <p>Esta acció esborrarà la falta i el PDF firmat. Si és un assumpte particular, el dia quedarà disponible de nou.</p>
+                <label for="motiuAnulacio">Motiu de l’anul·lació</label>
+                <textarea id="motiuAnulacio" class="form-control" wire:model="motiuAnulacio"></textarea>
+                @error('motiuAnulacio') <span class="text-danger">{{ $message }}</span> @enderror
+                <div class="mt-2">
+                    <button class="btn btn-danger" type="button" wire:click="confirmarAnulacio" onclick="return confirm('Confirmes l’anul·lació definitiva de la falta i del PDF?');">Confirmar anul·lació</button>
+                    <button class="btn btn-secondary" type="button" wire:click="cancelarAnulacio">Cancel·lar</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($message !== '')
         <div class="alert alert-success">{{ $message }}</div>
     @endif
@@ -83,14 +99,16 @@
                 <td>{{ $falta['motivo'] }}</td>
                 <td>{{ $falta['situacion'] }}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn btn-warning btn-xs"
-                        wire:click="editar({{ $falta['id'] }})"
-                        title="Editar"
-                    >
-                        <i class="fa fa-edit" aria-hidden="true"></i>
-                    </button>
+                    @if ($falta['canEdit'])
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-xs"
+                            wire:click="editar({{ $falta['id'] }})"
+                            title="Editar"
+                        >
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                        </button>
+                    @endif
 
                     @if (in_array((int) $falta['estado'], [1, 2], true) || ((int) $falta['estado'] === 0 && $isDireccion))
                         <button
@@ -110,7 +128,7 @@
                         </button>
                     @endif
 
-                    @if ($falta['estado'] > 0 && $falta['estado'] < 4)
+                    @if ($falta['estado'] > 0 && $falta['estado'] < 3)
                         <button type="button" class="btn btn-danger btn-xs" wire:click="obrirRebutjar({{ $falta['id'] }})" title="Rebutjar">
                             <i class="fa fa-times" aria-hidden="true"></i>
                         </button>
@@ -126,6 +144,12 @@
                         >
                             <i class="fa fa-file-text-o" aria-hidden="true"></i>
                         </a>
+                    @endif
+
+                    @if ($falta['canAnnul'])
+                        <button type="button" class="btn btn-danger btn-xs" wire:click="obrirAnulacio({{ $falta['id'] }})" title="Anul·lar falta autoritzada">
+                            <i class="fa fa-ban" aria-hidden="true"></i>
+                        </button>
                     @endif
 
                     @if ((int) $falta['estado'] === 1)

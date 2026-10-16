@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Feature\AssumpteParticular;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Queue;
+use Intranet\Application\AssumpteParticular\AssumpteParticularDocumentService;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDireccionQueryService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\AssumpteParticularDireccionPanel;
+use Intranet\Livewire\AssumpteParticularHistoricPanel;
 use Livewire\Livewire;
+use Mockery;
 use Tests\TestCase;
 
 /**
@@ -25,12 +32,19 @@ class DireccionPanelTest extends TestCase
     {
         parent::setUp();
 
+        CarbonImmutable::setTestNow('2026-10-08 12:00:00');
+
         $this->sqlitePath = tempnam(sys_get_temp_dir(), 'assumptes-direccio-') ?: ':memory:';
         config(['database.default' => 'sqlite']);
         config(['database.connections.sqlite.database' => $this->sqlitePath]);
+        config(['avisos.director' => 'DIR001']);
         DB::setDefaultConnection('sqlite');
         DB::purge('sqlite');
         DB::reconnect('sqlite');
+        Event::fake();
+        Storage::fake('local');
+        Storage::fake('public');
+        Queue::fake();
 
         $this->crearEsquema();
         $this->crearPlantilla();
@@ -38,6 +52,7 @@ class DireccionPanelTest extends TestCase
 
     protected function tearDown(): void
     {
+        CarbonImmutable::setTestNow();
         DB::disconnect('sqlite');
         if ($this->sqlitePath !== ':memory:' && file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -59,6 +74,148 @@ class DireccionPanelTest extends TestCase
         Livewire::actingAs($this->professor('PROF01'), 'profesor')
             ->test(AssumpteParticularDireccionPanel::class)
             ->assertForbidden();
+    }
+
+    public function test_el_panell_de_pendents_enllaca_l_historic_sense_carregar_lo(): void
+    {
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSee('Històric')
+            ->assertSeeHtml(route('assumptes-particulars.direccion.historic'))
+            ->assertDontSee('Històric d’autoritzacions del curs')
+            ->assertDontSee('Incorporar un dia ja gaudit');
+    }
+
+    public function test_direccio_regularitza_un_dia_i_el_mostra_en_l_historic(): void
+    {
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertSee('Incorporar un dia ja gaudit')
+            ->set('professorRegularitzacio', 'PROF01')
+            ->set('dataRegularitzacio', '2026-09-11')
+            ->set('tipusRegularitzacio', AssumpteParticular::TIPUS_LECTIU)
+            ->call('regularitzar')
+            ->assertSet('error', '')
+            ->assertSet('missatge', 'El dia ja gaudit s’ha incorporat a l’històric i al saldo.')
+            ->assertSee('Professor 01')
+            ->assertSee('11/09/2026')
+            ->assertSee('Regularització');
+
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'idProfesor' => 'PROF01',
+            'data_gaudi' => '2026-09-11 00:00:00',
+            'tipus' => AssumpteParticular::TIPUS_LECTIU,
+            'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+            'falta_id' => null,
+            'resolucio_document' => null,
+        ]);
+        $this->assertDatabaseCount('faltas', 0);
+        $this->assertDatabaseCount('documentos', 0);
+    }
+
+    public function test_nomes_direccio_pot_obrir_l_historic(): void
+    {
+        Livewire::actingAs($this->professor('ADM001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertForbidden();
+
+        Livewire::actingAs($this->professor('PROF01'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('assumptes_particulars', 0);
+    }
+
+    public function test_historic_diferencia_sollicituds_i_regularitzacions(): void
+    {
+        $ordinaria = $this->crearPeticio(
+            'PROF01',
+            '2026-10-01',
+            AssumpteParticular::ESTAT_AUTORITZADA
+        );
+        $ordinaria->forceFill([
+            'resolta_per' => 'DIR001',
+            'resolta_at' => '2026-09-25 10:00:00',
+            'resolucio_document' => 'assumptes-particulars/resolucions/ordinaria.pdf',
+        ])->save();
+        $regularitzada = $this->crearPeticio(
+            'PROF02',
+            '2026-09-18',
+            AssumpteParticular::ESTAT_AUTORITZADA
+        );
+        $regularitzada->forceFill([
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+            'resolta_at' => '2026-09-26 10:00:00',
+        ])->save();
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertSee('Històric d’autoritzacions del curs')
+            ->assertSee('Sol·licitud')
+            ->assertSee('Regularització')
+            ->assertSee('Direcció')
+            ->assertSeeHtml(route('assumptes-particulars.document', [
+                'assumpteParticular' => $ordinaria->id,
+            ]));
+    }
+
+    public function test_filtra_l_historic_per_professor_data_tipus_i_origen(): void
+    {
+        $ordinaria = $this->crearPeticio('PROF01', '2026-10-01', AssumpteParticular::ESTAT_AUTORITZADA);
+        $ordinaria->forceFill(['resolta_per' => 'DIR001'])->save();
+        $regularitzada = $this->crearPeticio('PROF02', '2026-09-18', AssumpteParticular::ESTAT_AUTORITZADA);
+        $regularitzada->forceFill([
+            'tipus' => AssumpteParticular::TIPUS_NO_LECTIU,
+            'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
+            'resolta_per' => 'DIR001',
+        ])->save();
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->assertSee('Professor 01')
+            ->assertSee('Professor 02')
+            ->set('filtreProfessor', 'PROF02')
+            ->set('filtreData', '2026-09-18')
+            ->set('filtreTipus', AssumpteParticular::TIPUS_NO_LECTIU)
+            ->set('filtreOrigen', AssumpteParticular::ORIGEN_REGULARITZACIO)
+            ->assertSee('18/09/2026')
+            ->assertDontSee('01/10/2026')
+            ->call('netejarFiltres')
+            ->assertSee('01/10/2026')
+            ->assertSee('18/09/2026');
+    }
+
+    /** El panell mostra per defecte el seté dia natural i manté el filtre manual. */
+    public function test_filtra_per_defecte_el_sete_dia_natural(): void
+    {
+        $this->crearPeticio('PROF01', '2026-10-15', AssumpteParticular::ESTAT_PENDENT);
+        $this->crearPeticio('PROF02', '2026-10-16', AssumpteParticular::ESTAT_PENDENT);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSet('filtreData', '2026-10-15')
+            ->assertSee('Professor 01')
+            ->assertSet('grups', fn (array $grups): bool => count($grups) === 1
+                && $grups[0]['peticions'][0]['dni'] === 'PROF01')
+            ->set('filtreData', '2026-10-16')
+            ->assertSet('grups', fn (array $grups): bool => count($grups) === 1
+                && $grups[0]['peticions'][0]['dni'] === 'PROF02');
+    }
+
+    /** El huité dia es pot consultar però no autoritzar des de la pantalla. */
+    public function test_el_boto_d_autoritzar_es_desactiva_mes_enlla_del_sete_dia(): void
+    {
+        $peticio = $this->crearPeticio('PROF01', '2026-10-16', AssumpteParticular::ESTAT_PENDENT);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->set('filtreData', '2026-10-16')
+            ->assertSee('Professor 01')
+            ->assertDontSeeHtml('wire:click="autoritzar(' . $peticio->id . ')"')
+            ->assertSee('Només es poden autoritzar els pròxims set dies naturals');
     }
 
     public function test_ordena_per_dies_gaudits_hores_i_antiguitat(): void
@@ -186,7 +343,7 @@ class DireccionPanelTest extends TestCase
         ));
     }
 
-    public function test_renderitza_grups_i_no_oferix_accions_de_resolucio(): void
+    public function test_permet_denegar_amb_motiu_sense_generar_document_ni_falta(): void
     {
         $this->crearPeticio(
             'PROF01',
@@ -203,8 +360,105 @@ class DireccionPanelTest extends TestCase
             ->assertSee('Professor 01')
             ->assertSee('Necessitat familiar sobrevinguda')
             ->assertSee('Excepcional')
-            ->assertDontSeeHtml('wire:click="autoritzar')
-            ->assertDontSeeHtml('wire:click="denegar');
+            ->assertSeeHtml('wire:click="autoritzar(1)"')
+            ->assertSeeHtml('wire:click="seleccionarDenegacio(')
+            ->call('seleccionarDenegacio', 1)
+            ->set('motiuDenegacio', 'No es pot garantir el servei del centre.')
+            ->call('denegar')
+            ->assertSet('missatge', 'La petició s’ha denegat correctament.')
+            ->assertSet('grups', []);
+
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => 1,
+            'estat' => AssumpteParticular::ESTAT_DENEGADA,
+            'resolucio' => 'No es pot garantir el servei del centre.',
+            'resolta_per' => 'DIR001',
+            'resolucio_document' => null,
+        ]);
+        $this->assertDatabaseCount('faltas', 0);
+    }
+
+    public function test_la_directora_autoritza_i_arxiva_el_document_amb_una_unica_falta(): void
+    {
+        $peticio = $this->crearPeticio(
+            'PROF01',
+            '2026-10-15',
+            AssumpteParticular::ESTAT_PENDENT
+        );
+        $document = 'assumptes-particulars/resolucions/prova.pdf';
+        Storage::disk('local')->put($document, 'PDF amb dues rúbriques');
+        $documents = Mockery::mock(AssumpteParticularDocumentService::class);
+        $documents->shouldReceive('generarAutoritzada')
+            ->once()
+            ->andReturn($document);
+        app()->instance(AssumpteParticularDocumentService::class, $documents);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->call('autoritzar', $peticio->id)
+            ->assertSet('error', '')
+            ->assertSet('missatge', 'La petició s’ha autoritzat i arxivat correctament.');
+
+        $peticio->refresh();
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->estat);
+        $this->assertSame($document, $peticio->resolucio_document);
+        $this->assertNotNull($peticio->falta_id);
+        $this->assertDatabaseCount('faltas', 1);
+    }
+
+    /** Direcció tramita, però el PDF porta sempre la rúbrica de la directora configurada. */
+    public function test_un_altre_membre_de_direccio_autoritza_amb_la_rubrica_de_la_directora(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'DIR002',
+            'nombre' => 'Segona direcció',
+            'apellido1' => '',
+            'apellido2' => '',
+            'fecha_ingreso' => '2026-09-01',
+            'rol' => config('roles.rol.direccion'),
+            'activo' => true,
+            'foto' => 'DIR002.png',
+        ]);
+        $peticio = $this->crearPeticio('PROF01', '2026-10-15', AssumpteParticular::ESTAT_PENDENT);
+        $document = 'assumptes-particulars/resolucions/delegada.pdf';
+        Storage::disk('local')->put($document, 'PDF amb rúbrica de la directora');
+        $documents = Mockery::mock(AssumpteParticularDocumentService::class);
+        $documents->shouldReceive('generarAutoritzada')
+            ->once()
+            ->withArgs(fn ($actual, $directora): bool => $actual->id === $peticio->id
+                && $directora->dni === 'DIR001')
+            ->andReturn($document);
+        app()->instance(AssumpteParticularDocumentService::class, $documents);
+
+        Livewire::actingAs($this->professor('DIR002'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->assertSet('potAutoritzar', true)
+            ->assertSet('teRubricaDirectora', true)
+            ->call('autoritzar', $peticio->id)
+            ->assertSet('error', '');
+
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => $peticio->id,
+            'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+            'resolta_per' => 'DIR002',
+        ]);
+    }
+
+    public function test_no_permet_denegar_sense_motiu(): void
+    {
+        $peticio = $this->crearPeticio(
+            'PROF01',
+            '2026-10-15',
+            AssumpteParticular::ESTAT_PENDENT
+        );
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->call('seleccionarDenegacio', $peticio->id)
+            ->call('denegar')
+            ->assertHasErrors(['motiuDenegacio' => 'required']);
+
+        $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
     }
 
     private function professor(string $dni): Profesor
@@ -224,6 +478,7 @@ class DireccionPanelTest extends TestCase
             $table->string('sustituye_a')->nullable();
             $table->unsignedBigInteger('rol')->default(config('roles.rol.profesor'));
             $table->boolean('activo')->default(true);
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
         Schema::create('horas', function (Blueprint $table): void {
@@ -244,6 +499,21 @@ class DireccionPanelTest extends TestCase
             $table->unsignedInteger('plantilla')->nullable();
             $table->timestamps();
         });
+        Schema::create('faltas', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('idProfesor');
+            $table->date('desde');
+            $table->date('hasta')->nullable();
+            $table->string('motivos', 2);
+            $table->string('observaciones', 200)->nullable();
+            $table->tinyInteger('estado')->default(0);
+            $table->string('fichero', 100)->nullable();
+            $table->time('hora_ini')->nullable();
+            $table->time('hora_fin')->nullable();
+            $table->boolean('dia_completo')->nullable();
+            $table->boolean('baja')->nullable();
+            $table->timestamps();
+        });
         Schema::create('calendari_escolar', function (Blueprint $table): void {
             $table->id();
             $table->date('data')->unique();
@@ -259,6 +529,7 @@ class DireccionPanelTest extends TestCase
             $table->string('tipus');
             $table->string('torn');
             $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
             $table->text('motivacio_excepcional')->nullable();
             $table->text('pla_activitats')->nullable();
             $table->text('resolucio')->nullable();
@@ -267,6 +538,21 @@ class DireccionPanelTest extends TestCase
             $table->timestamp('cancel_lada_at')->nullable();
             $table->string('resolta_per')->nullable();
             $table->unsignedInteger('falta_id')->nullable();
+            $table->string('resolucio_document')->nullable();
+            $table->timestamps();
+        });
+        $migration = require database_path('migrations/2026_09_17_100000_create_assumpte_particular_mail_deliveries_table.php');
+        $migration->up();
+        Schema::create('documentos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('tipoDocumento');
+            $table->string('curso');
+            $table->integer('idDocumento')->nullable();
+            $table->string('propietario')->nullable();
+            $table->string('propietario_dni')->nullable();
+            $table->string('descripcion');
+            $table->string('fichero')->nullable();
+            $table->integer('rol')->default(1);
             $table->timestamps();
         });
     }
@@ -295,7 +581,9 @@ class DireccionPanelTest extends TestCase
                 'fecha_ingreso' => '2026-09-01',
                 'rol' => $rol,
                 'activo' => $actiu,
+                'foto' => $dni . '.png',
             ]);
+            Storage::disk('public')->put('signatures/' . $dni . '.png', 'Rúbrica');
         }
 
         DB::table('horas')->insert([

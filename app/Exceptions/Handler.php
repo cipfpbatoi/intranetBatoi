@@ -124,7 +124,7 @@ class Handler extends ExceptionHandler
 
             return response()->json([
                 'message' => $payloadMsg,
-            ], $status);
+            ], $status, $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : []);
         }
 
         // HTML: redirecció login per a auth

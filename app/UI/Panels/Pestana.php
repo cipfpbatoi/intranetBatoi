@@ -132,14 +132,19 @@ class Pestana
     }
 
     /**
-     * Retorna l'etiqueta traduïda; si no hi ha traducció, usa el nom original.
+     * Retorna l'etiqueta traduïda, reutilitzant el catàleg de menú quan corresponga.
      */
     public function getLabel(): string
     {
-        $key = 'messages.buttons.' . $this->getNombre();
+        $buttonKey = 'messages.buttons.' . $this->getNombre();
+        if (Lang::has($buttonKey)) {
+            return __($buttonKey);
+        }
 
-        return Lang::has($key)
-            ? __($key)
+        $menuKey = 'messages.menu.' . $this->getNombre();
+
+        return Lang::has($menuKey)
+            ? __($menuKey)
             : $this->getNombre();
     }
 

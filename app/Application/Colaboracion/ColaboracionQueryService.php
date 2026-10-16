@@ -184,6 +184,15 @@ class ColaboracionQueryService
             $badges->push($this->panelBadge('Conveni pendent', 'bg-danger', 'fa-file-text-o'));
         }
 
+        if ($this->isBlankText($empresa?->nif_gerente ?? null)) {
+            $badges->push($this->panelBadge(
+                'Falta NIF del gerent',
+                'bg-danger',
+                'fa-credit-card',
+                $empresa?->id ? route('empresa.edit', ['empresa' => $empresa->id]) : null
+            ));
+        }
+
         $prioritatFitxa = 0;
         $prioritatFitxa += $this->isBlankText($colaboracion->contacto ?? null) ? 5 : 0;
         $prioritatFitxa += !$hasInstructor ? 4 : 0;
@@ -266,14 +275,15 @@ class ColaboracionQueryService
     /**
      * Normalitza el format dels badges de qualitat de fitxa del panell.
      *
-     * @return array{label:string,class:string,icon:string}
+     * @return array{label:string,class:string,icon:string,url:?string}
      */
-    private function panelBadge(string $label, string $class, string $icon): array
+    private function panelBadge(string $label, string $class, string $icon, ?string $url = null): array
     {
         return [
             'label' => $label,
             'class' => $class,
             'icon' => $icon,
+            'url' => $url,
         ];
     }
 

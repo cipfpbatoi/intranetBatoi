@@ -7,10 +7,7 @@
         <th>Acta <strong> {{$datosInforme->Tipos()->vliteral}}</strong> "{{$datosInforme->Xgrupo}}"</th>
     </tr>
 </table>
-<div class="container col-lg-12" >
-    Acta número <strong>{{$datosInforme->numero}}</strong> curs <strong>{{$datosInforme->curso}}</strong> del dia 
-   <strong>{{$datosInforme->dia}}</strong> a les <strong>{{$datosInforme->hora}}</strong>
-</div>
+@include('pdf.reunion.partials.dades-acta')
 @include('pdf.reunion.partials.punts')
 {{--
 @if ($datosInforme->informe)

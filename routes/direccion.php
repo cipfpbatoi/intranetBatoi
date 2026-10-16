@@ -30,6 +30,8 @@ Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Di
 Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');
 Route::view('/assumptes-particulars', 'assumpte-particular.direccion-livewire-panel')
     ->name('assumptes-particulars.direccion.index');
+Route::view('/assumptes-particulars/historic', 'assumpte-particular.historic-livewire-panel')
+    ->name('assumptes-particulars.direccion.historic');
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
 Route::get('/falta/{falta}/show', ['as' => 'falta.direccion.show', 'uses' => 'Direccion\\Falta\\ShowController']);
 Route::get('/falta/{falta}/document', ['as' => 'falta.direccion.document', 'uses' => 'Direccion\\Falta\\DocumentController']);

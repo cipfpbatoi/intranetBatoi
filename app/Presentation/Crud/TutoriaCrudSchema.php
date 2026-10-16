@@ -24,6 +24,20 @@ final class TutoriaCrudSchema
     ];
 
     /**
+     * Camps visibles per al seguiment global d'Orientació.
+     *
+     * @var array<int, string>
+     */
+    public const ORIENTACION_GRID_FIELDS = [
+        'descripcion',
+        'tipos',
+        'hasta',
+        'Xobligatoria',
+        'Grupo',
+        'feedbackProgress',
+    ];
+
+    /**
      * Tipus de camp legacy del model.
      *
      * @var array<string, array<string, mixed>>
@@ -50,4 +64,3 @@ final class TutoriaCrudSchema
         'grupos' => 'required',
     ];
 }
-

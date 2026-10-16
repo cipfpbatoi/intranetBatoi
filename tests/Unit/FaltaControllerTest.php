@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
 use Tests\TestCase;
@@ -47,6 +48,7 @@ class FaltaControllerTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('assumptes_particulars');
         Schema::connection('sqlite')->dropIfExists('notifications');
         Schema::connection('sqlite')->dropIfExists('activities');
         Schema::connection('sqlite')->dropIfExists('faltas');
@@ -488,6 +490,12 @@ class FaltaControllerTest extends TestCase
 
     private function createSchema(): void
     {
+        Schema::connection('sqlite')->create('assumptes_particulars', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('falta_id')->nullable();
+            $table->string('estat');
+            $table->string('origen')->default(AssumpteParticular::ORIGEN_SOLLICITUD);
+        });
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
             Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
                 $table->string('dni', 10)->primary();

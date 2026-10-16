@@ -30,9 +30,6 @@ class EventServiceProvider extends ServiceProvider
         'Intranet\Events\GrupoCreated' => [
             'Intranet\Listeners\CoordinadorCreate',
         ],
-        'Intranet\Events\ReunionCreated' => [
-            'Intranet\Listeners\AsistentesCreate',
-        ],
         'Intranet\Events\ActivityReport' => [
             'Intranet\Listeners\RegisterActivity',
         ],

@@ -7,8 +7,11 @@ namespace Intranet\Application\AssumpteParticular;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
+use Throwable;
 
 /**
  * Casos d'ús del cicle de vida dels assumptes particulars.
@@ -19,7 +22,9 @@ class AssumpteParticularService
         private readonly SaldoAssumpteParticularCalculator $saldoCalculator,
         private readonly ContingentAssumpteParticularCalculator $contingentCalculator,
         private readonly CalendariAssumpteParticularService $calendariService,
-        private readonly TornAssumpteParticularService $tornService
+        private readonly TornAssumpteParticularService $tornService,
+        private readonly FaltaService $faltaService,
+        private readonly RubricaAssumpteParticularService $rubriques
     ) {
     }
 
@@ -40,8 +45,9 @@ class AssumpteParticularService
             $plaActivitats,
             $hui
         );
+        $this->rubriques->path(Profesor::query()->findOrFail($dni));
 
-        return AssumpteParticular::query()->create([
+        $peticio = AssumpteParticular::query()->create([
             'idProfesor' => $dni,
             'data_gaudi' => $previsualitzacio['data'],
             'curs' => $previsualitzacio['curs'],
@@ -52,6 +58,12 @@ class AssumpteParticularService
             'pla_activitats' => filled($plaActivitats) ? trim($plaActivitats) : null,
             'sollicitada_at' => now(),
         ]);
+
+        if ($previsualitzacio['excepcional']) {
+            app(AssumpteParticularNotificationService::class)->urgent($peticio);
+        }
+
+        return $peticio;
     }
 
     /**
@@ -73,9 +85,6 @@ class AssumpteParticularService
 
         $this->validarTermini($data, $avui, $motivacioExcepcional);
         $tipus = $this->calendariService->validar($data, $iniciCurs, $fiCurs);
-        if ($tipus === AssumpteParticular::TIPUS_LECTIU && blank($plaActivitats)) {
-            throw new AssumpteParticularException('El pla d’activitats és obligatori en un dia lectiu.');
-        }
         $this->validarSaldo($profesor, $curs, $tipus, $iniciCurs, $fiCurs);
         $this->validarConsecutivitat($dni, $data, $iniciCurs, $fiCurs, $tipus);
 
@@ -144,59 +153,155 @@ class AssumpteParticularService
     }
 
     /**
-     * Autoritza una petició revalidant saldo i contingent dins d'una transacció.
+     * Registra una autorització històrica sense crear falta, document ni notificació.
      */
-    public function autoritzar(int $id, string $resoltaPer): AssumpteParticular
-    {
-        $referencia = AssumpteParticular::query()->findOrFail($id);
+    public function regularitzar(
+        string $dni,
+        CarbonInterface|string $dataGaudi,
+        string $tipus,
+        string $resoltaPer,
+        CarbonInterface|string|null $hui = null
+    ): AssumpteParticular {
+        if (!in_array($tipus, [
+            AssumpteParticular::TIPUS_LECTIU,
+            AssumpteParticular::TIPUS_NO_LECTIU,
+        ], true)) {
+            throw new AssumpteParticularException('El tipus de dia indicat no és vàlid.');
+        }
 
-        return DB::transaction(function () use ($id, $resoltaPer, $referencia): AssumpteParticular {
-            $peticionsDia = AssumpteParticular::query()
-                ->whereDate('data_gaudi', $referencia->data_gaudi->toDateString())
-                ->orderBy('id')
+        $data = $this->data($dataGaudi);
+        $avui = $hui === null ? CarbonImmutable::today() : $this->data($hui);
+        if ($data->greaterThan($avui)) {
+            throw new AssumpteParticularException('Només es poden regularitzar dies ja gaudits.');
+        }
+
+        $curs = $this->cursVigent($avui);
+        [$inici, $fi] = $this->limitsDelCurs($curs);
+        if ($data->lessThan($inici) || $data->greaterThan($fi)) {
+            throw new AssumpteParticularException('La data ha de pertànyer al curs vigent.');
+        }
+
+        return DB::transaction(function () use (
+            $dni,
+            $data,
+            $tipus,
+            $resoltaPer,
+            $curs,
+            $inici,
+            $fi
+        ): AssumpteParticular {
+            $professor = Profesor::query()->lockForUpdate()->findOrFail($dni);
+            $duplicada = AssumpteParticular::query()
+                ->where('idProfesor', $dni)
+                ->whereDate('data_gaudi', $data->toDateString())
                 ->lockForUpdate()
-                ->get();
-            /** @var AssumpteParticular|null $peticio */
-            $peticio = $peticionsDia->firstWhere('id', $id);
-            if ($peticio === null || !$peticio->estaPendent()) {
-                throw new AssumpteParticularException('Només es pot autoritzar una petició pendent.');
+                ->exists();
+            if ($duplicada) {
+                throw new AssumpteParticularException(
+                    'El professor ja té una petició o regularització per a esta data.'
+                );
             }
 
-            [$iniciCurs, $fiCurs] = $this->limitsDelCurs($peticio->curs);
-            $profesor = Profesor::query()->findOrFail($peticio->idProfesor);
-            AssumpteParticular::query()
-                ->where('idProfesor', $peticio->idProfesor)
-                ->where('curs', $peticio->curs)
-                ->orderBy('id')
-                ->lockForUpdate()
-                ->get();
-            $tipusActual = $this->calendariService->validar(
-                $peticio->data_gaudi,
-                $iniciCurs,
-                $fiCurs
-            );
-            if ($tipusActual !== $peticio->tipus) {
-                throw new AssumpteParticularException('El tipus del dia ha canviat en el calendari escolar.');
-            }
-            $this->validarSaldo($profesor, $peticio->curs, $peticio->tipus, $iniciCurs, $fiCurs);
-            $this->validarConsecutivitat(
-                $peticio->idProfesor,
-                $peticio->data_gaudi,
-                $iniciCurs,
-                $fiCurs,
-                $peticio->tipus,
-                $peticio->id
-            );
-            $this->validarContingent($peticio, $peticionsDia);
+            $this->validarSaldo($professor, $curs, $tipus, $inici, $fi);
 
-            $peticio->forceFill([
+            return AssumpteParticular::query()->create([
+                'idProfesor' => $dni,
+                'data_gaudi' => $data->toDateString(),
+                'curs' => $curs,
+                'tipus' => $tipus,
+                'torn' => $this->tornService->delProfessor($dni),
                 'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+                'origen' => AssumpteParticular::ORIGEN_REGULARITZACIO,
                 'resolta_per' => $resoltaPer,
                 'resolta_at' => now(),
-            ])->save();
-
-            return $peticio->fresh();
+            ]);
         }, 3);
+    }
+
+    /**
+     * Autoritza una petició amb la falta i el document firmat dins d'una transacció.
+     */
+    public function autoritzar(int $id, string $resoltaPer, string $documentFirmat): AssumpteParticular
+    {
+        if (blank($documentFirmat) || !Storage::disk('local')->exists($documentFirmat)) {
+            throw new AssumpteParticularException(
+                'No es pot autoritzar la petició sense la resolució oficial firmada.'
+            );
+        }
+
+        try {
+            $referencia = AssumpteParticular::query()->findOrFail($id);
+
+            $peticio = DB::transaction(function () use (
+                $id,
+                $resoltaPer,
+                $referencia,
+                $documentFirmat
+            ): AssumpteParticular {
+                $peticionsDia = AssumpteParticular::query()
+                    ->whereDate('data_gaudi', $referencia->data_gaudi->toDateString())
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get();
+                /** @var AssumpteParticular|null $peticio */
+                $peticio = $peticionsDia->firstWhere('id', $id);
+                if ($peticio === null || !$peticio->estaPendent()) {
+                    throw new AssumpteParticularException('Només es pot autoritzar una petició pendent.');
+                }
+                if ($peticio->data_gaudi->greaterThan(CarbonImmutable::today()->addDays(7))) {
+                    throw new AssumpteParticularException(
+                        'Només es poden autoritzar peticions dels pròxims set dies naturals.'
+                    );
+                }
+
+                [$iniciCurs, $fiCurs] = $this->limitsDelCurs($peticio->curs);
+                $profesor = Profesor::query()->findOrFail($peticio->idProfesor);
+                AssumpteParticular::query()
+                    ->where('idProfesor', $peticio->idProfesor)
+                    ->where('curs', $peticio->curs)
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get();
+                $tipusActual = $this->calendariService->validar(
+                    $peticio->data_gaudi,
+                    $iniciCurs,
+                    $fiCurs
+                );
+                if ($tipusActual !== $peticio->tipus) {
+                    throw new AssumpteParticularException('El tipus del dia ha canviat en el calendari escolar.');
+                }
+                $this->validarSaldo($profesor, $peticio->curs, $peticio->tipus, $iniciCurs, $fiCurs);
+                $this->validarConsecutivitat(
+                    $peticio->idProfesor,
+                    $peticio->data_gaudi,
+                    $iniciCurs,
+                    $fiCurs,
+                    $peticio->tipus,
+                    $peticio->id
+                );
+                $this->validarContingent($peticio, $peticionsDia);
+
+                $falta = $this->faltaService->createForAssumpteParticular($peticio, $documentFirmat);
+                $peticio->forceFill([
+                    'estat' => AssumpteParticular::ESTAT_AUTORITZADA,
+                    'resolta_per' => $resoltaPer,
+                    'resolta_at' => now(),
+                    'falta_id' => $falta->getKey(),
+                    'resolucio_document' => $documentFirmat,
+                ])->save();
+
+                app(AssumpteParticularArchiveService::class)->arxivar($peticio, $profesor);
+
+                return $peticio->fresh();
+            }, 3);
+        } catch (Throwable $exception) {
+            Storage::disk('local')->delete($documentFirmat);
+            throw $exception;
+        }
+
+        app(AssumpteParticularNotificationService::class)->autoritzada($peticio);
+
+        return $peticio;
     }
 
     /**
@@ -208,7 +313,7 @@ class AssumpteParticularService
             throw new AssumpteParticularException('La denegació ha d’estar motivada.');
         }
 
-        return DB::transaction(function () use ($id, $resoltaPer, $motiu): AssumpteParticular {
+        $peticio = DB::transaction(function () use ($id, $resoltaPer, $motiu): AssumpteParticular {
             $peticio = AssumpteParticular::query()->lockForUpdate()->findOrFail($id);
             if (!$peticio->estaPendent()) {
                 throw new AssumpteParticularException('Només es pot denegar una petició pendent.');
@@ -222,6 +327,10 @@ class AssumpteParticularService
 
             return $peticio->fresh();
         });
+
+        app(AssumpteParticularNotificationService::class)->denegada($peticio);
+
+        return $peticio;
     }
 
     /**

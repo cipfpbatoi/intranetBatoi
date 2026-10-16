@@ -11,6 +11,7 @@ use Intranet\Console\Commands\SaoConnect;
 use Intranet\Console\Commands\SendDailyEmails;
 use Intranet\Console\Commands\CreateDailyGuards;
 use Intranet\Console\Commands\NotifyDailyFaults;
+use Intranet\Console\Commands\NotifyPendingTutoriaFeedback;
 use Intranet\Console\Commands\SendFctEmails;
 use Intranet\Console\Commands\SyncSaoCompanyData;
 use Intranet\Console\Commands\UploadAnexes;
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
         SendDailyEmails::class,
         CreateDailyGuards::class,
         NotifyDailyFaults::class,
+        NotifyPendingTutoriaFeedback::class,
         SendFctEmails::class,
         UploadAnexes::class,
         SaoConnect::class,
@@ -57,6 +59,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
         $schedule->command('sao:sync-company-data')->weekly()->fridays()->at('9:30');
         $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
+        $schedule->command('tutories:notifica-feedback-pendent')->weekly()->fridays()->at('7:15');
     }
 
     /**

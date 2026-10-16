@@ -326,6 +326,22 @@
     text-decoration: underline;
 }
 
+.convalidacio-document-descripcio-error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+.convalidacio-document-descripcio-missatge {
+    color: #dc3545;
+    display: block;
+    font-size: 0.875em;
+    margin-bottom: 0.5rem;
+}
+
+.convalidacio-document-descripcio-missatge[hidden] {
+    display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .convalidacio-item-nou,
     .convalidacio-comptador-actualitzat {
@@ -580,6 +596,16 @@
         description.maxLength = 120;
         description.placeholder = 'Exemples: certificat acadèmic, expedient o certificat PRL';
         description.setAttribute('aria-label', 'Descripció del document');
+        const descriptionError = document.createElement('div');
+        descriptionError.className = 'convalidacio-document-descripcio-missatge';
+        descriptionError.textContent = 'Indica de quin tipus és el document adjunt.';
+        descriptionError.hidden = true;
+        description.addEventListener('input', () => {
+            if (description.value.trim()) {
+                description.classList.remove('convalidacio-document-descripcio-error');
+                descriptionError.hidden = true;
+            }
+        });
         const file = document.createElement('input');
         file.type = 'file';
         file.className = 'form-control';
@@ -600,9 +626,9 @@
             row.remove();
             addDocumentButton.disabled = documentRows.length >= 3;
         });
-        row.append(description, file, remove);
+        row.append(description, descriptionError, file, remove);
         documentsList.appendChild(row);
-        documentRows.push({ row, description, file });
+        documentRows.push({ row, description, descriptionError, file });
         addDocumentButton.disabled = documentRows.length >= 3;
     };
     const buildReview = () => {
@@ -708,8 +734,15 @@
             setError('Adjunta almenys un document per a esta modalitat.');
             return;
         }
-        if (documentRows.some((entry) => entry.file.files.length && !entry.description.value.trim())) {
-            setError('Indica de quin tipus és cada document adjunt.');
+        const documentsWithoutDescription = documentRows.filter(
+            (entry) => entry.file.files.length && !entry.description.value.trim()
+        );
+        if (documentsWithoutDescription.length) {
+            documentsWithoutDescription.forEach((entry) => {
+                entry.description.classList.add('convalidacio-document-descripcio-error');
+                entry.descriptionError.hidden = false;
+            });
+            documentsWithoutDescription[0].description.focus();
             return;
         }
         const isIpeI = moduleId === '1709';

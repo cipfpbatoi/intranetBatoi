@@ -107,6 +107,7 @@ return [
     */
 
     'attributes' => array(
+                'feedbackProgress' =>'Completed feedback',
                 'read_at' =>'read in',
 		'username' =>'username',
 		'password' =>'password'
@@ -127,6 +128,7 @@ return [
                ,'medio' =>'Means of transport'
                ,'marca' =>'Make'
                ,'numero' =>'Model'
+               ,'numero_acta' =>'Minutes number'
                ,'matricula' =>'Vehicle registration'
                ,'alojamiento' =>'Accommodation expenses'
                ,'comida' =>'Meal expenses'
@@ -155,12 +157,14 @@ return [
                ,'movil2' =>'Mobile'
                ,'sexo' =>'Sex'
                ,'codigo_postal' =>'Postal code'
+               ,'localitat' =>'Town'
                ,'departamento' =>'Department'
                ,'fecha_ingreso' =>'Entry date'
                ,'fecha_nac' =>'Date of birth'
                ,'fecha_baja' =>'Leaving date'
                ,'rol' =>'User role'
                ,'dni' =>"ID card"
+               ,'nif_gerente' =>'Manager tax ID'
                ,'nia' =>"NIA"
                ,'expediente' =>'File'
                ,'telef1' =>'Telephone'

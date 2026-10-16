@@ -39,4 +39,15 @@ class AssumpteParticularPolicyTest extends TestCase
         $this->assertTrue($policy->resolve((object) ['dni' => 'ADM001', 'rol' => 33], $peticio));
         $this->assertFalse($policy->resolve((object) ['dni' => 'PROF001', 'rol' => 3], $peticio));
     }
+
+    public function test_qualsevol_membre_de_direccio_pot_autoritzar_amb_la_rubrica_configurada(): void
+    {
+        config(['avisos.director' => 'DIR001']);
+        $policy = new AssumpteParticularPolicy();
+        $peticio = new AssumpteParticular(['estat' => AssumpteParticular::ESTAT_PENDENT]);
+
+        $this->assertTrue($policy->approve((object) ['dni' => 'DIR001', 'rol' => 6], $peticio));
+        $this->assertTrue($policy->approve((object) ['dni' => 'DIR002', 'rol' => 6], $peticio));
+        $this->assertFalse($policy->approve((object) ['dni' => 'ADM001', 'rol' => 33], $peticio));
+    }
 }

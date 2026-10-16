@@ -4,6 +4,9 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Assistència d'un professor a una reunió.
+ */
 class Asistencia extends Model
 {
 
@@ -17,5 +20,13 @@ class Asistencia extends Model
     public function Profesor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
+    }
+
+    /**
+     * Retorna la reunió a la qual pertany l'assistència.
+     */
+    public function Reunion()
+    {
+        return $this->belongsTo(Reunion::class, 'idReunion', 'id');
     }
 }

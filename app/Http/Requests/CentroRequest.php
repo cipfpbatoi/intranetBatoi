@@ -11,13 +11,35 @@ class CentroRequest extends FormRequest
         return true;
     }
 
-    public function rules()
+    /**
+     * Retorna les regles compartides pels formularis web i l'API de centres.
+     *
+     * @return array<string, string>
+     */
+    public static function validationRules(bool $requireEmpresa = true): array
     {
-        return [
-            'idEmpresa' => 'required',
+        $rules = [
             'nombre' => 'required',
             'direccion' => 'required',
             'localidad' => 'required',
+            'latitud' => 'nullable|numeric|between:-90,90',
+            'longitud' => 'nullable|numeric|between:-180,180',
         ];
+
+        if ($requireEmpresa) {
+            $rules['idEmpresa'] = 'required';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Retorna les regles de validació del formulari de centre.
+     *
+     * @return array<string, string>
+     */
+    public function rules(): array
+    {
+        return self::validationRules();
     }
 }

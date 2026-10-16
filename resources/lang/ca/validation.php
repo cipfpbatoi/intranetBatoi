@@ -121,6 +121,7 @@ return array(
 	*/
 
 	'attributes' => array(
+                'feedbackProgress' => 'Feedback realitzat',
                 'read_at' => 'lleguida a',
 		'username' => 'usuari/a',
 		'password' => 'contrasenya',
@@ -141,6 +142,7 @@ return array(
                 'medio' => 'Mitjà de Locomoció',
                 'marca' => 'Marca',
                 'numero' => 'Nombre',
+                'numero_acta' => "Número d'acta",
                 'matricula' => 'Matrícula del Vehicle',
                 'alojamiento' => "Despeses d'allotjament",
                 'comida' => 'Despeses de menjar',
@@ -169,12 +171,14 @@ return array(
                 'movil2' => 'Mòbil',
                 'sexo' => 'Sexe',
                 'codigo_postal' => 'Codi Postal',
+                'localitat' => 'Localitat',
                 'departamento' => 'Departament',
                 'fecha_ingreso' => "Data d'ingrés",
                 'fecha_nac' => 'Data de Naixement',
                 'fecha_baja' => 'Data de Baixa',
                 'rol' => "Rol de la persona",
                 'dni' => 'DNI',
+                'nif_gerente' => 'NIF del gerent',
                 'nia' => 'NIA',
                 'expediente' => 'Expedient',
                 'telef1' => 'Telèfon',

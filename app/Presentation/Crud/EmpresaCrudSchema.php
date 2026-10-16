@@ -46,8 +46,10 @@ final class EmpresaCrudSchema
         'actividad' => ['type' => 'text'],
         'delitos' => ['type' => 'checkbox'],
         'menores' => ['type' => 'checkbox'],
+        'dependent_gva' => ['type' => 'checkbox'],
         'observaciones' => ['type' => 'textarea'],
         'gerente' => ['type' => 'text'],
+        'nif_gerente' => ['type' => 'text'],
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
         'idSao' => ['type' => 'hidden'],
@@ -85,8 +87,10 @@ final class EmpresaCrudSchema
             'actividad' => 'nullable|string|max:255',
             'delitos' => 'boolean',
             'menores' => 'boolean',
+            'dependent_gva' => 'boolean',
             'observaciones' => 'nullable|string',
             'gerente' => 'nullable|string|max:255',
+            'nif_gerente' => ['nullable', 'string', 'max:20', 'regex:/^[A-Za-z0-9][A-Za-z0-9-]{7,19}$/'],
             'fichero' => 'nullable|file|mimes:pdf,docx,xlsx,jpg,png,webp,heic,heif,zip',
             'creador' => 'nullable|string|max:12',
             'idSao' => 'nullable|integer',
@@ -94,4 +98,3 @@ final class EmpresaCrudSchema
         ];
     }
 }
-

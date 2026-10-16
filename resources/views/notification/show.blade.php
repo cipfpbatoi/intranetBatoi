@@ -8,7 +8,7 @@
                                                 @if ($elemento->enlace != '#')
                                                         <li><p><a href="{{$elemento->enlace}}" >Anar</a></p></li>
                                                 @endif
-                                                <li><p> {{ __("validation.attributes.idProfesor") }} : {{ $elemento->emissor }}</p></li>
+                                                <li><p> {{ __("validation.attributes.Profesor") }} : {{ $elemento->emissor }}</p></li>
                                                 <li><p> {{ __("validation.attributes.motivo") }} : {{ $elemento->motiu }}</p></li>
                                                 <li><p> {{ __("validation.attributes.fecha") }} : {{ $elemento->data }}</p></li>
                                         </ul>

@@ -88,6 +88,36 @@ class RouteNameContractTest extends TestCase
             absolute: false
         ));
         $this->assertContains('role:direccion', $route->gatherMiddleware());
+
+        $historic = Route::getRoutes()->getByName('assumptes-particulars.direccion.historic');
+        $this->assertNotNull($historic);
+        $this->assertSame('/direccion/assumptes-particulars/historic', route(
+            'assumptes-particulars.direccion.historic',
+            absolute: false
+        ));
+        $this->assertContains('role:direccion', $historic->gatherMiddleware());
+    }
+
+    public function test_les_mutacions_de_reunions_no_accepten_get(): void
+    {
+        $expectedMethods = [
+            'reunion.destroy' => 'DELETE',
+            'reunion.orden.destroy' => 'DELETE',
+            'reunion.profesor.destroy' => 'DELETE',
+            'reunion.alumno.destroy' => 'DELETE',
+            'reunion.email' => 'POST',
+            'reunion.notificar' => 'POST',
+            'reunion.saveFile' => 'POST',
+            'reunion.deleteFile' => 'POST',
+        ];
+
+        foreach ($expectedMethods as $name => $method) {
+            $route = Route::getRoutes()->getByName($name);
+
+            $this->assertNotNull($route, "No s'ha trobat la ruta {$name}.");
+            $this->assertContains($method, $route->methods());
+            $this->assertNotContains('GET', $route->methods());
+        }
     }
 
     public function test_rutes_de_convalidacions_separen_alumnat_i_direccio(): void

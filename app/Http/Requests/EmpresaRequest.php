@@ -33,7 +33,7 @@ class EmpresaRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores'];
+        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores', 'dependent_gva'];
         $normalized = [];
 
         foreach ($checkboxes as $field) {
@@ -47,4 +47,3 @@ class EmpresaRequest extends FormRequest
         $this->merge($normalized);
     }
 }
-

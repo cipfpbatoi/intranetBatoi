@@ -6,6 +6,7 @@
 @section('content')
     @include('pdf.partials.cabecera')
     <div class="container">
+        <p>@include('pdf.reunion.partials.numero-acta')</p>
         <table class="table table-bordered" style='font-size: large;width: 90%'>
             <tr>
                 <th><h4>{{strtoupper($datosInforme->Tipos()->vliteral)}}</h4></th>

@@ -37,12 +37,13 @@ class ProjecteDocumentService
         $acta->save();
 
         foreach ($projectes->values() as $key => $projecte) {
-            OrdenReunion::create([
-                'idReunion' => $acta->id,
-                'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => $projecte->titol . ' (Tutor individual)',
-                'orden' => $key + 1,
-            ]);
+            $this->createOrder(
+                $acta,
+                OrdenReunion::CODE_PROJECT_PROPOSAL_STUDENT,
+                (string) $projecte->Alumno->fullName,
+                $projecte->titol . ' (Tutor individual)',
+                $key + 1
+            );
         }
 
         return $acta;
@@ -68,12 +69,13 @@ class ProjecteDocumentService
         $acta->save();
 
         foreach ($projectes->values() as $key => $projecte) {
-            OrdenReunion::create([
-                'idReunion' => $acta->id,
-                'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => '(' . $projecte->titol . ')' . $projecte->defensa . '(' . $projecte->hora_defensa . ')',
-                'orden' => $key + 1,
-            ]);
+            $this->createOrder(
+                $acta,
+                OrdenReunion::CODE_PROJECT_DEFENSE_STUDENT,
+                (string) $projecte->Alumno->fullName,
+                '(' . $projecte->titol . ')' . $projecte->defensa . '(' . $projecte->hora_defensa . ')',
+                $key + 1
+            );
         }
 
         return $acta;
@@ -98,5 +100,25 @@ class ProjecteDocumentService
         if ($zipPath && file_exists($zipPath)) {
             @unlink($zipPath);
         }
+    }
+
+    /**
+     * Persistix un punt generat amb el seu codi intern immutable.
+     */
+    private function createOrder(
+        Reunion $reunion,
+        string $code,
+        string $description,
+        string $summary,
+        int $position
+    ): void {
+        $order = new OrdenReunion([
+            'idReunion' => $reunion->id,
+            'descripcion' => $description,
+            'resumen' => $summary,
+            'orden' => $position,
+        ]);
+        $order->codigo = $code;
+        $order->save();
     }
 }

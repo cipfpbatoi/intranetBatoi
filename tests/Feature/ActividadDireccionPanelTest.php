@@ -155,13 +155,51 @@ class ActividadDireccionPanelTest extends TestCase
         $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
-    public function test_mostrar_oculta_justificacio_ra_en_activitats_extraescolars(): void
+    public function test_mostra_tipus_complementaria_i_extraescolar_en_llistat_i_detall(): void
     {
-        Livewire::actingAs($this->direccionUser(), 'profesor')
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(ActividadDireccionPanel::class)
+            ->assertSee('Tipus')
+            ->assertSee('Complementària')
+            ->assertSee('Extraescolar');
+
+        $actividades = collect($component->get('actividades'))->keyBy('id');
+
+        $this->assertSame('Complementària', $actividades[1]['tipo']);
+        $this->assertSame('Extraescolar', $actividades[4]['tipo']);
+
+        $component
             ->call('mostrar', 4)
-            ->assertSet('selectedActividad.tipo', 'No complementària')
+            ->assertSet('selectedActividad.tipo', 'Extraescolar')
             ->assertDontSee('Justificació RA');
+    }
+
+    public function test_mostra_ubicacio_en_el_llistat_i_el_detall(): void
+    {
+        DB::connection('sqlite')->table('actividades')->where('id', 1)->update([
+            'fueraCentro' => 0,
+            'transport' => 0,
+        ]);
+        DB::connection('sqlite')->table('actividades')->where('id', 2)->update([
+            'fueraCentro' => 1,
+            'transport' => 1,
+        ]);
+
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->assertSee('Ubicació')
+            ->assertSee('Dins del centre')
+            ->assertSee('Fora del centre amb transport')
+            ->assertSee('Fora del centre sense transport');
+
+        $actividades = collect($component->get('actividades'))->keyBy('id');
+
+        $this->assertSame('Dins del centre', $actividades[1]['ubicacio']);
+        $this->assertSame('Fora del centre amb transport', $actividades[2]['ubicacio']);
+        $this->assertSame('Fora del centre sense transport', $actividades[3]['ubicacio']);
+
+        $component->call('mostrar', 1)
+            ->assertSet('selectedActividad.ubicacio', 'Dins del centre');
     }
 
     public function test_mostrar_usa_el_pivot_per_a_identificar_el_coordinador(): void

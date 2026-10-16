@@ -11,6 +11,19 @@ use Tests\TestCase;
  */
 class HandlerTest extends TestCase
 {
+    /** Conserva el temps d'espera de les respostes JSON 429. */
+    public function test_throttle_conserva_retry_after(): void
+    {
+        $request = \Illuminate\Http\Request::create('/api/reserva', 'POST');
+        $request->headers->set('Accept', 'application/json');
+        $exception = new \Illuminate\Http\Exceptions\ThrottleRequestsException(
+            'Too Many Attempts.', null, ['Retry-After' => '42']
+        );
+        $response = $this->app->make(Handler::class)->render($request, $exception);
+        $this->assertSame(429, $response->getStatusCode());
+        $this->assertSame('42', $response->headers->get('Retry-After'));
+    }
+
     /**
      * Verifica que el resum intern d'error siga curt i sense traça completa.
      *

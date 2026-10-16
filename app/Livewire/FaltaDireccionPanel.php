@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Application\Falta\FaltaAnulacioService;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Profesor;
 use Intranet\Mail\ReminderFaltaJustificant;
@@ -42,6 +44,8 @@ class FaltaDireccionPanel extends Component
     public bool $isDireccion = false;
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
+    public ?int $anullarId = null;
+    public string $motiuAnulacio = '';
     public bool $showFormModal = false;
     public bool $isEditing = false;
     public ?int $formFaltaId = null;
@@ -149,6 +153,11 @@ class FaltaDireccionPanel extends Component
     public function obrirRebutjar(int $id): void
     {
         $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($id);
+        if (!in_array((int) $falta->estado, [1, 2], true)) {
+            $this->error = 'Només es poden rebutjar faltes pendents.';
+            return;
+        }
         $this->rebutjarId = $id;
         $this->motiuRebutjar = '';
     }
@@ -171,6 +180,12 @@ class FaltaDireccionPanel extends Component
 
         if ($this->rebutjarId === null) {
             $this->error = 'No hi ha falta seleccionada per rebutjar.';
+            return;
+        }
+
+        $falta = Falta::query()->findOrFail($this->rebutjarId);
+        if (!in_array((int) $falta->estado, [1, 2], true)) {
+            $this->error = 'Només es poden rebutjar faltes pendents.';
             return;
         }
 
@@ -248,6 +263,11 @@ class FaltaDireccionPanel extends Component
         $falta = Falta::find($id);
         if (!$falta) {
             $this->error = 'No s\\\'ha trobat la falta.';
+            return;
+        }
+
+        if ($falta->assumpteParticular?->estat === AssumpteParticular::ESTAT_AUTORITZADA) {
+            $this->error = 'Per a modificar una petició autoritzada, cal anul·lar primer la falta.';
             return;
         }
 
@@ -341,6 +361,36 @@ class FaltaDireccionPanel extends Component
         $this->reloadFaltes();
     }
 
+    /** Obri la confirmació d'anul·lació d'una falta autoritzada. */
+    public function obrirAnulacio(int $id): void
+    {
+        $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($id);
+        $this->authorize('annul', $falta);
+        $this->anullarId = $id;
+        $this->motiuAnulacio = '';
+    }
+
+    /** Tanca el formulari d'anul·lació. */
+    public function cancelarAnulacio(): void
+    {
+        $this->anullarId = null;
+        $this->motiuAnulacio = '';
+    }
+
+    /** Anul·la la falta i allibera el dia, amb comprovació final dins del servei. */
+    public function confirmarAnulacio(FaltaAnulacioService $service): void
+    {
+        $this->resetFeedback();
+        $this->validate(['motiuAnulacio' => 'required|string|max:1000']);
+        $falta = Falta::query()->findOrFail($this->anullarId);
+        $this->authorize('annul', $falta);
+        $service->annullar((int) $falta->id, $this->motiuAnulacio, (string) AuthUser()->dni);
+        $this->cancelarAnulacio();
+        $this->message = 'Falta anul·lada i dia alliberat correctament.';
+        $this->reloadFaltes();
+    }
+
     /**
      * Renderitza la vista del component.
      */
@@ -355,7 +405,7 @@ class FaltaDireccionPanel extends Component
     private function reloadFaltes(): void
     {
         $query = Falta::query()
-            ->with('Profesor')
+            ->with(['Profesor', 'assumpteParticular'])
             ->orderByDesc('desde');
 
         if ($this->filterProfessor !== '') {
@@ -377,6 +427,8 @@ class FaltaDireccionPanel extends Component
                 'estado' => (int) $falta->estado,
                 'situacion' => (string) $falta->situacion,
                 'hasDocument' => !empty($falta->fichero),
+                'canAnnul' => $this->isDireccion && (int) $falta->estado === 3 && $falta->idDocumento === null,
+                'canEdit' => $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA,
             ];
         })->all();
 
@@ -538,7 +590,7 @@ class FaltaDireccionPanel extends Component
      *
      * @return array<string, string>
      */
-    private function validationAttributes(): array
+    public function validationAttributes(): array
     {
         return [
             'formIdProfesor' => 'professor',

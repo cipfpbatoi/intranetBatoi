@@ -4,6 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
+use Intranet\Application\Reunion\CreateReunionData;
+use Intranet\Application\Reunion\CreateReunionService;
+use Intranet\Application\Reunion\ReunionArchiveService;
 use Intranet\Application\Reunion\ReunionFeValuationService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -25,13 +28,12 @@ use Intranet\Jobs\SendEmail;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\UI\FormBuilder;
-use Intranet\Services\General\GestorService;
-use Intranet\Services\Calendar\MeetingOrderGenerateService;
 use Intranet\Services\School\ReunionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Response;
 use Intranet\Services\UI\AppAlert as Alert;
+use Throwable;
 use function dispatch;
 
 /**
@@ -41,12 +43,18 @@ class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
     private ?ReunionService $reunionService = null;
+
+    /** @var ReunionArchiveService|null */
+    private ?ReunionArchiveService $archiveService = null;
+
     /**
      * @var ReunionFeValuationService|null
      */
     private ?ReunionFeValuationService $feValuationService = null;
 
-    use Imprimir;
+    use Imprimir {
+        ics as protected imprimirIcs;
+    }
 
     const REUNION_UPDATE = 'reunion.update';
     protected $perfil = 'profesor';
@@ -58,12 +66,14 @@ class ReunionController extends ModalController
     public function __construct(
         ?GrupoService $grupoService = null,
         ?ReunionService $reunionService = null,
-        ?ReunionFeValuationService $feValuationService = null
+        ?ReunionFeValuationService $feValuationService = null,
+        ?ReunionArchiveService $archiveService = null
     ) {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->reunionService = $reunionService;
         $this->feValuationService = $feValuationService;
+        $this->archiveService = $archiveService;
     }
 
     private function grupos(): GrupoService
@@ -82,6 +92,18 @@ class ReunionController extends ModalController
         }
 
         return $this->reunionService;
+    }
+
+    /**
+     * Retorna el cas d'ús d'arxivament d'actes.
+     */
+    private function archives(): ReunionArchiveService
+    {
+        if ($this->archiveService === null) {
+            $this->archiveService = app(ReunionArchiveService::class);
+        }
+
+        return $this->archiveService;
     }
 
     /**
@@ -111,19 +133,16 @@ class ReunionController extends ModalController
         ]);
     }
 
-    public function store(ReunionStoreRequest $request)
+    /**
+     * Crea una reunió completa mitjançant el cas d'ús compartit amb l'API.
+     */
+    public function store(ReunionStoreRequest $request, CreateReunionService $createReunion)
     {
         $this->authorize('create', Reunion::class);
-        $this->normalitzaGrupoDocente($request);
-
-        $elemento = DB::transaction(function() use ($request) {
-            $id = $this->persist($request);
-            $elemento = Reunion::findOrFail($id);
-            $service = new MeetingOrderGenerateService($elemento);
-            $service->exec();
-            $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
-            return $elemento;
-        });
+        $elemento = $createReunion->create(
+            CreateReunionData::fromArray($request->validated()),
+            $request->user()
+        );
 
         if ($elemento->fichero != '') {
             return back();
@@ -137,12 +156,15 @@ class ReunionController extends ModalController
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
         if ($elemento->fichero != '') {
-            $formulario = new FormBuilder($elemento, $this->formFields);
+            $formFields = $this->formFields;
+            if (!(bool) $elemento->Tipos()->numero_funcional) {
+                unset($formFields['numero']);
+            }
+            $formulario = new FormBuilder($elemento, $formFields);
             $modelo = $this->model;
             return view('intranet.edit', compact('formulario', 'modelo'));
         }
 
-        $this->feValuations()->ensureOrder($elemento, $elemento->normativa);
         $feNotesData = $elemento->avaluacioFinal ? $this->feValuations()->gradeInputData($elemento) : null;
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
         $activos = app(ProfesorService::class)->activosOrdered();
@@ -152,7 +174,7 @@ class ReunionController extends ModalController
             ->orderBy('apellido1')
             ->orderBy('apellido2')
             ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
-        $formulario = new FormBuilder($elemento,[
+        $formFields = [
             'idProfesor' => ['type' => 'hidden'],
             'tipo' => ['type' => 'hidden'],
             'numero' => ['type' => 'select'],
@@ -164,7 +186,11 @@ class ReunionController extends ModalController
             'objetivos' => ['type' => 'textarea'],
             'idEspacio' => ['type' => 'select'],
             'fichero' => ['type' => 'file'],
-        ]);
+        ];
+        if (!(bool) $elemento->Tipos()->numero_funcional) {
+            unset($formFields['numero']);
+        }
+        $formulario = new FormBuilder($elemento, $formFields);
         $modelo = $this->model;
         if ($elemento->informe){
             $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
@@ -196,9 +222,27 @@ class ReunionController extends ModalController
     {
         $elemento = Reunion::findOrFail($id);
         $this->authorize('update', $elemento);
+        $request->merge(['idProfesor' => (string) $elemento->idProfesor]);
+        if (!(bool) $elemento->Tipos()->numero_funcional) {
+            $request->request->remove('numero');
+        }
         $this->normalitzaGrupoDocente($request);
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina una reunió oberta després de comprovar-ne la propietat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        $reunion = Reunion::findOrFail($id);
+        $this->authorize('delete', $reunion);
+
+        return parent::destroy($id);
     }
 
     private function tAlumnos($reunion,$sAlumnos){
@@ -207,40 +251,94 @@ class ReunionController extends ModalController
     }
 
 
+    /**
+     * Afig un professor existent a una reunió autoritzada.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaProfesor(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
-        $this->reunionService()->addProfesor($reunion, (string) $request->idProfesor);
+        $validated = $request->validate([
+            'idProfesor' => 'required|string|exists:profesores,dni',
+        ]);
+        $this->reunionService()->addProfesor($reunion, (string) $validated['idProfesor']);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Elimina un professor que pertany a la reunió indicada.
+     *
+     * @param int|string $reunion_id
+     * @param string $profesor_id
+     */
     public function borrarProfesor($reunion_id, $profesor_id)
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
+
+        if (!$reunion->profesores()->where('profesores.dni', (string) $profesor_id)->exists()) {
+            throw new NotFoundDomainException(
+                'El professor no pertany a la reunió indicada.',
+                ['reunion_id' => $reunion_id, 'profesor_id' => $profesor_id]
+            );
+        }
+
         $this->reunionService()->removeProfesor($reunion, (string) $profesor_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Elimina un alumne que pertany a la reunió indicada.
+     *
+     * @param int|string $reunion_id
+     * @param string $alumno_id
+     */
     public function borrarAlumno($reunion_id, $alumno_id)
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
+
+        if (!$reunion->alumnos()->where('alumnos.nia', (string) $alumno_id)->exists()) {
+            throw new NotFoundDomainException(
+                "L'alumne no pertany a la reunió indicada.",
+                ['reunion_id' => $reunion_id, 'alumno_id' => $alumno_id]
+            );
+        }
+
         $this->reunionService()->removeAlumno($reunion, (string) $alumno_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Afig un alumne existent a una reunió autoritzada.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaAlumno(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageParticipants', $reunion);
-        $this->reunionService()->addAlumno($reunion, (string) $request->idAlumno, (int) $request->capacitats);
+        $validated = $request->validate([
+            'idAlumno' => 'required|string|exists:alumnos,nia',
+            'capacitats' => 'required|integer',
+        ]);
+        $this->reunionService()->addAlumno(
+            $reunion,
+            (string) $validated['idAlumno'],
+            (int) $validated['capacitats']
+        );
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+    /**
+     * Afig un punt i força la reunió pare de la ruta.
+     *
+     * @param int|string $reunion_id
+     */
     public function altaOrden(OrdenReunionStoreRequest $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
@@ -250,7 +348,12 @@ class ReunionController extends ModalController
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
             $request->merge(['orden' => $max + 1]);
         }
-        OrdenReunion::create($request->all());
+        OrdenReunion::create([
+            'idReunion' => $reunion->id,
+            'orden' => (int) $request->orden,
+            'descripcion' => (string) $request->descripcion,
+            'resumen' => $request->input('resumen'),
+        ]);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
@@ -308,7 +411,7 @@ class ReunionController extends ModalController
         $reunion = Reunion::findOrFail($reunion_id);
         $this->authorize('manageOrder', $reunion);
 
-        $orden = OrdenReunion::find($orden_id);
+        $orden = $reunion->ordenes()->whereKey($orden_id)->first();
 
         if (!$orden) {
             throw new NotFoundDomainException(
@@ -384,6 +487,9 @@ class ReunionController extends ModalController
         return back();
     }
 
+    /**
+     * Configura els botons de la graella amb verbs HTTP segurs.
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['pdf']);
@@ -395,17 +501,27 @@ class ReunionController extends ModalController
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.delete',
-                ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'archivada', '==', '0'],
+                    'data-method' => 'DELETE',
+                    'data-confirm' => 'Segur que vols eliminar esta reunió?',
+                ]
             )
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.notification',
-                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0'],
+                    'data-method' => 'POST',
+                ]
             )
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.email',
-                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]
+                [
+                    'where' => ['idProfesor', '==', $actual, 'fichero', '==', ''],
+                    'data-method' => 'POST',
+                ]
             )
         );
         $this->panel->setBoton('grid',
@@ -420,7 +536,8 @@ class ReunionController extends ModalController
                         'idProfesor', '==', $actual,
                         'archivada', '==', '0',
                         'fecha', 'anterior', Carbon::yesterday()
-                    ]
+                    ],
+                    'data-method' => 'POST',
                 ]
             )
         );
@@ -452,6 +569,7 @@ class ReunionController extends ModalController
         if (!$elemento) {
             throw new NotFoundDomainException("No s'ha trobat la reunió #$id", ['reunion_id' => $id]);
         }
+        $this->authorize('view', $elemento);
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
@@ -462,71 +580,58 @@ class ReunionController extends ModalController
         }
 
         if ($elemento->archivada) {
-            $this->saveFile($id);
+            Alert::warning("L'acta està arxivada però no té cap fitxer disponible.");
+            return back();
         }
 
         return $this->construye_pdf($id)->stream();
     }
 
-    private function actaCompleta(Reunion $reunion)
-    {
-        if ($reunion->tipo == 7) {
-            foreach ($reunion->ordenes as $orden) {
-                if (empty($orden->resumen)) {
-                    throw new IntranetException("Tots els punts han de completar-se en una reunió d'avaluació");
-                }
-            }
-        }
-    }
-
+    /**
+     * Autoritza i delega l'arxivament de l'acta en el cas d'ús.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function saveFile($id)
     {
+        $elemento = $this->class::findOrFail($id);
+        $this->authorize('archive', $elemento);
+
         try {
-            $elemento = $this->class::find($id);
-            if ($elemento->fichero != '') {
-                $nomComplet = $elemento->fichero;
-            } else {
-                $this->actaCompleta($elemento);
-                $nom = 'Acta_' . $elemento->id . '.pdf';
-                $directorio = 'gestor/' . Curso() . '/' . $this->model;
-                $nomComplet = $directorio . '/' . $nom;
-                if (!file_exists(storage_path('/app/' . $nomComplet))) {
-                    $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
-                }
+            $result = $this->archives()->archive($elemento, Curso());
+            if ($result->wasAlreadyArchived()) {
+                Alert::warning("L'acta ja està arxivada i no es modificarà.");
             }
-            $elemento->archivada = 1;
-            $elemento->fichero = $nomComplet;
-            DB::transaction(function () use ($elemento) {
-                $gestor = new GestorService($elemento);
-                $gestor->save(['propietario' => $elemento->Creador->FullName,
-                    'tipoDocumento' => 'Acta',
-                    'descripcion' => $elemento->descripcion,
-                    'fichero' => $elemento->fichero,
-                    'supervisor' => $elemento->Creador->FullName,
-                    'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                    'tags' => TipoReunionService::find($elemento->tipo)->vliteral,
-                    'created_at' => new Carbon($elemento->fecha),
-                    'rol' => config('roles.rol.profesor')]);
-                $elemento->save();
-            });
-        } catch (IntranetException $e){
+        } catch (Throwable $e) {
             report($e);
             Log::warning('Error generant acta de reunió.', [
                 'reunion_id' => $id,
                 'error' => $e->getMessage(),
             ]);
-            Alert::warning($e->getMessage());
+            $message = $e instanceof IntranetException
+                ? $e->getMessage()
+                : "No s'ha pogut arxivar l'acta.";
+            Alert::warning($message);
         }
         return back();
     }
 
-    public function deleteFile(Request $request,$id)
+    /**
+     * Desarxiva una acta mitjançant una acció explícita i autoritzada.
+     *
+     * @param int|string $id
+     */
+    public function deleteFile(Request $request, $id)
     {
-        if ($request->pass == date('mdy')) {
-            $elemento = $this->class::find($id);
-            $document = Documento::where('tipoDocumento','Acta')
-                ->where('curso',Curso())
-                ->where('idDocumento',$elemento->id)
+        $elemento = $this->class::findOrFail($id);
+        $this->authorize('unarchive', $elemento);
+        $validated = $request->validate(['pass' => 'required|string']);
+
+        if ($validated['pass'] === date('mdy')) {
+            $document = Documento::where('tipoDocumento', 'Acta')
+                ->where('curso', Curso())
+                ->where('idDocumento', $elemento->id)
                 ->first();
             if ($elemento->fichero != '' && $document) {
                 DB::transaction(function () use ($elemento, $document) {
@@ -540,6 +645,21 @@ class ReunionController extends ModalController
             }
         }
         return back();
+    }
+
+    /**
+     * Genera l'iCalendar només per a usuaris que poden consultar la reunió.
+     *
+     * @param int|string $id
+     * @param string $descripcion
+     * @param string $objetivos
+     * @return mixed
+     */
+    public function ics($id, $descripcion = 'descripcion', $objetivos = 'objetivos')
+    {
+        $this->authorize('view', Reunion::findOrFail($id));
+
+        return $this->imprimirIcs($id, $descripcion, $objetivos);
     }
 
     public function listado($dia = null)

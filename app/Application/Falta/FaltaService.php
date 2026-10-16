@@ -6,6 +6,8 @@ namespace Intranet\Application\Falta;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Falta;
 use Intranet\Services\General\StateService;
 use Intranet\Services\Notifications\AdviseTeacher;
@@ -17,6 +19,8 @@ use Illuminate\Support\Carbon;
  */
 class FaltaService
 {
+    private const MOTIU_ASSUMPTE_PARTICULAR = 'PERMÍS RETRIBUÏT PER ASSUMPTES PARTICULARS';
+
     /**
      * Crea una falta de professorat.
      */
@@ -51,6 +55,35 @@ class FaltaService
     }
 
     /**
+     * Crea la falta autoritzada de dia complet vinculada a un assumpte particular.
+     */
+    public function createForAssumpteParticular(AssumpteParticular $peticio, string $documentFirmat): Falta
+    {
+        $motiu = array_search(
+            self::MOTIU_ASSUMPTE_PARTICULAR,
+            config('auxiliares.motivoAusencia', []),
+            true
+        );
+        if ($motiu === false) {
+            throw new \LogicException('No està configurat el motiu de falta per assumptes particulars.');
+        }
+
+        return Falta::query()->create([
+            'idProfesor' => $peticio->idProfesor,
+            'baja' => 0,
+            'dia_completo' => 1,
+            'desde' => $peticio->data_gaudi->toDateString(),
+            'hasta' => $peticio->data_gaudi->toDateString(),
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => (string) $motiu,
+            'observaciones' => sprintf('Permís retribuït per assumptes particulars. Sol·licitud #%d.', $peticio->id),
+            'fichero' => $documentFirmat,
+            'estado' => 3,
+        ]);
+    }
+
+    /**
      * Actualitza una falta.
      *
      * Quan la falta ja està enviada, només Direcció ha de poder modificar les
@@ -60,6 +93,7 @@ class FaltaService
     public function update(int|string $id, Request $request, bool $canEditSubmittedData = false): Falta
     {
         $falta = Falta::findOrFail($id);
+        $this->assegurarNoResolucioFirmada($falta);
 
         if ((int) $falta->estado >= 1 && !$canEditSubmittedData) {
             return $this->updateJustificant($id, $request);
@@ -90,6 +124,7 @@ class FaltaService
     public function updateJustificant(int|string $id, Request $request): Falta
     {
         $falta = Falta::findOrFail($id);
+        $this->assegurarNoResolucioFirmada($falta);
 
         if ($request->hasFile('fichero')) {
             $falta->fichero = $falta->fillFile($request->file('fichero'));
@@ -103,6 +138,16 @@ class FaltaService
         }
 
         return $falta;
+    }
+
+    /** Impedeix substituir la resolució d'una petició ja autoritzada. */
+    private function assegurarNoResolucioFirmada(Falta $falta): void
+    {
+        if ($falta->assumpteParticular?->estat === AssumpteParticular::ESTAT_AUTORITZADA) {
+            throw ValidationException::withMessages([
+                'fichero' => 'La resolució firmada només es pot retirar anul·lant la falta des de Direcció.',
+            ]);
+        }
     }
 
     /**

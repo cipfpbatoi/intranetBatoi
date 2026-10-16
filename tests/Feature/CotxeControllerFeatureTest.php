@@ -12,8 +12,13 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
 use Intranet\Entities\Cotxe;
 use Intranet\Entities\Profesor;
+use Intranet\Http\Controllers\API\CotxeController as ApiCotxeController;
 use Intranet\Presentation\Crud\CotxeCrudSchema;
+use Intranet\Services\HR\FitxatgeService;
+use Intranet\Services\School\CotxeAccessService;
 use Intranet\Services\UI\FormBuilder;
+use Mockery;
+use RuntimeException;
 use Tests\TestCase;
 
 /**
@@ -45,6 +50,9 @@ class CotxeControllerFeatureTest extends TestCase
 
     protected function tearDown(): void
     {
+        Mockery::close();
+
+        Schema::connection('sqlite')->dropIfExists('cotxe_accessos');
         Schema::connection('sqlite')->dropIfExists('cotxes');
         Schema::connection('sqlite')->dropIfExists('menus');
         Schema::connection('sqlite')->dropIfExists('notifications');
@@ -55,6 +63,168 @@ class CotxeControllerFeatureTest extends TestCase
         }
 
         parent::tearDown();
+    }
+
+    public function test_alta_i_edicio_normalitzen_espais_guions_i_minuscules(): void
+    {
+        $this->insertProfesor('COTXE01');
+        $professor = Profesor::on('sqlite')->findOrFail('COTXE01');
+
+        $createResponse = $this
+            ->actingAs($professor, 'profesor')
+            ->post(route('cotxe.store'), [
+                'matricula' => ' 12 34-abc ',
+                'marca' => 'Vehicle normalitzat',
+            ]);
+
+        $createResponse->assertStatus(302);
+        $createResponse->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('cotxes', [
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+        ]);
+
+        $cotxeId = (int) DB::table('cotxes')->value('id');
+        $updateResponse = $this
+            ->actingAs($professor, 'profesor')
+            ->put(route('cotxe.update', ['id' => $cotxeId]), [
+                'matricula' => ' 56-78 def ',
+                'marca' => 'Vehicle editat',
+            ]);
+
+        $updateResponse->assertStatus(302);
+        $updateResponse->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('cotxes', [
+            'id' => $cotxeId,
+            'matricula' => '5678DEF',
+        ]);
+    }
+
+    public function test_alta_rebutja_matricules_equivalents_i_caracters_no_permesos(): void
+    {
+        $this->insertProfesor('COTXE01');
+        $professor = Profesor::on('sqlite')->findOrFail('COTXE01');
+
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+            'marca' => 'Vehicle existent',
+        ]);
+
+        $duplicateResponse = $this
+            ->actingAs($professor, 'profesor')
+            ->post(route('cotxe.store'), [
+                'matricula' => '1234-abc',
+                'marca' => 'Vehicle duplicat',
+            ]);
+
+        $duplicateResponse->assertSessionHasErrors('matricula');
+        $this->assertSame(1, DB::table('cotxes')->count());
+
+        $invalidResponse = $this
+            ->actingAs($professor, 'profesor')
+            ->post(route('cotxe.store'), [
+                'matricula' => '1234/XYZ',
+                'marca' => 'Vehicle invàlid',
+            ]);
+
+        $invalidResponse->assertSessionHasErrors('matricula');
+        $this->assertSame(1, DB::table('cotxes')->count());
+    }
+
+    public function test_camera_reconeix_una_matricula_amb_espais_i_guions(): void
+    {
+        $this->insertProfesor('COTXE01');
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+            'marca' => 'Vehicle autoritzat',
+        ]);
+
+        $access = Mockery::mock(CotxeAccessService::class);
+        $access->shouldReceive('recentAccessWithin')->once()->with('1234ABC', 30)->andReturnFalse();
+        $access->shouldReceive('obrirIPorta')->once()->andReturnTrue();
+        $access->shouldReceive('registrarAcces')
+            ->once()
+            ->with('1234ABC', true, true, 'camera-1', 'entrada');
+
+        $fitxatge = Mockery::mock(FitxatgeService::class);
+        $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnFalse();
+
+        $request = Request::create(
+            '/api/eventPorta',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['plate' => '12 34-abc', 'device' => 'camera-1'], JSON_THROW_ON_ERROR)
+        );
+
+        $response = (new ApiCotxeController($access, $fitxatge))->eventEntrada($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Porta oberta (entrada)', $response->getData(true)['status']);
+    }
+
+    public function test_migracio_normalitza_cotxes_i_historial_d_accessos(): void
+    {
+        $this->insertProfesor('COTXE01');
+        DB::table('cotxes')->insert([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '12-34abc',
+            'marca' => 'Vehicle llegat',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('cotxe_accessos')->insert([
+            'matricula' => '12 34-abc',
+            'autoritzat' => true,
+            'porta_oberta' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $migration = require database_path('migrations/2026_09_25_120000_normalize_cotxe_matricules.php');
+        $migration->up();
+
+        $this->assertSame('1234ABC', DB::table('cotxes')->value('matricula'));
+        $this->assertSame('1234ABC', DB::table('cotxe_accessos')->value('matricula'));
+    }
+
+    public function test_migracio_s_atura_abans_de_crear_duplicats(): void
+    {
+        $this->insertProfesor('COTXE01');
+        DB::table('cotxes')->insert([
+            [
+                'idProfesor' => 'COTXE01',
+                'matricula' => '1234ABC',
+                'marca' => 'Vehicle net',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'COTXE01',
+                'matricula' => '1234-ABC',
+                'marca' => 'Vehicle duplicat',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $migration = require database_path('migrations/2026_09_25_120000_normalize_cotxe_matricules.php');
+
+        try {
+            $migration->up();
+            $this->fail('La migració havia de detectar la col·lisió de matrícules.');
+        } catch (RuntimeException $exception) {
+            $this->assertStringContainsString('quedarien duplicats', $exception->getMessage());
+        }
+
+        $this->assertEqualsCanonicalizing(
+            ['1234ABC', '1234-ABC'],
+            DB::table('cotxes')->pluck('matricula')->all()
+        );
     }
 
     public function test_professor_pot_tornar_a_afegir_matricula_despres_d_eliminar_la(): void
@@ -167,6 +337,16 @@ class CotxeControllerFeatureTest extends TestCase
             $table->timestamps();
 
             $table->unique(['matricula', 'idProfesor']);
+        });
+
+        Schema::connection('sqlite')->create('cotxe_accessos', function (Blueprint $table): void {
+            $table->id();
+            $table->string('matricula');
+            $table->boolean('autoritzat')->default(false);
+            $table->boolean('porta_oberta')->default(false);
+            $table->string('device')->nullable();
+            $table->string('tipus')->nullable();
+            $table->timestamps();
         });
 
         Schema::connection('sqlite')->create('menus', function (Blueprint $table): void {

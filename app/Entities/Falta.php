@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\FaltaCrudSchema;
@@ -51,6 +52,14 @@ class Falta extends Model
     public function profesor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
+    }
+
+    /**
+     * Petició d'assumptes particulars que ha originat esta falta, si n'hi ha.
+     */
+    public function assumpteParticular(): HasOne
+    {
+        return $this->hasOne(AssumpteParticular::class, 'falta_id');
     }
 
 

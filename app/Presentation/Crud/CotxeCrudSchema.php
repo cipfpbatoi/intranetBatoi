@@ -43,6 +43,7 @@ final class CotxeCrudSchema
                 'required',
                 'string',
                 'max:8',
+                'regex:/^[A-Z0-9]+$/',
                 Rule::unique('cotxes')
                     ->ignore($cotxeId)
                     ->where(static function ($query) use ($dni) {
@@ -53,4 +54,3 @@ final class CotxeCrudSchema
         ];
     }
 }
-

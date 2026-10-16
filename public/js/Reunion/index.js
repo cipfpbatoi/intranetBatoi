@@ -3,6 +3,38 @@
 var id;
 
 document.addEventListener('DOMContentLoaded', function () {
+    function submitWithMethod(link) {
+        var method = (link.getAttribute('data-method') || 'POST').toUpperCase();
+        var confirmation = link.getAttribute('data-confirm');
+        var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+
+        if (confirmation && !window.confirm(confirmation)) {
+            return;
+        }
+
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = link.href;
+        form.hidden = true;
+
+        var token = document.createElement('input');
+        token.type = 'hidden';
+        token.name = '_token';
+        token.value = csrf;
+        form.appendChild(token);
+
+        if (method !== 'POST') {
+            var methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = method;
+            form.appendChild(methodInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     function showPasswordModal() {
         if (window.intranetUiHelpers && typeof window.intranetUiHelpers.showModal === 'function') {
             window.intranetUiHelpers.showModal('password');
@@ -31,6 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
         var row = unlockButton.closest('.lineaGrupo') || unlockButton.closest('tr');
         id = row ? row.id : '';
         showPasswordModal();
+    });
+
+    document.addEventListener('click', function (event) {
+        var methodLink = event.target.closest('#datatable a[data-method]');
+        if (!methodLink) {
+            return;
+        }
+
+        event.preventDefault();
+        submitWithMethod(methodLink);
     });
 
     var formPassword = document.getElementById('formPassword');

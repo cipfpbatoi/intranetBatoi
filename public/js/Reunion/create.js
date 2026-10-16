@@ -76,6 +76,22 @@
         }
     }
 
+    function setNumeroFunctional(enabled) {
+        var numero = byId('numero_id');
+        var field = byId('field_numero_id');
+        if (!numero) {
+            return;
+        }
+
+        numero.disabled = !enabled;
+        if (field) {
+            field.hidden = !enabled;
+        }
+        if (!enabled) {
+            numero.value = '';
+        }
+    }
+
     function fillNumeroOptions(numeracion) {
         var numero = byId('numero_id');
         if (!numero) {
@@ -94,8 +110,10 @@
     function applyTipoReunionData(data) {
         setDisabled('grupo_id', Number(data.select) === 0);
         setGrupoDocenteEnabled(data.colectivo === 'Grupo');
+        var hasFunctionalNumber = data.numero_funcional === true || Number(data.numero_funcional) === 1;
+        setNumeroFunctional(hasFunctionalNumber);
 
-        if (data.numeracion) {
+        if (hasFunctionalNumber && data.numeracion) {
             fillNumeroOptions(data.numeracion);
         }
     }
@@ -128,7 +146,7 @@
 
             if (String(tipoValue) === '9') {
                 setDisabled('fichero_id', false);
-                setDisabled('numero_id', true);
+                setNumeroFunctional(false);
                 setGrupoDocenteEnabled(true);
                 if (descripcion) {
                     descripcion.value = 'Acta FSE';
@@ -139,12 +157,12 @@
             }
 
             setDisabled('fichero_id', true);
-            setDisabled('numero_id', false);
             setDisabled('objetivos_id', false);
 
             loadTipoReunion(tipoValue);
         });
 
+        setNumeroFunctional(false);
         loadTipoReunion(tipo.value);
     });
 })();

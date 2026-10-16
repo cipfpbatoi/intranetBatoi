@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Intranet\Application\AssumpteParticular\AssumpteParticularException;
 use Intranet\Application\AssumpteParticular\AssumpteParticularService;
+use Intranet\Application\AssumpteParticular\RubricaAssumpteParticularService;
 use Intranet\Entities\AssumpteParticular;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -29,6 +30,7 @@ class AssumpteParticularProfessorPanel extends Component
     public string $missatge = '';
     public string $error = '';
     public int $perPage = 10;
+    public bool $teRubrica = false;
 
     /**
      * @var array<string, array{disponible: float, pendent: int}>
@@ -50,6 +52,7 @@ class AssumpteParticularProfessorPanel extends Component
         Gate::authorize('create', AssumpteParticular::class);
 
         $this->dni = (string) $user->dni;
+        $this->teRubrica = app(RubricaAssumpteParticularService::class)->exists($user);
         $this->curs = $this->servei()->cursVigent();
         $this->recarregarSaldos();
     }

@@ -71,6 +71,7 @@ function buildFecha($fecha, $hora)
     return new \DateTime($str." ".$hora.":00");
 
 }
+/** Retorna la data amb el mes traduït a la llengua indicada. */
 function fechaString($fecha = null, $idioma = null)
 {
     $fecha = is_string($fecha) ? new Carbon($fecha) : $fecha;
@@ -78,9 +79,9 @@ function fechaString($fecha = null, $idioma = null)
     if (!isset($idioma)) {
         $idioma = Session::get('lang') ?: config('app.locale', 'es');
     }
-    Carbon::setLocale((string) $idioma);
+    $fc1 = $fc1->copy()->locale((string) $idioma);
 
-    return $fc1->format('d') . ' de ' . $fc1->format('F') .
+    return $fc1->format('d') . ' de ' . $fc1->translatedFormat('F') .
             ' de ' . $fc1->format('Y');
 }
 

@@ -4,11 +4,11 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Reunion\ReunionCreationGroupResolver;
 use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\ReunionCreated;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
 
 
@@ -42,7 +42,6 @@ class Reunion extends Model
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
-        'created' => ReunionCreated::class,
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -98,6 +97,47 @@ class Reunion extends Model
             }
         });
     }
+
+    /**
+     * Limita les reunions a les que un professor pot consultar.
+     *
+     * Direcció i administració mantenen la visibilitat institucional completa.
+     * La resta només veu reunions pròpies, del seu grup tutor o on consta com
+     * a assistent.
+     *
+     * @param mixed $query
+     * @param Profesor $profesor
+     * @return mixed
+     */
+    public function scopeVisibleTo($query, Profesor $profesor)
+    {
+        $role = (int) $profesor->rol;
+        $directionRole = (int) config('roles.rol.direccion');
+        $adminRole = (int) config('roles.rol.administrador');
+
+        if (
+            ($directionRole > 0 && $role % $directionRole === 0)
+            || ($adminRole > 0 && $role % $adminRole === 0)
+        ) {
+            return $query;
+        }
+
+        $groups = Grupo::qTutor((string) $profesor->dni)->pluck('codigo')->all();
+        $meetings = Asistencia::query()
+            ->where('idProfesor', (string) $profesor->dni)
+            ->pluck('idReunion')
+            ->all();
+
+        return $query->where(function ($innerQuery) use ($profesor, $groups, $meetings): void {
+            $innerQuery->where('idProfesor', (string) $profesor->dni)
+                ->orWhereIn('id', $meetings);
+
+            if ($groups !== []) {
+                $innerQuery->orWhereIn('idGrupo', $groups);
+            }
+        });
+    }
+
     public function scopeConvocante($query, $dni=null)
     {
         $dni = $dni??authUser()->dni;
@@ -191,7 +231,15 @@ class Reunion extends Model
      */
     public function getIdGrupoOptions(): array
     {
-        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
+        $creator = authUser();
+        if (!$creator instanceof Profesor) {
+            return [];
+        }
+
+        $groups = app(ReunionCreationGroupResolver::class)
+            ->availableFor($creator, $this->idGrupo ? (string) $this->idGrupo : null);
+
+        return hazArray($groups, 'codigo', 'nombre');
     }
 
     public function getDepartamentoAttribute()
@@ -240,6 +288,16 @@ class Reunion extends Model
     public function Espacio()
     {
         return $this->belongsTo(Espacio::class, 'idEspacio', 'aula');
+    }
+
+    /**
+     * Retorna la descripció del lloc de reunió o, si manca, el seu codi.
+     */
+    public function getLlocReunioAttribute(): string
+    {
+        $description = trim((string) ($this->Espacio?->descripcion ?? ''));
+
+        return $description !== '' ? $description : (string) ($this->idEspacio ?? '');
     }
 
     public function Responsable()

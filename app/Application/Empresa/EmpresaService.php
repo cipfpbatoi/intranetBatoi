@@ -164,11 +164,11 @@ class EmpresaService
     }
 
     /**
-     * Normalitza checkbox i CIF en l'entrada del formulari d'empresa.
+     * Normalitza checkbox i identificadors fiscals en l'entrada del formulari d'empresa.
      */
     private function normalizeRequest(Request $request): Request
     {
-        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores'];
+        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores', 'dependent_gva'];
         $normalized = [];
 
         foreach ($checkboxes as $field) {
@@ -176,7 +176,11 @@ class EmpresaService
         }
 
         if ($request->filled('cif')) {
-            $normalized['cif'] = strtoupper((string) $request->input('cif'));
+            $normalized['cif'] = strtoupper(trim((string) $request->input('cif')));
+        }
+
+        if ($request->filled('nif_gerente')) {
+            $normalized['nif_gerente'] = strtoupper(trim((string) $request->input('nif_gerente')));
         }
 
         $request->merge($normalized);

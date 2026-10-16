@@ -11,6 +11,9 @@ use Intranet\Services\HR\FitxatgeService;
 
 enum Direccio: string { case Entrada = 'entrada'; case Eixida = 'eixida'; }
 
+/**
+ * Gestiona els esdeveniments de les càmeres i l'obertura de l'aparcament.
+ */
 class CotxeController extends ApiResourceController
 {
     protected  $model = 'Cotxe';
@@ -126,9 +129,9 @@ class CotxeController extends ApiResourceController
 
 
     /**
-     * Accepta payloads heterogenis (Milesight, etc.)
-     * - Entrada:   plate / device
-     * - Eixida:    license_plate / device_name
+     * Accepta payloads heterogenis (Milesight, etc.).
+     *
+     * @return array{0: string, 1: mixed}
      */
     private function normalizePayload(Request $request, Direccio $direccio): array
     {
@@ -146,7 +149,7 @@ class CotxeController extends ApiResourceController
             $data['device_name']    ??  // Milesight
             null;
 
-        $matricula = strtoupper(preg_replace('/\s+/', '', $rawPlate));
+        $matricula = Cotxe::normalizeMatricula($rawPlate);
         $device    = $rawDevice ?: ($direccio === Direccio::Entrada ? 'Cam_exterior' : 'Cam_interior');
 
         return [$matricula, $device];

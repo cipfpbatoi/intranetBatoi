@@ -237,8 +237,23 @@ class ImageService
         return $nomFitxer;
     }
 
-    public static function toPng($fitxerOriginal, $fitxerDesti)
+    /**
+     * Convertix una imatge a PNG i crea el directori de destí si no existix.
+     *
+     * @param mixed $fitxerOriginal
+     * @param string $fitxerDesti
+     * @return void
+     * @throws \RuntimeException
+     */
+    public static function toPng($fitxerOriginal, $fitxerDesti): void
     {
+        $directori = dirname($fitxerDesti);
+        if (!is_dir($directori)) {
+            if (!@mkdir($directori, 0755, true) && !is_dir($directori)) {
+                throw new \RuntimeException('No s\'ha pogut crear el directori de destí per a la imatge.');
+            }
+        }
+
         // Si és PNG real, simplement mou
         try {
             $img = self::openGdImage($fitxerOriginal);

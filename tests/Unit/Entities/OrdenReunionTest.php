@@ -27,6 +27,7 @@ class OrdenReunionTest extends TestCase
         $schema->create('ordenes_reuniones', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('idReunion');
+            $table->string('codigo', 64)->nullable();
             $table->unsignedInteger('orden');
             $table->string('descripcion')->nullable();
             $table->text('resumen')->nullable();
@@ -47,5 +48,17 @@ class OrdenReunionTest extends TestCase
         $this->assertSame(1, OrdenReunion::firstByReunionAndOrder(10, 1)?->id);
         $this->assertNull(OrdenReunion::firstByReunionAndOrder(99, 1));
     }
-}
 
+    public function test_el_codi_no_es_pot_alterar_per_assignacio_massiva(): void
+    {
+        $order = OrdenReunion::query()->create([
+            'idReunion' => 1,
+            'codigo' => OrdenReunion::CODE_AGREEMENTS,
+            'orden' => 2,
+            'descripcion' => 'Punt manual',
+            'resumen' => 'Text',
+        ]);
+
+        $this->assertNull($order->fresh()?->codigo);
+    }
+}

@@ -60,6 +60,11 @@ class ApiTipoReunionControllerFeatureTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('success', true);
         $response->assertJsonPath('data.index', '0');
+        $response->assertJsonMissingPath('data.numero_funcional');
+
+        $this->getJson('/api/tiporeunion/7')
+            ->assertOk()
+            ->assertJsonPath('data.numero_funcional', true);
     }
 
     private function createSchema(): void

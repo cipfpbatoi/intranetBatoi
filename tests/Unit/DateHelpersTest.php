@@ -8,8 +8,16 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
+/** Proves de format i operacions amb dates. */
 class DateHelpersTest extends TestCase
 {
+    /** El nom del mes respecta la llengua indicada. */
+    public function test_fecha_string_tradueix_el_mes(): void
+    {
+        $this->assertSame('05 de octubre de 2026', fechaString('2026-10-05', 'ca'));
+        $this->assertSame('05 de October de 2026', fechaString('2026-10-05', 'en'));
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

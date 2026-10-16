@@ -1,4 +1,5 @@
 <?php
+use Intranet\Http\Controllers\AssumpteParticularDocumentController;
 use Intranet\Http\Livewire\BustiaVioleta\Form as BustiaForm;
 
 Route::get('/allProgramacion/', ['as' => 'modulogrupo.all', 'uses' => 'PanelModuloGrupoController@index']);
@@ -30,6 +31,8 @@ Route::get('/doPoll', ['as' => 'enquesta.do', 'uses' => 'PanelPollResponseContro
 Route::post('/signatura/{id}/upload', ['as' => 'signatura.upload', 'uses' => 'SignaturaController@upload']);
 Route::get('/A3', ['as' => 'signaturaAlumno.index', 'uses' => 'SignaturaAlumneController@index']);
 Route::get('/signatura/{id}/pdf', ['as' => 'signatura.pdf', 'uses' => 'SignaturaController@pdf']);
+Route::get('/assumptes-particulars/{assumpteParticular}/document', AssumpteParticularDocumentController::class)
+    ->name('assumptes-particulars.document');
 
 Route::resource('projecte' , 'ProjecteController',['except'=>['update','destroy','show']]);
 Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'ProjecteController@update']);

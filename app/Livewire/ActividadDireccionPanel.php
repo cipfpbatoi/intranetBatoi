@@ -299,6 +299,8 @@ class ActividadDireccionPanel extends Component
             ->map(fn ($grup) => (string) ($grup->nombre ?? $grup->codigo ?? ''))
             ->filter()
             ->values();
+        $tipus = $actividad->getTipusActivitatOptions();
+        $ubicacions = $actividad->getUbicacioActivitatOptions();
 
         return [
             'id' => (int) $actividad->id,
@@ -309,7 +311,8 @@ class ActividadDireccionPanel extends Component
             'hasta' => (string) $actividad->hasta,
             'estado' => (int) $actividad->estado,
             'situacion' => (string) $actividad->situacion,
-            'tipo' => $actividad->complementaria ? 'Complementària' : 'No complementària',
+            'tipo' => $tipus[$actividad->tipus_activitat] ?? '-',
+            'ubicacio' => $ubicacions[$actividad->ubicacio_activitat] ?? '-',
             'tipoActividad' => (string) ($actividad->tipoActividad->vliteral ?? '-'),
             'justificacioRa' => (string) ($actividad->tipoActividad->justificacio ?? ''),
             'departamento' => (string) ($actividad->tipoActividad->departamento ?? 'CENTRE'),

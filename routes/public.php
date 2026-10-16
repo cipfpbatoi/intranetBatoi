@@ -25,12 +25,20 @@ Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 Route::post('password/email', function (Request $request) {
     $profesor =  Profesor::where('email', $request->input('email'))->first();
 
-    if ($profesor) {
-        $profesor->changePassword =  null;
-        $profesor->save() ;
+    if (!$profesor) {
+        return back()
+            ->withInput()
+            ->withErrors(['email' => 'No s\'ha trobat cap professor amb este correu.']);
     }
 
-    return redirect('/profesor/login');
+    $profesor->changePassword = null;
+    $profesor->save();
+
+    return redirect('/profesor/login')->with(
+        'status',
+        'La contrasenya s\'ha reiniciat. Identifica\'t amb el teu codi d\'usuari i usa el DNI '
+        . '(amb el 0 davant i la lletra en majúscula) com a contrasenya. Després podràs definir-ne una de nova.'
+    );
 });
 Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');

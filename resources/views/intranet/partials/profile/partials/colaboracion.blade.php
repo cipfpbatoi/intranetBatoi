@@ -88,9 +88,18 @@
                 @if ($fitxaBadges->isNotEmpty())
                     <p class="mb-2">
                         @foreach ($fitxaBadges as $badge)
-                            <span class="badge {{ $badge['class'] }}" style="margin-bottom:.25rem;">
-                                <em class="fa {{ $badge['icon'] }}"></em> {{ $badge['label'] }}
-                            </span>
+                            @if (!empty($badge['url']))
+                                <a href="{{ $badge['url'] }}"
+                                   class="badge {{ $badge['class'] }}"
+                                   style="margin-bottom:.25rem;"
+                                   title="Editar les dades del gerent">
+                                    <em class="fa {{ $badge['icon'] }}"></em> {{ $badge['label'] }}
+                                </a>
+                            @else
+                                <span class="badge {{ $badge['class'] }}" style="margin-bottom:.25rem;">
+                                    <em class="fa {{ $badge['icon'] }}"></em> {{ $badge['label'] }}
+                                </span>
+                            @endif
                         @endforeach
                     </p>
                 @endif

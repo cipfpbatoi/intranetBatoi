@@ -53,6 +53,7 @@ class Profesor extends Authenticatable
         'movil2',
         'sexo',
         'codigo_postal',
+        'localitat',
         'departamento',
         'fecha_ingreso',
         'fecha_baja',
@@ -74,6 +75,7 @@ class Profesor extends Authenticatable
         'movil2',
         'mostrar',
         'especialitat',
+        'localitat',
     ];
     protected $casts = [
         'codigo' => 'integer',
