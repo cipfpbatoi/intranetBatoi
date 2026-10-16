@@ -119,6 +119,9 @@ class ConvalidacioReglesManager
             if (isset($rule['source']['conditions']) && !is_array($rule['source']['conditions'])) {
                 throw new ConvalidacioException('Les condicions de la regla han de ser un conjunt de camps YAML.');
             }
+            if (isset($rule['source']['catalog']) && !in_array($rule['source']['catalog'], ['fol_loe'], true)) {
+                throw new ConvalidacioException('La regla referix un catàleg d’origen desconegut.');
+            }
         }
 
         return $catalog;

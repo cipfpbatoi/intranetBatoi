@@ -120,6 +120,10 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
     Route::get('/angles/{correspondencia}/editar', ['as' => 'direction.angles.edit', 'uses' => 'DireccionConvalidacioAnglesController@edit']);
     Route::put('/angles/{correspondencia}', ['as' => 'direction.angles.update', 'uses' => 'DireccionConvalidacioAnglesController@update']);
     Route::delete('/angles/{correspondencia}', ['as' => 'direction.angles.destroy', 'uses' => 'DireccionConvalidacioAnglesController@destroy']);
+    Route::get('/fol-loe', ['as' => 'direction.fol-loe.index', 'uses' => 'DireccionConvalidacioFolLoeController@index']);
+    Route::post('/fol-loe', ['as' => 'direction.fol-loe.store', 'uses' => 'DireccionConvalidacioFolLoeController@store']);
+    Route::put('/fol-loe/{modul}', ['as' => 'direction.fol-loe.update', 'uses' => 'DireccionConvalidacioFolLoeController@update']);
+    Route::delete('/fol-loe/{modul}', ['as' => 'direction.fol-loe.destroy', 'uses' => 'DireccionConvalidacioFolLoeController@destroy']);
     Route::prefix('xml')->name('direction.xml.')->group(function () {
         Route::get('/', ['as' => 'index', 'uses' => 'DireccionConvalidacioXmlController@index']);
         Route::post('/', ['as' => 'store', 'uses' => 'DireccionConvalidacioXmlController@store']);
