@@ -245,6 +245,7 @@ Then el document inclou una entrada independent per cada mòdul que coincidix am
 And cada entrada identifica l'alumne, el mòdul, el seu estat i la sol·licitud de referència amb la data
 And les entrades s'ordenen alfabèticament pel nom de l'alumne
 And el PDF mostra el resultat `CO` o `AA` i la nota només quan consten guardats en la petició
+And si una petició és una acreditació alternativa, el PDF mostra en estil secundari la descripció dels estudis indicats per l'alumne
 And mostra la data de l'últim canvi d'estat del mòdul
 And el PDF manté visibles els estats diferents dels mòduls d'una mateixa sol·licitud
 And el PDF no tracta ni presenta la sol·licitud com si tinguera un estat propi

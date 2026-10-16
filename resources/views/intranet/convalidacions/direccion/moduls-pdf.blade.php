@@ -34,7 +34,13 @@
                 <tr>
                     <td>{{ $peticio->sollicitud?->alumno?->fullName ?? $peticio->sollicitud?->alumno_id }}<br><span class="muted">NIA {{ $peticio->sollicitud?->alumno_id }}</span></td>
                     <td><strong>{{ $peticio->moduloDestino?->vliteral ?? $peticio->modulo_destino_id }}</strong><br><span class="muted">{{ $peticio->modulo_destino_id }}</span></td>
-                    <td>{{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}<br><span class="muted">{{ $peticio->modulo_origen_codigo }} {{ $peticio->modulo_origen_nombre }}</span></td>
+                    <td>
+                        {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}<br>
+                        <span class="muted">{{ $peticio->modulo_origen_codigo }} {{ $peticio->modulo_origen_nombre }}</span>
+                        @if ($peticio->acreditacio_alternativa && filled($peticio->acreditacio_descripcio))
+                            <div class="muted"><strong>Estudis indicats per l’alumne:</strong><br>{{ $peticio->acreditacio_descripcio }}</div>
+                        @endif
+                    </td>
                     <td>{{ $peticio->resultat_resolucio ?: '—' }}@if ($peticio->mode_nota_resolucio === 'preserve' && $peticio->nota_resultat_resolucio !== null)<br><span class="muted">Nota {{ rtrim(rtrim(number_format((float) $peticio->nota_resultat_resolucio, 2, ',', ''), '0'), ',') }}</span>@elseif ($peticio->mode_nota_resolucio === 'preserve')<br><span class="muted">Nota no disponible</span>@elseif ($peticio->mode_nota_resolucio === 'none')<br><span class="muted">Sense nota</span>@endif</td>
                     <td>{{ \Intranet\Entities\Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat }}</td>
                     <td>#{{ $peticio->sollicitud_convalidacio_id }}</td>
