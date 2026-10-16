@@ -40,6 +40,13 @@
                         </td>
                         <td>
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
+                            @if ($peticio->acreditacio_alternativa)
+                                <div class="alert alert-warning py-2 mb-2">
+                                    <strong>Acreditació alternativa — revisió manual</strong>
+                                    <div>{{ $peticio->acreditacio_descripcio }}</div>
+                                    <small>No correspon a un resultat verificat en l’XML.</small>
+                                </div>
+                            @endif
                             @if (filled($peticio->regla_automatica_id))
                                 <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
                                 <div class="mb-1"><strong>Catàleg:</strong> {{ $peticio->regla_automatica_version }}</div>

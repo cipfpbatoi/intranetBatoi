@@ -83,6 +83,8 @@ class AlumnoConvalidacioController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.modulo_destino_id' => ['required', 'string'],
             'items.*.origen' => ['required', 'string', Rule::in(array_keys(Convalidacio::origenOptions()))],
+            'items.*.acreditacio_alternativa' => ['nullable', 'boolean'],
+            'items.*.acreditacio_descripcio' => ['nullable', 'string', 'max:2000'],
             'items.*.resultat_origen_id' => ['nullable', 'string', 'size:64'],
             'items.*.declaracio_responsable' => ['nullable', 'boolean'],
             'declaracio_responsable_sollicitud' => ['nullable', 'boolean'],
@@ -103,6 +105,7 @@ class AlumnoConvalidacioController extends Controller
         foreach ($items as &$item) {
             $declaracioItem = filter_var($item['declaracio_responsable'] ?? false, FILTER_VALIDATE_BOOL);
             $teAdjunts = !empty($item['documents']) || isset($item['document']) || isset($item['document_prl']);
+            $item['acreditacio_alternativa'] = filter_var($item['acreditacio_alternativa'] ?? false, FILTER_VALIDATE_BOOL);
             $requereixDeclaracio = $item['origen'] !== Convalidacio::ORIGEN_PROPI_CENTRE || $teAdjunts;
             $item['declaracio_responsable'] = $requereixDeclaracio
                 ? ($declaracioResponsableSollicitud || $declaracioItem)

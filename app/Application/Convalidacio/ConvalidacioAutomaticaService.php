@@ -157,6 +157,7 @@ class ConvalidacioAutomaticaService
                         ->findOrFail($cas['peticio_id']);
                     if (
                         $peticio->regla_automatica_id !== null
+                        || $peticio->acreditacio_alternativa
                         || $peticio->esTerminal()
                         || !$peticio->sollicitud?->submitted_at
                     ) {
@@ -251,6 +252,9 @@ class ConvalidacioAutomaticaService
         }
         if (!$this->nivellDestinacioCoincideix((string) ($regla['target']['level'] ?? ''), (int) $peticio->ciclo_matricula_tipo)) {
             return ['resultat_origen' => null, 'motiu' => 'sense_coincidencia'];
+        }
+        if ($peticio->acreditacio_alternativa) {
+            return ['resultat_origen' => null, 'motiu' => 'L’acreditació alternativa requerix revisió manual.'];
         }
 
         $source = $regla['source'];

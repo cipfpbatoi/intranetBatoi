@@ -34,6 +34,8 @@ class Convalidacio extends Model
         'sollicitud_convalidacio_id',
         'modulo_destino_id',
         'origen',
+        'acreditacio_alternativa',
+        'acreditacio_descripcio',
         'modulo_origen_codigo',
         'modulo_origen_nombre',
         'modulo_origen_nombre_val',
@@ -99,6 +101,7 @@ class Convalidacio extends Model
 
     protected $casts = [
         'declaracio_responsable' => 'boolean',
+        'acreditacio_alternativa' => 'boolean',
         'fol_logse' => 'boolean',
         'modulo_origen_es_fol' => 'boolean',
         'any_origen' => 'integer',

@@ -109,6 +109,7 @@
                             </div>
 
                             <div id="propi-centre" class="mb-3" hidden>
+                                <div id="verified-own-center-fields">
                                 <label class="form-label" for="builder-resultat">Mòdul superat</label>
                                 <select class="form-select" id="builder-resultat">
                                     <option value="">Selecciona un mòdul aprovat</option>
@@ -143,6 +144,19 @@
                                 @if ($modulsAprovats === [])
                                     <div class="form-text text-warning">No s'han trobat mòduls aprovats disponibles per a seleccionar.</div>
                                 @endif
+                                </div>
+                                <div class="mt-3" id="own-center-options">
+                                    <button class="convalidacio-inline-action" type="button" id="toggle-alternative-accreditation">No trobes el mòdul o necessites aportar altres estudis?</button>
+                                    <button class="convalidacio-inline-action" type="button" id="toggle-own-documents">Vols aportar més documentació?</button>
+                                </div>
+                                <div class="alert alert-info mt-3 mb-0" id="alternative-accreditation-notice" hidden>
+                                    Descriu amb claredat els estudis que vols fer servir. Direcció revisarà la sol·licitud i, si ho considera necessari, et sol·licitarà més documentació.
+                                </div>
+                                <div class="mt-3" id="alternative-accreditation-fields" hidden>
+                                    <label class="form-label" for="builder-accreditation-description">Quin mòdul o quins estudis vols fer servir?</label>
+                                    <textarea class="form-control" id="builder-accreditation-description" rows="3" maxlength="2000" placeholder="Descriu el mòdul o els estudis que vols aportar."></textarea>
+                                    <button class="convalidacio-inline-action mt-2" type="button" id="toggle-alternative-documents">Vols aportar més documentació?</button>
+                                </div>
                             </div>
 
                             <div id="fol-logse-section" class="border rounded p-3 mb-3" hidden>
@@ -165,9 +179,11 @@
                                 </select>
                             </div>
 
-                            <div id="documents-builder" class="mb-3">
+                            <div id="documents-builder" class="mb-3" hidden>
                                 <label class="form-label">Documents de suport (màxim 3)</label>
-                                <p class="form-text">Pots adjuntar documents en qualsevol modalitat. En cada fitxer indica de quin document es tracta.</p>
+                                <p class="form-text mb-2" id="own-document-notice" hidden><strong>Si has pogut seleccionar el mòdul</strong>, normalment no cal adjuntar més documentació perquè ja consta als registres del centre. Si aportes FOL de LOGSE per a IPE I, sí que cal adjuntar el certificat de Prevenció de Riscos Laborals.</p>
+                                <p class="form-text mb-2" id="alternative-document-notice" hidden>Pots adjuntar documents que ajuden Direcció a revisar els estudis que has descrit. Si declares FOL de LOGSE per a IPE I, cal adjuntar el certificat de Prevenció de Riscos Laborals.</p>
+                                <p class="form-text" id="documents-builder-help">En cada fitxer indica de quin document es tracta.</p>
                                 <div id="builder-documents-list"></div>
                                 <button class="btn btn-sm btn-outline-secondary mt-2" type="button" id="add-document">Afegir document</button>
                                 <div class="form-text">PDF, JPG, JPEG o PNG; màxim {{ round($maxDocumentKb / 1024, 1) }} MB per fitxer.</div>
@@ -277,6 +293,39 @@
     animation: convalidacio-comptador-actualitzat 450ms ease-out;
 }
 
+#builder-resultat {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#own-center-options .convalidacio-inline-action,
+#alternative-accreditation-fields .convalidacio-inline-action {
+    display: block;
+    margin-left: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-style: italic;
+    text-align: left;
+    cursor: pointer;
+}
+
+#own-center-options .convalidacio-inline-action::before,
+#alternative-accreditation-fields .convalidacio-inline-action::before {
+    content: "+ ";
+}
+
+#own-center-options .convalidacio-inline-action:hover,
+#own-center-options .convalidacio-inline-action:focus-visible,
+#alternative-accreditation-fields .convalidacio-inline-action:hover,
+#alternative-accreditation-fields .convalidacio-inline-action:focus-visible {
+    color: var(--bs-link-color, #0d6efd);
+    text-decoration: underline;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .convalidacio-item-nou,
     .convalidacio-comptador-actualitzat {
@@ -320,6 +369,16 @@
     const folOriginSelect = document.getElementById('builder-es-fol');
     const documentsList = document.getElementById('builder-documents-list');
     const addDocumentButton = document.getElementById('add-document');
+    const documentsBuilder = document.getElementById('documents-builder');
+    const verifiedOwnCenterFields = document.getElementById('verified-own-center-fields');
+    const alternativeFields = document.getElementById('alternative-accreditation-fields');
+    const alternativeNotice = document.getElementById('alternative-accreditation-notice');
+    const alternativeDescription = document.getElementById('builder-accreditation-description');
+    const toggleAlternativeButton = document.getElementById('toggle-alternative-accreditation');
+    const toggleOwnDocumentsButton = document.getElementById('toggle-own-documents');
+    const toggleAlternativeDocumentsButton = document.getElementById('toggle-alternative-documents');
+    const ownDocumentNotice = document.getElementById('own-document-notice');
+    const alternativeDocumentNotice = document.getElementById('alternative-document-notice');
     const originGroup = document.getElementById('origen-group');
     const ownCenter = document.getElementById('propi-centre');
     const secretary = document.getElementById('avis-secretaria');
@@ -343,6 +402,8 @@
     let nextIndex = 0;
     let openingPresentationConfirmation = false;
     let presentationConfirmed = false;
+    let alternativeAccreditation = false;
+    let documentsExpanded = false;
 
     const selectedText = (select) => select.options[select.selectedIndex]?.text.trim() || '';
     const setError = (message = '') => {
@@ -378,6 +439,19 @@
         secretary.hidden = !hasModule || origin !== 'secretaria';
         const isIpeI = moduleSelect.value === '1709';
         const selectedResult = resultSelect.options[resultSelect.selectedIndex];
+        verifiedOwnCenterFields.hidden = alternativeAccreditation;
+        alternativeFields.hidden = !alternativeAccreditation;
+        alternativeNotice.hidden = !alternativeAccreditation;
+        toggleAlternativeButton.textContent = alternativeAccreditation
+            ? 'Tornar a seleccionar un mòdul aprovat'
+            : 'No trobes el mòdul o necessites aportar altres estudis?';
+        toggleOwnDocumentsButton.hidden = alternativeAccreditation;
+        toggleOwnDocumentsButton.textContent = documentsExpanded
+            ? 'Amagar documentació'
+            : 'Vols aportar més documentació?';
+        toggleAlternativeDocumentsButton.textContent = documentsExpanded
+            ? 'Amagar documentació'
+            : 'Vols aportar més documentació?';
         const ownFol = isIpeI && origin === 'propi_centre' && selectedResult?.dataset.esFol === '1';
         const folApplicable = isIpeI && hasModule && origin !== '' && origin !== 'secretaria';
         const xmlClassification = ownFol ? selectedResult.dataset.folLogse : '';
@@ -385,10 +459,18 @@
         folCatalogNotice.hidden = !(ownFol && xmlClassification !== '');
         if (!folApplicable) folSelect.value = '';
         else if (ownFol && xmlClassification !== '') folSelect.value = xmlClassification;
-        const isFolOrigin = origin === 'propi_centre' ? ownFol : folOriginSelect.value === '1';
+        const isFolOrigin = origin === 'propi_centre' && !alternativeAccreditation
+            ? ownFol
+            : folOriginSelect.value === '1';
         folDocumentNotice.hidden = !folApplicable || folSelect.value !== '1' || !isFolOrigin;
-        folOriginSection.hidden = !isIpeI || origin !== 'altre_centre';
-        document.getElementById('documents-builder').hidden = !hasModule || origin === '' || origin === 'secretaria';
+        folOriginSection.hidden = !isIpeI || !(origin === 'altre_centre' || (origin === 'propi_centre' && alternativeAccreditation));
+        const documentsAvailable = hasModule && origin !== '' && origin !== 'secretaria';
+        documentsBuilder.hidden = !documentsAvailable || (origin === 'propi_centre' && !documentsExpanded);
+        ownDocumentNotice.hidden = !documentsExpanded || origin !== 'propi_centre' || alternativeAccreditation;
+        alternativeDocumentNotice.hidden = !documentsExpanded || origin !== 'propi_centre' || !alternativeAccreditation;
+        document.getElementById('documents-builder-help').textContent = externalOrigins.includes(origin)
+            ? 'En cada fitxer indica de quin document es tracta.'
+            : 'Adjunta només la documentació complementària que consideres necessària.';
         addDocumentButton.disabled = documentRows.length >= 3;
         addButton.hidden = !hasModule || origin === '' || origin === 'secretaria';
         refreshResultDetail();
@@ -419,6 +501,9 @@
         moduleSelect.value = '';
         originSelect.value = '';
         resultSelect.value = '';
+        alternativeAccreditation = false;
+        alternativeDescription.value = '';
+        documentsExpanded = false;
         declaration.checked = false;
         documentRows = [];
         documentsList.replaceChildren();
@@ -479,6 +564,9 @@
             return;
         }
         appendLine(cell, item.dataset.accreditationTitle, 'fw-semibold mb-1');
+        if (item.dataset.alternativeDescription) {
+            appendLine(cell, item.dataset.alternativeDescription, 'mb-1');
+        }
         appendLine(cell, item.dataset.accreditationMeta, 'small');
         JSON.parse(item.dataset.documents || '[]').forEach((doc) => appendLine(cell, `${doc.descripcio}: ${doc.nom}`, 'small mt-1'));
     };
@@ -549,6 +637,23 @@
     folSelect.addEventListener('change', refreshBuilder);
     folOriginSelect.addEventListener('change', refreshBuilder);
     addDocumentButton.addEventListener('click', addDocumentRow);
+    toggleAlternativeButton.addEventListener('click', () => {
+        alternativeAccreditation = !alternativeAccreditation;
+        resultSelect.value = '';
+        alternativeDescription.value = '';
+        folSelect.value = '';
+        folOriginSelect.value = '';
+        documentsExpanded = false;
+        refreshBuilder();
+    });
+    toggleOwnDocumentsButton.addEventListener('click', () => {
+        documentsExpanded = !documentsExpanded;
+        refreshBuilder();
+    });
+    toggleAlternativeDocumentsButton.addEventListener('click', () => {
+        documentsExpanded = !documentsExpanded;
+        refreshBuilder();
+    });
     reviewModalElement.addEventListener('show.bs.modal', buildReview);
     reviewModalElement.addEventListener('hidden.bs.modal', () => {
         if (!openingPresentationConfirmation) return;
@@ -585,8 +690,13 @@
         const moduleId = moduleSelect.value;
         const origin = originSelect.value;
 
-        if (origin === 'propi_centre' && resultSelect.value === '') {
+        if (origin === 'propi_centre' && !alternativeAccreditation && resultSelect.value === '') {
             setError('Selecciona el mòdul superat que vols aportar.');
+            return;
+        }
+        if (origin === 'propi_centre' && alternativeAccreditation && !alternativeDescription.value.trim()) {
+            setError('Descriu quin mòdul o quins estudis vols fer servir.');
+            alternativeDescription.focus();
             return;
         }
         const attached = documentRows.filter((entry) => entry.file.files.length > 0);
@@ -603,13 +713,13 @@
             return;
         }
         const isIpeI = moduleId === '1709';
-        const result = origin === 'propi_centre' ? resultSelect.options[resultSelect.selectedIndex] : null;
+        const result = origin === 'propi_centre' && !alternativeAccreditation ? resultSelect.options[resultSelect.selectedIndex] : null;
         const folApplicable = isIpeI && origin !== 'secretaria';
         if (folApplicable && folSelect.value === '') {
             setError('Revisa el certificat acadèmic i indica si els estudis d’origen són LOGSE.');
             return;
         }
-        if (isIpeI && origin === 'altre_centre' && folOriginSelect.value === '') {
+        if (isIpeI && (origin === 'altre_centre' || (origin === 'propi_centre' && alternativeAccreditation)) && folOriginSelect.value === '') {
             setError('Indica si l’origen és el mòdul FOL.');
             return;
         }
@@ -631,7 +741,14 @@
         addHidden(accreditationCell, `items[${index}][origen]`, origin);
 
         const docsSummary = [];
-        if (origin === 'propi_centre') {
+        if (origin === 'propi_centre' && alternativeAccreditation) {
+            item.dataset.accreditationTitle = 'Acreditació alternativa · revisió manual';
+            item.dataset.alternativeDescription = alternativeDescription.value.trim();
+            item.dataset.accreditationMeta = attached.map((entry) => entry.file.files[0].name).join(', ');
+            item.dataset.modality = '';
+            addHidden(accreditationCell, `items[${index}][acreditacio_alternativa]`, '1');
+            addHidden(accreditationCell, `items[${index}][acreditacio_descripcio]`, alternativeDescription.value.trim());
+        } else if (origin === 'propi_centre') {
             item.dataset.accreditationSourceCode = result.dataset.codi;
             item.dataset.accreditationSourceName = result.dataset.modul;
             item.dataset.accreditationCycleName = result.dataset.cicleNom;
@@ -646,7 +763,9 @@
         }
         if (origin !== 'propi_centre' || attached.length > 0) item.dataset.requiresDeclaration = 'true';
         if (folApplicable) addHidden(accreditationCell, `items[${index}][fol_logse]`, folSelect.value);
-        if (isIpeI && origin === 'altre_centre') addHidden(accreditationCell, `items[${index}][modulo_origen_es_fol]`, folOriginSelect.value);
+        if (isIpeI && (origin === 'altre_centre' || (origin === 'propi_centre' && alternativeAccreditation))) {
+            addHidden(accreditationCell, `items[${index}][modulo_origen_es_fol]`, folOriginSelect.value);
+        }
         attached.forEach((entry, docIndex) => {
             const description = entry.description.value.trim();
             const clone = entry.file.cloneNode();

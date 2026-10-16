@@ -896,6 +896,11 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Només es tramitaran els mòduls que apareguen en esta llista.')
             ->assertSee('Destí 1')
             ->assertSee('Mòdul superat')
+            ->assertSee('No trobes el mòdul o necessites aportar altres estudis?')
+            ->assertSee('Vols aportar més documentació?')
+            ->assertSee('<strong>Si has pogut seleccionar el mòdul</strong>, normalment no cal adjuntar més documentació perquè ja consta als registres del centre.', false)
+            ->assertSee('id="builder-accreditation-description"', false)
+            ->assertSee('Descriu amb claredat els estudis que vols fer servir. Direcció revisarà la sol·licitud i, si ho considera necessari, et sol·licitarà més documentació.', false)
             ->assertSee('Origen 1')
             ->assertSee('Cicle anterior')
             ->assertSee('Any 2025')
@@ -1104,6 +1109,122 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame(1, DB::table('documents_convalidacions')->count());
     }
 
+    public function test_acreditacio_alternativa_del_propi_centre_es_guarda_com_a_declarada_i_no_com_a_resultat_xml(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'acreditacio-alternativa-text', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'acreditacio_alternativa' => true,
+            'acreditacio_descripcio' => 'FOL d’un cicle anterior que no apareix en els resultats.',
+            // Un identificador manipulat no ha de convertir l’acreditació en dades verificades.
+            'resultat_origen_id' => str_repeat('a', 64),
+        ]]);
+
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->assertTrue($peticio->acreditacio_alternativa);
+        $this->assertSame('FOL d’un cicle anterior que no apareix en els resultats.', $peticio->acreditacio_descripcio);
+        $this->assertNull($peticio->modulo_origen_codigo);
+        $this->assertNull($peticio->nota_origen);
+        $this->assertFalse($peticio->declaracio_responsable);
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->get(route('convalidacions.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Acreditació alternativa — pendent de revisió manual')
+            ->assertSee('FOL d’un cicle anterior que no apareix en els resultats.');
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Acreditació alternativa — revisió manual')
+            ->assertSee('No correspon a un resultat verificat en l’XML.');
+
+        try {
+            $this->service->tramitar($this->alumno, 'acreditacio-alternativa-buida', [[
+                'modulo_destino_id' => 'DEST2',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'acreditacio_alternativa' => true,
+                'acreditacio_descripcio' => '   ',
+            ]]);
+            $this->fail('La descripció alternativa no pot estar buida.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('Descriu quin mòdul', $exception->getMessage());
+        }
+    }
+
+    public function test_acreditacio_alternativa_amb_adjunts_exigix_la_declaracio_responsable(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $base = [
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'acreditacio_alternativa' => '1',
+            'acreditacio_descripcio' => 'Estudis previs no disponibles en l’XML.',
+            'documents' => [[
+                'descripcio' => 'Certificat acadèmic',
+                'fitxer' => UploadedFile::fake()->create('certificat.pdf', 20, 'application/pdf'),
+            ]],
+        ];
+
+        $this->from('/alumno/convalidacions/create')->post('/alumno/convalidacions', [
+            'submission_token' => 'alternative-without-declaration',
+            'items' => [$base],
+        ])->assertRedirect('/alumno/convalidacions/create')->assertSessionHasErrors('items');
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+
+        $response = $this->post('/alumno/convalidacions', [
+            'submission_token' => 'alternative-with-declaration',
+            'declaracio_responsable_sollicitud' => '1',
+            'items' => [$base],
+        ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect('/alumno/convalidacions/1');
+        $peticio = Convalidacio::query()->firstOrFail();
+        $this->assertTrue($peticio->acreditacio_alternativa);
+        $this->assertTrue($peticio->declaracio_responsable);
+        $this->assertSame(1, DB::table('documents_convalidacions')->count());
+    }
+
+    public function test_acreditacio_alternativa_conserva_l_excepcio_fol_logse_per_a_ipe_i(): void
+    {
+        DB::table('modulos')->insert(['codigo' => '1709', 'cliteral' => 'IPE I', 'vliteral' => 'IPE I']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => '1709', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        $base = [
+            'modulo_destino_id' => '1709',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'acreditacio_alternativa' => true,
+            'acreditacio_descripcio' => 'FOL d’un cicle LOGSE que no apareix en l’XML.',
+            'fol_logse' => true,
+            'modulo_origen_es_fol' => true,
+        ];
+
+        try {
+            $this->service->tramitar($this->alumno, 'alternativa-fol-logse-sense-document', [$base]);
+            $this->fail('El certificat PRL havia de ser obligatori per a FOL LOGSE en IPE I.');
+        } catch (ConvalidacioException $exception) {
+            $this->assertStringContainsString('Adjunta el certificat de Prevenció', $exception->getMessage());
+        }
+
+        $sollicitud = $this->service->tramitar($this->alumno, 'alternativa-fol-logse-amb-document', [[
+            ...$base,
+            'declaracio_responsable' => true,
+            'documents' => [[
+                'descripcio' => 'Certificat de prevenció de riscos laborals',
+                'fitxer' => UploadedFile::fake()->create('prl.pdf', 20, 'application/pdf'),
+            ]],
+        ]]);
+
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->assertTrue($peticio->acreditacio_alternativa);
+        $this->assertTrue($peticio->fol_logse);
+        $this->assertTrue($peticio->modulo_origen_es_fol);
+        $this->assertNull($peticio->modulo_origen_codigo);
+        $this->assertSame(1, $peticio->documents()->count());
+    }
+
     public function test_origen_extern_sense_declaracio_retorn_a_un_error_funcional(): void
     {
         $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
@@ -1267,7 +1388,8 @@ class ConvalidacioFlowTest extends TestCase
         $sollicitudAlt = $this->service->tramitar($this->alumno, 'pdf-per-modul-alt', [[
             'modulo_destino_id' => 'DEST1',
             'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
-            'resultat_origen_id' => $this->resultatId(),
+            'acreditacio_alternativa' => true,
+            'acreditacio_descripcio' => 'Estudis previs que no apareixen en els resultats del centre.',
         ]]);
         $sollicitudAlt->convalidacions->first()->forceFill(['estat' => Convalidacio::ESTAT_DENEGADA])->save();
         $this->withoutMiddleware(RoleMiddleware::class)
@@ -1304,6 +1426,18 @@ class ConvalidacioFlowTest extends TestCase
             'document_original_name' => 'confidencial.pdf',
         ], 'sqlite');
         $this->assertStringNotContainsString('confidencial.pdf', $response->getContent());
+
+        $vistaPdf = view('intranet.convalidacions.direccion.moduls-pdf', [
+            'peticions' => collect([$sollicitudAlt->convalidacions->firstOrFail()->fresh()->load(['sollicitud.alumno', 'moduloDestino'])]),
+            'generat' => now(),
+            'generatPer' => Profesor::query()->findOrFail('DIR00001'),
+            'registreItacaConfirmat' => false,
+            'estatInforme' => null,
+            'errorsCorreu' => 0,
+        ])->render();
+        $this->assertStringContainsString('Estudis indicats per l’alumne:', $vistaPdf);
+        $this->assertStringContainsString('Estudis previs que no apareixen en els resultats del centre.', $vistaPdf);
+        $this->assertStringNotContainsString('confidencial.pdf', $vistaPdf);
     }
 
     public function test_pdf_ordena_les_peticions_pel_nom_visible_de_l_alumne(): void
@@ -1588,6 +1722,31 @@ class ConvalidacioFlowTest extends TestCase
             'modulo_destino_id' => 'DEST2',
             'estat' => Convalidacio::ESTAT_ENVIADA,
             'regla_automatica_id' => null,
+        ], 'sqlite');
+    }
+
+    public function test_acreditacio_alternativa_no_apareix_com_a_elegible_per_a_una_regla_automatica(): void
+    {
+        DB::table('modulos')->insert(['codigo' => 'DEST_AUTO', 'cliteral' => 'Destí automàtic', 'vliteral' => 'Destí automàtic']);
+        DB::table('modulo_ciclos')->insert(['id' => 4, 'idModulo' => 'DEST_AUTO', 'idCiclo' => 2]);
+        DB::table('modulo_grupos')->insert(['id' => 4, 'idGrupo' => 'ACTUAL', 'idModuloCiclo' => 4]);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $this->automaticRulesYaml());
+        $this->service->tramitar($this->alumno, 'alternativa-no-automatica', [[
+            'modulo_destino_id' => 'DEST_AUTO',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'acreditacio_alternativa' => true,
+            'acreditacio_descripcio' => 'Estudis que no apareixen en l’XML.',
+        ]]);
+
+        $preview = app(ConvalidacioAutomaticaService::class)->previsualitzar();
+
+        $this->assertCount(0, $preview['casos']);
+        $this->assertSame('L’acreditació alternativa requerix revisió manual.', $preview['bloquejats']['regla-orig1-desti-auto']);
+        $this->assertDatabaseHas('convalidacions', [
+            'modulo_destino_id' => 'DEST_AUTO',
+            'acreditacio_alternativa' => true,
+            'regla_automatica_id' => null,
+            'estat' => Convalidacio::ESTAT_ENVIADA,
         ], 'sqlite');
     }
 
@@ -2754,6 +2913,8 @@ XML;
             $table->unsignedBigInteger('sollicitud_convalidacio_id');
             $table->string('modulo_destino_id');
             $table->string('origen');
+            $table->boolean('acreditacio_alternativa')->default(false);
+            $table->text('acreditacio_descripcio')->nullable();
             $table->string('modulo_origen_codigo')->nullable();
             $table->string('modulo_origen_nombre')->nullable();
             $table->string('modulo_origen_nombre_val')->nullable();

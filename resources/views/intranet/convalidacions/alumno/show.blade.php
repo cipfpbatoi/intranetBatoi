@@ -41,6 +41,12 @@
                         </td>
                         <td>
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
+                            @if ($peticio->acreditacio_alternativa)
+                                <div class="alert alert-info py-2 mb-2">
+                                    <strong>Acreditació alternativa — pendent de revisió manual</strong>
+                                    <div>{{ $peticio->acreditacio_descripcio }}</div>
+                                </div>
+                            @endif
                             @if (filled($peticio->regla_automatica_id))
                                 <div class="mb-1"><strong>Regla aplicada:</strong> {{ $peticio->regla_automatica_id }}</div>
                                 <div class="mb-1"><strong>Resultat:</strong> {{ $peticio->resultat_automatic }}@if ($peticio->mode_nota_automatic === 'preserve') · Nota {{ number_format((float) $peticio->nota_resultat_automatic, 0, ',', '') }}@endif</div>

@@ -67,6 +67,8 @@ class ConvalidacioService
                     $peticio = $sollicitud->convalidacions()->create([
                         'modulo_destino_id' => $item['modulo_destino_id'],
                         'origen' => $item['origen'],
+                        'acreditacio_alternativa' => (bool) ($item['acreditacio_alternativa'] ?? false),
+                        'acreditacio_descripcio' => $item['acreditacio_descripcio'] ?? null,
                         'modulo_origen_codigo' => $item['modulo_origen_codigo'] ?? null,
                         'modulo_origen_nombre' => $item['modulo_origen_nombre'] ?? null,
                         'modulo_origen_nombre_val' => $item['modulo_origen_nombre_val'] ?? null,
@@ -473,13 +475,26 @@ class ConvalidacioService
         }
         $destino = (string) ($item['modulo_destino_id'] ?? '');
         $origen = (string) ($item['origen'] ?? '');
+        $acreditacioAlternativa = filter_var($item['acreditacio_alternativa'] ?? false, FILTER_VALIDATE_BOOL);
+        $descripcioAlternativa = trim((string) ($item['acreditacio_descripcio'] ?? ''));
 
         if (!array_key_exists($origen, Convalidacio::origenOptions())) {
             throw new ConvalidacioException('L\'origen indicat no és vàlid.');
         }
+        if ($acreditacioAlternativa && (
+            $origen !== Convalidacio::ORIGEN_PROPI_CENTRE
+            || $descripcioAlternativa === ''
+            || mb_strlen($descripcioAlternativa) > 2000
+        )) {
+            throw new ConvalidacioException('Descriu quin mòdul o quins estudis vols aportar per a la revisió manual.');
+        }
         $esIpeI = $destino === self::MODUL_IPE_I;
+        $esIPEIAltresEstudis = $esIpeI && ($origen === Convalidacio::ORIGEN_ALTRE_CENTRE || $acreditacioAlternativa);
         if ($esIpeI && !is_bool($item['fol_logse'] ?? null)) {
             throw new ConvalidacioException('Revisa el certificat acadèmic i indica si els estudis d’origen són LOGSE.');
+        }
+        if ($esIPEIAltresEstudis && !is_bool($item['modulo_origen_es_fol'] ?? null)) {
+            throw new ConvalidacioException('Indica si l’origen de la petició és el mòdul FOL.');
         }
         $folLogse = $esIpeI ? $item['fol_logse'] : null;
 
@@ -505,6 +520,47 @@ class ConvalidacioService
         }
 
         $contextMatricula = $this->contextMatricula($alumno, $destino);
+
+        if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE && $acreditacioAlternativa) {
+            $documents = $this->validarDocuments($item, false);
+            if ($documents !== [] && ($item['declaracio_responsable'] ?? false) !== true) {
+                throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
+            }
+            $esFolLogse = $esIPEIAltresEstudis
+                && ($item['modulo_origen_es_fol'] ?? false) === true
+                && $folLogse === true;
+            $this->validarDocumentacioFolLogse($documents, $esFolLogse);
+
+            return array_merge($item, $contextMatricula, [
+                'acreditacio_alternativa' => true,
+                'acreditacio_descripcio' => $descripcioAlternativa,
+                'modulo_origen_codigo' => null,
+                'modulo_origen_nombre' => null,
+                'modulo_origen_nombre_val' => null,
+                'modulo_origen_nombre_cas' => null,
+                'ciclo_origen_codigo' => null,
+                'ciclo_origen_nombre' => null,
+                'ciclo_origen_nombre_val' => null,
+                'ciclo_origen_nombre_cas' => null,
+                'familia_professional_codigo' => null,
+                'familia_professional_nombre_val' => null,
+                'familia_professional_nombre_cas' => null,
+                'nivel_origen_codigo' => null,
+                'nivel_origen_nombre_val' => null,
+                'nivel_origen_nombre_cas' => null,
+                'any_origen' => null,
+                'nota_origen' => null,
+                'convocatoria_origen' => null,
+                'resultat_origen_id' => null,
+                'document' => null,
+                'declaracio_responsable' => $documents !== [] && ($item['declaracio_responsable'] ?? false) === true,
+                'fol_logse' => $folLogse,
+                'modulo_origen_es_fol' => $esIPEIAltresEstudis ? $item['modulo_origen_es_fol'] : null,
+                'fol_logse_cicle' => null,
+                'fol_logse_nivell' => null,
+                'documents' => $documents,
+            ]);
+        }
 
         if ($origen === Convalidacio::ORIGEN_PROPI_CENTRE) {
             $resultat = $this->resultatsAcademics->trobarAprovat(
@@ -555,10 +611,6 @@ class ConvalidacioService
             ]);
         }
 
-        $esIPEIAltresEstudis = $destino === self::MODUL_IPE_I && $origen === Convalidacio::ORIGEN_ALTRE_CENTRE;
-        if ($esIPEIAltresEstudis && !is_bool($item['modulo_origen_es_fol'] ?? null)) {
-            throw new ConvalidacioException('Indica si l’origen de la petició és el mòdul FOL.');
-        }
         if ($origen !== Convalidacio::ORIGEN_PROPI_CENTRE && ($item['declaracio_responsable'] ?? false) !== true) {
             throw new ConvalidacioException('Accepta la declaració responsable per als documents adjunts.');
         }
