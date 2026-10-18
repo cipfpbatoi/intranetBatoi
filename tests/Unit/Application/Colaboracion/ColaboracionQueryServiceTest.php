@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Colaboracion;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Carbon;
 use Intranet\Application\Colaboracion\ColaboracionQueryService;
 use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Entities\Activity;
@@ -140,5 +141,57 @@ class ColaboracionQueryServiceTest extends TestCase
         )->first();
 
         $this->assertNull($resultat->fitxaBadges->firstWhere('label', 'Falta NIF del gerent'));
+    }
+
+    /** Marca com a inactives les col·laboracions sense FCT durant el curs actual ni l'anterior. */
+    public function test_detecta_dos_cursos_sense_activitat_fct(): void
+    {
+        Carbon::setTestNow('2026-10-18 12:00:00');
+
+        try {
+            $service = new ColaboracionQueryService(app(SeguimientoService::class));
+            $recent = $this->colaboracionAmbUltimaFct(10, '2025-09-01');
+            $old = $this->colaboracionAmbUltimaFct(11, '2025-08-31');
+            $never = $this->colaboracionAmbUltimaFct(12, null);
+
+            $resultat = $service->attachRelatedAndContacts(
+                collect([$recent, $old, $never]),
+                collect(),
+                collect([
+                    10 => collect(),
+                    11 => collect(),
+                    12 => collect(),
+                ])
+            )->keyBy('id');
+
+            $this->assertFalse($resultat[10]->senseActivitatRecent);
+            $this->assertTrue($resultat[11]->senseActivitatRecent);
+            $this->assertTrue($resultat[12]->senseActivitatRecent);
+            $this->assertSame('2025-09-01', $resultat[10]->ultimaFctData?->format('Y-m-d'));
+            $this->assertSame('2025-08-31', $resultat[11]->ultimaFctData?->format('Y-m-d'));
+            $this->assertNull($resultat[12]->ultimaFctData);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /** Crea una col·laboració mínima amb una data final d'FCT opcional. */
+    private function colaboracionAmbUltimaFct(int $id, ?string $hasta): Colaboracion
+    {
+        $colaboracion = new Colaboracion();
+        $colaboracion->id = $id;
+        $colaboracion->idCentro = $id;
+        $colaboracion->setRelation('Centro', (object) [
+            'Empresa' => $this->fakeEmpresa(),
+            'instructores' => collect([(object) ['id' => 1]]),
+        ]);
+        $colaboracion->setRelation('fcts', $hasta === null
+            ? collect()
+            : collect([(object) [
+                'id' => $id * 10,
+                'AlFct' => collect([(object) ['hasta' => $hasta]]),
+            ]]));
+
+        return $colaboracion;
     }
 }

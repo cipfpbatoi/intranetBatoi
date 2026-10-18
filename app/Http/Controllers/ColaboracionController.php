@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Colaboracion\ColaboracionQueryService;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Seguimiento\SeguimientoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -50,7 +51,8 @@ class ColaboracionController extends ModalController
      */
     public function __construct(
         private readonly SeguimientoService $seguimientoService,
-        private readonly ColaboracionQueryService $colaboracionQueryService
+        private readonly ColaboracionQueryService $colaboracionQueryService,
+        private readonly GrupoService $grupoService
     )
     {
         parent::__construct();
@@ -96,6 +98,12 @@ class ColaboracionController extends ModalController
     public function search()
     {
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
+        $ciclesPropis = $this->grupoService
+            ->qTutor((string) AuthUser()->dni)
+            ->pluck('idCiclo')
+            ->filter()
+            ->map(static fn ($id): int => (int) $id)
+            ->unique();
         $ciclos = Ciclo::query()
             ->where('departamento', AuthUser()->departamento)
             ->pluck('id')
@@ -103,10 +111,14 @@ class ColaboracionController extends ModalController
 
         $colaboraciones = Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
-            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario', 'fcts'])
+            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario', 'fcts.AlFct'])
             ->get();
 
-        return $this->colaboracionQueryService->hydrateIndicators($colaboraciones);
+        return $this->colaboracionQueryService
+            ->hydrateIndicators($colaboraciones)
+            ->each(static function (Colaboracion $colaboracion) use ($ciclesPropis): void {
+                $colaboracion->esCiclePropi = $ciclesPropis->contains((int) $colaboracion->idCiclo);
+            });
     }
 
     /**
