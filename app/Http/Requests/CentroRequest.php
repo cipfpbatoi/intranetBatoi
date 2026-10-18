@@ -4,8 +4,14 @@ namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Valida les dades dels formularis de centres.
+ */
 class CentroRequest extends FormRequest
 {
+    /**
+     * Autoritza la petició de centre.
+     */
     public function authorize()
     {
         return true;
@@ -16,7 +22,7 @@ class CentroRequest extends FormRequest
      *
      * @return array<string, string>
      */
-    public static function validationRules(bool $requireEmpresa = true): array
+    public static function sharedRules(bool $requireEmpresa = true): array
     {
         $rules = [
             'nombre' => 'required',
@@ -40,6 +46,6 @@ class CentroRequest extends FormRequest
      */
     public function rules(): array
     {
-        return self::validationRules();
+        return self::sharedRules();
     }
 }
