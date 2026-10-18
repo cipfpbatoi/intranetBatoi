@@ -39,22 +39,23 @@ class ColaboracionViewPresentationTest extends TestCase
         $this->assertStringContainsString('[^A-Z0-9\\s]', $html);
     }
 
-    /** El panell departamental mostra una graella compacta amb classificacions operatives. */
-    public function test_el_panell_departamental_permet_classificar_fitxes_compactes(): void
+    /** El panell departamental agrupa per empresa i combina tots els filtres. */
+    public function test_el_panell_departamental_permet_filtres_acumulatius_per_empresa(): void
     {
         $pestana = new \stdClass();
         $elements = collect([
             $this->colaboracio(
                 1,
+                10,
                 'Empresa Beta',
                 'CB',
                 'Cicle B',
                 0,
-                inactiva: true,
                 localitat: 'COCENTAINA'
             ),
             $this->colaboracio(
                 2,
+                20,
                 'Empresa Alfa',
                 'CA',
                 'Cicle A',
@@ -66,14 +67,24 @@ class ColaboracionViewPresentationTest extends TestCase
             ),
             $this->colaboracio(
                 3,
+                20,
                 'Empresa Alfa',
                 'CC',
                 'Cicle C',
                 3,
                 'Pau Ferrer',
-                'Pau Ferrer Tercer',
-                inactiva: true,
-                ultimaFct: '2023-06-20'
+                'Pau Ferrer Tercer'
+            ),
+            $this->colaboracio(
+                4,
+                30,
+                'Empresa Gamma',
+                'CD',
+                'Cicle D',
+                1,
+                'Joan Soler',
+                'Joan Soler Quart',
+                localitat: 'MURO'
             ),
         ]);
 
@@ -85,59 +96,65 @@ class ColaboracionViewPresentationTest extends TestCase
         $html = Blade::render(
             <<<'BLADE'
                 @include('intranet.partials.colaboracion.departamento')
-                @stack('styles')
                 @stack('scripts')
             BLADE,
             compact('panel', 'pestana')
         );
 
-        $this->assertSame(3, substr_count($html, 'js-colaboracion-show colaboracion-department-card'));
-        $this->assertStringContainsString('data-company="Empresa Alfa"', $html);
-        $this->assertStringContainsString('data-company="Empresa Beta"', $html);
+        $this->assertSame(3, substr_count($html, 'class="colaboracion-company-card"'));
+        $this->assertSame(4, substr_count($html, 'js-colaboracion-show colaboracion-cycle-row'));
+        $this->assertSame(1, substr_count($html, 'data-company-key="20"'));
+        $this->assertSame(
+            1,
+            substr_count($html, '<h4 class="colaboracion-company-name" title="Empresa Alfa">')
+        );
+        $this->assertStringContainsString('data-colaboracion-department-styles', $html);
         $this->assertStringContainsString('@media (min-width: 992px)', $html);
         $this->assertStringContainsString('grid-template-columns: repeat(3, minmax(0, 1fr))', $html);
-        $this->assertStringContainsString('Filtrar per poble', $html);
+        $this->assertStringContainsString('linear-gradient(135deg', $html);
+        $this->assertStringContainsString('Població', $html);
         $this->assertStringContainsString('id="colaboracion-town-filter"', $html);
+        $this->assertStringContainsString('id="colaboracion-cycle-filter"', $html);
+        $this->assertStringContainsString('id="colaboracion-state-filter"', $html);
+        $this->assertStringContainsString('id="colaboracion-assignment-filter"', $html);
+        $this->assertStringContainsString('id="colaboracion-documentation-filter"', $html);
+        $this->assertStringContainsString('id="colaboracion-clear-filters"', $html);
         $this->assertStringContainsString('value="ALCOI"', $html);
         $this->assertStringContainsString('value="COCENTAINA"', $html);
-        $this->assertStringContainsString('data-view="town"', $html);
-        $this->assertStringContainsString('data-view="cycle"', $html);
-        $this->assertStringContainsString('data-view="contacted"', $html);
-        $this->assertStringContainsString('data-view="collaborates"', $html);
-        $this->assertStringContainsString('data-view="documentation"', $html);
-        $this->assertStringContainsString('data-view="inactive"', $html);
-        $this->assertStringContainsString('data-documentation-old="1"', $html);
-        $this->assertStringContainsString('data-inactive="1"', $html);
-        $this->assertStringContainsString('data-contacted="0"', $html);
-        $this->assertStringContainsString('data-collaborates="1"', $html);
+        $this->assertStringContainsString('value="no-contact"', $html);
+        $this->assertStringContainsString('value="contacted"', $html);
+        $this->assertStringContainsString('value="collaborates"', $html);
+        $this->assertStringContainsString('value="assigned"', $html);
+        $this->assertStringContainsString('value="unassigned"', $html);
+        $this->assertStringContainsString('Documentació actualitzada', $html);
+        $this->assertStringContainsString('data-documentation-current="0"', $html);
+        $this->assertStringContainsString('data-documentation-current="1"', $html);
+        $this->assertStringContainsString('data-assigned="0"', $html);
+        $this->assertStringContainsString('data-assigned="1"', $html);
         $this->assertStringContainsString('El meu cicle', $html);
         $this->assertMatchesRegularExpression('/>\s*CA\s*<\/span>/u', $html);
         $this->assertMatchesRegularExpression('/>\s*CC\s*<\/span>/u', $html);
-        $this->assertSame(3, substr_count($html, 'class="badge colaboracion-cycle-badge"'));
-        $this->assertStringContainsString('--company-background:', $html);
-        $this->assertStringContainsString('--company-border:', $html);
+        $this->assertSame(4, substr_count($html, 'class="badge colaboracion-cycle-badge"'));
         $this->assertStringContainsString('Anna Garcia', $html);
         $this->assertStringNotContainsString('Anna Garcia Segon', $html);
         $this->assertStringContainsString('fa-user-times', $html);
         $this->assertStringContainsString('aria-label="Sense assignar"', $html);
-        $this->assertStringNotContainsString('No contactada', $html);
+        $this->assertStringContainsString('Sense contacte', $html);
+        $this->assertStringContainsString('Contactada', $html);
         $this->assertStringContainsString('Col·labora', $html);
         $this->assertStringContainsString('No col·labora', $html);
-        $this->assertStringContainsString('Documentació antiga o pendent', $html);
-        $this->assertStringContainsString('Última FCT: 20/06/2023', $html);
-        $this->assertStringContainsString("renderView('town')", $html);
-        $this->assertStringContainsString("card.getAttribute('data-cycle')", $html);
-        $this->assertStringContainsString('var matchesTown = function (card)', $html);
-        $this->assertStringContainsString('return matchesView(card, view) && matchesTown(card);', $html);
-        $this->assertStringContainsString('renderView(activeView);', $html);
-
-        preg_match_all(
-            '/data-company="Empresa Alfa"[^>]+style="([^"]*--company-background:[^"]+)"/u',
-            $html,
-            $companyStyles
-        );
-        $this->assertCount(2, $companyStyles[1]);
-        $this->assertSame($companyStyles[1][0], $companyStyles[1][1]);
+        $this->assertStringNotContainsString('Pendent', $html);
+        $this->assertStringNotContainsString('Sense activitat recent', $html);
+        $this->assertStringNotContainsString('Última FCT', $html);
+        $this->assertStringNotContainsString('data-inactive', $html);
+        $this->assertStringContainsString('var matchesFilters = function (row)', $html);
+        $this->assertStringContainsString('&& matchesCycle', $html);
+        $this->assertStringContainsString('&& matchesState(row)', $html);
+        $this->assertStringContainsString('&& matchesDocumentation', $html);
+        $this->assertStringContainsString('&& matchesAssignment(row)', $html);
+        $this->assertStringContainsString('card.hidden = visibleInCompany === 0;', $html);
+        $this->assertStringContainsString('id="colaboracion-visible-companies"', $html);
+        $this->assertStringContainsString('id="colaboracion-visible-collaborations"', $html);
     }
 
     /**
@@ -145,6 +162,7 @@ class ColaboracionViewPresentationTest extends TestCase
      */
     private function colaboracio(
         int $id,
+        int $idCentro,
         string $empresa,
         string $cicle,
         string $literal,
@@ -153,12 +171,11 @@ class ColaboracionViewPresentationTest extends TestCase
         ?string $nomComplet = null,
         bool $ciclePropi = false,
         bool $documentacioPendent = false,
-        bool $inactiva = false,
-        ?string $ultimaFct = null,
         string $localitat = 'ALCOI'
     ): object {
         return (object) [
             'id' => $id,
+            'idCentro' => $idCentro,
             'idCiclo' => $id,
             'localidad' => $localitat,
             'empresa' => $empresa,
@@ -170,8 +187,6 @@ class ColaboracionViewPresentationTest extends TestCase
             'fctsAssociadesCount' => 0,
             'esCiclePropi' => $ciclePropi,
             'conveniPendent' => $documentacioPendent,
-            'senseActivitatRecent' => $inactiva,
-            'ultimaFctData' => $ultimaFct === null ? null : \Illuminate\Support\Carbon::parse($ultimaFct),
             'Ciclo' => (object) [
                 'ciclo' => $cicle,
                 'literal' => $literal,
