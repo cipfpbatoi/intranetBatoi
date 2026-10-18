@@ -150,6 +150,7 @@ class ColaboracionQueryService
     private function hydratePanelIndicators(Colaboracion $colaboracion, Collection $activities): void
     {
         $colaboracion->contactos = $activities;
+        $colaboracion->teContacte = $activities->isNotEmpty();
         $colaboracion->ultimaActividad = $activities->last();
         $colaboracion->ultima_actividad = $colaboracion->ultimaActividad?->created_at;
         $colaboracion->diesSenseContacte = $this->daysSince($colaboracion->ultima_actividad);

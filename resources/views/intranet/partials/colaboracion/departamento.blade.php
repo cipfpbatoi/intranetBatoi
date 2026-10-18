@@ -154,11 +154,12 @@
     $empreses = $elementos
         ->groupBy(static fn ($elemento): string => (string) ($elemento->idCentro ?? ('colaboracio-' . $elemento->id)))
         ->sortBy(static fn ($items): string => (string) ($items->first()->empresa ?? ''));
+    $municipalityNormalizer = app(\Intranet\Presentation\Colaboracion\MunicipalityNameNormalizer::class);
     $townOptions = $elementos
-        ->pluck('localidad')
-        ->filter()
-        ->unique()
-        ->sort()
+        ->filter(static fn ($elemento): bool => trim((string) ($elemento->localidad ?? '')) !== '')
+        ->map(static fn ($elemento): array => $municipalityNormalizer->normalize($elemento->localidad ?? null))
+        ->unique('key')
+        ->sortBy('label')
         ->values();
     $cycleLabel = static function ($elemento): string {
         $cycle = optional($elemento->Ciclo);
@@ -181,10 +182,10 @@
         ->values();
     $status = static function ($elemento): array {
         return match ((int) ($elemento->estado ?? 0)) {
-            1 => ['label' => 'Contactada', 'class' => 'bg-info text-dark'],
+            1 => ['label' => 'No sé', 'class' => 'bg-info text-dark'],
             2 => ['label' => 'Col·labora', 'class' => 'bg-success'],
             3 => ['label' => 'No col·labora', 'class' => 'bg-danger'],
-            default => ['label' => 'Sense contacte', 'class' => 'bg-secondary'],
+            default => ['label' => 'No contactada', 'class' => 'bg-secondary'],
         };
     };
     $cyclePalette = [
@@ -245,7 +246,7 @@
                 <select id="colaboracion-town-filter" class="form-control input-sm">
                     <option value="">Totes les poblacions</option>
                     @foreach ($townOptions as $townOption)
-                        <option value="{{ $townOption }}">{{ $townOption }}</option>
+                        <option value="{{ $townOption['key'] }}">{{ $townOption['label'] }}</option>
                     @endforeach
                 </select>
             </div>
@@ -285,7 +286,7 @@
                         class="btn btn-default btn-sm"
                         aria-pressed="false">
                     <em class="fa fa-file-text-o" aria-hidden="true"></em>
-                    Documentació actualitzada
+                    Conveni actualitzat
                 </button>
                 <button type="button" id="colaboracion-clear-filters" class="btn btn-default btn-sm">
                     <em class="fa fa-times" aria-hidden="true"></em>
@@ -305,7 +306,7 @@
             @php
                 $first = $companyItems->first();
                 $companyName = (string) ($first->empresa ?? 'Empresa sense nom');
-                $town = (string) ($first->localidad ?? 'Desconeguda');
+                $town = $municipalityNormalizer->normalize($first->localidad ?? null);
             @endphp
             <article class="colaboracion-company-card"
                      data-company-key="{{ $companyKey }}"
@@ -318,7 +319,7 @@
                         </h4>
                         <div class="colaboracion-company-town">
                             <em class="fa fa-map-marker" aria-hidden="true"></em>
-                            {{ $town }}
+                            {{ $town['label'] }}
                         </div>
                     </div>
                     <span class="badge bg-secondary js-company-cycle-count">{{ $companyItems->count() }}</span>
@@ -333,13 +334,15 @@
                             $responsable = trim((string) (optional($elemento->Propietario)->shortName ?? ''));
                             $assigned = !empty($elemento->tutor);
                             $cardStatus = $status($elemento);
+                            $rowTown = $municipalityNormalizer->normalize($elemento->localidad ?? null);
                         @endphp
                         <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
                            class="js-colaboracion-show colaboracion-cycle-row text-decoration-none text-reset"
                            data-show-title="Detall col·laboració"
-                           data-town="{{ $elemento->localidad }}"
+                           data-town="{{ $rowTown['key'] }}"
                            data-cycle="{{ $elemento->idCiclo }}"
                            data-state="{{ (int) ($elemento->estado ?? 0) }}"
+                           data-contacted="{{ !empty($elemento->teContacte) ? '1' : '0' }}"
                            data-documentation-current="{{ empty($elemento->conveniPendent) ? '1' : '0' }}"
                            data-assigned="{{ $assigned ? '1' : '0' }}">
                             <span class="colaboracion-cycle-main">
@@ -348,9 +351,6 @@
                                       title="{{ $cycleTitle }}">
                                     {{ $cycleName }}
                                 </span>
-                                @if (!empty($elemento->esCiclePropi))
-                                    <span class="badge bg-primary">El meu cicle</span>
-                                @endif
                                 <span class="colaboracion-professor">
                                     @if ($assigned)
                                         <em class="fa fa-user" aria-hidden="true"></em>
@@ -409,10 +409,10 @@
                 var state = row.getAttribute('data-state') || '0';
 
                 if (selectedState === 'no-contact') {
-                    return state === '0';
+                    return row.getAttribute('data-contacted') !== '1';
                 }
                 if (selectedState === 'contacted') {
-                    return state !== '0';
+                    return row.getAttribute('data-contacted') === '1';
                 }
                 if (selectedState === 'collaborates') {
                     return state === '2';

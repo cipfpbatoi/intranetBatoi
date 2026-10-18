@@ -82,6 +82,7 @@ class ColaboracionQueryServiceTest extends TestCase
 
         $this->assertCount(1, $resultat);
         $this->assertSame([$contacteMeu], $resultat->first()->contactos->all());
+        $this->assertTrue($resultat->first()->teContacte);
         $this->assertSame($contacteMeu, $resultat->first()->ultimaActividad);
         $this->assertCount(1, $resultat->first()->relacionadas);
         $this->assertSame(
@@ -92,6 +93,7 @@ class ColaboracionQueryServiceTest extends TestCase
             [$contacteRelacionat],
             $resultat->first()->relacionadas->first()->contactos->all()
         );
+        $this->assertTrue($resultat->first()->relacionadas->first()->teContacte);
     }
 
     public function test_marca_i_enllaca_les_empreses_sense_nif_del_gerent(): void
@@ -140,6 +142,7 @@ class ColaboracionQueryServiceTest extends TestCase
         )->first();
 
         $this->assertNull($resultat->fitxaBadges->firstWhere('label', 'Falta NIF del gerent'));
+        $this->assertFalse($resultat->teContacte);
     }
 
 }

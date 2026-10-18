@@ -290,11 +290,12 @@ documentationFilter.click();
 
 const target = rows[0];
 const targetState = target.getAttribute('data-state') || '0';
+const targetContacted = target.getAttribute('data-contacted') === '1';
 townFilter.value = target.getAttribute('data-town') || '';
 cycleFilter.value = target.getAttribute('data-cycle') || '';
-stateFilter.value = targetState === '0'
-  ? 'no-contact'
-  : (targetState === '2' ? 'collaborates' : 'contacted');
+stateFilter.value = targetState === '2'
+  ? 'collaborates'
+  : (targetContacted ? 'contacted' : 'no-contact');
 assignmentFilter.value = target.getAttribute('data-assigned') === '1' ? 'assigned' : 'unassigned';
 
 [townFilter, cycleFilter, stateFilter, assignmentFilter].forEach((filter) => {
@@ -305,8 +306,10 @@ const filteredRows = visibleRows();
 const cumulativeOk = filteredRows.length > 0 && filteredRows.every((row) => {
   const state = row.getAttribute('data-state') || '0';
   const stateMatches = stateFilter.value === 'no-contact'
-    ? state === '0'
-    : (stateFilter.value === 'collaborates' ? state === '2' : state !== '0');
+    ? row.getAttribute('data-contacted') !== '1'
+    : (stateFilter.value === 'collaborates'
+      ? state === '2'
+      : row.getAttribute('data-contacted') === '1');
 
   return row.getAttribute('data-town') === townFilter.value
     && row.getAttribute('data-cycle') === cycleFilter.value
