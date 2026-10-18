@@ -125,9 +125,11 @@
 @php
     $elementos = $panel->getElementos($pestana)->sortBy('localidad')->values();
     $townOptions = $elementos->pluck('localidad')->filter()->unique()->values();
+    $companyOptions = $elementos->pluck('empresa')->filter()->unique()->sort()->values();
     $groupedByTown = $elementos->groupBy(static fn ($item) => $item->localidad ?: 'Desconeguda');
     $tabName = $pestana->getNombre();
     $filterId = 'mis-colaboraciones-town-filter-' . $tabName;
+    $companyFilterId = 'mis-colaboraciones-company-filter-' . $tabName;
     $quickFilterId = 'mis-colaboraciones-quick-filters-' . $tabName;
     $extraQuickFilterId = 'mis-colaboraciones-extra-quick-filters-' . $tabName;
     $summaryData = match ($tabName) {
@@ -275,19 +277,35 @@
 @endif
 
 <div class="col-xs-12 mb-3">
-    <div style="max-width: 420px;">
-        <label for="{{ $filterId }}" class="form-label fw-semibold">Filtrar per poble</label>
-        <input id="{{ $filterId }}"
-               class="form-control mis-colaboraciones-town-filter"
-               data-target-tab="{{ $tabName }}"
-               list="{{ $filterId }}-options"
-               type="search"
-               placeholder="Escriu part del poble">
-        <datalist id="{{ $filterId }}-options">
-            @foreach ($townOptions as $townOption)
-                <option value="{{ $townOption }}"></option>
-            @endforeach
-        </datalist>
+    <div class="row">
+        <div class="col-md-6 col-xs-12 mb-2">
+            <label for="{{ $filterId }}" class="form-label fw-semibold">Filtrar per poble</label>
+            <input id="{{ $filterId }}"
+                   class="form-control mis-colaboraciones-town-filter"
+                   data-target-tab="{{ $tabName }}"
+                   list="{{ $filterId }}-options"
+                   type="search"
+                   placeholder="Escriu part del poble">
+            <datalist id="{{ $filterId }}-options">
+                @foreach ($townOptions as $townOption)
+                    <option value="{{ $townOption }}"></option>
+                @endforeach
+            </datalist>
+        </div>
+        <div class="col-md-6 col-xs-12 mb-2">
+            <label for="{{ $companyFilterId }}" class="form-label fw-semibold">Filtrar per empresa</label>
+            <input id="{{ $companyFilterId }}"
+                   class="form-control mis-colaboraciones-company-filter"
+                   data-target-tab="{{ $tabName }}"
+                   list="{{ $companyFilterId }}-options"
+                   type="search"
+                   placeholder="Escriu part del nom de l’empresa">
+            <datalist id="{{ $companyFilterId }}-options">
+                @foreach ($companyOptions as $companyOption)
+                    <option value="{{ $companyOption }}"></option>
+                @endforeach
+            </datalist>
+        </div>
     </div>
 </div>
 
@@ -420,6 +438,17 @@
                         .replace(/[0-9]/g, ' ')
                         .replace(/Y/g, 'I')
                         .replace(/[^A-Z\s]/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                };
+
+                var normalizeCompany = function (value) {
+                    return (value || '')
+                        .toString()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toUpperCase()
+                        .replace(/[^A-Z0-9\s]/g, ' ')
                         .replace(/\s+/g, ' ')
                         .trim();
                 };
@@ -563,7 +592,9 @@
 
                 var applyFiltersForTab = function (targetTab) {
                     var townFilter = document.querySelector('.mis-colaboraciones-town-filter[data-target-tab="' + targetTab + '"]');
+                    var companyFilter = document.querySelector('.mis-colaboraciones-company-filter[data-target-tab="' + targetTab + '"]');
                     var selectedTown = normalizeTown(townFilter ? townFilter.value : '');
+                    var selectedCompany = normalizeCompany(companyFilter ? companyFilter.value : '');
                     var activeQuickFilters = Array.from(
                         document.querySelectorAll('.mis-colaboraciones-quick-filter[data-target-tab="' + targetTab + '"]:checked')
                     ).map(function (input) {
@@ -572,12 +603,14 @@
 
                     document.querySelectorAll('.mis-colaboraciones-card[data-target-tab="' + targetTab + '"]').forEach(function (card) {
                         var cardTown = normalizeTown(card.getAttribute('data-town') || '');
+                        var cardCompany = normalizeCompany(card.getAttribute('data-company') || '');
                         var matchesTown = !selectedTown || cardTown.indexOf(selectedTown) !== -1;
+                        var matchesCompany = !selectedCompany || cardCompany.indexOf(selectedCompany) !== -1;
                         var matchesQuickFilters = activeQuickFilters.every(function (filterName) {
                             return quickFilterMatches(card, filterName);
                         });
 
-                        card.style.display = matchesTown && matchesQuickFilters ? '' : 'none';
+                        card.style.display = matchesTown && matchesCompany && matchesQuickFilters ? '' : 'none';
                     });
 
                     applyOrderingForTab(targetTab);
@@ -594,6 +627,17 @@
                         applyFiltersForTab(targetTab);
                     });
                     applyFiltersForTab(targetTab);
+                });
+
+                document.querySelectorAll('.mis-colaboraciones-company-filter').forEach(function (filter) {
+                    var targetTab = filter.getAttribute('data-target-tab') || '';
+
+                    filter.addEventListener('input', function () {
+                        applyFiltersForTab(targetTab);
+                    });
+                    filter.addEventListener('change', function () {
+                        applyFiltersForTab(targetTab);
+                    });
                 });
 
                 document.querySelectorAll('.mis-colaboraciones-quick-filter').forEach(function (filter) {
