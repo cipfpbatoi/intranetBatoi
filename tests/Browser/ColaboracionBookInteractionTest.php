@@ -228,7 +228,7 @@ JS
         });
     }
 
-    /** Verifica les classificacions interactives del panell departamental. */
+    /** Verifica les classificacions i el filtre per poble del panell departamental. */
     public function test_classifica_les_colaboracions_del_departament(): void
     {
         $profesor = $this->profesorAmbColaboracionsOrSkip();
@@ -247,11 +247,13 @@ JS
                 ->visit('/colaboracion')
                 ->pause(1800)
                 ->assertPresent('#colaboracion-department-panel')
+                ->assertPresent('#colaboracion-town-filter')
                 ->assertPresent('.colaboracion-department-card');
 
             $result = $browser->script(<<<'JS'
 const container = document.querySelector('#colaboracion-department-groups');
 const allCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+const townFilter = document.querySelector('#colaboracion-town-filter');
 const views = ['town', 'cycle', 'contacted', 'collaborates', 'documentation', 'inactive'];
 const attributes = {
   contacted: 'data-contacted',
@@ -260,9 +262,20 @@ const attributes = {
   inactive: 'data-inactive'
 };
 
-if (!allCards.length) {
-  return {ok: false, reason: 'No hi ha fitxes departamentals'};
+if (!allCards.length || !townFilter) {
+  return {ok: false, reason: 'No hi ha fitxes departamentals o filtre de poble'};
 }
+
+const normalizeTown = (value) => (value || '')
+  .toString()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toUpperCase()
+  .replace(/[0-9]/g, ' ')
+  .replace(/Y/g, 'I')
+  .replace(/[^A-Z\s]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
 
 const checks = {};
 for (const view of views) {
@@ -283,11 +296,37 @@ for (const view of views) {
 }
 
 document.querySelector('.js-colaboracion-view[data-view="town"]').click();
+const targetTown = allCards[0].getAttribute('data-town') || '';
+const normalizedTargetTown = normalizeTown(targetTown);
+townFilter.value = targetTown;
+townFilter.dispatchEvent(new Event('input', {bubbles: true}));
+
+const expectedTownCards = allCards.filter((card) => {
+  return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
+});
+const townCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+const townFilterOk = townCards.length === expectedTownCards.length
+  && townCards.every((card) => {
+    return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
+  });
+
+document.querySelector('.js-colaboracion-view[data-view="cycle"]').click();
+const cycleTownCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+const combinedOk = cycleTownCards.length === expectedTownCards.length
+  && cycleTownCards.every((card) => {
+    return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
+  });
+
+townFilter.value = '';
+townFilter.dispatchEvent(new Event('input', {bubbles: true}));
+document.querySelector('.js-colaboracion-view[data-view="town"]').click();
 const restored = container.querySelectorAll('.colaboracion-department-card').length === allCards.length;
 
 return {
-  ok: Object.values(checks).every(Boolean) && restored,
+  ok: Object.values(checks).every(Boolean) && townFilterOk && combinedOk && restored,
   checks,
+  townFilterOk,
+  combinedOk,
   total: allCards.length
 };
 JS

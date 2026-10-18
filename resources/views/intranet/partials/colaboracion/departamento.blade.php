@@ -39,22 +39,22 @@
                 min-width: 0;
                 height: 100%;
                 padding: 12px 14px;
-                border: 1px solid #d7dee6;
-                border-left: 4px solid #7f8c8d;
+                border: 1px solid var(--company-border, #d7dee6);
+                border-left-width: 4px;
                 border-radius: 5px;
-                background: #fff;
+                background: var(--company-background, #fff);
                 box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
             }
 
             .colaboracion-department-card.is-own-cycle {
                 border-left-color: #337ab7;
-                background: #f8fbfe;
+                box-shadow: inset 3px 0 0 rgba(51, 122, 183, .12), 0 1px 3px rgba(0, 0, 0, .05);
             }
 
             .colaboracion-department-card:hover,
             .colaboracion-department-card:focus {
                 border-color: #78aee8;
-                background: #f5f9fd;
+                box-shadow: 0 2px 6px rgba(20, 74, 117, .12);
             }
 
             .colaboracion-card-company {
@@ -75,13 +75,17 @@
                 gap: 6px;
             }
 
+            .colaboracion-cycle-badge {
+                font-weight: 700;
+            }
+
             @media (min-width: 768px) {
                 .colaboracion-card-grid {
                     grid-template-columns: repeat(2, minmax(0, 1fr));
                 }
             }
 
-            @media (min-width: 1200px) {
+            @media (min-width: 992px) {
                 .colaboracion-card-grid {
                     grid-template-columns: repeat(3, minmax(0, 1fr));
                 }
@@ -98,6 +102,7 @@
             ['idCiclo', 'asc'],
         ]);
     $townGroups = $elementos->groupBy(static fn ($elemento) => $elemento->localidad ?: 'Desconeguda');
+    $townOptions = $townGroups->keys()->values();
     $viewCounts = [
         'town' => $elementos->count(),
         'cycle' => $elementos->count(),
@@ -113,6 +118,45 @@
             1 => ['label' => 'Pendent', 'class' => 'bg-warning text-dark'],
             default => ['label' => null, 'class' => 'bg-secondary'],
         };
+    };
+    $cyclePalette = [
+        ['background' => '#e8f3ff', 'border' => '#78aee8', 'text' => '#144a75'],
+        ['background' => '#eef7e8', 'border' => '#8dbb61', 'text' => '#35551a'],
+        ['background' => '#fff2e8', 'border' => '#d59a60', 'text' => '#7a4314'],
+        ['background' => '#f3ecff', 'border' => '#9a7ad9', 'text' => '#4c2b8a'],
+        ['background' => '#e8f7f5', 'border' => '#58b4a4', 'text' => '#1f5e55'],
+        ['background' => '#fff0f4', 'border' => '#d97897', 'text' => '#7c1f42'],
+    ];
+    $companyPalette = [
+        ['background' => '#f8fbff', 'border' => '#dce9f5'],
+        ['background' => '#f9fcf7', 'border' => '#deead7'],
+        ['background' => '#fffbf7', 'border' => '#f1e3d3'],
+        ['background' => '#fbf9ff', 'border' => '#e7def3'],
+        ['background' => '#f7fcfb', 'border' => '#d7ebe7'],
+        ['background' => '#fff9fb', 'border' => '#f0dde4'],
+    ];
+    $paletteColor = static function (string $seed, array $palette): array {
+        return $palette[abs(crc32($seed)) % count($palette)];
+    };
+    $cycleStyle = static function ($elemento) use ($cyclePalette, $paletteColor): string {
+        $seed = (string) (optional($elemento->Ciclo)->literal ?? $elemento->idCiclo ?? $elemento->id ?? '0');
+        $colors = $paletteColor($seed, $cyclePalette);
+
+        return sprintf(
+            'background:%s;border:1px solid %s;color:%s;',
+            $colors['background'],
+            $colors['border'],
+            $colors['text']
+        );
+    };
+    $companyStyle = static function ($elemento) use ($companyPalette, $paletteColor): string {
+        $colors = $paletteColor((string) ($elemento->empresa ?? ''), $companyPalette);
+
+        return sprintf(
+            '--company-background:%s;--company-border:%s;',
+            $colors['background'],
+            $colors['border']
+        );
     };
 @endphp
 
@@ -155,6 +199,21 @@
         Es mostren totes les col·laboracions del departament. La marca «El meu cicle» identifica les del tutor actual.
     </p>
 
+    <div class="mb-3">
+        <label for="colaboracion-town-filter" class="form-label fw-semibold">Filtrar per poble</label>
+        <input id="colaboracion-town-filter"
+               class="form-control"
+               list="colaboracion-town-options"
+               type="search"
+               autocomplete="off"
+               placeholder="Escriu part del poble">
+        <datalist id="colaboracion-town-options">
+            @foreach ($townOptions as $townOption)
+                <option value="{{ $townOption }}"></option>
+            @endforeach
+        </datalist>
+    </div>
+
     <div id="colaboracion-department-groups">
         @forelse ($townGroups as $localidad => $townItems)
             <section class="colaboracion-group">
@@ -188,7 +247,8 @@
                            data-contacted="{{ (int) ($elemento->estado ?? 0) !== 0 ? '1' : '0' }}"
                            data-collaborates="{{ (int) ($elemento->estado ?? 0) === 2 ? '1' : '0' }}"
                            data-documentation-old="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
-                           data-inactive="{{ !empty($elemento->senseActivitatRecent) ? '1' : '0' }}">
+                           data-inactive="{{ !empty($elemento->senseActivitatRecent) ? '1' : '0' }}"
+                           style="{{ $companyStyle($elemento) }}">
                             <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                                 <h5 class="colaboracion-card-company" title="{{ $elemento->empresa }}">
                                     <em class="fa fa-building" aria-hidden="true"></em>
@@ -204,7 +264,9 @@
                                     <em class="fa fa-map-marker" aria-hidden="true"></em>
                                     {{ $localidad }}
                                 </span>
-                                <span class="badge bg-info text-dark" title="{{ $cycleTitle }}">
+                                <span class="badge colaboracion-cycle-badge"
+                                      style="{{ $cycleStyle($elemento) }}"
+                                      title="{{ $cycleTitle }}">
                                     {{ $cycleLabel }}
                                 </span>
                             </div>
@@ -249,7 +311,7 @@
     </div>
 
     <div id="colaboracion-department-empty" class="alert alert-info mb-0" hidden>
-        No hi ha col·laboracions per a esta classificació.
+        No hi ha col·laboracions per als criteris seleccionats.
     </div>
 </div>
 
@@ -259,18 +321,40 @@
             var panel = document.getElementById('colaboracion-department-panel');
             var container = document.getElementById('colaboracion-department-groups');
             var emptyState = document.getElementById('colaboracion-department-empty');
+            var townFilter = document.getElementById('colaboracion-town-filter');
 
-            if (!panel || !container || !emptyState) {
+            if (!panel || !container || !emptyState || !townFilter) {
                 return;
             }
 
             var buttons = Array.from(panel.querySelectorAll('.js-colaboracion-view'));
             var cards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+            var activeView = 'town';
             var viewLabels = {
                 contacted: 'Contactades',
                 collaborates: 'Col·laboren',
                 documentation: 'Documentació antiga o pendent',
                 inactive: 'Sense activitat recent'
+            };
+
+            var normalizeTown = function (value) {
+                return (value || '')
+                    .toString()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toUpperCase()
+                    .replace(/[0-9]/g, ' ')
+                    .replace(/Y/g, 'I')
+                    .replace(/[^A-Z\s]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            };
+
+            var matchesTown = function (card) {
+                var selectedTown = normalizeTown(townFilter.value);
+                var cardTown = normalizeTown(card.getAttribute('data-town') || '');
+
+                return !selectedTown || cardTown.indexOf(selectedTown) !== -1;
             };
 
             var matchesView = function (card, view) {
@@ -302,8 +386,9 @@
             };
 
             var renderView = function (view) {
+                activeView = view;
                 var visibleCards = cards.filter(function (card) {
-                    return matchesView(card, view);
+                    return matchesView(card, view) && matchesTown(card);
                 });
                 var groups = new Map();
 
@@ -369,6 +454,13 @@
                 button.addEventListener('click', function () {
                     renderView(button.getAttribute('data-view') || 'town');
                 });
+            });
+
+            townFilter.addEventListener('input', function () {
+                renderView(activeView);
+            });
+            townFilter.addEventListener('change', function () {
+                renderView(activeView);
             });
 
             renderView('town');
