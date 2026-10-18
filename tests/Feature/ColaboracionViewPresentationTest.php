@@ -44,9 +44,9 @@ class ColaboracionViewPresentationTest extends TestCase
     {
         $pestana = new \stdClass();
         $elements = collect([
-            $this->colaboracio(1, 'Empresa Beta', 'Cicle B', 1),
-            $this->colaboracio(2, 'Empresa Alfa', 'Cicle A', 2),
-            $this->colaboracio(3, 'Empresa Alfa', 'Cicle C', 3),
+            $this->colaboracio(1, 'Empresa Beta', 'CB', 'Cicle B', 1),
+            $this->colaboracio(2, 'Empresa Alfa', 'CA', 'Cicle A', 2, 'Anna Garcia', 'Anna Garcia Segon'),
+            $this->colaboracio(3, 'Empresa Alfa', 'CC', 'Cicle C', 3, 'Pau Ferrer', 'Pau Ferrer Tercer'),
         ]);
 
         $panel = Mockery::mock();
@@ -66,8 +66,18 @@ class ColaboracionViewPresentationTest extends TestCase
         $this->assertSame(3, substr_count($html, 'colaboracion-company-item text-decoration-none'));
         $this->assertStringContainsString('data-company="Empresa Alfa"', $html);
         $this->assertStringContainsString('data-company="Empresa Beta"', $html);
-        $this->assertMatchesRegularExpression('/2\s+col·laboracions/u', $html);
-        $this->assertMatchesRegularExpression('/1\s+col·laboració/u', $html);
+        $this->assertStringContainsString('grid-template-columns: repeat(3, minmax(0, 1fr))', $html);
+        $this->assertStringNotContainsString('text-uppercase">Empresa', $html);
+        $this->assertStringNotContainsString('col·laboracions</span>', $html);
+        $this->assertMatchesRegularExpression('/>\s*CA\s*<\/span>/u', $html);
+        $this->assertMatchesRegularExpression('/>\s*CC\s*<\/span>/u', $html);
+        $this->assertStringContainsString('Anna Garcia', $html);
+        $this->assertStringNotContainsString('Anna Garcia Segon', $html);
+        $this->assertStringContainsString('fa-user-times', $html);
+        $this->assertStringContainsString('aria-label="Sense assignar"', $html);
+        $this->assertStringNotContainsString('No contactada', $html);
+        $this->assertStringContainsString('Contactada', $html);
+        $this->assertStringContainsString('No col·labora', $html);
         $this->assertLessThan(
             strpos($html, 'data-company="Empresa Beta"'),
             strpos($html, 'data-company="Empresa Alfa"')
@@ -77,20 +87,31 @@ class ColaboracionViewPresentationTest extends TestCase
     /**
      * Crea les dades mínimes d'una col·laboració per a renderitzar el panell.
      */
-    private function colaboracio(int $id, string $empresa, string $cicle, int $estat): object
-    {
+    private function colaboracio(
+        int $id,
+        string $empresa,
+        string $cicle,
+        string $literal,
+        int $estat,
+        ?string $nomCurt = null,
+        ?string $nomComplet = null
+    ): object {
         return (object) [
             'id' => $id,
             'idCiclo' => $id,
             'localidad' => 'ALCOI',
             'empresa' => $empresa,
             'estado' => $estat,
-            'profesor' => 'Tutor ' . $id,
-            'tutor' => 'TUTOR' . $id,
+            'profesor' => $nomComplet ?? '',
+            'tutor' => $nomCurt === null ? null : 'TUTOR' . $id,
             'ultimaActividad' => null,
             'estatPreparacioKey' => 'preparada',
             'fctsAssociadesCount' => 0,
-            'Ciclo' => (object) ['literal' => $cicle],
+            'Ciclo' => (object) [
+                'ciclo' => $cicle,
+                'literal' => $literal,
+            ],
+            'Propietario' => $nomCurt === null ? null : (object) ['shortName' => $nomCurt],
         ];
     }
 }
