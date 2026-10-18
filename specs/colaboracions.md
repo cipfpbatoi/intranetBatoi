@@ -8,11 +8,13 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - Els filtres per poble, empresa i estat ràpid es combinen: una targeta ha de complir-los tots.
 - La cerca per empresa és parcial, ignora accents i majúscules i conserva els números.
 - En buidar el filtre d'empresa es mantenen actius els altres filtres.
-- El panell departamental agrupa primer per poble i després per empresa.
-- Les empreses es distribuïxen en una graella responsive i cada fitxa mostra només el nom en la capçalera, sense etiqueta ni recompte.
-- Les col·laboracions d'una empresa es representen amb les abreviatures dels cicles en una fila flexible i cada cicle enllaça amb el seu detall.
-- El professor assignat es mostra amb nom i primer cognom; l'absència d'assignació es representa amb una icona accessible de professor ratllat.
-- L'estat `No contactada` no es mostra en la fitxa compacta; `Contactada` i `No col·labora` es mantenen visibles.
+- El panell departamental mostra totes les col·laboracions dels cicles del departament i destaca els cicles que tutoritza el professor actual.
+- Cada fitxa representa una col·laboració entre una empresa i un cicle, i s'ordena en una graella responsive de tres, dos o una columna segons l'amplària disponible.
+- El professor pot classificar la informació per poble o per cicle i filtrar-la per contactades, col·laboradores, documentació antiga o pendent i absència d'activitat recent.
+- Una col·laboració és contactada quan `estado != 0` i col·labora quan `estado = 2`.
+- La documentació antiga o pendent reutilitza l'indicador `conveniPendent` del domini.
+- Una col·laboració està sense activitat recent quan no té cap FCT en el curs actual ni en l'anterior, segons la data màxima `alumno_fcts.hasta`; les que no tenen cap FCT també s'hi inclouen.
+- Cada fitxa mostra empresa, poble, abreviatura del cicle, professor amb nom i primer cognom o una icona accessible de professor ratllat, estat, documentació i última FCT.
 - Els filtres i la presentació no modifiquen dades, accions ni permisos.
 
 ## Escenaris
@@ -41,34 +43,58 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 **Then** es recuperen les targetes admeses pels altres filtres actius.
 
-### ✅ Distribuir les empreses del departament en columnes
+### ✅ Distribuir les col·laboracions del departament en columnes
 
-**Given** un poble amb col·laboracions de diverses empreses
+**Given** col·laboracions de diverses empreses i cicles del departament
 
 **When** el professor consulta les col·laboracions del departament
 
-**Then** cada empresa apareix en una fitxa diferenciada dins d'una graella responsive i la capçalera mostra només el nom de l'empresa, sense etiqueta ni recompte.
+**Then** cada parella empresa-cicle apareix en una fitxa diferenciada dins d'una graella de tres columnes en escriptori, dos en tauleta i una en mòbil.
 
-### ✅ Mostrar els cicles de cada empresa de manera compacta
+### ✅ Classificar per poble i per cicle
 
-**Given** diverses col·laboracions de la mateixa empresa per a diferents cicles
+**Given** col·laboracions de diferents pobles i cicles
+
+**When** el professor selecciona la classificació per poble o per cicle
+
+**Then** les fitxes s'agrupen segons el criteri seleccionat i cada grup mostra el seu recompte.
+
+### ✅ Filtrar les col·laboracions contactades i les que col·laboren
+
+**Given** col·laboracions amb diferents estats
+
+**When** el professor selecciona `Contactades` o `Col·laboren`
+
+**Then** `Contactades` mostra les que tenen `estado != 0` i `Col·laboren` les que tenen `estado = 2`.
+
+### ✅ Identificar els cicles propis del tutor
+
+**Given** que el professor tutoritza un o més cicles del departament
+
+**When** consulta el panell departamental
+
+**Then** les fitxes d'eixos cicles mostren un distintiu que les diferencia de la resta.
+
+### ✅ Identificar la documentació antiga o pendent
+
+**Given** col·laboracions amb documentació vigent i amb conveni pendent o anterior a l'1 de gener de 2024
+
+**When** el professor selecciona `Documentació antiga o pendent`
+
+**Then** només es mostren les fitxes marcades pel domini amb `conveniPendent`.
+
+### ✅ Identificar les col·laboracions sense activitat recent
+
+**Given** col·laboracions amb FCT recents, amb l'última FCT anterior al curs acadèmic precedent i sense cap FCT
+
+**When** el professor selecciona `Sense activitat recent`
+
+**Then** es mostren les que no tenen cap FCT en el curs actual ni en l'anterior, incloses les que no en tenen cap registrada.
+
+### ✅ Mostrar la informació operativa de cada col·laboració
+
+**Given** col·laboracions amb professor assignat i sense assignar, diferents estats i historial FCT
 
 **When** es renderitza el panell departamental
 
-**Then** les abreviatures dels cicles apareixen en una fila flexible dins de la mateixa fitxa i cadascuna enllaça amb el detall de la seua col·laboració.
-
-### ✅ Mostrar l'assignació amb el nom curt del professor
-
-**Given** col·laboracions amb professor assignat i sense professor assignat
-
-**When** es renderitzen els seus cicles
-
-**Then** el professor assignat apareix amb nom i primer cognom i la col·laboració sense assignació mostra una icona de professor ratllat amb l'ajuda accessible `Sense assignar`.
-
-### ✅ Ometre l'estat no contactada en la fitxa compacta
-
-**Given** col·laboracions amb els estats `No contactada`, `Contactada` i `No col·labora`
-
-**When** es renderitza la fitxa de l'empresa
-
-**Then** no es mostra el text `No contactada` i es mantenen visibles els estats `Contactada` i `No col·labora`.
+**Then** cada fitxa mostra empresa, poble, abreviatura del cicle, estat, documentació, última FCT i el professor amb nom i primer cognom o la icona accessible `Sense assignar`.

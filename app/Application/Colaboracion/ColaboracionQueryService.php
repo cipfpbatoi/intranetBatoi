@@ -27,7 +27,7 @@ class ColaboracionQueryService
         return Colaboracion::query()
             ->MiColaboracion(null, $dni)
             ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'Ciclo', 'fcts' => function ($query): void {
-                $query->orderByDesc('id')->with('Instructor');
+                $query->orderByDesc('id')->with(['Instructor', 'AlFct']);
             }])
             ->withCount('fcts')
             ->get();
@@ -54,7 +54,7 @@ class ColaboracionQueryService
 
         return Colaboracion::query()
             ->with(['Ciclo', 'Propietario', 'Centro', 'Centro.Empresa', 'Centro.instructores', 'fcts' => function ($query): void {
-                $query->orderByDesc('id')->with('Instructor');
+                $query->orderByDesc('id')->with(['Instructor', 'AlFct']);
             }])
             ->withCount('fcts')
             ->whereNotIn('id', $meves->pluck('id'))
@@ -214,6 +214,7 @@ class ColaboracionQueryService
 
         $fcts = $colaboracion->fcts ?? collect();
         $ultimaFct = $fcts->first();
+        $ultimaFctData = $this->latestFctEndDate($fcts);
         $teDocumentEmpresa = !blank($empresa?->fichero);
         $documentacioPendent = collect();
 
@@ -261,6 +262,9 @@ class ColaboracionQueryService
         $colaboracion->fctsAssociadesCount = (int) ($colaboracion->fcts_count ?? $fcts->count());
         $colaboracion->ultimaFct = $ultimaFct;
         $colaboracion->ultimaFctId = $ultimaFct?->id;
+        $colaboracion->ultimaFctData = $ultimaFctData;
+        $colaboracion->senseActivitatRecent = $ultimaFctData === null
+            || $ultimaFctData->lt($this->recentFctCutoffDate());
         $colaboracion->estatPreparacioKey = $estatPreparacio['key'];
         $colaboracion->estatPreparacioLabel = $estatPreparacio['label'];
         $colaboracion->estatPreparacioClass = $estatPreparacio['class'];
@@ -299,6 +303,35 @@ class ColaboracionQueryService
         }
 
         return (int) Carbon::parse($dateTime)->startOfDay()->diffInDays(Carbon::now()->startOfDay());
+    }
+
+    /**
+     * Retorna la data final més recent de l'alumnat que ha fet FCT en la col·laboració.
+     *
+     * @param Collection<int, mixed> $fcts
+     */
+    private function latestFctEndDate(Collection $fcts): ?Carbon
+    {
+        $latest = $fcts
+            ->flatMap(static fn ($fct) => $fct->AlFct ?? collect())
+            ->pluck('hasta')
+            ->filter()
+            ->map(static fn ($date): Carbon => Carbon::parse($date)->startOfDay())
+            ->sortDesc()
+            ->first();
+
+        return $latest instanceof Carbon ? $latest : null;
+    }
+
+    /**
+     * Inici del curs anterior, tall per considerar dos cursos sense activitat FCT.
+     */
+    private function recentFctCutoffDate(): Carbon
+    {
+        $today = Carbon::today();
+        $currentCourseStartYear = $today->month >= 9 ? $today->year : $today->year - 1;
+
+        return Carbon::create($currentCourseStartYear - 1, 9, 1)->startOfDay();
     }
 
     private function annexISignatureDate($empresa): ?Carbon

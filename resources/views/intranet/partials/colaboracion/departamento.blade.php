@@ -1,76 +1,88 @@
 @once
     @push('styles')
         <style>
-            .colaboracion-company-list {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 18px;
-            }
-
-            .colaboracion-company-block {
-                overflow: hidden;
-                border: 1px solid #cfd8e3;
-                border-left: 5px solid #337ab7;
-                border-radius: 6px;
-                background: #fff;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, .06);
-            }
-
-            .colaboracion-company-header {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 12px 16px;
-                border-bottom: 1px solid #dce4ec;
-                background: #f2f7fb;
-            }
-
-            .colaboracion-company-name {
-                margin: 0;
-                color: #144a75;
-                font-size: 1.1rem;
-                font-weight: 700;
-            }
-
-            .colaboracion-company-collaborations {
+            .colaboracion-view-toolbar {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: center;
-                gap: 8px;
-                padding: 14px 16px 16px;
+                gap: 6px;
             }
 
-            .colaboracion-company-item {
-                display: inline-flex;
+            .colaboracion-view-toolbar .btn {
+                margin: 0;
+            }
+
+            .colaboracion-group + .colaboracion-group {
+                margin-top: 22px;
+            }
+
+            .colaboracion-group-title {
+                display: flex;
                 align-items: center;
-                flex: 0 1 auto;
-                gap: 7px;
-                min-width: 0;
-                padding: 7px 9px;
-                border: 1px solid #e1e6eb;
-                border-radius: 4px;
-                background: #fbfbfc;
+                gap: 8px;
+                margin: 0 0 10px;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #dfe5eb;
+                color: #34495e;
+                font-size: 1rem;
+                font-weight: 700;
             }
 
-            .colaboracion-company-item:hover,
-            .colaboracion-company-item:focus {
+            .colaboracion-card-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
+            }
+
+            .colaboracion-department-card {
+                display: block;
+                min-width: 0;
+                height: 100%;
+                padding: 12px 14px;
+                border: 1px solid #d7dee6;
+                border-left: 4px solid #7f8c8d;
+                border-radius: 5px;
+                background: #fff;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            }
+
+            .colaboracion-department-card.is-own-cycle {
+                border-left-color: #337ab7;
+                background: #f8fbfe;
+            }
+
+            .colaboracion-department-card:hover,
+            .colaboracion-department-card:focus {
                 border-color: #78aee8;
                 background: #f5f9fd;
             }
 
-            .colaboracion-company-teacher,
-            .colaboracion-company-status {
+            .colaboracion-card-company {
+                overflow: hidden;
+                margin: 0;
+                color: #144a75;
+                font-size: 1rem;
+                font-weight: 700;
+                text-overflow: ellipsis;
                 white-space: nowrap;
             }
 
+            .colaboracion-card-meta,
+            .colaboracion-card-badges {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 6px;
+            }
+
             @media (min-width: 768px) {
-                .colaboracion-company-list {
+                .colaboracion-card-grid {
                     grid-template-columns: repeat(2, minmax(0, 1fr));
                 }
             }
 
             @media (min-width: 1200px) {
-                .colaboracion-company-list {
+                .colaboracion-card-grid {
                     grid-template-columns: repeat(3, minmax(0, 1fr));
                 }
             }
@@ -79,337 +91,287 @@
 @endonce
 
 @php
-    $today = \Illuminate\Support\Carbon::today();
-    $currentCourseStart = $today->month >= 9
-        ? $today->copy()->startOfYear()->month(9)->day(1)
-        : $today->copy()->subYear()->startOfYear()->month(9)->day(1);
-    $elementos = $panel->getElementos($pestana);
-    $townGroups = $elementos
+    $elementos = $panel->getElementos($pestana)
         ->sortBy([
             ['localidad', 'asc'],
             ['empresa', 'asc'],
-        ])
-        ->groupBy(fn ($elemento) => $elemento->localidad ?: 'Desconeguda');
-    $townOptions = $townGroups->keys()->values();
-    $dashboardSummary = [
-        'total' => $elementos->count(),
-        'pendents' => $elementos->where('estado', 1)->count(),
-        'colaboren' => $elementos->where('estado', 2)->count(),
-        'noColaboren' => $elementos->where('estado', 3)->count(),
-        'senseClassificar' => $elementos
-            ->reject(static fn ($elemento) => in_array((int) ($elemento->estado ?? 0), [1, 2, 3], true))
-            ->count(),
+            ['idCiclo', 'asc'],
+        ]);
+    $townGroups = $elementos->groupBy(static fn ($elemento) => $elemento->localidad ?: 'Desconeguda');
+    $viewCounts = [
+        'town' => $elementos->count(),
+        'cycle' => $elementos->count(),
+        'contacted' => $elementos->filter(static fn ($elemento) => (int) ($elemento->estado ?? 0) !== 0)->count(),
+        'collaborates' => $elementos->where('estado', 2)->count(),
+        'documentation' => $elementos->filter(static fn ($elemento) => !empty($elemento->conveniPendent))->count(),
+        'inactive' => $elementos->filter(static fn ($elemento) => !empty($elemento->senseActivitatRecent))->count(),
     ];
-    $byTutor = $elementos
-        ->groupBy(static fn ($elemento) => optional($elemento->Propietario)->shortName ?: 'Sense tutor assignat')
-        ->map(static function ($items, $label) use ($currentCourseStart) {
-            return [
-                'label' => $label,
-                'total' => $items->count(),
-                'senseContacteCurs' => $items->filter(static function ($elemento) use ($currentCourseStart) {
-                    $ultima = $elemento->ultimaActividad?->created_at;
-                    return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
-                })->count(),
-                'preparades' => $items->where('estatPreparacioKey', 'preparada')->count(),
-                'ambAlumnat' => $items->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
-            ];
-        })
-        ->sortByDesc('total');
-    $byCycle = $elementos
-        ->groupBy(static fn ($elemento) => optional($elemento->Ciclo)->literal ?? ('Cicle ' . ($elemento->idCiclo ?? '')))
-        ->map(static function ($items, $label) use ($currentCourseStart) {
-            return [
-                'label' => $label,
-                'total' => $items->count(),
-                'senseContacteCurs' => $items->filter(static function ($elemento) use ($currentCourseStart) {
-                    $ultima = $elemento->ultimaActividad?->created_at;
-                    return $ultima === null || \Illuminate\Support\Carbon::parse($ultima)->lt($currentCourseStart);
-                })->count(),
-                'preparades' => $items->where('estatPreparacioKey', 'preparada')->count(),
-                'ambAlumnat' => $items->filter(static fn ($elemento) => (int) ($elemento->fctsAssociadesCount ?? 0) > 0)->count(),
-            ];
-        })
-        ->sortBy('label');
-
-    $cyclePalette = [
-        ['background' => '#e8f3ff', 'border' => '#78aee8', 'text' => '#144a75'],
-        ['background' => '#eef7e8', 'border' => '#8dbb61', 'text' => '#35551a'],
-        ['background' => '#fff2e8', 'border' => '#d59a60', 'text' => '#7a4314'],
-        ['background' => '#f3ecff', 'border' => '#9a7ad9', 'text' => '#4c2b8a'],
-        ['background' => '#e8f7f5', 'border' => '#58b4a4', 'text' => '#1f5e55'],
-        ['background' => '#fff0f4', 'border' => '#d97897', 'text' => '#7c1f42'],
-    ];
-
-    $cycleStyle = static function ($elemento) use ($cyclePalette): string {
-        $seed = (string) (optional($elemento->Ciclo)->literal ?? $elemento->idCiclo ?? $elemento->id ?? '0');
-        $index = abs(crc32($seed)) % count($cyclePalette);
-        $colors = $cyclePalette[$index];
-
-        return sprintf(
-            'background:%s;border:1px solid %s;color:%s;',
-            $colors['background'],
-            $colors['border'],
-            $colors['text']
-        );
-    };
-
-    $contactStatus = static function ($elemento): array {
+    $status = static function ($elemento): array {
         return match ((int) ($elemento->estado ?? 0)) {
-            2 => [
-                'label' => 'Contactada',
-                'class' => 'text-success',
-            ],
-            3 => [
-                'label' => 'No col·labora',
-                'class' => 'text-danger',
-            ],
-            1 => [
-                'label' => null,
-                'class' => 'text-muted',
-            ],
-            default => [
-                'label' => null,
-                'class' => 'text-muted',
-            ],
+            2 => ['label' => 'Col·labora', 'class' => 'bg-success'],
+            3 => ['label' => 'No col·labora', 'class' => 'bg-danger'],
+            1 => ['label' => 'Pendent', 'class' => 'bg-warning text-dark'],
+            default => ['label' => null, 'class' => 'bg-secondary'],
         };
     };
 @endphp
 
-<div class="x_content">
-    <div class="mb-3">
-        <a href="{{ route('colaboracion.mias') }}" class="btn btn-primary btn-sm">
-            <em class="fa fa-user"></em> Vore misColaboraciones
+<div class="x_content" id="colaboracion-department-panel">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="colaboracion-view-toolbar" role="group" aria-label="Classificació de col·laboracions">
+            <button type="button" class="btn btn-primary btn-sm js-colaboracion-view" data-view="town" aria-pressed="true">
+                <em class="fa fa-map-marker" aria-hidden="true"></em>
+                Per poble <span class="badge bg-light text-dark">{{ $viewCounts['town'] }}</span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="cycle" aria-pressed="false">
+                <em class="fa fa-graduation-cap" aria-hidden="true"></em>
+                Per cicle <span class="badge bg-light text-dark">{{ $viewCounts['cycle'] }}</span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="contacted" aria-pressed="false">
+                <em class="fa fa-phone" aria-hidden="true"></em>
+                Contactades <span class="badge bg-light text-dark">{{ $viewCounts['contacted'] }}</span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="collaborates" aria-pressed="false">
+                <em class="fa fa-check" aria-hidden="true"></em>
+                Col·laboren <span class="badge bg-light text-dark">{{ $viewCounts['collaborates'] }}</span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="documentation" aria-pressed="false">
+                <em class="fa fa-file-text-o" aria-hidden="true"></em>
+                Documentació antiga o pendent
+                <span class="badge bg-light text-dark">{{ $viewCounts['documentation'] }}</span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="inactive" aria-pressed="false">
+                <em class="fa fa-clock-o" aria-hidden="true"></em>
+                Sense activitat recent <span class="badge bg-light text-dark">{{ $viewCounts['inactive'] }}</span>
+            </button>
+        </div>
+
+        <a href="{{ route('colaboracion.mias') }}" class="btn btn-default btn-sm">
+            <em class="fa fa-user" aria-hidden="true"></em> Les meues col·laboracions
         </a>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Total</div>
-                <div style="font-size: 1.75rem; font-weight: 700;">{{ $dashboardSummary['total'] }}</div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Pendents</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #8a6d3b;">{{ $dashboardSummary['pendents'] }}</div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Col·laboren</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #1f7a1f;">{{ $dashboardSummary['colaboren'] }}</div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">No col·laboren</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #a94442;">{{ $dashboardSummary['noColaboren'] }}</div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Sense classificar</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #144a75;">{{ $dashboardSummary['senseClassificar'] }}</div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-6 mb-3">
-            <div class="rounded border bg-white p-3 h-100 text-center" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <div class="small text-muted">Quadratura</div>
-                <div style="font-size: 1.75rem; font-weight: 700; color: #555;">{{ $dashboardSummary['pendents'] + $dashboardSummary['colaboren'] + $dashboardSummary['noColaboren'] + $dashboardSummary['senseClassificar'] }}</div>
-            </div>
-        </div>
-    </div>
+    <p class="small text-muted mb-3">
+        Es mostren totes les col·laboracions del departament. La marca «El meu cicle» identifica les del tutor actual.
+    </p>
 
-    <div class="row mb-4">
-        <div class="col-md-6 col-sm-12">
-            <div class="rounded border bg-white p-3 h-100" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <h4 class="mb-3">Per tutor</h4>
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped mb-0">
-                        <thead>
-                        <tr>
-                            <th>Tutor</th>
-                            <th>Total</th>
-                            <th>Sense contacte</th>
-                            <th>Preparades</th>
-                            <th>Amb alumnat</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($byTutor as $row)
-                            <tr>
-                                <td>{{ $row['label'] }}</td>
-                                <td>{{ $row['total'] }}</td>
-                                <td>{{ $row['senseContacteCurs'] }}</td>
-                                <td>{{ $row['preparades'] }}</td>
-                                <td>{{ $row['ambAlumnat'] }}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-sm-12">
-            <div class="rounded border bg-white p-3 h-100" style="box-shadow: 0 1px 2px rgba(0,0,0,.04);">
-                <h4 class="mb-3">Per cicle</h4>
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped mb-0">
-                        <thead>
-                        <tr>
-                            <th>Cicle</th>
-                            <th>Total</th>
-                            <th>Sense contacte</th>
-                            <th>Preparades</th>
-                            <th>Amb alumnat</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($byCycle as $row)
-                            <tr>
-                                <td>{{ $row['label'] }}</td>
-                                <td>{{ $row['total'] }}</td>
-                                <td>{{ $row['senseContacteCurs'] }}</td>
-                                <td>{{ $row['preparades'] }}</td>
-                                <td>{{ $row['ambAlumnat'] }}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="colaboracion-department-groups">
+        @forelse ($townGroups as $localidad => $townItems)
+            <section class="colaboracion-group">
+                <h4 class="colaboracion-group-title">
+                    <em class="fa fa-map-marker" aria-hidden="true"></em>
+                    {{ $localidad }}
+                    <span class="badge bg-secondary">{{ $townItems->count() }}</span>
+                </h4>
 
-    <div class="mb-3">
-        <label for="colaboracion-town-filter" class="form-label fw-semibold">Filtrar per poble</label>
-        <input id="colaboracion-town-filter"
-               class="form-control"
-               list="colaboracion-town-options"
-               type="search"
-               placeholder="Escriu part del poble">
-        <datalist id="colaboracion-town-options">
-            @foreach ($townOptions as $townOption)
-                <option value="{{ $townOption }}"></option>
-            @endforeach
-        </datalist>
-    </div>
+                <div class="colaboracion-card-grid">
+                    @foreach ($townItems as $elemento)
+                        @php
+                            $cycle = optional($elemento->Ciclo);
+                            $cycleLabel = $cycle->ciclo
+                                ?? $cycle->acronim
+                                ?? $cycle->literal
+                                ?? ('Cicle ' . ($elemento->idCiclo ?? ''));
+                            $cycleTitle = $cycle->literal ?? $cycleLabel;
+                            $responsable = trim((string) (optional($elemento->Propietario)->shortName ?? ''));
+                            $assigned = !empty($elemento->tutor) && $responsable !== '';
+                            $cardStatus = $status($elemento);
+                            $lastFctDate = $elemento->ultimaFctData ?? null;
+                        @endphp
 
-    @forelse ($townGroups as $localidad => $townItems)
-        @php
-            $centers = $townItems->groupBy('empresa');
-        @endphp
+                        <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
+                           class="js-colaboracion-show colaboracion-department-card text-decoration-none text-reset{{ !empty($elemento->esCiclePropi) ? ' is-own-cycle' : '' }}"
+                           data-show-title="Detall col·laboració"
+                           data-company="{{ $elemento->empresa }}"
+                           data-town="{{ $localidad }}"
+                           data-cycle="{{ $cycleLabel }}"
+                           data-contacted="{{ (int) ($elemento->estado ?? 0) !== 0 ? '1' : '0' }}"
+                           data-collaborates="{{ (int) ($elemento->estado ?? 0) === 2 ? '1' : '0' }}"
+                           data-documentation-old="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
+                           data-inactive="{{ !empty($elemento->senseActivitatRecent) ? '1' : '0' }}">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <h5 class="colaboracion-card-company" title="{{ $elemento->empresa }}">
+                                    <em class="fa fa-building" aria-hidden="true"></em>
+                                    {{ $elemento->empresa }}
+                                </h5>
+                                @if (!empty($elemento->esCiclePropi))
+                                    <span class="badge bg-primary text-nowrap">El meu cicle</span>
+                                @endif
+                            </div>
 
-        <div class="mb-4 colaboracion-town-group" data-town="{{ $localidad }}">
-            <div class="d-flex align-items-center gap-2 mb-3 pb-1" style="border-bottom: 1px solid #e6e9ed;">
-                <span class="badge bg-secondary-subtle text-dark border">
-                    <em class="fa fa-map-marker"></em> {{ $localidad }}
-                </span>
-                <small class="text-muted">
-                    {{ $centers->count() }} {{ $centers->count() === 1 ? 'empresa' : 'empreses' }}
-                </small>
-            </div>
+                            <div class="colaboracion-card-meta small text-muted mb-2">
+                                <span>
+                                    <em class="fa fa-map-marker" aria-hidden="true"></em>
+                                    {{ $localidad }}
+                                </span>
+                                <span class="badge bg-info text-dark" title="{{ $cycleTitle }}">
+                                    {{ $cycleLabel }}
+                                </span>
+                            </div>
 
-            <div class="colaboracion-company-list">
-                @foreach ($centers as $centerName => $centerItems)
-                    <section class="colaboracion-company-block" data-company="{{ $centerName }}">
-                        <header class="colaboracion-company-header">
-                            <h4 class="colaboracion-company-name">
-                                <em class="fa fa-building" aria-hidden="true"></em>
-                                {{ $centerName }}
-                            </h4>
-                        </header>
-
-                        <div class="colaboracion-company-collaborations">
-                            @foreach ($centerItems as $elemento)
-                                @php
-                                    $status = $contactStatus($elemento);
-                                    $cycle = optional($elemento->Ciclo);
-                                    $cycleLabel = $cycle->ciclo
-                                        ?? $cycle->acronim
-                                        ?? $cycle->literal
-                                        ?? ('Cicle ' . ($elemento->idCiclo ?? ''));
-                                    $cycleTitle = $cycle->literal ?? $cycleLabel;
-                                    $responsable = trim((string) (optional($elemento->Propietario)->shortName ?? ''));
-                                    $assigned = !empty($elemento->tutor) && $responsable !== '';
-                                @endphp
-
-                                <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
-                                   class="js-colaboracion-show colaboracion-company-item text-decoration-none text-reset"
-                                   data-show-title="Detall col·laboració">
-                                    <span class="badge"
-                                          title="{{ $cycleTitle }}"
-                                          style="{{ $cycleStyle($elemento) }}">
-                                        {{ $cycleLabel }}
+                            <div class="small text-muted mb-2">
+                                @if ($assigned)
+                                    <em class="fa fa-user" aria-hidden="true"></em>
+                                    {{ $responsable }}
+                                @else
+                                    <span class="text-danger" role="img" aria-label="Sense assignar" title="Sense assignar">
+                                        <em class="fa fa-user-times" aria-hidden="true"></em>
                                     </span>
+                                @endif
+                            </div>
 
-                                    @if ($assigned)
-                                        <span class="small text-muted colaboracion-company-teacher">
-                                            <em class="fa fa-user" aria-hidden="true"></em>
-                                            {{ $responsable }}
-                                        </span>
-                                    @else
-                                        <span class="text-danger"
-                                              role="img"
-                                              aria-label="Sense assignar"
-                                              title="Sense assignar">
-                                            <em class="fa fa-user-times" aria-hidden="true"></em>
-                                        </span>
-                                    @endif
-
-                                    @if ($status['label'])
-                                        <span class="small colaboracion-company-status {{ $status['class'] }}">
-                                            {{ $status['label'] }}
-                                        </span>
-                                    @endif
-                                </a>
-                            @endforeach
-                        </div>
-                    </section>
-                @endforeach
+                            <div class="colaboracion-card-badges">
+                                @if ($cardStatus['label'])
+                                    <span class="badge {{ $cardStatus['class'] }}">{{ $cardStatus['label'] }}</span>
+                                @endif
+                                @if (!empty($elemento->conveniPendent))
+                                    <span class="badge bg-danger">Documentació antiga o pendent</span>
+                                @endif
+                                @if (!empty($elemento->senseActivitatRecent))
+                                    <span class="badge bg-secondary">
+                                        @if ($lastFctDate)
+                                            Última FCT: {{ $lastFctDate->format('d/m/Y') }}
+                                        @else
+                                            Sense FCT registrada
+                                        @endif
+                                    </span>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @empty
+            <div class="alert alert-info mb-0">
+                No hi ha col·laboracions disponibles per al departament.
             </div>
-        </div>
-    @empty
-        <div class="alert alert-info mb-0">
-            No hi ha col·laboracions disponibles per al departament.
-        </div>
-    @endforelse
+        @endforelse
+    </div>
+
+    <div id="colaboracion-department-empty" class="alert alert-info mb-0" hidden>
+        No hi ha col·laboracions per a esta classificació.
+    </div>
 </div>
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var filter = document.getElementById('colaboracion-town-filter');
-            if (!filter) {
+            var panel = document.getElementById('colaboracion-department-panel');
+            var container = document.getElementById('colaboracion-department-groups');
+            var emptyState = document.getElementById('colaboracion-department-empty');
+
+            if (!panel || !container || !emptyState) {
                 return;
             }
 
-            var groups = Array.from(document.querySelectorAll('.colaboracion-town-group'));
-            var normalizeTown = function (value) {
-                return (value || '')
-                    .toString()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .toUpperCase()
-                    .replace(/[0-9]/g, ' ')
-                    .replace(/Y/g, 'I')
-                    .replace(/[^A-Z\s]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim();
+            var buttons = Array.from(panel.querySelectorAll('.js-colaboracion-view'));
+            var cards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+            var viewLabels = {
+                contacted: 'Contactades',
+                collaborates: 'Col·laboren',
+                documentation: 'Documentació antiga o pendent',
+                inactive: 'Sense activitat recent'
             };
 
-            var applyTownFilter = function () {
-                var selectedTown = normalizeTown(filter.value);
+            var matchesView = function (card, view) {
+                if (view === 'contacted') {
+                    return card.getAttribute('data-contacted') === '1';
+                }
+                if (view === 'collaborates') {
+                    return card.getAttribute('data-collaborates') === '1';
+                }
+                if (view === 'documentation') {
+                    return card.getAttribute('data-documentation-old') === '1';
+                }
+                if (view === 'inactive') {
+                    return card.getAttribute('data-inactive') === '1';
+                }
 
-                groups.forEach(function (group) {
-                    var groupTown = normalizeTown(group.getAttribute('data-town') || '');
-                    group.style.display = (!selectedTown || groupTown.indexOf(selectedTown) !== -1) ? '' : 'none';
+                return true;
+            };
+
+            var groupLabel = function (card, view) {
+                if (view === 'town') {
+                    return card.getAttribute('data-town') || 'Desconeguda';
+                }
+                if (view === 'cycle') {
+                    return card.getAttribute('data-cycle') || 'Sense cicle';
+                }
+
+                return viewLabels[view] || 'Col·laboracions';
+            };
+
+            var renderView = function (view) {
+                var visibleCards = cards.filter(function (card) {
+                    return matchesView(card, view);
                 });
+                var groups = new Map();
+
+                visibleCards.forEach(function (card) {
+                    var label = groupLabel(card, view);
+                    if (!groups.has(label)) {
+                        groups.set(label, []);
+                    }
+                    groups.get(label).push(card);
+                });
+
+                container.innerHTML = '';
+                Array.from(groups.keys())
+                    .sort(function (left, right) {
+                        return left.localeCompare(right, 'ca', {sensitivity: 'base'});
+                    })
+                    .forEach(function (label) {
+                        var section = document.createElement('section');
+                        section.className = 'colaboracion-group';
+
+                        var heading = document.createElement('h4');
+                        heading.className = 'colaboracion-group-title';
+                        heading.textContent = label + ' ';
+
+                        var count = document.createElement('span');
+                        count.className = 'badge bg-secondary';
+                        count.textContent = groups.get(label).length.toString();
+                        heading.appendChild(count);
+
+                        var grid = document.createElement('div');
+                        grid.className = 'colaboracion-card-grid';
+                        groups.get(label)
+                            .sort(function (left, right) {
+                                var companyComparison = (left.getAttribute('data-company') || '')
+                                    .localeCompare(right.getAttribute('data-company') || '', 'ca', {sensitivity: 'base'});
+                                if (companyComparison !== 0) {
+                                    return companyComparison;
+                                }
+
+                                return (left.getAttribute('data-cycle') || '')
+                                    .localeCompare(right.getAttribute('data-cycle') || '', 'ca', {sensitivity: 'base'});
+                            })
+                            .forEach(function (card) {
+                                grid.appendChild(card);
+                            });
+
+                        section.appendChild(heading);
+                        section.appendChild(grid);
+                        container.appendChild(section);
+                    });
+
+                buttons.forEach(function (button) {
+                    var active = button.getAttribute('data-view') === view;
+                    button.classList.toggle('btn-primary', active);
+                    button.classList.toggle('btn-default', !active);
+                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+
+                emptyState.hidden = visibleCards.length !== 0;
             };
 
-            filter.addEventListener('input', applyTownFilter);
-            filter.addEventListener('change', applyTownFilter);
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    renderView(button.getAttribute('data-view') || 'town');
+                });
+            });
+
+            renderView('town');
         });
     </script>
 @endpush

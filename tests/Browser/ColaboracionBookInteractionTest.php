@@ -228,6 +228,75 @@ JS
         });
     }
 
+    /** Verifica les classificacions interactives del panell departamental. */
+    public function test_classifica_les_colaboracions_del_departament(): void
+    {
+        $profesor = $this->profesorAmbColaboracionsOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $browser->visit('/profesor/login')
+                ->type('codigo', $login['identifier'])
+                ->type('password', $login['password'])
+                ->press('Entra')
+                ->pause(1500)
+                ->visit('/colaboracion')
+                ->pause(1800)
+                ->assertPresent('#colaboracion-department-panel')
+                ->assertPresent('.colaboracion-department-card');
+
+            $result = $browser->script(<<<'JS'
+const container = document.querySelector('#colaboracion-department-groups');
+const allCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+const views = ['town', 'cycle', 'contacted', 'collaborates', 'documentation', 'inactive'];
+const attributes = {
+  contacted: 'data-contacted',
+  collaborates: 'data-collaborates',
+  documentation: 'data-documentation-old',
+  inactive: 'data-inactive'
+};
+
+if (!allCards.length) {
+  return {ok: false, reason: 'No hi ha fitxes departamentals'};
+}
+
+const checks = {};
+for (const view of views) {
+  const button = document.querySelector('.js-colaboracion-view[data-view="' + view + '"]');
+  if (!button) {
+    return {ok: false, reason: 'Falta la vista ' + view};
+  }
+
+  button.click();
+  const rendered = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+  const expected = attributes[view]
+    ? allCards.filter((card) => card.getAttribute(attributes[view]) === '1')
+    : allCards;
+
+  checks[view] = rendered.length === expected.length
+    && rendered.every((card) => !attributes[view] || card.getAttribute(attributes[view]) === '1')
+    && button.getAttribute('aria-pressed') === 'true';
+}
+
+document.querySelector('.js-colaboracion-view[data-view="town"]').click();
+const restored = container.querySelectorAll('.colaboracion-department-card').length === allCards.length;
+
+return {
+  ok: Object.values(checks).every(Boolean) && restored,
+  checks,
+  total: allCards.length
+};
+JS
+            )[0] ?? ['ok' => false, 'reason' => 'Sense resultat JavaScript'];
+
+            $this->assertTrue((bool) ($result['ok'] ?? false), json_encode($result));
+        });
+    }
+
     /**
      * Selecciona un professor amb emailItaca i col·laboracions en el panell.
      */
