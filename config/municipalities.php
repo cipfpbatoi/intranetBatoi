@@ -30,6 +30,6 @@ return [
         'Banyeres' => ['Banyeres','Banyeres de Mariola', 'Bañeres de Mariola', 'Bañeres'],
         'Xixona' => ['Xixona', 'Jijona', 'Jijona de Alicante'],
         'Sant Vicent del Raspeig' => ['San Vicente del Raspeig', 'Sant Vicent del Raspeig', 'Sant Vicent del Raspeig'],
-
+        'Sant Joan d’Alacant' => ['San Juan de Alicante', 'Sant Joan d’Alacant', 'Sant Joan d’Alacant', 'San Juan'],
     ],
 ];
