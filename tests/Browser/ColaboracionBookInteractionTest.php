@@ -133,6 +133,102 @@ JS
     }
 
     /**
+     * Verifica que poble i empresa es combinen i que buidar empresa conserva el poble.
+     */
+    public function test_filtra_per_empresa_i_poble_en_la_mateixa_pestana(): void
+    {
+        $profesor = $this->profesorAmbColaboracionsOrSkip();
+        if ($profesor === null) {
+            return;
+        }
+
+        $login = $this->prepareProfesorForUiLogin($profesor);
+
+        $this->browse(function (Browser $browser) use ($login) {
+            $browser->visit('/profesor/login')
+                ->type('codigo', $login['identifier'])
+                ->type('password', $login['password'])
+                ->press('Entra')
+                ->pause(1500)
+                ->visit('/misColaboraciones')
+                ->pause(1800)
+                ->assertPresent('.mis-colaboraciones-company-filter');
+
+            $result = $browser->script(<<<'JS'
+const normalizeCompany = (value) => (value || '')
+  .toString()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toUpperCase()
+  .replace(/[^A-Z0-9\s]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const normalizeTown = (value) => (value || '')
+  .toString()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toUpperCase()
+  .replace(/[0-9]/g, ' ')
+  .replace(/Y/g, 'I')
+  .replace(/[^A-Z\s]/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+const visible = (element) => element && element.offsetParent !== null;
+const target = Array.from(document.querySelectorAll('.mis-colaboraciones-card')).find(visible);
+
+if (!target) {
+  return {ok: false, reason: 'No hi ha targetes visibles'};
+}
+
+const targetTab = target.getAttribute('data-target-tab') || '';
+const company = normalizeCompany(target.getAttribute('data-company') || '');
+const town = normalizeTown(target.getAttribute('data-town') || '');
+const companyFilter = document.querySelector('.mis-colaboraciones-company-filter[data-target-tab="' + targetTab + '"]');
+const townFilter = document.querySelector('.mis-colaboraciones-town-filter[data-target-tab="' + targetTab + '"]');
+
+if (!companyFilter || !townFilter || !company || !town) {
+  return {ok: false, reason: 'Falten dades o filtres'};
+}
+
+const companyQuery = company.slice(0, Math.max(1, Math.ceil(company.length / 2)));
+companyFilter.value = companyQuery;
+companyFilter.dispatchEvent(new Event('input', {bubbles: true}));
+
+const cardsForTab = Array.from(document.querySelectorAll('.mis-colaboraciones-card[data-target-tab="' + targetTab + '"]'));
+const companyMatches = cardsForTab.filter(visible);
+const companyOk = companyMatches.length > 0 && companyMatches.every((card) => {
+  return normalizeCompany(card.getAttribute('data-company') || '').includes(companyQuery);
+});
+
+townFilter.value = target.getAttribute('data-town') || '';
+townFilter.dispatchEvent(new Event('input', {bubbles: true}));
+const combinedMatches = cardsForTab.filter(visible);
+const combinedOk = combinedMatches.length > 0 && combinedMatches.every((card) => {
+  return normalizeCompany(card.getAttribute('data-company') || '').includes(companyQuery)
+    && normalizeTown(card.getAttribute('data-town') || '').includes(town);
+});
+
+companyFilter.value = '';
+companyFilter.dispatchEvent(new Event('input', {bubbles: true}));
+const townMatches = cardsForTab.filter(visible);
+const clearOk = townMatches.length > 0 && townMatches.every((card) => {
+  return normalizeTown(card.getAttribute('data-town') || '').includes(town);
+});
+
+return {
+  ok: companyOk && combinedOk && clearOk,
+  companyMatches: companyMatches.length,
+  combinedMatches: combinedMatches.length,
+  townMatches: townMatches.length
+};
+JS
+            )[0] ?? ['ok' => false, 'reason' => 'Sense resultat JavaScript'];
+
+            $this->assertTrue((bool) ($result['ok'] ?? false), json_encode($result));
+        });
+    }
+
+    /**
      * Selecciona un professor amb emailItaca i col·laboracions en el panell.
      */
     private function profesorAmbColaboracionsOrSkip(): ?Profesor
@@ -157,7 +253,7 @@ JS
             return null;
         }
 
-        $this->markTestSkipped('No hi ha professor amb col·laboracions disponibles per a provar book en Dusk.');
+        $this->markTestSkipped('No hi ha professor amb col·laboracions disponibles per a provar el panell en Dusk.');
         return null;
     }
 
