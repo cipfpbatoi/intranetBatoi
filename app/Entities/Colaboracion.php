@@ -88,6 +88,20 @@ class Colaboracion extends Model
 
         return $query->whereIn('idCentro', $centros);
     }
+
+    /**
+     * Exclou les col·laboracions vinculades a empreses Erasmus.
+     *
+     * @param mixed $query
+     * @return mixed
+     */
+    public function scopeSenseErasmus($query)
+    {
+        return $query->whereHas('Centro.Empresa', static function ($empresaQuery): void {
+            $empresaQuery->where('europa', 0);
+        });
+    }
+
     public function scopeMiColaboracion($query, $empresa=null, $dni=null)
     {
         $dni = $dni??authUser()->dni;

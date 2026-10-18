@@ -17,6 +17,7 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - Les poblacions es filtren amb una clau que ignora majúscules, accents, apòstrofs i puntuació, sense modificar `centros.localidad`.
 - Els àlies configurats compartixen un únic nom canònic; inicialment s'unifiquen les variants d'Alcoi, Muro d'Alcoi, València, Xàtiva, Denia, Ontinyent, Alacant, Banyeres, Xixona i Sant Vicent del Raspeig.
 - Les opcions del filtre de població es mostren en majúscules i conserven els accents del nom canònic; el text de les fitxes no es modifica.
+- El panell departamental exclou abans d'agrupar i comptar les col·laboracions vinculades a empreses Erasmus (`empresas.europa = 1`).
 - Primer es filtren les col·laboracions i després s'agrupen per `idCentro`, de manera que cada empresa o centre apareix una sola vegada i conté els cicles coincidents.
 - Cada cicle visible dins de la fitxa permet accedir al detall de la seua col·laboració.
 - La graella és responsive: tres columnes des de 992 px, dos en tauleta i una en mòbil.
@@ -122,6 +123,14 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 **When** es mostren les opcions del selector
 
 **Then** els noms apareixen en majúscules, conserven els accents i mantenen intactes les claus de filtratge i el text de les fitxes.
+
+### ✅ Excloure les empreses Erasmus del panell departamental
+
+**Given** col·laboracions d'empreses ordinàries (`europa = 0`) i Erasmus (`europa = 1`)
+
+**When** el professor consulta o filtra les col·laboracions del departament
+
+**Then** només es carreguen, agrupen i compten les col·laboracions de les empreses ordinàries, sense modificar el panell específic d'Erasmus.
 
 ### ✅ Netejar els filtres departamentals
 

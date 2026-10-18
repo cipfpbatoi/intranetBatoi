@@ -111,6 +111,7 @@ class ColaboracionController extends ModalController
 
         $colaboraciones = Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
+            ->SenseErasmus()
             ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario'])
             ->withCount('fcts')
             ->get();
