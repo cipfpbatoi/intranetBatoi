@@ -25,7 +25,13 @@ class ColaboracionTest extends TestCase
         $schema->dropIfExists('activities');
         $schema->dropIfExists('colaboraciones');
         $schema->dropIfExists('centros');
+        $schema->dropIfExists('empresas');
         $schema->dropIfExists('ciclos');
+
+        $schema->create('empresas', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedTinyInteger('europa')->default(0);
+        });
 
         $schema->create('centros', function (Blueprint $table): void {
             $table->increments('id');
@@ -79,6 +85,28 @@ class ColaboracionTest extends TestCase
         ]);
 
         $ids = Colaboracion::query()->Empresa(1)->pluck('id')->all();
+
+        $this->assertSame([1], $ids);
+    }
+
+    public function test_scope_sense_erasmus_exclou_empreses_europees(): void
+    {
+        DB::table('empresas')->insert([
+            ['id' => 1, 'europa' => 0],
+            ['id' => 2, 'europa' => 1],
+        ]);
+
+        DB::table('centros')->insert([
+            ['id' => 10, 'idEmpresa' => 1, 'nombre' => 'Empresa ordinària'],
+            ['id' => 20, 'idEmpresa' => 2, 'nombre' => 'Empresa Erasmus'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            ['id' => 1, 'idCentro' => 10, 'idCiclo' => 100, 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'idCentro' => 20, 'idCiclo' => 100, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $ids = Colaboracion::query()->SenseErasmus()->pluck('id')->all();
 
         $this->assertSame([1], $ids);
     }

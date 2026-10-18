@@ -123,9 +123,11 @@ class ColaboracionViewPresentationTest extends TestCase
         $this->assertStringContainsString('id="colaboracion-clear-filters"', $html);
         $this->assertStringContainsString('value="alcoi"', $html);
         $this->assertSame(1, substr_count($html, 'value="alcoi"'));
-        $this->assertStringContainsString('>Alcoi</option>', $html);
+        $this->assertMatchesRegularExpression('/>\s*ALCOI\s*<\/option>/u', $html);
+        $this->assertStringNotContainsString('>Alcoi</option>', $html);
         $this->assertSame(1, substr_count($html, 'value="muro-d-alcoi"'));
-        $this->assertSame(3, substr_count($html, 'Muro d’Alcoi'));
+        $this->assertSame(2, substr_count($html, 'Muro d’Alcoi'));
+        $this->assertMatchesRegularExpression('/>\s*MURO D’ALCOI\s*<\/option>/u', $html);
         $this->assertStringContainsString('value="no-contact"', $html);
         $this->assertStringContainsString('value="contacted"', $html);
         $this->assertStringContainsString('value="collaborates"', $html);
