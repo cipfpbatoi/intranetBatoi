@@ -246,7 +246,9 @@
                 <select id="colaboracion-town-filter" class="form-control input-sm">
                     <option value="">Totes les poblacions</option>
                     @foreach ($townOptions as $townOption)
-                        <option value="{{ $townOption['key'] }}">{{ $townOption['label'] }}</option>
+                        <option value="{{ $townOption['key'] }}">
+                            {{ mb_strtoupper($townOption['label'], 'UTF-8') }}
+                        </option>
                     @endforeach
                 </select>
             </div>

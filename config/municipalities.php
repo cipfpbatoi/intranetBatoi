@@ -24,10 +24,12 @@ return [
         ],
         'València' => ['València', 'Valencia'],
         'Xàtiva' => ['Xàtiva', 'Xativa', 'Játiva', 'Jativa'],
-        'Dénia' => ['Dénia', 'Denia'],
+        'Denia' => ['Dénia', 'Denia'],
         'Ontinyent' => ['Ontinyent', 'Onteniente'],
         'Alacant' => ['Alicante', 'Alicant','Alacant'],
         'Banyeres' => ['Banyeres','Banyeres de Mariola', 'Bañeres de Mariola', 'Bañeres'],
         'Xixona' => ['Xixona', 'Jijona', 'Jijona de Alicante'],
+        'Sant Vicent del Raspeig' => ['San Vicente del Raspeig', 'Sant Vicent del Raspeig', 'Sant Vicent del Raspeig'],
+
     ],
 ];

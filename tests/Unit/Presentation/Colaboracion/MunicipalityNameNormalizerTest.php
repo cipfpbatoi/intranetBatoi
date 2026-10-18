@@ -37,7 +37,7 @@ class MunicipalityNameNormalizerTest extends TestCase
             'València sense accent' => ['Valencia', 'valencia', 'València'],
             'Xàtiva sense accent' => ['Xativa', 'xativa', 'Xàtiva'],
             'Xàtiva en castellà' => ['Játiva', 'xativa', 'Xàtiva'],
-            'Dénia sense accent' => ['Denia', 'denia', 'Dénia'],
+            'Denia sense accent' => ['Denia', 'denia', 'Denia'],
             'Ontinyent en castellà' => ['Onteniente', 'ontinyent', 'Ontinyent'],
         ];
     }

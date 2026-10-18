@@ -15,7 +15,8 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - Les marques d'estat respecten el domini: `No contactada` (`estado = 0`), `No sé` (`estado = 1`), `Col·labora` (`estado = 2`) i `No col·labora` (`estado = 3`).
 - Una col·laboració està assignada quan té professor tutor i té el conveni actualitzat quan `conveniPendent` és fals.
 - Les poblacions es filtren amb una clau que ignora majúscules, accents, apòstrofs i puntuació, sense modificar `centros.localidad`.
-- Els àlies configurats compartixen un nom valencià canònic; inicialment s'unifiquen les variants d'Alcoi, Muro d'Alcoi, València, Xàtiva, Dénia i Ontinyent.
+- Els àlies configurats compartixen un únic nom canònic; inicialment s'unifiquen les variants d'Alcoi, Muro d'Alcoi, València, Xàtiva, Denia, Ontinyent, Alacant, Banyeres, Xixona i Sant Vicent del Raspeig.
+- Les opcions del filtre de població es mostren en majúscules i conserven els accents del nom canònic; el text de les fitxes no es modifica.
 - Primer es filtren les col·laboracions i després s'agrupen per `idCentro`, de manera que cada empresa o centre apareix una sola vegada i conté els cicles coincidents.
 - Cada cicle visible dins de la fitxa permet accedir al detall de la seua col·laboració.
 - La graella és responsive: tres columnes des de 992 px, dos en tauleta i una en mòbil.
@@ -113,6 +114,14 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 **When** es construïx el filtre departamental per població
 
 **Then** cada municipi apareix una sola vegada amb el nom valencià canònic i totes les seues variants responen a la mateixa opció.
+
+### ✅ Mostrar les poblacions del filtre en majúscules
+
+**Given** noms canònics amb i sense accents en el filtre departamental de població
+
+**When** es mostren les opcions del selector
+
+**Then** els noms apareixen en majúscules, conserven els accents i mantenen intactes les claus de filtratge i el text de les fitxes.
 
 ### ✅ Netejar els filtres departamentals
 
