@@ -159,12 +159,12 @@
                                     <button
                                         type="button"
                                         class="btn btn-sm btn-outline-success"
-                                        @if ($potAutoritzar && $teRubricaDirectora && $grup['data'] <= now()->addDays(7)->toDateString())
+                                        @if ($potAutoritzar && $teRubricaDirectora && $peticio['autoritzable'])
                                             wire:click="autoritzar({{ $peticio['id'] }})"
                                             wire:confirm="Segur que vols autoritzar esta petició i generar el document firmat?"
                                         @else
                                             disabled
-                                            title="{{ !$potAutoritzar ? 'Cal el rol de Direcció per a autoritzar' : (!$teRubricaDirectora ? 'Cal la rúbrica de la directora configurada' : 'Només es poden autoritzar els pròxims set dies naturals') }}"
+                                            title="{{ !$potAutoritzar ? 'Cal el rol de Direcció per a autoritzar' : (!$teRubricaDirectora ? 'Cal la rúbrica de la directora configurada' : 'Encara no ha començat el termini d’autorització') }}"
                                         @endif
                                     >
                                         Autoritzar

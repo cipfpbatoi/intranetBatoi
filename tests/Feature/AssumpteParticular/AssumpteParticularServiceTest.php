@@ -152,12 +152,74 @@ class AssumpteParticularServiceTest extends TestCase
             $this->service->autoritzar($peticio->id, 'DIRE001', 'resolucio-futura.pdf');
             $this->fail('S’esperava rebutjar una autorització amb més de set dies.');
         } catch (AssumpteParticularException $exception) {
-            $this->assertStringContainsString('set dies naturals', $exception->getMessage());
+            $this->assertStringContainsString('setmana anterior', $exception->getMessage());
         }
 
         $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
         $this->assertDatabaseCount('faltas', 0);
         Storage::disk('local')->assertMissing('resolucio-futura.pdf');
+    }
+
+    /** Un festiu set dies abans permet autoritzar des del laborable anterior. */
+    public function test_avanca_l_autoritzacio_si_el_dia_inicial_es_festiu(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-10-09', 'festiu');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-16');
+        $document = 'resolucio-festiu.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $resolta->estat);
+        $this->assertDatabaseCount('faltas', 1);
+        Storage::disk('local')->assertExists($document);
+    }
+
+    /** Un dia no lectiu no activa l'excepció reservada als festius. */
+    public function test_no_avanca_l_autoritzacio_si_el_dia_inicial_es_no_lectiu(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-10-09', 'no lectiu');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-16');
+        $document = 'resolucio-no-lectiu.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+            $this->fail('S’esperava mantindre el termini ordinari per a un dia no lectiu.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('setmana anterior', $exception->getMessage());
+        }
+
+        $this->assertSame(AssumpteParticular::ESTAT_PENDENT, $peticio->fresh()->estat);
+        $this->assertDatabaseCount('faltas', 0);
+    }
+
+    /** El laborable anterior pot requerir travessar el cap de setmana i un altre festiu. */
+    public function test_el_festiu_inicial_retrocedix_fins_al_laborable_anterior(): void
+    {
+        $this->crearProfesor('PROF001');
+        $this->crearDiaCalendari('2026-10-12', 'festiu');
+        $this->crearDiaCalendari('2026-10-09', 'festiu');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-19');
+        $document = 'resolucio-dilluns-festiu.pdf';
+        CarbonImmutable::setTestNow('2026-10-07 12:00:00');
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        try {
+            $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+            $this->fail('S’esperava rebutjar l’autorització abans del laborable anterior.');
+        } catch (AssumpteParticularException $exception) {
+            $this->assertStringContainsString('setmana anterior', $exception->getMessage());
+        }
+
+        CarbonImmutable::setTestNow('2026-10-08 12:00:00');
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $resolta->estat);
+        $this->assertDatabaseCount('faltas', 1);
     }
 
     /** Una denegació motivada queda registrada, fins i tot si es reintenta la resolució. */

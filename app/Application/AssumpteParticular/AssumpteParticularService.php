@@ -248,9 +248,10 @@ class AssumpteParticularService
                 if ($peticio === null || !$peticio->estaPendent()) {
                     throw new AssumpteParticularException('Només es pot autoritzar una petició pendent.');
                 }
-                if ($peticio->data_gaudi->greaterThan(CarbonImmutable::today()->addDays(7))) {
+                if (!$this->calendariService->esAutoritzable($peticio->data_gaudi)) {
                     throw new AssumpteParticularException(
-                        'Només es poden autoritzar peticions dels pròxims set dies naturals.'
+                        'Només es poden autoritzar durant la setmana anterior al gaudi '
+                        . 'o des del laborable anterior si el dia inicial és festiu.'
                     );
                 }
 

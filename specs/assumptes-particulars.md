@@ -23,7 +23,7 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - El panell de Direcció mostra el contingent global i per torn, ocupat únicament per peticions autoritzades.
 - Els canvis sobrevinguts de calendari, torn, saldo o contingent es mostren com a avisos abans de resoldre.
 - La denegació requerix una motivació i no genera ni document de resolució ni `Falta`.
-- L'autorització la pot efectuar qualsevol persona amb rol de Direcció només fins al seté dia natural posterior a hui, inclòs; requerix la rúbrica gràfica del professor i de la directora configurada.
+- L'autorització la pot efectuar qualsevol persona amb rol de Direcció des del seté dia natural anterior al gaudi, inclòs; si eixe dia és festiu, el termini comença el laborable anterior. Els dies `no lectiu` no activen esta excepció. L'autorització requerix la rúbrica gràfica del professor i de la directora configurada.
 - El PDF sempre mostra la rúbrica de la directora configurada, mentre que la petició registra en `resolta_per` la persona de Direcció que ha tramitat l'autorització.
 - Una petició autoritzada genera un únic PDF d'una pàgina sobre el model oficial, amb les dues signatures, i una única `Falta` de dia complet.
 - El document autoritzat queda arxivat en emmagatzematge privat i només el poden descarregar el professor titular, Direcció o Administració.
@@ -168,6 +168,14 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** Direcció la consulta i intenta autoritzar-la
 
 **Then** el seté dia és autoritzable i el huité no ho és ni des del botó ni directament des del servei; no es genera cap falta ni document parcial.
+
+### ✅ L'autorització avança si el dia inicial és festiu
+
+**Given** una petició pendent i el dia situat exactament set dies abans del gaudi marcat com a `festiu`
+
+**When** arriba el laborable immediatament anterior, retrocedint caps de setmana o altres festius si cal
+
+**Then** Direcció pot autoritzar-la tant des del botó com directament des del servei; abans d'eixe laborable continua bloquejada i un dia `no lectiu` no avança el termini.
 
 ### ✅ Una autorització invàlida no deixa artefactes parcials
 
