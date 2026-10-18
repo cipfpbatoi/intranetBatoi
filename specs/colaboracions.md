@@ -8,11 +8,14 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - Els filtres per poble, empresa i estat ràpid es combinen: una targeta ha de complir-los tots.
 - La cerca per empresa és parcial, ignora accents i majúscules i conserva els números.
 - En buidar el filtre d'empresa es mantenen actius els altres filtres.
-- El panell departamental mostra totes les col·laboracions dels cicles del departament i destaca els cicles que tutoritza el professor actual.
-- El professor pot filtrar el panell departamental per població, cicle, estat, documentació actualitzada i assignació.
+- El panell departamental mostra totes les col·laboracions dels cicles del departament sense afegir un distintiu al cicle tutoritzat pel professor actual.
+- El professor pot filtrar el panell departamental per població, cicle, estat de contacte, conveni actualitzat i assignació.
 - Els filtres departamentals són acumulatius: una mateixa col·laboració ha de complir tots els criteris actius.
-- Els estats disponibles són `Sense contacte` (`estado = 0`), `Contactada` (`estado != 0`) i `Col·labora` (`estado = 2`); l'estat `1` es presenta com `Contactada`.
-- Una col·laboració està assignada quan té professor tutor i té la documentació actualitzada quan `conveniPendent` és fals.
+- `Sense contacte` i `Contactada` depenen respectivament de l'absència o existència d'almenys un contacte registrat, no del valor d'`estado`.
+- Les marques d'estat respecten el domini: `No contactada` (`estado = 0`), `No sé` (`estado = 1`), `Col·labora` (`estado = 2`) i `No col·labora` (`estado = 3`).
+- Una col·laboració està assignada quan té professor tutor i té el conveni actualitzat quan `conveniPendent` és fals.
+- Les poblacions es filtren amb una clau que ignora majúscules, accents, apòstrofs i puntuació, sense modificar `centros.localidad`.
+- Els àlies configurats compartixen un nom valencià canònic; inicialment s'unifiquen les variants d'Alcoi, Muro d'Alcoi, València, Xàtiva, Dénia i Ontinyent.
 - Primer es filtren les col·laboracions i després s'agrupen per `idCentro`, de manera que cada empresa o centre apareix una sola vegada i conté els cicles coincidents.
 - Cada cicle visible dins de la fitxa permet accedir al detall de la seua col·laboració.
 - La graella és responsive: tres columnes des de 992 px, dos en tauleta i una en mòbil.
@@ -57,11 +60,11 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 ### ✅ Filtrar per estat
 
-**Given** col·laboracions amb `estado` 0, 1, 2 i 3
+**Given** col·laboracions amb i sense contactes registrats i amb `estado` 0, 1, 2 i 3
 
 **When** selecciona `Sense contacte`, `Contactada` o `Col·labora`
 
-**Then** es mostren respectivament les d'estat 0, les d'estat diferent de 0 o les d'estat 2, i l'estat 1 s'etiqueta com `Contactada`.
+**Then** es mostren respectivament les que no tenen contacte, les que en tenen almenys un o les d'estat 2, i l'estat 1 s'etiqueta com `No sé`.
 
 ### ✅ Filtrar per assignació
 
@@ -71,11 +74,11 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 **Then** només es mostren les col·laboracions que tenen o no tenen professor tutor, respectivament.
 
-### ✅ Filtrar per documentació actualitzada
+### ✅ Filtrar per conveni actualitzat
 
 **Given** col·laboracions amb `conveniPendent` verdader i fals
 
-**When** el professor activa `Documentació actualitzada`
+**When** el professor activa `Conveni actualitzat`
 
 **Then** desapareixen les col·laboracions amb conveni pendent i només es mostren les que tenen `conveniPendent` fals.
 
@@ -95,13 +98,21 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 **Then** la graella mostra tres, dos o una columna respectivament, cada empresa conserva el seu degradat i vora i cada cicle conserva el seu color.
 
-### ✅ Identificar els cicles propis del tutor
+### ✅ Ometre el distintiu del cicle propi
 
 **Given** que el professor tutoritza un o més cicles del departament
 
 **When** consulta el panell departamental
 
-**Then** les fitxes d'eixos cicles mostren un distintiu que les diferencia de la resta.
+**Then** el cicle conserva la mateixa presentació compacta que la resta i no mostra l'etiqueta `El meu cicle`.
+
+### ✅ Normalitzar les poblacions del filtre
+
+**Given** poblacions escrites amb diferències de caixa, accents, puntuació o àlies castellans i valencians configurats
+
+**When** es construïx el filtre departamental per població
+
+**Then** cada municipi apareix una sola vegada amb el nom valencià canònic i totes les seues variants responen a la mateixa opció.
 
 ### ✅ Netejar els filtres departamentals
 

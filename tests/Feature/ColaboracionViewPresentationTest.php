@@ -51,7 +51,7 @@ class ColaboracionViewPresentationTest extends TestCase
                 'CB',
                 'Cicle B',
                 0,
-                localitat: 'COCENTAINA'
+                localitat: 'Muro de Alcoy'
             ),
             $this->colaboracio(
                 2,
@@ -62,8 +62,8 @@ class ColaboracionViewPresentationTest extends TestCase
                 2,
                 'Anna Garcia',
                 'Anna Garcia Segon',
-                ciclePropi: true,
-                documentacioPendent: true
+                documentacioPendent: true,
+                teContacte: true
             ),
             $this->colaboracio(
                 3,
@@ -73,7 +73,9 @@ class ColaboracionViewPresentationTest extends TestCase
                 'Cicle C',
                 3,
                 'Pau Ferrer',
-                'Pau Ferrer Tercer'
+                'Pau Ferrer Tercer',
+                localitat: 'Alcoy',
+                teContacte: true
             ),
             $this->colaboracio(
                 4,
@@ -119,19 +121,25 @@ class ColaboracionViewPresentationTest extends TestCase
         $this->assertStringContainsString('id="colaboracion-assignment-filter"', $html);
         $this->assertStringContainsString('id="colaboracion-documentation-filter"', $html);
         $this->assertStringContainsString('id="colaboracion-clear-filters"', $html);
-        $this->assertStringContainsString('value="ALCOI"', $html);
-        $this->assertStringContainsString('value="COCENTAINA"', $html);
+        $this->assertStringContainsString('value="alcoi"', $html);
+        $this->assertSame(1, substr_count($html, 'value="alcoi"'));
+        $this->assertStringContainsString('>Alcoi</option>', $html);
+        $this->assertSame(1, substr_count($html, 'value="muro-d-alcoi"'));
+        $this->assertSame(3, substr_count($html, 'Muro d’Alcoi'));
         $this->assertStringContainsString('value="no-contact"', $html);
         $this->assertStringContainsString('value="contacted"', $html);
         $this->assertStringContainsString('value="collaborates"', $html);
         $this->assertStringContainsString('value="assigned"', $html);
         $this->assertStringContainsString('value="unassigned"', $html);
-        $this->assertStringContainsString('Documentació actualitzada', $html);
+        $this->assertStringContainsString('Conveni actualitzat', $html);
+        $this->assertStringNotContainsString('Documentació actualitzada', $html);
         $this->assertStringContainsString('data-documentation-current="0"', $html);
         $this->assertStringContainsString('data-documentation-current="1"', $html);
         $this->assertStringContainsString('data-assigned="0"', $html);
         $this->assertStringContainsString('data-assigned="1"', $html);
-        $this->assertStringContainsString('El meu cicle', $html);
+        $this->assertStringContainsString('data-contacted="0"', $html);
+        $this->assertStringContainsString('data-contacted="1"', $html);
+        $this->assertStringNotContainsString('El meu cicle', $html);
         $this->assertMatchesRegularExpression('/>\s*CA\s*<\/span>/u', $html);
         $this->assertMatchesRegularExpression('/>\s*CC\s*<\/span>/u', $html);
         $this->assertSame(4, substr_count($html, 'class="badge colaboracion-cycle-badge"'));
@@ -139,7 +147,12 @@ class ColaboracionViewPresentationTest extends TestCase
         $this->assertStringNotContainsString('Anna Garcia Segon', $html);
         $this->assertStringContainsString('fa-user-times', $html);
         $this->assertStringContainsString('aria-label="Sense assignar"', $html);
-        $this->assertStringContainsString('Sense contacte', $html);
+        $this->assertStringContainsString('No contactada', $html);
+        $this->assertStringContainsString('No sé', $html);
+        $this->assertMatchesRegularExpression(
+            '/data-state="1"\s+data-contacted="0"[\s\S]*?No sé/u',
+            $html
+        );
         $this->assertStringContainsString('Contactada', $html);
         $this->assertStringContainsString('Col·labora', $html);
         $this->assertStringContainsString('No col·labora', $html);
@@ -169,9 +182,9 @@ class ColaboracionViewPresentationTest extends TestCase
         int $estat,
         ?string $nomCurt = null,
         ?string $nomComplet = null,
-        bool $ciclePropi = false,
         bool $documentacioPendent = false,
-        string $localitat = 'ALCOI'
+        string $localitat = 'ALCOI',
+        bool $teContacte = false
     ): object {
         return (object) [
             'id' => $id,
@@ -183,9 +196,9 @@ class ColaboracionViewPresentationTest extends TestCase
             'profesor' => $nomComplet ?? '',
             'tutor' => $nomCurt === null ? null : 'TUTOR' . $id,
             'ultimaActividad' => null,
+            'teContacte' => $teContacte,
             'estatPreparacioKey' => 'preparada',
             'fctsAssociadesCount' => 0,
-            'esCiclePropi' => $ciclePropi,
             'conveniPendent' => $documentacioPendent,
             'Ciclo' => (object) [
                 'ciclo' => $cicle,
