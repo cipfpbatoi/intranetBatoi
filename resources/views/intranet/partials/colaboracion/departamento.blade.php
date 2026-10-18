@@ -2,8 +2,8 @@
     @push('styles')
         <style>
             .colaboracion-company-list {
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
                 gap: 18px;
             }
 
@@ -19,7 +19,6 @@
             .colaboracion-company-header {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
                 gap: 12px;
                 padding: 12px 16px;
                 border-bottom: 1px solid #dce4ec;
@@ -34,16 +33,20 @@
             }
 
             .colaboracion-company-collaborations {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px;
                 padding: 14px 16px 16px;
             }
 
             .colaboracion-company-item {
-                display: block;
+                display: inline-flex;
+                align-items: center;
+                flex: 0 1 auto;
+                gap: 7px;
                 min-width: 0;
-                padding: 10px 12px;
+                padding: 7px 9px;
                 border: 1px solid #e1e6eb;
                 border-radius: 4px;
                 background: #fbfbfc;
@@ -55,14 +58,19 @@
                 background: #f5f9fd;
             }
 
-            @media (min-width: 992px) {
-                .colaboracion-company-collaborations {
+            .colaboracion-company-teacher,
+            .colaboracion-company-status {
+                white-space: nowrap;
+            }
+
+            @media (min-width: 768px) {
+                .colaboracion-company-list {
                     grid-template-columns: repeat(2, minmax(0, 1fr));
                 }
             }
 
-            @media (min-width: 1700px) {
-                .colaboracion-company-collaborations {
+            @media (min-width: 1200px) {
+                .colaboracion-company-list {
                     grid-template-columns: repeat(3, minmax(0, 1fr));
                 }
             }
@@ -93,7 +101,7 @@
             ->count(),
     ];
     $byTutor = $elementos
-        ->groupBy(static fn ($elemento) => $elemento->profesor ?: 'Sense tutor assignat')
+        ->groupBy(static fn ($elemento) => optional($elemento->Propietario)->shortName ?: 'Sense tutor assignat')
         ->map(static function ($items, $label) use ($currentCourseStart) {
             return [
                 'label' => $label,
@@ -156,8 +164,8 @@
                 'class' => 'text-danger',
             ],
             1 => [
-                'label' => 'No contactada',
-                'class' => 'text-warning',
+                'label' => null,
+                'class' => 'text-muted',
             ],
             default => [
                 'label' => null,
@@ -307,48 +315,54 @@
                 @foreach ($centers as $centerName => $centerItems)
                     <section class="colaboracion-company-block" data-company="{{ $centerName }}">
                         <header class="colaboracion-company-header">
-                            <div>
-                                <div class="small text-muted text-uppercase">Empresa</div>
-                                <h4 class="colaboracion-company-name">
-                                    <em class="fa fa-building" aria-hidden="true"></em>
-                                    {{ $centerName }}
-                                </h4>
-                            </div>
-                            <span class="badge bg-primary">
-                                {{ $centerItems->count() }}
-                                {{ $centerItems->count() === 1 ? 'col·laboració' : 'col·laboracions' }}
-                            </span>
+                            <h4 class="colaboracion-company-name">
+                                <em class="fa fa-building" aria-hidden="true"></em>
+                                {{ $centerName }}
+                            </h4>
                         </header>
 
                         <div class="colaboracion-company-collaborations">
                             @foreach ($centerItems as $elemento)
                                 @php
                                     $status = $contactStatus($elemento);
-                                    $responsable = $elemento->profesor ?: 'Sense assignar';
+                                    $cycle = optional($elemento->Ciclo);
+                                    $cycleLabel = $cycle->ciclo
+                                        ?? $cycle->acronim
+                                        ?? $cycle->literal
+                                        ?? ('Cicle ' . ($elemento->idCiclo ?? ''));
+                                    $cycleTitle = $cycle->literal ?? $cycleLabel;
+                                    $responsable = trim((string) (optional($elemento->Propietario)->shortName ?? ''));
+                                    $assigned = !empty($elemento->tutor) && $responsable !== '';
                                 @endphp
 
                                 <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
                                    class="js-colaboracion-show colaboracion-company-item text-decoration-none text-reset"
                                    data-show-title="Detall col·laboració">
-                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge"
-                                                  style="{{ $cycleStyle($elemento) }}">
-                                                {{ optional($elemento->Ciclo)->literal ?? ('Cicle ' . ($elemento->idCiclo ?? '')) }}
-                                            </span>
-                                        </div>
+                                    <span class="badge"
+                                          title="{{ $cycleTitle }}"
+                                          style="{{ $cycleStyle($elemento) }}">
+                                        {{ $cycleLabel }}
+                                    </span>
 
-                                        @if ($status['label'])
-                                            <span class="small {{ $status['class'] }}">
-                                                {{ $status['label'] }}
-                                            </span>
-                                        @endif
-                                    </div>
+                                    @if ($assigned)
+                                        <span class="small text-muted colaboracion-company-teacher">
+                                            <em class="fa fa-user" aria-hidden="true"></em>
+                                            {{ $responsable }}
+                                        </span>
+                                    @else
+                                        <span class="text-danger"
+                                              role="img"
+                                              aria-label="Sense assignar"
+                                              title="Sense assignar">
+                                            <em class="fa fa-user-times" aria-hidden="true"></em>
+                                        </span>
+                                    @endif
 
-                                    <div class="small text-muted mt-2">
-                                        <em class="fa fa-user" aria-hidden="true"></em>
-                                        {{ !empty($elemento->tutor) ? $responsable : 'Sense assignar' }}
-                                    </div>
+                                    @if ($status['label'])
+                                        <span class="small colaboracion-company-status {{ $status['class'] }}">
+                                            {{ $status['label'] }}
+                                        </span>
+                                    @endif
                                 </a>
                             @endforeach
                         </div>

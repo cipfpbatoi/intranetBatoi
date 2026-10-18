@@ -9,7 +9,10 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - La cerca per empresa és parcial, ignora accents i majúscules i conserva els números.
 - En buidar el filtre d'empresa es mantenen actius els altres filtres.
 - El panell departamental agrupa primer per poble i després per empresa.
-- Cada empresa té una capçalera pròpia i les seues col·laboracions queden subordinades i diferenciades per cicle, estat i responsable.
+- Les empreses es distribuïxen en una graella responsive i cada fitxa mostra només el nom en la capçalera, sense etiqueta ni recompte.
+- Les col·laboracions d'una empresa es representen amb les abreviatures dels cicles en una fila flexible i cada cicle enllaça amb el seu detall.
+- El professor assignat es mostra amb nom i primer cognom; l'absència d'assignació es representa amb una icona accessible de professor ratllat.
+- L'estat `No contactada` no es mostra en la fitxa compacta; `Contactada` i `No col·labora` es mantenen visibles.
 - Els filtres i la presentació no modifiquen dades, accions ni permisos.
 
 ## Escenaris
@@ -38,18 +41,34 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 **Then** es recuperen les targetes admeses pels altres filtres actius.
 
-### ✅ Diferenciar empreses en el panell departamental
+### ✅ Distribuir les empreses del departament en columnes
 
 **Given** un poble amb col·laboracions de diverses empreses
 
 **When** el professor consulta les col·laboracions del departament
 
-**Then** cada empresa apareix en un bloc visual propi amb nom destacat i recompte de col·laboracions.
+**Then** cada empresa apareix en una fitxa diferenciada dins d'una graella responsive i la capçalera mostra només el nom de l'empresa, sense etiqueta ni recompte.
 
-### ✅ Agrupar les col·laboracions de la mateixa empresa
+### ✅ Mostrar els cicles de cada empresa de manera compacta
 
 **Given** diverses col·laboracions de la mateixa empresa per a diferents cicles
 
 **When** es renderitza el panell departamental
 
-**Then** totes queden dins del mateix bloc d'empresa i continuen diferenciades per cicle, estat i responsable.
+**Then** les abreviatures dels cicles apareixen en una fila flexible dins de la mateixa fitxa i cadascuna enllaça amb el detall de la seua col·laboració.
+
+### ✅ Mostrar l'assignació amb el nom curt del professor
+
+**Given** col·laboracions amb professor assignat i sense professor assignat
+
+**When** es renderitzen els seus cicles
+
+**Then** el professor assignat apareix amb nom i primer cognom i la col·laboració sense assignació mostra una icona de professor ratllat amb l'ajuda accessible `Sense assignar`.
+
+### ✅ Ometre l'estat no contactada en la fitxa compacta
+
+**Given** col·laboracions amb els estats `No contactada`, `Contactada` i `No col·labora`
+
+**When** es renderitza la fitxa de l'empresa
+
+**Then** no es mostra el text `No contactada` i es mantenen visibles els estats `Contactada` i `No col·labora`.
