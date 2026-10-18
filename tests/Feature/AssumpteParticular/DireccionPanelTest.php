@@ -215,7 +215,23 @@ class DireccionPanelTest extends TestCase
             ->set('filtreData', '2026-10-16')
             ->assertSee('Professor 01')
             ->assertDontSeeHtml('wire:click="autoritzar(' . $peticio->id . ')"')
-            ->assertSee('Només es poden autoritzar els pròxims set dies naturals');
+            ->assertSee('Encara no ha començat el termini d’autorització');
+    }
+
+    /** El botó s'habilita el laborable anterior quan el dia inicial és festiu. */
+    public function test_habilita_l_autoritzacio_abans_si_el_dia_inicial_es_festiu(): void
+    {
+        DB::table('calendari_escolar')->insert([
+            'data' => '2026-10-09',
+            'tipus' => 'festiu',
+        ]);
+        $peticio = $this->crearPeticio('PROF01', '2026-10-16', AssumpteParticular::ESTAT_PENDENT);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularDireccionPanel::class)
+            ->set('filtreData', '2026-10-16')
+            ->assertSee('Professor 01')
+            ->assertSeeHtml('wire:click="autoritzar(' . $peticio->id . ')"');
     }
 
     public function test_ordena_per_dies_gaudits_hores_i_antiguitat(): void

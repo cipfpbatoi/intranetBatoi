@@ -55,6 +55,38 @@ class CalendariAssumpteParticularService
     }
 
     /**
+     * Indica si ja ha començat el termini per a autoritzar una petició.
+     *
+     * Si el dia situat exactament una setmana abans del gaudi és festiu,
+     * el termini avança fins al laborable anterior.
+     */
+    public function esAutoritzable(
+        CarbonInterface $dataGaudi,
+        ?CarbonInterface $hui = null
+    ): bool {
+        $avui = CarbonImmutable::parse(($hui ?? CarbonImmutable::today())->toDateString());
+
+        return $avui->greaterThanOrEqualTo($this->dataIniciAutoritzacio($dataGaudi));
+    }
+
+    /**
+     * Calcula el primer dia en què Direcció pot autoritzar la petició.
+     */
+    private function dataIniciAutoritzacio(CarbonInterface $dataGaudi): CarbonImmutable
+    {
+        $inici = CarbonImmutable::parse($dataGaudi->toDateString())->subDays(7);
+        if (!CalendariEscolar::esFestiu($inici)) {
+            return $inici;
+        }
+
+        do {
+            $inici = $inici->subDay();
+        } while ($inici->isWeekend() || CalendariEscolar::esFestiu($inici));
+
+        return $inici;
+    }
+
+    /**
      * Indica si dues dates són dies lectius consecutius segons el calendari.
      */
     public function sonLectiusConsecutius(

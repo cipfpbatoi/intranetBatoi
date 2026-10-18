@@ -209,6 +209,7 @@ class AssumpteParticularDireccionQueryService
             ),
             'motivacio_excepcional' => $peticio->motivacio_excepcional,
             'excepcional' => filled($peticio->motivacio_excepcional),
+            'autoritzable' => $this->calendariService->esAutoritzable($peticio->data_gaudi),
             'avisos' => $avisos,
             'sollicitada_at' => $sollicitadaAt?->format('d/m/Y H:i') ?? '—',
             'ordre_sollicitud' => $sollicitadaAt?->getTimestamp() ?? PHP_INT_MAX,
