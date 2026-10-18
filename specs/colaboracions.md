@@ -9,8 +9,11 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 - La cerca per empresa és parcial, ignora accents i majúscules i conserva els números.
 - En buidar el filtre d'empresa es mantenen actius els altres filtres.
 - El panell departamental mostra totes les col·laboracions dels cicles del departament i destaca els cicles que tutoritza el professor actual.
-- Cada fitxa representa una col·laboració entre una empresa i un cicle, i s'ordena en una graella responsive de tres, dos o una columna segons l'amplària disponible.
+- Cada fitxa representa una col·laboració entre una empresa i un cicle, i s'ordena en una graella responsive de tres columnes des de 992 px, dos en tauleta i una en mòbil.
 - El professor pot classificar la informació per poble o per cicle i filtrar-la per contactades, col·laboradores, documentació antiga o pendent i absència d'activitat recent.
+- El filtre independent per poble es combina amb qualsevol classificació activa del panell departamental.
+- L'abreviatura de cada cicle conserva un color estable i diferenciat.
+- Les fitxes d'una mateixa empresa compartixen un fons molt degradat i una vora clara estable, sense interferir amb el color del cicle.
 - Una col·laboració és contactada quan `estado != 0` i col·labora quan `estado = 2`.
 - La documentació antiga o pendent reutilitza l'indicador `conveniPendent` del domini.
 - Una col·laboració està sense activitat recent quan no té cap FCT en el curs actual ni en l'anterior, segons la data màxima `alumno_fcts.hasta`; les que no tenen cap FCT també s'hi inclouen.
@@ -49,7 +52,7 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 
 **When** el professor consulta les col·laboracions del departament
 
-**Then** cada parella empresa-cicle apareix en una fitxa diferenciada dins d'una graella de tres columnes en escriptori, dos en tauleta i una en mòbil.
+**Then** cada parella empresa-cicle apareix en una fitxa diferenciada dins d'una graella de tres columnes des de 992 px, dos en tauleta i una en mòbil.
 
 ### ✅ Classificar per poble i per cicle
 
@@ -58,6 +61,30 @@ Especificació del bounded context que presenta i filtra les col·laboracions am
 **When** el professor selecciona la classificació per poble o per cicle
 
 **Then** les fitxes s'agrupen segons el criteri seleccionat i cada grup mostra el seu recompte.
+
+### ✅ Filtrar el panell departamental per poble
+
+**Given** col·laboracions de diferents pobles i qualsevol classificació activa
+
+**When** el professor escriu o selecciona un poble en el filtre independent
+
+**Then** només es mostren les fitxes coincidents amb el poble que també complixen la classificació activa.
+
+### ✅ Identificar visualment els cicles
+
+**Given** col·laboracions de diferents cicles
+
+**When** es mostren les seues abreviatures
+
+**Then** cada cicle conserva un color estable i diferenciat en totes les seues fitxes.
+
+### ✅ Diferenciar visualment les empreses
+
+**Given** diverses empreses dins d'un mateix grup
+
+**When** es mostren les seues fitxes
+
+**Then** les fitxes d'una mateixa empresa compartixen un fons molt degradat i una vora clara estable, mentre el color identificatiu queda reservat al cicle.
 
 ### ✅ Filtrar les col·laboracions contactades i les que col·laboren
 
