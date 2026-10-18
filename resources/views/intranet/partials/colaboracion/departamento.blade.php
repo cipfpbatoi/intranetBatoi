@@ -1,122 +1,190 @@
 @once
-    @push('styles')
-        <style>
-            .colaboracion-view-toolbar {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 6px;
-            }
+    <style data-colaboracion-department-styles>
+        .colaboracion-filter-panel {
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 1px solid #d9e1e8;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
 
-            .colaboracion-view-toolbar .btn {
-                margin: 0;
-            }
+        .colaboracion-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
 
-            .colaboracion-group + .colaboracion-group {
-                margin-top: 22px;
-            }
+        .colaboracion-filter-field label {
+            display: block;
+            margin-bottom: 4px;
+            color: #34495e;
+            font-size: .82rem;
+            font-weight: 700;
+        }
 
-            .colaboracion-group-title {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin: 0 0 10px;
-                padding-bottom: 6px;
-                border-bottom: 1px solid #dfe5eb;
-                color: #34495e;
-                font-size: 1rem;
-                font-weight: 700;
-            }
+        .colaboracion-filter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
 
-            .colaboracion-card-grid {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 12px;
-            }
+        .colaboracion-filter-actions .btn {
+            margin: 0;
+        }
 
-            .colaboracion-department-card {
-                display: block;
-                min-width: 0;
-                height: 100%;
-                padding: 12px 14px;
-                border: 1px solid var(--company-border, #d7dee6);
-                border-left-width: 4px;
-                border-radius: 5px;
-                background: var(--company-background, #fff);
-                box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
-            }
+        .colaboracion-result-summary {
+            margin: 10px 0 0;
+            color: #5d6d7e;
+            font-size: .85rem;
+        }
 
-            .colaboracion-department-card.is-own-cycle {
-                border-left-color: #337ab7;
-                box-shadow: inset 3px 0 0 rgba(51, 122, 183, .12), 0 1px 3px rgba(0, 0, 0, .05);
-            }
+        .colaboracion-company-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
 
-            .colaboracion-department-card:hover,
-            .colaboracion-department-card:focus {
-                border-color: #78aee8;
-                box-shadow: 0 2px 6px rgba(20, 74, 117, .12);
-            }
+        .colaboracion-company-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 2px solid #ccd8e4;
+            border-radius: 7px;
+            box-shadow: 0 2px 6px rgba(20, 50, 80, .08);
+        }
 
-            .colaboracion-card-company {
-                overflow: hidden;
-                margin: 0;
-                color: #144a75;
-                font-size: 1rem;
-                font-weight: 700;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
+        .colaboracion-company-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 11px 12px 9px;
+            border-bottom: 1px solid rgba(80, 105, 130, .16);
+        }
 
-            .colaboracion-card-meta,
-            .colaboracion-card-badges {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 6px;
-            }
+        .colaboracion-company-name {
+            overflow: hidden;
+            margin: 0;
+            color: #174b73;
+            font-size: 1rem;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-            .colaboracion-cycle-badge {
-                font-weight: 700;
-            }
+        .colaboracion-company-town {
+            margin-top: 3px;
+            color: #647587;
+            font-size: .8rem;
+        }
 
-            @media (min-width: 768px) {
-                .colaboracion-card-grid {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
-            }
+        .colaboracion-cycle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 9px;
+        }
 
-            @media (min-width: 992px) {
-                .colaboracion-card-grid {
-                    grid-template-columns: repeat(3, minmax(0, 1fr));
-                }
+        .colaboracion-cycle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+            padding: 8px 9px;
+            border: 1px solid rgba(90, 110, 130, .18);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .colaboracion-cycle-row:hover,
+        .colaboracion-cycle-row:focus {
+            border-color: #6da8db;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(20, 74, 117, .12);
+        }
+
+        .colaboracion-cycle-main,
+        .colaboracion-cycle-status {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .colaboracion-cycle-status {
+            justify-content: flex-end;
+        }
+
+        .colaboracion-cycle-badge {
+            font-weight: 700;
+        }
+
+        .colaboracion-professor {
+            overflow: hidden;
+            color: #586979;
+            font-size: .8rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            .colaboracion-company-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
-        </style>
-    @endpush
+        }
+
+        @media (min-width: 992px) {
+            .colaboracion-company-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+    </style>
 @endonce
 
 @php
     $elementos = $panel->getElementos($pestana)
         ->sortBy([
-            ['localidad', 'asc'],
             ['empresa', 'asc'],
             ['idCiclo', 'asc'],
-        ]);
-    $townGroups = $elementos->groupBy(static fn ($elemento) => $elemento->localidad ?: 'Desconeguda');
-    $townOptions = $townGroups->keys()->values();
-    $viewCounts = [
-        'town' => $elementos->count(),
-        'cycle' => $elementos->count(),
-        'contacted' => $elementos->filter(static fn ($elemento) => (int) ($elemento->estado ?? 0) !== 0)->count(),
-        'collaborates' => $elementos->where('estado', 2)->count(),
-        'documentation' => $elementos->filter(static fn ($elemento) => !empty($elemento->conveniPendent))->count(),
-        'inactive' => $elementos->filter(static fn ($elemento) => !empty($elemento->senseActivitatRecent))->count(),
-    ];
+        ])
+        ->values();
+    $empreses = $elementos
+        ->groupBy(static fn ($elemento): string => (string) ($elemento->idCentro ?? ('colaboracio-' . $elemento->id)))
+        ->sortBy(static fn ($items): string => (string) ($items->first()->empresa ?? ''));
+    $townOptions = $elementos
+        ->pluck('localidad')
+        ->filter()
+        ->unique()
+        ->sort()
+        ->values();
+    $cycleLabel = static function ($elemento): string {
+        $cycle = optional($elemento->Ciclo);
+
+        return (string) (
+            $cycle->ciclo
+            ?? $cycle->acronim
+            ?? $cycle->literal
+            ?? ('Cicle ' . ($elemento->idCiclo ?? ''))
+        );
+    };
+    $cycleOptions = $elementos
+        ->map(static fn ($elemento): array => [
+            'id' => (string) ($elemento->idCiclo ?? ''),
+            'label' => $cycleLabel($elemento),
+        ])
+        ->filter(static fn (array $cycle): bool => $cycle['id'] !== '')
+        ->unique('id')
+        ->sortBy('label')
+        ->values();
     $status = static function ($elemento): array {
         return match ((int) ($elemento->estado ?? 0)) {
+            1 => ['label' => 'Contactada', 'class' => 'bg-info text-dark'],
             2 => ['label' => 'Col·labora', 'class' => 'bg-success'],
             3 => ['label' => 'No col·labora', 'class' => 'bg-danger'],
-            1 => ['label' => 'Pendent', 'class' => 'bg-warning text-dark'],
-            default => ['label' => null, 'class' => 'bg-secondary'],
+            default => ['label' => 'Sense contacte', 'class' => 'bg-secondary'],
         };
     };
     $cyclePalette = [
@@ -128,12 +196,12 @@
         ['background' => '#fff0f4', 'border' => '#d97897', 'text' => '#7c1f42'],
     ];
     $companyPalette = [
-        ['background' => '#f8fbff', 'border' => '#dce9f5'],
-        ['background' => '#f9fcf7', 'border' => '#deead7'],
-        ['background' => '#fffbf7', 'border' => '#f1e3d3'],
-        ['background' => '#fbf9ff', 'border' => '#e7def3'],
-        ['background' => '#f7fcfb', 'border' => '#d7ebe7'],
-        ['background' => '#fff9fb', 'border' => '#f0dde4'],
+        ['start' => '#dceeff', 'border' => '#90bde6'],
+        ['start' => '#e3f3da', 'border' => '#a5ca8e'],
+        ['start' => '#ffead6', 'border' => '#dfb184'],
+        ['start' => '#eee3ff', 'border' => '#b6a0dc'],
+        ['start' => '#ddf2ee', 'border' => '#8fc8bd'],
+        ['start' => '#fbe2ea', 'border' => '#d8a1b3'],
     ];
     $paletteColor = static function (string $seed, array $palette): array {
         return $palette[abs(crc32($seed)) % count($palette)];
@@ -149,12 +217,12 @@
             $colors['text']
         );
     };
-    $companyStyle = static function ($elemento) use ($companyPalette, $paletteColor): string {
-        $colors = $paletteColor((string) ($elemento->empresa ?? ''), $companyPalette);
+    $companyStyle = static function (string $companyKey) use ($companyPalette, $paletteColor): string {
+        $colors = $paletteColor($companyKey, $companyPalette);
 
         return sprintf(
-            '--company-background:%s;--company-border:%s;',
-            $colors['background'],
+            'background:linear-gradient(135deg,%s 0%%,#ffffff 88%%);border-color:%s;',
+            $colors['start'],
             $colors['border']
         );
     };
@@ -162,156 +230,153 @@
 
 <div class="x_content" id="colaboracion-department-panel">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <div class="colaboracion-view-toolbar" role="group" aria-label="Classificació de col·laboracions">
-            <button type="button" class="btn btn-primary btn-sm js-colaboracion-view" data-view="town" aria-pressed="true">
-                <em class="fa fa-map-marker" aria-hidden="true"></em>
-                Per poble <span class="badge bg-light text-dark">{{ $viewCounts['town'] }}</span>
-            </button>
-            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="cycle" aria-pressed="false">
-                <em class="fa fa-graduation-cap" aria-hidden="true"></em>
-                Per cicle <span class="badge bg-light text-dark">{{ $viewCounts['cycle'] }}</span>
-            </button>
-            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="contacted" aria-pressed="false">
-                <em class="fa fa-phone" aria-hidden="true"></em>
-                Contactades <span class="badge bg-light text-dark">{{ $viewCounts['contacted'] }}</span>
-            </button>
-            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="collaborates" aria-pressed="false">
-                <em class="fa fa-check" aria-hidden="true"></em>
-                Col·laboren <span class="badge bg-light text-dark">{{ $viewCounts['collaborates'] }}</span>
-            </button>
-            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="documentation" aria-pressed="false">
-                <em class="fa fa-file-text-o" aria-hidden="true"></em>
-                Documentació antiga o pendent
-                <span class="badge bg-light text-dark">{{ $viewCounts['documentation'] }}</span>
-            </button>
-            <button type="button" class="btn btn-default btn-sm js-colaboracion-view" data-view="inactive" aria-pressed="false">
-                <em class="fa fa-clock-o" aria-hidden="true"></em>
-                Sense activitat recent <span class="badge bg-light text-dark">{{ $viewCounts['inactive'] }}</span>
-            </button>
-        </div>
-
+        <p class="small text-muted mb-0">
+            Filtra les col·laboracions i obri el cicle per consultar-ne el detall.
+        </p>
         <a href="{{ route('colaboracion.mias') }}" class="btn btn-default btn-sm">
             <em class="fa fa-user" aria-hidden="true"></em> Les meues col·laboracions
         </a>
     </div>
 
-    <p class="small text-muted mb-3">
-        Es mostren totes les col·laboracions del departament. La marca «El meu cicle» identifica les del tutor actual.
-    </p>
+    <div class="colaboracion-filter-panel" aria-label="Filtres de col·laboracions">
+        <div class="colaboracion-filter-grid">
+            <div class="colaboracion-filter-field">
+                <label for="colaboracion-town-filter">Població</label>
+                <select id="colaboracion-town-filter" class="form-control input-sm">
+                    <option value="">Totes les poblacions</option>
+                    @foreach ($townOptions as $townOption)
+                        <option value="{{ $townOption }}">{{ $townOption }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-    <div class="mb-3">
-        <label for="colaboracion-town-filter" class="form-label fw-semibold">Filtrar per poble</label>
-        <input id="colaboracion-town-filter"
-               class="form-control"
-               list="colaboracion-town-options"
-               type="search"
-               autocomplete="off"
-               placeholder="Escriu part del poble">
-        <datalist id="colaboracion-town-options">
-            @foreach ($townOptions as $townOption)
-                <option value="{{ $townOption }}"></option>
-            @endforeach
-        </datalist>
+            <div class="colaboracion-filter-field">
+                <label for="colaboracion-cycle-filter">Cicle</label>
+                <select id="colaboracion-cycle-filter" class="form-control input-sm">
+                    <option value="">Tots els cicles</option>
+                    @foreach ($cycleOptions as $cycleOption)
+                        <option value="{{ $cycleOption['id'] }}">{{ $cycleOption['label'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="colaboracion-filter-field">
+                <label for="colaboracion-state-filter">Estat</label>
+                <select id="colaboracion-state-filter" class="form-control input-sm">
+                    <option value="">Tots els estats</option>
+                    <option value="no-contact">Sense contacte</option>
+                    <option value="contacted">Contactada</option>
+                    <option value="collaborates">Col·labora</option>
+                </select>
+            </div>
+
+            <div class="colaboracion-filter-field">
+                <label for="colaboracion-assignment-filter">Assignació</label>
+                <select id="colaboracion-assignment-filter" class="form-control input-sm">
+                    <option value="">Totes</option>
+                    <option value="assigned">Assignades</option>
+                    <option value="unassigned">Sense assignar</option>
+                </select>
+            </div>
+
+            <div class="colaboracion-filter-actions">
+                <button type="button"
+                        id="colaboracion-documentation-filter"
+                        class="btn btn-default btn-sm"
+                        aria-pressed="false">
+                    <em class="fa fa-file-text-o" aria-hidden="true"></em>
+                    Documentació actualitzada
+                </button>
+                <button type="button" id="colaboracion-clear-filters" class="btn btn-default btn-sm">
+                    <em class="fa fa-times" aria-hidden="true"></em>
+                    Netejar filtres
+                </button>
+            </div>
+        </div>
+
+        <p class="colaboracion-result-summary" aria-live="polite">
+            <strong id="colaboracion-visible-companies">{{ $empreses->count() }}</strong> empreses ·
+            <strong id="colaboracion-visible-collaborations">{{ $elementos->count() }}</strong> col·laboracions
+        </p>
     </div>
 
-    <div id="colaboracion-department-groups">
-        @forelse ($townGroups as $localidad => $townItems)
-            <section class="colaboracion-group">
-                <h4 class="colaboracion-group-title">
-                    <em class="fa fa-map-marker" aria-hidden="true"></em>
-                    {{ $localidad }}
-                    <span class="badge bg-secondary">{{ $townItems->count() }}</span>
-                </h4>
+    <div id="colaboracion-company-grid" class="colaboracion-company-grid">
+        @foreach ($empreses as $companyKey => $companyItems)
+            @php
+                $first = $companyItems->first();
+                $companyName = (string) ($first->empresa ?? 'Empresa sense nom');
+                $town = (string) ($first->localidad ?? 'Desconeguda');
+            @endphp
+            <article class="colaboracion-company-card"
+                     data-company-key="{{ $companyKey }}"
+                     style="{{ $companyStyle((string) $companyKey) }}">
+                <header class="colaboracion-company-header">
+                    <div class="min-w-0">
+                        <h4 class="colaboracion-company-name" title="{{ $companyName }}">
+                            <em class="fa fa-building" aria-hidden="true"></em>
+                            {{ $companyName }}
+                        </h4>
+                        <div class="colaboracion-company-town">
+                            <em class="fa fa-map-marker" aria-hidden="true"></em>
+                            {{ $town }}
+                        </div>
+                    </div>
+                    <span class="badge bg-secondary js-company-cycle-count">{{ $companyItems->count() }}</span>
+                </header>
 
-                <div class="colaboracion-card-grid">
-                    @foreach ($townItems as $elemento)
+                <div class="colaboracion-cycle-list">
+                    @foreach ($companyItems as $elemento)
                         @php
                             $cycle = optional($elemento->Ciclo);
-                            $cycleLabel = $cycle->ciclo
-                                ?? $cycle->acronim
-                                ?? $cycle->literal
-                                ?? ('Cicle ' . ($elemento->idCiclo ?? ''));
-                            $cycleTitle = $cycle->literal ?? $cycleLabel;
+                            $cycleName = $cycleLabel($elemento);
+                            $cycleTitle = (string) ($cycle->literal ?? $cycleName);
                             $responsable = trim((string) (optional($elemento->Propietario)->shortName ?? ''));
-                            $assigned = !empty($elemento->tutor) && $responsable !== '';
+                            $assigned = !empty($elemento->tutor);
                             $cardStatus = $status($elemento);
-                            $lastFctDate = $elemento->ultimaFctData ?? null;
                         @endphp
-
                         <a href="{{ route('colaboracion.show', ['colaboracion' => $elemento->id]) }}"
-                           class="js-colaboracion-show colaboracion-department-card text-decoration-none text-reset{{ !empty($elemento->esCiclePropi) ? ' is-own-cycle' : '' }}"
+                           class="js-colaboracion-show colaboracion-cycle-row text-decoration-none text-reset"
                            data-show-title="Detall col·laboració"
-                           data-company="{{ $elemento->empresa }}"
-                           data-town="{{ $localidad }}"
-                           data-cycle="{{ $cycleLabel }}"
-                           data-contacted="{{ (int) ($elemento->estado ?? 0) !== 0 ? '1' : '0' }}"
-                           data-collaborates="{{ (int) ($elemento->estado ?? 0) === 2 ? '1' : '0' }}"
-                           data-documentation-old="{{ !empty($elemento->conveniPendent) ? '1' : '0' }}"
-                           data-inactive="{{ !empty($elemento->senseActivitatRecent) ? '1' : '0' }}"
-                           style="{{ $companyStyle($elemento) }}">
-                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                                <h5 class="colaboracion-card-company" title="{{ $elemento->empresa }}">
-                                    <em class="fa fa-building" aria-hidden="true"></em>
-                                    {{ $elemento->empresa }}
-                                </h5>
-                                @if (!empty($elemento->esCiclePropi))
-                                    <span class="badge bg-primary text-nowrap">El meu cicle</span>
-                                @endif
-                            </div>
-
-                            <div class="colaboracion-card-meta small text-muted mb-2">
-                                <span>
-                                    <em class="fa fa-map-marker" aria-hidden="true"></em>
-                                    {{ $localidad }}
-                                </span>
+                           data-town="{{ $elemento->localidad }}"
+                           data-cycle="{{ $elemento->idCiclo }}"
+                           data-state="{{ (int) ($elemento->estado ?? 0) }}"
+                           data-documentation-current="{{ empty($elemento->conveniPendent) ? '1' : '0' }}"
+                           data-assigned="{{ $assigned ? '1' : '0' }}">
+                            <span class="colaboracion-cycle-main">
                                 <span class="badge colaboracion-cycle-badge"
                                       style="{{ $cycleStyle($elemento) }}"
                                       title="{{ $cycleTitle }}">
-                                    {{ $cycleLabel }}
+                                    {{ $cycleName }}
                                 </span>
-                            </div>
-
-                            <div class="small text-muted mb-2">
-                                @if ($assigned)
-                                    <em class="fa fa-user" aria-hidden="true"></em>
-                                    {{ $responsable }}
-                                @else
-                                    <span class="text-danger" role="img" aria-label="Sense assignar" title="Sense assignar">
-                                        <em class="fa fa-user-times" aria-hidden="true"></em>
-                                    </span>
+                                @if (!empty($elemento->esCiclePropi))
+                                    <span class="badge bg-primary">El meu cicle</span>
                                 @endif
-                            </div>
-
-                            <div class="colaboracion-card-badges">
-                                @if ($cardStatus['label'])
-                                    <span class="badge {{ $cardStatus['class'] }}">{{ $cardStatus['label'] }}</span>
-                                @endif
+                                <span class="colaboracion-professor">
+                                    @if ($assigned)
+                                        <em class="fa fa-user" aria-hidden="true"></em>
+                                        {{ $responsable !== '' ? $responsable : 'Assignada' }}
+                                    @else
+                                        <span role="img" aria-label="Sense assignar" title="Sense assignar">
+                                            <em class="fa fa-user-times text-danger" aria-hidden="true"></em>
+                                        </span>
+                                    @endif
+                                </span>
+                            </span>
+                            <span class="colaboracion-cycle-status">
+                                <span class="badge {{ $cardStatus['class'] }}">{{ $cardStatus['label'] }}</span>
                                 @if (!empty($elemento->conveniPendent))
-                                    <span class="badge bg-danger">Documentació antiga o pendent</span>
+                                    <span class="badge bg-warning text-dark">Documentació antiga</span>
                                 @endif
-                                @if (!empty($elemento->senseActivitatRecent))
-                                    <span class="badge bg-secondary">
-                                        @if ($lastFctDate)
-                                            Última FCT: {{ $lastFctDate->format('d/m/Y') }}
-                                        @else
-                                            Sense FCT registrada
-                                        @endif
-                                    </span>
-                                @endif
-                            </div>
+                            </span>
                         </a>
                     @endforeach
                 </div>
-            </section>
-        @empty
-            <div class="alert alert-info mb-0">
-                No hi ha col·laboracions disponibles per al departament.
-            </div>
-        @endforelse
+            </article>
+        @endforeach
     </div>
 
-    <div id="colaboracion-department-empty" class="alert alert-info mb-0" hidden>
-        No hi ha col·laboracions per als criteris seleccionats.
+    <div id="colaboracion-department-empty" class="alert alert-info mt-3 mb-0" hidden>
+        No hi ha col·laboracions que complisquen tots els filtres seleccionats.
     </div>
 </div>
 
@@ -319,151 +384,126 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var panel = document.getElementById('colaboracion-department-panel');
-            var container = document.getElementById('colaboracion-department-groups');
-            var emptyState = document.getElementById('colaboracion-department-empty');
+            var grid = document.getElementById('colaboracion-company-grid');
             var townFilter = document.getElementById('colaboracion-town-filter');
+            var cycleFilter = document.getElementById('colaboracion-cycle-filter');
+            var stateFilter = document.getElementById('colaboracion-state-filter');
+            var assignmentFilter = document.getElementById('colaboracion-assignment-filter');
+            var documentationFilter = document.getElementById('colaboracion-documentation-filter');
+            var clearFilters = document.getElementById('colaboracion-clear-filters');
+            var companiesOutput = document.getElementById('colaboracion-visible-companies');
+            var collaborationsOutput = document.getElementById('colaboracion-visible-collaborations');
+            var emptyState = document.getElementById('colaboracion-department-empty');
 
-            if (!panel || !container || !emptyState || !townFilter) {
+            if (!panel || !grid || !townFilter || !cycleFilter || !stateFilter
+                || !assignmentFilter || !documentationFilter || !clearFilters
+                || !companiesOutput || !collaborationsOutput || !emptyState) {
                 return;
             }
 
-            var buttons = Array.from(panel.querySelectorAll('.js-colaboracion-view'));
-            var cards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
-            var activeView = 'town';
-            var viewLabels = {
-                contacted: 'Contactades',
-                collaborates: 'Col·laboren',
-                documentation: 'Documentació antiga o pendent',
-                inactive: 'Sense activitat recent'
-            };
+            var cards = Array.from(grid.querySelectorAll('.colaboracion-company-card'));
+            var documentationOnly = false;
 
-            var normalizeTown = function (value) {
-                return (value || '')
-                    .toString()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .toUpperCase()
-                    .replace(/[0-9]/g, ' ')
-                    .replace(/Y/g, 'I')
-                    .replace(/[^A-Z\s]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-            };
+            var matchesState = function (row) {
+                var selectedState = stateFilter.value;
+                var state = row.getAttribute('data-state') || '0';
 
-            var matchesTown = function (card) {
-                var selectedTown = normalizeTown(townFilter.value);
-                var cardTown = normalizeTown(card.getAttribute('data-town') || '');
-
-                return !selectedTown || cardTown.indexOf(selectedTown) !== -1;
-            };
-
-            var matchesView = function (card, view) {
-                if (view === 'contacted') {
-                    return card.getAttribute('data-contacted') === '1';
+                if (selectedState === 'no-contact') {
+                    return state === '0';
                 }
-                if (view === 'collaborates') {
-                    return card.getAttribute('data-collaborates') === '1';
+                if (selectedState === 'contacted') {
+                    return state !== '0';
                 }
-                if (view === 'documentation') {
-                    return card.getAttribute('data-documentation-old') === '1';
-                }
-                if (view === 'inactive') {
-                    return card.getAttribute('data-inactive') === '1';
+                if (selectedState === 'collaborates') {
+                    return state === '2';
                 }
 
                 return true;
             };
 
-            var groupLabel = function (card, view) {
-                if (view === 'town') {
-                    return card.getAttribute('data-town') || 'Desconeguda';
+            var matchesAssignment = function (row) {
+                if (assignmentFilter.value === 'assigned') {
+                    return row.getAttribute('data-assigned') === '1';
                 }
-                if (view === 'cycle') {
-                    return card.getAttribute('data-cycle') || 'Sense cicle';
+                if (assignmentFilter.value === 'unassigned') {
+                    return row.getAttribute('data-assigned') === '0';
                 }
 
-                return viewLabels[view] || 'Col·laboracions';
+                return true;
             };
 
-            var renderView = function (view) {
-                activeView = view;
-                var visibleCards = cards.filter(function (card) {
-                    return matchesView(card, view) && matchesTown(card);
-                });
-                var groups = new Map();
+            var matchesFilters = function (row) {
+                var matchesTown = !townFilter.value
+                    || row.getAttribute('data-town') === townFilter.value;
+                var matchesCycle = !cycleFilter.value
+                    || row.getAttribute('data-cycle') === cycleFilter.value;
+                var matchesDocumentation = !documentationOnly
+                    || row.getAttribute('data-documentation-current') === '1';
 
-                visibleCards.forEach(function (card) {
-                    var label = groupLabel(card, view);
-                    if (!groups.has(label)) {
-                        groups.set(label, []);
-                    }
-                    groups.get(label).push(card);
-                });
+                return matchesTown
+                    && matchesCycle
+                    && matchesState(row)
+                    && matchesDocumentation
+                    && matchesAssignment(row);
+            };
 
-                container.innerHTML = '';
-                Array.from(groups.keys())
-                    .sort(function (left, right) {
-                        return left.localeCompare(right, 'ca', {sensitivity: 'base'});
-                    })
-                    .forEach(function (label) {
-                        var section = document.createElement('section');
-                        section.className = 'colaboracion-group';
+            var applyFilters = function () {
+                var visibleCompanies = 0;
+                var visibleCollaborations = 0;
 
-                        var heading = document.createElement('h4');
-                        heading.className = 'colaboracion-group-title';
-                        heading.textContent = label + ' ';
+                cards.forEach(function (card) {
+                    var rows = Array.from(card.querySelectorAll('.colaboracion-cycle-row'));
+                    var visibleInCompany = 0;
 
-                        var count = document.createElement('span');
-                        count.className = 'badge bg-secondary';
-                        count.textContent = groups.get(label).length.toString();
-                        heading.appendChild(count);
-
-                        var grid = document.createElement('div');
-                        grid.className = 'colaboracion-card-grid';
-                        groups.get(label)
-                            .sort(function (left, right) {
-                                var companyComparison = (left.getAttribute('data-company') || '')
-                                    .localeCompare(right.getAttribute('data-company') || '', 'ca', {sensitivity: 'base'});
-                                if (companyComparison !== 0) {
-                                    return companyComparison;
-                                }
-
-                                return (left.getAttribute('data-cycle') || '')
-                                    .localeCompare(right.getAttribute('data-cycle') || '', 'ca', {sensitivity: 'base'});
-                            })
-                            .forEach(function (card) {
-                                grid.appendChild(card);
-                            });
-
-                        section.appendChild(heading);
-                        section.appendChild(grid);
-                        container.appendChild(section);
+                    rows.forEach(function (row) {
+                        var visible = matchesFilters(row);
+                        row.hidden = !visible;
+                        if (visible) {
+                            visibleInCompany += 1;
+                            visibleCollaborations += 1;
+                        }
                     });
 
-                buttons.forEach(function (button) {
-                    var active = button.getAttribute('data-view') === view;
-                    button.classList.toggle('btn-primary', active);
-                    button.classList.toggle('btn-default', !active);
-                    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+                    card.hidden = visibleInCompany === 0;
+                    var count = card.querySelector('.js-company-cycle-count');
+                    if (count) {
+                        count.textContent = visibleInCompany.toString();
+                    }
+                    if (visibleInCompany > 0) {
+                        visibleCompanies += 1;
+                    }
                 });
 
-                emptyState.hidden = visibleCards.length !== 0;
+                companiesOutput.textContent = visibleCompanies.toString();
+                collaborationsOutput.textContent = visibleCollaborations.toString();
+                emptyState.hidden = visibleCollaborations !== 0;
             };
 
-            buttons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    renderView(button.getAttribute('data-view') || 'town');
-                });
+            [townFilter, cycleFilter, stateFilter, assignmentFilter].forEach(function (filter) {
+                filter.addEventListener('change', applyFilters);
             });
 
-            townFilter.addEventListener('input', function () {
-                renderView(activeView);
-            });
-            townFilter.addEventListener('change', function () {
-                renderView(activeView);
+            documentationFilter.addEventListener('click', function () {
+                documentationOnly = !documentationOnly;
+                documentationFilter.classList.toggle('btn-primary', documentationOnly);
+                documentationFilter.classList.toggle('btn-default', !documentationOnly);
+                documentationFilter.setAttribute('aria-pressed', documentationOnly ? 'true' : 'false');
+                applyFilters();
             });
 
-            renderView('town');
+            clearFilters.addEventListener('click', function () {
+                townFilter.value = '';
+                cycleFilter.value = '';
+                stateFilter.value = '';
+                assignmentFilter.value = '';
+                documentationOnly = false;
+                documentationFilter.classList.remove('btn-primary');
+                documentationFilter.classList.add('btn-default');
+                documentationFilter.setAttribute('aria-pressed', 'false');
+                applyFilters();
+            });
+
+            applyFilters();
         });
     </script>
 @endpush

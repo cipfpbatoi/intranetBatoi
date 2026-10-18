@@ -111,7 +111,8 @@ class ColaboracionController extends ModalController
 
         $colaboraciones = Colaboracion::query()
             ->whereIn('idCiclo', $ciclos)
-            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario', 'fcts.AlFct'])
+            ->with(['Centro.Empresa', 'Centro.instructores', 'Ciclo', 'Propietario'])
+            ->withCount('fcts')
             ->get();
 
         return $this->colaboracionQueryService

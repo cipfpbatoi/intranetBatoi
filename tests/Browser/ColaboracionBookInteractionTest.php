@@ -228,8 +228,8 @@ JS
         });
     }
 
-    /** Verifica les classificacions i el filtre per poble del panell departamental. */
-    public function test_classifica_les_colaboracions_del_departament(): void
+    /** Verifica que els filtres departamentals es combinen sobre una fitxa per empresa. */
+    public function test_combina_els_filtres_de_colaboracions_del_departament(): void
     {
         $profesor = $this->profesorAmbColaboracionsOrSkip();
         if ($profesor === null) {
@@ -248,86 +248,92 @@ JS
                 ->pause(1800)
                 ->assertPresent('#colaboracion-department-panel')
                 ->assertPresent('#colaboracion-town-filter')
-                ->assertPresent('.colaboracion-department-card');
+                ->assertPresent('#colaboracion-cycle-filter')
+                ->assertPresent('#colaboracion-state-filter')
+                ->assertPresent('#colaboracion-assignment-filter')
+                ->assertPresent('#colaboracion-documentation-filter')
+                ->assertPresent('.colaboracion-company-card')
+                ->assertPresent('.colaboracion-cycle-row');
 
             $result = $browser->script(<<<'JS'
-const container = document.querySelector('#colaboracion-department-groups');
-const allCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
+const grid = document.querySelector('#colaboracion-company-grid');
+const cards = Array.from(grid.querySelectorAll('.colaboracion-company-card'));
+const rows = Array.from(grid.querySelectorAll('.colaboracion-cycle-row'));
 const townFilter = document.querySelector('#colaboracion-town-filter');
-const views = ['town', 'cycle', 'contacted', 'collaborates', 'documentation', 'inactive'];
-const attributes = {
-  contacted: 'data-contacted',
-  collaborates: 'data-collaborates',
-  documentation: 'data-documentation-old',
-  inactive: 'data-inactive'
-};
+const cycleFilter = document.querySelector('#colaboracion-cycle-filter');
+const stateFilter = document.querySelector('#colaboracion-state-filter');
+const assignmentFilter = document.querySelector('#colaboracion-assignment-filter');
+const documentationFilter = document.querySelector('#colaboracion-documentation-filter');
+const clearFilters = document.querySelector('#colaboracion-clear-filters');
+const companiesOutput = document.querySelector('#colaboracion-visible-companies');
+const collaborationsOutput = document.querySelector('#colaboracion-visible-collaborations');
 
-if (!allCards.length || !townFilter) {
-  return {ok: false, reason: 'No hi ha fitxes departamentals o filtre de poble'};
+if (!cards.length || !rows.length || !townFilter || !cycleFilter || !stateFilter
+  || !assignmentFilter || !documentationFilter || !clearFilters
+  || !companiesOutput || !collaborationsOutput) {
+  return {ok: false, reason: 'Falten fitxes o controls del panell departamental'};
 }
 
-const normalizeTown = (value) => (value || '')
-  .toString()
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .toUpperCase()
-  .replace(/[0-9]/g, ' ')
-  .replace(/Y/g, 'I')
-  .replace(/[^A-Z\s]/g, ' ')
-  .replace(/\s+/g, ' ')
-  .trim();
-
-const checks = {};
-for (const view of views) {
-  const button = document.querySelector('.js-colaboracion-view[data-view="' + view + '"]');
-  if (!button) {
-    return {ok: false, reason: 'Falta la vista ' + view};
-  }
-
-  button.click();
-  const rendered = Array.from(container.querySelectorAll('.colaboracion-department-card'));
-  const expected = attributes[view]
-    ? allCards.filter((card) => card.getAttribute(attributes[view]) === '1')
-    : allCards;
-
-  checks[view] = rendered.length === expected.length
-    && rendered.every((card) => !attributes[view] || card.getAttribute(attributes[view]) === '1')
-    && button.getAttribute('aria-pressed') === 'true';
-}
-
-document.querySelector('.js-colaboracion-view[data-view="town"]').click();
-const targetTown = allCards[0].getAttribute('data-town') || '';
-const normalizedTargetTown = normalizeTown(targetTown);
-townFilter.value = targetTown;
-townFilter.dispatchEvent(new Event('input', {bubbles: true}));
-
-const expectedTownCards = allCards.filter((card) => {
-  return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
+const companyKeys = cards.map((card) => card.getAttribute('data-company-key'));
+const uniqueCompanies = companyKeys.length === new Set(companyKeys).size;
+const visibleRows = () => rows.filter((row) => {
+  const card = row.closest('.colaboracion-company-card');
+  return !row.hidden && card && !card.hidden;
 });
-const townCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
-const townFilterOk = townCards.length === expectedTownCards.length
-  && townCards.every((card) => {
-    return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
-  });
+const visibleCards = () => cards.filter((card) => !card.hidden);
 
-document.querySelector('.js-colaboracion-view[data-view="cycle"]').click();
-const cycleTownCards = Array.from(container.querySelectorAll('.colaboracion-department-card'));
-const combinedOk = cycleTownCards.length === expectedTownCards.length
-  && cycleTownCards.every((card) => {
-    return normalizeTown(card.getAttribute('data-town') || '').includes(normalizedTargetTown);
-  });
+documentationFilter.click();
+const documentationRows = visibleRows();
+const documentationOk = documentationFilter.getAttribute('aria-pressed') === 'true'
+  && documentationRows.every((row) => row.getAttribute('data-documentation-current') === '1');
+documentationFilter.click();
 
-townFilter.value = '';
-townFilter.dispatchEvent(new Event('input', {bubbles: true}));
-document.querySelector('.js-colaboracion-view[data-view="town"]').click();
-const restored = container.querySelectorAll('.colaboracion-department-card').length === allCards.length;
+const target = rows[0];
+const targetState = target.getAttribute('data-state') || '0';
+townFilter.value = target.getAttribute('data-town') || '';
+cycleFilter.value = target.getAttribute('data-cycle') || '';
+stateFilter.value = targetState === '0'
+  ? 'no-contact'
+  : (targetState === '2' ? 'collaborates' : 'contacted');
+assignmentFilter.value = target.getAttribute('data-assigned') === '1' ? 'assigned' : 'unassigned';
+
+[townFilter, cycleFilter, stateFilter, assignmentFilter].forEach((filter) => {
+  filter.dispatchEvent(new Event('change', {bubbles: true}));
+});
+
+const filteredRows = visibleRows();
+const cumulativeOk = filteredRows.length > 0 && filteredRows.every((row) => {
+  const state = row.getAttribute('data-state') || '0';
+  const stateMatches = stateFilter.value === 'no-contact'
+    ? state === '0'
+    : (stateFilter.value === 'collaborates' ? state === '2' : state !== '0');
+
+  return row.getAttribute('data-town') === townFilter.value
+    && row.getAttribute('data-cycle') === cycleFilter.value
+    && row.getAttribute('data-assigned') === target.getAttribute('data-assigned')
+    && stateMatches;
+});
+const groupedOk = visibleCards().every((card) => {
+  return Array.from(card.querySelectorAll('.colaboracion-cycle-row')).some((row) => !row.hidden);
+});
+const countersOk = Number(companiesOutput.textContent) === visibleCards().length
+  && Number(collaborationsOutput.textContent) === filteredRows.length;
+
+clearFilters.click();
+const restored = visibleRows().length === rows.length
+  && visibleCards().length === cards.length
+  && documentationFilter.getAttribute('aria-pressed') === 'false';
 
 return {
-  ok: Object.values(checks).every(Boolean) && townFilterOk && combinedOk && restored,
-  checks,
-  townFilterOk,
-  combinedOk,
-  total: allCards.length
+  ok: uniqueCompanies && documentationOk && cumulativeOk && groupedOk && countersOk && restored,
+  uniqueCompanies,
+  documentationOk,
+  cumulativeOk,
+  groupedOk,
+  countersOk,
+  restored,
+  companies: cards.length,
+  collaborations: rows.length
 };
 JS
             )[0] ?? ['ok' => false, 'reason' => 'Sense resultat JavaScript'];
