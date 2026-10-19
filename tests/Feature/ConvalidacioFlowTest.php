@@ -263,17 +263,20 @@ class ConvalidacioFlowTest extends TestCase
         $director = Profesor::query()->findOrFail('DIR00001');
         $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
 
-        $this->get(route('convalidacions.direction.index'))
+        $response = $this->get(route('convalidacions.direction.index'));
+        $response
             ->assertOk()
             ->assertSee('En seguiment')
             ->assertSee('Resoltes')
             ->assertSee('<span class="badge">3</span>', false)
-            ->assertSee('<span class="badge">2</span>', false)
             ->assertSee('>#' . $mixta . '</td>', false)
             ->assertSee('>#' . $revisarDocumentacio . '</td>', false)
             ->assertSee('>#' . $aportarOriginal . '</td>', false)
             ->assertDontSee('>#' . $acceptada . '</td>', false)
             ->assertDontSee('>#' . $denegada . '</td>', false);
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="automatic-action-heading"'), strpos($html, 'aria-label="Pestanyes de sol·licituds"'));
+        $this->assertSame(1, preg_match('/<a[^>]*>\s*Resoltes\s*<\/a>/s', $html));
 
         $this->get(route('convalidacions.direction.index', [
             'pestanya' => 'seguiment',
@@ -285,13 +288,17 @@ class ConvalidacioFlowTest extends TestCase
             ->assertDontSee('>#' . $revisarDocumentacio . '</td>', false)
             ->assertDontSee('>#' . $aportarOriginal . '</td>', false);
 
-        $this->get(route('convalidacions.direction.index', ['pestanya' => 'resoltes']))
+        $response = $this->get(route('convalidacions.direction.index', ['pestanya' => 'resoltes']));
+        $response
             ->assertOk()
             ->assertSee('aria-current="page"', false)
+            ->assertDontSee('automatic-action-heading')
+            ->assertDontSee('<th>Automatització</th>', false)
             ->assertSee('>#' . $acceptada . '</td>', false)
             ->assertSee('>#' . $denegada . '</td>', false)
             ->assertSee('>Veure</a>', false)
             ->assertDontSee('>#' . $mixta . '</td>', false);
+        $this->assertSame(1, preg_match('/<a[^>]*aria-current="page"[^>]*>\s*Resoltes\s*<\/a>/s', $response->getContent()));
     }
 
     public function test_rebutja_destins_duplicats_ids_manipulats_i_externs_sense_document(): void
@@ -1445,7 +1452,7 @@ class ConvalidacioFlowTest extends TestCase
             ->assertOk()
             ->assertSee('#' . $sollicitud->id)
             ->assertSee('Mòduls')
-            ->assertSee('Automatització');
+            ->assertDontSee('Automatització');
     }
 
     public function test_pdf_per_modul_filtra_per_estat_i_no_inclou_adjunts(): void

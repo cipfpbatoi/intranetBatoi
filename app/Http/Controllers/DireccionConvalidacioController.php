@@ -42,12 +42,14 @@ class DireccionConvalidacioController extends Controller
     /** Mostra les sol·licituds separades entre seguiment i resoltes. */
     public function index(Request $request): View
     {
-        $preview = $this->automatitzacions->previsualitzar();
         $filters = $request->validate([
             'pestanya' => ['nullable', 'string', Rule::in(['seguiment', 'resoltes'])],
             'pendent_direccio' => ['nullable', 'boolean'],
         ]);
         $pestanya = $filters['pestanya'] ?? 'seguiment';
+        $preview = $pestanya === 'seguiment'
+            ? $this->automatitzacions->previsualitzar()
+            : ['per_sollicitud' => [], 'casos' => []];
         $pendentDireccio = $pestanya === 'seguiment'
             && filter_var($filters['pendent_direccio'] ?? false, FILTER_VALIDATE_BOOL);
         $sollicituds = $pestanya === 'resoltes'
@@ -56,7 +58,7 @@ class DireccionConvalidacioController extends Controller
 
         return view('intranet.convalidacions.direccion.index', [
             'sollicituds' => $sollicituds,
-            'comptesPestanyes' => $this->queries->comptarSollicitudsPerEstatDireccion(),
+            'sollicitudsEnSeguiment' => $this->queries->comptarSollicitudsEnSeguimentDireccion(),
             'pestanya' => $pestanya,
             'accessBlocked' => $this->access->isBlocked(),
             'accessPassword' => (string) config('convalidacions_access.password'),

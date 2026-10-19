@@ -26,6 +26,7 @@ Then es mostren les sol·licituds en què tots els mòduls estan en `Acceptada`,
 And `Acceptada` es considera resolta encara que encara no s'haja marcat com a `Acceptada (Convalidada)`
 And les sol·licituds resoltes deixen d'aparéixer en «En seguiment»
 And es manté l'accés al detall de cada sol·licitud
+And no es mostra l'apartat ni la columna d'automatització, perquè només s'apliquen al seguiment
 
 ### Escenari 3: classificar sol·licituds amb estats mixtos o pendents d'una altra persona
 
@@ -40,13 +41,17 @@ Given Direcció canvia de pestanya o aplica el filtre d'acció pendent
 When es carrega el llistat corresponent
 Then la pestanya seleccionada i el filtre actiu queden reflectits en la URL i en la interfície
 And canviar entre pestanyes o filtrar no modifica cap sol·licitud, mòdul ni estat
-And cada pestanya mostra un recompte de les sol·licituds que conté
+And les pestanyes apareixen per damunt de l'apartat de resolució automàtica
+And «En seguiment» mostra el nombre de sol·licituds i «Resoltes» no mostra cap recompte
+And el recompte de «En seguiment» inclou cada sol·licitud amb algun mòdul en un estat no final
 
 ## Regles de negoci
 
 - La unitat de classificació és la sol·licitud completa, però la decisió d'incloure-la es basa en els estats individuals dels mòduls.
 - Una sol·licitud està «Resoltes» només si té almenys un mòdul i tots estan en `Acceptada`, `Denegada` o `Acceptada (Convalidada)`.
 - `Acceptada` significa que Direcció ja ha resolt el mòdul; el pas posterior a `Acceptada (Convalidada)` no impedeix que la sol·licitud deixe el llistat de seguiment.
+- El recompte de la pestanya «En seguiment» compta sol·licituds amb algun mòdul no final; el filtre «Només amb acció pendent de Direcció» continua limitat a `Enviada` o `En procés`.
+- La secció de resolució automàtica i la seua columna només es mostren en «En seguiment».
 - Una sol·licitud amb estats mixtos continua en seguiment fins que es resolga l'últim mòdul pendent.
 - `Revisar documentació` i `Aportar documentació original a Secretaria` no es consideren resoltes: encara esperen una actuació per a completar el procés.
 - La separació és només de consulta; no crea estats nous, no altera dades ni canvia permisos, accions de revisió, correus, automatitzacions o documents.
@@ -57,7 +62,7 @@ And cada pestanya mostra un recompte de les sol·licituds que conté
 
 - `app/Application/Convalidacio/ConvalidacioQueryService.php` — consultes separades per a sol·licituds en seguiment i resoltes.
 - `app/Http/Controllers/DireccionConvalidacioController.php` — selecció de pestanya, recomptes i preservació del filtre.
-- `resources/views/intranet/convalidacions/direccion/index.blade.php` — pestanyes, comptadors i filtre contextual.
+- `resources/views/intranet/convalidacions/direccion/index.blade.php` — posició de les pestanyes, recompte en seguiment i filtre contextual.
 - `tests/Feature/ConvalidacioFlowTest.php` — classificació de sol·licituds amb tots els estats, casos mixtos, recomptes i navegació.
 - `specs/convalidacions.md` — incorporar els escenaris quan s'arxive la implementació.
 

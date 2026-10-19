@@ -75,13 +75,10 @@ class ConvalidacioQueryService
             ->get();
     }
 
-    /** Retorna els recomptes de les dues pestanyes sense carregar les relacions. */
-    public function comptarSollicitudsPerEstatDireccion(): array
+    /** Retorna el recompte de sol·licituds en seguiment sense carregar les relacions. */
+    public function comptarSollicitudsEnSeguimentDireccion(): int
     {
-        return [
-            'seguiment' => $this->consultaSollicitudsEnSeguiment()->count(),
-            'resoltes' => $this->consultaSollicitudsResoltes()->count(),
-        ];
+        return $this->consultaSollicitudsEnSeguiment()->count();
     }
 
     /** Construeix la consulta de sol·licituds amb algun mòdul no resolt. */
