@@ -1,98 +1,125 @@
-# Manual de Cap d'Estudis i Direcció
-Índex de continguts
-* [Introducció](#introducció)
-* [Tasques habituals](#tasques-habituals)
-  * [Canvis dels horaris](#canvis-dhorari)
-* [Menú 'Equip directiu'](#menú-equip-directiu)
-  * [Cursos /Ponències](#)
-  * [Dades professors](#dades-professors)
----
+# Manual de Direcció
 
-## Introducció
-Aquest manual només explica les accions que pot fer el cap d'estudis o director i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
+Este manual resumix els panells específics de Direcció. Les opcions docents
+comunes continuen explicades en el [manual del professorat](manual-profe.md).
 
-L'accés a la intranet és igual per a tots els professors i és el sistema qui detecta quin és el seu rol (professor, tutor, cap de departament, …) i mostra les opcions adequades en cada cas.
+## Criteri general de treball
 
-Els membres de l'equip directiu tenen en el menú general un apartat anomenat 'Equip directiu' i també noves opcions en alguns altres menús.
+Els panells de Direcció mostren informació de tot el centre i permeten canviar
+estats administratius. Abans d'autoritzar, rebutjar o imprimir en bloc cal:
 
-Aquest manual explica al principi com fer determinades tasques i després explica com funciona cada opció dels menús.
+1. aplicar els filtres necessaris;
+2. obrir el detall del registre;
+3. comprovar dates, participants, documents i estat;
+4. confirmar que l'acció correspon al conjunt seleccionat.
 
-## Tasques habituals
+Els botons disponibles canvien segons l'estat. Un registre imprés, resolt o
+tancat pot deixar de ser editable.
 
-### Canvis d'horari
-Quan els professors alliberen hores perquè els alumnes de 2n curs sen van a fer la FCT poden fer canvis en els seus horaris. 
+## Activitats
 
-#### Activar els canvis per als professors
-Pera a que puguen fer els canvis en el seu horari s'ha d'activar aquesta opció del menú (per defecte està desactivada perquè només es poden fer canvis quan s'alliberen les hores de 2n). Es fa des del _Menú **Administració** -> Manteniment del menú general_. Busquem l'opció de 'Canvi horari? (podem filtrar la taula) i l'editem:
+El panell **Equip directiu → Autoritzar activitats** permet filtrar per
+professor o activitat, departament i estat.
 
-![Menu canviar horari](../img/ajuda/canviHorari-menu.png)
+![Activitats de Direcció](../img/ajuda/actual/24-direccio-activitats.png)
 
-Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aquesta opció en el menú:
-* 0: no habilitada
-* 1: habilitada
+La taula mostra el coordinador real, el tipus —complementària o extraescolar—,
+la data, la ubicació i l'estat. Des del detall es revisen participants, grups,
+objectius i, només en les complementàries, la justificació dels resultats
+d'aprenentatge.
 
-Quan està habilitada a tots els professors els apareix en el menú '_Professorat_' l'opció de '_Canviar horari_'.
+Segons l'estat es pot autoritzar, tornar a l'estat anterior, rebutjar amb un
+motiu, marcar la gestió en ITACA o imprimir les activitats autoritzades.
 
-#### Aprovar horaris
-Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
+## Comissions de servei
 
-![Taula professors](../img/ajuda/canviHorari-tabla-profes.png)
+El panell **Equip directiu → Autoritzar comissions** permet filtrar per
+professor i estat, revisar imports i resoldre les comissions.
 
-* Horari (1a icona): permet veure l'horari actuañ del professor
-* Canviar horar (antepenúltima icona): obri la pantalla de modificació d'horari. Aquesta icona és diferent si el professor ha fet ja una proposta de canvi (segona filera de l'exemple, icona de taula amb 9 quadres) o si no ha fet cap proposta (primera filera, icona de taula amb 4 quadres grans).
+![Comissions de Direcció](../img/ajuda/actual/25-direccio-comissions.png)
 
-La pantalla de modificar l'horari és la mateixa que teel professor per a canviar el seu horari:
+Direcció pot autoritzar o rebutjar les pendents, tornar una autorització a
+pendent quan el flux ho permet, consultar el detall i imprimir les comissions
+autoritzades. La zona de pagaments agrupa per professor les comissions pendents
+de cobrament i genera la documentació del conjunt seleccionat.
 
-![Canviar horari](../img/ajuda/canviHorari-horario-cambiar.png)
+## Absències
 
-El primer que apareix en la pantalla es l'_Estat_ del canvi que pot ser:
-* No hi ha proposta: el profesor no ha proposat cap canvi d'horari
-* Pendent: el professor ha fet la proposta de canvi que es mostra
-* Aprovat: direcció ja ha aprovat el canvi. El professor ja no pot fer modificacions
-* Guardat: el canvi ja s'ha aplicat a l'horari del professor
+El panell **Equip directiu → Autoritzar absències** centralitza les
+comunicacions del professorat.
 
-En l'horari les hores canviades apareixen en roig. A banda dels canvis fets pel professor l'equip directiu pot fer més canvis (arrastrant i soltant les hores, igual que fan els professors).
+![Absències de Direcció](../img/ajuda/actual/26-direccio-absencies.png)
 
-Quan tot siga correcte s'ha de **aprovar** la proposta pulsant el botó que hi ha baix de la taula de l'horari. L'estat de la proposta canvia a '_Aprovat_' i el professor ja no pot fer més modificacions, però sí l'equip directiu (després ha de tornar a aprovar l'horari). 
+Cal revisar el període, el motiu, les observacions i el justificant abans de
+resoldre. Segons l'estat es pot autoritzar, rebutjar motivadament, consultar el
+document o completar les accions administratives disponibles.
 
-#### Canviar un horari
-Quan un horari està aprovat apareix un nou botó de **Aplicar els canvis**. Això el que fa es que els canvis s'apliquen a l'horari del profesor que pasa a ser el nou horari. A més l'estat canvia a '_Guardat_'. Aixó només es fa en cas de una modificació puntual. 
+## Assumptes particulars
 
-#### Canviar tots els horaris
-Quan direcció ha aprovat tots els canvis d'horari per aplicar-los tots (sense haver d'anar un per un) es fa des del _menú **Equip directiu** -> Autorització d'horaris_. Ací tenim un botó que farà els canvis de tots els horaris i en aquesta pantalla apareixerà qualsevol error que puga sorgir. 
+El panell mostra les peticions pendents agrupades per data i ordenades segons
+els criteris de prioritat del sistema.
 
-#### Canviar funcions d'horari
-A més de moure una hora a altra diferent  l'equip directiu també podem canviar el contingut d'una hora (per exemple per a posar una nova guàrdia on hi havia altra cosa). Això es fa també des de la taula de professors (_menú **Equip directiu** -> Dades Professors_) amb la penúltima icona (el raig).
+![Assumptes particulars de Direcció](../img/ajuda/actual/27-direccio-assumptes-particulars.png)
 
-Ens mostra una taula amb cada entrada de l'horari amb el mòdul, el grup (o l'ocupació) i quan s'imparteix i un botó d'editar:
+Per defecte es consulta la data situada set dies naturals després de hui. Es
+pot seleccionar una altra data o mostrar-les totes. Abans d'autoritzar, la
+pantalla comprova calendari, saldo, consecutivitat, contingent i torn.
 
-![Canvia funcio](../img/ajuda/canviHorari-funcio.png)
+L'autorització només està disponible dins del termini. Si el dia que obri el
+termini és festiu, es pot autoritzar des del laborable anterior; un dia no
+lectiu no avança el termini. Per generar la resolució cal que el professor i la
+directora configurada tinguen la rúbrica gràfica guardada.
 
-Des d'ací podem canviar a què dedica el professor eixa hora.
+La denegació requerix un motiu. L'opció **Històric** permet consultar les
+autoritzacions del curs i les regularitzacions registrades.
 
-## Menú 'Equip directiu'
-Ací tenim la majoria d'accions:
+## Expedients
 
-### Cursos / Ponències
+El panell d'expedients permet filtrar i revisar els tràmits enviats pel
+professorat. Les accions poden incloure veure el detall, generar documents,
+autoritzar o rebutjar segons el tipus i l'estat. Cal evitar resoldre en bloc
+expedients que requerixen comprovacions individuals.
 
-### Dades professors
-Ací tenim una taula amb tots els professors actius del Centre que podem filtrar, ordenar, ... 
+## Programacions
 
-![Taula professors](../img/ajuda/canviHorari-tabla-profes.png)
+La pantalla de control mostra els mòduls, el cicle, la programació associada i
+la seua situació. Permet detectar programacions no presentades o pendents i
+avisar el professorat responsable. La revisió del fitxer continua sent
+necessària abans de donar per completat el procés.
 
-Les acciones que podem fer són:
-* **Horari**: mostra l'horari del professor
-* **Editar**: ens mostra el perfil del professors des d'on podem canviar:
-  * e-mail del centre
-  * fotografia
-  * departament al que pertany (ho hem de fer en tots els nous professors perquè en Itaca no apareix el departament)
-  * idioma de la intranet
-  * si es mostra o no el seu telèfon en la intranet als companys de departament
-  * rol: només direcció i els administradors poden canviar el rol d'un usuari. Tot el mon ha de tindre al menys el rol '_Tots_' i el rol de '_Professor_' o '_Alumne_'.
-* **Carnet**: permet imprimir el carnet d'eixe professor
-* **Més dades**: podem veure totes de dades del professor, però no canviar-les (s'ha de canviar a Itaca)
-* **Canviar horari professor**: per a autoritzar el canvi d'horari com s'explica en el [manual de canviar horari](#canvis-dhorari)
-* **Canviar funcions d'horari**: per a modificar què fa un professor una hora determinada com s'explica en el [manual de canviar horari](#canvis-dhorari)
-* **Canviar usuari**: ens permet funcionar com si forem l'usuari indicat. Per a tornar al nostre usuari es fa des del menú del perfil amb l'opció de _Tornar al meu usuari_.
+![Control de programacions](../img/ajuda/actual/28-direccio-programacions.png)
 
-![Tornar al meu usuari](../img/ajuda/direc-tornaUsuari.png)
+## Dades del professorat
+
+La pantalla **Equip directiu → Dades professorat** permet consultar el personal
+docent i accedir a operacions autoritzades sobre horaris, presència, avisos i
+dades administratives.
+
+![Dades del professorat](../img/ajuda/actual/29-direccio-professorat.png)
+
+Abans de modificar o desactivar un registre cal comprovar la identitat i la
+situació del professor. Les dades de contacte i els identificadors només s'han
+d'utilitzar per a les tasques de gestió del centre.
+
+## Horaris
+
+Direcció pot consultar les propostes temporals d'horari, revisar els moviments
+i acceptar-les o rebutjar-les. Una proposta aprovada queda bloquejada per al
+professorat, però no entra en vigor fins que s'aplica en el moment acordat.
+
+També hi ha opcions per imprimir horaris i consultar el control de presència.
+L'activació o desactivació d'una opció general del menú correspon al perfil
+d'administració i no forma part del flux ordinari de Direcció.
+
+## Reunions i documentació
+
+Direcció pot consultar les reunions del centre, detectar actes pendents i
+generar conjunts d'actes d'avaluació. El gestor documental de Direcció permet
+consultar els documents protegits d'acord amb el seu tipus i titularitat.
+
+## Signatures i convalidacions
+
+El panell de signatures mostra els documents d'FCT pendents d'intervenció de
+Direcció. Les convalidacions disposen d'un espai propi per revisar sol·licituds,
+documents, regles i imports autoritzats. En tots dos casos s'ha de preservar el
+document original i deixar constància de la resolució aplicada.

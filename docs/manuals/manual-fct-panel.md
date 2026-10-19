@@ -1,78 +1,68 @@
-# Panell de seguiment de FCT
+# Panell de seguiment d'FCT
 
-El panell **FCT** mostra les pràctiques actives i finalitzades del tutor o cotutor. Està pensat per a treballar el seguiment diari sense haver d'entrar contínuament en la fitxa detallada.
+La pantalla **Pràctiques → FCTs** mostra les pràctiques actives i finalitzades
+del tutor o cotutor. Està pensada per registrar el seguiment ordinari sense
+entrar contínuament en cada fitxa detallada.
+
+![Panell de seguiment d'FCT](../img/ajuda/actual/20-panell-fct.png)
 
 ## Pestanyes
 
-- **Actius**: FCT obertes o pendents de tancar. En esta pestanya apareixen els botons d'accions massives de correu i documentació.
-- **Finalizats**: FCT que ja tenen el certificat d'instructor enviat. Ací es consulta l'històric i no apareixen els botons superiors d'acció massiva.
+- **Actius:** pràctiques obertes o pendents de tancar. Mostra les accions
+  col·lectives de comunicació i seguiment.
+- **Finalitzats:** pràctiques que ja han completat el procés de finalització.
+  Servix com a consulta de l'històric del tutor.
 
-## Targeta de FCT
+## Targetes
 
-Cada targeta correspon a una empresa o centre de treball amb una FCT.
+Cada targeta representa un centre de treball amb una o més persones en FCT.
+La capçalera mostra el centre i indicadors com:
 
-En la capçalera de la targeta:
+- nombre d'alumnes;
+- seguiments registrats;
+- estat del certificat;
+- modalitat dual, quan correspon;
+- avisos de dades incompletes.
 
-- **Ull**: obri la fitxa completa de la FCT.
-- **Nom del centre**: identifica l'empresa o centre de treball.
-- **Etiquetes**: mostren el nombre d'alumnes, seguiments registrats, estat del certificat i si és DUAL.
+També apareixen l'instructor, el telèfon, el correu, l'últim seguiment i la
+població. La icona de l'ull obri la fitxa completa.
 
-En la zona de dades apareixen:
+## Accions col·lectives
 
-- instructor o instructora
-- telèfon i correu de l'instructor
-- últim seguiment registrat
-- avisos de dades pendents, com falta d'instructor, telèfon, email o conveni
+La barra superior permet preparar, segons l'estat:
 
-## Correus
+- recordatori d'inici a l'empresa;
+- documentació d'inici per a l'alumnat;
+- correu de seguiment;
+- comissió de servei;
+- proposta per concertar una visita;
+- citació de l'alumnat.
 
-Els botons de correu de la targeta permeten preparar missatges abans d'enviar-los:
-
-- **Instructor**: envia el correu de finalització de pràctiques a l'instructor.
-- **Centre**: envia el mateix tipus de correu al contacte del centre de treball.
-
-El correu s'obri en la pantalla de previsualització perquè es puga revisar o modificar abans d'enviar.
+Abans d'enviar s'obri la selecció o previsualització corresponent. Cal revisar
+destinataris i contingut; registrar una acció no significa que la resposta de
+l'empresa haja quedat anotada.
 
 ## Contactes amb l'empresa
 
-La columna **Empresa** mostra els contactes registrats amb l'instructor o el centre:
+La columna **Empresa** utilitza icones per identificar correus, telefonades i
+visites. El signe **+** indica que el contacte té resum; el signe **−**, que
+encara falta completar-lo.
 
-- **Sobre**: correu enviat.
-- **Telèfon**: contacte telefònic.
-- **Vehicle**: visita o comissió de servei.
-- **+**: el contacte té resum o retroalimentació.
-- **-**: el contacte està registrat però encara no té resum.
-
-En la franja inferior de la targeta, el botó de **telèfon** registra una telefonada amb l'empresa i obri un modal per escriure el resum.
-
-Es pot editar un resum fent clic sobre el contacte. Si apareix amb **-**, també es pot eliminar.
+El botó de telèfon de la targeta registra una telefonada. Els contactes amb
+resum es poden obrir per revisar-los i els que encara no en tenen es poden
+completar o eliminar segons el tipus.
 
 ## Contactes amb l'alumnat
 
-La columna **Alumnat** mostra els contactes registrats amb alumnes de la FCT:
+La columna **Alumnat** mostra la data, la persona contactada i si hi ha resum.
+El botó amb la icona de persona crea un nou contacte seleccionant l'alumne i
+escrivint el resultat de la conversa.
 
-- data del contacte
-- nom curt de l'alumne o alumna
-- **+** si hi ha resum
-- **-** si encara no hi ha resum
-
-El botó blau amb icona de **persona**, en la franja inferior de la targeta, permet registrar un nou contacte amb alumnat. En obrir-lo:
-
-1. Selecciona l'alumne o alumna.
-2. Escriu el resum del contacte.
-3. Confirma per guardar-lo.
-
-Els contactes amb **+** es poden obrir per editar el resum. Els contactes amb **-** es poden eliminar.
-
-## Bandera d'inici
-
-Quan apareix una **bandera** en la columna d'alumnat, indica l'enviament de la informació relativa a l'inici de les pràctiques.
-
-Este registre és informatiu:
-
-- no es pot editar des del panell
-- no es pot eliminar des del panell
+La bandera d'inici és una evidència informativa de l'enviament inicial i no es
+modifica des d'este panell.
 
 ## Fitxa completa
 
-Si cal revisar o canviar informació més detallada, entra amb l'**ull** de la targeta. La fitxa completa permet consultar alumnat, contactes, centre, col·laboradors i altres dades de la FCT.
+Quan cal canviar alumnat, instructor, centre, cotutor, hores o altres dades de
+la pràctica, s'ha d'obrir la fitxa completa amb la icona de l'ull. Els canvis
+estructurals no s'han de simular amb una simple anotació de seguiment.

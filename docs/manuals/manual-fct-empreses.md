@@ -1,27 +1,63 @@
+# Empreses i centres de treball d'FCT
 
-Esta página mostra totes les empreses amb les que s'ha col.laborat o amb les que s'ha contactat al llarg del temps a nivell de centre.
+La pantalla **Empreses → Empreses** conté el directori compartit del centre.
+Abans de crear una empresa nova, cal buscar-la pel nom o pel NIF per evitar
+duplicats.
 
-Les empreses que, a més, han col.laborat amb un cert departament, apareixen també a **Col.laboracions Departament**.
-___
+![Llistat d'empreses](../img/ajuda/actual/19-empreses-fct.png)
 
-A nivell de llistat, per cada empresa tenim dues icones que podem fer servir per tal de consultar les seues dades. Si premem sobre la icona  **+** de l'esquerra, ens mostra el seu **CIF** i la seua **activitat**:
+## Estructura de les dades
 
-![dades_empresa_cif](../img/ajuda/fct_veure_cif_empresa.PNG)
+La intranet diferencia quatre elements:
 
-Si premem la icona **+** de la dreta ens mostra totes les dades de l'empresa i ens permet editar-les:
+- **Empresa:** entitat jurídica, NIF, gerència i dades generals.
+- **Centre de treball:** ubicació concreta on es fan les pràctiques.
+- **Col·laboració:** relació d'un centre de treball amb un cicle.
+- **Instructor:** persona de l'empresa que tutoritza l'alumnat.
 
-![dades_empresa_totes](../img/ajuda/fct_veure_dades_empresa.PNG)
+Una empresa pot tindre diversos centres, cada centre diverses col·laboracions i
+més d'un instructor. Una FCT s'associa a la col·laboració i a l'instructor
+corresponents, no només al nom de l'empresa.
 
-___
+## Consultar i editar
 
-Des del punt de vista de la intranet, per a poder col.laborar amb una empresa en una FCT, es requerixen els següents elements:
-* Que la empresa estiga al llistat d'empreses col.laboradores del centre.
-* Que l'empresa siga una col.laboració del departament.
-* Que s'haja establit un instructor.
-* Que s'haja establit un centre de treball (Entenem per centre de treball una localització on l'empresa tinga activitat)
+Des del llistat es pot obrir el detall de l'empresa. La fitxa agrupa les dades
+generals, els centres, els instructors, les col·laboracions i la documentació
+disponible.
 
+Abans de modificar cal comprovar si la dada pertany a l'empresa o només a un
+centre de treball. Canviar una dada compartida afecta totes les col·laboracions
+relacionades.
 
-A la página de [Preguntes frequents](../governance/faqs.md) pots consultar:
-  * Com anyadir una empresa que no ha colaborat abans amb el centre.
-  * Com crear una col.laboració amb el departament.
-  * Com crear un nou instructor o un nou centre de treball.
+Les accions d'edició i eliminació depenen de les policies. El professorat tutor
+pot crear i actualitzar la informació autoritzada; les eliminacions queden
+reservades als perfils corresponents.
+
+## Crear una empresa
+
+En donar d'alta una empresa s'han d'emplenar les dades jurídiques i de contacte
+amb informació verificada. La intranet crea el centre inicial i, quan es pot
+determinar el cicle tutoritzat, la col·laboració inicial.
+
+Cal revisar especialment:
+
+- NIF i nom oficial;
+- nom i NIF de la gerència en camps separats;
+- telèfon, correu i adreça;
+- si depén de la Generalitat Valenciana;
+- localitat i, quan es disposa d'elles, coordenades del centre;
+- conveni i documentació associada.
+
+L'avís **Falta NIF del gerent** identifica una fitxa incompleta però no bloqueja
+la resta del treball. En completar-lo en la fitxa de l'empresa, l'avís desapareix
+de totes les col·laboracions relacionades.
+
+## Altres llistats
+
+- **Empreses sense concert:** contactes o entitats que encara no formen part
+  del circuit ordinari de concert.
+- **Empreses Erasmus:** empreses internacionals gestionades en el panell
+  específic; no apareixen en les col·laboracions departamentals ordinàries.
+
+Per a assignar, contactar i classificar empreses del cicle, consulta
+[Les meues col·laboracions](manual-fct-meues-colaboracions.md).
