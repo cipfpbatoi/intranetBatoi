@@ -37,7 +37,9 @@ Este repo està preparat perquè els agents d'IA (Claude Code, Codex, Cursor…)
 | 🐳 Desplegament Docker | [`docs/operations/docker-prod.md`](docs/operations/docker-prod.md) |
 | 🗄️ Esquema de la BD | [`docs/architecture/bbdd-esquema.md`](docs/architecture/bbdd-esquema.md) |
 | ❓ Preguntes freqüents | [`docs/governance/faqs.md`](docs/governance/faqs.md) |
-| 👥 Manuals d'usuari | [`docs/manuals/`](docs/manuals/) |
+| 👥 Manuals del professorat | [`docs/manuals/README.md`](docs/manuals/README.md) |
+| 🧩 Arquitectura actual | [`docs/architecture/aplicacio.md`](docs/architecture/aplicacio.md) |
+| 🗺️ Pantalles, rutes i controladors | [`docs/architecture/mapa-pantalles-professorat.md`](docs/architecture/mapa-pantalles-professorat.md) |
 
 ## 🤝 Contribuir
 

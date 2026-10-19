@@ -1,184 +1,97 @@
-# Manual del tutor
-Índex de continguts
-- [Manual del tutor](#manual-del-tutor)
-  - [Introducció](#introducció)
-  - [Menú 'Docència' → 'Gestió dels grups'](#menú-docència--gestió-dels-grups)
-  - [Menú 'Tràmits'](#menú-tràmits)
-    - [Expedients](#expedients)
-    - [Remissió a Orientació](#remissió-a-orientació)
-  - [Menú 'Tutoria'](#menú-tutoria)
-    - [Seguiments](#seguiments)
-    - [Tutories](#tutories)
-  - [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
-    - [Nova reunió](#nova-reunió)
-    - [Gestionar les reunions](#gestionar-les-reunions)
-    - [Acta de la reunió](#acta-de-la-reunió)
-  - [Menú 'Documentació' → 'Gestor documental'](#menú-documentació--gestor-documental)
-  - [Menú 'Pràctiques'](#menú-pràctiques)
-    - [Menú 'Empresa'](#menú-empresa)
-    - [Centres de treball](#centres-de-treball)
-    - [FCTs](#fcts)
+# Manual de tutoria
 
+Este manual descriu les funcions que s'afigen al perfil del professorat quan
+una persona és tutora d'un grup. Per a les opcions comunes, consulta el
+[manual del professorat](manual-profe.md).
 
-## Introducció
-Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el [manual del professor](./manual-profe.md).
+## Accés i grup tutoritzat
 
-L'accés a la intranet és igual per a tots els professors i és el sistema qui detecta quin és el seu rol (professor, tutor, cap de departament, …) i mostra les opcions adequades en cada cas.
+El rol de tutoria és acumulatiu: es mantenen totes les opcions docents i
+apareixen noves accions sobre el grup tutoritzat. El grup s'obté de l'assignació
+vigent del curs; si no hi ha cap grup associat, les pantalles de tutoria poden
+mostrar un avís i no permetre continuar.
 
-Els tutors tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
+## Gestió del grup
 
-## Menú 'Docència' → 'Gestió dels grups'
-En el nostre grup apareixen una nova icona:
-* Carnet: permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets
+En **Docència → Gestió de grups**, el tutor pot obrir l'alumnat del seu grup i
+accedir a les operacions autoritzades sobre cada fitxa. Segons la configuració,
+pot actualitzar dades editables de l'alumne, assignar subgrups o posicions i
+generar documents del grup.
 
-A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icones:
-* Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail, la seua foto o l'idioma de la intranet per a l'alumne
-* _Editar_: permet assignar l'alumne a un subgrup (útil si es fan desdobles) i indicar la seua posició en l'aula per a que la fulla de fotos del grup aparega ordenada per aquest ordre i no alfabèticament 
-* Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
+Les dades acadèmiques sensibles només s'han d'utilitzar per a la funció
+tutorial. No s'han de copiar contrasenyes ni informació personal fora de la
+intranet.
 
-També tenim l¡opció de vore els alumnes en **_Mosaic_** en compte de en _Llistat_ i això ens mostra el NIA de cadascú i la seua contrasenya inicial per si algú no s'ho sap per a entrar a la intranet.
+## Seguiments del grup
 
-## Menú 'Tràmits'
-### Expedients
-És igual que per al professor però al crear un nou expedient el tutor pot triar també 
-* **Baixa per inasistència** que permet donar de baixa a un alumne per faltes d'asistència segons la normativa
-* **Pèrdua Avaluació Contínua** que permet tramitar la pèrdua de l'avaluació continua per a un alumne
-* **Part d'amonestació**
-* **Informe d'exempció FCT**: si un alumne sol·licita l'exempció de les FCT hem d'omplir aquest informe.
+El menú **Tutoria → Seguiments** reunix els seguiments que el professorat de
+l'equip educatiu ha registrat. Servix per preparar la visió conjunta del grup i
+detectar mòduls que encara no han completat la informació de l'avaluació.
 
-Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
+## Tutories d'Orientació
 
-![Nou expedient reunió](../img/tutor/07-nou-expedient.png)
+El menú **Tutoria → Tutories** mostra les propostes preparades per Orientació
+per al grup assignat.
 
-### Remissió a Orientació
-Des d'ací podem derivar alumnes per a que siguen tractats pel departament d'Orientació. Per a cada alumne creem un 'Qüestionari de derivació' on indiquem el motiu i l'orientador responsable esposarà en contacte en el tutor o directament en l'alumne.
+![Tutories del grup](../img/ajuda/actual/17-tutories.png)
 
-En la taula podem vore totes les derivacions fetes i el resultat de les mateixes.
+Cada fila pot mostrar:
 
-![Remissió a Orientació](../img/tutor/orientacio.png)
+- descripció i tipus de tutoria;
+- data límit i caràcter obligatori;
+- grup afectat;
+- estat del retorn o *feedback*;
+- documentació i accions disponibles.
 
-## Menú 'Tutoria'
-Aquest menú només els apareix als tutor i inclou la majoria d'accions específiques per a ells.
+Quan el grup realitza una tutoria, cal obrir l'acció de retorn, indicar la data
+i registrar el resultat o les observacions. El document original es consulta
+des de la mateixa fila quan està disponible.
 
-### Seguiments
-Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe del grup per a cada avaluació
+## Sol·licituds a Orientació
 
-### Tutories
-Ací apareixen totes les tutories que ompli el departament d'orientació. 
+Des de **Tràmits → Sol·licituds** el tutor pot remetre una situació a
+Orientació. Cal seleccionar l'alumne, descriure el motiu amb informació
+professional i suficient, i consultar després l'estat de la petició.
 
-![Tutories](../img/tutor/08-tutories.png)
+Una sol·licitud no substituïx les comunicacions urgents ni els protocols
+específics del centre.
 
-Per a cada una tenim 2 icones:
-* Veure el fitxer: per a veure la tutoria que han fet des del departament d'orientació
-* Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris. És important omplir això en sugeriments o millores per a que des del departament d'Orientació puguen saber cóm ha funcionat la tutoria
+## Expedients
 
-![Nova tutoria](../img/tutor/09-tutoria-crear.png)
+En crear un expedient, el rol de tutoria dona accés als tipus vinculats al
+seguiment del grup, com la pèrdua d'avaluació contínua, la baixa per
+inassistència o altres procediments configurats.
 
-## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
-El tutor tindrà que convocar diferents reunions al llarg del curs. 
-Tenim les opcions:
-- Gestió de reunions: el tutor tindrà que convocar diferents reunions d'equip educatiu al llarg del curs. A continuació expliquem cóm fer-ho
-- Imprimir Acta FSE (Fons Social Europeu): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat escanejat. L'original s'ha de lliurar a Caporalia.
+Guardar l'expedient no sempre significa tramitar-lo. Cal revisar l'estat i
+enviar-lo a Direcció quan la pantalla mostre l'acció corresponent. Una vegada
+tramés, les modificacions queden limitades pel flux de resolució.
 
-### Nova reunió
-Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els camps:
-* tipo: ací indiquem el tipus de reunió que anem a convocar: 
-    * d'equip educatiu: reunió normal de l'equip educatiu del nostre grup
-    * d'un grup de treball
-    * tutoria: per indicar que hem fet alguna de les tutories creades pel departament d'orientació o altra
-    * elecció de delegat: per a fer l'acta 
-    * reunió de pares: la reunió de principi de curs o si convoquem alguna més
-    * reunió d'avaluació: només 1 per avaluació
-    * FSE: per a fer l'acta de la tutoria on expliquem als alumnes lo del FSE
-    * acta de valoració de proposta de projectes: per als tutors de 2n de grau superior, reunió on s'aproven o no les propostes dels alumnes per al seu projecte de fi de cicle
-    * data defensa del projecte: reunió on s'aprova la data de defensa del projecte de cada alumne de 2n de grau superior
-* grup: si és una reunió de grup de treball ací indicarem de quin grup. Si és una reunió d'equip educatiu o d'avaluació no cal posar res perquè s'asigna automàticament al grup del que som tutors
-* numero: indiquem el nº de reunió (per a que estiguen numerades consecutivament)
-* data en que es celebrarà la reunió
-* descripció de la reunió que veuran la resta de convocats
-* objectius de la reunió (camp opcional)
-* espai on es celebrarà la reunió
+## Reunions d'equip educatiu
 
-![Nova reunió](../img/tutor/01-nova-reunio.png)
+El tutor pot crear reunions d'equip educatiu des de **Actes/Convocatòries →
+Gestió de reunions**.
 
-Una vegada guardada la reunió ja podem completar l'ordre del dia i els participants:
+El procés habitual és:
 
-![Acta reunió](../img/tutor/02-acta-reunio.png)
+1. Crear la reunió amb tipus, data, número, espai i descripció.
+2. Revisar els participants proposats i completar-los si cal.
+3. Preparar l'ordre del dia.
+4. Enviar la convocatòria o una notificació als participants.
+5. Després de la reunió, emplenar el resum de cada punt.
+6. Generar l'acta i guardar-la en el gestor documental quan estiga tancada.
 
-Per defecte ja apareix un ordre del dia de la reunió del qual podem llevar qualsevol punt i afegir punts nous.
+La pantalla general de reunions i les accions comunes estan explicades en el
+[manual del professorat](manual-profe.md#gestió-de-reunions).
 
-També apareixen ja seleccionats els professors participants: tots els de l'equip educatiu.
+## Projectes i gestor documental
 
-![Nova reunió](../img/tutor/03-profes-reunio.png)
+Quan el perfil i el grup ho permeten, el tutor pot incorporar projectes de
+l'alumnat al gestor documental. Cal indicar el curs, l'autoria, el títol o
+descripció, les etiquetes i el fitxer definitiu. Si el projecte té diversos
+fitxers, s'ha de preparar el paquet segons el criteri documental del centre.
 
-Igualment podem afegir o eliminar professors participants.
+## Tutoria d'FCT
 
-### Gestionar les reunions
-Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on podem:
-
-![Reunions](../img/tutor/04-reunions.png)
-
-* imprimir: s'imprimeix la convocatòria en PDF
-* editar: tornem a la finestra d'edició per a modificar qualsevol cosa
-* avisar participants: s'envia una notificació a cadascun dels professors participants que els apareixerà en la seua icona de notificacions
-* **enviar convocatòria/acta**: s'envia la convocatòria per e-mail als participants
-* esborrar: s'esborra l'acta
-
-### Acta de la reunió
-Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l'_**Ordre del dia**_ polsem en cada punt el botó d'_Editar_ (l'últim) i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió. Quan acabes d'escriure en eixe recuadre és **MOLT IMPORTANT polsar la icona _V_** de la dreta per a guradar els canvis o **_X_** per a cancel·lar-los (si no polses es cancel·laran).
-
-![Acta reunió](../img/tutor/05-omplir-acta-reunio.png)
-
-Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als participants o enviar-los l'acta. En aquest cas l'avís els indicarà que ja està l'acta disponible per a que la puguen veure.
-
-Tras comprovar que tot és correcte polsem la icona de '_**Guardar en el gestor documental**_' que puja l'acta al gestor documental (dins del menú Documentació) per a que la pugen veure.
-
-## Menú 'Documentació' → 'Gestor documental'
-Als tutors els aparei a la part superior un botó per a 'Pujar els projectes dels alumnes'. Es tracta del mòdul de Projecte dels alumnes de cicles de grau superior.
-
-Hem d'omplir els camps amb les dades del projecte:
-* Tipus de document: ja apareix posat Projecte (no es pot canviar)
-* Curs: curs en que s'ha fet el projecte
-* Autor: alumne que l'ha fet
-* Descripció: títol del projecte
-* Fitxer: podem pujar un únic fitxer (si són més els comprimirem prèviament per a tindre només un) polsant en el botó de triar fitxer
-etiquetes: podem asociar al projecte tantes etiquetes com vulgam. Per a crear cada etiqueta la escribim ací dins i polsem Intro.
-
-![Nou projecte](../img/tutor/06-nou-projecte.png)
-
-## Menú 'Pràctiques'
-Aquest menú només els apareix als tutors de 2n curs per a gestionar les FCT tal i com s'explica en el [manual de FCT](./manual-fct.md)
-
-El que fem en la intranet NO substitueix al programa SAO de Conselleria que hem de continuar utilitzant. Omplir la informació en la Intranet ens permetrà obtindre automàticament els certificats per a alumnes i empreses i altres documents que el SAO no proporciona.
-
-### Menú 'Empresa'
-El primer pas és comprobar que si la empresa ja està donada de alta en la intranet. Totes les empreses en les que hi ha concert de pràctiques estan afegides a la intranet. 
-
-Des d'aquest menú busquem la empresa. Si la empresa ja està ens hem d'asegurar que està asociada al nostre cicle (si no afegim una nova col·laboració amb el cicle).
-
-Si la empresa no està donada de alta la donem nosaltres des de 'Nova empresa':
-
-![Nova empresa](../img/tutor/10-nova-empresa.png)
-
-Ací omplim les dades excepte el fitxer de l'Annex I (a la part inferior). Quen tinguem l'annex I signat per l'empresa l'escanejarem i el pujarem ací per a que es quede guardat.
-
-Una vegada creada es fa automàticament la col·laboració amb el nostre cicle. 
-
-![Col·laboracions](../img/tutor/11-colaboraciones.png)
-
-Una vegada afegida l'empresa la intranet ens dona automàticament un número de concert per a l'empresa. Aquest número és el que utilitzem per a apuntar-la en el llibre d'empreses del departament de FCT i per al SAO.
-
-Si posterioment l'empresa ha de acogir alumnes de qualsevol altre cicle afegirem una nova col·laboració per a eixe cicle des d'ací:
-
-![Nova col·laboració](../img/tutor/12-nova-colaboracio.png)
-![Nova col·laboració](../img/tutor/13-nova-colaboracio-ii.png)
-
-### Centres de treball
-Una col.laboració no es vincula a una empresa sinó a un centre de treball. Una empresa pot tindre varios centres de treballs. Per defecte una empresa té un centre de treball que concidix amb les dades de l'empresa. Si calen més s'han de donar d'alta de la mateixa forma que s'ha fet amb les col.laboracions.
-
-### FCTs
-Quan ja existeix l'empresa i la col·laboració amb el nostre cicle ja podem crear la nova FCT des del menú FCTs amb el botó 'Nova FCT':
-
-![Nova FCT](../img/tutor/14-nova-fct.png)
-
-Una vegada guardada podem esborrar-la, editar-la o imprimir els certificats una vegada acabades les pràctiques.
+Ser tutor de grup no implica necessàriament gestionar pràctiques. Quan també es
+disposa del rol corresponent, apareixen els menús **Empreses** i **Pràctiques**.
+El procés complet es documenta en el [manual d'FCT](manual-fct.md).

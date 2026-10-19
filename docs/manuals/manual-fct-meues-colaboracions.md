@@ -1,85 +1,67 @@
+# Les meues col·laboracions
 
-Esta página mostra totes les empreses que han col.laborat amb el nostre cicle formatiu. 
+Este panell permet al tutor d'FCT treballar amb les col·laboracions del seu
+cicle: repartir-les entre tutors, registrar contactes i indicar si l'empresa
+col·labora durant el curs.
 
-Tenim 3 pestanyes en la part superior:
+## Com s'hi arriba
 
-+ **No assignades**. Ací estan les col·laboracions del cicle que encara no hem catalogat. Al principi estan totes.
-* **Pendents de Contestar**. Ens les hem assignades però encara no sabem si col·laboraran.
-* **Col·laboren**. Les col·laboracions que poden acollir algun alumne enguany.
+Des de les col·laboracions del departament, cal polsar **Les meues
+col·laboracions**. També es pot entrar des del menú d'FCT quan l'opció estiga
+configurada. L'adreça és `/misColaboraciones`.
 
+![Les meues col·laboracions](../img/ajuda/actual/16-meues-colaboracions.png)
 
-Per a passar una col·laboració de la primera pestanya a la segon ens l'hem d'assignar (Si sóm l'unic tutor del cicle, ens les hauriem d'assignar aquelles que considerem, si no, ens les hauriem de dividir amb els altres tutors per tal de no contactar tots).
-___
-**Truc** Si no volem col·laborar amb una empresa podem no assignar-nos-la.**
-___
+## Pestanyes de treball
 
-Una vegada assignades, perden el botó groc d'assignar i passen a tindre els botons verd i roig de **SI** i **NO**, que podem pitjar per classificar-les.
- 
-Cada pestanya presenta, a la part de dalt, una serie de botons amb accions. Ixem més o meyns botons dependent de en quina part del procés estem. Eixos botons són col·lectius, s'apliquen a totes les col·laboracions que complixen amb els requeriments del botó en qüestió. 
+Les pestanyes agrupen les col·laboracions segons l'estat configurat en el
+panell. El nom concret pot variar, però el flux habitual distingix:
 
+- les que encara no tenen tutor assignat;
+- les assignades que estan pendents de decisió;
+- les empreses que han confirmat que col·laboren;
+- les que han indicat que no col·laboren, quan la configuració les mostra.
 
-## Que signifiquen totes les dades que hi ha en una col·laboració.
+Assignar-se una col·laboració evita que diversos tutors contacten amb la
+mateixa empresa sense coordinació. Una vegada assignada, es pot registrar el
+contacte i classificar la resposta.
 
-Per ordre a l'esquerra apareix: ![colaboracio](../img/fct/02-profile-colaboracio.png)
+## Cercar i combinar filtres
 
-* Nom centre treball (ordenats alfabèticament)
-  * Número de conveni i si està actualitzat (ditet)
-  * Número de llocs de treball
-  * Persona de contacte
-  * Telèfon de contacte
-  * Email de contacte
-  * Població del centre de treball
-  * Botons per a :
-    * Classificar la col·laboració.
-    * Afegir comentaris d'este procés de selecció.
-  * Icones amb data que ens indiquen els contactes que hem fet i les anotacions.
+Cada pestanya es pot filtrar per:
 
-  
-## Pestanya **Pendents de contestar**
+- **població**;
+- **nom d'empresa**, escrivint una part del nom;
+- **estat ràpid**, quan estiga disponible.
 
-Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
-Un cuadrat de color roig significa que l'empresa no vol col·laborar enguany.
+Els filtres es combinen. La cerca per empresa ignora majúscules i accents, i en
+buidar-la es mantenen actius els altres criteris. Els grups de població que es
+queden sense resultats s'oculten automàticament.
 
-![solicitud](../img/ajuda/fct_solicitud_practiques.PNG)
+## Informació i accions
 
-![llistat](../img/ajuda/fct_seleccio_elements.PNG)
+Cada registre identifica el centre de treball i mostra les dades de contacte,
+la població, el conveni, les places i les anotacions disponibles. Segons la
+pestanya i els permisos poden aparéixer accions per a:
 
-Una vegada feta la selecció podrem editar el cos del correu que per defecte es el següent:
+- assignar o canviar la persona responsable;
+- marcar **Col·labora**, **No col·labora** o **No sé**;
+- registrar una anotació o un contacte;
+- revisar les dades de l'empresa i del centre;
+- iniciar les comunicacions o la revisió documental d'FCT.
 
-~~~ 
- El meu nom és Ignasi Gomis Mullor i sóc el professor-tutor del Cicle Formatiu de Grau Superior Desenrotllament d'aplicacions web del Centre Integrat Formació Professional Batoi.
-Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer 400 hores de pràctiques en empreses, organitzacions, entitats ..., en l'horari normal de l'empresa (que sol ser 40 hores setmanals). Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes. Actualment, tenim alumnes que estarien molt interessats en fer les seues pràctiques en una empresa com la vostra. L'unic requeriment es dispossar d'almenys un tècnic, que puga tutoritzar les pràctiques en l'empressa. Per tot això, ens agradaria que consideràreu la possibilitat d'acollir les pràctiques d'un dels nostres alumnes entre el 11 de març i el 10 de juny, aproximadament.
-Òbviament, abans de prendre la vostra decisió, parlaríem tot allò que fera falta i també podríeu entrevistar als alumnes candidats. En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.
-Salutacions cordials de Ignasi Gomis
-~~~ 
+Les accions col·lectives s'apliquen només als registres que complixen les
+condicions de l'acció. Abans d'enviar un correu, cal revisar la selecció de
+destinataris i el contingut mostrat per l'aplicació.
 
-___
-## Pestanya **Col·laboren**
+## Criteri recomanat de treball
 
-Ja ens han mostrat la seua voluntat de col·laborar, però encara no hem emplenat la documentació.
-Tenim el botó de  **Revissió de documentació**: 
+1. Repartir les col·laboracions entre els tutors del cicle.
+2. Consultar les anotacions prèvies abans de contactar.
+3. Registrar cada contacte realitzat.
+4. Actualitzar l'estat segons la resposta de l'empresa.
+5. En les que col·laboren, revisar les dades i el conveni abans de crear o
+   assignar l'FCT.
 
-Una vegada que ja tenim empreses dispostes a col.laborar, es hora de comprovar que les seues dades son correctes. Per tal de dur a terme esta tasca fem servir el botó **Revissió de documentació** que envia un correu automàtic a tots els contactes de les col·laboracions de la pestanya de colabora amb el següent text:
-
-~~~ 
-Hola Carlos Fabra,
-Estic preparant la documentació corresponent a les pràctiques de FCT del Cicle Formatiu de Grau Superior 'Desenrotllament d'aplicacions web' , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:
-Empresa: Ninots Fallers,SA 
-CIF: 11115551Z
-Telèfon: 567812520
-Adreça: Avinguda Pais Valencià, 13 2-C
-Poble: Ontinyent
-Email-Empresa :
-Horari Pràctiques:
-Tria Instructor:
-Nom: Carlos Fabra 
-E-mail: carlos@ninot.com
-DNI : 29205051A
-Telèfon: 567812520
-O afegueix un altre:
-Nom: ___________________________________________
-E-mail : ____________________________________
-DNI : _____________________________________
-Telèfon: __________________________________
-Salutacions cordials de Ignasi Gomis
-~~~ 
+Per a comparar esta informació amb la resta de cicles, cal tornar a
+[Col·laboracions del departament](manual-fct-gestio-contactes.md).

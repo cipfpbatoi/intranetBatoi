@@ -1,59 +1,79 @@
-# Documentació d'FCT
+# Manual d'FCT
 
-Index de continguts:
-* [Objectius](#objectius)
-* [Temporalitzacio](#temporalització)
-* [Les meues col·laboracions](#les-meues-col·laboracions)
-* [Gestió de contactes](#gestió-de-contactes)
-* [FCTS](#fcts)
-* 
----
+La intranet acompanya el treball del tutor des de la preparació d'empreses fins
+al seguiment i l'avaluació. No substituïx SAO: les dades i documents oficials
+que corresponen a SAO s'han de continuar gestionant allí.
 
-## Objectius
+## Visió general del procés
 
-L'objectiu del menú de Pràctiques és portar tot el procés, des del contacte amb l'empresa fins l'avaluació de l'alumnat, deixant les evidències necessàries i facilitant el seguiment per part del tutor.
-Cal a dir també que:
+1. Revisar empreses, centres de treball, instructors i col·laboracions.
+2. Assignar i contactar les empreses del cicle.
+3. Preparar les FCT en SAO i importar o sincronitzar les dades necessàries.
+4. Gestionar annexos i signatures.
+5. Enviar la informació d'inici a empresa i alumnat.
+6. Registrar seguiments, telefonades, visites i contactes amb l'alumnat.
+7. Avaluar l'FCT i el projecte quan corresponga.
+8. Demanar l'acta i conservar la documentació final.
 
-* Hi ha una part de documentació que s'ha de fer amb el SAO, i no hi podem fugir.
-* Hi ha una evidència que es farà amb les comissions de servei.
+![Panell de seguiment d'FCT](../img/ajuda/actual/20-panell-fct.png)
 
-## Temporalització
+## Preparar empreses i col·laboracions
 
-L'ordre dels passos a seguir és important en este procés i anem a ordenar-los supossant que les pràctiques comencen al periode ordinari.
+Abans de crear una FCT s'ha de comprovar que existixen:
 
-* Durant el curs poden arribar/fer contactes amb empreses que haurem de registrar, per tal de poder contactar després amb elles. Si no podem donar-li a una empresa un número de concert, podem registrar-la en el menú **Empreses Sense Concert**.
-* Opcional (**Les meues col·laboracions**) 
-  * Quan arriba el temps de preparar les FCT haurem d'entrar en el menú de **Empreses / Les meues col·laboracions** i allí haurem de:
-      * Assignar-nos les empreses amb les que volem contactar (pot ser una empresa no la volem contactar perquè no tenim alumnes de la zona o si ens dividim les empreses, li toque a un altre tutor)
-      * Quan ja tenim les empreses seleccionades, podem enviar un correu (massiu o individualitzat) a totes elles sol·licitant la seua col·laboració.
-      * El següent pas, és marcar amb un SI o amb un NO, les empreses que volen col.laborar (o NO).
-      * També podem afegir algun comentari a les empreses que han contestat.
-      * Quan tingam les empreses sel·leccionades, podem enviar un correu a les empreses per tal que confirmen les seues dades.
-* Ara és el moment de generar la **documentació** en el **SAO**.
-* Després caldrà importar les FCTS a la intranet.
-* Quan ja estiguen importades, arriba el moment de baixar la documentació del SAO per a la seua signatura, que haurem de pujar al SAO una vegada estiga completa.
-* En fer-ho podem impremer la documentació p.
-* Quan falte poc per a començar les pràctiques se li ha enviar un correu de recordatori de les pràctiques, on va l'informació de l'alumne i del segur.
-* També hem d'enviar el correu a l'alumne amb la informació de la seua pràctica.
-* Quan ja estiguen les pràctiques en marxa, haurem de fer el seguiment de les pràctiques, i tenim les següents opcions:
+- l'empresa;
+- almenys un centre de treball;
+- la col·laboració amb el cicle;
+- l'instructor o instructora amb dades de contacte suficients.
 
-  	* Enviar un correu de seguiment per a que el tutor ens diga com va el procediment.
-  	* Enviar un correu per tal de concertar una visita per sol.licitar una visita a l'empresa.
-  	* Quan creem una comissió de servei amb la creu d' FCT marcada, ens deixa marcar a les empreses i el horari en el que anirém i si volem enviar un missatge a l'empresa confirmant la visita, amb una entrada del calendar inclossa. A més quedarà evidència de la visita.
-  	* Si tenim un contacte telefònic també el podem registrar amb la pestanya corresponent.
-  	* Per últim també podem enviar un correu massiu als alumnes per a citar-los a l'institut a una hora determinada.
+Consulta estos manuals:
 
-* Per finalitzar les fct avaluarem als alumnes (amb projecte si escau) i demanarem l'acta d'avaluació a caporalia. Marcarem també si l'alumne s'ha quedat al centre de treball.
+- [Empreses i centres de treball](manual-fct-empreses.md)
+- [Col·laboracions del departament](manual-fct-gestio-contactes.md)
+- [Les meues col·laboracions](manual-fct-meues-colaboracions.md)
 
-## Les meues col·laboracions
+Les empreses sense concert i les empreses Erasmus tenen pantalles específiques
+i no s'han de confondre amb el llistat ordinari de col·laboracions.
 
-Fes click aci per tal de veure la informació detallada sobre les [Meues col·laboracions](manual-fct-meues-colaboracions.md)
+## Gestionar l'alumnat
 
-## Fcts
+La pantalla **Pràctiques → FCT x alumne/a** reunix les dades de cada pràctica,
+els accessos a SAO, els informes i les signatures. S'explica en
+[FCT de l'alumnat](manual-fct-alumno.md).
 
-Fes click aci per tal de veure la informació detallada sobre les [Fcts](manual-fct-alumno.md)
+## Seguiment de pràctiques
 
+La pantalla **Pràctiques → FCTs** està orientada al treball diari: recordatoris
+d'inici, correus, telefonades, visites, comissions i contactes amb l'alumnat.
+Consulta el [panell de seguiment](manual-fct-panel.md).
 
-## Gestió de contactes
+Cada contacte real ha de quedar registrat amb la data i un resum útil. Les
+comissions de servei associades a visites constituïxen també una evidència del
+seguiment.
 
-Fes click aci per tal de veure la informació detallada sobre la [Gestió de contactes](manual-fct-gestio-contactes.md)
+## Signatures digitals
+
+Des de **Signatures digitals** es gestionen els annexos pendents.
+
+![Signatures pendents d'FCT](../img/ajuda/actual/23-signatures-fct.png)
+
+La taula mostra el centre, el tipus de document, l'alumne, l'estat i la data
+d'alta. Les accions disponibles depenen del tipus i del progrés de la firma:
+
+- crear o importar documents des de SAO;
+- enviar Annex III a l'alumnat;
+- enviar la documentació a l'instructor;
+- descarregar o pujar documents firmats;
+- preparar l'Annex V;
+- consultar el PDF i l'estat de cada signatura.
+
+En els enviaments múltiples, la intranet agrupa els documents per destinatari.
+Abans d'enviar cal comprovar que instructor o alumne tenen nom i correu vàlids.
+No s'han de modificar manualment els indicadors d'enviament o firma.
+
+## Avaluació i tancament
+
+L'avaluació d'FCT, el projecte i la petició d'acta es descriuen en
+[Avaluació d'FCT](manual-fct-avaluacio.md). Abans de tancar el procés cal
+comprovar que la qualificació, les hores, els documents i la inserció laboral
+estiguen correctament registrats.
