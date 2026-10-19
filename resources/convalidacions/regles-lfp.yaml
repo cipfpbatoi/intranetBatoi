@@ -95,9 +95,9 @@ convalidations:
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: false, reference: Circular Ministeri}
     result: null
-  - id: 1710-from-eie-gm-loe
+  - id: 1710-from-eie-loe-cas
     target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
-    source: {type: module, name: EIE GM LOE}
+    source: {type: module, name: Empresa e iniciativa emprendedora}
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}
@@ -109,9 +109,9 @@ convalidations:
     resolution: {authority: centre, automatic: true}
     result: {status: AA, grade: {mode: preserve}}
     legal_basis: [{reference: art. 126.5}, {reference: art. 127.1.a}]
-  - id: 1710-from-eie-gs-loe
+  - id: 1710-from-eie-loe-val
     target: {code: '1710', name: IPE II GM i GS, level: GM_GS}
-    source: {type: module, name: EIE GS LOE}
+    source: {type: module, name: Empresa i iniciativa emprenedora}
     proposal: {action: convalidate}
     resolution: {authority: centre, automatic: true}
     result: {status: CO, grade: {mode: preserve}}

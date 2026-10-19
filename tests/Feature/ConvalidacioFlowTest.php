@@ -2130,6 +2130,111 @@ XML);
         $this->assertCount(2, $peticioAnglesGs->regla_automatica_snapshot['equivalent_matching_rules']);
     }
 
+    public function test_eie_loe_es_reconeix_pel_nom_i_s_aplica_a_ipe_ii_en_gm_i_gs(): void
+    {
+        $contingutRegles = file_get_contents(resource_path('convalidacions/regles-lfp.yaml'));
+        $this->assertIsString($contingutRegles);
+        Storage::disk('convalidacions')->put('regles-automatiques/convalidacions.yaml', $contingutRegles);
+
+        $casos = [
+            ['alumne' => '12345678', 'token' => 'eie-gm-cap-a-gm', 'nivell_origen' => 'GM', 'nivell_desti' => 1, 'codi' => '1557', 'nota' => 6],
+            ['alumne' => '12345678', 'token' => 'eie-gm-cap-a-gs', 'nivell_origen' => 'GM', 'nivell_desti' => 2, 'codi' => '0756', 'nota' => 7],
+            ['alumne' => '87654321', 'token' => 'eie-gs-cap-a-gm', 'nivell_origen' => 'GS', 'nivell_desti' => 1, 'codi' => '0381', 'nota' => 8],
+            ['alumne' => '87654321', 'token' => 'eie-gs-cap-a-gs', 'nivell_origen' => 'GS', 'nivell_desti' => 2, 'codi' => '1134', 'nota' => 9],
+        ];
+
+        foreach ($casos as $cas) {
+            $sollicitud = SollicitudConvalidacio::query()->create([
+                'alumno_id' => $cas['alumne'],
+                'submission_token' => $cas['token'],
+                'submitted_at' => now(),
+            ]);
+            $nomValencia = $cas['nota'] === 9
+                ? 'EMPRESA I INICIATIVA EMPRENEDORA'
+                : 'Empresa i iniciativa emprenedora';
+            $nomCastella = $cas['nota'] === 9
+                ? 'EMPRESA E INICIATIVA EMPRENDEDORA'
+                : 'Empresa e iniciativa emprendedora';
+            Convalidacio::query()->create([
+                'sollicitud_convalidacio_id' => $sollicitud->id,
+                'modulo_destino_id' => '1710',
+                'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                'modulo_origen_codigo' => $cas['codi'],
+                'modulo_origen_nombre' => $nomCastella,
+                'modulo_origen_nombre_val' => $nomValencia,
+                'modulo_origen_nombre_cas' => $nomCastella,
+                'nivel_origen_codigo' => $cas['nivell_origen'],
+                'ciclo_matricula_tipo' => $cas['nivell_desti'],
+                'nota_origen' => $cas['nota'],
+                'estat' => Convalidacio::ESTAT_ENVIADA,
+            ]);
+        }
+
+        $sollicitudExtern = SollicitudConvalidacio::query()->create([
+            'alumno_id' => '12345678',
+            'submission_token' => 'eie-extern-manual',
+            'submitted_at' => now(),
+        ]);
+        Convalidacio::query()->create([
+            'sollicitud_convalidacio_id' => $sollicitudExtern->id,
+            'modulo_destino_id' => '1710',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'modulo_origen_nombre_val' => 'Empresa i iniciativa emprenedora',
+            'modulo_origen_nombre_cas' => 'Empresa e iniciativa emprendedora',
+            'ciclo_matricula_tipo' => 2,
+            'estat' => Convalidacio::ESTAT_ENVIADA,
+        ]);
+
+        $sollicitudNomDesconegut = SollicitudConvalidacio::query()->create([
+            'alumno_id' => '12345678',
+            'submission_token' => 'eie-nom-desconegut',
+            'submitted_at' => now(),
+        ]);
+        Convalidacio::query()->create([
+            'sollicitud_convalidacio_id' => $sollicitudNomDesconegut->id,
+            'modulo_destino_id' => '1710',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'modulo_origen_codigo' => '9999',
+            'modulo_origen_nombre_val' => 'Emprenedoria',
+            'modulo_origen_nombre_cas' => 'Emprendimiento',
+            'ciclo_matricula_tipo' => 2,
+            'estat' => Convalidacio::ESTAT_ENVIADA,
+        ]);
+
+        $service = app(ConvalidacioAutomaticaService::class);
+        $preview = $service->previsualitzar();
+
+        $this->assertCount(4, $preview['casos']);
+        $this->assertSame(
+            ['1710-from-eie-loe-cas', '1710-from-eie-loe-val'],
+            array_column($preview['casos'][0]['regles_coincidents'], 'id')
+        );
+        $reglesEie = array_filter(
+            $preview['regles'],
+            static fn (array $item): bool => in_array($item['regla']['id'], [
+                '1710-from-eie-loe-cas',
+                '1710-from-eie-loe-val',
+            ], true)
+        );
+        $this->assertSame([4, 4], array_values(array_map(
+            static fn (array $item): int => $item['casos'],
+            $reglesEie
+        )));
+
+        $resultat = $service->aplicar(Profesor::query()->findOrFail('DIR00001'));
+
+        $this->assertSame(['aplicats' => 4, 'ja_existien' => 0, 'errors' => []], $resultat);
+        $this->assertSame(4, Convalidacio::query()->where('estat', Convalidacio::ESTAT_ACCEPTADA)->count());
+        foreach ($casos as $cas) {
+            $peticio = Convalidacio::query()
+                ->whereHas('sollicitud', static fn ($query) => $query->where('submission_token', $cas['token']))
+                ->firstOrFail();
+            $this->assertSame('CO', $peticio->resultat_automatic);
+            $this->assertSame('preserve', $peticio->mode_nota_automatic);
+            $this->assertSame((float) $cas['nota'], $peticio->nota_resultat_automatic);
+        }
+    }
+
     public function test_ipe_i_i_ipe_ii_de_mateix_codi_s_apliquen_automaticament(): void
     {
         DB::table('modulos')->insert([
