@@ -56,6 +56,23 @@
             </form>
         </div>
     </details>
+    <nav aria-label="Pestanyes de sol·licituds">
+        <ul class="nav nav-tabs bar_tabs">
+            <li @class(['active' => $pestanya === 'seguiment'])>
+                <a href="{{ route('convalidacions.direction.index', ['pestanya' => 'seguiment', 'pendent_direccio' => $filters['pendent_direccio'] ? 1 : null]) }}"
+                   @if ($pestanya === 'seguiment') aria-current="page" @endif>
+                    En seguiment <span class="badge">{{ $sollicitudsEnSeguiment }}</span>
+                </a>
+            </li>
+            <li @class(['active' => $pestanya === 'resoltes'])>
+                <a href="{{ route('convalidacions.direction.index', ['pestanya' => 'resoltes']) }}"
+                   @if ($pestanya === 'resoltes') aria-current="page" @endif>
+                    Resoltes
+                </a>
+            </li>
+        </ul>
+    </nav>
+    @if ($pestanya === 'seguiment')
     <section class="x_panel" aria-labelledby="automatic-action-heading">
         <div class="x_title">
             <h2 id="automatic-action-heading">Resolució automàtica</h2>
@@ -80,15 +97,21 @@
             @endif
         </div>
     </section>
-    <form method="GET" action="{{ route('convalidacions.direction.index') }}" class="form-inline mb-3">
-        <label for="filter-pendent-direccio" class="mr-2">Mostrar</label>
-        <select id="filter-pendent-direccio" name="pendent_direccio" class="form-control mr-2" onchange="this.form.submit()">
-            <option value="0" @selected(!$filters['pendent_direccio'])>Totes les sol·licituds</option>
-            <option value="1" @selected($filters['pendent_direccio'])>Només amb acció pendent de Direcció</option>
-        </select>
-    </form>
+    @endif
+    @if ($pestanya === 'seguiment')
+        <form method="GET" action="{{ route('convalidacions.direction.index') }}" class="form-inline mb-3">
+            <input type="hidden" name="pestanya" value="seguiment">
+            <label for="filter-pendent-direccio" class="mr-2">Mostrar</label>
+            <select id="filter-pendent-direccio" name="pendent_direccio" class="form-control mr-2" onchange="this.form.submit()">
+                <option value="0" @selected(!$filters['pendent_direccio'])>Totes les sol·licituds en seguiment</option>
+                <option value="1" @selected($filters['pendent_direccio'])>Només amb acció pendent de Direcció</option>
+            </select>
+        </form>
+    @else
+        <p class="text-muted">Sol·licituds en què tots els mòduls estan acceptats, denegats o convalidats.</p>
+    @endif
     <div class="table-responsive"><table class="table table-striped">
-        <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Acció pendent de Direcció</th><th>Automatització</th><th></th></tr></thead>
+        <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Acció pendent de Direcció</th>@if ($pestanya === 'seguiment')<th>Automatització</th>@endif<th></th></tr></thead>
         <tbody>
             @forelse ($sollicituds as $sollicitud)
                 @php($automatitzacio = $automatitzacions[$sollicitud->id] ?? ['pendents' => 0, 'elegibles' => 0])
@@ -112,23 +135,25 @@
                             </span>
                         @endif
                     </td>
-                    <td>
-                        @if ($peticionsPendentsAuto > 0 && $peticionsAuto === 0)
-                            <span role="img"
-                                  aria-label="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}."
-                                  title="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}.">✍️</span>
-                        @elseif ($peticionsAuto === $peticionsPendentsAuto)
-                            @if ($peticionsPendentsAuto > 0)
+                    @if ($pestanya === 'seguiment')
+                        <td>
+                            @if ($peticionsPendentsAuto > 0 && $peticionsAuto === 0)
                                 <span role="img"
-                                      aria-label="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica."
-                                      title="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica.">🤖</span>
+                                      aria-label="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}."
+                                      title="Revisió manual: no hi ha cap regla automàtica aplicable a {{ $peticionsPendentsAuto }} {{ $peticionsPendentsAuto === 1 ? 'petició pendent' : 'peticions pendents' }}.">✍️</span>
+                            @elseif ($peticionsAuto === $peticionsPendentsAuto)
+                                @if ($peticionsPendentsAuto > 0)
+                                    <span role="img"
+                                          aria-label="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica."
+                                          title="Resolució automàtica: {{ $peticionsAuto }} {{ $peticionsAuto === 1 ? 'petició pendent elegible' : 'peticions pendents elegibles' }} per a aplicació automàtica.">🤖</span>
+                                @endif
+                            @elseif ($peticionsPendentsAuto > 0)
+                                <span role="img"
+                                      aria-label="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual."
+                                      title="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual.">🤖✍️</span>
                             @endif
-                        @elseif ($peticionsPendentsAuto > 0)
-                            <span role="img"
-                                  aria-label="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual."
-                                  title="Resolució mixta: {{ $peticionsAuto }} de {{ $peticionsPendentsAuto }} peticions pendents es poden resoldre automàticament; {{ $peticionsManuals }} {{ $peticionsManuals === 1 ? 'requerix' : 'requerixen' }} revisió manual.">🤖✍️</span>
-                        @endif
-                    </td>
+                        </td>
+                    @endif
                     <td>
                         @if ($enviades > 0)
                             <form method="POST" action="{{ route('convalidacions.direction.review', $sollicitud) }}">
@@ -136,12 +161,12 @@
                                 <button class="btn btn-primary btn-sm" type="submit">Revisar</button>
                             </form>
                         @else
-                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">{{ $pestanya === 'resoltes' ? 'Veure' : 'Revisar' }}</a>
                         @endif
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="7">No hi ha sol·licituds.</td></tr>
+                <tr><td colspan="{{ $pestanya === 'seguiment' ? 7 : 6 }}">No hi ha sol·licituds.</td></tr>
             @endforelse
         </tbody>
     </table></div>

@@ -39,28 +39,27 @@ class DireccionConvalidacioController extends Controller
         parent::__construct();
     }
 
-    /** Mostra una fila per sol·licitud, sense filtrar capçaleres pels estats dels mòduls. */
+    /** Mostra les sol·licituds separades entre seguiment i resoltes. */
     public function index(Request $request): View
     {
-        $preview = $this->automatitzacions->previsualitzar();
         $filters = $request->validate([
+            'pestanya' => ['nullable', 'string', Rule::in(['seguiment', 'resoltes'])],
             'pendent_direccio' => ['nullable', 'boolean'],
         ]);
-        $sollicituds = $this->queries->totesSollicitudsDireccion();
-        $pendentDireccio = filter_var($filters['pendent_direccio'] ?? false, FILTER_VALIDATE_BOOL);
-
-        if ($pendentDireccio) {
-            $sollicituds = $sollicituds->filter(static fn (SollicitudConvalidacio $sollicitud): bool =>
-                $sollicitud->convalidacions->contains(static fn (Convalidacio $peticio): bool => in_array(
-                    $peticio->estat,
-                    [Convalidacio::ESTAT_ENVIADA, Convalidacio::ESTAT_EN_PROCES],
-                    true
-                ))
-            )->values();
-        }
+        $pestanya = $filters['pestanya'] ?? 'seguiment';
+        $preview = $pestanya === 'seguiment'
+            ? $this->automatitzacions->previsualitzar()
+            : ['per_sollicitud' => [], 'casos' => []];
+        $pendentDireccio = $pestanya === 'seguiment'
+            && filter_var($filters['pendent_direccio'] ?? false, FILTER_VALIDATE_BOOL);
+        $sollicituds = $pestanya === 'resoltes'
+            ? $this->queries->sollicitudsResoltesDireccion()
+            : $this->queries->sollicitudsEnSeguimentDireccion($pendentDireccio);
 
         return view('intranet.convalidacions.direccion.index', [
             'sollicituds' => $sollicituds,
+            'sollicitudsEnSeguiment' => $this->queries->comptarSollicitudsEnSeguimentDireccion(),
+            'pestanya' => $pestanya,
             'accessBlocked' => $this->access->isBlocked(),
             'accessPassword' => (string) config('convalidacions_access.password'),
             'automatitzacions' => $preview['per_sollicitud'],

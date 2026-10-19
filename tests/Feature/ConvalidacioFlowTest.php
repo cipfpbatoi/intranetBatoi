@@ -224,6 +224,83 @@ class ConvalidacioFlowTest extends TestCase
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
     }
 
+    /** Verifica la separació per sol·licitud, inclosos els estats mixtos i els recomptes. */
+    public function test_panell_de_direccio_separa_sollicituds_en_seguiment_i_resoltes(): void
+    {
+        $crearSollicitud = function (string $token, array $estats): int {
+            $ara = now();
+            $sollicitudId = DB::table('sollicituds_convalidacions')->insertGetId([
+                'alumno_id' => $this->alumno->nia,
+                'submission_token' => $token,
+                'submitted_at' => $ara,
+                'created_at' => $ara,
+                'updated_at' => $ara,
+            ]);
+
+            foreach ($estats as $index => $estat) {
+                DB::table('convalidacions')->insert([
+                    'sollicitud_convalidacio_id' => $sollicitudId,
+                    'modulo_destino_id' => 'DEST' . ($index + 1),
+                    'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+                    'estat' => $estat,
+                    'created_at' => $ara,
+                    'updated_at' => $ara,
+                ]);
+            }
+
+            return $sollicitudId;
+        };
+
+        $mixta = $crearSollicitud('pestanya-mixta', [
+            Convalidacio::ESTAT_ENVIADA,
+            Convalidacio::ESTAT_DENEGADA,
+        ]);
+        $acceptada = $crearSollicitud('pestanya-acceptada', [Convalidacio::ESTAT_ACCEPTADA]);
+        $denegada = $crearSollicitud('pestanya-denegada', [Convalidacio::ESTAT_DENEGADA]);
+        $revisarDocumentacio = $crearSollicitud('pestanya-documentacio', [Convalidacio::ESTAT_REVISAR_DOCUMENTACIO]);
+        $aportarOriginal = $crearSollicitud('pestanya-original', [Convalidacio::ESTAT_APORTAR_ORIGINAL]);
+
+        $director = Profesor::query()->findOrFail('DIR00001');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($director, 'profesor');
+
+        $response = $this->get(route('convalidacions.direction.index'));
+        $response
+            ->assertOk()
+            ->assertSee('En seguiment')
+            ->assertSee('Resoltes')
+            ->assertSee('<span class="badge">3</span>', false)
+            ->assertSee('>#' . $mixta . '</td>', false)
+            ->assertSee('>#' . $revisarDocumentacio . '</td>', false)
+            ->assertSee('>#' . $aportarOriginal . '</td>', false)
+            ->assertDontSee('>#' . $acceptada . '</td>', false)
+            ->assertDontSee('>#' . $denegada . '</td>', false);
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="automatic-action-heading"'), strpos($html, 'aria-label="Pestanyes de sol·licituds"'));
+        $this->assertSame(1, preg_match('/<a[^>]*>\s*Resoltes\s*<\/a>/s', $html));
+
+        $this->get(route('convalidacions.direction.index', [
+            'pestanya' => 'seguiment',
+            'pendent_direccio' => 1,
+        ]))
+            ->assertOk()
+            ->assertSee('Només amb acció pendent de Direcció')
+            ->assertSee('>#' . $mixta . '</td>', false)
+            ->assertDontSee('>#' . $revisarDocumentacio . '</td>', false)
+            ->assertDontSee('>#' . $aportarOriginal . '</td>', false);
+
+        $response = $this->get(route('convalidacions.direction.index', ['pestanya' => 'resoltes']));
+        $response
+            ->assertOk()
+            ->assertSee('aria-current="page"', false)
+            ->assertDontSee('automatic-action-heading')
+            ->assertDontSee('<th>Automatització</th>', false)
+            ->assertSee('>#' . $acceptada . '</td>', false)
+            ->assertSee('>#' . $denegada . '</td>', false)
+            ->assertSee('>Veure</a>', false)
+            ->assertDontSee('>#' . $mixta . '</td>', false);
+        $this->assertSame(1, preg_match('/<a[^>]*aria-current="page"[^>]*>\s*Resoltes\s*<\/a>/s', $response->getContent()));
+    }
+
     public function test_rebutja_destins_duplicats_ids_manipulats_i_externs_sense_document(): void
     {
         foreach ([
@@ -1371,11 +1448,11 @@ class ConvalidacioFlowTest extends TestCase
             ->assertOk()
             ->assertSee('DEST1')
             ->assertSee('DEST2');
-        $this->get(route('convalidacions.direction.index', ['estat' => Convalidacio::ESTAT_ACCEPTADA]))
+        $this->get(route('convalidacions.direction.index', ['pestanya' => 'resoltes']))
             ->assertOk()
             ->assertSee('#' . $sollicitud->id)
             ->assertSee('Mòduls')
-            ->assertSee('Automatització');
+            ->assertDontSee('Automatització');
     }
 
     public function test_pdf_per_modul_filtra_per_estat_i_no_inclou_adjunts(): void
