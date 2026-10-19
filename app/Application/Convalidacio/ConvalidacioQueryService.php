@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Convalidacio;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Alumno;
@@ -47,13 +48,70 @@ class ConvalidacioQueryService
             ->get();
     }
 
-    /** Retorna totes les capçaleres sense filtrar-les pels estats de les peticions. */
-    public function totesSollicitudsDireccion(): Collection
+    /** Retorna les sol·licituds amb almenys una petició encara no resolta per Direcció. */
+    public function sollicitudsEnSeguimentDireccion(bool $nomesAccioPendent = false): Collection
     {
-        return SollicitudConvalidacio::query()
+        $query = $this->consultaSollicitudsEnSeguiment();
+
+        if ($nomesAccioPendent) {
+            $query->whereHas('convalidacions', static fn ($peticions) => $peticions->whereIn('estat', [
+                Convalidacio::ESTAT_ENVIADA,
+                Convalidacio::ESTAT_EN_PROCES,
+            ]));
+        }
+
+        return $query
             ->with(['alumno', 'convalidacions.moduloDestino'])
             ->latest('submitted_at')
             ->get();
+    }
+
+    /** Retorna les sol·licituds amb almenys un mòdul i tots els mòduls resolts. */
+    public function sollicitudsResoltesDireccion(): Collection
+    {
+        return $this->consultaSollicitudsResoltes()
+            ->with(['alumno', 'convalidacions.moduloDestino'])
+            ->latest('submitted_at')
+            ->get();
+    }
+
+    /** Retorna els recomptes de les dues pestanyes sense carregar les relacions. */
+    public function comptarSollicitudsPerEstatDireccion(): array
+    {
+        return [
+            'seguiment' => $this->consultaSollicitudsEnSeguiment()->count(),
+            'resoltes' => $this->consultaSollicitudsResoltes()->count(),
+        ];
+    }
+
+    /** Construeix la consulta de sol·licituds amb algun mòdul no resolt. */
+    private function consultaSollicitudsEnSeguiment(): Builder
+    {
+        return SollicitudConvalidacio::query()->whereHas(
+            'convalidacions',
+            static fn ($peticions) => $peticions->whereNotIn('estat', self::estatsResoltsDireccion())
+        );
+    }
+
+    /** Construeix la consulta de sol·licituds amb mòduls i sense cap mòdul pendent. */
+    private function consultaSollicitudsResoltes(): Builder
+    {
+        return SollicitudConvalidacio::query()
+            ->whereHas('convalidacions')
+            ->whereDoesntHave(
+                'convalidacions',
+                static fn ($peticions) => $peticions->whereNotIn('estat', self::estatsResoltsDireccion())
+            );
+    }
+
+    /** Estats que tanquen la revisió del mòdul per a la classificació de les pestanyes. */
+    private static function estatsResoltsDireccion(): array
+    {
+        return [
+            Convalidacio::ESTAT_ACCEPTADA,
+            Convalidacio::ESTAT_DENEGADA,
+            Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+        ];
     }
 
     /** Retorna una fila per petició, opcionalment filtrada pel seu estat. */

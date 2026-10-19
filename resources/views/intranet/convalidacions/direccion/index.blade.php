@@ -80,13 +80,34 @@
             @endif
         </div>
     </section>
-    <form method="GET" action="{{ route('convalidacions.direction.index') }}" class="form-inline mb-3">
-        <label for="filter-pendent-direccio" class="mr-2">Mostrar</label>
-        <select id="filter-pendent-direccio" name="pendent_direccio" class="form-control mr-2" onchange="this.form.submit()">
-            <option value="0" @selected(!$filters['pendent_direccio'])>Totes les sol·licituds</option>
-            <option value="1" @selected($filters['pendent_direccio'])>Només amb acció pendent de Direcció</option>
-        </select>
-    </form>
+    <nav aria-label="Pestanyes de sol·licituds">
+        <ul class="nav nav-tabs bar_tabs">
+            <li @class(['active' => $pestanya === 'seguiment'])>
+                <a href="{{ route('convalidacions.direction.index', ['pestanya' => 'seguiment', 'pendent_direccio' => $filters['pendent_direccio'] ? 1 : null]) }}"
+                   @if ($pestanya === 'seguiment') aria-current="page" @endif>
+                    En seguiment <span class="badge">{{ $comptesPestanyes['seguiment'] }}</span>
+                </a>
+            </li>
+            <li @class(['active' => $pestanya === 'resoltes'])>
+                <a href="{{ route('convalidacions.direction.index', ['pestanya' => 'resoltes']) }}"
+                   @if ($pestanya === 'resoltes') aria-current="page" @endif>
+                    Resoltes <span class="badge">{{ $comptesPestanyes['resoltes'] }}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    @if ($pestanya === 'seguiment')
+        <form method="GET" action="{{ route('convalidacions.direction.index') }}" class="form-inline mb-3">
+            <input type="hidden" name="pestanya" value="seguiment">
+            <label for="filter-pendent-direccio" class="mr-2">Mostrar</label>
+            <select id="filter-pendent-direccio" name="pendent_direccio" class="form-control mr-2" onchange="this.form.submit()">
+                <option value="0" @selected(!$filters['pendent_direccio'])>Totes les sol·licituds en seguiment</option>
+                <option value="1" @selected($filters['pendent_direccio'])>Només amb acció pendent de Direcció</option>
+            </select>
+        </form>
+    @else
+        <p class="text-muted">Sol·licituds en què tots els mòduls estan acceptats, denegats o convalidats.</p>
+    @endif
     <div class="table-responsive"><table class="table table-striped">
         <thead><tr><th>Referència</th><th>Data</th><th>Alumne</th><th>Mòduls</th><th>Acció pendent de Direcció</th><th>Automatització</th><th></th></tr></thead>
         <tbody>
@@ -136,7 +157,7 @@
                                 <button class="btn btn-primary btn-sm" type="submit">Revisar</button>
                             </form>
                         @else
-                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">Revisar</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('convalidacions.direction.show', $sollicitud) }}">{{ $pestanya === 'resoltes' ? 'Veure' : 'Revisar' }}</a>
                         @endif
                     </td>
                 </tr>
