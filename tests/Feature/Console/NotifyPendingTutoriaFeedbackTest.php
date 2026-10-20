@@ -165,6 +165,53 @@ class NotifyPendingTutoriaFeedbackTest extends TestCase
         ]);
     }
 
+    /**
+     * Verifica que 2CAE es manté en el progrés però no rep recordatoris.
+     */
+    public function test_ordre_no_notifica_el_tutor_del_grup_2cae(): void
+    {
+        DB::table('ciclos')->insert(['id' => 1, 'tipo' => 1]);
+        DB::table('profesores')->insert([
+            ['dni' => 'TUTOR1', 'nombre' => 'Anna', 'sustituye_a' => null],
+            ['dni' => 'TUTOR2', 'nombre' => 'Bernat', 'sustituye_a' => null],
+        ]);
+        DB::table('grupos')->insert([
+            ['codigo' => 'G1', 'nombre' => 'Grup 1', 'idCiclo' => 1, 'tutor' => 'TUTOR1'],
+            ['codigo' => '2CAE', 'nombre' => '2CAE', 'idCiclo' => 1, 'tutor' => 'TUTOR2'],
+        ]);
+        DB::table('tutorias')->insert([
+            'id' => 24,
+            'descripcion' => 'Convivència',
+            'grupos' => 0,
+            'desde' => '2026-09-01',
+            'hasta' => '2026-10-31',
+        ]);
+
+        $notifications = Mockery::mock(NotificationService::class);
+        $notifications->shouldReceive('send')
+            ->once()
+            ->with(
+                'TUTOR1',
+                Mockery::on(static fn (string $message): bool => str_contains($message, 'Convivència')),
+                '/tutoria/24/anexo',
+                'Sistema'
+            );
+        $this->app->instance(NotificationService::class, $notifications);
+
+        $this->artisan('tutories:notifica-feedback-pendent')
+            ->expectsOutput("S'han enviat 1 avisos de feedback pendent.")
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('tutoria_feedback_notifications', [
+            'idTutoria' => 24,
+            'idGrupo' => 'G1',
+        ]);
+        $this->assertDatabaseMissing('tutoria_feedback_notifications', [
+            'idTutoria' => 24,
+            'idGrupo' => '2CAE',
+        ]);
+    }
+
     private function createSchema(): void
     {
         Schema::create('ciclos', function (Blueprint $table): void {

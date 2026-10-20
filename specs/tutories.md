@@ -52,6 +52,13 @@ Especificació del seguiment de feedback de tutories i dels avisos interns als t
 **When** s'executa la comprovació d'un divendres posterior
 **Then** el tutor no rep més recordatoris per a eixa tutoria i grup.
 
+## ✅ Escenari 9: 2CAE no rep recordatoris de feedback
+
+**Given** una tutoria activa i el grup `2CAE` sense feedback vàlid
+**When** s'executa la comprovació programada del divendres
+**Then** el seu tutor no rep cap recordatori
+**And** el grup continua comptant en el progrés de la tutoria.
+
 ## Regles de negoci
 
 - Un feedback només és vàlid si conserva text després d'eliminar HTML, entitats i espais invisibles.
@@ -59,3 +66,4 @@ Especificació del seguiment de feedback de tutories i dels avisos interns als t
 - Les tutories actives, amb `desde` anterior o igual a hui i `hasta` posterior o igual a hui, es revisen els divendres a les 07:15.
 - Els grups sense tutor compten en el progrés, però no generen notificació.
 - La unicitat de l'avís es garanteix en base de dades per tutoria, grup i setmana.
+- El grup `2CAE` queda exclòs únicament dels recordatoris de feedback.
