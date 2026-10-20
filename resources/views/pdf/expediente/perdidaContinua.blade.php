@@ -15,12 +15,13 @@
                 <p tyle="text-indent: 30px">L’aplicació del procés d’avaluació contínua de l’alumnat requerix la seua
                     assistència regular a les classes
                     i activitats programades. Per a això, en règim presencial, serà necessària almenys el 85% de les
-                    clases i activitats previstes
-                    en cada mòdul (Normativa : Orden 79/2010, de 27 de agosto, de la Conselleria de Educación i Normes
-                    d’inici de curs, així com l'Ordre 30/2022, de 12 de maig de la Conselleria d'Educació,
-                    Cultura i Esport que regula la pèrdua d'avaluació contínua en el règim semipresencial,
-                    tant per inassistència a les classes de presencialitat obligatòries com la
-                    inasistència als exàmens presencials).
+                    classes i activitats previstes
+                    en cada mòdul (Normativa: article 7 de l'ORDE 8/2025, de 22 d'abril, de la Conselleria
+                    d'Educació, Cultura, Universitats i Ocupació, per la qual es regula l'avaluació del procés
+                    d'ensenyament-aprenentatge en cicles formatius i cursos d'especialització i les instruccions d'inici de curs.
+                    Així com l'Ordre 30/2022, de 12 de maig, de la Conselleria
+                    d'Educació, Cultura i Esport, que regula la pèrdua d'avaluació contínua en el règim semipresencial tant per inassistència
+                    a les classes de presencialitat obligatòries com als exàmens presencials).
                 </p>
                 <p tyle="text-indent: 30px">La dita circumstància és acreditada i certificada pel cap d’estudis a partir
                     dels parts de faltes d’assistència comunicades pel professorat
