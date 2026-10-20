@@ -426,6 +426,75 @@ class ConvalidacioService
         return $peticio->fresh();
     }
 
+    /** Afig un adjunt nou i conserva els documents relacionals i llegats existents. */
+    public function afegirAdjunt(
+        Convalidacio $peticio,
+        Alumno $alumno,
+        UploadedFile $file,
+        string $descripcio,
+        bool $acceptaDeclaracioResponsable
+    ): Convalidacio {
+        if (blank($descripcio)) {
+            throw new ConvalidacioException('Indica de quin tipus de document es tracta.');
+        }
+
+        $this->validarDocument($file);
+        $savedPath = null;
+
+        try {
+            DB::transaction(function () use (
+                $peticio,
+                $alumno,
+                $file,
+                $descripcio,
+                $acceptaDeclaracioResponsable,
+                &$savedPath
+            ): void {
+                $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
+                if ((string) $actual->sollicitud->alumno_id !== (string) $alumno->nia
+                    || !$this->estatAdmetEdicioDocumental($actual->estat)) {
+                    throw new ConvalidacioException('Esta petició no admet afegir documentació.');
+                }
+
+                if (!$actual->declaracio_responsable && !$acceptaDeclaracioResponsable) {
+                    throw new ConvalidacioException('Has d’acceptar la declaració responsable per a tots els documents adjunts.');
+                }
+
+                $paths = $actual->documents()->lockForUpdate()->pluck('path')->all();
+                $paths[] = $actual->document_path;
+                $paths[] = $actual->document_prl_path;
+                if (collect($paths)->filter()->unique()->count() >= 3) {
+                    throw new ConvalidacioException('Pots adjuntar un màxim de tres documents a cada petició.');
+                }
+
+                $saved = $this->guardarAdjunt($alumno, $actual->sollicitud, $file);
+                $savedPath = $saved['path'];
+                $actual->documents()->create([
+                    'descripcio' => trim($descripcio),
+                    ...$saved,
+                ]);
+
+                $canvis = [];
+                if (!$actual->declaracio_responsable) {
+                    $canvis['declaracio_responsable'] = true;
+                }
+                if ($actual->estat === Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                    $canvis['estat'] = Convalidacio::ESTAT_EN_PROCES;
+                }
+                if ($canvis !== []) {
+                    $actual->forceFill($canvis)->save();
+                }
+            });
+        } catch (\Throwable $exception) {
+            if ($savedPath !== null) {
+                Storage::disk('convalidacions')->delete($savedPath);
+            }
+            throw $exception;
+        }
+
+        return $peticio->fresh();
+    }
+
     /** Determina en quins estats l'alumnat pot substituir la documentació. */
     private function estatAdmetEdicioDocumental(string $estat): bool
     {

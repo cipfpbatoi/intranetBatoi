@@ -101,7 +101,7 @@
                                 <div class="mb-1"><strong>Any d’aprovació:</strong> {{ $peticio->any_origen }}</div>
                                 <div class="mb-1"><strong>Nota:</strong> {{ number_format($peticio->nota_origen, 0, ',', '') }}</div>
                             @endif
-                            @if ($peticio->documents->isNotEmpty())
+                            @if ($peticio->documents->isNotEmpty() || $peticio->document_path || $peticio->document_prl_path)
                                 <div class="mt-2"><strong>Documents adjunts</strong>
                                     <ul class="mb-0">
                                         @foreach ($peticio->documents as $document)
@@ -109,15 +109,16 @@
                                                 {{ $document->descripcio }} — <a href="{{ route('convalidacions.direction.download-attachment', [$peticio, $document]) }}">{{ $document->original_name }}</a>
                                             </li>
                                         @endforeach
+                                        @if ($peticio->document_path && !$peticio->documents->contains('path', $peticio->document_path))
+                                            <li class="mb-1">Document anterior — <a href="{{ route('convalidacions.direction.download', $peticio) }}">{{ $peticio->document_original_name }}</a></li>
+                                        @endif
+                                        @if ($peticio->document_prl_path && !$peticio->documents->contains('path', $peticio->document_prl_path))
+                                            <li class="mb-1"><strong>Certificat PRL:</strong> <a href="{{ route('convalidacions.direction.download-prl', $peticio) }}">{{ $peticio->document_prl_original_name }}</a></li>
+                                        @endif
                                     </ul>
                                 </div>
-                            @else
-                                @if ($peticio->document_path)
-                                    <div class="mt-2"><a href="{{ route('convalidacions.direction.download', $peticio) }}">Descarregar {{ $peticio->document_original_name }}</a></div>
-                                @endif
                             @endif
-                            @if ($peticio->documents->isEmpty() && $peticio->document_prl_path)
-                                <div class="mt-1"><strong>Certificat PRL:</strong> <a href="{{ route('convalidacions.direction.download-prl', $peticio) }}">{{ $peticio->document_prl_original_name }}</a></div>
+                            @if ($peticio->document_prl_path)
                                 <div class="small text-muted">Comprova les hores exigides: 30 h per a grau mitjà o 50 h per a grau superior.</div>
                             @endif
                             @if ($peticio->modulo_destino_id === '1709' && $peticio->modulo_origen_es_fol && $peticio->fol_logse)
