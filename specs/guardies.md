@@ -57,6 +57,20 @@ Especificació del comportament esperat per al domini Guàrdies. Tecnologia-agn�
 **When** fa la petició  
 **Then** rep `403` (Gate `manageAttendance` en `Profesor::class`)
 
+## Avisos diaris de guàrdies
+
+### ✅ Una falta justifica l’avís de guàrdia pendent
+
+**Given** un professor amb una guàrdia pendent (`realizada = -1`)
+
+**When** té una `Falta` de dia complet, inclosa la generada per un assumpte particular autoritzat, o una falta parcial que coincidix amb la sessió de guàrdia
+
+**Then** no rep l’avís nocturn de guàrdia pendent.
+
+**And Given** que la falta parcial no coincidix amb la sessió, o que no hi ha falta
+
+**Then** l’avís de guàrdia pendent es manté.
+
 ## Faltes de professorat
 
 ### ✅ Escenari 7: Direcció veu sempre tots els estats al filtre de faltes
@@ -99,6 +113,7 @@ Especificació del comportament esperat per al domini Guàrdies. Tecnologia-agn�
 - La prioritat d'estat és: Extraescolar > Comissió > Falta > No fitxat (es comprova en eixe ordre).
 - El model `Guardia` usa els scopes `Profesor($dni)` i `DiaHora($dia, $hora)` per a les consultes.
 - `realizada` i `observaciones` es poden actualitzar sobre una `Guardia` existent.
+- L’avís nocturn de guàrdia pendent s’omet quan una `Falta` de dia complet o coincident amb la seua sessió la justifica.
 - El filtre d'estat de `/direccion/falta` sempre mostra tots els estats de falta `0..5` amb recompte.
 - En el flux del professor, una falta enviada (`estado >= 1`) només permet canviar el justificant.
 - El panell de Direcció conserva les seues operacions i edició completa sobre faltes.

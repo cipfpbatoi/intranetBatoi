@@ -182,6 +182,90 @@ class NotifyDailyFaultsTest extends TestCase
     }
 
     /**
+     * Verifica que les faltes de dia complet o coincidents no generen avís de guàrdia.
+     */
+    public function test_handle_no_avisar_guardies_justificades_i_mante_les_no_justificades(): void
+    {
+        Carbon::setTestNow('2026-04-01 21:30:00');
+        Notification::fake();
+
+        DB::table('calendari_escolar')->insert([
+            'data' => '2026-04-01',
+            'tipus' => 'lectiu',
+            'esdeveniment' => null,
+        ]);
+        DB::table('horas')->insert([
+            ['codigo' => 1, 'hora_ini' => '08:00:00', 'hora_fin' => '09:00:00'],
+            ['codigo' => 2, 'hora_ini' => '10:00:00', 'hora_fin' => '11:00:00'],
+        ]);
+        DB::table('guardias')->insert([
+            ['idProfesor' => 'P001', 'dia' => '2026-04-01', 'hora' => 1, 'realizada' => -1],
+            ['idProfesor' => 'P002', 'dia' => '2026-04-01', 'hora' => 1, 'realizada' => -1],
+            ['idProfesor' => 'P003', 'dia' => '2026-04-01', 'hora' => 2, 'realizada' => -1],
+            ['idProfesor' => 'P004', 'dia' => '2026-04-01', 'hora' => 1, 'realizada' => -1],
+        ]);
+        DB::table('faltas')->insert([
+            [
+                'idProfesor' => 'P001',
+                'desde' => '2026-04-01',
+                'hasta' => '2026-04-01',
+                'dia_completo' => 1,
+                'hora_ini' => null,
+                'hora_fin' => null,
+                'estado' => 3,
+            ],
+            [
+                'idProfesor' => 'P002',
+                'desde' => '2026-04-01',
+                'hasta' => '2026-04-01',
+                'dia_completo' => 0,
+                'hora_ini' => '08:00:00',
+                'hora_fin' => '09:00:00',
+                'estado' => 3,
+            ],
+            [
+                'idProfesor' => 'P003',
+                'desde' => '2026-04-01',
+                'hasta' => '2026-04-01',
+                'dia_completo' => 0,
+                'hora_ini' => '08:00:00',
+                'hora_fin' => '09:00:00',
+                'estado' => 3,
+            ],
+        ]);
+
+        $profesores = collect(['P001', 'P002', 'P003', 'P004'])
+            ->mapWithKeys(function (string $dni): array {
+                $profesor = new Profesor(['dni' => $dni, 'email' => strtolower($dni) . '@example.com']);
+                $profesor->dni = $dni;
+
+                return [$dni => $profesor];
+            });
+        $profesorService = Mockery::mock(ProfesorService::class);
+        $profesorService->shouldReceive('activosOrdered')->once()->andReturn(new EloquentCollection());
+        $profesorService->shouldReceive('find')->with(Mockery::type('string'))->andReturnUsing(
+            fn (string $dni): ?Profesor => $profesores->get($dni)
+        );
+        $this->app->instance(ProfesorService::class, $profesorService);
+
+        $horarioService = Mockery::mock(HorarioService::class);
+        $horarioService->shouldReceive('countByProfesorAndDay')->never();
+        $this->app->instance(HorarioService::class, $horarioService);
+
+        $comisionService = Mockery::mock(ComisionService::class);
+        $comisionService->shouldReceive('byDay')->once()->with('2026-04-01')->andReturn(new EloquentCollection());
+        $this->app->instance(ComisionService::class, $comisionService);
+
+        $resultat = (new NotifyDailyFaults())->handle();
+
+        $this->assertSame(0, $resultat);
+        Notification::assertNotSentTo($profesores['P001'], mensajePanel::class);
+        Notification::assertNotSentTo($profesores['P002'], mensajePanel::class);
+        Notification::assertSentTo($profesores['P003'], mensajePanel::class);
+        Notification::assertSentTo($profesores['P004'], mensajePanel::class);
+    }
+
+    /**
      * Crea les taules mínimes per a executar la comanda en proves.
      */
     private function createSchema(): void
@@ -219,8 +303,17 @@ class NotifyDailyFaultsTest extends TestCase
             $table->string('idProfesor', 10)->nullable();
             $table->date('desde');
             $table->date('hasta');
+            $table->boolean('dia_completo')->default(true);
+            $table->time('hora_ini')->nullable();
+            $table->time('hora_fin')->nullable();
             $table->integer('estado')->default(0);
             $table->timestamps();
+        });
+
+        $schema->create('horas', function (Blueprint $table): void {
+            $table->unsignedInteger('codigo')->primary();
+            $table->time('hora_ini');
+            $table->time('hora_fin');
         });
 
         $schema->create('actividades', function (Blueprint $table): void {
