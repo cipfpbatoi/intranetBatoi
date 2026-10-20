@@ -11,6 +11,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Guardia;
+use Intranet\Entities\Hora;
 use Illuminate\Support\Carbon;
 use Throwable;
 use Illuminate\Support\Facades\Log;
@@ -67,11 +68,7 @@ class NotifyDailyFaults extends Command
 
             $dataFormatada = Carbon::parse($dia)->format('d-m-Y');
 
-            $guardias = hazArray(
-                Guardia::where('dia', $dia)->where('realizada', -1)->get(),
-                'idProfesor',
-                'idProfesor'
-            );
+            $guardias = $this->guardiasPendentsSenseJustificar($dia);
             $profesores = $this->noHanFichado($dia);
             foreach ($profesores as $profesor) {
                 avisa($profesor, 'No has fitxat hui dia '.$dataFormatada, '#', 'Sistema');
@@ -184,6 +181,50 @@ class NotifyDailyFaults extends Command
                 unset($noHanFichado[$falta->idProfesor]);
             }
         }
+    }
+
+    /**
+     * Retorna el professorat amb una guàrdia pendent que no queda coberta per una falta.
+     *
+     * @param string $dia
+     * @return array<string, string>
+     */
+    private function guardiasPendentsSenseJustificar(string $dia): array
+    {
+        $guardias = Guardia::query()
+            ->where('dia', $dia)
+            ->where('realizada', -1)
+            ->get()
+            ->reject(fn (Guardia $guardia): bool => $this->guardiaEstaJustificada($guardia, $dia));
+
+        return hazArray($guardias, 'idProfesor', 'idProfesor');
+    }
+
+    /**
+     * Determina si una falta de dia complet o coincident amb la sessió justifica la guàrdia.
+     *
+     * @param Guardia $guardia
+     * @param string $dia
+     * @return bool
+     */
+    private function guardiaEstaJustificada(Guardia $guardia, string $dia): bool
+    {
+        $faltas = Falta::Dia($dia)
+            ->where('idProfesor', $guardia->idProfesor)
+            ->get();
+
+        foreach ($faltas as $falta) {
+            if ((bool) $falta->dia_completo) {
+                return true;
+            }
+
+            if (Hora::horasAfectadas($falta->hora_ini, $falta->hora_fin)
+                ->contains((int) $guardia->hora)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
