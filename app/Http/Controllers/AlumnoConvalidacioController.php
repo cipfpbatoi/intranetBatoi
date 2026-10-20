@@ -202,7 +202,9 @@ class AlumnoConvalidacioController extends Controller
                 filter_var($validated['declaracio_responsable'] ?? false, FILTER_VALIDATE_BOOL)
             );
         } catch (ConvalidacioException $exception) {
-            return back()->withErrors(['fitxer' => $exception->getMessage()]);
+            return back()
+                ->withErrors(['fitxer' => $exception->getMessage()])
+                ->withInput($request->except('fitxer'));
         }
 
         return back()->with('success', 'Document afegit correctament.');

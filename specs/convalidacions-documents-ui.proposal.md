@@ -1,6 +1,6 @@
 # Proposta: simplificar els controls dels documents adjunts
 
-- Estat: aprovada; implementació pendent
+- Estat: ready_for_review
 - Issue relacionada: #323
 - Domini: interfície d'alumnat de convalidacions
 - Punt d'entrada: `resources/views/intranet/convalidacions/alumno/show.blade.php`
@@ -49,6 +49,7 @@ And els altres formularis continuen ocults
 ## Fitxers previsibles
 
 - `resources/views/intranet/convalidacions/alumno/show.blade.php` — mostrar controls sota demanda i compactar la llista.
+- `app/Http/Controllers/AlumnoConvalidacioController.php` — conservar el context del formulari quan una validació de domini retorna un error.
 - `tests/Feature/ConvalidacioFlowTest.php` — assegurar que el llistat és net, els controls es despleguen i els errors es mostren sense perdre el context.
 
 ## Riscos
@@ -57,4 +58,4 @@ And els altres formularis continuen ocults
 - Els formularis d'afegir i substituir no han de niar-se ni compartir els noms dels camps; cadascun ha d'enviar només l'acció triada.
 - La plantilla també mostra documents llegats; els controls han de continuar funcionant per a estos fitxers.
 
-Status: awaiting_approval
+Status: ready_for_review

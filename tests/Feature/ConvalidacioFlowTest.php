@@ -995,6 +995,95 @@ class ConvalidacioFlowTest extends TestCase
         Storage::disk('convalidacions')->assertExists($peticioActualitzada->documents->last()->path);
     }
 
+    public function test_detall_d_alumne_mostra_adjunts_compactes_i_accions_plegades(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'documents-compactes', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [
+                [
+                    'descripcio' => 'Certificat acadèmic',
+                    'fitxer' => UploadedFile::fake()->create('certificat-academic.pdf', 30, 'application/pdf'),
+                ],
+                [
+                    'descripcio' => 'Certificat de riscos',
+                    'fitxer' => UploadedFile::fake()->create('certificat-riscos.pdf', 30, 'application/pdf'),
+                ],
+            ],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $response = $this->get(route('convalidacions.show', $sollicitud))->assertOk();
+        $response->assertSee('Certificat acadèmic')
+            ->assertSee('Certificat de riscos')
+            ->assertSee('Afig un document')
+            ->assertSee('Canviar');
+
+        preg_match_all('/<details\\b([^>]*)>/', $response->getContent(), $detalls);
+        $this->assertCount(3, $detalls[1]);
+        foreach ($detalls[1] as $atributs) {
+            $this->assertDoesNotMatchRegularExpression('/\\bopen\\b/', $atributs);
+        }
+    }
+
+    public function test_errors_de_document_reobrin_nomes_el_control_corresponent(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'documents-reoberts', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [
+                [
+                    'descripcio' => 'Certificat acadèmic',
+                    'fitxer' => UploadedFile::fake()->create('certificat-academic.pdf', 30, 'application/pdf'),
+                ],
+                [
+                    'descripcio' => 'Certificat de riscos',
+                    'fitxer' => UploadedFile::fake()->create('certificat-riscos.pdf', 30, 'application/pdf'),
+                ],
+            ],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $documents = $peticio->documents()->orderBy('id')->get();
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $addTarget = 'afegir-' . $peticio->id;
+        $addResponse = $this->followingRedirects()
+            ->from(route('convalidacions.show', $sollicitud))
+            ->post(route('convalidacions.add-attachment', $peticio), [
+                'document_form_target' => $addTarget,
+                'descripcio' => 'Document addicional',
+                'fitxer' => UploadedFile::fake()->create('invalid.txt', 10, 'text/plain'),
+            ])
+            ->assertOk();
+        $addResponse->assertSee('Afig un document');
+        $this->assertOpenDocumentFormTarget($addResponse->getContent(), $addTarget);
+
+        $replaceTarget = 'adjunt-' . $documents->first()->id;
+        $replaceResponse = $this->followingRedirects()
+            ->from(route('convalidacions.show', $sollicitud))
+            ->put(route('convalidacions.correct-attachment', [$peticio, $documents->first()]), [
+                'document_form_target' => $replaceTarget,
+                'fitxer' => UploadedFile::fake()->create('invalid.txt', 10, 'text/plain'),
+            ])
+            ->assertOk();
+        $this->assertOpenDocumentFormTarget($replaceResponse->getContent(), $replaceTarget);
+    }
+
+    /** Comprova que només està desplegat el formulari que ha fallat. */
+    private function assertOpenDocumentFormTarget(string $html, string $expectedTarget): void
+    {
+        preg_match_all('/<details\\b([^>]*)>(.*?)<\\/details>/s', $html, $detalls, PREG_SET_ORDER);
+        $oberts = array_values(array_filter($detalls, static fn (array $detall): bool => preg_match('/\\bopen\\b/', $detall[1]) === 1));
+
+        $this->assertCount(1, $oberts);
+        $this->assertStringContainsString('value="' . $expectedTarget . '"', $oberts[0][2]);
+    }
+
     public function test_no_es_poden_afegir_mes_de_tres_documents_inclosos_els_llegats(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'max-documents-llegats', [[
