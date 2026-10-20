@@ -183,6 +183,31 @@ class AlumnoConvalidacioController extends Controller
         return back()->with('success', 'Document substituït correctament.');
     }
 
+    /** Afig un adjunt sense substituir cap document existent. */
+    public function addAttachment(Request $request, Convalidacio $convalidacio): RedirectResponse
+    {
+        Gate::forUser($this->alumno())->authorize('correct', $convalidacio);
+        $validated = $request->validate([
+            'descripcio' => ['required', 'string', 'max:120'],
+            'fitxer' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:' . config('convalidacions.max_document_kb', 5120)],
+            'declaracio_responsable' => [$convalidacio->declaracio_responsable ? 'nullable' : 'accepted'],
+        ]);
+
+        try {
+            $this->service->afegirAdjunt(
+                $convalidacio,
+                $this->alumno(),
+                $validated['fitxer'],
+                $validated['descripcio'],
+                filter_var($validated['declaracio_responsable'] ?? false, FILTER_VALIDATE_BOOL)
+            );
+        } catch (ConvalidacioException $exception) {
+            return back()->withErrors(['fitxer' => $exception->getMessage()]);
+        }
+
+        return back()->with('success', 'Document afegit correctament.');
+    }
+
     /** Substituïx el document d'una petició retornada per Direcció. */
     public function correct(Request $request, Convalidacio $convalidacio): RedirectResponse
     {

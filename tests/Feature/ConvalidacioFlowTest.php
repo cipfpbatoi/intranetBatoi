@@ -922,6 +922,149 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertSame('certificat-actualitzat.pdf', $actualitzada->document_original_name);
     }
 
+    public function test_alumne_afig_un_document_a_peticio_en_revisio_sense_perdre_els_existents(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'afegir-document-revisio', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [[
+                'descripcio' => 'Certificat acadèmic',
+                'fitxer' => UploadedFile::fake()->create('certificat-academic.pdf', 50, 'application/pdf'),
+            ]],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $documentInicial = $peticio->documents()->firstOrFail();
+        $pathInicial = $documentInicial->path;
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->from(route('convalidacions.show', $sollicitud))
+            ->post(route('convalidacions.add-attachment', $peticio), [
+                'descripcio' => 'Certificat de Prevenció de Riscos Laborals',
+                'fitxer' => UploadedFile::fake()->create('certificat-prl.pdf', 40, 'application/pdf'),
+            ])
+            ->assertRedirect(route('convalidacions.show', $sollicitud))
+            ->assertSessionHas('success', 'Document afegit correctament.');
+
+        $peticioActualitzada = $peticio->fresh()->load('documents');
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $peticioActualitzada->estat);
+        $this->assertCount(2, $peticioActualitzada->documents);
+        $this->assertSame('Certificat acadèmic', $peticioActualitzada->documents->first()->descripcio);
+        $this->assertSame('Certificat de Prevenció de Riscos Laborals', $peticioActualitzada->documents->last()->descripcio);
+        Storage::disk('convalidacions')->assertExists($pathInicial);
+        Storage::disk('convalidacions')->assertExists($peticioActualitzada->documents->last()->path);
+        $this->get(route('convalidacions.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Certificat acadèmic')
+            ->assertSee('Certificat de Prevenció de Riscos Laborals');
+
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Certificat acadèmic')
+            ->assertSee('Certificat de Prevenció de Riscos Laborals');
+    }
+
+    public function test_alumne_afig_un_document_enviat_i_es_conserva_l_estat_i_la_declaracio(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'afegir-document-enviada', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat-inicial.pdf', 30, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $pathInicial = $peticio->document_path;
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->post(route('convalidacions.add-attachment', $peticio), [
+            'descripcio' => 'Certificat complementari',
+            'fitxer' => UploadedFile::fake()->create('complementari.pdf', 30, 'application/pdf'),
+        ])->assertSessionHas('success');
+
+        $peticioActualitzada = $peticio->fresh()->load('documents');
+        $this->assertSame(Convalidacio::ESTAT_ENVIADA, $peticioActualitzada->estat);
+        $this->assertTrue($peticioActualitzada->declaracio_responsable);
+        $this->assertCount(2, $peticioActualitzada->documents);
+        Storage::disk('convalidacions')->assertExists($pathInicial);
+        $this->assertSame('Certificat complementari', $peticioActualitzada->documents->last()->descripcio);
+        Storage::disk('convalidacions')->assertExists($peticioActualitzada->documents->last()->path);
+    }
+
+    public function test_no_es_poden_afegir_mes_de_tres_documents_inclosos_els_llegats(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'max-documents-llegats', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $rutaLlegada = $this->alumno->nia . '/' . $sollicitud->id . '/llegat.pdf';
+        $rutaPrl = $this->alumno->nia . '/' . $sollicitud->id . '/llegat-prl.pdf';
+        $rutaRelacionada = $this->alumno->nia . '/' . $sollicitud->id . '/relacional.pdf';
+        Storage::disk('convalidacions')->put($rutaLlegada, 'legacy');
+        Storage::disk('convalidacions')->put($rutaPrl, 'legacy-prl');
+        Storage::disk('convalidacions')->put($rutaRelacionada, 'related');
+        $peticio->forceFill([
+            'document_path' => $rutaLlegada,
+            'document_original_name' => 'llegat.pdf',
+            'document_mime' => 'application/pdf',
+            'document_prl_path' => $rutaPrl,
+            'document_prl_original_name' => 'llegat-prl.pdf',
+            'document_prl_mime' => 'application/pdf',
+        ])->save();
+        $peticio->documents()->create([
+            'descripcio' => 'Certificat acadèmic',
+            'path' => $rutaRelacionada,
+            'original_name' => 'relacional.pdf',
+            'mime' => 'application/pdf',
+        ]);
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->post(route('convalidacions.add-attachment', $peticio), [
+            'descripcio' => 'Quart document',
+            'fitxer' => UploadedFile::fake()->create('quart.pdf', 30, 'application/pdf'),
+            'declaracio_responsable' => '1',
+        ])->assertSessionHasErrors('fitxer');
+
+        $this->assertSame(1, $peticio->documents()->count());
+        Storage::disk('convalidacions')->assertExists($rutaLlegada);
+        Storage::disk('convalidacions')->assertExists($rutaPrl);
+        Storage::disk('convalidacions')->assertExists($rutaRelacionada);
+    }
+
+    public function test_nomes_el_propietari_pot_afegir_documents_i_la_declaracio_es_requerida(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'add-attachment-security', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $altreAlumne = Alumno::query()->findOrFail('87654321');
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($altreAlumne, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->post(route('convalidacions.add-attachment', $peticio), [
+            'descripcio' => 'Certificat',
+            'fitxer' => UploadedFile::fake()->create('certificat.pdf', 30, 'application/pdf'),
+            'declaracio_responsable' => '1',
+        ])->assertForbidden();
+
+        $this->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->post(route('convalidacions.add-attachment', $peticio), [
+            'descripcio' => 'Certificat',
+            'fitxer' => UploadedFile::fake()->create('certificat.pdf', 30, 'application/pdf'),
+        ])->assertSessionHasErrors('declaracio_responsable');
+        $this->assertSame(0, $peticio->documents()->count());
+        $this->assertFalse($peticio->fresh()->declaracio_responsable);
+    }
+
     public function test_una_peticio_no_denegada_bloqueja_el_modul_i_denegada_el_torna_a_habilitar(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'blocking', [[

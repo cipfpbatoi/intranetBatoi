@@ -29,6 +29,7 @@ Route::prefix('convalidacions')->name('convalidacions.')->group(function () {
         Route::get('/documents/{convalidacio}', ['as' => 'download', 'uses' => 'AlumnoConvalidacioController@download']);
         Route::get('/documents/{convalidacio}/prl', ['as' => 'download-prl', 'uses' => 'AlumnoConvalidacioController@downloadPrl']);
         Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'download-attachment', 'uses' => 'AlumnoConvalidacioController@downloadAttachment']);
+        Route::post('/{convalidacio}/documents', ['as' => 'add-attachment', 'uses' => 'AlumnoConvalidacioController@addAttachment']);
         Route::put('/{convalidacio}/adjunt/{document}', ['as' => 'correct-attachment', 'uses' => 'AlumnoConvalidacioController@correctAttachment']);
         Route::put('/{convalidacio}/document', ['as' => 'correct', 'uses' => 'AlumnoConvalidacioController@correct']);
         Route::get('/{sollicitud}', ['as' => 'show', 'uses' => 'AlumnoConvalidacioController@show']);
