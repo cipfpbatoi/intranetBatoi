@@ -184,6 +184,12 @@ class FieldBuilder
      */
     public function radios(string $name, array $options = [], mixed $selected = null, array $attributes = [], array $extra = []): string
     {
+        if (is_array($selected) && empty($attributes)) {
+            $extra = $attributes;
+            $attributes = $selected;
+            $selected = null;
+        }
+
         return $this->doBuild('radios', $name, $selected, $attributes, $extra, $options);
     }
 

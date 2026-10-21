@@ -55,8 +55,13 @@
                         </tr>
                     @endforeach
                     @foreach ($bloque['ciclos'] as $key => $resCiclo)
+                        @php
+                            $ciclo = \Intranet\Entities\Ciclo::find($key);
+                            $nombreCiclo = $ciclo?->ciclo
+                                ?? ($key === '' ? 'Sense cicle assignat' : "Cicle no trobat (#{$key})");
+                        @endphp
                         <tr>
-                            <td style="border: 1px solid #00aeef; padding: 5px;">{{\Intranet\Entities\Ciclo::find($key)->ciclo}}</td>
+                            <td style="border: 1px solid #00aeef; padding: 5px;">{{ $nombreCiclo }}</td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['matriculados'] }}</td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['resfct']  }} de {{ $resCiclo['avalfct'] }}</td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['exentos'] }}</td>
