@@ -356,6 +356,7 @@ return array(
         'dual' => 'Tutora FPDual',
         'jefe_practicas' => "Cap d'FCT",
         'acompanyant' => 'Professorat acompanyant',
+        'secretaria' => 'Secretaria',
     ),
     'week' => array(
         'L' => 'Dilluns',

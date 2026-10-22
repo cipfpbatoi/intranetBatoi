@@ -57,8 +57,9 @@ abstract class PerfilController extends IntranetController
         if ($request->especialitat) {
             $new->especialitat = $request->especialitat;
         }
-        if ($request->rol && $this->canManageRoles()) {
-            $new->rol = Rol($request->rol);
+        $previousRole = $new->rol;
+        if ($request->exists('rol') && $this->canManageRoles()) {
+            $new->rol = Rol($request->input('rol', []));
         }
         if ($request->telef1) {
             $new->telef1 = $request->telef1;
@@ -96,6 +97,10 @@ abstract class PerfilController extends IntranetController
         }
 
         $new->save();
+
+        if ((int) $previousRole !== (int) $new->rol && !empty($new->dni)) {
+            app(\Intranet\Application\Menu\MenuService::class)->clearCache('general', (string) $new->dni);
+        }
     }
 
     /**

@@ -353,7 +353,8 @@ return array(
         'practicas' => 'Tutor prácticas',
         'dual' => 'Tutor FPDual',
         'jefe_practicas' => 'Jefe de FCT',
-        'acompanyant' => 'Profesorado acompañante'
+        'acompanyant' => 'Profesorado acompañante',
+        'secretaria' => 'Secretaría'
     ),
     'week' => array(
         'L' => 'Lunes',

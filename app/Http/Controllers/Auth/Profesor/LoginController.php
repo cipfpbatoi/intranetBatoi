@@ -61,7 +61,28 @@ class LoginController extends Controller
     {
         if ($user instanceof Profesor) {
             $this->apiSessionTokens()->issueForProfesor($user, 'web-login');
+
+            if ($this->isSecretaryOnly($user)) {
+                $request->session()->forget('url.intended');
+            }
         }
+    }
+
+    /** Retorna una destinació accessible per a cada combinació de rols. */
+    public function redirectPath(): string
+    {
+        $user = $this->guard()->user();
+
+        return $user instanceof Profesor && $this->isSecretaryOnly($user)
+            ? route('convalidacions.direction.modules.index')
+            : $this->redirectTo;
+    }
+
+    /** Determina si l'usuari té Secretaria però no el rol de Professorat. */
+    private function isSecretaryOnly(Profesor $user): bool
+    {
+        return esRol((int) $user->rol, (int) config('roles.rol.secretaria'))
+            && !esRol((int) $user->rol, (int) config('roles.rol.profesor'));
     }
 
     protected function credentials(Request $request)
@@ -156,7 +177,9 @@ class LoginController extends Controller
             Auth::login($profesor);
             $this->apiSessionTokens()->issueForProfesor($profesor, 'web-first-login');
             session(['lang' => $profesor->idioma]);
-            return redirect()->route('home.profesor');
+            return redirect($this->isSecretaryOnly($profesor)
+                ? route('convalidacions.direction.modules.index')
+                : route('home.profesor'));
         }
 
     }
