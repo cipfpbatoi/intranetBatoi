@@ -15,15 +15,21 @@ class ConvalidacioPolicy
     /** L'alumne pot consultar una capçalera pròpia. */
     public function view($user, SollicitudConvalidacio $sollicitud): bool
     {
-        return $this->isDirection($user)
+        return $this->canManageRequests($user)
             || ($user instanceof Alumno && (string) $user->nia === (string) $sollicitud->alumno_id);
     }
 
     /** L'alumne pot consultar o descarregar una petició pròpia. */
     public function viewPeticio($user, Convalidacio $peticio): bool
     {
-        return $this->isDirection($user)
+        return $this->canManageRequests($user)
             || ($user instanceof Alumno && (string) $user->nia === (string) $peticio->sollicitud->alumno_id);
+    }
+
+    /** Perfils operatius autoritzats poden consultar el panell de sol·licituds. */
+    public function viewRequests($user): bool
+    {
+        return $this->canManageRequests($user);
     }
 
     /** L'alumne propietari pot modificar documents només abans de revisar o quan se li demana una correcció. */
@@ -37,22 +43,28 @@ class ConvalidacioPolicy
             ], true);
     }
 
-    /** Només Direcció pot revisar una petició no terminal. */
+    /** Direcció, Secretaria i Administració poden revisar peticions no terminals. */
     public function resolve($user, Convalidacio $peticio): bool
     {
-        return $this->isDirection($user) && !$peticio->esTerminal();
+        return $this->canManageRequests($user) && !$peticio->esTerminal();
     }
 
-    /** Direcció i la persona configurada com a secretària poden consultar el llistat de mòduls. */
+    /** Perfils operatius autoritzats poden consultar els llistats de sol·licituds i mòduls. */
     public function viewModuleRequests($user): bool
     {
-        return $this->isDirection($user) || $this->isSecretary($user);
+        return $this->canManageRequests($user);
     }
 
-    /** Direcció i la persona configurada com a secretària poden registrar el pas a ITACA. */
+    /** Perfils operatius autoritzats poden registrar el pas a ITACA en la intranet. */
     public function registerModuleRequests($user): bool
     {
         return $this->viewModuleRequests($user);
+    }
+
+    /** Perfils operatius autoritzats poden aplicar les regles automàtiques a les sol·licituds. */
+    public function applyAutomaticConvalidations($user): bool
+    {
+        return $this->canManageRequests($user);
     }
 
     /** Determina si la identitat pertany al perfil de Direcció. */
@@ -60,6 +72,14 @@ class ConvalidacioPolicy
     {
         return $user instanceof Profesor
             && esRol((int) $user->rol, (int) config('roles.rol.direccion'));
+    }
+
+    /** Comprova si el perfil pot treballar les sol·licituds de convalidació. */
+    private function canManageRequests($user): bool
+    {
+        return $this->isDirection($user)
+            || $this->isSecretary($user)
+            || ($user instanceof Profesor && esRol((int) $user->rol, (int) config('roles.rol.administrador')));
     }
 
     /** Comprova el factor independent del rol de Secretaria. */

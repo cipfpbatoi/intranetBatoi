@@ -7,10 +7,12 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
 use Intranet\Application\Convalidacio\ConvalidacioException;
 use Intranet\Application\Convalidacio\ConvalidacioReglesManager;
+use Intranet\Entities\Convalidacio;
 use Intranet\Entities\Profesor;
 
 /** Gestiona el catàleg de regles i la seua aplicació per Direcció. */
@@ -71,12 +73,15 @@ class DireccionConvalidacioReglesController extends Controller
     {
         $responsable = auth('profesor')->user();
         abort_unless($responsable instanceof Profesor, 401);
+        Gate::forUser($responsable)->authorize('applyAutomaticConvalidations', Convalidacio::class);
 
         $resultat = $this->automatitzacions->aplicar($responsable);
 
-        $destinacio = $request->input('return_to') === 'index'
-            ? 'convalidacions.direction.index'
-            : 'convalidacions.direction.rules.index';
+        $potVeureRegles = esRol((int) $responsable->rol, (int) config('roles.rol.direccion'))
+            || esRol((int) $responsable->rol, (int) config('roles.rol.administrador'));
+        $destinacio = $potVeureRegles && $request->input('return_to') !== 'index'
+            ? 'convalidacions.direction.rules.index'
+            : 'convalidacions.direction.index';
 
         return redirect()->route($destinacio)->with('resultatAutomatic', $resultat);
     }
