@@ -42,6 +42,9 @@ class DireccionConvalidacioController extends Controller
     /** Mostra les sol·licituds separades entre seguiment i resoltes. */
     public function index(Request $request): View
     {
+        $responsable = $this->profesor();
+        Gate::forUser($responsable)->authorize('viewRequests', Convalidacio::class);
+        $potConfigurar = $this->potConfigurarConvalidacions($responsable);
         $filters = $request->validate([
             'pestanya' => ['nullable', 'string', Rule::in(['seguiment', 'resoltes'])],
             'pendent_direccio' => ['nullable', 'boolean'],
@@ -60,8 +63,9 @@ class DireccionConvalidacioController extends Controller
             'sollicituds' => $sollicituds,
             'sollicitudsEnSeguiment' => $this->queries->comptarSollicitudsEnSeguimentDireccion(),
             'pestanya' => $pestanya,
-            'accessBlocked' => $this->access->isBlocked(),
-            'accessPassword' => (string) config('convalidacions_access.password'),
+            'potConfigurar' => $potConfigurar,
+            'accessBlocked' => $potConfigurar && $this->access->isBlocked(),
+            'accessPassword' => $potConfigurar ? (string) config('convalidacions_access.password') : null,
             'automatitzacions' => $preview['per_sollicitud'],
             'peticionsAutomatiquesElegibles' => count($preview['casos']),
             'filters' => ['pendent_direccio' => $pendentDireccio],
@@ -317,5 +321,12 @@ class DireccionConvalidacioController extends Controller
         abort_unless($profesor instanceof Profesor, 401);
 
         return $profesor;
+    }
+
+    /** Comprova si el perfil pot veure i gestionar la configuració de convalidacions. */
+    private function potConfigurarConvalidacions(Profesor $profesor): bool
+    {
+        return esRol((int) $profesor->rol, (int) config('roles.rol.direccion'))
+            || esRol((int) $profesor->rol, (int) config('roles.rol.administrador'));
     }
 }

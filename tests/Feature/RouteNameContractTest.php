@@ -81,6 +81,13 @@ class RouteNameContractTest extends TestCase
     public function test_rutes_operatives_de_secretaria_no_impliquen_rol_de_professorat_o_direccio(): void
     {
         foreach ([
+            'convalidacions.direction.index',
+            'convalidacions.direction.show',
+            'convalidacions.direction.review',
+            'convalidacions.direction.resolve',
+            'convalidacions.direction.destroy',
+            'convalidacions.direction.download',
+            'convalidacions.direction.rules.apply',
             'convalidacions.direction.modules.index',
             'convalidacions.direction.modules.pdf',
             'convalidacions.direction.modules.pdf.post',
@@ -157,14 +164,15 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/alumno/convalidacions', route('convalidacions.index', absolute: false));
         $this->assertSame('/direccion/convalidacions', route('convalidacions.direction.index', absolute: false));
         $this->assertContains('role:alumno', $alumno->gatherMiddleware());
-        $this->assertContains('role:direccion', $direccion->gatherMiddleware());
+        $this->assertContains('auth:profesor', $direccion->gatherMiddleware());
+        $this->assertNotContains('role:direccion', $direccion->gatherMiddleware());
         $this->assertNotContains('role:alumno', $direccion->gatherMiddleware());
 
         foreach (['convalidacions.index', 'convalidacions.create', 'convalidacions.store', 'convalidacions.download', 'convalidacions.correct', 'convalidacions.show'] as $name) {
             $this->assertContains('convalidacions.alumne.access', Route::getRoutes()->getByName($name)->gatherMiddleware());
         }
 
-        foreach (['convalidacions.direction.access', 'convalidacions.direction.destroy'] as $name) {
+        foreach (['convalidacions.direction.access', 'convalidacions.direction.configuracio'] as $name) {
             $this->assertContains('role:direccion', Route::getRoutes()->getByName($name)->gatherMiddleware());
         }
 

@@ -1894,8 +1894,9 @@ class ConvalidacioFlowTest extends TestCase
         }
     }
 
-    public function test_el_rol_secretaria_accedix_al_flux_operatiu_i_el_dni_configurat_no_autoritza(): void
+    public function test_secretaria_pot_gestionar_sollicituds_i_el_dni_configurat_no_autoritza(): void
     {
+        Mail::fake();
         DB::table('profesores')->insert([
             'dni' => 'SEC00001',
             'nombre' => 'Secretaria',
@@ -1904,8 +1905,57 @@ class ConvalidacioFlowTest extends TestCase
             'updated_at' => now(),
         ]);
         config(['avisos.secretario' => 'ALTRA00']);
-        $this->actingAs(Profesor::query()->findOrFail('SEC00001'), 'profesor');
+        $secretaria = Profesor::query()->findOrFail('SEC00001');
+        $sollicitud = $this->service->tramitar($this->alumno, 'secretaria-gestio-sollicitud', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat.pdf', 50, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $this->alumno->forceFill(['email' => 'alumne@example.test'])->save();
+        $this->actingAs($secretaria, 'profesor');
         $this->assertTrue(userIsNameAllow('todos'));
+
+        $this->get(route('convalidacions.direction.index'))
+            ->assertOk()
+            ->assertSee('Sol·licituds de convalidació')
+            ->assertSee('#' . $sollicitud->id)
+            ->assertDontSee('Entorn de proves')
+            ->assertDontSee('Configuració de convalidacions')
+            ->assertDontSee((string) config('convalidacions_access.password'));
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Estudis i documents aportats')
+            ->assertSee('certificat.pdf');
+        $this->get(route('convalidacions.direction.download', $peticio))->assertOk();
+        $this->post(route('convalidacions.direction.review', $sollicitud))
+            ->assertRedirect(route('convalidacions.direction.show', $sollicitud));
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $peticio->fresh()->estat);
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $peticio), [
+                'estat' => Convalidacio::ESTAT_ACCEPTADA,
+                'observacions' => 'Cal revisar la documentació.',
+                'resultat_resolucio' => 'AA',
+                'mode_nota_resolucio' => 'preserve',
+                'nota_resultat_resolucio' => 8,
+            ])->assertRedirect(route('convalidacions.direction.show', $sollicitud));
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA, $peticio->fresh()->estat);
+        $this->assertSame('Cal revisar la documentació.', $peticio->fresh()->observacions);
+        $this->assertSame('AA', $peticio->fresh()->resultat_resolucio);
+        $this->assertEquals(8, $peticio->fresh()->nota_resultat_resolucio);
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $peticio), [
+                'estat' => Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA,
+            ])->assertRedirect(route('convalidacions.direction.show', $sollicitud));
+        $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $peticio->fresh()->estat);
+        $this->post(route('convalidacions.direction.rules.apply'), ['return_to' => 'index'])
+            ->assertRedirect(route('convalidacions.direction.index'));
+        $rutaEliminar = $peticio->document_path;
+        $this->delete(route('convalidacions.direction.destroy', $sollicitud))
+            ->assertRedirect(route('convalidacions.direction.index'));
+        $this->assertDatabaseMissing('sollicituds_convalidacions', ['id' => $sollicitud->id], 'sqlite');
+        Storage::disk('convalidacions')->assertMissing($rutaEliminar);
 
         $this->get(route('convalidacions.direction.modules.index'))
             ->assertOk()
@@ -1913,14 +1963,22 @@ class ConvalidacioFlowTest extends TestCase
         $this->get(route('convalidacions.direction.modules.pdf'))->assertOk();
         $this->get(route('menu.index'))->assertForbidden();
         $this->get(route('convalidacions.direction.rules.index'))->assertForbidden();
+        $this->put(route('convalidacions.direction.access'), ['blocked' => '1'])->assertForbidden();
+        $this->get(route('convalidacions.direction.xml.index'))->assertForbidden();
+        $this->get(route('convalidacions.direction.angles.index'))->assertForbidden();
+        $this->get(route('convalidacions.direction.fol-loe.index'))->assertForbidden();
         $this->get(route('home.profesor'))->assertForbidden();
 
         $menuService = app(MenuService::class);
-        $this->assertArrayHasKey('Convalidacions per mòdul', $menuService->make(
+        $this->assertArrayHasKey('Sol·licituds de convalidació', $menuService->make(
             'general', true, Profesor::query()->findOrFail('SEC00001')
         ));
+        $this->assertSame(
+            route('convalidacions.direction.index'),
+            $menuService->make('general', true, Profesor::query()->findOrFail('SEC00001'))['Sol·licituds de convalidació']['url']
+        );
         $this->assertArrayHasKey(
-            'Convalidacions per mòdul',
+            'Sol·licituds de convalidació',
             $menuService->make('general', true, Profesor::query()->findOrFail('DIR00001'))
         );
 
@@ -1936,7 +1994,8 @@ class ConvalidacioFlowTest extends TestCase
         $this->actingAs($professor, 'profesor')
             ->get(route('convalidacions.direction.modules.index'))
             ->assertForbidden();
-        $this->assertArrayNotHasKey('Convalidacions per mòdul', $menuService->make('general', true, $professor));
+        $this->get(route('convalidacions.direction.index'))->assertForbidden();
+        $this->assertArrayNotHasKey('Sol·licituds de convalidació', $menuService->make('general', true, $professor));
     }
 
     public function test_rol_secretaria_es_independent_i_es_combina_multiplicativament(): void
@@ -2168,7 +2227,8 @@ class ConvalidacioFlowTest extends TestCase
 
         $deleteRoute = Route::getRoutes()->getByName('convalidacions.direction.destroy');
         $this->assertNotNull($deleteRoute);
-        $this->assertContains('role:direccion', $deleteRoute->gatherMiddleware());
+        $this->assertContains('auth:profesor', $deleteRoute->gatherMiddleware());
+        $this->assertNotContains('role:direccion', $deleteRoute->gatherMiddleware());
         $this->get(route('convalidacions.direction.show', $sollicitud))
             ->assertOk()
             ->assertSee('<table class="table table-hover align-middle">', false)

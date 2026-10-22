@@ -268,6 +268,16 @@ And Direcció també pot marcar individualment com a `Acceptada (Convalidada)` u
 And este canvi individual conserva el resultat i la nota ja guardats, tant si la resolució va ser manual com automàtica
 But no es pot fer el canvi individual des de cap altre estat
 
+### Escenari 23: operativa completa de sol·licituds per Secretaria
+
+Given una persona autenticada amb rol Secretaria
+When obri la vista «Equip Directiu / Convalida»
+Then pot consultar el llistat complet de sol·licituds, obrir-ne qualsevol i consultar-ne els mòduls, els estats, les observacions i la documentació
+And pot descarregar els documents autoritzats i realitzar les mateixes accions operatives de revisió i resolució per mòdul que Direcció, amb les mateixes validacions, transicions, traçabilitat i notificacions
+And pot utilitzar el llistat per mòdul, generar-ne el PDF, registrar les acceptades com a convalidades en la intranet i executar les altres accions operatives disponibles per a Direcció
+But no pot accedir a la configuració de regles, gestió d'XML o catàlegs, control d'accés de proves ni gestió de rols
+And el rol Secretaria no li concedeix accés general a les àrees protegides per `role:profesor`, `role:direccion` o `role:administrador`
+
 ### ✅ Escenari 22: guardar resultat, nota i procedència de la resolució per mòdul
 
 Given Direcció resol manualment una petició com a `Acceptada`
@@ -336,7 +346,7 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 - Una mateixa sol·licitud pot contindre peticions en estats diferents.
 - La sol·licitud és una agrupació de peticions i no té un estat únic; les consultes i filtres per estat s'apliquen a cada petició de mòdul.
 - El llistat de sol·licituds mostra una fila per capçalera i no es filtra per estat de mòdul; el llistat de convalidacions mostra una fila per mòdul i és el lloc dels filtres i operacions per estat.
-- La persona configurada com a càrrec de Secretaria pot accedir només al llistat per mòdul i al seu PDF; no pot obrir el detall ni gestionar la configuració de Direcció.
+- El rol Secretaria pot accedir a la vista completa de sol·licituds, al detall, als documents i a les accions operatives de revisió/resolució per mòdul disponibles per a Direcció; no pot gestionar la configuració de Direcció.
 - El llistat per mòdul només es filtra per estat; el PDF operatiu permet triar l'estat en un diàleg i l'opció buida inclou tots els estats. Els PDF sempre identifiquen la sol·licitud d'origen i no incorporen fitxers adjunts.
 - El PDF amb confirmació de registre en ITACA obté els identificadors exclusivament del filtre aplicat; no accepta una llista d'identificadors enviada pel navegador i no modifica peticions que ja no estiguen `Acceptada`.
 - `Acceptada` no determina per si sola el resultat de la convalidació ni el tractament de la nota; cada petició acceptada guarda `CO` o `AA` i si conserva la nota d'origen.
@@ -349,7 +359,7 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 ### Autorització i seguretat
 
 - L'alumne només pot consultar, tramitar i corregir les seues pròpies sol·licituds i peticions.
-- Direcció gestiona totes les sol·licituds i peticions; Secretaria té accés als llistats i PDF descrits en els escenaris 19–21, inclosa la confirmació de registre en ITACA, però no per això obté accés a la configuració de regles, als XML d'avaluació ni al bloqueig de proves.
+- Direcció i Secretaria poden gestionar les sol·licituds i peticions mitjançant les accions operatives del flux; Secretaria no obté per això accés a la configuració de regles, als XML d'avaluació, als catàlegs ni al bloqueig de proves.
 - No es confia en IDs, estats, orígens, tipus ni permisos rebuts des del navegador sense validació al servidor.
 - Els missatges, les observacions i els adjunts no exposen informació d'altres persones.
 - El bloqueig de proves es persistix perquè siga consistent entre peticions i dispositius, i per defecte l'accés de l'alumnat està obert.
@@ -380,7 +390,7 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 - Accions massives fora de les peticions `Acceptada` incloses en el PDF i confirmades expressament per l'usuari responsable.
 - OCR, IA, models en la DGX Spark i fine-tuning.
 - Altres notificacions de panell o correus diferents de l'avís per canvi individual d'estat definit en l'escenari 18.
-- Gestió general de permisos de Secretaria fora dels llistats i PDF descrits en els escenaris 19–21.
+- Gestió general de permisos de Secretaria fora de l'operativa de convalidacions descrita en l'escenari 23.
 - Historial complet de transicions.
 - Múltiples documents per petició i versionat documental.
 - Edició o cancel·lació d'una sol·licitud ja tramitada.

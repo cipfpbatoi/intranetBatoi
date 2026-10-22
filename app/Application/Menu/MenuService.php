@@ -232,8 +232,8 @@ class MenuService
         if ($nom === 'general'
             && (esRol((int) $user->rol, (int) config('roles.rol.direccion'))
                 || esRol((int) $user->rol, (int) config('roles.rol.secretaria')))) {
-            $menu['Convalidacions per mòdul'] = [
-                'url' => route('convalidacions.direction.modules.index'),
+            $menu['Sol·licituds de convalidació'] = [
+                'url' => route('convalidacions.direction.index'),
                 'class' => 'fa-check-square',
                 'secure' => true,
             ];

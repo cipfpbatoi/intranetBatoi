@@ -8,7 +8,9 @@
         <ul class="nav nav-tabs bar_tabs">
             <li class="active"><a href="{{ route('convalidacions.direction.index') }}" aria-current="page">Sol·licituds</a></li>
             <li><a href="{{ route('convalidacions.direction.modules.index') }}">Convalidacions per mòdul</a></li>
-            <li><a href="{{ route('convalidacions.direction.configuracio') }}">Configuració de convalidacions</a></li>
+            @if ($potConfigurar)
+                <li><a href="{{ route('convalidacions.direction.configuracio') }}">Configuració de convalidacions</a></li>
+            @endif
         </ul>
     </nav>
     <p>Cada fila agrupa una sol·licitud de l’alumne i tots els mòduls que ha demanat.</p>
@@ -24,6 +26,7 @@
             @endif
         </div>
     @endif
+    @if ($potConfigurar)
     <details class="panel panel-default">
         <summary class="panel-heading" style="cursor:pointer">
             <strong>Entorn de proves</strong>
@@ -56,6 +59,7 @@
             </form>
         </div>
     </details>
+    @endif
     <nav aria-label="Pestanyes de sol·licituds">
         <ul class="nav nav-tabs bar_tabs">
             <li @class(['active' => $pestanya === 'seguiment'])>

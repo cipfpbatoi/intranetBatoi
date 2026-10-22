@@ -142,7 +142,7 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    /** Rutes de consulta i anotació de mòduls accessibles a Direcció i a la Secretaria designada. */
+    /** Rutes operatives de convalidacions protegides per les policies del domini. */
     protected function convalidacioModuleRoutes()
     {
         Route::group([
@@ -150,6 +150,7 @@ class RouteServiceProvider extends ServiceProvider
             'namespace' => $this->namespace,
         ], function ($router) {
             require base_path('routes/convalidacions-moduls.php');
+            require base_path('routes/convalidacions-sollicituds.php');
         });
     }
 
