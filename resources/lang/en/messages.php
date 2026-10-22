@@ -356,6 +356,7 @@ return array(
         'dual' => 'Dual training tutor',
         'jefe_practicas' => 'Head of FCT',
         'acompanyant' => 'Companion teacher',
+        'secretaria' => 'Secretary',
     ),
     'week' => array(
         'L' => 'Monday',

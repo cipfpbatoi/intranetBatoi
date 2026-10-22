@@ -286,6 +286,7 @@ class PerfilControllerTest extends TestCase
                 'rol' => [
                     config('roles.rol.profesor'),
                     config('roles.rol.jefe_dpto'),
+                    config('roles.rol.secretaria'),
                 ],
             ]);
 
@@ -294,7 +295,9 @@ class PerfilControllerTest extends TestCase
 
         $fresh = Profesor::on('sqlite')->findOrFail($profesor->dni);
         $this->assertSame(
-            (int) config('roles.rol.profesor') * (int) config('roles.rol.jefe_dpto'),
+            (int) config('roles.rol.profesor')
+                * (int) config('roles.rol.jefe_dpto')
+                * (int) config('roles.rol.secretaria'),
             (int) $fresh->rol
         );
 
@@ -302,6 +305,23 @@ class PerfilControllerTest extends TestCase
             'formulario' => new FormBuilder($fresh),
         ])->render();
         $this->assertStringContainsString('name="rol[]"', $html);
+        $this->assertStringContainsString(__('messages.rol.secretaria'), $html);
+
+        $this->withoutMiddleware([RoleMiddleware::class])
+            ->withoutMiddleware([VerifyCsrfToken::class])
+            ->actingAs($profesor, 'profesor')
+            ->from('/profesor/' . $profesor->dni . '/edit')
+            ->put('/profesor/' . $profesor->dni . '/edit', [
+                'email' => 'professor@example.com',
+                'rol' => [config('roles.rol.administrador')],
+            ]);
+
+        $this->assertSame(
+            (int) config('roles.rol.profesor')
+                * (int) config('roles.rol.jefe_dpto')
+                * (int) config('roles.rol.secretaria'),
+            (int) Profesor::on('sqlite')->findOrFail($profesor->dni)->rol
+        );
     }
 
     private function createSchema(): void

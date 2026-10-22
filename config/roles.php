@@ -15,7 +15,8 @@ return [
         //'convivencia' => 37,
         'jefe_practicas' => 41,
         'qualitat' => 43,
-        'comissio_IiC' => 47
+        'comissio_IiC' => 47,
+        'secretaria' => 53
     ],
     'lor' => [
         2 => 'direccion',
@@ -33,6 +34,7 @@ return [
         41 => 'jefe_practicas',
         43 => 'qualitat',
         47 => 'comissio_IiC',
+        53 => 'secretaria',
     ],
     'actions' => [
         'SegAval' => 'Seguiments Avaluació',

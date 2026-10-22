@@ -62,13 +62,10 @@ class ConvalidacioPolicy
             && esRol((int) $user->rol, (int) config('roles.rol.direccion'));
     }
 
-    /** Comprova el DNI configurat per al càrrec de secretaria. */
+    /** Comprova el factor independent del rol de Secretaria. */
     private function isSecretary($user): bool
     {
-        $secretaryDni = trim((string) config('avisos.secretario', ''));
-
         return $user instanceof Profesor
-            && $secretaryDni !== ''
-            && (string) $user->dni === $secretaryDni;
+            && esRol((int) $user->rol, (int) config('roles.rol.secretaria'));
     }
 }

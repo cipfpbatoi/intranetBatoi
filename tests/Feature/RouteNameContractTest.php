@@ -78,6 +78,35 @@ class RouteNameContractTest extends TestCase
         );
     }
 
+    public function test_rutes_operatives_de_secretaria_no_impliquen_rol_de_professorat_o_direccio(): void
+    {
+        foreach ([
+            'convalidacions.direction.modules.index',
+            'convalidacions.direction.modules.pdf',
+            'convalidacions.direction.modules.pdf.post',
+        ] as $routeName) {
+            $route = Route::getRoutes()->getByName($routeName);
+            $this->assertNotNull($route, "No s'ha trobat la ruta {$routeName}.");
+            $middleware = $route->gatherMiddleware();
+            $this->assertContains('auth:profesor', $middleware);
+            $this->assertNotContains('role:profesor', $middleware);
+            $this->assertNotContains('role:direccion', $middleware);
+        }
+
+        $this->assertContains(
+            'role:profesor',
+            Route::getRoutes()->getByName('home.profesor')->gatherMiddleware()
+        );
+        $this->assertContains(
+            'role:todos',
+            Route::getRoutes()->getByName('notificacion.index')->gatherMiddleware()
+        );
+        $this->assertContains(
+            'role:administrador',
+            Route::getRoutes()->getByName('menu.index')->gatherMiddleware()
+        );
+    }
+
     public function test_la_ruta_d_assumptes_particulars_de_direccio_es_estable_i_protegida(): void
     {
         $route = Route::getRoutes()->getByName('assumptes-particulars.direccion.index');

@@ -199,6 +199,68 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
         $this->assertSame('va', session('lang'));
     }
 
+    public function test_secretaria_sola_inicia_sessio_i_arriba_al_llistat_operatiu(): void
+    {
+        $this->insertProfesor([
+            'dni' => 'SEC00001',
+            'codigo' => 2053,
+            'email' => 'secretaria@test.local',
+            'password' => Hash::make('secret-pass'),
+            'changePassword' => '2026-01-01',
+            'rol' => (int) config('roles.rol.secretaria'),
+        ]);
+
+        $response = $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.postlogin'), [
+                'codigo' => '2053',
+                'password' => 'secret-pass',
+            ]);
+
+        $response->assertRedirect(route('convalidacions.direction.modules.index'));
+        $this->assertAuthenticated('profesor');
+        $this->get(route('login'))->assertRedirect(route('convalidacions.direction.modules.index'));
+    }
+
+    public function test_professorat_i_secretaria_manté_la_destinacio_de_professorat(): void
+    {
+        $this->insertProfesor([
+            'dni' => 'SEC00002',
+            'codigo' => 2054,
+            'email' => 'prof-secretaria@test.local',
+            'password' => Hash::make('secret-pass'),
+            'changePassword' => '2026-01-01',
+            'rol' => (int) config('roles.rol.profesor') * (int) config('roles.rol.secretaria'),
+        ]);
+
+        $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.postlogin'), [
+                'codigo' => '2054',
+                'password' => 'secret-pass',
+            ])
+            ->assertRedirect('/home');
+    }
+
+    public function test_primer_login_de_secretaria_arriba_al_llistat_operatiu(): void
+    {
+        $this->insertProfesor([
+            'dni' => 'SEC00003',
+            'codigo' => 2055,
+            'email' => 'first-secretaria@test.local',
+            'password' => Hash::make('old-secret'),
+            'changePassword' => null,
+            'rol' => (int) config('roles.rol.secretaria'),
+        ]);
+
+        $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.firstLogin'), [
+                'codigo' => '2055',
+                'email' => 'first-secretaria@test.local',
+                'password' => 'PassWord1234',
+                'password_confirmation' => 'PassWord1234',
+            ])
+            ->assertRedirect(route('convalidacions.direction.modules.index'));
+    }
+
     public function test_first_login_retorna_errors_de_validacio_quan_password_no_complix_regles(): void
     {
         $this->insertProfesor([

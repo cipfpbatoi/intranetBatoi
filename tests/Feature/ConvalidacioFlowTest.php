@@ -19,6 +19,7 @@ use Intranet\Application\Convalidacio\ConvalidacioAnglesCorrespondenciesService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioReglesManager;
 use Intranet\Application\Convalidacio\ConvalidacioService;
+use Intranet\Application\Menu\MenuService;
 use Intranet\Application\Convalidacio\ResultatsAcademicsXmlService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Convalidacio;
@@ -1801,8 +1802,17 @@ class ConvalidacioFlowTest extends TestCase
         $peticions[1]->forceFill(['estat' => Convalidacio::ESTAT_DENEGADA])->save();
         $this->alumno->forceFill(['email' => 'alumne@example.test'])->save();
         $dataAnterior = $peticions[0]->fresh()->estat_canviat_at;
-        $this->withoutMiddleware(RoleMiddleware::class)
-            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00002',
+            'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        config(['avisos.secretario' => 'NO-COINCIDIX']);
+        $secretaria = Profesor::query()->findOrFail('SEC00002');
+        $this->actingAs($secretaria, 'profesor');
+        $this->get(route('convalidacions.direction.modules.index'))->assertOk();
 
         $response = $this->post(route('convalidacions.direction.modules.pdf.post'), [
             'estat' => Convalidacio::ESTAT_ACCEPTADA,
@@ -1812,7 +1822,7 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertStringStartsWith('%PDF', $response->getContent());
         $this->assertSame(Convalidacio::ESTAT_ACCEPTADA_CONVALIDADA, $peticions[0]->fresh()->estat);
         $this->assertSame(Convalidacio::ESTAT_DENEGADA, $peticions[1]->fresh()->estat);
-        $this->assertSame('DIR00001', $peticions[0]->fresh()->revisat_per);
+        $this->assertSame('SEC00002', $peticions[0]->fresh()->revisat_per);
         $this->assertNotNull($peticions[0]->fresh()->estat_canviat_at);
         $this->assertGreaterThanOrEqual($dataAnterior->getTimestamp(), $peticions[0]->fresh()->estat_canviat_at->getTimestamp());
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 1);
@@ -1820,7 +1830,7 @@ class ConvalidacioFlowTest extends TestCase
         $vistaPdf = view('intranet.convalidacions.direccion.moduls-pdf', [
             'peticions' => collect([$peticions[0]->fresh()->load(['sollicitud.alumno', 'moduloDestino'])]),
             'generat' => now(),
-            'generatPer' => Profesor::query()->findOrFail('DIR00001'),
+            'generatPer' => $secretaria,
             'registreItacaConfirmat' => true,
             'estatInforme' => Convalidacio::ESTAT_ACCEPTADA,
             'errorsCorreu' => 0,
@@ -1884,22 +1894,64 @@ class ConvalidacioFlowTest extends TestCase
         }
     }
 
-    public function test_secretaria_configurada_accedix_al_llistat_per_modul_pero_no_a_la_configuracio_de_direccio(): void
+    public function test_el_rol_secretaria_accedix_al_flux_operatiu_i_el_dni_configurat_no_autoritza(): void
     {
         DB::table('profesores')->insert([
             'dni' => 'SEC00001',
             'nombre' => 'Secretaria',
-            'rol' => (int) config('roles.rol.profesor'),
+            'rol' => (int) config('roles.rol.secretaria'),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        config(['avisos.secretario' => 'SEC00001']);
+        config(['avisos.secretario' => 'ALTRA00']);
         $this->actingAs(Profesor::query()->findOrFail('SEC00001'), 'profesor');
+        $this->assertTrue(userIsNameAllow('todos'));
 
         $this->get(route('convalidacions.direction.modules.index'))
             ->assertOk()
             ->assertSee(route('convalidacions.direction.modules.index'), false);
+        $this->get(route('convalidacions.direction.modules.pdf'))->assertOk();
+        $this->get(route('menu.index'))->assertForbidden();
         $this->get(route('convalidacions.direction.rules.index'))->assertForbidden();
+        $this->get(route('home.profesor'))->assertForbidden();
+
+        $menuService = app(MenuService::class);
+        $this->assertArrayHasKey('Convalidacions per mòdul', $menuService->make(
+            'general', true, Profesor::query()->findOrFail('SEC00001')
+        ));
+        $this->assertArrayHasKey(
+            'Convalidacions per mòdul',
+            $menuService->make('general', true, Profesor::query()->findOrFail('DIR00001'))
+        );
+
+        DB::table('profesores')->insert([
+            'dni' => 'PROFSEC0',
+            'nombre' => 'Professor sense el rol',
+            'rol' => (int) config('roles.rol.profesor'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        config(['avisos.secretario' => 'PROFSEC0']);
+        $professor = Profesor::query()->findOrFail('PROFSEC0');
+        $this->actingAs($professor, 'profesor')
+            ->get(route('convalidacions.direction.modules.index'))
+            ->assertForbidden();
+        $this->assertArrayNotHasKey('Convalidacions per mòdul', $menuService->make('general', true, $professor));
+    }
+
+    public function test_rol_secretaria_es_independent_i_es_combina_multiplicativament(): void
+    {
+        $secretaria = (int) config('roles.rol.secretaria');
+        $professorat = (int) config('roles.rol.profesor');
+        $direccio = (int) config('roles.rol.direccion');
+
+        $this->assertSame(53, $secretaria);
+        $this->assertSame(159, rol([$professorat, $secretaria]));
+        $this->assertSame(106, rol([$direccio, $secretaria]));
+        $this->assertSame([1, $secretaria], rolesUser($secretaria));
+        $this->assertFalse(esRol($secretaria, $professorat));
+        $this->assertFalse(esRol($secretaria, $direccio));
+        $this->assertFalse(esRol($secretaria, (int) config('roles.rol.administrador')));
     }
 
     public function test_panell_de_direccio_permet_carregar_i_consultar_el_cataleg_yaml(): void

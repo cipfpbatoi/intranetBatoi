@@ -230,8 +230,8 @@ class MenuService
         }
 
         if ($nom === 'general'
-            && trim((string) config('avisos.secretario', '')) !== ''
-            && (string) ($user->dni ?? '') === trim((string) config('avisos.secretario'))) {
+            && (esRol((int) $user->rol, (int) config('roles.rol.direccion'))
+                || esRol((int) $user->rol, (int) config('roles.rol.secretaria')))) {
             $menu['Convalidacions per mòdul'] = [
                 'url' => route('convalidacions.direction.modules.index'),
                 'class' => 'fa-check-square',

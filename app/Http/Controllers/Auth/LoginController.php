@@ -24,6 +24,12 @@ class LoginController extends Controller
     public function login()
     {
         if (isset(AuthUser()->codigo)) {
+            $user = AuthUser();
+            if (esRol((int) $user->rol, (int) config('roles.rol.secretaria'))
+                && !esRol((int) $user->rol, (int) config('roles.rol.profesor'))) {
+                return redirect()->route('convalidacions.direction.modules.index');
+            }
+
             return redirect()->route('home.profesor');
         }
         if (isset(AuthUser()->nia)) {
