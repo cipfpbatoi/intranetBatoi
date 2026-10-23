@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -33,51 +34,27 @@ class FctStatsViewTest extends TestCase
     {
         DB::table('ciclos')->insert(['id' => 7, 'ciclo' => 'CFGS Informàtica']);
 
-        $html = $this->renderStats(['7' => $this->resultatCicle()]);
+        $html = $this->renderCycleName(7);
 
         $this->assertStringContainsString('CFGS Informàtica', $html);
     }
 
     public function test_no_falla_quan_el_cicle_no_existeix(): void
     {
-        $html = $this->renderStats(['99' => $this->resultatCicle()]);
+        $html = $this->renderCycleName(99);
 
         $this->assertStringContainsString('Cicle no trobat (#99)', $html);
     }
 
     public function test_indica_quan_el_grup_no_te_cicle_assignat(): void
     {
-        $html = $this->renderStats(['' => $this->resultatCicle()]);
+        $html = $this->renderCycleName('');
 
         $this->assertStringContainsString('Sense cicle assignat', $html);
     }
 
-    /**
-     * @param array<string, array<string, int>> $ciclos
-     */
-    private function renderStats(array $ciclos): string
+    private function renderCycleName(int|string $id): string
     {
-        return view('fct.estadisticas', [
-            'grupos1' => collect(),
-            'grupos2' => collect(),
-            'ciclos1' => $ciclos,
-            'ciclos2' => [],
-        ])->render();
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    private function resultatCicle(): array
-    {
-        return [
-            'matriculados' => 1,
-            'resfct' => 1,
-            'avalfct' => 1,
-            'exentos' => 0,
-            'respro' => 0,
-            'avalpro' => 0,
-            'resempresa' => 0,
-        ];
+        return Blade::render('<x-fct.stats-cycle-name :id="$id" />', compact('id'));
     }
 }

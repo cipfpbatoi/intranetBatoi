@@ -35,7 +35,7 @@ class FieldBuilderTest extends TestCase
             ['id' => 'activo_id']
         );
 
-        $this->assertMatchesRegularExpression('/value="0"[^>]*checked/u', $html);
-        $this->assertDoesNotMatchRegularExpression('/value="1"[^>]*checked/u', $html);
+        $this->assertMatchesRegularExpression('/<input[^>]*checked="checked"[^>]*value="0"/u', $html);
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*checked="checked"[^>]*value="1"/u', $html);
     }
 }
