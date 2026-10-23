@@ -8,7 +8,6 @@ Requisits: [Docker](https://docs.docker.com/engine/install/) i [Docker Compose](
 # 1. Clonar el repositori
 git clone https://github.com/cipfpbatoi/intranetBatoi.git
 cd intranetBatoi
-git checkout laravel11Legacy
 
 # 2. Configurar l'entorn
 cp .env.docker .env
