@@ -33,6 +33,17 @@ class RouteNameContractTest extends TestCase
         $this->assertSame([], $duplicates);
     }
 
+    public function test_logout_de_personal_requerix_autenticacio_pero_no_rol_professorat(): void
+    {
+        $route = Route::getRoutes()->getByName('logout');
+
+        $this->assertNotNull($route);
+        $this->assertSame('logout', $route->getName());
+        $this->assertSame('logout', $route->uri());
+        $this->assertContains('auth:profesor', $route->gatherMiddleware());
+        $this->assertNotContains('role:profesor', $route->gatherMiddleware());
+    }
+
     public function test_rutes_legacy_d_activitat_continuen_resolent(): void
     {
         $this->assertSame('/actividad/create', route('actividad.store', absolute: false));
