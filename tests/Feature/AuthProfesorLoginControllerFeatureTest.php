@@ -221,6 +221,56 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
         $this->get(route('login'))->assertRedirect(route('convalidacions.direction.modules.index'));
     }
 
+    public function test_secretaria_pot_tancar_sessio_i_revocar_el_token_web(): void
+    {
+        $this->insertProfesor([
+            'dni' => 'SEC00004',
+            'codigo' => 2056,
+            'email' => 'secretaria-logout@test.local',
+            'password' => Hash::make('secret-pass'),
+            'changePassword' => '2026-01-01',
+            'rol' => (int) config('roles.rol.secretaria'),
+        ]);
+
+        $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.postlogin'), [
+                'codigo' => '2056',
+                'password' => 'secret-pass',
+            ])
+            ->assertRedirect(route('convalidacions.direction.modules.index'));
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+
+        $this->get(route('logout'))
+            ->assertRedirect();
+
+        $this->assertGuest('profesor');
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_professorat_conserva_el_logout_en_la_ruta_compartida(): void
+    {
+        $this->insertProfesor([
+            'dni' => '44556678G',
+            'codigo' => 2057,
+            'email' => 'professor-logout@test.local',
+            'password' => Hash::make('secret-pass'),
+            'changePassword' => '2026-01-01',
+            'rol' => (int) config('roles.rol.profesor'),
+        ]);
+
+        $this->withoutMiddleware([VerifyCsrfToken::class])
+            ->post(route('profesor.postlogin'), [
+                'codigo' => '2057',
+                'password' => 'secret-pass',
+            ]);
+
+        $this->get(route('logout'))
+            ->assertRedirect();
+
+        $this->assertGuest('profesor');
+    }
+
     public function test_professorat_i_secretaria_manté_la_destinacio_de_professorat(): void
     {
         $this->insertProfesor([
@@ -373,6 +423,7 @@ class AuthProfesorLoginControllerFeatureTest extends TestCase
             $table->string('idioma')->nullable();
             $table->string('changePassword')->nullable();
             $table->unsignedInteger('rol')->default(3);
+            $table->dateTime('last_logged')->nullable();
             $table->date('fecha_baja')->nullable();
             $table->boolean('activo')->default(true);
             $table->rememberToken();

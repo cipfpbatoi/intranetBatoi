@@ -36,3 +36,17 @@ professorat i alumnat.
 **Given** un professor o un alumne autenticat sense permisos per gestionar rols  
 **When** actualitza les dades ordinàries del seu perfil i manipula el camp rol  
 **Then** es guarden les dades ordinàries i es conserva el rol anterior.
+
+### ✅ Secretaria pot tancar la seua sessió sense accés general a Professorat
+
+**Given** una persona autenticada amb únicament el rol Secretaria
+
+**When** utilitza l'opció de tancar sessió del personal
+
+**Then** es tanca la sessió del guard de professorat i es revoca el token web actual
+
+**And** la ruta conserva el nom i l'URL existents i requerix autenticació del guard de professorat
+
+**But** no requerix el rol `profesor` ni concedix accés a les altres rutes de Professorat
+
+**And** el logout d'alumnat continua funcionant pel seu flux separat.

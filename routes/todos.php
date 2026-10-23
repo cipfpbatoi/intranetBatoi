@@ -2,6 +2,9 @@
 use Intranet\Http\Controllers\AssumpteParticularDocumentController;
 use Intranet\Http\Livewire\BustiaVioleta\Form as BustiaForm;
 
+Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginController@logout'])
+    ->middleware('auth:profesor');
+
 Route::get('/allProgramacion/', ['as' => 'modulogrupo.all', 'uses' => 'PanelModuloGrupoController@index']);
 Route::get('/modulogrupo/{modulogrupo}/pdf', ['as' => 'modulogrupo.programacion', 'uses' =>  'PanelModuloGrupoController@pdf']);
 

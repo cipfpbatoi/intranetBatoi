@@ -7,10 +7,6 @@ use Intranet\Livewire\BustiaVioleta\AdminList;
 
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
-Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginController@logout']);
-
-
-
 Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilController@editar']);
 Route::put('/perfil', ['as' => 'perfil.update', 'uses' => 'Auth\Profesor\PerfilController@update']);
 Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilController@files']);
