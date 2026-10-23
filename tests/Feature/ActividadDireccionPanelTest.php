@@ -155,6 +155,27 @@ class ActividadDireccionPanelTest extends TestCase
         $this->assertSame(['1r CFGM Estètica'], $selected['grups']);
     }
 
+    public function test_mostra_els_comentaris_del_professor_abans_d_autoritzar(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->call('mostrar', 1)
+            ->assertSet('selectedActividad.comentarios', 'Cal confirmar el nombre final d\'assistents.')
+            ->assertSee('Comentaris:')
+            ->assertSee('Cal confirmar el nombre final d\'assistents.');
+
+        $this->assertSame(1, (int) DB::connection('sqlite')->table('actividades')->where('id', 1)->value('estado'));
+    }
+
+    public function test_mostra_un_guio_quan_l_activitat_no_te_comentaris(): void
+    {
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->call('mostrar', 2)
+            ->assertSet('selectedActividad.comentarios', '')
+            ->assertSeeHtml('<strong>Comentaris:</strong> -');
+    }
+
     public function test_mostra_tipus_complementaria_i_extraescolar_en_llistat_i_detall(): void
     {
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
@@ -449,6 +470,7 @@ class ActividadDireccionPanelTest extends TestCase
                 'fueraCentro' => 1,
                 'transport' => 0,
                 'objetivos' => 'Visita guiada',
+                'comentarios' => 'Cal confirmar el nombre final d\'assistents.',
                 'idDocumento' => null,
                 'estado' => 1,
                 'created_at' => now(),
