@@ -185,6 +185,7 @@
                                 <li><strong>Justificació RA:</strong> {{ $selectedActividad['justificacioRa'] !== '' ? $selectedActividad['justificacioRa'] : '-' }}</li>
                             @endif
                             <li><strong>Objectius:</strong> {{ $selectedActividad['objetivos'] !== '' ? $selectedActividad['objetivos'] : '-' }}</li>
+                            <li><strong>Comentaris:</strong> {{ $selectedActividad['comentarios'] !== '' ? $selectedActividad['comentarios'] : '-' }}</li>
                         </ul>
 
                         <hr>

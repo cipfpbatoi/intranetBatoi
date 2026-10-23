@@ -307,6 +307,7 @@ class ActividadDireccionPanel extends Component
             'name' => (string) $actividad->name,
             'descripcion' => (string) ($actividad->descripcion ?? ''),
             'objetivos' => (string) ($actividad->objetivos ?? ''),
+            'comentarios' => (string) ($actividad->comentarios ?? ''),
             'desde' => (string) $actividad->desde,
             'hasta' => (string) $actividad->hasta,
             'estado' => (int) $actividad->estado,
