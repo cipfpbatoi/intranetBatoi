@@ -56,7 +56,7 @@
                     @endforeach
                     @foreach ($bloque['ciclos'] as $key => $resCiclo)
                         <tr>
-                            <td style="border: 1px solid #00aeef; padding: 5px;">{{\Intranet\Entities\Ciclo::find($key)->ciclo}}</td>
+                            <td style="border: 1px solid #00aeef; padding: 5px;"><x-fct.stats-cycle-name :id="$key" /></td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['matriculados'] }}</td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['resfct']  }} de {{ $resCiclo['avalfct'] }}</td>
                             <td style="border: 1px solid #00aeef; padding: 5px;">{{ $resCiclo['exentos'] }}</td>

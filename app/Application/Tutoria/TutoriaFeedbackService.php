@@ -20,6 +20,9 @@ use Intranet\Services\Notifications\NotificationService;
  */
 class TutoriaFeedbackService
 {
+    /** Codi del grup exempt dels recordatoris de feedback. */
+    private const GRUP_SENSE_RECORDATORI = '2CAE';
+
     /**
      * Crea el servei amb el canal intern de notificacions.
      */
@@ -102,6 +105,10 @@ class TutoriaFeedbackService
             $completedGroups = $this->completedGroupCodes($feedback);
 
             foreach ($this->applicableGroups($tutoria, $groups) as $group) {
+                if ((string) $group->codigo === self::GRUP_SENSE_RECORDATORI) {
+                    continue;
+                }
+
                 if ($completedGroups->contains((string) $group->codigo)) {
                     continue;
                 }
