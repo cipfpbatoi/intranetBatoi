@@ -11,15 +11,20 @@
 
     @forelse ($sollicituds as $sollicitud)
         <div class="card mb-3">
-            <div class="card-header d-flex justify-content-between">
+            <div class="card-header d-flex justify-content-between align-items-center gap-2">
                 <span>Tramitada el {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</span>
-                <a href="{{ route('convalidacions.show', $sollicitud) }}">Consultar</a>
+                <a href="{{ route('convalidacions.show', $sollicitud) }}" class="btn btn-primary btn-sm">Accedir a la sol·licitud</a>
             </div>
             <ul class="list-group list-group-flush">
                 @foreach ($sollicitud->convalidacions as $peticio)
                     <li class="list-group-item">
                         <strong>{{ $peticio->moduloDestino?->literal ?? $peticio->modulo_destino_id }}</strong>
                         — {{ \Intranet\Entities\Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat }}
+                        @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_REVISAR_DOCUMENTACIO)
+                            <div class="alert alert-warning mt-2 mb-0">
+                                <strong>Documentació requerida.</strong> Accedix a la sol·licitud per llegir el comentari i aportar-la.
+                            </div>
+                        @endif
                         @if ($peticio->observacions)<div class="text-muted">{{ $peticio->observacions }}</div>@endif
                     </li>
                 @endforeach

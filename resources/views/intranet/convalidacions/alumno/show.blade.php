@@ -47,6 +47,16 @@
                             @endif
                         </td>
                         <td>
+                            @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_REVISAR_DOCUMENTACIO)
+                                <div class="alert alert-warning py-2">
+                                    <strong>Documentació requerida.</strong> Llig el comentari de Direcció i afig o canvia el document abans de continuar.
+                                </div>
+                            @endif
+                            @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_APORTAR_ORIGINAL)
+                                <div class="alert alert-warning py-2">
+                                    <strong>Has d'aportar la documentació original a Secretaria.</strong> No has de pujar-la des de la intranet.
+                                </div>
+                            @endif
                             <div class="mb-2"><strong>Origen:</strong> {{ \Intranet\Entities\Convalidacio::origenLabel($peticio->origen) }}</div>
                             @if ($peticio->acreditacio_alternativa)
                                 <div class="alert alert-info py-2 mb-2">

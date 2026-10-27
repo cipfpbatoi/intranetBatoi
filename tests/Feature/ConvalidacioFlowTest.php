@@ -1293,6 +1293,37 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Estat i comentari');
     }
 
+    public function test_alumne_veu_l_acces_i_les_instruccions_de_documentacio_pendent(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $sollicitud = $this->service->tramitar($this->alumno, 'avis-documentacio', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+
+        $this->get('/alumno/convalidacions')
+            ->assertOk()
+            ->assertSee('Accedir a la sol·licitud')
+            ->assertSee('Documentació requerida.')
+            ->assertSee('Accedix a la sol·licitud per llegir el comentari i aportar-la.');
+
+        $this->get('/alumno/convalidacions/' . $sollicitud->id)
+            ->assertOk()
+            ->assertSee('Llig el comentari de Direcció i afig o canvia el document abans de continuar.');
+
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_APORTAR_ORIGINAL])->save();
+
+        $this->get('/alumno/convalidacions/' . $sollicitud->id)
+            ->assertOk()
+            ->assertSee("Has d'aportar la documentació original a Secretaria.")
+            ->assertSee('No has de pujar-la des de la intranet.');
+    }
+
     public function test_rebutja_fitxer_massa_gran_al_servidor_com_a_ultima_validacio(): void
     {
         $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
