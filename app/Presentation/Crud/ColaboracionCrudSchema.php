@@ -25,15 +25,24 @@ final class ColaboracionCrudSchema
     ];
 
     /**
+     * Regles d'alta: l'estat inicial el proporciona el model.
+     *
+     * @var array<string, string>
+     */
+    public const STORE_RULES = [
+        'contacto' => 'required',
+        'telefono' => 'required',
+        'email' => 'required|email',
+        'puestos' => 'required|numeric',
+    ];
+
+    /**
      * Regles del formulari manual de canvi d'estat/contacte.
      *
      * @var array<string, string>
      */
     public const UPDATE_RULES = [
-        'contacto' => 'required',
-        'telefono' => 'required',
-        'email' => 'required|email',
-        'puestos' => 'required|numeric',
+        ...self::STORE_RULES,
         'estado' => 'required',
     ];
 
