@@ -150,6 +150,28 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->assertSame('Actualitzada pel responsable', DB::table('incidencias')->where('id', $id)->value('descripcion'));
     }
 
+    public function test_edit_permet_al_responsable_que_rep_l_avis(): void
+    {
+        $this->insertProfesor('111A', config('roles.rol.profesor'));
+        $this->insertProfesor('PINC023', config('roles.rol.profesor'));
+        $this->insertTipoIncidencia(6, '111A');
+        $this->authenticateAsProfesor('111A');
+
+        $id = $this->insertIncidencia([
+            'tipo' => 6,
+            'idProfesor' => 'PINC023',
+            'responsable' => '111A',
+            'descripcion' => 'Incidència assignada',
+            'estado' => 1,
+        ]);
+
+        $this
+            ->withoutMiddleware()
+            ->get('/incidencia/' . $id . '/edit')
+            ->assertOk()
+            ->assertSee('Incidència assignada');
+    }
+
     public function test_store_ignora_id_profesor_manipulat_i_usa_l_usuari_autenticat(): void
     {
         $this->insertProfesor('111A', config('roles.rol.profesor'));
