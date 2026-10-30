@@ -214,7 +214,7 @@ And la descàrrega no canvia ni activa cap versió del catàleg
 But una persona sense rol de Direcció no pot obtindre el fitxer
 And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i no un fitxer buit ni una excepció tècnica
 
-### Escenari 18: notificar per correu cada canvi individual de mòdul
+### ✅ Escenari 18: notificar per correu cada canvi individual de mòdul
 
 Given una persona de Direcció canvia vàlidament l'estat o l'observació d'una petició
 When el canvi efectiu queda guardat
@@ -223,6 +223,17 @@ And la resta de peticions de la sol·licitud no canvien
 And el missatge no inclou adjunts ni informació d'altres mòduls o alumnes
 But si es torna a guardar exactament el mateix estat i observació, no s'envia un altre correu
 And si no hi ha una adreça vàlida o falla l'enviament, es conserva el canvi i Direcció rep un avís
+And la interfície informa si el correu s'ha enviat o si no s'ha pogut enviar
+
+### ✅ Escenari 18a: presentar l'aportació documental com una acció contextual
+
+Given Secretaria o Direcció consulta una petició en estat `Revisar documentació`
+When obri el detall de la petició
+Then veu un botó «Afegir documentació rebuda» i una indicació que pot incorporar un fitxer, un comentari o tots dos
+And el formulari complet no ocupa la vista fins que prem el botó
+When prem el botó
+Then s'obri un diàleg amb els camps d'aportació
+But si la petició està en qualsevol altre estat, no veu el botó ni el diàleg i el servidor rebutja una petició directa sense guardar canvis
 
 ### ✅ Escenari 19: llistats separats de sol·licituds i convalidacions
 
