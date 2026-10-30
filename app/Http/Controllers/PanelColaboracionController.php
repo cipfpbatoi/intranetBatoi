@@ -259,13 +259,15 @@ class PanelColaboracionController extends IntranetController
     }
 
     /**
+     * Crea una col·laboració conservant l'estat inicial definit pel model.
+     *
      * @param  Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         $this->authorize('create', Colaboracion::class);
-        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
+        $this->validate($request, ColaboracionCrudSchema::STORE_RULES, (new ColaboracionRequest())->messages());
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
