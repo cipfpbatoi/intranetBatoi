@@ -102,6 +102,8 @@ class RouteNameContractTest extends TestCase
             'convalidacions.direction.modules.index',
             'convalidacions.direction.modules.pdf',
             'convalidacions.direction.modules.pdf.post',
+            'convalidacions.direction.staff-contribution',
+            'convalidacions.direction.download-staff-contribution',
         ] as $routeName) {
             $route = Route::getRoutes()->getByName($routeName);
             $this->assertNotNull($route, "No s'ha trobat la ruta {$routeName}.");
@@ -110,6 +112,15 @@ class RouteNameContractTest extends TestCase
             $this->assertNotContains('role:profesor', $middleware);
             $this->assertNotContains('role:direccion', $middleware);
         }
+
+        $this->assertSame(
+            '/direccion/convalidacions/peticions/1/aportacio-documental',
+            route('convalidacions.direction.staff-contribution', ['convalidacio' => 1], false)
+        );
+        $this->assertSame(
+            '/direccion/convalidacions/peticions/1/aportacions/2/document',
+            route('convalidacions.direction.download-staff-contribution', ['convalidacio' => 1, 'aportacio' => 2], false)
+        );
 
         $this->assertContains(
             'role:profesor',

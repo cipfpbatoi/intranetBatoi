@@ -587,6 +587,39 @@ class ConvalidacioFlowTest extends TestCase
         Mail::assertSentTimes(ConvalidacioEstatActualitzat::class, 2);
     }
 
+    public function test_direccio_notifica_canvi_d_estat_encara_que_no_afija_un_comentari_nou(): void
+    {
+        DB::table('alumnos')->where('nia', $this->alumno->nia)->update(['email' => 'alumne@example.test']);
+        $sollicitud = $this->service->tramitar($this->alumno, 'canvi-sense-comentari', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill([
+            'estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO,
+            'observacions' => 'Falta el certificat.',
+        ])->save();
+        Mail::fake();
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->put(route('convalidacions.direction.resolve', $peticio), [
+                'estat' => Convalidacio::ESTAT_EN_PROCES,
+                'observacions' => '',
+            ])
+            ->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHas('success', 'Petició actualitzada i correu enviat a l’alumne.');
+
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $peticio->fresh()->estat);
+        Mail::assertSent(ConvalidacioEstatActualitzat::class, function (ConvalidacioEstatActualitzat $mail): bool {
+            return $mail->hasTo('alumne@example.test')
+                && $mail->modul === 'Destí 1'
+                && $mail->estat === 'En procés';
+        });
+    }
+
     public function test_direccio_pot_assignar_els_nous_estats_a_moduls_individuals(): void
     {
         DB::table('alumnos')->where('nia', $this->alumno->nia)->update(['email' => 'alumne@example.test']);
@@ -1996,6 +2029,254 @@ class ConvalidacioFlowTest extends TestCase
             ->assertForbidden();
         $this->get(route('convalidacions.direction.index'))->assertForbidden();
         $this->assertArrayNotHasKey('Sol·licituds de convalidació', $menuService->make('general', true, $professor));
+    }
+
+    public function test_secretaria_pot_afegir_document_i_comentari_només_amb_documentacio_requerida(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00003', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-personal-document', [[
+            'modulo_destino_id' => 'DEST2', 'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('expedient.pdf', 40, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $rutaInicial = $peticio->documents()->firstOrFail()->path;
+        $this->actingAs(Profesor::query()->findOrFail('SEC00003'), 'profesor');
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Afegir documentació rebuda')
+            ->assertSee('id="aportacio-documental-' . $peticio->id . '"', false)
+            ->assertSee('Descripció del document')
+            ->assertSee('Comentari general')
+            ->assertSee('data-aportacio-document-template', false)
+            ->assertSee('Pots afegir fins a 2 documents més.', false)
+            ->assertSee('Si canvies l’estat, l’alumne rebrà un correu encara que no afegisques cap comentari nou.', false);
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'documents' => [[
+                    'descripcio' => 'Certificat PRL',
+                    'fitxer' => UploadedFile::fake()->create('prl.pdf', 35, 'application/pdf'),
+                ]],
+                'comentari' => 'Rebut presencialment a Secretaria.',
+            ])->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHas('success');
+
+        $aportacio = $peticio->fresh()->aportacionsDocumentals()->firstOrFail();
+        $this->assertSame('SEC00003', $aportacio->actor_dni);
+        $this->assertSame(['secretaria'], $aportacio->rols_actor);
+        $this->assertSame('Rebut presencialment a Secretaria.', $aportacio->comentari);
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $peticio->fresh()->estat);
+        $this->assertTrue($peticio->fresh()->declaracio_responsable);
+        $this->assertSame(1, $peticio->fresh()->documents()->count());
+        Storage::disk('convalidacions')->assertExists($rutaInicial);
+        Storage::disk('convalidacions')->assertExists($aportacio->path);
+        $this->get(route('convalidacions.direction.download-staff-contribution', [$peticio, $aportacio]))->assertOk();
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()->assertSee('Secretaria operativa')->assertSee('Rebut presencialment a Secretaria.');
+    }
+
+    public function test_secretaria_pot_afegir_diversos_documents_amb_descripcio_per_fitxer(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00005', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-multiples-documents', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [[
+                'descripcio' => 'Expedient acadèmic',
+                'fitxer' => UploadedFile::fake()->create('expedient.pdf', 30, 'application/pdf'),
+            ]],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $documentInicial = $peticio->documents()->firstOrFail();
+        $this->actingAs(Profesor::query()->findOrFail('SEC00005'), 'profesor');
+
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'documents' => [
+                    [
+                        'descripcio' => 'Certificat de notes',
+                        'fitxer' => UploadedFile::fake()->create('notes.pdf', 25, 'application/pdf'),
+                    ],
+                    [
+                        'descripcio' => 'Certificat PRL',
+                        'fitxer' => UploadedFile::fake()->create('prl.pdf', 20, 'application/pdf'),
+                    ],
+                ],
+                'comentari' => 'Documentació rebuda presencialment.',
+            ])->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHas('success');
+
+        $aportacions = $peticio->fresh()->aportacionsDocumentals()->orderBy('id')->get();
+        $this->assertCount(2, $aportacions);
+        $this->assertSame(['Certificat de notes', 'Certificat PRL'], $aportacions->pluck('descripcio')->all());
+        $this->assertSame('Documentació rebuda presencialment.', $aportacions->first()->comentari);
+        $this->assertNull($aportacions->last()->comentari);
+        foreach ($aportacions as $aportacio) {
+            $this->assertSame('SEC00005', $aportacio->actor_dni);
+            $this->assertSame(['secretaria'], $aportacio->rols_actor);
+            Storage::disk('convalidacions')->assertExists($aportacio->path);
+        }
+        Storage::disk('convalidacions')->assertExists($documentInicial->path);
+        $this->assertSame(Convalidacio::ESTAT_EN_PROCES, $peticio->fresh()->estat);
+        $this->assertCount(1, $peticio->fresh()->documents);
+    }
+
+    public function test_aportacio_personal_destaca_descripcio_faltant_i_no_guarda_fitxer(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00006', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-sense-descripcio', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [[
+                'descripcio' => 'Expedient acadèmic',
+                'fitxer' => UploadedFile::fake()->create('expedient.pdf', 30, 'application/pdf'),
+            ]],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $pathInicial = $peticio->documents()->firstOrFail()->path;
+        $this->actingAs(Profesor::query()->findOrFail('SEC00006'), 'profesor');
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('data-descripcio-error', false)
+            ->assertSee('Indica què acredita este fitxer', false)
+            ->assertSee('hasFile && !comment.value.trim()', false);
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'documents' => [[
+                    'fitxer' => UploadedFile::fake()->create('prl.pdf', 20, 'application/pdf'),
+                ]],
+            ])
+            ->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHasErrors('aportacio');
+
+        $this->assertSame(Convalidacio::ESTAT_REVISAR_DOCUMENTACIO, $peticio->fresh()->estat);
+        $this->assertSame(0, $peticio->fresh()->aportacionsDocumentals()->count());
+        Storage::disk('convalidacions')->assertExists($pathInicial);
+        $this->assertCount(1, Storage::disk('convalidacions')->allFiles());
+    }
+
+    public function test_aportacio_multiple_rebutja_superar_el_limit_sense_guardar_parcialment(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00007', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-limite-documents', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [
+                ['descripcio' => 'Expedient', 'fitxer' => UploadedFile::fake()->create('expedient.pdf', 30, 'application/pdf')],
+                ['descripcio' => 'Certificat acadèmic', 'fitxer' => UploadedFile::fake()->create('certificat.pdf', 30, 'application/pdf')],
+                ['descripcio' => 'Certificat PRL antic', 'fitxer' => UploadedFile::fake()->create('prl-antic.pdf', 30, 'application/pdf')],
+            ],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $pathsInicials = $peticio->documents()->pluck('path')->all();
+        $this->actingAs(Profesor::query()->findOrFail('SEC00007'), 'profesor');
+
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Ja s’ha arribat al màxim de tres documents d’esta petició.', false)
+            ->assertDontSee('name="documents[0][fitxer]"', false);
+        $this->from(route('convalidacions.direction.show', $sollicitud))
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'documents' => [[
+                    'descripcio' => 'Document 3',
+                    'fitxer' => UploadedFile::fake()->create('document-3.pdf', 20, 'application/pdf'),
+                ], [
+                    'descripcio' => 'Document 4',
+                    'fitxer' => UploadedFile::fake()->create('document-4.pdf', 20, 'application/pdf'),
+                ]],
+            ])
+            ->assertRedirect(route('convalidacions.direction.show', $sollicitud))
+            ->assertSessionHasErrors('aportacio');
+
+        $this->assertSame(0, $peticio->fresh()->aportacionsDocumentals()->count());
+        $this->assertSame(Convalidacio::ESTAT_REVISAR_DOCUMENTACIO, $peticio->fresh()->estat);
+        foreach ($pathsInicials as $path) {
+            Storage::disk('convalidacions')->assertExists($path);
+        }
+        $this->assertCount(3, Storage::disk('convalidacions')->allFiles());
+    }
+
+    public function test_comentari_personal_no_canvia_estat_i_no_s_accepta_en_altres_estats(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00004', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-personal-comentari', [[
+            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $this->actingAs(Profesor::query()->findOrFail('SEC00004'), 'profesor');
+        $this->post(route('convalidacions.direction.staff-contribution', $peticio), [
+            'comentari' => 'L’alumne ha entregat el document en mà.',
+        ])->assertRedirect();
+        $this->assertSame(Convalidacio::ESTAT_REVISAR_DOCUMENTACIO, $peticio->fresh()->estat);
+        $this->assertDatabaseHas('convalidacio_aportacions', [
+            'convalidacio_id' => $peticio->id,
+            'comentari' => 'L’alumne ha entregat el document en mà.',
+            'path' => null,
+        ], 'sqlite');
+
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_EN_PROCES])->save();
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertDontSee('Afegir documentació rebuda')
+            ->assertDontSee('id="aportacio-documental-' . $peticio->id . '"', false);
+        $this->post(route('convalidacions.direction.staff-contribution', $peticio), [
+            'comentari' => 'No s’ha de guardar.',
+        ])->assertForbidden();
+        $this->assertSame(1, $peticio->fresh()->aportacionsDocumentals()->count());
+
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $this->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor')
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'comentari' => 'Aportació registrada per Direcció.',
+            ])->assertRedirect();
+        $aportacioDireccio = $peticio->fresh()->aportacionsDocumentals()->latest('id')->firstOrFail();
+        $this->assertSame(['direccion'], $aportacioDireccio->rols_actor);
+        $this->assertSame(Convalidacio::ESTAT_REVISAR_DOCUMENTACIO, $peticio->fresh()->estat);
+    }
+
+    public function test_professor_sense_secretaria_o_direccio_no_pot_registrar_aportacions(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'PROF0002', 'nombre' => 'Professorat',
+            'rol' => (int) config('roles.rol.profesor'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacio-personal-no-autoritzada', [[
+            'modulo_destino_id' => 'DEST1', 'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $this->actingAs(Profesor::query()->findOrFail('PROF0002'), 'profesor')
+            ->post(route('convalidacions.direction.staff-contribution', $peticio), [
+                'comentari' => 'Intent no autoritzat.',
+            ])->assertForbidden();
+        $this->assertSame(0, $peticio->fresh()->aportacionsDocumentals()->count());
     }
 
     public function test_rol_secretaria_es_independent_i_es_combina_multiplicativament(): void
@@ -3670,6 +3951,18 @@ XML;
             $table->string('path');
             $table->string('original_name');
             $table->string('mime', 100);
+            $table->timestamps();
+        });
+        Schema::create('convalidacio_aportacions', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('convalidacio_id');
+            $table->string('actor_dni', 20);
+            $table->json('rols_actor');
+            $table->text('comentari')->nullable();
+            $table->string('descripcio', 120)->nullable();
+            $table->string('path')->nullable();
+            $table->string('original_name')->nullable();
+            $table->string('mime', 100)->nullable();
             $table->timestamps();
         });
     }

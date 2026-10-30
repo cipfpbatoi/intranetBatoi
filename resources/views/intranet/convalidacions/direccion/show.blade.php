@@ -10,6 +10,7 @@
     <h1>{{ $sollicitudAutomatica ? 'Sol·licitud amb resolucions automàtiques' : 'Sol·licitud' }} de {{ $sollicitud->alumno?->fullName ?? $sollicitud->alumno_id }}</h1>
     @if (session('warning'))<div class="alert alert-warning" role="alert">{{ session('warning') }}</div>@endif
     @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
+    @if ($errors->any())<div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>@endif
     <p>Tramitada el {{ $sollicitud->submitted_at->format('d/m/Y H:i') }}</p>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -84,7 +85,7 @@
                                 <div class="mb-1"><strong>Mòdul d’origen FOL:</strong> {{ $peticio->modulo_origen_es_fol ? 'Sí' : 'No' }}</div>
                             @endif
                             @if ($peticio->declaracio_responsable || $peticio->documents->isNotEmpty() || $peticio->document_path || $peticio->document_prl_path)
-                                <div class="mb-1"><strong>Declaració responsable:</strong> {{ $peticio->declaracio_responsable ? 'Acceptada per a tots els documents adjunts' : 'No acceptada' }}</div>
+                                <div class="mb-1"><strong>Declaració responsable:</strong> {{ $peticio->declaracio_responsable ? 'Acceptada per als documents aportats per l’alumne' : 'No acceptada' }}</div>
                             @endif
                             @if ($peticio->fol_logse_cicle)
                                 <div class="mb-1"><strong>Catàleg FOL:</strong> {{ $peticio->fol_logse_cicle }} ({{ $peticio->fol_logse_nivell }})</div>
@@ -115,6 +116,27 @@
                                         @if ($peticio->document_prl_path && !$peticio->documents->contains('path', $peticio->document_prl_path))
                                             <li class="mb-1"><strong>Certificat PRL:</strong> <a href="{{ route('convalidacions.direction.download-prl', $peticio) }}">{{ $peticio->document_prl_original_name }}</a></li>
                                         @endif
+                                    </ul>
+                                </div>
+                            @endif
+                            @if ($peticio->aportacionsDocumentals->isNotEmpty())
+                                <div class="mt-3">
+                                    <strong>Aportacions de Secretaria o Direcció</strong>
+                                    <ul class="mb-0">
+                                        @foreach ($peticio->aportacionsDocumentals as $aportacio)
+                                            <li class="mb-2">
+                                                <div>
+                                                    <strong>{{ $aportacio->actor?->fullName ?? $aportacio->actor_dni }}</strong>
+                                                    <span class="text-muted">({{ collect($aportacio->rols_actor)->map(fn ($rol) => $rol === 'secretaria' ? 'Secretaria' : 'Direcció')->implode(' / ') }}, {{ $aportacio->created_at?->format('d/m/Y H:i') }})</span>
+                                                </div>
+                                                @if ($aportacio->path)
+                                                    <div>{{ $aportacio->descripcio }} — <a href="{{ route('convalidacions.direction.download-staff-contribution', [$peticio, $aportacio]) }}">{{ $aportacio->original_name }}</a></div>
+                                                @endif
+                                                @if ($aportacio->comentari)
+                                                    <div>{{ $aportacio->comentari }}</div>
+                                                @endif
+                                            </li>
+                                        @endforeach
                                     </ul>
                                 </div>
                             @endif
@@ -157,11 +179,22 @@
                                     </div>
                                     <label class="form-label" for="observacions-{{ $peticio->id }}">Comentari de Direcció</label>
                                     <textarea class="form-control mb-2" id="observacions-{{ $peticio->id }}" name="observacions" rows="4">{{ $peticio->observacions }}</textarea>
+                                    <div class="form-text mb-2">Si canvies l’estat, l’alumne rebrà un correu encara que no afegisques cap comentari nou. Si guardes sense canvis, no s’enviarà cap avís nou.</div>
                                     <button class="btn btn-primary" type="submit">Guardar esta petició</button>
                                 </form>
                                 @if ($peticio->revisor)
                                     <div class="mt-2"><small>Últim canvi: {{ $peticio->revisor->fullName ?? $peticio->revisat_per }}, {{ $peticio->revisat_at?->format('d/m/Y H:i') }}</small></div>
                                 @endif
+                            @endif
+                            @if ($potAportarDocumentacio[$peticio->id] ?? false)
+                                <div class="mt-3">
+                                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#aportacio-documental-{{ $peticio->id }}">Afegir documentació rebuda</button>
+                                    @if (($espaisAportacioDocumental[$peticio->id] ?? 0) > 0)
+                                        <div class="form-text mt-1">Pots afegir fins a {{ $espaisAportacioDocumental[$peticio->id] }} documents més. Si n’adjuntes, la petició tornarà a «En procés».</div>
+                                    @else
+                                        <div class="form-text mt-1">Ja s’ha arribat al màxim de tres documents; encara pots afegir un comentari.</div>
+                                    @endif
+                                </div>
                             @endif
                         </td>
                     </tr>
@@ -169,6 +202,65 @@
             </tbody>
         </table>
     </div>
+    @foreach ($sollicitud->convalidacions as $peticio)
+        @if ($potAportarDocumentacio[$peticio->id] ?? false)
+            <div class="modal fade" id="aportacio-documental-{{ $peticio->id }}" tabindex="-1" aria-labelledby="aportacio-documental-titol-{{ $peticio->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <form method="POST" enctype="multipart/form-data" action="{{ route('convalidacions.direction.staff-contribution', $peticio) }}" data-aportacio-form>
+                            @csrf
+                            <div class="modal-header">
+                                <h2 class="modal-title fs-5" id="aportacio-documental-titol-{{ $peticio->id }}">Afegir documentació rebuda</h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tancar"></button>
+                            </div>
+                            <div class="modal-body">
+                                @php($espaisDocuments = $espaisAportacioDocumental[$peticio->id] ?? 0)
+                                <p>Identifica cada fitxer amb una descripció, per exemple «Certificat acadèmic» o «Certificat PRL». El comentari és una nota general opcional sobre l’entrega. Els documents anteriors es conservaran. Si adjuntes fitxers, la petició tornarà a «En procés».</p>
+                                <div class="alert alert-danger py-2" data-aportacio-feedback role="alert" hidden></div>
+                                @if ($espaisDocuments > 0)
+                                    <div data-aportacio-documents data-max-files="{{ $espaisDocuments }}">
+                                        <div class="mb-2" data-aportacio-document-list>
+                                            <div class="border rounded p-2 mb-2" data-aportacio-document>
+                                                <label class="form-label" for="descripcio-aportacio-{{ $peticio->id }}-0">Descripció del document</label>
+                                                <input class="form-control mb-1" id="descripcio-aportacio-{{ $peticio->id }}-0" name="documents[0][descripcio]" maxlength="120" placeholder="Ex.: Certificat acadèmic" data-aportacio-descripcio>
+                                                <div class="invalid-feedback" data-descripcio-error>Indica què acredita este fitxer, per exemple «Certificat PRL».</div>
+                                                <label class="form-label mt-2" for="fitxer-aportacio-{{ $peticio->id }}-0">Fitxer (PDF, JPG o PNG)</label>
+                                                <input class="form-control" type="file" id="fitxer-aportacio-{{ $peticio->id }}-0" name="documents[0][fitxer]" accept=".pdf,.jpg,.jpeg,.png" data-aportacio-fitxer>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary mb-3" type="button" data-afegir-document @if ($espaisDocuments < 2) hidden @endif>+ Afegir un altre document</button>
+                                    </div>
+                                @else
+                                    <div class="alert alert-info py-2">Ja s’ha arribat al màxim de tres documents d’esta petició. Pots afegir un comentari.</div>
+                                @endif
+                                <label class="form-label" for="comentari-aportacio-{{ $peticio->id }}">Comentari general <span class="text-muted">(opcional)</span></label>
+                                <div class="form-text mb-1">Afig context sobre l’entrega; no és la descripció dels fitxers.</div>
+                                <textarea class="form-control" id="comentari-aportacio-{{ $peticio->id }}" name="comentari" rows="3" maxlength="2000"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel·lar</button>
+                                <button class="btn btn-primary" type="submit">Afegir a l’expedient</button>
+                            </div>
+                        </form>
+                        @if ($espaisDocuments > 1)
+                            <template data-aportacio-document-template>
+                                <div class="border rounded p-2 mb-2" data-aportacio-document>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label" for="descripcio-aportacio-{{ $peticio->id }}-__INDEX__">Descripció del document</label>
+                                        <button class="btn btn-sm btn-link text-danger" type="button" data-eliminar-document>Eliminar</button>
+                                    </div>
+                                    <input class="form-control mb-1" id="descripcio-aportacio-{{ $peticio->id }}-__INDEX__" name="documents[__INDEX__][descripcio]" maxlength="120" placeholder="Ex.: Certificat PRL" data-aportacio-descripcio>
+                                    <div class="invalid-feedback" data-descripcio-error>Indica què acredita este fitxer, per exemple «Certificat PRL».</div>
+                                    <label class="form-label mt-2" for="fitxer-aportacio-{{ $peticio->id }}-__INDEX__">Fitxer (PDF, JPG o PNG)</label>
+                                    <input class="form-control" type="file" id="fitxer-aportacio-{{ $peticio->id }}-__INDEX__" name="documents[__INDEX__][fitxer]" accept=".pdf,.jpg,.jpeg,.png" data-aportacio-fitxer>
+                                </div>
+                            </template>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
     <a class="btn btn-secondary" href="{{ route('convalidacions.direction.index') }}">Tornar</a>
     @unless ($sollicitudAutomatica)
         <form class="d-inline" method="POST" action="{{ route('convalidacions.direction.destroy', $sollicitud) }}" onsubmit="return confirm(&quot;Una sol·licitud d&#39;un alumne no pot eliminar-se llevat que siga una prova, ja que elimina tota la traçabilitat. Vols continuar?&quot;)">
@@ -180,6 +272,91 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form[data-aportacio-form]').forEach(function (form) {
+            const documentArea = form.querySelector('[data-aportacio-documents]');
+            const feedback = form.querySelector('[data-aportacio-feedback]');
+            const comment = form.querySelector('textarea[name="comentari"]');
+            if (!documentArea) {
+                form.addEventListener('submit', function (event) {
+                    if (!comment.value.trim()) {
+                        event.preventDefault();
+                        feedback.textContent = 'Afig almenys un document o un comentari.';
+                        feedback.hidden = false;
+                        comment.focus();
+                    }
+                });
+                return;
+            }
+
+            const list = documentArea.querySelector('[data-aportacio-document-list]');
+            const addButton = documentArea.querySelector('[data-afegir-document]');
+            const maxFiles = Number(documentArea.dataset.maxFiles);
+            const template = form.parentElement.querySelector('template[data-aportacio-document-template]');
+            let nextIndex = list.querySelectorAll('[data-aportacio-document]').length;
+            const updateAddButton = function () {
+                addButton.hidden = list.querySelectorAll('[data-aportacio-document]').length >= maxFiles;
+            };
+
+            if (template) {
+                addButton.addEventListener('click', function () {
+                    const index = nextIndex++;
+                    const row = document.createElement('div');
+                    row.innerHTML = template.innerHTML.replaceAll('__INDEX__', String(index));
+                    const entry = row.firstElementChild;
+                    entry.querySelector('[data-eliminar-document]').addEventListener('click', function () {
+                        entry.remove();
+                        updateAddButton();
+                    });
+                    list.append(entry);
+                    updateAddButton();
+                    entry.querySelector('[data-aportacio-descripcio]').focus();
+                });
+            }
+
+            form.addEventListener('submit', function (event) {
+                let invalidDescription = null;
+                let hasFile = false;
+                documentArea.querySelectorAll('[data-aportacio-document]').forEach(function (entry) {
+                    const file = entry.querySelector('[data-aportacio-fitxer]');
+                    const description = entry.querySelector('[data-aportacio-descripcio]');
+                    const error = entry.querySelector('[data-descripcio-error]');
+                    const selected = file.files.length > 0;
+                    hasFile = hasFile || selected;
+                    const missing = selected && !description.value.trim();
+                    description.classList.toggle('is-invalid', missing);
+                    description.setAttribute('aria-invalid', missing ? 'true' : 'false');
+                    error.hidden = !missing;
+                    if (missing && invalidDescription === null) {
+                        invalidDescription = description;
+                    }
+                });
+
+                if (invalidDescription) {
+                    event.preventDefault();
+                    invalidDescription.focus();
+                    return;
+                }
+                if (!hasFile && !comment.value.trim()) {
+                    event.preventDefault();
+                    feedback.textContent = 'Afig almenys un document o un comentari.';
+                    feedback.hidden = false;
+                    comment.focus();
+                }
+            });
+
+            form.addEventListener('input', function (event) {
+                if (event.target.matches('[data-aportacio-descripcio]')) {
+                    event.target.classList.remove('is-invalid');
+                    event.target.setAttribute('aria-invalid', 'false');
+                    event.target.nextElementSibling.hidden = true;
+                }
+                if (event.target.matches('textarea[name="comentari"]')) {
+                    feedback.hidden = true;
+                }
+            });
+            updateAddButton();
+        });
+
         document.querySelectorAll('select[id^="estat-"]').forEach(function (estat) {
             const peticioId = estat.id.replace('estat-', '');
             const campsResolucio = document.getElementById('resolucio-' + peticioId);

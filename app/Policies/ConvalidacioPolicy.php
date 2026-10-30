@@ -49,6 +49,13 @@ class ConvalidacioPolicy
         return $this->canManageRequests($user) && !$peticio->esTerminal();
     }
 
+    /** Secretaria o Direcció poden aportar documents només quan s'han demanat. */
+    public function addStaffContribution($user, Convalidacio $peticio): bool
+    {
+        return ($this->isDirection($user) || $this->isSecretary($user))
+            && $peticio->estat === Convalidacio::ESTAT_REVISAR_DOCUMENTACIO;
+    }
+
     /** Perfils operatius autoritzats poden consultar els llistats de sol·licituds i mòduls. */
     public function viewModuleRequests($user): bool
     {

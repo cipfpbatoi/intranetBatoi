@@ -131,6 +131,12 @@ class Convalidacio extends Model
         return $this->hasMany(DocumentConvalidacio::class, 'convalidacio_id');
     }
 
+    /** Aportacions addicionals de documentació fetes per Secretaria o Direcció. */
+    public function aportacionsDocumentals(): HasMany
+    {
+        return $this->hasMany(AportacioDocumentalConvalidacio::class, 'convalidacio_id');
+    }
+
     /**
      * Sol·licitud de convalidació a la que pertany.
      */
