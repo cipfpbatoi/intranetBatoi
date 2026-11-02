@@ -8,16 +8,29 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Illuminate\Routing\Redirector;
 
+/**
+ * Restringix les rutes als rols indicats en el middleware.
+ */
 class RoleMiddleware
 {
-    public function handle($request, Closure $next, $role)
+    /**
+     * Permet l'accés si l'usuari té almenys un dels rols requerits.
+     *
+     * @param array<int, string> $roles
+     */
+    public function handle($request, Closure $next, ...$roles)
     {
         $user = authUser();
         if (!$user) {
             // Redirigeix com a convidat per evitar bucles
             return redirect()->guest(route('login'))->with('error', 'Has d’iniciar sessió.');
         }
-        if (userIsNameAllow($role) || isAdmin()) {
+
+        $hasAllowedRole = collect($roles)->contains(
+            static fn (string $role): bool => userIsNameAllow($role)
+        );
+
+        if ($hasAllowedRole || isAdmin()) {
             $response = $next($request);
         } else {
             // Evitem excepcions dures: redirigim amb missatge i codi 403

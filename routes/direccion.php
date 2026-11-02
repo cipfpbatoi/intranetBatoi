@@ -77,8 +77,6 @@ Route::get('/horario/propuesta/{dni}/{id}/aceptar', ['as' => 'horario.propuesta.
 Route::get('/horario/propuesta/{dni}/{id}/rebutjar', ['as' => 'horario.propuesta.rebutjar', 'uses' => 'HorarioController@rebutjarProposta']);
 Route::get('/horario/propuesta/{dni}/{id}/esborrar', ['as' => 'horario.propuesta.esborrar', 'uses' => 'HorarioController@esborrarProposta']);
 
-Route::get('/documento', ['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
-
 Route::get('/myMail', 'MyMailController@create');
 Route::post('/myMail', 'MyMailController@store');
 

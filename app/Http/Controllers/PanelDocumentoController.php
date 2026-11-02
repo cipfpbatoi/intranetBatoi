@@ -52,7 +52,10 @@ class PanelDocumentoController extends BaseController
     protected function iniBotones()
     {
         $this->panel->setBoton('index',
-            new BotonBasico('documento.create', ['roles' => config('roles.rol.direccion')])
+            new BotonBasico('documento.create', ['roles' => [
+                config('roles.rol.direccion'),
+                config('roles.rol.qualitat'),
+            ]])
         );
         $this->panel->setBothBoton('documento.show', ['where' => ['link','==',1]]);
         $this->panel->setBoton('grid', new BotonImg('documento.edit'));

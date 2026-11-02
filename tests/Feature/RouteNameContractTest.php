@@ -145,6 +145,15 @@ class RouteNameContractTest extends TestCase
         $this->assertContains('role:direccion', $historic->gatherMiddleware());
     }
 
+    public function test_el_panell_de_documents_admet_direccio_i_qualitat(): void
+    {
+        $route = Route::getRoutes()->getByName('documentosP.index');
+
+        $this->assertNotNull($route);
+        $this->assertSame('/direccion/documento', route('documentosP.index', absolute: false));
+        $this->assertContains('role:direccion,qualitat', $route->gatherMiddleware());
+    }
+
     public function test_les_mutacions_de_reunions_no_accepten_get(): void
     {
         $expectedMethods = [

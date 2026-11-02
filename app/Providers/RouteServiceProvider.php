@@ -5,6 +5,9 @@ namespace Intranet\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
+/**
+ * Registra els grups de rutes web i API de la intranet.
+ */
 class RouteServiceProvider extends ServiceProvider
 {
     /**
@@ -41,6 +44,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->profesorRoutes();
         $this->todosRoutes();
+        $this->documentRoutes();
         $this->direccionRoutes();
         $this->convalidacioModuleRoutes();
         $this->adminRoutes();
@@ -139,6 +143,23 @@ class RouteServiceProvider extends ServiceProvider
             'prefix' => 'direccion'
                 ], function ($router) {
             require base_path('routes/direccion.php');
+        });
+    }
+
+    /**
+     * Registra el panell documental compartit per Direcció i Qualitat.
+     */
+    protected function documentRoutes()
+    {
+        Route::group([
+            'middleware' => ['web', 'role:direccion,qualitat'],
+            'namespace' => $this->namespace,
+            'prefix' => 'direccion',
+        ], function ($router) {
+            Route::get('/documento', [
+                'as' => 'documentosP.index',
+                'uses' => 'PanelDocumentoController@index',
+            ]);
         });
     }
 
