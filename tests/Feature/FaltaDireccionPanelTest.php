@@ -286,6 +286,27 @@ class FaltaDireccionPanelTest extends TestCase
         );
     }
 
+    public function test_editar_una_falta_autoritzada_com_a_baixa_llarga_la_mostra_al_filtre_corresponent(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('editar', 3)
+            ->set('formBaja', true)
+            ->call('guardar')
+            ->assertSet('error', '')
+            ->assertSet('message', 'Falta actualitzada correctament.');
+
+        $this->assertSame(1, (int) DB::connection('sqlite')->table('faltas')->where('id', 3)->value('baja'));
+        $this->assertSame(5, (int) DB::connection('sqlite')->table('faltas')->where('id', 3)->value('estado'));
+        $this->assertSame('2026-03-12', DB::connection('sqlite')->table('profesores')->where('dni', 'PF200')->value('fecha_baja'));
+
+        $component->set('filterEstat', '5');
+
+        $faltes = $component->get('faltes');
+        $this->assertCount(1, $faltes);
+        $this->assertSame(3, $faltes[0]['id']);
+    }
+
     public function test_mostra_boto_recordatori_només_en_estat_sense_justificant(): void
     {
         Livewire::actingAs($this->direccionUser(), 'profesor')

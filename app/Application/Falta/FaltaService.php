@@ -99,6 +99,27 @@ class FaltaService
             return $this->updateJustificant($id, $request);
         }
 
+        if ($request->boolean('baja')) {
+            return DB::transaction(function () use ($falta, $request): Falta {
+                $request->merge([
+                    'baja' => 1,
+                    'dia_completo' => 1,
+                    'hora_ini' => null,
+                    'hora_fin' => null,
+                    'hasta' => '',
+                    'estado' => 5,
+                ]);
+
+                $falta->fillAll($request);
+                app(TeacherSubstitutionService::class)->markLeave(
+                    (string) $falta->idProfesor,
+                    (string) $falta->getRawOriginal('desde')
+                );
+
+                return $falta->fresh();
+            });
+        }
+
         $diaCompleto = $request->boolean('dia_completo') ? 1 : 0;
 
         $request->merge([
