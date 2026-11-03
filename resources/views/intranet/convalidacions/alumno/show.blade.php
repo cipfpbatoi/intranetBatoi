@@ -176,7 +176,7 @@
                             <div class="mb-2"><strong>Estat actual:</strong> <span class="badge bg-secondary">{{ \Intranet\Entities\Convalidacio::estatOptions()[$peticio->estat] ?? $peticio->estat }}</span></div>
                             @if ($peticio->estat === \Intranet\Entities\Convalidacio::ESTAT_APORTAR_ORIGINAL)
                                 <div class="alert alert-warning mt-2 mb-2">
-                                    <div>Has d'aportar la documentació original a Secretaria.</div>
+                                    <div>{{ "Has d'aportar la documentació original a Secretaria." }}</div>
                                     <div>No has de pujar-la des de la intranet.</div>
                                 </div>
                             @endif

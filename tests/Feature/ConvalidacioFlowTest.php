@@ -1079,7 +1079,7 @@ class ConvalidacioFlowTest extends TestCase
 
         $this->get(route('convalidacions.show', $sollicitud))
             ->assertOk()
-            ->assertSee("Has d'aportar la documentació original a Secretaria.", false)
+            ->assertSee("Has d'aportar la documentació original a Secretaria.")
             ->assertSee('No has de pujar-la des de la intranet.')
             ->assertDontSee('Afig un document');
     }
