@@ -52,7 +52,7 @@ class TeacherSubstitutionService
             return;
         }
 
-        $profe->fecha_baja = new Carbon($fecha);
+        $profe->fecha_baja = Carbon::parse($fecha)->toDateString();
         $profe->save();
     }
 

@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,7 @@ use Intranet\Application\Convalidacio\ConvalidacioAccessService;
 use Intranet\Application\Convalidacio\ConvalidacioAutomaticaService;
 use Intranet\Application\Convalidacio\ConvalidacioQueryService;
 use Intranet\Application\Convalidacio\ConvalidacioService;
+use Intranet\Entities\AportacioDocumentalConvalidacio;
 use Intranet\Entities\Convalidacio;
 use Intranet\Entities\DocumentConvalidacio;
 use Intranet\Entities\Profesor;
@@ -176,6 +178,7 @@ class DireccionConvalidacioController extends Controller
     {
         $model = $this->queries->sollicitudDetail($sollicitud) ?? abort(404);
         Gate::forUser($this->profesor())->authorize('view', $model);
+        $model->load('convalidacions.documents', 'convalidacions.aportacionsDocumentals.actor');
         $peticionsElegibles = collect($this->automatitzacions->previsualitzar()['casos'])
             ->filter(fn (array $cas): bool => (int) $cas['peticio']->sollicitud_convalidacio_id === (int) $model->id)
             ->keyBy('peticio_id');
@@ -184,7 +187,68 @@ class DireccionConvalidacioController extends Controller
             'sollicitud' => $model,
             'estats' => Convalidacio::estatManualOptions(),
             'peticionsElegibles' => $peticionsElegibles,
+            'potAportarDocumentacio' => $model->convalidacions->mapWithKeys(fn (Convalidacio $peticio): array => [
+                $peticio->id => Gate::forUser($this->profesor())->allows('addStaffContribution', $peticio),
+            ]),
+            'espaisAportacioDocumental' => $model->convalidacions->mapWithKeys(function (Convalidacio $peticio): array {
+                $paths = collect($peticio->documents->pluck('path')->all())
+                    ->merge([$peticio->document_path, $peticio->document_prl_path])
+                    ->merge($peticio->aportacionsDocumentals->pluck('path')->all())
+                    ->filter()
+                    ->unique();
+
+                return [$peticio->id => max(0, 3 - $paths->count())];
+            }),
         ]);
+    }
+
+    /** Afig documents i/o un comentari al requeriment pendent sense substituir adjunts previs. */
+    public function staffContribution(Request $request, Convalidacio $convalidacio): RedirectResponse
+    {
+        $actor = $this->profesor();
+        Gate::forUser($actor)->authorize('addStaffContribution', $convalidacio);
+        $validated = $request->validate([
+            'documents' => ['nullable', 'array', 'max:3'],
+            'documents.*.fitxer' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:' . (int) config('convalidacions.max_document_kb', 5120)],
+            'documents.*.descripcio' => ['nullable', 'string', 'max:120'],
+            'comentari' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $documents = [];
+        foreach ($validated['documents'] ?? [] as $document) {
+            $file = $document['fitxer'] ?? null;
+            if (!$file instanceof UploadedFile) {
+                continue;
+            }
+            if (blank($document['descripcio'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'aportacio' => 'Indica la descripció de cada fitxer seleccionat.',
+                ]);
+            }
+            $documents[] = [
+                'fitxer' => $file,
+                'descripcio' => trim((string) $document['descripcio']),
+            ];
+        }
+
+        if ($documents === [] && blank($validated['comentari'] ?? null)) {
+            throw ValidationException::withMessages([
+                'aportacio' => 'Afig almenys un document o un comentari.',
+            ]);
+        }
+
+        try {
+            $this->service->registrarAportacioPersonal(
+                $convalidacio,
+                $actor,
+                $documents,
+                $validated['comentari'] ?? null
+            );
+        } catch (ConvalidacioException $exception) {
+            return back()->withErrors(['aportacio' => $exception->getMessage()]);
+        }
+
+        return back()->with('success', 'Aportació incorporada a l’expedient.');
     }
 
     /** Inicia la revisió i passa a En procés únicament els mòduls que estaven Enviada. */
@@ -312,6 +376,18 @@ class DireccionConvalidacioController extends Controller
         abort_unless(Storage::disk('convalidacions')->exists($document->path), 404);
 
         return Storage::disk('convalidacions')->download($document->path, $document->original_name);
+    }
+
+    /** Descarrega un fitxer aportat per Secretaria o Direcció des del disc privat. */
+    public function downloadStaffContribution(
+        Convalidacio $convalidacio,
+        AportacioDocumentalConvalidacio $aportacio
+    ): StreamedResponse {
+        Gate::forUser($this->profesor())->authorize('viewPeticio', $convalidacio);
+        abort_unless((int) $aportacio->convalidacio_id === (int) $convalidacio->id, 404);
+        abort_unless($aportacio->path && Storage::disk('convalidacions')->exists($aportacio->path), 404);
+
+        return Storage::disk('convalidacions')->download($aportacio->path, $aportacio->original_name);
     }
 
     /** Retorna la identitat autenticada pel guard de professorat. */

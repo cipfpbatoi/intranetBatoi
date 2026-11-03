@@ -214,7 +214,7 @@ And la descàrrega no canvia ni activa cap versió del catàleg
 But una persona sense rol de Direcció no pot obtindre el fitxer
 And si no hi ha cap catàleg disponible, Direcció rep un missatge funcional i no un fitxer buit ni una excepció tècnica
 
-### Escenari 18: notificar per correu cada canvi individual de mòdul
+### ✅ Escenari 18: notificar per correu cada canvi individual de mòdul
 
 Given una persona de Direcció canvia vàlidament l'estat o l'observació d'una petició
 When el canvi efectiu queda guardat
@@ -223,6 +223,17 @@ And la resta de peticions de la sol·licitud no canvien
 And el missatge no inclou adjunts ni informació d'altres mòduls o alumnes
 But si es torna a guardar exactament el mateix estat i observació, no s'envia un altre correu
 And si no hi ha una adreça vàlida o falla l'enviament, es conserva el canvi i Direcció rep un avís
+And la interfície informa si el correu s'ha enviat o si no s'ha pogut enviar
+
+### ✅ Escenari 18a: presentar l'aportació documental com una acció contextual
+
+Given Secretaria o Direcció consulta una petició en estat `Revisar documentació`
+When obri el detall de la petició
+Then veu un botó «Afegir documentació rebuda» i una indicació que pot incorporar un fitxer, un comentari o tots dos
+And el formulari complet no ocupa la vista fins que prem el botó
+When prem el botó
+Then s'obri un diàleg amb els camps d'aportació
+But si la petició està en qualsevol altre estat, no veu el botó ni el diàleg i el servidor rebutja una petició directa sense guardar canvis
 
 ### ✅ Escenari 19: llistats separats de sol·licituds i convalidacions
 
@@ -278,6 +289,41 @@ And pot utilitzar el llistat per mòdul, generar-ne el PDF, registrar les accept
 But no pot accedir a la configuració de regles, gestió d'XML o catàlegs, control d'accés de proves ni gestió de rols
 And el rol Secretaria no li concedeix accés general a les àrees protegides per `role:profesor`, `role:direccion` o `role:administrador`
 
+### ✅ Escenari 24: identificar separadament els documents i el comentari del personal
+
+Given Secretaria o Direcció obri «Afegir documentació rebuda» en una petició en estat `Revisar documentació`
+When consulta el formulari
+Then veu que cada fitxer ha de tindre una descripció del seu contingut, per exemple «Certificat acadèmic» o «Certificat PRL»
+And veu el comentari com una nota general opcional de l'aportació, diferenciada de les descripcions
+
+### ✅ Escenari 25: mostrar la descripció obligatòria que falta
+
+Given s'ha seleccionat un fitxer sense descripció
+When Secretaria o Direcció intenta afegir-lo a l'expedient
+Then el diàleg no es tanca ni es perd el fitxer seleccionat
+And el camp de descripció corresponent es destaca i indica què falta
+And el servidor valida igualment la descripció i no guarda l'aportació si no és vàlida
+
+### ✅ Escenari 26: afegir diversos documents rebuts en una aportació
+
+Given una petició està en estat `Revisar documentació` i té capacitat disponible dins del límit vigent
+When Secretaria o Direcció prepara una aportació
+Then pot afegir un o més fitxers i cada fitxer té una descripció obligatòria pròpia
+And pot afegir o llevar files abans d'enviar
+And pot incloure un comentari general opcional compartit per tota l'aportació
+And cada document queda associat a la persona i al rol que l'ha registrat
+And els documents previs de l'alumne i del personal es conserven sense substituir-los
+And si s'incorpora almenys un fitxer, la petició passa a `En procés`
+But si només s'afig un comentari, la petició continua en `Revisar documentació`
+
+### ✅ Escenari 27: respectar el límit i l'estat permés en les aportacions del personal
+
+Given una petició ja té tres documents en total o no està en `Revisar documentació`
+When el personal intenta afegir fitxers
+Then la interfície no permet superar la capacitat disponible
+And el servidor rebutja qualsevol excés o aportació fora de l'estat permés sense guardar documents parcials
+And es mantenen les autoritzacions existents de Secretaria i Direcció
+
 ### ✅ Escenari 22: guardar resultat, nota i procedència de la resolució per mòdul
 
 Given Direcció resol manualment una petició com a `Acceptada`
@@ -313,6 +359,8 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 - El cas especial de convalidació basada en un cicle complet queda ajornat fins que es definisquen les seues regles.
 - Els orígens externs es presenten en tres opcions compactes: estudis o certificats acadèmics d'un altre centre, certificat d'EOI i prevenció de riscos LOGSE.
 - Els tres orígens externs admesos exigixen la declaració «Declare que la informació aportada és original i que dispose dels originals en cas que se'm demanen» i un únic adjunt.
+- Quan Secretaria o Direcció aporta documentació addicional en estat `Revisar documentació`, pot afegir diversos fitxers, cadascun amb descripció obligatòria i un comentari general opcional, fins a un màxim total de tres documents per petició comptant els adjunts previs i els camps llegats.
+- La validació de la descripció en el navegador facilita la correcció, però el servidor continua sent autoritatiu. Les aportacions del personal es guarden sense substituir documents previs i amb traçabilitat de persona, rol i data.
 - La interfície mostra els formats admesos i el límit de mida configurat per l'aplicació.
 - Els adjunts es guarden en emmagatzematge privat, mai en `public/` ni en un disc públic.
 - La descàrrega passa sempre per autorització i només està disponible per a l'alumne propietari i per a Direcció.
@@ -392,7 +440,7 @@ And el detall i el PDF per mòdul mostren el resultat i la nota quan consten gua
 - Altres notificacions de panell o correus diferents de l'avís per canvi individual d'estat definit en l'escenari 18.
 - Gestió general de permisos de Secretaria fora de l'operativa de convalidacions descrita en l'escenari 23.
 - Historial complet de transicions.
-- Múltiples documents per petició i versionat documental.
+- Versionat documental.
 - Edició o cancel·lació d'una sol·licitud ja tramitada.
 - Text normatiu definitiu i enllaços oficials sobre titulacions universitàries.
 

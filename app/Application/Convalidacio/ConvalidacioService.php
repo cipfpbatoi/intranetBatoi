@@ -495,6 +495,108 @@ class ConvalidacioService
         return $peticio->fresh();
     }
 
+    /**
+     * Registra un comentari i/o diversos documents de Secretaria o Direcció sense alterar adjunts previs.
+     *
+     * @param array<int, array{fitxer: UploadedFile, descripcio: string}> $documents
+     */
+    public function registrarAportacioPersonal(
+        Convalidacio $peticio,
+        Profesor $actor,
+        array $documents,
+        ?string $comentari
+    ): Convalidacio {
+        $comentari = filled($comentari) ? trim($comentari) : null;
+        $documents = array_values(array_filter($documents, static fn (array $document): bool => ($document['fitxer'] ?? null) instanceof UploadedFile));
+        if ($documents === [] && $comentari === null) {
+            throw new ConvalidacioException('Afig un document, un comentari o tots dos.');
+        }
+        if (count($documents) > 3) {
+            throw new ConvalidacioException('Pots adjuntar un màxim de tres documents a cada petició.');
+        }
+        foreach ($documents as $document) {
+            if (blank($document['descripcio'] ?? null)) {
+                throw new ConvalidacioException('Indica la descripció de cada fitxer seleccionat.');
+            }
+            $this->validarDocument($document['fitxer']);
+        }
+
+        $storedPaths = [];
+        try {
+            DB::transaction(function () use ($peticio, $actor, $documents, $comentari, &$storedPaths): void {
+                $actual = Convalidacio::query()->lockForUpdate()->findOrFail($peticio->id);
+                if ($actual->estat !== Convalidacio::ESTAT_REVISAR_DOCUMENTACIO) {
+                    throw new ConvalidacioException('Només es pot aportar documentació quan la petició està en «Revisar documentació».');
+                }
+
+                $roles = [];
+                if (esRol((int) $actor->rol, (int) config('roles.rol.secretaria'))) {
+                    $roles[] = 'secretaria';
+                }
+                if (esRol((int) $actor->rol, (int) config('roles.rol.direccion'))) {
+                    $roles[] = 'direccion';
+                }
+                if ($roles === []) {
+                    throw new ConvalidacioException('No tens permisos per a registrar esta aportació.');
+                }
+
+                if ($documents !== []) {
+                    $paths = $actual->documents()->lockForUpdate()->pluck('path')->all();
+                    $paths = array_merge($paths, [
+                        $actual->document_path,
+                        $actual->document_prl_path,
+                    ], $actual->aportacionsDocumentals()->lockForUpdate()->pluck('path')->all());
+                    $documentsExistents = collect($paths)->filter()->unique()->count();
+                    if ($documentsExistents + count($documents) > 3) {
+                        throw new ConvalidacioException('Pots adjuntar un màxim de tres documents a cada petició.');
+                    }
+
+                    $alumne = $actual->sollicitud->alumno;
+                    if (!$alumne instanceof Alumno) {
+                        throw new ConvalidacioException('No s’ha trobat l’alumne de la sol·licitud.');
+                    }
+                }
+
+                $comentariPendent = $comentari;
+                foreach ($documents as $document) {
+                    $saved = $this->guardarAdjunt($alumne, $actual->sollicitud, $document['fitxer']);
+                    $storedPaths[] = $saved['path'];
+                    $actual->aportacionsDocumentals()->create([
+                        'actor_dni' => $actor->dni,
+                        'rols_actor' => $roles,
+                        'comentari' => $comentariPendent,
+                        'descripcio' => trim((string) $document['descripcio']),
+                        ...$saved,
+                    ]);
+                    $comentariPendent = null;
+                }
+
+                if ($documents === [] || $comentariPendent !== null) {
+                    $actual->aportacionsDocumentals()->create([
+                        'actor_dni' => $actor->dni,
+                        'rols_actor' => $roles,
+                        'comentari' => $comentariPendent,
+                        'descripcio' => null,
+                        'path' => null,
+                        'original_name' => null,
+                        'mime' => null,
+                    ]);
+                }
+
+                if ($documents !== []) {
+                    $actual->forceFill(['estat' => Convalidacio::ESTAT_EN_PROCES])->save();
+                }
+            }, 1);
+        } catch (\Throwable $exception) {
+            if ($storedPaths !== []) {
+                Storage::disk('convalidacions')->delete($storedPaths);
+            }
+            throw $exception;
+        }
+
+        return $peticio->fresh();
+    }
+
     /** Determina en quins estats l'alumnat pot substituir la documentació. */
     private function estatAdmetEdicioDocumental(string $estat): bool
     {

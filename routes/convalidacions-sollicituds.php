@@ -10,6 +10,8 @@ Route::prefix('direccion/convalidacions')->name('convalidacions.direction.')->gr
     Route::get('/documents/{convalidacio}', ['as' => 'download', 'uses' => 'DireccionConvalidacioController@download']);
     Route::get('/documents/{convalidacio}/prl', ['as' => 'download-prl', 'uses' => 'DireccionConvalidacioController@downloadPrl']);
     Route::get('/documents/{convalidacio}/adjunt/{document}', ['as' => 'download-attachment', 'uses' => 'DireccionConvalidacioController@downloadAttachment']);
+    Route::post('/peticions/{convalidacio}/aportacio-documental', ['as' => 'staff-contribution', 'uses' => 'DireccionConvalidacioController@staffContribution']);
+    Route::get('/peticions/{convalidacio}/aportacions/{aportacio}/document', ['as' => 'download-staff-contribution', 'uses' => 'DireccionConvalidacioController@downloadStaffContribution']);
     Route::put('/peticions/{convalidacio}', ['as' => 'resolve', 'uses' => 'DireccionConvalidacioController@resolve']);
     Route::post('/{sollicitud}/revisar', ['as' => 'review', 'uses' => 'DireccionConvalidacioController@review'])
         ->whereNumber('sollicitud');
