@@ -1063,6 +1063,27 @@ class ConvalidacioFlowTest extends TestCase
         }
     }
 
+    public function test_alumne_veu_les_instruccions_quan_ha_de_presentar_els_originals_a_secretaria(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'presentar-originals-secretaria', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'document' => UploadedFile::fake()->create('certificat.pdf', 30, 'application/pdf'),
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_APORTAR_ORIGINAL])->save();
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $this->get(route('convalidacions.show', $sollicitud))
+            ->assertOk()
+            ->assertSee("Has d'aportar la documentació original a Secretaria.", false)
+            ->assertSee('No has de pujar-la des de la intranet.')
+            ->assertDontSee('Afig un document');
+    }
+
     public function test_errors_de_document_reobrin_nomes_el_control_corresponent(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'documents-reoberts', [[

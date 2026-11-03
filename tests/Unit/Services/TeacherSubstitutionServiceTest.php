@@ -40,7 +40,7 @@ class TeacherSubstitutionServiceTest extends TestCase
         (new TeacherSubstitutionService())->markLeave('P100', '2026-02-12');
 
         $fecha = (string) DB::table('profesores')->where('dni', 'P100')->value('fecha_baja');
-        $this->assertStringStartsWith('2026-02-12', $fecha);
+        $this->assertSame('2026-02-12', $fecha);
     }
 
     public function test_reactivate_traspassa_dades_del_substitut_i_el_desactiva(): void
