@@ -54,4 +54,4 @@ But si la petició no està en estat `Acceptada`, el sistema rebutja el canvi
 - Cal evitar que canviar el desplegable després d'introduir una nota deixe un valor obsolet que es guarde amb `mode_nota_resolucio = none`.
 - Les peticions ja acceptades sense nota no s'actualitzen automàticament; només s'afegirà la nota quan Direcció les torne a revisar mitjançant el flux previst.
 
-Status: ready_to_commit
+Status: archived

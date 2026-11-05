@@ -61,4 +61,4 @@ And si no s'adjunta cap document en el cas ordinari del propi centre, no es dema
 - Si l'alumne descriu uns estudis com a «cicle complet», l'expressió és només informació descriptiva: no es modela com una entitat ni implica una regla o equivalència automàtica.
 - S'ha de mantindre la declaració responsable comuna i la validació del nombre, tipus i grandària dels fitxers.
 
-Status: ready_for_review
+Status: archived

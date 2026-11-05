@@ -1,6 +1,6 @@
 # Proposta: aclarir avisos de canvi d'estat i aportació documental
 
-- Estat: `ready_to_commit`
+- Estat: archived
 - Domini: convalidacions, notificacions i UX operativa
 - Punt d'entrada: formulari de resolució i detall de petició de Direcció/Secretaria
 
@@ -63,4 +63,4 @@ La resolució d'una petició ja intenta enviar un correu quan hi ha un canvi efe
 - El canvi d'interfície no ha d'alterar la regla d'observació obligatòria per a `Denegada`, `Revisar documentació` i `Aportar documentació original a Secretaria`.
 - El diàleg ha de ser accessible i no pot deixar camps obligatoris actius quan està tancat.
 
-Status: ready_to_commit
+Status: archived

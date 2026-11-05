@@ -2,7 +2,7 @@
 
 ## Estat
 
-Status: ready_to_commit
+Status: archived
 
 ## Domini i traça
 

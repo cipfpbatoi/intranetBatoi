@@ -1,7 +1,7 @@
 # Convalidacions — resposta controlada davant errors tècnics
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Escenaris
 

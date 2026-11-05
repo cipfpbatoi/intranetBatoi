@@ -1,7 +1,7 @@
 # Convalidacions — descàrrega del YAML de regles
 
 Issue: #323
-Status: ready_to_commit
+Status: archived
 
 ## Traça i punt d'entrada
 
@@ -63,7 +63,7 @@ And no retorna un fitxer buit ni mostra una excepció tècnica
 - El contingut actiu pot estar en emmagatzematge privat o en el recurs inicial inclòs en el desplegament; l'acció ha de tractar els dos orígens sense fer pública cap ruta.
 - La prova del fallback inicial ha de distingir-lo del YAML pujat en altres escenaris de test per evitar resultats dependents de l'estat.
 
-Status: ready_to_commit
+Status: archived
 
 ## Implementació aplicada
 

@@ -64,4 +64,4 @@ And es conserva la confirmació i el comportament actual de l'acció
 - Plegar els controls sense mostrar-ne l'estat podria amagar un bloqueig actiu; per això l'estat resumit ha de quedar visible.
 - El botó d'aplicació automàtica no ha de suggerir que s'aplica a totes les peticions, només a les elegibles.
 
-Status: ready_to_commit
+Status: archived

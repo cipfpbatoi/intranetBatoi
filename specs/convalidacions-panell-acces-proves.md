@@ -1,7 +1,7 @@
 # Convalidacions — control d'accés de proves en Direcció
 
 Issue: #323
-Status: ready_to_commit
+Status: archived
 
 ## Traça i punt d'entrada
 
@@ -68,4 +68,4 @@ And els usuaris que no són de Direcció no poden accedir al panell que la mostr
 - La contrasenya pot diferir del valor per defecte si l'entorn configura `CONVALIDACIONS_ACCESS_PASSWORD`; cal mostrar el valor efectiu, no codificar el valor per defecte en Blade.
 - El canvi visual no ha de convertir la lectura de l'estat en una acció: només un canvi de l'interruptor envia l'actualització.
 
-Status: ready_to_commit
+Status: archived

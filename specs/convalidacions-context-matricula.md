@@ -1,7 +1,7 @@
 # Convalidacions — context del cicle de matrícula
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Objectiu
 

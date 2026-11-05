@@ -1,7 +1,7 @@
 # Convalidacions — cicle nominal i separació del mòdul professional
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb les specs existents
 

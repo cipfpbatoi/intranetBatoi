@@ -1,7 +1,7 @@
 # Convalidacions — nivell formatiu del cicle
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Objectiu
 

@@ -1,7 +1,7 @@
 # Convalidacions — declaració responsable conservada en la composició
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Escenaris
 

@@ -1,7 +1,7 @@
 # Proposta: EIE LOE → IPE II per coincidència del nom XML
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Traça
 

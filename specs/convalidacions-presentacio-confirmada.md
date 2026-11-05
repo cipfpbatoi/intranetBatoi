@@ -1,7 +1,7 @@
 # Convalidacions — presentació confirmada de la sol·licitud
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Escenaris
 

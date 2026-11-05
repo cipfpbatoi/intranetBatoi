@@ -1,6 +1,6 @@
 # Proposta: afegir documentació a una sol·licitud existent
 
-- Estat: ready_for_review
+- Estat: archived — consolidated into specs/convalidacions.md
 - Issue relacionada: #323
 - Domini: convalidacions de l'alumnat
 - Punt d'entrada actual: `AlumnoConvalidacioController::correctAttachment()` / `correct()`, les rutes d'alumnat i `ConvalidacioService`
