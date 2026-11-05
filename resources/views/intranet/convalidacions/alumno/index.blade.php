@@ -6,8 +6,19 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Convalidar</h1>
-        <a href="{{ route('convalidacions.create') }}" class="btn btn-primary">Nova sol·licitud</a>
+        @if ($newRequestBlockMessage)
+            <span class="text-muted">Nova sol·licitud no disponible</span>
+        @else
+            <a href="{{ route('convalidacions.create') }}" class="btn btn-primary">Nova sol·licitud</a>
+        @endif
     </div>
+
+    @if (session('warning'))
+        <div class="alert alert-warning" role="alert">{{ session('warning') }}</div>
+    @endif
+    @if ($newRequestBlockMessage)
+        <div class="alert alert-warning" role="alert">{{ $newRequestBlockMessage }}</div>
+    @endif
 
     @forelse ($sollicituds as $sollicitud)
         <div class="card mb-3">

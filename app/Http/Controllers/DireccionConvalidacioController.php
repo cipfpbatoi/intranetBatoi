@@ -77,7 +77,26 @@ class DireccionConvalidacioController extends Controller
     /** Mostra els accessos a les ferramentes de configuració de convalidacions. */
     public function configuracio(): View
     {
-        return view('intranet.convalidacions.direccion.configuracio');
+        return view('intranet.convalidacions.direccion.configuracio', [
+            'newRequestsEnabled' => $this->access->newRequestsEnabled(),
+            'julyEnrolmentsBlocked' => $this->access->julyEnrolmentsBlocked(),
+        ]);
+    }
+
+    /** Actualitza l'obertura de noves sol·licituds per a l'alumnat. */
+    public function newRequestsAccess(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'new_requests_enabled' => ['required', 'boolean'],
+            'july_enrolments_blocked' => ['required', 'boolean'],
+        ]);
+        $this->access->setNewRequestControls(
+            (bool) $validated['new_requests_enabled'],
+            (bool) $validated['july_enrolments_blocked']
+        );
+
+        return redirect()->route('convalidacions.direction.configuracio')
+            ->with('success', 'Configuració d’obertura de noves sol·licituds actualitzada.');
     }
 
     /** Mostra una fila i estat independents per cada mòdul sol·licitat. */

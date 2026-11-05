@@ -58,14 +58,21 @@ class AlumnoConvalidacioController extends Controller
     /** Mostra exclusivament les sol·licituds de l'alumne autenticat. */
     public function index(): View
     {
+        $alumno = $this->alumno();
+
         return view('intranet.convalidacions.alumno.index', [
-            'sollicituds' => $this->queries->sollicitudsAlumne((string) $this->alumno()->nia),
+            'sollicituds' => $this->queries->sollicitudsAlumne((string) $alumno->nia),
+            'newRequestBlockMessage' => $this->access->newRequestBlockMessage($alumno),
         ]);
     }
 
     /** Mostra el formulari temporal de composició. */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if ($message = $this->access->newRequestBlockMessage($this->alumno())) {
+            return redirect()->route('convalidacions.index')->with('warning', $message);
+        }
+
         return view('intranet.convalidacions.alumno.create', [
             'modulsDisponibles' => $this->queries->modulsActuals($this->alumno()),
             'modulsAprovats' => $this->queries->modulsAprovats($this->alumno()),
@@ -78,6 +85,10 @@ class AlumnoConvalidacioController extends Controller
     /** Tramita la composició completa en una sola operació. */
     public function store(Request $request): RedirectResponse
     {
+        if ($message = $this->access->newRequestBlockMessage($this->alumno())) {
+            return redirect()->route('convalidacions.index')->with('warning', $message);
+        }
+
         $validated = $request->validate([
             'submission_token' => ['required', 'string', 'max:64'],
             'items' => ['required', 'array', 'min:1'],
