@@ -1,7 +1,7 @@
 # Convalidacions — visibilitat de l'automatització en Direcció
 
 Issue: #323
-Status: ready_to_commit
+Status: archived
 
 ## Traça i punt d'entrada
 
@@ -86,4 +86,4 @@ And el canvi posterior del YAML no modifica la regla ni les dades ja guardades e
 - El llistat actual carrega totes les peticions i no pagina. Si la previsualització de totes les sol·licituds afecta el rendiment, la implementació haurà d'agrupar les coincidències en una sola passada i no executar una previsualització completa per cada sol·licitud.
 - La pàgina existent `/direccion/convalidacions/regles` continuarà sent la gestió del YAML. Tant eixa pàgina com el llistat principal oferiran l'acció explícita d'aplicar, amb confirmació; així l'acció queda visible sense llevar la pàgina de gestió detallada.
 
-Status: ready_to_commit
+Status: archived

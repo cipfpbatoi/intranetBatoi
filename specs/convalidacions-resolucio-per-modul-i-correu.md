@@ -2,7 +2,7 @@
 
 ## Estat
 
-Status: ready_for_review
+Status: archived
 
 ## Traça i punt d’entrada
 

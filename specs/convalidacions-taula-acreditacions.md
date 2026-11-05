@@ -1,7 +1,7 @@
 # Convalidacions — taula de mòduls i acreditacions simplificades
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb les specs existents
 

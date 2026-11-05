@@ -1,7 +1,7 @@
 # Convalidacions — composició mitjançant diàlegs i revisió final
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb la spec principal
 

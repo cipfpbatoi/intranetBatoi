@@ -1,6 +1,6 @@
 # Proposta: fer més clara i permetre diversos documents en una aportació de personal
 
-- Estat: `ready_to_commit`
+- Estat: archived
 - Domini: convalidacions, documentació i UX operativa
 - Punt d'entrada: aportació de Secretaria/Direcció des del detall d'una petició
 
@@ -67,4 +67,4 @@ El diàleg actual permet afegir un únic document. Quan s'adjunta un fitxer, la 
 - El nombre màxim s'ha de calcular incloent els documents relacionals, les aportacions i els camps llegats de documentació.
 - Un comentari comú no ha de duplicar-se com si cada fitxer tinguera una observació diferent, però cada fitxer ha de continuar identificat i traçable.
 
-Status: ready_to_commit
+Status: archived

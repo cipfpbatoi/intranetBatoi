@@ -1,7 +1,7 @@
 # Convalidacions — format llegible de l'acreditació acadèmica
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb les specs existents
 

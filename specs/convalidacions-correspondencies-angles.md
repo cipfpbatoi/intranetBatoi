@@ -1,7 +1,7 @@
 # Convalidacions — correspondències de cicles amb anglés de 5 hores o més
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Traça i punt d'entrada
 
@@ -110,4 +110,4 @@ El camp `es_grau_superior` accepta `1/0` o `si/no` (sense distingir majúscules 
 - La correspondència ha de comparar codis XML exactes amb el codi de cicle guardat en la petició. Si eixa dada de la petició no identifica el cicle d'anglés que descriu el CSV, cal ajustar la font/identificador abans de donar per aplicable la regla.
 - Els valors de `es_grau_superior` poden arribar amb variants de format; el parser ha de rebutjar literals desconeguts i no interpretar-los de manera permissiva.
 
-Status: ready_for_review
+Status: archived

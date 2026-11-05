@@ -1,7 +1,7 @@
 # Convalidacions automàtiques — aplicació interna de regles
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Traça i punt d'entrada
 
@@ -157,4 +157,4 @@ And la generació de l'informe i la comunicació posterior a ITACA són fases se
 - Falta rebre la correspondència entre cicles d'origen i les hores setmanals dels mòduls d'anglés a la Comunitat Valenciana. Fins que s'incorpore, només les regles d'Aprofundiment d'anglés que depenen d'esta correspondència quedaran pendents.
 - Les generacions automàtiques són independents del circuit de sol·licituds manuals i no equivalen encara a una anotació en ITACA.
 
-Status: ready_for_review
+Status: archived

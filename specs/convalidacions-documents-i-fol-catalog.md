@@ -1,7 +1,7 @@
 # Convalidacions — documents de suport i catàleg de FOL LOGSE
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Objectiu
 

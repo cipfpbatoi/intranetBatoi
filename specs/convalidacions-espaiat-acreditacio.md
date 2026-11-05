@@ -1,7 +1,7 @@
 # Convalidacions — espaiat entre les línies de l'acreditació
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Escenari
 

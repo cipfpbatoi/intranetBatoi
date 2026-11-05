@@ -69,4 +69,4 @@ And la sol·licitud continua disponible per a revisió manual o per a una altra 
 - La normativa permet establir formació complementària per a IPE I/II; qualsevol requisit o pràctica addicional establida per la Comunitat Valenciana queda fora d'esta regla i s'ha de revisar abans del desplegament.
 - Les regles es poden haver modificat a l'entorn desplegat; després de la implementació caldrà importar/publicar el YAML actualitzat perquè el comportament siga efectiu allí.
 
-Status: ready_for_review
+Status: archived

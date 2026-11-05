@@ -1,6 +1,6 @@
 # Proposta: simplificar els controls dels documents adjunts
 
-- Estat: ready_for_review
+- Estat: archived — consolidated into specs/convalidacions.md
 - Issue relacionada: #323
 - Domini: interfície d'alumnat de convalidacions
 - Punt d'entrada: `resources/views/intranet/convalidacions/alumno/show.blade.php`
@@ -58,4 +58,4 @@ And els altres formularis continuen ocults
 - Els formularis d'afegir i substituir no han de niar-se ni compartir els noms dels camps; cadascun ha d'enviar només l'acció triada.
 - La plantilla també mostra documents llegats; els controls han de continuar funcionant per a estos fitxers.
 
-Status: ready_for_review
+Status: archived

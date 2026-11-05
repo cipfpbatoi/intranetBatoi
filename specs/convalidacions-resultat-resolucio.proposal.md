@@ -56,4 +56,4 @@ And una regla només candidata o disponible, però no aplicada, no es presenta c
 - S'assumix que en producció no hi haurà resolucions manuals acceptades anteriors a este canvi; si se'n detecta alguna, es revisarà com una incidència separada, sense inferir-ne ni migrar-ne el resultat.
 - La nota manual només s'accepta com a enter entre 5 i 10, i no s'altera la nota d'origen registrada.
 
-Status: ready_to_commit
+Status: archived

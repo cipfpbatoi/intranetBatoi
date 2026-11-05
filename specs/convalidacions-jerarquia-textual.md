@@ -1,7 +1,7 @@
 # Convalidacions — jerarquia textual definitiva de l'acreditació
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb les specs existents
 

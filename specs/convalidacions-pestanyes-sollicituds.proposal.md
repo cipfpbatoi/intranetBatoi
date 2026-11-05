@@ -1,7 +1,7 @@
 # Convalidacions — pestanyes per a sol·licituds en seguiment i resoltes
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Objectiu
 
@@ -73,4 +73,4 @@ And el recompte de «En seguiment» inclou cada sol·licitud amb algun mòdul en
 - El filtratge SQL ha de tractar correctament les sol·licituds amb diversos mòduls i no duplicar capçalera ni files.
 - No es modifica el llistat independent «Convalidacions per mòdul» ni el seu filtre per estat.
 
-Status: ready_for_review
+Status: archived

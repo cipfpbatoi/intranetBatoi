@@ -1,7 +1,7 @@
 # Convalidacions — catàleg FOL LOE i regla per a IPE I
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Objectiu
 

@@ -1,7 +1,7 @@
 # Convalidacions — resultats acadèmics des d'XML privat
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Relació amb la spec principal
 

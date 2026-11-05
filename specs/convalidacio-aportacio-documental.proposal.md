@@ -1,6 +1,6 @@
 # Proposta: registrar documentació rebuda per Direcció o Secretaria
 
-- Estat: `ready_to_commit`
+- Estat: archived
 - Domini: convalidacions, documentació i traçabilitat
 - Punt d'entrada: detall de la sol·licitud, `ConvalidacioPolicy` i `ConvalidacioService`
 
@@ -69,4 +69,4 @@ L'alumnat pot aportar o corregir documentació, però a vegades porta la documen
 - El comentari de l'aportació es manté separat de l'observació de Direcció associada a la resolució, per no sobreescriure-la ni generar notificacions pròpies d'un canvi d'estat.
 - Si una persona té alhora Secretaria i Direcció, s'ha de guardar el rol operatiu triat o bé una instantània dels rols actius en el moment de l'aportació; no s'ha d'inferir a posteriori del rol actual.
 
-Status: ready_to_commit
+Status: archived

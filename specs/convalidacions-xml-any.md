@@ -1,7 +1,7 @@
 # Convalidacions - avaluacions d'ITACA ordenades per any
 
 Issue: #323
-Status: ready_for_review
+Status: archived
 
 ## Escenaris
 
