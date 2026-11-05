@@ -11,8 +11,34 @@
         </div>
         <a class="btn btn-outline-secondary" href="{{ route('convalidacions.direction.index') }}">Tornar a les sol·licituds</a>
     </div>
+    @if (session('success'))
+        <div class="alert alert-success" role="status">{{ session('success') }}</div>
+    @endif
 
     <div class="row g-3">
+        <div class="col-md-4">
+            <section class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Obertura de sol·licituds</h2>
+                    <p class="text-muted">Controla qui pot presentar una nova sol·licitud de convalidació.</p>
+                    <form method="POST" action="{{ route('convalidacions.direction.new-requests-access') }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="new_requests_enabled" value="0">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="new-requests-enabled" name="new_requests_enabled" value="1" @checked($newRequestsEnabled)>
+                            <label class="form-check-label" for="new-requests-enabled">Permetre noves sol·licituds</label>
+                        </div>
+                        <input type="hidden" name="july_enrolments_blocked" value="0">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="july-enrolments-blocked" name="july_enrolments_blocked" value="1" @checked($julyEnrolmentsBlocked)>
+                            <label class="form-check-label" for="july-enrolments-blocked">Bloquejar noves sol·licituds per a matrícules de juliol</label>
+                        </div>
+                        <button class="btn btn-outline-primary" type="submit">Guardar obertura</button>
+                    </form>
+                </div>
+            </section>
+        </div>
         <div class="col-md-4">
             <section class="card h-100">
                 <div class="card-body">

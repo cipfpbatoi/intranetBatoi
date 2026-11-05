@@ -14,6 +14,7 @@ Esta és la spec funcional consolidada del domini. Les especificacions complemen
 - Direcció i Secretaria comparteixen l'operativa sobre sol·licituds i mòduls; la configuració administrativa continua reservada a Direcció.
 - Les regles automàtiques s'apliquen només a mòduls que complixen una regla del YAML. Una sol·licitud pot tindre resolució automàtica parcial; la resta queda per a revisió manual. No hi ha integració d'escriptura amb ITACA.
 - Direcció gestiona el YAML, els XML acadèmics i els catàlegs auxiliars (FOL LOE i correspondències d'anglés). El període dels XML s'extrau del contingut, no del nom del fitxer.
+- Direcció controla des de Configuració si l'alumnat pot presentar noves sol·licituds i pot bloquejar-les específicament per a les matrícules de juliol.
 
 ## Escenaris vigents
 
@@ -113,6 +114,17 @@ Then estes opcions són exclusives de Direcció; Secretaria manté només l'acc�
 And el bloqueig de proves està actiu per defecte, pot requerir la contrasenya configurada al servidor i no l'exposa a l'alumnat
 And els XML i documents es mantenen privats, i les descàrregues passen per autorització
 And es pot eliminar una sol·licitud només com a prova, amb confirmació explícita i avís de pèrdua de traçabilitat.
+
+### ✅ 11. Obertura de noves sol·licituds
+
+Given que Direcció consulta `/direccion/convalidacions/configuracio`
+When activa o desactiva `Permetre noves sol·licituds` i `Bloquejar noves sol·licituds per a matrícules de juliol`
+Then els dos controls persistixen de forma independent i només Direcció els pot administrar
+And si les noves sol·licituds estan tancades, cap alumne no pot obrir ni presentar una sol·licitud nova i veu l'avís de tancament general
+And si les noves sol·licituds estan obertes però el bloqueig de juliol està actiu, només es bloqueja l'alumnat amb `alumnos.fecha_matricula` en el mes `07`, amb un avís específic
+And el bloqueig general preval sobre el bloqueig de juliol
+And el servidor torna a comprovar el bloqueig en mostrar i en tramitar la sol·licitud, sense crear dades parcials
+But l'alumnat conserva la consulta i les correccions documentals permeses de les sol·licituds existents.
 
 ## Límit de l'abast actual
 

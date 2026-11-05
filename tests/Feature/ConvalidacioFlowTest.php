@@ -1721,6 +1721,87 @@ class ConvalidacioFlowTest extends TestCase
             ->assertSee('Accés obert');
     }
 
+    public function test_direccio_configura_l_obertura_de_noves_sollicituds_des_de_configuracio(): void
+    {
+        $this->withoutMiddleware(RoleMiddleware::class)
+            ->actingAs(Profesor::query()->findOrFail('DIR00001'), 'profesor');
+
+        $route = Route::getRoutes()->getByName('convalidacions.direction.new-requests-access');
+        $this->assertNotNull($route);
+        $this->assertContains('role:direccion', $route->gatherMiddleware());
+
+        $this->get(route('convalidacions.direction.configuracio'))
+            ->assertOk()
+            ->assertSee('Obertura de sol·licituds')
+            ->assertSee('Permetre noves sol·licituds')
+            ->assertSee('Bloquejar noves sol·licituds per a matrícules de juliol');
+
+        $this->put(route('convalidacions.direction.new-requests-access'), [
+            'new_requests_enabled' => '0',
+            'july_enrolments_blocked' => '1',
+        ])
+            ->assertRedirect(route('convalidacions.direction.configuracio'))
+            ->assertSessionHas('success', 'Configuració d’obertura de noves sol·licituds actualitzada.');
+
+        $access = app(ConvalidacioAccessService::class);
+        $this->assertFalse($access->newRequestsEnabled());
+        $this->assertTrue($access->julyEnrolmentsBlocked());
+    }
+
+    public function test_bloqueig_global_impedix_noves_sollicituds_i_conserva_les_existents(): void
+    {
+        $sollicitud = $this->service->tramitar($this->alumno, 'sollicitud-existent', [[
+            'modulo_destino_id' => 'DEST1',
+            'origen' => Convalidacio::ORIGEN_PROPI_CENTRE,
+            'resultat_origen_id' => $this->resultatId(),
+        ]]);
+        app(ConvalidacioAccessService::class)->setNewRequestControls(false, true);
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($this->alumno, 'alumno');
+        auth()->shouldUse('profesor');
+
+        $this->get('/alumno/convalidacions')
+            ->assertOk()
+            ->assertSee('Les noves sol·licituds de convalidació no estan obertes en este moment.')
+            ->assertDontSee('href="/alumno/convalidacions/create"', false);
+        $this->get('/alumno/convalidacions/' . $sollicitud->id)->assertOk();
+        $this->get('/alumno/convalidacions/create')
+            ->assertRedirect('/alumno/convalidacions')
+            ->assertSessionHas('warning', 'Les noves sol·licituds de convalidació no estan obertes en este moment.');
+        $this->post('/alumno/convalidacions', [])
+            ->assertRedirect('/alumno/convalidacions')
+            ->assertSessionHas('warning', 'Les noves sol·licituds de convalidació no estan obertes en este moment.');
+
+        $this->assertSame(1, SollicitudConvalidacio::query()->count());
+    }
+
+    public function test_bloqueig_de_juliol_només_afecta_la_matricula_de_juliol_i_el_global_preval(): void
+    {
+        app(ConvalidacioAccessService::class)->setNewRequestControls(true, true);
+        $alumneJuliol = Alumno::query()->findOrFail('87654321');
+
+        $this->withoutMiddleware(RoleMiddleware::class)->actingAs($alumneJuliol, 'alumno');
+        auth()->shouldUse('profesor');
+        $this->get('/alumno/convalidacions')
+            ->assertOk()
+            ->assertSee('No pots presentar una nova sol·licitud de convalidació perquè la teua matrícula és de juliol.');
+        $this->get('/alumno/convalidacions/create')
+            ->assertRedirect('/alumno/convalidacions')
+            ->assertSessionHas('warning', 'No pots presentar una nova sol·licitud de convalidació perquè la teua matrícula és de juliol.');
+        $this->post('/alumno/convalidacions', [])->assertRedirect('/alumno/convalidacions');
+        $this->assertSame(0, SollicitudConvalidacio::query()->count());
+
+        $this->actingAs($this->alumno, 'alumno');
+        $this->get('/alumno/convalidacions/create')->assertOk();
+
+        app(ConvalidacioAccessService::class)->setNewRequestControls(false, true);
+        $this->actingAs($alumneJuliol, 'alumno');
+        $this->get('/alumno/convalidacions')
+            ->assertOk()
+            ->assertSee('Les noves sol·licituds de convalidació no estan obertes en este moment.')
+            ->assertDontSee('No pots presentar una nova sol·licitud de convalidació perquè la teua matrícula és de juliol.');
+    }
+
     public function test_llistat_per_modul_filtra_cada_peticio_i_no_les_seues_germanes(): void
     {
         $sollicitud = $this->service->tramitar($this->alumno, 'llistat-per-modul', [
@@ -3795,6 +3876,7 @@ XML;
             $table->string('apellido2')->nullable();
             $table->string('email')->nullable();
             $table->string('password')->nullable();
+            $table->date('fecha_matricula');
             $table->unsignedBigInteger('rol')->default(1);
             $table->timestamps();
         });
@@ -4022,8 +4104,8 @@ XML;
     private function seedAcademicData(): void
     {
         DB::table('alumnos')->insert([
-            ['nia' => '12345678', 'dni' => '11111111A', 'email' => null, 'rol' => config('roles.rol.alumno'), 'created_at' => now(), 'updated_at' => now()],
-            ['nia' => '87654321', 'dni' => '22222222B', 'email' => null, 'rol' => config('roles.rol.alumno'), 'created_at' => now(), 'updated_at' => now()],
+            ['nia' => '12345678', 'dni' => '11111111A', 'email' => null, 'fecha_matricula' => '2026-09-01', 'rol' => config('roles.rol.alumno'), 'created_at' => now(), 'updated_at' => now()],
+            ['nia' => '87654321', 'dni' => '22222222B', 'email' => null, 'fecha_matricula' => '2026-07-01', 'rol' => config('roles.rol.alumno'), 'created_at' => now(), 'updated_at' => now()],
         ]);
         DB::table('profesores')->insert([
             'dni' => 'DIR00001',
