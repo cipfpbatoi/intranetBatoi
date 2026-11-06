@@ -38,7 +38,8 @@ yarn-error.log
 /tests/Browser/screenshots/failure-Tests_*
 
 # Claude Code (configuració local per programador; commands/ és compartit)
-.claude/
+.claude/*
 !.claude/commands/
+!.claude/commands/*.md
 schedule.log
 docker-compose.override.yml

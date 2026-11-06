@@ -18,3 +18,4 @@ Plantilles per a tasques que es repeteixen. **Regla de les 3 vegades**: si has d
 | [`nova-vista-blade.md`](nova-vista-blade.md) | Nova vista Blade amb layout i parcials |
 | [`refactor-a-service.md`](refactor-a-service.md) | Extreure lògica d'un controlador a Application/Service |
 | [`review-checklist.md`](review-checklist.md) | Revisió de codi per un agent revisor independent |
+| [`docker-deployment.md`](docker-deployment.md) | Desplegament Docker: desenvolupament, build o servidor |

@@ -17,7 +17,7 @@ class AddJefeEstudiosToAvisosSettings extends Migration
     {
         DB::table('settings')->updateOrInsert(
             ['collection' => 'avisos', 'key' => 'jefeEstudios'],
-            ['value' => '021657327K']
+            ['value' => '00000016Q']
         );
     }
 
@@ -31,7 +31,7 @@ class AddJefeEstudiosToAvisosSettings extends Migration
         DB::table('settings')
             ->where('collection', 'avisos')
             ->where('key', 'jefeEstudios')
-            ->where('value', '021657327K')
+            ->where('value', '00000016Q')
             ->delete();
     }
 }
