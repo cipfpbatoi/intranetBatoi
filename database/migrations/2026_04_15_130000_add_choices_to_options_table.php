@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasColumn('options', 'choices')) {
+            return;
+        }
+
         Schema::table('options', function (Blueprint $table): void {
             $table->text('choices')->nullable()->after('scala');
         });
@@ -18,6 +22,10 @@ return new class extends Migration {
 
     public function down(): void
     {
+        if (!Schema::hasColumn('options', 'choices')) {
+            return;
+        }
+
         Schema::table('options', function (Blueprint $table): void {
             $table->dropColumn('choices');
         });

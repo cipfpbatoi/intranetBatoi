@@ -90,7 +90,7 @@ Namespace: `Intranet\Http\Controllers\API`. Autenticació via Sanctum. Intercanv
 - Tests amb `phpunit` o `php artisan test`; usa `--filter` per a apuntar casos concrets.
 - Scripts Composer: `composer test:focus`, `composer test:quick` (Expediente|Empresa|Comision), `composer test:full`, `composer test:auth-migration`, `composer dusk:local`.
 - Dusk (requereix app a `http://laravel.test`): `XDEBUG_MODE=off APP_URL=http://laravel.test DUSK_APP_URL=http://laravel.test php artisan dusk --env=local --filter=TestName`.
-- Si PHP local no és disponible, executa els tests dins Docker amb `docker compose exec -T laravel.test php artisan test` (p. ex. `docker compose exec -T laravel.test php artisan test --filter=ApiGuardiaControllerFeatureTest`).
+- Si PHP local no és disponible, executa els tests dins Docker com a `sail` amb `docker compose exec -T --user sail laravel.test php artisan test` (p. ex. `docker compose exec -T --user sail laravel.test php artisan test --filter=ApiGuardiaControllerFeatureTest`).
 - Usa `docker compose ps` per confirmar que els contenidors estan en marxa abans de validar amb Docker; prefereix el servei `laravel.test` per a ordres PHP/Laravel.
 
 ## Estil de codi i convencions de noms

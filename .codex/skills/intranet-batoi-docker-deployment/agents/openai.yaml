@@ -1,0 +1,4 @@
+interface:
+  display_name: "Desplegament Docker Batoi"
+  short_description: "Desenvolupament, build i servidor Docker."
+  default_prompt: "Usa esta skill per preparar el desplegament Docker en fase de desenvolupament, build o servidor."

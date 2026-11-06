@@ -12,28 +12,27 @@ git checkout laravel11Legacy
 
 # 2. Configurar l'entorn
 cp .env.docker .env
-# Editar .env i posar el nostre UID/GID en WWWUSER i WWWGROUP (consultar amb id -u i id -g)
+export WWWUSER="$(id -u)"
+export WWWGROUP="$(id -g)"
 
 # 3. Arrancar els contenidors
-./vendor/bin/sail up -d
-./vendor/bin/sail shell
+docker compose up -d --build
 # 4. Instal·lar dependències
-php composer install
-php npm install
-php npm run production
+docker compose exec -T --user sail laravel.test composer install
+docker compose exec -T --user sail laravel.test npm install
+docker compose exec -T --user sail laravel.test npm run production
 
 # 5. Generar clau i preparar la BBDD
-  php artisan key:generate
-  php artisan migrate
-  php artisan db:seed
+docker compose exec -T --user sail laravel.test php artisan key:generate
+docker compose exec -T --user sail laravel.test php artisan migrate
 
 # 6. (Opcional) Si hi ha problemes de permissos
 sudo chown -R $USER:$USER storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
 ```
 
-L'aplicació estarà disponible en **<https://localhost>**. L'usuari inicial és `admin@intranet.my` amb contrasenya `12345678`.
+L'aplicació estarà disponible en **<https://localhost>**. L'usuari inicial de prova és `9999` (o `admin.prova@exemple.invalid`) amb contrasenya `Prova2026!`.
 
-Per al flux de build, push i desplegament d'una imatge immutable de preproducció/producció, consulta [docker-prod.md](./docker-prod.md).
+Per al flux de desenvolupament, build, push i desplegament d'una imatge immutable, consulta [docker-deployment.md](./docker-deployment.md).
 
 Serveis disponibles:
 
@@ -84,16 +83,15 @@ Això arrancarà els següents serveis:
 Instal·lem les dependències dins del contenidor:
 
 ```bash
-docker compose exec laravel.test composer install
-docker compose exec laravel.test npm install
+docker compose exec --user sail laravel.test composer install
+docker compose exec --user sail laravel.test npm install
 ```
 
-Els permissos dels fitxers es gestionen automàticament pel contenidor Docker. Les variables `WWWUSER` i `WWWGROUP` del fitxer `.env.docker` s'han de configurar amb el UID i GID del nostre usuari per a evitar problemes de permissos:
+Els permissos dels fitxers es gestionen automàticament pel contenidor Docker. Abans de cada shell que invoque Docker Compose, exporta `WWWUSER` i `WWWGROUP` amb el UID i GID del teu usuari per a evitar problemes de permissos:
 
 ```bash
-# Per a saber el nostre UID i GID:
-id -u    # WWWUSER
-id -g    # WWWGROUP
+export WWWUSER="$(id -u)"
+export WWWGROUP="$(id -g)"
 ```
 
 Si tenim problemes de permissos amb les carpetes `storage` i `bootstrap/cache`, podem executar:
@@ -130,10 +128,10 @@ Cal configurar també en `.env`:
 
 ### Amb Docker
 
-Si hem seguit els passos de la secció Docker, el fitxer `.env` ja s'ha creat a partir de `.env.docker` i ja té configurades les connexions als serveis Docker (MySQL, Mailpit, etc.). Només cal ajustar les variables `WWWUSER` i `WWWGROUP` amb el nostre UID/GID i generar la clau de l'aplicació:
+Si hem seguit els passos de la secció Docker, el fitxer `.env` ja s'ha creat a partir de `.env.docker` i ja té configurades les connexions als serveis Docker (MySQL, Mailpit, etc.). Amb `WWWUSER` i `WWWGROUP` exportats per a la shell actual, només cal generar la clau de l'aplicació:
 
 ```bash
-docker compose exec laravel.test php artisan key:generate
+docker compose exec --user sail laravel.test php artisan key:generate
 ```
 
 ### Sense Docker (instal·lació directa)
@@ -198,7 +196,7 @@ El `db:seed` fica les dades inicials de:
 * horas:
 * departamentos:
 * tipoincidencias
-Així com un usuari amb l'identificador `admin@intranet.my` i la contrasenya '12345678' que és Administrador de la intranet.
+Així com un usuari de prova amb l'identificador `9999` (o `admin.prova@exemple.invalid`) i la contrasenya `Prova2026!`, amb rol d'administració.
 
 ### Altres dades inicials necessarios
 

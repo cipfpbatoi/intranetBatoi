@@ -1,5 +1,7 @@
 # Desplegament Docker de preproducció i producció
 
+> La recepta canònica, inclosa la preparació de la màquina de desenvolupament i el servidor sense eines de desenvolupament, és [`docker-deployment.md`](docker-deployment.md). Este document amplia el context específic de producció.
+
 Este document completa la tasca de documentació de la `issue #81` i descriu el flux recomanat per a construir, publicar i desplegar la imatge Docker de producció de la intranet. Els exemples estan inspirats en l'entorn de preproducció actual amb `Caddy`, però s'han simplificat perquè servisquen com a guia general.
 
 ## Objectiu

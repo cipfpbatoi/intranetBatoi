@@ -7,7 +7,7 @@
 - Build assets: `npm run dev` (servidor Vite amb HMR), `npm run build` / `npm run production` (bundles de producció).
 - App local: `php artisan serve`.
 - DB: `php artisan migrate --seed`.
-- Tests: `phpunit` o `php artisan test`; usar `--filter` per acotar.
+- Tests: `phpunit` o `php artisan test`; usar `--filter` per acotar. Dins del contenidor amb repositori muntat, executa'ls com `sail` (`docker compose exec -T --user sail laravel.test php artisan test`) per a respectar la propietat dels fitxers.
 
 ## Scripts Composer
 

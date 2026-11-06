@@ -152,7 +152,7 @@ El `db:seed` fica les dades inicials de:
 
 Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional, s'utilitzen només en alguns llistats).
 
-També crea un usuari amb el codi 9999 i la contrasenya '12345678' que és Administrador provisional de la intranet. Per a iniciar sessió per primera vegada hem de posar com usuari el seu email què és `admin@intranet.my`.
+També crea un usuari de prova amb el codi `9999` (o l'email `admin.prova@exemple.invalid`) i la contrasenya `Prova2026!`, amb rol d'administració.
 
 A continuació canviem el nom de la carpeta `pdf.exemple` a `pdf` amb
 ```bash

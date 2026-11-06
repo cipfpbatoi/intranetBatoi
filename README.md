@@ -34,7 +34,7 @@ Este repo està preparat perquè els agents d'IA (Claude Code, Codex, Cursor…)
 |---|---|
 | 🚀 Setup i instal·lació | [`docs/operations/setup.md`](docs/operations/setup.md) |
 | 🧪 Tests, Docker i Dusk | [`docs/agents/testing-docker.md`](docs/agents/testing-docker.md) |
-| 🐳 Desplegament Docker | [`docs/operations/docker-prod.md`](docs/operations/docker-prod.md) |
+| 🐳 Desplegament Docker | [`docs/operations/docker-deployment.md`](docs/operations/docker-deployment.md) |
 | 🗄️ Esquema de la BD | [`docs/architecture/bbdd-esquema.md`](docs/architecture/bbdd-esquema.md) |
 | ❓ Preguntes freqüents | [`docs/governance/faqs.md`](docs/governance/faqs.md) |
 | 👥 Manuals del professorat | [`docs/manuals/README.md`](docs/manuals/README.md) |

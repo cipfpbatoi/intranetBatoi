@@ -23,5 +23,5 @@ Intranet del CIP FP Batoi. Documentació organitzada per tipus (alta cohesió, b
 - ❓ [Preguntes freqüents](governance/faqs.md)
 - 🚀 [Setup i instal·lació](operations/setup.md)
 - 🗄️ [Esquema de la BD](architecture/bbdd-esquema.md)
-- 🐳 [Desplegament Docker](operations/docker-prod.md)
+- 🐳 [Desplegament Docker](operations/docker-deployment.md)
 - 🔍 [Selenium/SAO en producció](operations/selenium-sao-prod.md)

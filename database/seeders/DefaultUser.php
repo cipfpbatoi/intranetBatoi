@@ -11,14 +11,14 @@ class DefaultUser extends Seeder
     public function run()
     {
         Profesor::create([
-            'dni' => '099999999Z',
+            'dni' => '00000015S',
             'codigo' => '9999',
-            'nombre' => 'Admin',
-            'apellido1' => 'Administrador',
+            'nombre' => 'Usuari',
+            'apellido1' => 'De prova',
             'apellido2' => '',
-            'password' => bcrypt('12345678'),
-            'emailItaca' => 'admin@intranet.my',
-            'email' => 'admin@intranet.my',
+            'password' => bcrypt('Prova2026!'),
+            'emailItaca' => 'admin.prova@exemple.invalid',
+            'email' => 'admin.prova@exemple.invalid',
             'domicilio' => '',
             'movil1' => '',
             'movil2' => '',
@@ -36,6 +36,7 @@ class DefaultUser extends Seeder
             'created_at' => null,
             'updated_at' => null,
             'last_logged' => null,
+            'changePassword' => now(),
             'activo' => 1,
             'idioma' => 'ca',
             'api_token' => '',
