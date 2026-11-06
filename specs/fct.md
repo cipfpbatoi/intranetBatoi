@@ -135,6 +135,32 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 **When** l'usuari informa una latitud entre -90 i 90 i una longitud entre -180 i 180
 **Then** les coordenades opcionals es guarden amb doble precisió i es poden modificar des de la intranet
 
+## Informe del tutor per a l'exempció d'FE
+
+### Escenari 17: ✅ Emplenar les dades automàtiques de l'informe
+
+**Given** que una exempció té alumnat, tutor i cicle vàlids
+**When** es genera l'informe del tutor per a l'exempció d'FE
+**Then** s'emplenen les dades de l'alumnat, el centre, els estudis, el tutor, la població i la data
+
+### Escenari 18: ✅ Generar un formulari compatible amb pdftk
+
+**Given** que la plantilla de l'informe conté els camps AcroForm requerits
+**When** `PdfFormService` aplica les dades FDF
+**Then** els valors queden registrats als camps canònics del formulari i són visibles al PDF
+
+### Escenari 19: ✅ Conservar els camps manuals de l'informe
+
+**Given** un informe d'exempció d'FE generat
+**When** el tutor l'obri
+**Then** les caselles, les observacions, la valoració i la signatura continuen buides i editables
+
+### Escenari 20: ✅ No emplenar la signatura automàticament
+
+**Given** que la plantilla no té un camp específic per al nom del tutor al peu
+**When** es genera l'informe
+**Then** les dades del tutor apareixen només a la capçalera i el camp de signatura queda buit
+
 ## Regles de negoci invariants
 
 - `sendTo` i `signed` no es poden modificar directament des de cap controlador sense passar per `SignaturaStatusService` o `EmailPostSendService`.
@@ -146,3 +172,5 @@ Especificació del comportament esperat per al domini FCT. Tecnologia-agnòstica
 - La falta de `nif_gerente` és un avís de fitxa incompleta, però no bloqueja el treball amb la col·laboració.
 - `dependent_gva` és fals per defecte i editable des de la intranet mentre SAO Gestió no el proporcione automàticament.
 - `latitud` i `longitud` són opcionals; si s'informen, han d'estar dins dels límits geogràfics vàlids.
+- La plantilla de l'informe d'exempció d'FE conserva el nom `InformeExencionFCT.pdf` i es genera sense aplanar el formulari.
+- La signatura, les observacions, la valoració i les caselles de l'informe d'exempció d'FE no s'emplenen automàticament.
