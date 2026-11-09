@@ -113,15 +113,18 @@ class FaltaController extends ModalController
         $this->authorize('update', $falta);
 
         $isDireccion = UserisAllow(config('roles.rol.direccion'));
+        $currentUser = auth('profesor')->user() ?? auth('alumno')->user();
+        $canEditSubmittedData = $isDireccion
+            && (string) $falta->idProfesor !== (string) ($currentUser?->dni ?? '');
 
-        if ((int) $falta->estado >= 1 && !$isDireccion) {
+        if ((int) $falta->estado >= 1 && !$canEditSubmittedData) {
             $this->validate($request, ['fichero' => 'nullable|mimes:pdf,jpg,jpeg,png']);
             $this->faltas()->updateJustificant($id, $request);
             return $this->redirect();
         }
 
         $this->validate($request, (new FaltaRequest())->rules());
-        $this->faltas()->update($id, $request, $isDireccion);
+        $this->faltas()->update($id, $request, $canEditSubmittedData);
         return $this->redirect();
     }
 

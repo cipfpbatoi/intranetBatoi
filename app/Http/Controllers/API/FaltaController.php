@@ -27,8 +27,10 @@ class FaltaController extends ApiResourceController
 
         $user = $request->user('sanctum') ?? $request->user('api') ?? authUser();
         $isDireccion = $user && esRol($user->rol, config('roles.rol.direccion'));
+        $canEditSubmittedData = $isDireccion
+            && (string) $falta->idProfesor !== (string) ($user->dni ?? '');
 
-        app(FaltaService::class)->update($id, $request, (bool) $isDireccion);
+        app(FaltaService::class)->update($id, $request, (bool) $canEditSubmittedData);
 
         return $this->sendResponse(['updated' => true], 'OK');
     }

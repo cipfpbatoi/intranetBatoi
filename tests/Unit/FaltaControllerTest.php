@@ -18,6 +18,7 @@ use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
+use Intranet\Http\Controllers\API\FaltaController as ApiFaltaController;
 use Tests\TestCase;
 
 class FaltaControllerTest extends TestCase
@@ -486,6 +487,148 @@ class FaltaControllerTest extends TestCase
         $this->assertSame(3, (int) $falta->motivos);
         $this->assertSame('Canvi de Direcció', $falta->observaciones);
         $this->assertSame(1, (int) $falta->dia_completo);
+    }
+
+    public function test_membre_de_direccio_no_pot_editar_la_seua_falta_enviada(): void
+    {
+        Storage::fake('local');
+
+        DB::table('profesores')->insert([
+            'dni' => 'P910',
+            'rol' => config('roles.rol.direccion'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P910'), 'profesor');
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P910',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = Request::create(
+            '/falta/' . $faltaId . '/edit',
+            'PUT',
+            ['observaciones' => 'Canvi no permés'],
+            [],
+            ['fichero' => UploadedFile::fake()->create('justificant.pdf', 10, 'application/pdf')]
+        );
+
+        $response = (new DummyFaltaController())->update($request, $faltaId);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('Original', $falta->observaciones);
+        $this->assertSame(2, (int) $falta->estado);
+        $this->assertNotEmpty($falta->fichero);
+    }
+
+    public function test_un_altre_membre_de_direccio_pot_editar_una_falta_enviada(): void
+    {
+        foreach (['P911', 'P912'] as $dni) {
+            DB::table('profesores')->insert([
+                'dni' => $dni,
+                'rol' => config('roles.rol.direccion'),
+                'activo' => 1,
+                'fecha_baja' => null,
+                'sustituye_a' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P912'), 'profesor');
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P911',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'idProfesor' => 'P911',
+            'desde' => '2026-02-12',
+            'hasta' => '2026-02-12',
+            'motivos' => 3,
+            'observaciones' => 'Revisada per Direcció',
+            'dia_completo' => '1',
+        ]);
+
+        $response = (new DummyFaltaController())->update($request, $faltaId);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('2026-02-12', $falta->desde);
+        $this->assertSame(3, (int) $falta->motivos);
+        $this->assertSame('Revisada per Direcció', $falta->observaciones);
+    }
+
+    public function test_api_no_permet_a_direccio_editar_la_seua_falta_enviada(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P913',
+            'rol' => config('roles.rol.direccion'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        $professor = Profesor::on('sqlite')->findOrFail('P913');
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P913',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => null,
+            'hora_fin' => null,
+            'motivos' => 1,
+            'observaciones' => 'Original',
+            'baja' => 0,
+            'dia_completo' => 1,
+            'estado' => 1,
+            'fichero' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'desde' => '2026-02-12',
+            'motivos' => 3,
+            'observaciones' => 'Canvi no permés per API',
+        ]);
+        $request->setUserResolver(static fn (?string $guard = null) => $professor);
+
+        $response = (new ApiFaltaController())->update($request, $faltaId);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $falta = DB::table('faltas')->where('id', $faltaId)->first();
+        $this->assertSame('2026-02-10', $falta->desde);
+        $this->assertSame(1, (int) $falta->motivos);
+        $this->assertSame('Original', $falta->observaciones);
     }
 
     private function createSchema(): void
