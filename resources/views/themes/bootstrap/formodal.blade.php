@@ -6,7 +6,7 @@
             ? route($storeRoute)
             : url($storePath);
     @endphp
-    {!! Form::model($elemento, ['url' => $storeUrl, 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data", 'data-store-url' => $storeUrl]) !!}
+    {!! Form::model($elemento, ['url' => $storeUrl, 'class' => 'form-horizontal form-label-left', 'enctype' => "multipart/form-data", 'data-store-url' => $storeUrl, 'data-current-user-dni' => authUser()?->dni]) !!}
     {{ csrf_field() }}
     <input id='metodo' type='hidden' name='_method' value='{{old('_method')}}'/>
     <input id='id' type='hidden' name='id' value='{{old('id')}}'/>

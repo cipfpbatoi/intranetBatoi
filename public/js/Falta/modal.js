@@ -17,11 +17,20 @@
         return !!(element && element.checked);
     }
 
-    function isSubmittedFalta() {
+    function isOwnSubmittedFalta() {
         var method = byId('metodo');
         var estado = byId('estado_id');
+        var idProfesor = byId('idProfesor_id');
+        var form = idProfesor ? idProfesor.closest('form') : null;
+        var currentUserDni = form ? form.getAttribute('data-current-user-dni') : '';
 
-        return method && method.value.toUpperCase() === 'PUT' && estado && Number(estado.value) >= 1;
+        return method
+            && method.value.toUpperCase() === 'PUT'
+            && estado
+            && Number(estado.value) >= 1
+            && idProfesor
+            && currentUserDni
+            && idProfesor.value === currentUserDni;
     }
 
     function fieldContainer(element) {
@@ -50,7 +59,7 @@
     }
 
     function updateSubmittedFormState() {
-        var onlyJustificant = isSubmittedFalta();
+        var onlyJustificant = isOwnSubmittedFalta();
         var editableFields = [
             'idProfesor_id',
             'estado_id',
@@ -72,7 +81,7 @@
     }
 
     function updateFaltaState() {
-        if (isSubmittedFalta()) {
+        if (isOwnSubmittedFalta()) {
             updateSubmittedFormState();
             return;
         }

@@ -91,18 +91,19 @@ Especificació del comportament esperat per al domini Guàrdies. Tecnologia-agn�
 - El recompte respecta el filtre de professor aplicat
 - El recompte no depén del filtre d'estat seleccionat
 
-### ✅ Escenari 9: El professor no pot modificar dades d'una falta enviada
+### ✅ Escenari 9: El propietari no pot modificar dades d'una falta enviada
 
-**Given** que un professor té una falta pròpia amb `estado >= 1`  
+**Given** que un usuari té una falta pròpia amb `estado >= 1`, inclòs si forma part de Direcció
 **When** intenta actualitzar-la des del seu flux (`FaltaController::update`)  
 **Then**
 - Es conserven professor, dates, hores, motiu, baixa i observacions
 - Només pot pujar o substituir el `fichero`
 - Si la falta estava en `estado = 1` i queda amb justificant, passa a `estado = 2`
+- La mateixa restricció s'aplica a `PUT /api/falta/{id}`.
 
-### ✅ Escenari 10: La protecció del professor no bloqueja Direcció
+### ✅ Escenari 10: Un altre membre de Direcció pot editar la falta enviada
 
-**Given** que Direcció gestiona una falta des del panell `/direccion/falta`  
+**Given** que un membre de Direcció diferent del propietari gestiona una falta des del panell `/direccion/falta`
 **When** edita o tramita la falta amb les accions existents  
 **Then** manté el comportament actual de Direcció, incloent acceptar, rebutjar, recordatori, alta i edició des del panell
 
@@ -115,5 +116,6 @@ Especificació del comportament esperat per al domini Guàrdies. Tecnologia-agn�
 - `realizada` i `observaciones` es poden actualitzar sobre una `Guardia` existent.
 - L’avís nocturn de guàrdia pendent s’omet quan una `Falta` de dia complet o coincident amb la seua sessió la justifica.
 - El filtre d'estat de `/direccion/falta` sempre mostra tots els estats de falta `0..5` amb recompte.
-- En el flux del professor, una falta enviada (`estado >= 1`) només permet canviar el justificant.
+- El propietari d'una falta enviada (`estado >= 1`) només pot canviar el justificant, encara que tinga rol de Direcció.
+- Un altre membre de Direcció pot editar les dades completes d'una falta enviada.
 - El panell de Direcció conserva les seues operacions i edició completa sobre faltes.
