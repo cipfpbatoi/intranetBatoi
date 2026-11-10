@@ -416,6 +416,10 @@ class AssumpteParticularService
         }
 
         $quotes = $this->contingentCalculator->quotes($this->tornService->plantillaPerTorn());
+        if ($peticio->torn === AssumpteParticular::TORN_SENSE_DOCENCIA) {
+            return;
+        }
+
         $quotaTorn = $quotes[$peticio->torn] ?? 0;
         if ($autoritzades->where('torn', $peticio->torn)->count() >= $quotaTorn) {
             throw new AssumpteParticularException('Ja s’ha assolit el contingent del torn per al dia.');

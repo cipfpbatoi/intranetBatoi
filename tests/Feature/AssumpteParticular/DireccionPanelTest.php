@@ -359,6 +359,36 @@ class DireccionPanelTest extends TestCase
         ));
     }
 
+    public function test_no_avisa_de_quota_de_torn_al_professorat_sense_docencia(): void
+    {
+        for ($i = 1; $i <= 20; $i++) {
+            $dni = sprintf('MAT%03d', $i);
+            DB::table('profesores')->insert([
+                'dni' => $dni,
+                'nombre' => $dni,
+                'apellido1' => '',
+                'apellido2' => '',
+                'fecha_ingreso' => '2026-09-01',
+                'rol' => config('roles.rol.profesor'),
+                'activo' => true,
+                'foto' => $dni . '.png',
+            ]);
+            $this->crearHora($dni, 1);
+        }
+        $this->crearPeticio(
+            'PROF08',
+            '2026-10-15',
+            AssumpteParticular::ESTAT_PENDENT,
+            null,
+            AssumpteParticular::TORN_SENSE_DOCENCIA
+        );
+
+        $grup = app(AssumpteParticularDireccionQueryService::class)->grupsPendents()[0];
+
+        $this->assertSame(0, $grup['quotes'][AssumpteParticular::TORN_SENSE_DOCENCIA]['quota']);
+        $this->assertSame([], $grup['peticions'][0]['avisos']);
+    }
+
     public function test_permet_denegar_amb_motiu_sense_generar_document_ni_falta(): void
     {
         $this->crearPeticio(

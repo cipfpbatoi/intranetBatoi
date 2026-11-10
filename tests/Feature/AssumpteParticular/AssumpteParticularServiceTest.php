@@ -581,6 +581,35 @@ class AssumpteParticularServiceTest extends TestCase
         $this->service->autoritzar($novena->id, 'DIRE001', $document);
     }
 
+    public function test_autoritza_professorat_sense_docencia_si_hi_ha_contingent_global(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $peticio->forceFill(['torn' => AssumpteParticular::TORN_SENSE_DOCENCIA])->save();
+        $document = 'assumptes-particulars/resolucions/sense-docencia.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        $this->serviceAmbContingentSenseDocencia()->autoritzar($peticio->id, 'DIRE001', $document);
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->fresh()->estat);
+    }
+
+    public function test_el_professorat_sense_docencia_respecta_el_limit_global(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $peticio->forceFill(['torn' => AssumpteParticular::TORN_SENSE_DOCENCIA])->save();
+        for ($i = 1; $i <= 8; $i++) {
+            $this->crearPeticio(sprintf('AUT%03d', $i), '2026-10-15', AssumpteParticular::ESTAT_AUTORITZADA);
+        }
+        $document = 'assumptes-particulars/resolucions/sense-docencia-limit.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+
+        $this->expectException(AssumpteParticularException::class);
+        $this->expectExceptionMessage('màxim de huit');
+        $this->serviceAmbContingentSenseDocencia()->autoritzar($peticio->id, 'DIRE001', $document);
+    }
+
     public function test_autoritza_amb_una_unica_falta_i_el_document_firmat(): void
     {
         $this->crearProfesor('PROF001');
@@ -878,5 +907,26 @@ class AssumpteParticularServiceTest extends TestCase
     private function crearPeticioAutoritzada(string $dni, string $data): AssumpteParticular
     {
         return $this->crearPeticio($dni, $data, AssumpteParticular::ESTAT_AUTORITZADA);
+    }
+
+    /**
+     * Crea el servei amb una categoria sense docència que no rep quota proporcional.
+     */
+    private function serviceAmbContingentSenseDocencia(): AssumpteParticularService
+    {
+        $torns = Mockery::mock(TornAssumpteParticularService::class);
+        $torns->shouldReceive('plantillaPerTorn')->andReturn([
+            AssumpteParticular::TORN_MATI => 100,
+            AssumpteParticular::TORN_SENSE_DOCENCIA => 1,
+        ]);
+
+        return new AssumpteParticularService(
+            new SaldoAssumpteParticularCalculator(),
+            new ContingentAssumpteParticularCalculator(),
+            new CalendariAssumpteParticularService(),
+            $torns,
+            new FaltaService(),
+            new RubricaAssumpteParticularService()
+        );
     }
 }

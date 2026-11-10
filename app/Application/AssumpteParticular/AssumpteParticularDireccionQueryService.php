@@ -245,7 +245,10 @@ class AssumpteParticularDireccionQueryService
         if ($this->assumpteService->saldo($peticio->idProfesor, $peticio->curs, $peticio->tipus) < 1.0) {
             $avisos[] = 'El professor ja no disposa d’un dia complet d’este tipus.';
         }
-        if (($quotes[$peticio->torn]['disponibles'] ?? 0) === 0) {
+        if (
+            $peticio->torn !== AssumpteParticular::TORN_SENSE_DOCENCIA
+            && ($quotes[$peticio->torn]['disponibles'] ?? 0) === 0
+        ) {
             $avisos[] = 'No queden places disponibles per al torn registrat.';
         }
         if ($sensePlacesGlobals) {
