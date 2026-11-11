@@ -10,7 +10,9 @@ use Intranet\Exceptions\NotFoundDomainException;
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use Throwable;
 
 /**
  * Controlador API de materials.
@@ -18,7 +20,62 @@ use Laravel\Sanctum\PersonalAccessToken;
 class MaterialController extends ApiResourceController
 {
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
+    const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
+    const ROLES_ROL_JEFE_DPTO = 'roles.rol.jefe_dpto';
     protected $model = 'Material';
+
+    /**
+     * Actualitza un material i protegeix la ubicació dels pendents d'inventari.
+     *
+     * @param Request $request
+     * @param int|string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, $id)
+    {
+        $material = Material::find($id);
+        if (!$material) {
+            return $this->sendNotFound('Material no trobat');
+        }
+
+        if ($material->espacio !== 'INVENT') {
+            return parent::update($request, $id);
+        }
+
+        $user = $this->resolveApiUser($request);
+        if (!$user) {
+            return $this->sendError('Unauthorized', 401);
+        }
+
+        if (!$this->canUpdatePendingMaterial($user, $material)) {
+            return $this->sendError('No tens permís per ubicar este material.', 403);
+        }
+
+        try {
+            $payload = $request->validate([
+                'espacio' => ['required', 'string', 'max:10', 'exists:espacios,aula'],
+            ], [
+                'espacio.required' => 'Has de seleccionar un espai.',
+                'espacio.max' => "L'espai no pot superar els 10 caràcters.",
+                'espacio.exists' => "L'espai seleccionat no existeix.",
+            ]);
+
+            $material->update($payload);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            report($e);
+            Log::error('Error ubicant un material pendent.', [
+                'material_id' => $material->id,
+                'espai' => $request->input('espacio'),
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->sendError("No s'ha pogut ubicar el material.", 500);
+        }
+
+        return $this->sendResponse(['updated' => true], 'OK');
+    }
 
     function getMaterial($espacio)
     {
@@ -251,6 +308,40 @@ class MaterialController extends ApiResourceController
         }
 
         return apiAuthUser($token);
+    }
+
+    /**
+     * Comprova l'accés a un material que encara està en l'espai INVENT.
+     *
+     * Direcció i administració poden ubicar qualsevol unitat; la resta ha de
+     * tindre el rol de cap de departament i coincidir amb el departament del lot.
+     *
+     * @param mixed $user
+     * @param Material $material
+     * @return bool
+     */
+    private function canUpdatePendingMaterial($user, Material $material): bool
+    {
+        if (!is_object($user) || !isset($user->rol)) {
+            return false;
+        }
+
+        if (esRol($user->rol, config(self::ROLES_ROL_DIRECCION))
+            || esRol($user->rol, config(self::ROLES_ROL_ADMINISTRADOR))) {
+            return true;
+        }
+
+        if (!esRol($user->rol, config(self::ROLES_ROL_JEFE_DPTO))) {
+            return false;
+        }
+
+        $articuloLote = $material->LoteArticulo;
+        $lote = $articuloLote ? $articuloLote->Lote : null;
+
+        return $lote !== null
+            && $lote->departamento_id !== null
+            && isset($user->departamento)
+            && (string) $lote->departamento_id === (string) $user->departamento;
     }
 
     /**

@@ -183,6 +183,80 @@ class ApiLoteControllerFeatureTest extends TestCase
         );
     }
 
+    public function test_store_articulo_lote_normalitza_unitats_absents_i_rebutja_les_invalides(): void
+    {
+        DB::table('articulos')->insert([
+            'id' => 2,
+            'descripcion' => 'Teclat',
+        ]);
+
+        $this->withoutMiddleware()
+            ->postJson('/api/articuloLote', [
+                'lote_id' => 'LOT-UNITATS',
+                'articulo_id' => 2,
+                'unidades' => null,
+            ])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertSame(
+            1,
+            (int) DB::table('articulos_lote')
+                ->where('lote_id', 'LOT-UNITATS')
+                ->value('unidades')
+        );
+
+        $this->withoutMiddleware()
+            ->postJson('/api/articuloLote', [
+                'lote_id' => 'LOT-UNITATS',
+                'articulo_id' => 2,
+                'unidades' => 0,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Les dades no són vàlides.');
+
+        $this->assertSame(
+            1,
+            DB::table('articulos_lote')->where('lote_id', 'LOT-UNITATS')->count()
+        );
+    }
+
+    public function test_store_articulo_lote_reverteix_l_article_nou_si_falla_el_lot(): void
+    {
+        Schema::connection('sqlite')->table('articulos_lote', function (Blueprint $table): void {
+            $table->unique('lote_id');
+        });
+
+        DB::table('articulos')->insert([
+            'id' => 3,
+            'descripcion' => 'Article existent',
+        ]);
+        DB::table('articulos_lote')->insert([
+            'lote_id' => 'LOT-DUPLICAT',
+            'articulo_id' => 3,
+            'unidades' => 1,
+        ]);
+
+        $this->withoutMiddleware()
+            ->postJson('/api/articuloLote', [
+                'lote_id' => 'LOT-DUPLICAT',
+                'articulo_id' => 'new',
+                'descripcion' => 'Article que no ha de persistir',
+                'unidades' => 1,
+            ])
+            ->assertStatus(500)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', "No s'ha pogut crear l'article del lot.");
+
+        $this->assertSame(1, DB::table('articulos')->count());
+        $this->assertNull(
+            DB::table('articulos')
+                ->where('descripcion', 'Article Que No Ha De Persistir')
+                ->first()
+        );
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('lotes')) {

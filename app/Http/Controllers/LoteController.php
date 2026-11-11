@@ -6,6 +6,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Articulo;
@@ -161,18 +162,17 @@ class LoteController extends ModalController
     public function postCapture($lote, Request $request)
     {
         $this->authorize('update', $this->findModelOrFail(Lote::class, (string) $lote, 'Lot no trobat', ['lote_id' => $lote]));
-        foreach ($request->except('_token') as $key => $value) {
-            $material = Material::find($key);
-            if (!$material) {
-                throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
-            }
-            if (!$value) {
-                $value = $material->descripcion;
-            }
-            DB::transaction(function () use ($material, $value, $lote) {
-                $articulo = Articulo::where('descripcion', $value)->first();
+        $captures = $this->prepareCapture($request);
+
+        DB::transaction(function () use ($captures, $lote) {
+            foreach ($captures as $capture) {
+                $material = $capture['material'];
+                $descripcion = $capture['descripcion'];
+                $unidades = $capture['unidades'];
+
+                $articulo = Articulo::where('descripcion', $descripcion)->first();
                 if (!$articulo) {
-                    $articulo = new Articulo(['descripcion' => $value]);
+                    $articulo = new Articulo(['descripcion' => $descripcion]);
                     $articulo->save();
                 }
                 $articulo_lote = new ArticuloLote([
@@ -180,10 +180,10 @@ class LoteController extends ModalController
                     'articulo_id' => $articulo->id,
                     'marca' => $material->marca,
                     'modelo' => $material->modelo,
-                    'unidades' => $material->unidades,
+                    'unidades' => $unidades,
                 ]);
                 $articulo_lote->save();
-                for ($i = 0; $i < $material->unidades; $i++) {
+                for ($i = 0; $i < $unidades; $i++) {
                     $new = $material->replicate();
                     $new->unidades = 1;
                     $new->inventariable = 1;
@@ -192,8 +192,66 @@ class LoteController extends ModalController
                     $new->save();
                 }
                 $material->delete();
-            });
+            }
+        });
+    }
+
+    /**
+     * Resol i valida tots els materials abans de modificar cap registre.
+     *
+     * @param Request $request
+     * @return array<int, array{material: Material, descripcion: string, unidades: int}>
+     * @throws NotFoundDomainException
+     * @throws ValidationException
+     */
+    private function prepareCapture(Request $request): array
+    {
+        $captures = [];
+
+        foreach ($request->except(['_token', '_method']) as $key => $value) {
+            $material = Material::find($key);
+            if (!$material) {
+                throw new NotFoundDomainException('Material no trobat', ['material_id' => $key]);
+            }
+
+            $descripcion = is_string($value) && trim($value) !== ''
+                ? $value
+                : (string) $material->descripcion;
+
+            $captures[] = [
+                'material' => $material,
+                'descripcion' => $descripcion,
+                'unidades' => $this->normaliseUnits($material),
+            ];
         }
+
+        return $captures;
+    }
+
+    /**
+     * Normalitza les unitats heretades d'un material de captura.
+     *
+     * L'absència del valor conserva el valor per defecte històric d'una unitat;
+     * qualsevol valor explícit ha de ser un enter positiu.
+     *
+     * @param Material $material
+     * @return int
+     * @throws ValidationException
+     */
+    private function normaliseUnits(Material $material): int
+    {
+        if ($material->unidades === null || $material->unidades === '') {
+            return 1;
+        }
+
+        $unidades = filter_var($material->unidades, FILTER_VALIDATE_INT);
+        if ($unidades === false || $unidades < 1) {
+            throw ValidationException::withMessages([
+                'unidades' => "Les unitats del material «{$material->descripcion}» han de ser un enter positiu.",
+            ]);
+        }
+
+        return $unidades;
     }
 
 }
