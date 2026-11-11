@@ -68,6 +68,7 @@
             (result.data || []).forEach(function (item) {
                 options[item.aula] = item.descripcion;
             });
+            window.options = options;
         });
     }
 
@@ -79,9 +80,9 @@
         (result.data || []).forEach(function (item) {
             html += '<tr id="' + item.id + '">';
             html += '<td>' + item.id + '</td>';
-            html += '<td><span class="input" name="nserieprov">' + item.nserieprov + '</span></td>';
-            html += '<td><span class="input" name="marca">' + item.marca + '</span></td>';
-            html += '<td><span class="input" name="modelo">' + item.modelo + '</span></td>';
+            html += '<td><span class="none">' + item.nserieprov + '</span></td>';
+            html += '<td><span class="none">' + item.marca + '</span></td>';
+            html += '<td><span class="none">' + item.modelo + '</span></td>';
             html += '<td><span class="objselect" name="espacio">' + item.espacio + '</span></td>';
             html += '<td><span class="botones">' + editar + '</span></td>';
             html += '</tr>';
@@ -130,6 +131,11 @@
         if (!button) {
             return;
         }
+
+        if (button.closest('#dialogo')) {
+            return;
+        }
+
         event.preventDefault();
         var idArticulo = getArticuloIdFromButton(button);
         loadEspacios().then(function () {
