@@ -26,6 +26,11 @@
 - `app/Services/Document/*`: generació/resposta de documents.
 - `app/Sao/*`: descàrrega i processament d'annexos des de SAO.
 
+## Importació des d'ITACA SAO
+
+- Recorregut de lectura i contracte inicial del llistat FE:
+  [`itaca-sao-importacio.md`](itaca-sao-importacio.md).
+
 ## Vistes I Correus
 
 - `resources/views/email/fct/*.blade.php`: correus FCT.
