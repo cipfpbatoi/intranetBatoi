@@ -195,6 +195,21 @@
         });
     }
 
+    /**
+     * Inicia l'edició d'una fila des d'una taula dinàmica externa.
+     *
+     * Alguns mòduls, com el detall de materials pendents d'ubicar, creen la
+     * taula dins d'un diàleg. El punt d'entrada públic evita que hagen de
+     * duplicar la lògica compartida d'edició.
+     */
+    function editRow(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        startEdition(this.closest('tr'));
+    }
+
     function saveEdition(event, row) {
         event.preventDefault();
         if (!row) {
@@ -308,4 +323,6 @@
             }
         });
     });
+
+    window.editRow = editRow;
 })();

@@ -6,7 +6,10 @@ namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Profesor;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
@@ -20,6 +23,7 @@ class ApiMaterialControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
+        Event::fake();
         $this->sqlitePath = storage_path('api_material_controller_feature_testing.sqlite');
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -42,6 +46,8 @@ class ApiMaterialControllerFeatureTest extends TestCase
         Schema::connection('sqlite')->dropIfExists('materiales');
         Schema::connection('sqlite')->dropIfExists('articulos_lote');
         Schema::connection('sqlite')->dropIfExists('articulos');
+        Schema::connection('sqlite')->dropIfExists('espacios');
+        Schema::connection('sqlite')->dropIfExists('lotes');
         Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
@@ -314,6 +320,73 @@ class ApiMaterialControllerFeatureTest extends TestCase
         $this->assertSame('Proposta Nova Ubicació', $items[0]['espacio']);
     }
 
+    public function test_departament_del_lot_pot_ubicar_un_material_pendent(): void
+    {
+        $this->insertPendingMaterialFixture();
+        $this->insertProfesor('PJEF001', config('roles.rol.jefe_dpto'), 1);
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PJEF001'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/material/301', ['espacio' => 'AULA1'])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertSame(
+            'AULA1',
+            DB::table('materiales')->where('id', 301)->value('espacio')
+        );
+    }
+
+    public function test_altre_departament_no_pot_ubicar_un_material_pendent(): void
+    {
+        $this->insertPendingMaterialFixture();
+        $this->insertProfesor('PJEF002', config('roles.rol.jefe_dpto'), 2);
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PJEF002'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/material/301', ['espacio' => 'AULA1'])
+            ->assertForbidden()
+            ->assertJsonPath('success', false);
+
+        $this->assertSame(
+            'INVENT',
+            DB::table('materiales')->where('id', 301)->value('espacio')
+        );
+    }
+
+    public function test_professor_del_mateix_departament_no_pot_ubicar_un_material_pendent(): void
+    {
+        $this->insertPendingMaterialFixture();
+        $this->insertProfesor('PPROF001', config('roles.rol.profesor'), 1);
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PPROF001'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/material/301', ['espacio' => 'AULA1'])
+            ->assertForbidden()
+            ->assertJsonPath('success', false);
+
+        $this->assertSame(
+            'INVENT',
+            DB::table('materiales')->where('id', 301)->value('espacio')
+        );
+    }
+
+    public function test_cap_de_departament_no_pot_indicar_un_espai_inexistent(): void
+    {
+        $this->insertPendingMaterialFixture();
+        $this->insertProfesor('PJEF003', config('roles.rol.jefe_dpto'), 1);
+        Sanctum::actingAs(Profesor::on('sqlite')->findOrFail('PJEF003'));
+
+        $this->withoutMiddleware()
+            ->putJson('/api/material/301', ['espacio' => 'NO-EXIST'])
+            ->assertUnprocessable();
+
+        $this->assertSame(
+            'INVENT',
+            DB::table('materiales')->where('id', 301)->value('espacio')
+        );
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {
@@ -330,6 +403,19 @@ class ApiMaterialControllerFeatureTest extends TestCase
             Schema::connection('sqlite')->create('articulos', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->string('descripcion', 200)->nullable();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('lotes')) {
+            Schema::connection('sqlite')->create('lotes', function (Blueprint $table): void {
+                $table->string('registre', 12)->primary();
+                $table->unsignedInteger('departamento_id')->nullable();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('espacios')) {
+            Schema::connection('sqlite')->create('espacios', function (Blueprint $table): void {
+                $table->string('aula', 10)->primary();
             });
         }
 
@@ -361,5 +447,46 @@ class ApiMaterialControllerFeatureTest extends TestCase
                 $table->unsignedTinyInteger('estado')->default(0);
             });
         }
+    }
+
+    private function insertPendingMaterialFixture(): void
+    {
+        DB::table('espacios')->insert(['aula' => 'AULA1']);
+
+        DB::table('lotes')->insert([
+            'registre' => 'LOT-PEND',
+            'departamento_id' => 1,
+        ]);
+
+        DB::table('articulos')->insert([
+            'id' => 30,
+            'descripcion' => 'Projector',
+        ]);
+
+        DB::table('articulos_lote')->insert([
+            'id' => 300,
+            'lote_id' => 'LOT-PEND',
+            'articulo_id' => 30,
+            'unidades' => 1,
+        ]);
+
+        DB::table('materiales')->insert([
+            'id' => 301,
+            'descripcion' => 'Projector pendent',
+            'espacio' => 'INVENT',
+            'estado' => 1,
+            'inventariable' => 1,
+            'articulo_lote_id' => 300,
+        ]);
+    }
+
+    private function insertProfesor(string $dni, int $rol, int $departamento): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => $dni,
+            'rol' => $rol,
+            'departamento' => $departamento,
+            'activo' => 1,
+        ]);
     }
 }

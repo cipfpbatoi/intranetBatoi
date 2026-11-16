@@ -3,6 +3,7 @@
     <title>Omplir lot {{$lote}}</title>
 @endsection
 @section('content')
+    <x-ui.errors />
     <form method="post">
         @csrf
         @foreach ($materiales as $material)
