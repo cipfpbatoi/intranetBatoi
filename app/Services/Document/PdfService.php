@@ -13,7 +13,7 @@ use function fechaString;
 
 
 /**
- * Servei de generació de PDFs i ZIPs.
+ * Servei de generació de PDFs i ZIPs amb els recursos gràfics de cada centre.
  */
 class PdfService
 {
@@ -83,7 +83,6 @@ class PdfService
     public function hazZip($informe, $all, $datosInforme = null, $orientacion = 'portrait', $field = 'id')
     {
         $pdfs = [];
-        $pie = $this->footerText($informe);
         $className = 'seguiments';
         $datosInforme = $datosInforme ?? fechaString(null, 'ca');
         $dimensiones = 'a4';
@@ -99,14 +98,12 @@ class PdfService
             }
             $todos = [$element];
             //
-            SnappyPDF::loadView(
+            $this->loadSnappyView(
                 $informe,
                 compact('todos', 'datosInforme')
             )->setPaper($dimensiones)
                 ->setOrientation($orientacion)
                 ->setOption('margin-top', $marginTop)
-                ->setOption('footer-line', true)
-                ->setOption('footer-right', $pie)
                 ->setOption('enable-external-links', true)->save($filePath);
             $pdfs[] = $filePath;
         }
@@ -147,17 +144,14 @@ class PdfService
         $marginTop = 15
     )
     {
-        $pie = $this->footerText($informe);
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         if (is_string($dimensiones)) {
-            return(SnappyPDF::loadView(
+            return($this->loadSnappyView(
                 $informe,
                 compact('todos', 'datosInforme')
                 )->setPaper($dimensiones)
                 ->setOrientation($orientacion)
                 ->setOption('margin-top', $marginTop)
-                ->setOption('footer-line', true)
-                ->setOption('footer-right', $pie)
                 ->setOption('enable-external-links', true));
         }
 
@@ -187,8 +181,51 @@ class PdfService
 
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         if (is_string($dimensiones)) {
-            return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
+            $html = view($informe, compact('todos', 'datosInforme'))->render();
+            if ($this->hasCentreFooter($html)) {
+                $pie = $this->footerText($informe);
+                $footer = '<style>@page { margin-bottom: 28mm; }</style>'
+                    . '<div style="position: fixed; bottom: -23mm; left: 0; right: 0;">'
+                    . view('pdf.partials.imatgePeuCentre', compact('pie'))->render() . '</div>';
+                $html = preg_replace_callback('/<body\b[^>]*>/i', fn ($match) => $match[0] . $footer, $html, 1);
+            }
+            return(DomPDF::loadHTML($html)
                 ->setPaper($dimensiones, $orientacion));
         }
+    }
+
+    /**
+     * Carrega la vista i configura un peu natiu repetit en cada pàgina de Snappy.
+     *
+     * @param string $informe
+     * @param array $data
+     * @return \Barryvdh\Snappy\PdfWrapper
+     */
+    protected function loadSnappyView($informe, array $data)
+    {
+        $html = view($informe, $data)->render();
+        $pie = $this->footerText($informe);
+        $pdf = SnappyPDF::loadHTML($html);
+
+        if ($this->hasCentreFooter($html)) {
+            return $pdf->setOption('footer-html', view('pdf.partials.pieCentre', compact('pie'))->render())
+                ->setOption('margin-bottom', 28)
+                ->setOption('footer-spacing', 5)
+                ->setOption('footer-line', false)
+                ->setOption('footer-right', '');
+        }
+
+        return $pdf->setOption('footer-line', true)->setOption('footer-right', $pie);
+    }
+
+    /**
+     * Comprova si el document usa la capçalera comuna i el centre té imatge de peu.
+     *
+     * @param string $html
+     * @return bool
+     */
+    protected function hasCentreFooter($html)
+    {
+        return str_contains($html, 'data-centre-header') && is_file(public_path('img/pdf/pie.png'));
     }
 }
