@@ -40,7 +40,10 @@ files d'altres modalitats com a FCT.
 
 ## Pendent abans d'implementar
 
-- Confirmar un identificador extern estable per evitar duplicats locals.
+- ITACA no mostra un identificador propi de la FE. La clau provisional
+  d'idempotència és una empremta de NIA, cicle, centre de treball, dates,
+  tipus i hores previstes. No s'ha de guardar en `idSao`, reservat per als
+  annexos del flux llegat.
 - Confirmar si el detall de la formació aporta les dades d'empresa i de
   l'instructor requerides pel flux actual.
 - Determinar el mapping de `Confirmació` i `Hores realitzades`: no formen part
