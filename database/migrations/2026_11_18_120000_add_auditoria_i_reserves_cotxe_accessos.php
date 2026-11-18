@@ -24,6 +24,7 @@ return new class extends Migration
             $table->id();
             $table->string('idProfesor', 10);
             $table->enum('tipus', ['entrada', 'eixida']);
+            $table->timestamp('processing_at')->nullable();
             $table->timestamp('expires_at');
             $table->timestamps();
             $table->unique(['idProfesor', 'tipus']);

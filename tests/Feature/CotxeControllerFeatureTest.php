@@ -145,13 +145,14 @@ class CotxeControllerFeatureTest extends TestCase
         ]);
 
         $access = Mockery::mock(CotxeAccessService::class);
-        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada')->andReturnTrue();
         $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
             'porta_oberta' => true,
             'intents' => 1,
             'error' => null,
         ]);
         $access->shouldReceive('registrarAcces')->once();
+        $access->shouldReceive('finalitzarReservaAcces')->once()->with('COTXE01', 'entrada', 30);
 
         $fitxatge = Mockery::mock(FitxatgeService::class);
         $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnFalse();
@@ -182,13 +183,14 @@ class CotxeControllerFeatureTest extends TestCase
         ]);
 
         $access = Mockery::mock(CotxeAccessService::class);
-        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada')->andReturnTrue();
         $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
             'porta_oberta' => true,
             'intents' => 1,
             'error' => null,
         ]);
         $access->shouldReceive('registrarAcces')->once();
+        $access->shouldReceive('finalitzarReservaAcces')->once()->with('COTXE01', 'entrada', 30);
 
         $fitxatge = Mockery::mock(FitxatgeService::class);
         $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
@@ -219,13 +221,14 @@ class CotxeControllerFeatureTest extends TestCase
         ]);
 
         $access = Mockery::mock(CotxeAccessService::class);
-        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'eixida', 30)->andReturnTrue();
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'eixida')->andReturnTrue();
         $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
             'porta_oberta' => true,
             'intents' => 1,
             'error' => null,
         ]);
         $access->shouldReceive('registrarAcces')->once();
+        $access->shouldReceive('finalitzarReservaAcces')->once()->with('COTXE01', 'eixida', 30);
 
         $fitxatge = Mockery::mock(FitxatgeService::class);
         $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
@@ -256,7 +259,7 @@ class CotxeControllerFeatureTest extends TestCase
         ]);
 
         $access = Mockery::mock(CotxeAccessService::class);
-        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada')->andReturnTrue();
         $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
             'porta_oberta' => false,
             'intents' => 2,
@@ -268,6 +271,7 @@ class CotxeControllerFeatureTest extends TestCase
                 && $arguments[9] === 2
                 && $arguments[10] === 'sense_resposta_satisfactoria';
         });
+        $access->shouldReceive('finalitzarReservaAcces')->once()->with('COTXE01', 'entrada', 30);
 
         $fitxatge = Mockery::mock(FitxatgeService::class);
         $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
@@ -285,6 +289,36 @@ class CotxeControllerFeatureTest extends TestCase
         $response = (new ApiCotxeController($access, $fitxatge))->eventEntrada($request);
 
         $this->assertSame('No s\'ha pogut obrir la porta', $response->getData(true)['status']);
+    }
+
+    public function test_hamming_admet_la_n_amb_longitud_unicode(): void
+    {
+        $this->insertProfesor('COTXE01');
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABÑ',
+            'marca' => 'Vehicle unicode',
+        ]);
+
+        $resolucio = Cotxe::resoldreLecturaAcces('1234ACÑ');
+
+        $this->assertSame('tolerada', $resolucio['resultat']);
+        $this->assertSame('COTXE01', $resolucio['professor']);
+        $this->assertSame('1234ABÑ', $resolucio['matricula_canonica']);
+    }
+
+    public function test_reserva_protegix_el_processament_i_la_finestra_posterior(): void
+    {
+        $service = new CotxeAccessService();
+
+        $this->assertTrue($service->reservarAcces('COTXE01', 'entrada'));
+        $this->assertFalse($service->reservarAcces('COTXE01', 'entrada'));
+        $this->assertNotNull(DB::table('cotxe_acces_reserves')->value('processing_at'));
+
+        $service->finalitzarReservaAcces('COTXE01', 'entrada', 30);
+
+        $this->assertNull(DB::table('cotxe_acces_reserves')->value('processing_at'));
+        $this->assertFalse($service->reservarAcces('COTXE01', 'entrada'));
     }
 
     public function test_migracio_normalitza_cotxes_i_historial_d_accessos(): void
@@ -479,6 +513,7 @@ class CotxeControllerFeatureTest extends TestCase
             $table->id();
             $table->string('idProfesor', 10);
             $table->string('tipus');
+            $table->timestamp('processing_at')->nullable();
             $table->timestamp('expires_at');
             $table->timestamps();
             $table->unique(['idProfesor', 'tipus']);

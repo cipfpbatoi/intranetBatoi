@@ -21,26 +21,24 @@ class CotxeAccessService
      *
      * @param string $professor Identificador intern del professor.
      * @param string $tipus     Sentit de la passada.
-     * @param int    $seconds   Duració de la finestra de deduplicació.
-     *
      * @return bool True quan la passada queda reservada.
      */
-    public function reservarAcces(string $professor, string $tipus, int $seconds): bool
+    public function reservarAcces(string $professor, string $tipus): bool
     {
         try {
-            return DB::transaction(function () use ($professor, $tipus, $seconds): bool {
+            return DB::transaction(function () use ($professor, $tipus): bool {
                 $reserva = DB::table('cotxe_acces_reserves')
                     ->where('idProfesor', $professor)
                     ->where('tipus', $tipus)
                     ->lockForUpdate()
                     ->first();
 
-                if ($reserva && Carbon::parse($reserva->expires_at)->isFuture()) {
+                if ($reserva && ($reserva->processing_at || Carbon::parse($reserva->expires_at)->isFuture())) {
                     return false;
                 }
 
                 $valors = [
-                    'expires_at' => now()->addSeconds($seconds),
+                    'processing_at' => now(),
                     'updated_at' => now(),
                 ];
 
@@ -50,15 +48,46 @@ class CotxeAccessService
                     DB::table('cotxe_acces_reserves')->insert($valors + [
                         'idProfesor' => $professor,
                         'tipus' => $tipus,
+                        'expires_at' => now(),
                         'created_at' => now(),
                     ]);
                 }
 
                 return true;
-            });
-        } catch (QueryException) {
-            return false;
+            }, 3);
+        } catch (QueryException $exception) {
+            if (self::esColisioUnica($exception)) {
+                return false;
+            }
+
+            throw $exception;
         }
+    }
+
+    /**
+     * Comença la finestra de deduplicació després de completar l'accés.
+     */
+    public function finalitzarReservaAcces(string $professor, string $tipus, int $seconds): void
+    {
+        DB::table('cotxe_acces_reserves')
+            ->where('idProfesor', $professor)
+            ->where('tipus', $tipus)
+            ->update([
+                'processing_at' => null,
+                'expires_at' => now()->addSeconds($seconds),
+                'updated_at' => now(),
+            ]);
+    }
+
+    /**
+     * Identifica únicament la col·lisió esperada de la clau única de reserva.
+     */
+    private static function esColisioUnica(QueryException $exception): bool
+    {
+        $missatge = strtolower($exception->getMessage());
+
+        return in_array((string) $exception->getCode(), ['23000', '23505'], true)
+            && (str_contains($missatge, 'duplicate') || str_contains($missatge, 'unique'));
     }
 
     /**

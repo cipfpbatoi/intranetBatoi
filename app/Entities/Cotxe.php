@@ -95,7 +95,6 @@ class Cotxe extends Model
         }
 
         $candidats = self::query()
-            ->whereRaw('LENGTH(matricula) = ?', [7])
             ->get()
             ->filter(fn (self $cotxe): bool => self::esHamming1Modern($plate, $cotxe->matricula));
 

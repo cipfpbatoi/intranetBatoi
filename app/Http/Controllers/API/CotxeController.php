@@ -92,7 +92,7 @@ class CotxeController extends ApiResourceController
             return response()->json(['status' => 'No autoritzat']);
         }
 
-        if (!$this->access->reservarAcces($professor, $direccio->value, 30)) {
+        if (!$this->access->reservarAcces($professor, $direccio->value)) {
             $log->info('Accés al pàrquing descartat per duplicat', [
                 'sentit' => $direccio->value,
                 'professor' => $professor,
@@ -101,36 +101,40 @@ class CotxeController extends ApiResourceController
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        $obertura = $this->access->obrirIPortaAmbReintent();
-        $this->access->registrarAcces(
-            matricula: $matricula,
-            autoritzat: true,
-            porta_oberta: $obertura['porta_oberta'],
-            device: $device,
-            tipus: $direccio->value,
-            professor: $professor,
-            matriculaCanonica: $resolucio['matricula_canonica'],
-            resultatResolucio: $resolucio['resultat'],
-            diferenciaOcr: $resolucio['diferencia_ocr'],
-            intentsDomotica: $obertura['intents'],
-            errorDomotica: $obertura['error'],
-        );
+        try {
+            $obertura = $this->access->obrirIPortaAmbReintent();
+            $this->access->registrarAcces(
+                matricula: $matricula,
+                autoritzat: true,
+                porta_oberta: $obertura['porta_oberta'],
+                device: $device,
+                tipus: $direccio->value,
+                professor: $professor,
+                matriculaCanonica: $resolucio['matricula_canonica'],
+                resultatResolucio: $resolucio['resultat'],
+                diferenciaOcr: $resolucio['diferencia_ocr'],
+                intentsDomotica: $obertura['intents'],
+                errorDomotica: $obertura['error'],
+            );
 
-        $resultatFitxatge = $this->fitxatge->fitxar($professor);
-        $missatge = $obertura['porta_oberta']
-            ? "Porta oberta ({$direccio->value})"
-            : 'No s\'ha pogut obrir la porta';
+            $resultatFitxatge = $this->fitxatge->fitxar($professor);
+            $missatge = $obertura['porta_oberta']
+                ? "Porta oberta ({$direccio->value})"
+                : 'No s\'ha pogut obrir la porta';
 
-        $log->info('Resultat d’accés al pàrquing', [
-            'sentit' => $direccio->value,
-            'resultat' => $resolucio['resultat'],
-            'professor' => $professor,
-            'porta_oberta' => $obertura['porta_oberta'],
-            'intents_domotica' => $obertura['intents'],
-            'fitxatge' => (bool) $resultatFitxatge,
-        ]);
+            $log->info('Resultat d’accés al pàrquing', [
+                'sentit' => $direccio->value,
+                'resultat' => $resolucio['resultat'],
+                'professor' => $professor,
+                'porta_oberta' => $obertura['porta_oberta'],
+                'intents_domotica' => $obertura['intents'],
+                'fitxatge' => (bool) $resultatFitxatge,
+            ]);
 
-        return response()->json(['status' => $missatge]);
+            return response()->json(['status' => $missatge]);
+        } finally {
+            $this->access->finalitzarReservaAcces($professor, $direccio->value, 30);
+        }
     }
 
 
