@@ -16,38 +16,28 @@ class CotxeAccessServiceTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_recent_access_within_returns_false_when_no_records()
+    public function test_reintenta_una_vegada_quan_la_primera_ordre_falla(): void
     {
-        $cotxeAcces = Mockery::mock('alias:' . CotxeAcces::class);
-        $cotxeAcces->shouldReceive('where')
-            ->with('matricula', '1234ABC')
-            ->andReturnSelf();
-        $cotxeAcces->shouldReceive('latest')
-            ->with('created_at')
-            ->andReturnSelf();
-        $cotxeAcces->shouldReceive('first')
-            ->andReturn(null);
+        $service = Mockery::mock(CotxeAccessService::class)->makePartial();
+        $service->shouldReceive('obrirIPorta')->twice()->andReturn(false, true);
 
-        $service = new CotxeAccessService();
-
-        $this->assertFalse($service->recentAccessWithin('1234ABC', 30));
+        $this->assertSame([
+            'porta_oberta' => true,
+            'intents' => 2,
+            'error' => null,
+        ], $service->obrirIPortaAmbReintent());
     }
 
-    public function test_recent_access_within_detects_recent_entry()
+    public function test_registra_fallada_despres_de_dos_intents(): void
     {
-        $cotxeAcces = Mockery::mock('alias:' . CotxeAcces::class);
-        $cotxeAcces->shouldReceive('where')
-            ->with('matricula', '1234ABC')
-            ->andReturnSelf();
-        $cotxeAcces->shouldReceive('latest')
-            ->with('created_at')
-            ->andReturnSelf();
-        $cotxeAcces->shouldReceive('first')
-            ->andReturn((object)['created_at' => now()->subSeconds(10)]);
+        $service = Mockery::mock(CotxeAccessService::class)->makePartial();
+        $service->shouldReceive('obrirIPorta')->twice()->andReturnFalse();
 
-        $service = new CotxeAccessService();
-
-        $this->assertTrue($service->recentAccessWithin('1234ABC', 30));
+        $this->assertSame([
+            'porta_oberta' => false,
+            'intents' => 2,
+            'error' => 'sense_resposta_satisfactoria',
+        ], $service->obrirIPortaAmbReintent());
     }
 
     public function test_registrar_acces_crea_registre()
@@ -55,13 +45,14 @@ class CotxeAccessServiceTest extends TestCase
         $cotxeAcces = Mockery::mock('alias:' . CotxeAcces::class);
         $cotxeAcces->shouldReceive('create')
             ->once()
-            ->with([
-                'matricula' => '1234ABC',
-                'autoritzat' => true,
-                'porta_oberta' => false,
-                'device' => 'device-1',
-                'tipus' => 'manual',
-            ]);
+            ->with(Mockery::on(function (array $valors): bool {
+                return $valors['matricula'] === '1234ABC'
+                    && $valors['autoritzat'] === true
+                    && $valors['porta_oberta'] === false
+                    && $valors['device'] === 'device-1'
+                    && $valors['tipus'] === 'manual'
+                    && $valors['intents_domotica'] === 0;
+            }));
 
         $service = new CotxeAccessService();
         $service->registrarAcces('1234ABC', true, false, 'device-1', 'manual');
@@ -72,6 +63,7 @@ class CotxeAccessServiceTest extends TestCase
     public function test_obrir_i_porta_envia_les_ordres_al_dispositiu()
     {
         config([
+            'logging.channels.parking' => ['driver' => 'errorlog', 'level' => 'debug'],
             'variables.domotica.host' => 'http://domotica.test',
             'variables.domotica.user' => 'usuari',
             'variables.domotica.pass' => 'clau',

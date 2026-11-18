@@ -70,61 +70,71 @@ class CotxeController extends ApiResourceController
             return response()->json(['error' => 'Sense matrícula'], 422);
         }
 
-        if ($this->access->recentAccessWithin($matricula, 30)) {
-            //$log->alert("Accés $matricula recent");
+        $resolucio = Cotxe::resoldreLecturaAcces($matricula);
+        $professor = $resolucio['professor'];
+
+        if (!$professor) {
+            $this->access->registrarAcces(
+                matricula: $matricula,
+                autoritzat: false,
+                porta_oberta: false,
+                device: $device,
+                tipus: $direccio->value,
+                resultatResolucio: $resolucio['resultat'],
+                diferenciaOcr: $resolucio['diferencia_ocr'],
+            );
+
+            $log->info('Accés al pàrquing no autoritzat', [
+                'sentit' => $direccio->value,
+                'resultat' => $resolucio['resultat'],
+            ]);
+
+            return response()->json(['status' => 'No autoritzat']);
+        }
+
+        if (!$this->access->reservarAcces($professor, $direccio->value)) {
+            $log->info('Accés al pàrquing descartat per duplicat', [
+                'sentit' => $direccio->value,
+                'professor' => $professor,
+            ]);
+
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        //$log->info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
-
-        $cotxe = Cotxe::where('matricula', $matricula)->first();
-
-        // Inicialitzem sempre per evitar "undefined variable"
-        $autoritzat = false;
-        $obrir      = false;
-
-        // Regles d’obertura
-        if ($cotxe) {
-            // Matrícula exacta registrada → autoritzat i obrim
-            $autoritzat = true;
-            $obrir      = true;
-        } elseif ($direccio === Direccio::Eixida && Cotxe::plateHamming1($matricula)->exists()) {
-            // Eixida per coincidència Hamming-1 encara que no estiga autoritzat → obrim però marquem no autoritzat
-            $autoritzat = false;
-            $obrir      = true;
-        }
-
-        if ($obrir) {
-            $obrir = $this->access->obrirIPorta();
-            if (!$obrir) {
-                $log->error("Error obrint la porta: resposta no satisfactòria");
-            }
-        }
-
-        // Registre d’accés (sempre)
-        if ($autoritzat){
+        try {
+            $obertura = $this->access->obrirIPortaAmbReintent();
             $this->access->registrarAcces(
-            matricula:    $matricula,
-            autoritzat:   $autoritzat,
-            porta_oberta: $obrir,
-            device:       $device,
-            tipus:        $direccio->value,
+                matricula: $matricula,
+                autoritzat: true,
+                porta_oberta: $obertura['porta_oberta'],
+                device: $device,
+                tipus: $direccio->value,
+                professor: $professor,
+                matriculaCanonica: $resolucio['matricula_canonica'],
+                resultatResolucio: $resolucio['resultat'],
+                diferenciaOcr: $resolucio['diferencia_ocr'],
+                intentsDomotica: $obertura['intents'],
+                errorDomotica: $obertura['error'],
             );
+
+            $resultatFitxatge = $this->fitxatge->fitxar($professor);
+            $missatge = $obertura['porta_oberta']
+                ? "Porta oberta ({$direccio->value})"
+                : 'No s\'ha pogut obrir la porta';
+
+            $log->info('Resultat d’accés al pàrquing', [
+                'sentit' => $direccio->value,
+                'resultat' => $resolucio['resultat'],
+                'professor' => $professor,
+                'porta_oberta' => $obertura['porta_oberta'],
+                'intents_domotica' => $obertura['intents'],
+                'fitxatge' => (bool) $resultatFitxatge,
+            ]);
+
+            return response()->json(['status' => $missatge]);
+        } finally {
+            $this->access->finalitzarReservaAcces($professor, $direccio->value, 30);
         }
-        
-
-        // Fitxatge: si vols que només fitxe en entrades, afegeix condició de direcció
-        if ($cotxe?->professor /* && $direccio === Direccio::Entrada */) {
-            $this->fitxatge->fitxar($cotxe->professor->dni);
-        }
-
-        $msg = $obrir
-            ? "Porta oberta ({$direccio->value})"
-            : ($cotxe ? 'No autoritzat' : 'No autoritzat');
-
-        $log->info("Resultat accés {$direccio->value} | Matricula: {$matricula} | {$msg}");
-
-        return response()->json(['status' => $msg]);
     }
 
 
