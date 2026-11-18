@@ -3,6 +3,8 @@
 namespace Intranet\Services\School;
 
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Intranet\Entities\CotxeAcces;
@@ -15,22 +17,48 @@ class CotxeAccessService
      * l'ordre d'obrir la porta al dispositiu configurat.
      */
     /**
-     * Comprova si hi ha hagut un accés recent d'una matrícula.
+     * Reserva atòmicament una passada de professor i sentit per a deduplicar-la.
      *
-     * @param string $matricula Matrícula del vehicle.
-     * @param int    $seconds   Llindar en segons per considerar l'accés recent.
+     * @param string $professor Identificador intern del professor.
+     * @param string $tipus     Sentit de la passada.
+     * @param int    $seconds   Duració de la finestra de deduplicació.
      *
-     * @return bool True si existeix un accés dins del rang indicat.
+     * @return bool True quan la passada queda reservada.
      */
-    public function recentAccessWithin(string $matricula, int $seconds): bool
+    public function reservarAcces(string $professor, string $tipus, int $seconds): bool
     {
-        $ultim = CotxeAcces::where('matricula', $matricula)
-            ->latest('created_at')
-            ->first();
+        try {
+            return DB::transaction(function () use ($professor, $tipus, $seconds): bool {
+                $reserva = DB::table('cotxe_acces_reserves')
+                    ->where('idProfesor', $professor)
+                    ->where('tipus', $tipus)
+                    ->lockForUpdate()
+                    ->first();
 
-        if (!$ultim) return false;
+                if ($reserva && Carbon::parse($reserva->expires_at)->isFuture()) {
+                    return false;
+                }
 
-        return Carbon::parse($ultim->created_at)->diffInSeconds(now()) < $seconds;
+                $valors = [
+                    'expires_at' => now()->addSeconds($seconds),
+                    'updated_at' => now(),
+                ];
+
+                if ($reserva) {
+                    DB::table('cotxe_acces_reserves')->where('id', $reserva->id)->update($valors);
+                } else {
+                    DB::table('cotxe_acces_reserves')->insert($valors + [
+                        'idProfesor' => $professor,
+                        'tipus' => $tipus,
+                        'created_at' => now(),
+                    ]);
+                }
+
+                return true;
+            });
+        } catch (QueryException) {
+            return false;
+        }
     }
 
     /**
@@ -42,15 +70,51 @@ class CotxeAccessService
      * @param string|null $device       Identificador del dispositiu d'accés.
      * @param string|null $tipus        Tipus o origen de l'accés.
      */
-    public function registrarAcces(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null): void
+    public function registrarAcces(
+        string $matricula,
+        bool $autoritzat,
+        bool $porta_oberta,
+        ?string $device = null,
+        ?string $tipus = null,
+        ?string $professor = null,
+        ?string $matriculaCanonica = null,
+        string $resultatResolucio = 'sense_candidat',
+        ?int $diferenciaOcr = null,
+        int $intentsDomotica = 0,
+        ?string $errorDomotica = null,
+    ): void
     {
         CotxeAcces::create([
             'matricula' => $matricula,
             'autoritzat' => $autoritzat,
             'porta_oberta' => $porta_oberta,
             'device' => $device,
-            'tipus' => $tipus
+            'tipus' => $tipus,
+            'idProfesor' => $professor,
+            'matricula_canonica' => $matriculaCanonica,
+            'resultat_resolucio' => $resultatResolucio,
+            'diferencia_ocr' => $diferenciaOcr,
+            'intents_domotica' => $intentsDomotica,
+            'error_domotica' => $errorDomotica,
         ]);
+    }
+
+    /**
+     * Envia com a màxim dos ordres a la domòtica per a una mateixa passada.
+     *
+     * @return array{porta_oberta: bool, intents: int, error: string|null}
+     */
+    public function obrirIPortaAmbReintent(): array
+    {
+        if ($this->obrirIPorta()) {
+            return ['porta_oberta' => true, 'intents' => 1, 'error' => null];
+        }
+
+        if ($this->obrirIPorta()) {
+            return ['porta_oberta' => true, 'intents' => 2, 'error' => null];
+        }
+
+        return ['porta_oberta' => false, 'intents' => 2, 'error' => 'sense_resposta_satisfactoria'];
     }
 
     /**

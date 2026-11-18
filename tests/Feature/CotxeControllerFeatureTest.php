@@ -32,7 +32,7 @@ class CotxeControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
-        $this->sqlitePath = storage_path('cotxe_controller_feature_testing.sqlite');
+        $this->sqlitePath = sys_get_temp_dir() . '/cotxe_controller_feature_testing.sqlite';
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
         }
@@ -45,6 +45,8 @@ class CotxeControllerFeatureTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
 
+        config(['logging.channels.parking' => ['driver' => 'errorlog', 'level' => 'debug']]);
+
         $this->createSchema();
     }
 
@@ -52,6 +54,7 @@ class CotxeControllerFeatureTest extends TestCase
     {
         Mockery::close();
 
+        Schema::connection('sqlite')->dropIfExists('cotxe_acces_reserves');
         Schema::connection('sqlite')->dropIfExists('cotxe_accessos');
         Schema::connection('sqlite')->dropIfExists('cotxes');
         Schema::connection('sqlite')->dropIfExists('menus');
@@ -142,11 +145,13 @@ class CotxeControllerFeatureTest extends TestCase
         ]);
 
         $access = Mockery::mock(CotxeAccessService::class);
-        $access->shouldReceive('recentAccessWithin')->once()->with('1234ABC', 30)->andReturnFalse();
-        $access->shouldReceive('obrirIPorta')->once()->andReturnTrue();
-        $access->shouldReceive('registrarAcces')
-            ->once()
-            ->with('1234ABC', true, true, 'camera-1', 'entrada');
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
+            'porta_oberta' => true,
+            'intents' => 1,
+            'error' => null,
+        ]);
+        $access->shouldReceive('registrarAcces')->once();
 
         $fitxatge = Mockery::mock(FitxatgeService::class);
         $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnFalse();
@@ -165,6 +170,121 @@ class CotxeControllerFeatureTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('Porta oberta (entrada)', $response->getData(true)['status']);
+    }
+
+    public function test_una_lectura_hamming_d_entrada_es_resol_i_es_deduplica_per_propietari(): void
+    {
+        $this->insertProfesor('COTXE01');
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+            'marca' => 'Vehicle autoritzat',
+        ]);
+
+        $access = Mockery::mock(CotxeAccessService::class);
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
+            'porta_oberta' => true,
+            'intents' => 1,
+            'error' => null,
+        ]);
+        $access->shouldReceive('registrarAcces')->once();
+
+        $fitxatge = Mockery::mock(FitxatgeService::class);
+        $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
+
+        $request = Request::create(
+            '/api/eventPorta',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['plate' => '1234ABD'], JSON_THROW_ON_ERROR)
+        );
+
+        $response = (new ApiCotxeController($access, $fitxatge))->eventEntrada($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Porta oberta (entrada)', $response->getData(true)['status']);
+    }
+
+    public function test_una_lectura_hamming_d_eixida_usa_el_mateix_flux_autoritzat(): void
+    {
+        $this->insertProfesor('COTXE01');
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+            'marca' => 'Vehicle autoritzat',
+        ]);
+
+        $access = Mockery::mock(CotxeAccessService::class);
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'eixida', 30)->andReturnTrue();
+        $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
+            'porta_oberta' => true,
+            'intents' => 1,
+            'error' => null,
+        ]);
+        $access->shouldReceive('registrarAcces')->once();
+
+        $fitxatge = Mockery::mock(FitxatgeService::class);
+        $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
+
+        $request = Request::create(
+            '/api/eventPortaSortida',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['license_plate' => '1234ABD'], JSON_THROW_ON_ERROR)
+        );
+
+        $response = (new ApiCotxeController($access, $fitxatge))->eventSortida($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('Porta oberta (eixida)', $response->getData(true)['status']);
+    }
+
+    public function test_la_fallada_final_de_la_domotica_es_auditada_com_a_autoritzada(): void
+    {
+        $this->insertProfesor('COTXE01');
+        Cotxe::create([
+            'idProfesor' => 'COTXE01',
+            'matricula' => '1234ABC',
+            'marca' => 'Vehicle autoritzat',
+        ]);
+
+        $access = Mockery::mock(CotxeAccessService::class);
+        $access->shouldReceive('reservarAcces')->once()->with('COTXE01', 'entrada', 30)->andReturnTrue();
+        $access->shouldReceive('obrirIPortaAmbReintent')->once()->andReturn([
+            'porta_oberta' => false,
+            'intents' => 2,
+            'error' => 'sense_resposta_satisfactoria',
+        ]);
+        $access->shouldReceive('registrarAcces')->once()->withArgs(function (...$arguments): bool {
+            return $arguments[1] === true
+                && $arguments[2] === false
+                && $arguments[9] === 2
+                && $arguments[10] === 'sense_resposta_satisfactoria';
+        });
+
+        $fitxatge = Mockery::mock(FitxatgeService::class);
+        $fitxatge->shouldReceive('fitxar')->once()->with('COTXE01')->andReturnTrue();
+
+        $request = Request::create(
+            '/api/eventPorta',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['plate' => '1234ABC'], JSON_THROW_ON_ERROR)
+        );
+
+        $response = (new ApiCotxeController($access, $fitxatge))->eventEntrada($request);
+
+        $this->assertSame('No s\'ha pogut obrir la porta', $response->getData(true)['status']);
     }
 
     public function test_migracio_normalitza_cotxes_i_historial_d_accessos(): void
@@ -342,11 +462,26 @@ class CotxeControllerFeatureTest extends TestCase
         Schema::connection('sqlite')->create('cotxe_accessos', function (Blueprint $table): void {
             $table->id();
             $table->string('matricula');
+            $table->string('matricula_canonica')->nullable();
+            $table->string('idProfesor', 10)->nullable();
             $table->boolean('autoritzat')->default(false);
             $table->boolean('porta_oberta')->default(false);
             $table->string('device')->nullable();
             $table->string('tipus')->nullable();
+            $table->string('resultat_resolucio')->default('sense_candidat');
+            $table->unsignedTinyInteger('diferencia_ocr')->nullable();
+            $table->unsignedTinyInteger('intents_domotica')->default(0);
+            $table->string('error_domotica')->nullable();
             $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('cotxe_acces_reserves', function (Blueprint $table): void {
+            $table->id();
+            $table->string('idProfesor', 10);
+            $table->string('tipus');
+            $table->timestamp('expires_at');
+            $table->timestamps();
+            $table->unique(['idProfesor', 'tipus']);
         });
 
         Schema::connection('sqlite')->create('menus', function (Blueprint $table): void {
