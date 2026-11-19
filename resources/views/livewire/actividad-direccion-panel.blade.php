@@ -8,7 +8,7 @@
     @endif
 
     <div class="row" style="margin-bottom: 15px;">
-        <div class="col-md-12">
+        <div class="col-md-12 d-flex flex-wrap gap-2 align-items-start">
             @if ($hasAuthorizedToPrint)
                 <a
                     class="btn btn-primary js-bulk-reload"
@@ -27,7 +27,7 @@
                 </a>
             @endif
 
-            <form method="POST" action="{{ route('actividad.direccion.itaca.pdf') }}" target="_blank" class="d-inline">
+            <form method="POST" action="{{ route('actividad.direccion.itaca.pdf') }}" target="_blank" class="ms-auto">
                 @csrf
                 <button
                     type="submit"

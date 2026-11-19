@@ -133,7 +133,7 @@ Si falla la generació del PDF, no es registra la impressió ni es canvia l'esta
 ### Escenari 16: Disponibilitat i selecció del llistat ITACA ✅
 
 **Given** el panell d'activitats de Direcció
-**When** es calcula la disponibilitat d'«Imprimir llistat per a ITACA»
+**When** es calcula la disponibilitat d'«Imprimir Llistat Valorades per Itaca», situat a la dreta de la barra d'accions
 **Then** el botó només està actiu si existeixen activitats del flux d'extraescolars
 (`extraescolar = 1`) amb estat Valorada (`4`) i finalització (`hasta`) anterior
 a l'instant actual. El lot és global, independent dels filtres del panell.
