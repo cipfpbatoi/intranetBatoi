@@ -107,6 +107,14 @@ return array(
             '0' => 'No comunicada'
         ),
         'Actividad' => array(
+            'itaca_print' => 'Imprimir llistat per a ITACA',
+            'itaca_list' => 'Llistat d’activitats per a ITACA3',
+            'itaca_empty' => 'No hi ha activitats valorades i finalitzades pendents del llistat per a ITACA.',
+            'itaca_category' => 'Categoria ITACA3',
+            'itaca_coordinator' => 'Coordinador',
+            'authorization_print_date' => 'Data d’impressió de l’autorització',
+            'unassigned' => 'Sense assignar',
+            'no_print_date' => 'Sense data',
             'index' => 'Gestionar Activitats extraescolars',
             'create' => 'Alta activitat',
             'createO' => 'Alta activitat Orientació',

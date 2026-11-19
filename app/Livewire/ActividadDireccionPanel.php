@@ -11,7 +11,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Panell Livewire d'activitats de Direcció.
+ * Panell Livewire d'activitats de Direcció amb impressió del lot pendent d'ITACA.
  */
 class ActividadDireccionPanel extends Component
 {
@@ -51,6 +51,11 @@ class ActividadDireccionPanel extends Component
     public bool $hasPendingAuthorization = false;
     public int $authorizedToPrintCount = 0;
     public int $pendingAuthorizationCount = 0;
+
+    /**
+     * Nombre global d'activitats valorades i finalitzades pendents del llistat ITACA.
+     */
+    public int $pendingItacaCount = 0;
 
     /**
      * @var array<string, mixed>|null
@@ -222,6 +227,7 @@ class ActividadDireccionPanel extends Component
      */
     private function reloadActividades(): void
     {
+        $this->pendingItacaCount = Actividad::pendientesItaca()->count();
         $all = $this->buildFilteredQuery()->get();
 
         $this->authorizedToPrintCount = $all->filter(

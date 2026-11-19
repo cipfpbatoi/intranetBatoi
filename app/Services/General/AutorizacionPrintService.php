@@ -4,6 +4,8 @@ namespace Intranet\Services\General;
 
 use Intranet\Services\Document\PdfService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Intranet\Entities\Actividad;
 
 /**
  * Servei d'impressió en lot per a fluxos d'autorització.
@@ -14,6 +16,7 @@ use Illuminate\Support\Carbon;
  * - persistir el document en gestor,
  * - aplicar la transició d'estat massiva,
  * - enllaçar (opcionalment) elements i document.
+ * - registrar la data d'impressió de les activitats després de generar el PDF.
  */
 class AutorizacionPrintService
 {
@@ -61,14 +64,23 @@ class AutorizacionPrintService
         $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
         $tags = config("modelos.$model.documento");
 
-        $doc = GestorService::saveDocument($nomComplet, $tags);
+        // La generació pot fallar: no canviem cap estat ni data fins a tindre el PDF.
+        $response = $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
 
-        StateService::makeAll($todos, $final);
+        DB::transaction(function () use ($todos, $final, $link, $nomComplet, $tags, $class): void {
+            $doc = GestorService::saveDocument($nomComplet, $tags);
+            StateService::makeAll($todos, $final);
 
-        if ($link && $doc) {
-            StateService::makeLink($todos, $doc->id);
-        }
+            if (is_a($class, Actividad::class, true) && $final === '_print') {
+                $class::whereKey($todos->modelKeys())->where('estado', 3)
+                    ->update(['fecha_impresion' => Carbon::today()->toDateString()]);
+            }
 
-        return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
+            if ($link && $doc) {
+                StateService::makeLink($todos, $doc->id);
+            }
+        });
+
+        return $response;
     }
 }

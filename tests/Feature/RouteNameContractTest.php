@@ -55,6 +55,19 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/autorizacion/12345678A/actividad/1', route('actividad.menor.autorizacion', ['nia' => '12345678A', 'id' => 1], false));
     }
 
+    /**
+     * La generació del llistat ITACA muta estats i requerix POST i rol de Direcció.
+     */
+    public function test_llistat_itaca_requerix_post_i_direccio(): void
+    {
+        $route = Route::getRoutes()->getByName('actividad.direccion.itaca.pdf');
+
+        $this->assertNotNull($route);
+        $this->assertSame(['POST'], $route->methods());
+        $this->assertSame('direccion/actividad/itaca/pdf', $route->uri());
+        $this->assertContains('role:direccion', $route->gatherMiddleware());
+    }
+
     public function test_rutes_de_lot_de_direccio_accepten_modal_i_legacy(): void
     {
         $this->assertSame('/direccion/lote/create', route('direccion.lote.store', absolute: false));

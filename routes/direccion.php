@@ -25,6 +25,7 @@ Route::view('/actividad', 'actividad.livewire-panel')->name('actividad.direccion
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.direccion.gestor', 'uses' => 'Direccion\\Actividad\\GestorController']);
 Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.direccion.pdfVal', 'uses' => 'Direccion\\Actividad\\ValuePdfController']);
 Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'Direccion\\Actividad\\PrintController']);
+Route::post('/actividad/itaca/pdf', ['as' => 'actividad.direccion.itaca.pdf', 'uses' => 'Direccion\\Actividad\\ItacaPrintController']);
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'Direccion\\Actividad\\AuthorizeController']);
 
 Route::view('/falta', 'falta.livewire-panel')->name('falta.direccion.index');

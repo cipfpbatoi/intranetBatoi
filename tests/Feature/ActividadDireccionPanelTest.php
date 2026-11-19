@@ -5,13 +5,26 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\ActividadDireccionPanel;
+use Intranet\Services\Document\PdfService;
+use Intranet\Services\General\AutorizacionPrintService;
+use Intranet\Services\School\ActividadItacaPrintService;
 use Livewire\Livewire;
+use Mockery;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use RuntimeException;
 use Tests\TestCase;
 
+/**
+ * Prova el panell de Direcció i els lots d'impressió d'autorització i ITACA.
+ */
 class ActividadDireccionPanelTest extends TestCase
 {
     private string $sqlitePath;
@@ -39,7 +52,9 @@ class ActividadDireccionPanelTest extends TestCase
 
     protected function tearDown(): void
     {
+        Carbon::setTestNow();
         Schema::connection('sqlite')->dropIfExists('activities');
+        Schema::connection('sqlite')->dropIfExists('documentos');
         Schema::connection('sqlite')->dropIfExists('horarios');
         Schema::connection('sqlite')->dropIfExists('horas');
         Schema::connection('sqlite')->dropIfExists('actividad_grupo');
@@ -266,6 +281,229 @@ class ActividadDireccionPanelTest extends TestCase
             ->assertSet('selectedActividad.coordinador', 'Anna Soler Lopez');
     }
 
+    /**
+     * El recompte i el botó només inclouen valorades que ja han finalitzat.
+     */
+    public function test_boto_itaca_nomes_actiu_amb_valorades_finalitzades(): void
+    {
+        Carbon::setTestNow('2026-03-05 12:30:00');
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(ActividadDireccionPanel::class)
+            ->assertSet('pendingItacaCount', 0);
+
+        $html = $component->html();
+        $this->assertMatchesRegularExpression('/data-bulk-action="print"\s+disabled/', $html);
+
+        Carbon::setTestNow('2026-03-05 12:30:01');
+        $component->set('filterProfessor', 'Cap coincidència')
+            ->assertSet('pendingItacaCount', 1);
+        $this->assertDoesNotMatchRegularExpression('/data-bulk-action="print"\s+disabled/', $component->html());
+    }
+
+    /**
+     * La descàrrega inclou la categoria i el coordinador real, i només marca el lot.
+     */
+    public function test_llistat_itaca_selecciona_finalitzades_i_conserva_data_autoritzacio(): void
+    {
+        Carbon::setTestNow('2026-03-20 12:00:00');
+        $this->actingAs($this->direccionUser(), 'profesor');
+        DB::table('actividades')->where('id', 4)->update(['fecha_impresion' => '2026-03-01', 'idDocumento' => 99]);
+        DB::table('actividad_profesor')->insert(['idActividad' => 4, 'idProfesor' => 'ACT100', 'coordinador' => 0]);
+        DB::table('actividad_grupo')->insert(['idActividad' => 4, 'idGrupo' => 'GRP001']);
+        DB::table('actividades')->where('id', 2)->update(['estado' => 4]);
+
+        $document = Mockery::mock();
+        $document->shouldReceive('download')->once()->with('activitats-itaca.pdf')
+            ->andReturnUsing(function (): Response {
+                $this->assertSame(4, (int) DB::table('actividades')->where('id', 4)->value('estado'));
+
+                return new Response('pdf-itaca');
+            });
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldReceive('hazPdf')->once()->withArgs(function ($vista, $todos, $datos, $orientacion): bool {
+            $this->assertSame('pdf.actividadesItaca', $vista);
+            $this->assertSame([4], $todos->modelKeys());
+            $this->assertSame('landscape', $orientacion);
+            $html = view($vista, ['todos' => $todos, 'datosInforme' => '20-03-2026'])->render();
+            $this->assertStringContainsString('Eixida cultural', $html);
+            $this->assertStringContainsString('Anna Soler Lopez', $html);
+            $this->assertMatchesRegularExpression('/<td>Anna Soler Lopez<\/td>/', $html);
+            $this->assertStringContainsString('Jordi Marti Perez', $html);
+            $this->assertStringContainsString('1r CFGM Estètica', $html);
+            $this->assertStringContainsString('01-03-2026', $html);
+            $this->assertStringContainsString('Fora del centre amb transport', $html);
+            $this->assertStringNotContainsString('Jornada convivencia', $html);
+
+            return true;
+        })->andReturn($document);
+        $this->app->instance(PdfService::class, $pdf);
+
+        $this->post(route('actividad.direccion.itaca.pdf'))->assertOk()->assertSee('pdf-itaca');
+
+        $this->assertSame(5, (int) DB::table('actividades')->where('id', 4)->value('estado'));
+        $this->assertSame('2026-03-01', DB::table('actividades')->where('id', 4)->value('fecha_impresion'));
+        $this->assertSame(99, (int) DB::table('actividades')->where('id', 4)->value('idDocumento'));
+        $this->assertSame(4, (int) DB::table('actividades')->where('id', 2)->value('estado'));
+        $this->assertSame(3, (int) DB::table('actividades')->where('id', 3)->value('estado'));
+        $this->assertSame(1, (int) DB::table('actividades')->where('id', 1)->value('estado'));
+
+        $this->post(route('actividad.direccion.itaca.pdf'))->assertRedirect();
+    }
+
+    /**
+     * Les dades antigues sense data o coordinador es representen sense inventar-les.
+     */
+    public function test_pdf_itaca_mostra_dades_absents_sense_inferir_coordinador(): void
+    {
+        DB::table('actividad_profesor')->where('idActividad', 4)->update(['coordinador' => 0]);
+        DB::table('actividades')->where('id', 4)->update(['tipo_actividad_id' => null]);
+        $actividad = Actividad::with(['profesores', 'grupos', 'tipoActividad'])->findOrFail(4);
+
+        $html = view('pdf.actividadesItaca', ['todos' => collect([$actividad]), 'datosInforme' => '20-03-2026'])->render();
+
+        $this->assertSame(2, substr_count($html, '<td>Sense assignar</td>'));
+        $this->assertStringContainsString('<td>Sense data</td>', $html);
+    }
+
+    /**
+     * Un error en generar el document no modifica cap activitat.
+     */
+    public function test_error_de_pdf_itaca_conserva_estat_i_data(): void
+    {
+        Carbon::setTestNow('2026-03-20 12:00:00');
+        $document = Mockery::mock();
+        $document->shouldReceive('download')->once()->andThrow(new RuntimeException('Error PDF de prova'));
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldReceive('hazPdf')->once()->andReturn($document);
+
+        try {
+            (new ActividadItacaPrintService($pdf))->imprimir();
+            $this->fail('La generació havia de fallar.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('Error PDF de prova', $exception->getMessage());
+        }
+
+        $this->assertSame(4, (int) DB::table('actividades')->where('id', 4)->value('estado'));
+        $this->assertNull(DB::table('actividades')->where('id', 4)->value('fecha_impresion'));
+    }
+
+    /**
+     * Els estats ja tramitats, les activitats futures i les alienes al flux no entren.
+     */
+    public function test_seleccio_itaca_exclou_altres_estats_i_activitats_no_extraescolars(): void
+    {
+        Carbon::setTestNow('2026-03-20 12:00:00');
+
+        foreach ([0, 1, 2, 3, 5] as $estado) {
+            DB::table('actividades')->where('id', 4)->update(['estado' => $estado]);
+            $this->assertSame(0, Actividad::pendientesItaca()->count());
+        }
+
+        DB::table('actividades')->where('id', 4)->update(['estado' => 4, 'extraescolar' => 0]);
+        $this->assertSame(0, Actividad::pendientesItaca()->count());
+        DB::table('actividades')->where('id', 4)->update(['extraescolar' => 1]);
+        $this->assertSame([4], Actividad::pendientesItaca()->get()->modelKeys());
+    }
+
+    /**
+     * La ruta torna sense PDF ni canvis si s'esgota el lot abans de prémer el botó.
+     */
+    public function test_llistat_itaca_buit_no_genera_pdf_ni_modifica_activitats(): void
+    {
+        Carbon::setTestNow('2026-03-01 12:00:00');
+        $this->actingAs($this->direccionUser(), 'profesor');
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldNotReceive('hazPdf');
+        $this->app->instance(PdfService::class, $pdf);
+
+        $this->post(route('actividad.direccion.itaca.pdf'))->assertRedirect()
+            ->assertSessionHas('info', __('models.Actividad.itaca_empty'));
+        $this->assertSame(4, (int) DB::table('actividades')->where('id', 4)->value('estado'));
+    }
+
+    /**
+     * Només Direcció pot executar la ruta que genera el lot.
+     */
+    public function test_professor_sense_rol_de_direccio_no_pot_imprimir_itaca(): void
+    {
+        $this->actingAs(Profesor::findOrFail('ACT100'), 'profesor');
+        $service = Mockery::mock(ActividadItacaPrintService::class);
+        $service->shouldNotReceive('imprimir');
+        $this->app->instance(ActividadItacaPrintService::class, $service);
+
+        $this->post(route('actividad.direccion.itaca.pdf'))->assertForbidden();
+    }
+
+    /**
+     * L'autorització impresa desa la data del lot i l'actualitza en una reimpressió.
+     * S'aïlla el gestor real dels tests que el substituïxen amb Mockery overload.
+     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_impressio_autoritzades_guarda_data_en_activitat(): void
+    {
+        Carbon::setTestNow('2026-03-20 12:00:00');
+        $this->actingAs($this->direccionUser(), 'profesor');
+        config(['modelos.Actividad.avisos' => []]);
+        $this->createDocumentSchema();
+        DB::table('actividades')->where('id', 2)->update(['fecha_impresion' => '2026-02-01']);
+        DB::table('actividades')->where('id', 1)->update(['estado' => 2]);
+
+        $document = Mockery::mock();
+        $document->shouldReceive('save')->once()->andReturnSelf();
+        $document->shouldReceive('download')->once()->andReturn(new Response('pdf-autoritzacio'));
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldReceive('hazPdf')->once()->andReturn($document);
+
+        (new AutorizacionPrintService($pdf))->imprimir(Actividad::class, 'Actividad', 'extraescolars');
+
+        $this->assertSame('2026-03-20', DB::table('actividades')->where('id', 2)->value('fecha_impresion'));
+        $this->assertSame(3, (int) DB::table('actividades')->where('id', 2)->value('estado'));
+        $this->assertNotNull(DB::table('actividades')->where('id', 2)->value('idDocumento'));
+        $this->assertSame('2026-03-20', DB::table('actividades')->where('id', 1)->value('fecha_impresion'));
+        $this->assertNull(DB::table('actividades')->where('id', 3)->value('fecha_impresion'));
+    }
+
+    /**
+     * Si no es pot generar l'autorització no es registra una impressió fictícia.
+     */
+    public function test_error_impressio_autoritzades_no_guarda_data_ni_canvia_estat(): void
+    {
+        $document = Mockery::mock();
+        $document->shouldReceive('save')->once()->andThrow(new RuntimeException('Error PDF de prova'));
+        $pdf = Mockery::mock(PdfService::class);
+        $pdf->shouldReceive('hazPdf')->once()->andReturn($document);
+
+        try {
+            (new AutorizacionPrintService($pdf))->imprimir(Actividad::class, 'Actividad', 'extraescolars');
+            $this->fail('La generació havia de fallar.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('Error PDF de prova', $exception->getMessage());
+        }
+
+        $this->assertSame(2, (int) DB::table('actividades')->where('id', 2)->value('estado'));
+        $this->assertNull(DB::table('actividades')->where('id', 2)->value('fecha_impresion'));
+    }
+
+    /**
+     * Prepara el gestor documental només per a les proves d'autorització impresa.
+     */
+    private function createDocumentSchema(): void
+    {
+        Schema::create('documentos', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('tipoDocumento')->nullable();
+            $table->string('fichero');
+            $table->text('tags')->nullable();
+            $table->string('curso');
+            $table->text('descripcion');
+            $table->string('propietario');
+            $table->string('supervisor');
+            $table->integer('rol');
+            $table->timestamps();
+        });
+    }
+
     private function direccionUser(): Profesor
     {
         return Profesor::on('sqlite')->findOrFail('DIR001');
@@ -292,6 +530,7 @@ class ActividadDireccionPanelTest extends TestCase
             $table->boolean('extraescolar')->default(true);
             $table->dateTime('desde')->nullable();
             $table->dateTime('hasta')->nullable();
+            $table->date('fecha_impresion')->nullable();
             $table->boolean('complementaria')->default(true);
             $table->boolean('fueraCentro')->default(true);
             $table->boolean('transport')->default(false);

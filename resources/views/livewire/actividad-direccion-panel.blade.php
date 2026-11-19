@@ -27,6 +27,18 @@
                 </a>
             @endif
 
+            <form method="POST" action="{{ route('actividad.direccion.itaca.pdf') }}" target="_blank" class="d-inline">
+                @csrf
+                <button
+                    type="submit"
+                    class="btn btn-primary {{ $pendingItacaCount > 0 ? 'js-bulk-reload' : '' }}"
+                    data-bulk-action="print"
+                    @disabled($pendingItacaCount === 0)
+                >
+                    {{ __('models.Actividad.itaca_print') }} ({{ $pendingItacaCount }})
+                </button>
+            </form>
+
         </div>
     </div>
 
