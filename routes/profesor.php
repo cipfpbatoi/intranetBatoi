@@ -5,6 +5,9 @@ use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
 use Intranet\Livewire\ColaboracionesLivewire;
 use Intranet\Livewire\BustiaVioleta\AdminList;
 
+Route::get('/sso/nm/login', \Intranet\Http\Controllers\Auth\Sso\NmSsoController::class)
+    ->name('sso.nm.login');
+
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
 Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilController@editar']);
