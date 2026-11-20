@@ -430,8 +430,8 @@ Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notific
 Route::resource('/espacio', 'EspacioController', ['except' => ['create', 'destroy', 'store', 'update', 'show']]);
 Route::get('/espacio/{espacio}/delete', ['as' => 'espacio.destroy', 'uses' => 'EspacioController@destroy']);
 Route::get('/espacio/{espacio}/barcode/{posicion?}', ['as' => 'espacio.barcode', 'uses'=> 'EspacioController@barcode']);
-Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.store', 'uses' => 'EspacioController@update']);
-Route::post('/espacio/create', ['as' => 'espacio.create', 'uses' => 'EspacioController@store']);
+Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.update', 'uses' => 'EspacioController@update']);
+Route::post('/espacio/create', ['as' => 'espacio.store', 'uses' => 'EspacioController@store']);
 
 //RUTAS PROGRAMACIONES
 Route::get('/programacion/{programacion}/delete', ['as' => 'programacion.destroy', 'uses' => 'ProgramacionController@destroy']);
