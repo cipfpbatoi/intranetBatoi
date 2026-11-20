@@ -12,6 +12,10 @@
 **When** envia directament la petició de creació d'un espai
 **Then** el sistema la denega i no crea cap espai.
 
+**Given** una persona amb rol d'Administració o Manteniment autenticada a l'API
+**When** envia `POST /api/espacio`
+**Then** el sistema respon amb un 403 i no crea cap espai.
+
 ### Formulari d'alta ✅
 
 **Given** una persona de Direcció que obri el llistat d'espais
