@@ -2234,6 +2234,11 @@ class ConvalidacioFlowTest extends TestCase
         ]]);
         $peticio = $sollicitud->convalidacions->firstOrFail();
         $documentInicial = $peticio->documents()->firstOrFail();
+        $documentLlegat = [
+            'path' => $peticio->document_path,
+            'original_name' => $peticio->document_original_name,
+            'mime' => $peticio->document_mime,
+        ];
         $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
         $this->actingAs(Profesor::query()->findOrFail('SEC00004'), 'profesor');
 
@@ -2254,10 +2259,16 @@ class ConvalidacioFlowTest extends TestCase
             ]],
         ])->assertSessionHas('success');
 
-        $peticioActualitzada = $peticio->fresh()->load(['documents', 'aportacionsDocumentals']);
+        $peticioActualitzada = $peticio->fresh()->load([
+            'documents',
+            'aportacionsDocumentals' => static fn ($query) => $query->orderBy('id'),
+        ]);
         $segonaAportacio = $peticioActualitzada->aportacionsDocumentals->last();
         $this->assertCount(1, $peticioActualitzada->documents);
         $this->assertCount(2, $peticioActualitzada->aportacionsDocumentals);
+        $this->assertSame($documentLlegat['path'], $peticioActualitzada->document_path);
+        $this->assertSame($documentLlegat['original_name'], $peticioActualitzada->document_original_name);
+        $this->assertSame($documentLlegat['mime'], $peticioActualitzada->document_mime);
         $this->assertSame(
             ['Certificat PRL entregat presencialment', 'DNI entregat presencialment'],
             $peticioActualitzada->aportacionsDocumentals->pluck('descripcio')->all()
