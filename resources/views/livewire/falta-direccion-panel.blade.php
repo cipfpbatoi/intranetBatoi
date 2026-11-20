@@ -99,6 +99,12 @@
                 <td>{{ $falta['motivo'] }}</td>
                 <td>{{ $falta['situacion'] }}</td>
                 <td>
+                    @if ($falta['canLongLeave'])
+                        <button type="button" class="btn btn-primary btn-xs" wire:click="obrirLlargaDurada({{ $falta['id'] }})" title="{{ __('falta.llarga_durada.titol') }}">
+                            {{ __('falta.llarga_durada.boto') }}
+                        </button>
+                    @endif
+
                     @if ($falta['canEdit'])
                         <button
                             type="button"
@@ -282,6 +288,39 @@
         </div>
     </div>
 
+    <div id="llargaDuradaModal" class="modal fade" tabindex="-1" aria-labelledby="llargaDuradaTitle" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="guardarLlargaDurada">
+                    <div class="modal-header">
+                        <h5 id="llargaDuradaTitle" class="modal-title">{{ __('falta.llarga_durada.titol') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cancelarLlargaDurada" aria-label="{{ __('falta.llarga_durada.tancar') }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="llargaDuradaMotiu">{{ __('falta.llarga_durada.motiu') }}</label>
+                            <select id="llargaDuradaMotiu" class="form-control" wire:model="llargaDuradaMotiu">
+                                @foreach (\Intranet\Entities\Falta::getMotivosOptions() as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('llargaDuradaMotiu') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="llargaDuradaDataBaixa">{{ __('falta.llarga_durada.data_baixa') }}</label>
+                            <input id="llargaDuradaDataBaixa" type="date" class="form-control" wire:model="llargaDuradaDataBaixa">
+                            @error('llargaDuradaDataBaixa') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cancelarLlargaDurada">{{ __('falta.llarga_durada.cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="guardarLlargaDurada">{{ __('falta.llarga_durada.guardar') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
             if (window.__faltaLivewireUiInit) {
@@ -318,6 +357,14 @@
             }
 
             document.addEventListener('livewire:init', function () {
+                Livewire.on('show-llarga-durada-modal', function () {
+                    showModalById('llargaDuradaModal');
+                });
+
+                Livewire.on('hide-llarga-durada-modal', function () {
+                    hideModalById('llargaDuradaModal');
+                });
+
                 Livewire.on('show-falta-modal', function () {
                     showModalById('faltaFormModal');
                 });

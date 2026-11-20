@@ -12,6 +12,12 @@ class FaltaPolicy
 {
     use InteractsWithProfesorOwnership;
 
+    /** Restringix la conversió a baixa llarga al personal de Direcció. */
+    public function longLeave($user, Falta $falta): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion');
+    }
+
     /**
      * Determina si l'usuari pot crear una falta.
      *

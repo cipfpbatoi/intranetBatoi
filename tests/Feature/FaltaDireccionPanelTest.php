@@ -15,6 +15,7 @@ use Intranet\Livewire\FaltaDireccionPanel;
 use Livewire\Livewire;
 use Tests\TestCase;
 
+/** Verifica el panell de Direcció i les transicions d'absències del professorat. */
 class FaltaDireccionPanelTest extends TestCase
 {
     private string $sqlitePath;
@@ -341,6 +342,156 @@ class FaltaDireccionPanelTest extends TestCase
             ->assertSet('error', 'Només es pot enviar el recordatori en faltes sense justificant.');
 
         Mail::assertNothingSent();
+    }
+
+    /** Cobrix els límits del marge natural i els estats no convertibles. */
+    public function test_llarga_durada_nomes_es_mostra_per_a_absencies_iniciades_fins_ahir(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        $casos = [
+            ['2026-03-10', '2026-03-13', 1, 0, true],
+            ['2026-03-12', '2026-03-12', 2, 0, true],
+            ['2026-03-10', '2026-03-11', 3, 0, true],
+            ['2026-03-10', '2026-03-10', 1, 0, false],
+            ['2026-03-13', '2026-03-14', 1, 0, false],
+            ['2026-03-10', null, 5, 1, false],
+            ['2026-03-10', '2026-03-12', 4, 0, false],
+        ];
+
+        foreach ($casos as [$desde, $hasta, $estado, $baja, $visible]) {
+            DB::table('faltas')->where('id', 1)->update(compact('desde', 'hasta', 'estado', 'baja'));
+            $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+                ->test(FaltaDireccionPanel::class);
+            $this->assertSame($visible, collect($component->get('faltes'))->firstWhere('id', 1)['canLongLeave']);
+            if ($visible) {
+                $component->assertSeeHtml('wire:click="obrirLlargaDurada(1)"')
+                    ->assertSee('L.Dura')
+                    ->assertSeeHtml('title="Llarga durada"');
+            } else {
+                $component->assertDontSeeHtml('wire:click="obrirLlargaDurada(1)"');
+            }
+        }
+    }
+
+    /** Preselecciona el motiu i usa hui quan la data de baixa està buida. */
+    public function test_llarga_durada_preselecciona_motiu_i_hui_sense_guardar_en_obrir(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirLlargaDurada', 3)
+            ->assertSet('llargaDuradaMotiu', '3')
+            ->assertSet('llargaDuradaDataBaixa', '2026-03-12')
+            ->assertSee('Data de baixa del professor')
+            ->assertDispatched('show-llarga-durada-modal')
+            ->set('llargaDuradaMotiu', '2')
+            ->call('cancelarLlargaDurada')
+            ->assertSet('llargaDuradaId', null)
+            ->assertDispatched('hide-llarga-durada-modal');
+
+        $this->assertNull(DB::table('profesores')->where('dni', 'PF200')->value('fecha_baja'));
+        $this->assertSame(3, (int) DB::table('faltas')->where('id', 3)->value('motivos'));
+        $this->assertSame(0, (int) DB::table('faltas')->where('id', 3)->value('baja'));
+    }
+
+    /** Guarda atòmicament el motiu, la conversió i la data editada del professor. */
+    public function test_llarga_durada_permet_canviar_data_actual_i_motiu(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        DB::table('profesores')->where('dni', 'PF100')->update(['fecha_baja' => '2026-03-01']);
+        DB::table('faltas')->where('id', 2)->update([
+            'dia_completo' => 0, 'hora_ini' => '08:00:00', 'hora_fin' => '10:00:00',
+        ]);
+
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirLlargaDurada', 2)
+            ->assertSet('llargaDuradaMotiu', '2')
+            ->assertSet('llargaDuradaDataBaixa', '2026-03-01')
+            ->set('llargaDuradaDataBaixa', '2026-03-09')
+            ->set('llargaDuradaMotiu', '3')
+            ->call('guardarLlargaDurada')
+            ->assertHasNoErrors()
+            ->assertSet('llargaDuradaId', null)
+            ->assertSet('message', __('falta.llarga_durada.guardada'))
+            ->assertSeeHtml('wire:click="alta(2)"')
+            ->assertDontSeeHtml('wire:click="obrirLlargaDurada(2)"');
+
+        $this->assertDatabaseHas('faltas', [
+            'id' => 2, 'desde' => '2026-03-11', 'hasta' => null,
+            'motivos' => 3, 'baja' => 1, 'estado' => 5, 'dia_completo' => 1,
+            'hora_ini' => null, 'hora_fin' => null, 'fichero' => 'faltas/doc.pdf',
+            'observaciones' => 'Amb document',
+        ]);
+        $this->assertDatabaseHas('profesores', ['dni' => 'PF100', 'fecha_baja' => '2026-03-09', 'activo' => 1]);
+    }
+
+    /** Les dades invàlides no alteren cap registre. */
+    public function test_llarga_durada_valida_motiu_i_data(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirLlargaDurada', 3)
+            ->set('llargaDuradaMotiu', '999999')
+            ->set('llargaDuradaDataBaixa', '')
+            ->call('guardarLlargaDurada')
+            ->assertHasErrors(['llargaDuradaMotiu', 'llargaDuradaDataBaixa']);
+
+        $this->assertDatabaseHas('faltas', ['id' => 3, 'baja' => 0, 'estado' => 3]);
+        $this->assertNull(DB::table('profesores')->where('dni', 'PF200')->value('fecha_baja'));
+    }
+
+    /** Revalida el termini en guardar encara que el diàleg ja estiga obert. */
+    public function test_llarga_durada_revalida_el_termini_en_guardar(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirLlargaDurada', 2);
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-13 15:00:00'));
+        $component->call('guardarLlargaDurada')->assertHasErrors('llargaDuradaMotiu');
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'baja' => 0, 'estado' => 2]);
+        $this->assertNull(DB::table('profesores')->where('dni', 'PF100')->value('fecha_baja'));
+    }
+
+    /** Manté la protecció de resolucions firmades d'assumptes particulars. */
+    public function test_llarga_durada_no_modifica_assumptes_particulars_autoritzats(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        DB::table('assumptes_particulars')->insert([
+            'id' => 10, 'falta_id' => 3, 'idProfesor' => 'PF200', 'estat' => 'autoritzada',
+        ]);
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertDontSeeHtml('wire:click="obrirLlargaDurada(3)"')
+            ->call('obrirLlargaDurada', 3)
+            ->assertSet('error', __('falta.llarga_durada.no_disponible'))
+            ->set('llargaDuradaId', 3)
+            ->set('llargaDuradaMotiu', '3')
+            ->set('llargaDuradaDataBaixa', '2026-03-12')
+            ->call('guardarLlargaDurada')
+            ->assertHasErrors('llargaDuradaMotiu');
+        $this->assertDatabaseHas('faltas', ['id' => 3, 'baja' => 0]);
+    }
+
+    /** Comprova permisos reals encara que es manipule l'estat públic del component. */
+    public function test_llarga_durada_rebutja_professor_sense_rol_direccio(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        $user = Profesor::findOrFail('PF100');
+        Livewire::actingAs($user, 'profesor')->test(FaltaDireccionPanel::class)
+            ->set('isDireccion', true)
+            ->assertDontSeeHtml('wire:click="obrirLlargaDurada(2)"')
+            ->call('obrirLlargaDurada', 2)
+            ->assertForbidden();
+        Livewire::actingAs($user, 'profesor')->test(FaltaDireccionPanel::class)
+            ->set('llargaDuradaId', 2)
+            ->set('llargaDuradaMotiu', '3')
+            ->set('llargaDuradaDataBaixa', '2026-03-12')
+            ->call('guardarLlargaDurada')
+            ->assertForbidden();
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'baja' => 0]);
     }
 
     private function actingAsDireccion(): bool

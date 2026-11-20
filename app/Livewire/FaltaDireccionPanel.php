@@ -62,6 +62,11 @@ class FaltaDireccionPanel extends Component
     public ?TemporaryUploadedFile $formFichero = null;
     public string $existingFichero = '';
 
+    /** Identificador i camps editables del diàleg de llarga durada. */
+    public ?int $llargaDuradaId = null;
+    public string $llargaDuradaMotiu = '';
+    public string $llargaDuradaDataBaixa = '';
+
     private ?FaltaService $faltaService = null;
 
     /**
@@ -209,6 +214,52 @@ class FaltaDireccionPanel extends Component
 
         $this->faltas()->alta($id);
         $this->message = 'S\\\'ha tramitat l\\\'alta correctament.';
+        $this->reloadFaltes();
+    }
+
+    /** Obri el diàleg amb el motiu i la data actual de baixa del professor. */
+    public function obrirLlargaDurada(int $id): void
+    {
+        $this->resetFeedback();
+        $this->resetValidation();
+        $falta = Falta::with(['Profesor', 'assumpteParticular'])->findOrFail($id);
+        $this->authorize('longLeave', $falta);
+
+        if (!$this->faltas()->potConvertirLlargaDurada($falta)) {
+            $this->error = __('falta.llarga_durada.no_disponible');
+            return;
+        }
+
+        $dataBaixa = $falta->Profesor?->getRawOriginal('fecha_baja');
+        $this->llargaDuradaId = $id;
+        $this->llargaDuradaMotiu = (string) $falta->motivos;
+        $this->llargaDuradaDataBaixa = empty($dataBaixa) || $dataBaixa === '0000-00-00'
+            ? today()->toDateString()
+            : substr((string) $dataBaixa, 0, 10);
+        $this->dispatch('show-llarga-durada-modal');
+    }
+
+    /** Tanca el diàleg sense guardar els canvis. */
+    public function cancelarLlargaDurada(): void
+    {
+        $this->reset('llargaDuradaId', 'llargaDuradaMotiu', 'llargaDuradaDataBaixa');
+        $this->resetValidation();
+        $this->dispatch('hide-llarga-durada-modal');
+    }
+
+    /** Guarda la conversió i recarrega les accions disponibles. */
+    public function guardarLlargaDurada(): void
+    {
+        $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($this->llargaDuradaId);
+        $this->authorize('longLeave', $falta);
+        $this->faltas()->convertirLlargaDurada(
+            (int) $falta->id,
+            $this->llargaDuradaMotiu,
+            $this->llargaDuradaDataBaixa
+        );
+        $this->cancelarLlargaDurada();
+        $this->message = __('falta.llarga_durada.guardada');
         $this->reloadFaltes();
     }
 
@@ -422,13 +473,15 @@ class FaltaDireccionPanel extends Component
                 'idProfesor' => (string) $falta->idProfesor,
                 'professor' => $falta->Profesor->fullName ?? (string) $falta->idProfesor,
                 'desde' => (string) $falta->desde,
-                'hasta' => (string) $falta->hasta,
+                'hasta' => $falta->getRawOriginal('hasta') ? (string) $falta->hasta : '',
                 'motivo' => (string) $falta->motivo,
                 'estado' => (int) $falta->estado,
                 'situacion' => (string) $falta->situacion,
                 'hasDocument' => !empty($falta->fichero),
                 'canAnnul' => $this->isDireccion && (int) $falta->estado === 3 && $falta->idDocumento === null,
                 'canEdit' => $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA,
+                'canLongLeave' => auth()->user()?->can('longLeave', $falta)
+                    && $this->faltas()->potConvertirLlargaDurada($falta),
             ];
         })->all();
 
