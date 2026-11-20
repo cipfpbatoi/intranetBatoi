@@ -6,7 +6,7 @@ use Intranet\Entities\Falta;
 use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
- * Policy d'autorització per a la gestió de faltes.
+ * Policy d'autorització per a la gestió de faltes i continuacions de baixes.
  */
 class FaltaPolicy
 {
@@ -14,6 +14,12 @@ class FaltaPolicy
 
     /** Restringix la conversió a baixa llarga al personal de Direcció. */
     public function longLeave($user, Falta $falta): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion');
+    }
+
+    /** Només Direcció pot continuar una baixa amb un altre motiu. */
+    public function continueWithReason($user, Falta $falta): bool
     {
         return $this->hasRole($user, 'roles.rol.direccion');
     }

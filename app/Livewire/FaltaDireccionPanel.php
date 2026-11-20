@@ -4,6 +4,7 @@ namespace Intranet\Livewire;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Application\Falta\FaltaAnulacioService;
@@ -17,7 +18,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 /**
- * Panell Livewire de faltes de Direcció.
+ * Panell Livewire de faltes de Direcció i continuació de baixes amb altre motiu.
  */
 class FaltaDireccionPanel extends Component
 {
@@ -66,6 +67,12 @@ class FaltaDireccionPanel extends Component
     public ?int $llargaDuradaId = null;
     public string $llargaDuradaMotiu = '';
     public string $llargaDuradaDataBaixa = '';
+
+    /** Identificador i camps del diàleg de continuació d'una baixa llarga. */
+    public ?int $canviMotiuId = null;
+    public string $canviMotiuDataFi = '';
+    public string $canviMotiuNouMotiu = '';
+    public string $canviMotiuDataInici = '';
 
     private ?FaltaService $faltaService = null;
 
@@ -260,6 +267,60 @@ class FaltaDireccionPanel extends Component
         );
         $this->cancelarLlargaDurada();
         $this->message = __('falta.llarga_durada.guardada');
+        $this->reloadFaltes();
+    }
+
+    /** Obri el diàleg per a tancar la baixa actual i continuar amb un altre motiu. */
+    public function obrirCanviMotiu(int $id): void
+    {
+        $this->resetFeedback();
+        $this->resetValidation();
+        $falta = Falta::query()->findOrFail($id);
+        $this->authorize('continueWithReason', $falta);
+
+        if (!$this->faltas()->potContinuarAmbAltreMotiu($falta)) {
+            $this->error = __('falta.canvi_motiu.no_disponible');
+            return;
+        }
+
+        $this->canviMotiuId = $id;
+        $this->canviMotiuDataFi = today()->toDateString();
+        $this->canviMotiuNouMotiu = '';
+        $this->canviMotiuDataInici = today()->addDay()->toDateString();
+        $this->dispatch('show-canvi-motiu-modal');
+    }
+
+    /** Proposa l'endemà com a inici quan s'edita la finalització. */
+    public function updatedCanviMotiuDataFi(string $value): void
+    {
+        if (validator(['data' => $value], ['data' => 'required|date_format:Y-m-d'])->passes()) {
+            $this->canviMotiuDataInici = Carbon::parse($value)->addDay()->toDateString();
+        }
+    }
+
+    /** Tanca el diàleg sense modificar les absències. */
+    public function cancelarCanviMotiu(): void
+    {
+        $this->reset('canviMotiuId', 'canviMotiuDataFi', 'canviMotiuNouMotiu', 'canviMotiuDataInici');
+        $this->resetValidation();
+        $this->dispatch('hide-canvi-motiu-modal');
+    }
+
+    /** Guarda el tancament i la continuació amb comprovació final dins del servei. */
+    public function guardarCanviMotiu(): void
+    {
+        $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($this->canviMotiuId);
+        $this->authorize('continueWithReason', $falta);
+        $this->faltas()->continuarAmbAltreMotiu(
+            (int) $falta->id,
+            $this->canviMotiuDataFi,
+            $this->canviMotiuNouMotiu,
+            $this->canviMotiuDataInici
+        );
+
+        $this->cancelarCanviMotiu();
+        $this->message = __('falta.canvi_motiu.guardada');
         $this->reloadFaltes();
     }
 
@@ -482,6 +543,8 @@ class FaltaDireccionPanel extends Component
                 'canEdit' => $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA,
                 'canLongLeave' => auth()->user()?->can('longLeave', $falta)
                     && $this->faltas()->potConvertirLlargaDurada($falta),
+                'canContinueWithReason' => auth()->user()?->can('continueWithReason', $falta)
+                    && $this->faltas()->potContinuarAmbAltreMotiu($falta),
             ];
         })->all();
 

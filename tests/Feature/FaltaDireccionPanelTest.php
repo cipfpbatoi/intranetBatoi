@@ -6,16 +6,19 @@ namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\AssumpteParticular;
+use Intranet\Application\Falta\FaltaService;
+use Intranet\Entities\Falta;
 use Intranet\Mail\ReminderFaltaJustificant;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\FaltaDireccionPanel;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-/** Verifica el panell de Direcció i les transicions d'absències del professorat. */
+/** Verifica el panell de Direcció, les baixes i la continuació amb altre motiu. */
 class FaltaDireccionPanelTest extends TestCase
 {
     private string $sqlitePath;
@@ -492,6 +495,211 @@ class FaltaDireccionPanelTest extends TestCase
             ->call('guardarLlargaDurada')
             ->assertForbidden();
         $this->assertDatabaseHas('faltas', ['id' => 2, 'baja' => 0]);
+    }
+
+    /** El botó només apareix en baixes llargues obertes. */
+    public function test_canvi_motiu_nomes_apareix_en_baixes_llargues_obertes(): void
+    {
+        $this->prepararBaixaLlarga();
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertSee('C. Motiu')
+            ->assertSeeHtml('title="Seguir amb altre motiu"')
+            ->assertSeeHtml('wire:click="obrirCanviMotiu(2)"')
+            ->assertDontSeeHtml('wire:click="obrirCanviMotiu(1)"')
+            ->assertDontSeeHtml('wire:click="obrirCanviMotiu(3)"');
+
+        foreach ([['estado' => 3], ['baja' => 0], ['hasta' => '2026-03-12']] as $canvis) {
+            $this->prepararBaixaLlarga();
+            DB::table('faltas')->where('id', 2)->update($canvis);
+            $component->set('filterProfessor', 'PF100')
+                ->assertDontSeeHtml('wire:click="obrirCanviMotiu(2)"')
+                ->call('obrirCanviMotiu', 2)
+                ->assertSet('error', __('falta.canvi_motiu.no_disponible'));
+            $component->set('filterProfessor', '');
+        }
+    }
+
+    /** Proposa hui i l'endemà, permet editar i cancel·lar sense persistir. */
+    public function test_canvi_motiu_proposa_dates_i_permet_cancelar(): void
+    {
+        $this->prepararBaixaLlarga();
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirCanviMotiu', 2)
+            ->assertSet('canviMotiuId', 2)
+            ->assertSet('canviMotiuDataFi', '2026-03-12')
+            ->assertSet('canviMotiuDataInici', '2026-03-13')
+            ->assertSet('canviMotiuNouMotiu', '')
+            ->assertDispatched('show-canvi-motiu-modal')
+            ->set('canviMotiuDataFi', '2026-03-14')
+            ->assertSet('canviMotiuDataInici', '2026-03-15')
+            ->set('canviMotiuDataInici', '2026-03-16')
+            ->set('canviMotiuNouMotiu', '3')
+            ->call('cancelarCanviMotiu')
+            ->assertSet('canviMotiuId', null)
+            ->assertSet('canviMotiuNouMotiu', '')
+            ->assertDispatched('hide-canvi-motiu-modal');
+
+        $this->assertDatabaseCount('faltas', 3);
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'estado' => 5, 'hasta' => null, 'motivos' => 2]);
+        $this->assertDatabaseHas('profesores', ['dni' => 'PF100', 'fecha_baja' => '2026-03-01']);
+    }
+
+    /** Tanca l'original i crea la continuació amb les dates editades sense alterar substituts. */
+    public function test_canvi_motiu_guarda_les_dues_absencies_i_conserva_la_baixa_del_professor(): void
+    {
+        $this->prepararBaixaLlarga();
+        DB::table('profesores')->where('dni', 'PF200')->update(['sustituye_a' => 'PF100']);
+        $professors = DB::table('profesores')->orderBy('dni')->get()->toArray();
+
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirCanviMotiu', 2)
+            ->set('canviMotiuDataFi', '2026-03-14')
+            ->set('canviMotiuDataInici', '2026-03-16')
+            ->set('canviMotiuNouMotiu', '3')
+            ->call('guardarCanviMotiu')
+            ->assertHasNoErrors()
+            ->assertSet('canviMotiuId', null)
+            ->assertSet('message', __('falta.canvi_motiu.guardada'))
+            ->assertDispatched('hide-canvi-motiu-modal')
+            ->assertDontSeeHtml('wire:click="obrirCanviMotiu(2)"');
+
+        $this->assertDatabaseCount('faltas', 4);
+        $this->assertDatabaseHas('faltas', [
+            'id' => 2, 'idProfesor' => 'PF100', 'desde' => '2026-03-11', 'hasta' => '2026-03-14',
+            'motivos' => 2, 'estado' => 3, 'baja' => 0, 'fichero' => 'faltas/doc.pdf',
+            'observaciones' => 'Amb document',
+        ]);
+        $nova = DB::table('faltas')->where('id', '>', 3)->first();
+        $this->assertDatabaseHas('faltas', [
+            'id' => $nova->id, 'idProfesor' => 'PF100', 'desde' => '2026-03-16', 'hasta' => null,
+            'motivos' => 3, 'estado' => 5, 'baja' => 1, 'dia_completo' => 1,
+            'hora_ini' => null, 'hora_fin' => null, 'fichero' => null, 'idDocumento' => null,
+        ]);
+        $this->assertEquals($professors, DB::table('profesores')->orderBy('dni')->get()->toArray());
+        $component->assertSeeHtml('wire:click="obrirCanviMotiu(' . $nova->id . ')"');
+    }
+
+    /** Valida motiu, dates obligatòries i límits sense deixar canvis parcials. */
+    public function test_canvi_motiu_rebutja_dates_o_motiu_invalids(): void
+    {
+        $this->prepararBaixaLlarga();
+        $casos = [
+            ['', '3', '2026-03-13', 'canviMotiuDataFi'],
+            ['2026-02-30', '3', '2026-03-13', 'canviMotiuDataFi'],
+            ['2026-03-10', '3', '2026-03-13', 'canviMotiuDataFi'],
+            ['2026-03-12', '', '2026-03-13', 'canviMotiuNouMotiu'],
+            ['2026-03-12', '999999', '2026-03-13', 'canviMotiuNouMotiu'],
+            ['2026-03-12', '3', '', 'canviMotiuDataInici'],
+            ['2026-03-12', '3', '2026-03-12', 'canviMotiuDataInici'],
+            ['2026-03-12', '3', '2026-03-11', 'canviMotiuDataInici'],
+        ];
+
+        foreach ($casos as [$fi, $motiu, $inici, $error]) {
+            Livewire::actingAs($this->direccionUser(), 'profesor')
+                ->test(FaltaDireccionPanel::class)
+                ->call('obrirCanviMotiu', 2)
+                ->set('canviMotiuDataFi', $fi)
+                ->set('canviMotiuNouMotiu', $motiu)
+                ->set('canviMotiuDataInici', $inici)
+                ->call('guardarCanviMotiu')
+                ->assertHasErrors($error);
+
+            $this->assertDatabaseCount('faltas', 3);
+            $this->assertDatabaseHas('faltas', ['id' => 2, 'estado' => 5, 'baja' => 1, 'hasta' => null]);
+        }
+    }
+
+    /** Accepta finalitzar el mateix dia d'inici i impedix repetir el guardat de l'original. */
+    public function test_canvi_motiu_accepta_el_limit_inicial_i_no_duplica_la_continuacio(): void
+    {
+        $this->prepararBaixaLlarga();
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirCanviMotiu', 2)
+            ->set('canviMotiuDataFi', '2026-03-11')
+            ->set('canviMotiuNouMotiu', '3')
+            ->call('guardarCanviMotiu')
+            ->assertHasNoErrors();
+
+        $component->set('canviMotiuId', 2)
+            ->set('canviMotiuDataFi', '2026-03-11')
+            ->set('canviMotiuDataInici', '2026-03-12')
+            ->set('canviMotiuNouMotiu', '3')
+            ->call('guardarCanviMotiu')
+            ->assertHasErrors('canviMotiuNouMotiu');
+
+        $this->assertDatabaseCount('faltas', 4);
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'hasta' => '2026-03-11', 'estado' => 3]);
+    }
+
+    /** Revalida una baixa que s'ha tancat mentre el diàleg estava obert. */
+    public function test_canvi_motiu_revalida_l_estat_en_guardar(): void
+    {
+        $this->prepararBaixaLlarga();
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('obrirCanviMotiu', 2)
+            ->set('canviMotiuNouMotiu', '3');
+
+        DB::table('faltas')->where('id', 2)->update(['estado' => 3, 'baja' => 0, 'hasta' => '2026-03-12']);
+        $component->call('guardarCanviMotiu')->assertHasErrors('canviMotiuNouMotiu');
+        $this->assertDatabaseCount('faltas', 3);
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'estado' => 3, 'hasta' => '2026-03-12']);
+    }
+
+    /** Denega l'acció a un professor inclús amb les propietats públiques manipulades. */
+    public function test_canvi_motiu_exigix_rol_de_direccio(): void
+    {
+        $this->prepararBaixaLlarga();
+        $professor = Profesor::findOrFail('PF100');
+        Livewire::actingAs($professor, 'profesor')->test(FaltaDireccionPanel::class)
+            ->set('isDireccion', true)
+            ->assertDontSeeHtml('wire:click="obrirCanviMotiu(2)"')
+            ->call('obrirCanviMotiu', 2)
+            ->assertForbidden();
+
+        Livewire::actingAs($professor, 'profesor')->test(FaltaDireccionPanel::class)
+            ->set('canviMotiuId', 2)
+            ->set('canviMotiuDataFi', '2026-03-12')
+            ->set('canviMotiuNouMotiu', '3')
+            ->set('canviMotiuDataInici', '2026-03-13')
+            ->call('guardarCanviMotiu')
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('faltas', 3);
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'estado' => 5, 'hasta' => null]);
+    }
+
+    /** Una fallada en crear la continuació restaura el tancament de l'absència original. */
+    public function test_canvi_motiu_revertix_el_tancament_si_falla_la_nova_absencia(): void
+    {
+        $this->prepararBaixaLlarga();
+        $this->actingAsDireccion();
+        Event::listen('eloquent.creating: ' . Falta::class, function (): void {
+            throw new \RuntimeException('Fallada simulada en crear la continuació.');
+        });
+
+        try {
+            app(FaltaService::class)->continuarAmbAltreMotiu(2, '2026-03-12', '3', '2026-03-13');
+            $this->fail('La creació havia de fallar.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Fallada simulada en crear la continuació.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseCount('faltas', 3);
+        $this->assertDatabaseHas('faltas', ['id' => 2, 'estado' => 5, 'baja' => 1, 'hasta' => null]);
+        $this->assertDatabaseHas('profesores', ['dni' => 'PF100', 'fecha_baja' => '2026-03-01']);
+    }
+
+    /** Prepara una baixa de llarga durada existent amb data de professor independent. */
+    private function prepararBaixaLlarga(): void
+    {
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-03-12 15:00:00'));
+        DB::table('faltas')->where('id', 2)->update(['estado' => 5, 'baja' => 1, 'hasta' => null]);
+        DB::table('profesores')->where('dni', 'PF100')->update(['fecha_baja' => '2026-03-01']);
     }
 
     private function actingAsDireccion(): bool

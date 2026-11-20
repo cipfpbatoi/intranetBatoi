@@ -172,6 +172,12 @@
                         </button>
                     @endif
 
+                    @if ($falta['canContinueWithReason'])
+                        <button type="button" class="btn btn-info btn-xs" wire:click="obrirCanviMotiu({{ $falta['id'] }})" title="{{ __('falta.canvi_motiu.titol') }}">
+                            {{ __('falta.canvi_motiu.boto') }}
+                        </button>
+                    @endif
+
                     @if ((int) $falta['estado'] === 5)
                         <button type="button" class="btn btn-primary btn-xs" wire:click="alta({{ $falta['id'] }})">
                             Alta
@@ -321,6 +327,45 @@
         </div>
     </div>
 
+    <div id="canviMotiuModal" class="modal fade" tabindex="-1" aria-labelledby="canviMotiuTitle" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="guardarCanviMotiu">
+                    <div class="modal-header">
+                        <h5 id="canviMotiuTitle" class="modal-title">{{ __('falta.canvi_motiu.titol') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cancelarCanviMotiu" aria-label="{{ __('falta.llarga_durada.tancar') }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="canviMotiuDataFi">{{ __('falta.canvi_motiu.data_fi') }}</label>
+                            <input id="canviMotiuDataFi" type="date" class="form-control" wire:model.live="canviMotiuDataFi">
+                            @error('canviMotiuDataFi') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="canviMotiuNouMotiu">{{ __('falta.canvi_motiu.nou_motiu') }}</label>
+                            <select id="canviMotiuNouMotiu" class="form-control" wire:model="canviMotiuNouMotiu">
+                                <option value="">{{ __('falta.canvi_motiu.seleccionar_motiu') }}</option>
+                                @foreach (\Intranet\Entities\Falta::getMotivosOptions() as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('canviMotiuNouMotiu') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="canviMotiuDataInici">{{ __('falta.canvi_motiu.data_inici') }}</label>
+                            <input id="canviMotiuDataInici" type="date" class="form-control" wire:model="canviMotiuDataInici">
+                            @error('canviMotiuDataInici') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cancelarCanviMotiu">{{ __('falta.llarga_durada.cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="guardarCanviMotiu">{{ __('falta.llarga_durada.guardar') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
             if (window.__faltaLivewireUiInit) {
@@ -357,6 +402,14 @@
             }
 
             document.addEventListener('livewire:init', function () {
+                Livewire.on('show-canvi-motiu-modal', function () {
+                    showModalById('canviMotiuModal');
+                });
+
+                Livewire.on('hide-canvi-motiu-modal', function () {
+                    hideModalById('canviMotiuModal');
+                });
+
                 Livewire.on('show-llarga-durada-modal', function () {
                     showModalById('llargaDuradaModal');
                 });
