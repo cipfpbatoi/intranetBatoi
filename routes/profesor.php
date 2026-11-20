@@ -5,6 +5,9 @@ use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
 use Intranet\Livewire\ColaboracionesLivewire;
 use Intranet\Livewire\BustiaVioleta\AdminList;
 
+Route::get('/sso/nm/login', \Intranet\Http\Controllers\Auth\Sso\NmSsoController::class)
+    ->name('sso.nm.login');
+
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
 Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilController@editar']);
@@ -430,8 +433,8 @@ Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notific
 Route::resource('/espacio', 'EspacioController', ['except' => ['create', 'destroy', 'store', 'update', 'show']]);
 Route::get('/espacio/{espacio}/delete', ['as' => 'espacio.destroy', 'uses' => 'EspacioController@destroy']);
 Route::get('/espacio/{espacio}/barcode/{posicion?}', ['as' => 'espacio.barcode', 'uses'=> 'EspacioController@barcode']);
-Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.store', 'uses' => 'EspacioController@update']);
-Route::post('/espacio/create', ['as' => 'espacio.create', 'uses' => 'EspacioController@store']);
+Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.update', 'uses' => 'EspacioController@update']);
+Route::post('/espacio/create', ['as' => 'espacio.store', 'uses' => 'EspacioController@store']);
 
 //RUTAS PROGRAMACIONES
 Route::get('/programacion/{programacion}/delete', ['as' => 'programacion.destroy', 'uses' => 'ProgramacionController@destroy']);
