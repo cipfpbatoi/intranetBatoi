@@ -2262,9 +2262,10 @@ class ConvalidacioFlowTest extends TestCase
             ['Certificat PRL entregat presencialment', 'DNI entregat presencialment'],
             $peticioActualitzada->aportacionsDocumentals->pluck('descripcio')->all()
         );
-        $documentActual = $peticioActualitzada->documents->sole();
+        $documentActual = $peticioActualitzada->documents->find($documentInicial->id);
         $primeraAportacioActual = $peticioActualitzada->aportacionsDocumentals->find($primeraAportacio->id);
         $segonaAportacioActual = $peticioActualitzada->aportacionsDocumentals->find($segonaAportacio->id);
+        $this->assertNotNull($documentActual);
         $this->assertNotNull($primeraAportacioActual);
         $this->assertNotNull($segonaAportacioActual);
         $rutes = [
