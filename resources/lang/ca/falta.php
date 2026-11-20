@@ -2,7 +2,7 @@
 
 return [
     'canvi_motiu' => [
-        'boto' => 'C. Motiu',
+        'boto' => 'Canv. Motiu',
         'titol' => 'Seguir amb altre motiu',
         'data_fi' => 'Data de finalització de l’absència actual',
         'nou_motiu' => 'Nou motiu',

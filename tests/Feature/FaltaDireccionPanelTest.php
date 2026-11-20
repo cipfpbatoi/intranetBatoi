@@ -503,7 +503,7 @@ class FaltaDireccionPanelTest extends TestCase
         $this->prepararBaixaLlarga();
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
             ->test(FaltaDireccionPanel::class)
-            ->assertSee('C. Motiu')
+            ->assertSee('Canv. Motiu')
             ->assertSeeHtml('title="Seguir amb altre motiu"')
             ->assertSeeHtml('wire:click="obrirCanviMotiu(2)"')
             ->assertDontSeeHtml('wire:click="obrirCanviMotiu(1)"')
