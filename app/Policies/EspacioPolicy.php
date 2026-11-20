@@ -19,7 +19,7 @@ class EspacioPolicy
      */
     public function create($user): bool
     {
-        return $this->isDirectionOrAdmin($user);
+        return $this->hasRole($user, 'roles.rol.direccion');
     }
 
     /**

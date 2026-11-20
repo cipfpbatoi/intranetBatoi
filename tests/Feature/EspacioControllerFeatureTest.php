@@ -80,6 +80,26 @@ class EspacioControllerFeatureTest extends TestCase
         $this->assertSame(1, DB::table('espacios')->where('aula', 'E amable')->count());
     }
 
+    public function test_store_denega_a_administracio(): void
+    {
+        $this->insertProfesor(
+            'ADM01',
+            config('roles.rol.profesor') * config('roles.rol.administrador')
+        );
+
+        $user = Profesor::on('sqlite')->findOrFail('ADM01');
+        $response = $this
+            ->actingAs($user, 'profesor')
+            ->post('/espacio/create', [
+                'aula' => 'NOU-ESPAI',
+                'descripcion' => 'Espai no autoritzat',
+                'idDepartamento' => 99,
+            ]);
+
+        $response->assertForbidden();
+        $this->assertSame(0, DB::table('espacios')->where('aula', 'NOU-ESPAI')->count());
+    }
+
     public function test_update_permet_mantindre_la_mateixa_aula(): void
     {
         $this->insertProfesor('DIR02', config('roles.rol.profesor') * config('roles.rol.direccion'));

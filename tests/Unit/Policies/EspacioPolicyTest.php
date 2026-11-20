@@ -13,13 +13,14 @@ use Tests\TestCase;
  */
 class EspacioPolicyTest extends TestCase
 {
-    public function test_mutacions_i_barcode_nom_son_per_direccio_o_admin(): void
+    public function test_crear_espais_nom_es_per_a_direccio(): void
     {
         $policy = new EspacioPolicy();
         $espacio = new Espacio();
 
         $direction = (object) ['rol' => (int) config('roles.rol.direccion')];
         $admin = (object) ['rol' => (int) config('roles.rol.administrador')];
+        $maintenance = (object) ['rol' => (int) config('roles.rol.mantenimiento')];
         $teacher = (object) ['rol' => (int) config('roles.rol.profesor')];
 
         $this->assertTrue($policy->create($direction));
@@ -27,6 +28,8 @@ class EspacioPolicyTest extends TestCase
         $this->assertTrue($policy->delete($direction, $espacio));
         $this->assertTrue($policy->printBarcode($admin, $espacio));
 
+        $this->assertFalse($policy->create($admin));
+        $this->assertFalse($policy->create($maintenance));
         $this->assertFalse($policy->create($teacher));
         $this->assertFalse($policy->update($teacher, $espacio));
         $this->assertFalse($policy->delete($teacher, $espacio));

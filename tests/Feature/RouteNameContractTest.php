@@ -55,6 +55,15 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/autorizacion/12345678A/actividad/1', route('actividad.menor.autorizacion', ['nia' => '12345678A', 'id' => 1], false));
     }
 
+    public function test_rutes_d_espais_accepten_el_formulari_modal_i_l_edicio(): void
+    {
+        $this->assertSame('/espacio/create', route('espacio.store', absolute: false));
+        $this->assertSame('/espacio/A101/edit', route('espacio.update', ['espacio' => 'A101'], false));
+
+        $this->assertContains('POST', Route::getRoutes()->getByName('espacio.store')->methods());
+        $this->assertContains('PUT', Route::getRoutes()->getByName('espacio.update')->methods());
+    }
+
     /**
      * La generació del llistat ITACA muta estats i requerix POST i rol de Direcció.
      */
