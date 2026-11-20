@@ -44,6 +44,16 @@ class RouteNameContractTest extends TestCase
         $this->assertNotContains('role:profesor', $route->gatherMiddleware());
     }
 
+    public function test_sso_nm_te_url_estable_i_requerix_rol_professorat(): void
+    {
+        $route = Route::getRoutes()->getByName('sso.nm.login');
+
+        $this->assertNotNull($route);
+        $this->assertSame('/sso/nm/login', route('sso.nm.login', absolute: false));
+        $this->assertSame(['GET', 'HEAD'], $route->methods());
+        $this->assertContains('role:profesor', $route->gatherMiddleware());
+    }
+
     public function test_rutes_legacy_d_activitat_continuen_resolent(): void
     {
         $this->assertSame('/actividad/create', route('actividad.store', absolute: false));
