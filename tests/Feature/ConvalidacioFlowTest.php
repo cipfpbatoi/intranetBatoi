@@ -2279,13 +2279,14 @@ class ConvalidacioFlowTest extends TestCase
         $this->assertNotNull($documentActual);
         $this->assertNotNull($primeraAportacioActual);
         $this->assertNotNull($segonaAportacioActual);
+        $this->assertSame($documentLlegat['path'], $documentActual->path);
         $rutes = [
             $documentActual->path,
             $primeraAportacioActual->path,
             $segonaAportacioActual->path,
         ];
         $this->assertCount(3, array_unique($rutes));
-        $this->assertSame($contingutExpedient, Storage::disk('convalidacions')->get($documentActual->path));
+        $this->assertSame($contingutExpedient, Storage::disk('convalidacions')->get($documentLlegat['path']));
         $this->assertSame($contingutPrl, Storage::disk('convalidacions')->get($primeraAportacioActual->path));
         $this->assertSame($contingutDni, Storage::disk('convalidacions')->get($segonaAportacioActual->path));
         $this->get(route('convalidacions.direction.show', $sollicitud))
