@@ -2213,6 +2213,89 @@ class ConvalidacioFlowTest extends TestCase
             ->assertOk()->assertSee('Secretaria operativa')->assertSee('Rebut presencialment a Secretaria.');
     }
 
+    /** Regressió: les aportacions presencials no substituïxen documents ja incorporats a l'expedient. */
+    public function test_secretaria_conserva_documents_previs_en_afegir_aportacions_presencials_successives(): void
+    {
+        $contingutExpedient = "%PDF-1.4\nExpedient acadèmic original";
+        $contingutPrl = "%PDF-1.4\nCertificat PRL presencial";
+        $contingutDni = "%PDF-1.4\nDNI presencial";
+        DB::table('profesores')->insert([
+            'dni' => 'SEC00004', 'nombre' => 'Secretaria operativa',
+            'rol' => (int) config('roles.rol.secretaria'), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $sollicitud = $this->service->tramitar($this->alumno, 'aportacions-presencials-successives', [[
+            'modulo_destino_id' => 'DEST2',
+            'origen' => Convalidacio::ORIGEN_ALTRE_CENTRE,
+            'declaracio_responsable' => true,
+            'documents' => [[
+                'descripcio' => 'Expedient acadèmic de l’alumne',
+                'fitxer' => UploadedFile::fake()->createWithContent('expedient-alumne.pdf', $contingutExpedient),
+            ]],
+        ]]);
+        $peticio = $sollicitud->convalidacions->firstOrFail();
+        $documentInicial = $peticio->documents()->firstOrFail();
+        $documentLlegat = [
+            'path' => $peticio->document_path,
+            'original_name' => $peticio->document_original_name,
+            'mime' => $peticio->document_mime,
+        ];
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $this->actingAs(Profesor::query()->findOrFail('SEC00004'), 'profesor');
+
+        $this->post(route('convalidacions.direction.staff-contribution', $peticio), [
+            'documents' => [[
+                'descripcio' => 'Certificat PRL entregat presencialment',
+                'fitxer' => UploadedFile::fake()->createWithContent('certificat-prl.pdf', $contingutPrl),
+            ]],
+        ])->assertSessionHas('success');
+        $peticio = $peticio->fresh();
+        $primeraAportacio = $peticio->aportacionsDocumentals()->firstOrFail();
+
+        $peticio->forceFill(['estat' => Convalidacio::ESTAT_REVISAR_DOCUMENTACIO])->save();
+        $this->post(route('convalidacions.direction.staff-contribution', $peticio), [
+            'documents' => [[
+                'descripcio' => 'DNI entregat presencialment',
+                'fitxer' => UploadedFile::fake()->createWithContent('dni.pdf', $contingutDni),
+            ]],
+        ])->assertSessionHas('success');
+
+        $peticioActualitzada = $peticio->fresh()->load([
+            'documents',
+            'aportacionsDocumentals' => static fn ($query) => $query->orderBy('id'),
+        ]);
+        $segonaAportacio = $peticioActualitzada->aportacionsDocumentals->last();
+        $this->assertCount(1, $peticioActualitzada->documents);
+        $this->assertCount(2, $peticioActualitzada->aportacionsDocumentals);
+        $this->assertSame($documentLlegat['path'], $peticioActualitzada->document_path);
+        $this->assertSame($documentLlegat['original_name'], $peticioActualitzada->document_original_name);
+        $this->assertSame($documentLlegat['mime'], $peticioActualitzada->document_mime);
+        $this->assertSame(
+            ['Certificat PRL entregat presencialment', 'DNI entregat presencialment'],
+            $peticioActualitzada->aportacionsDocumentals->pluck('descripcio')->all()
+        );
+        $documentActual = $peticioActualitzada->documents->find($documentInicial->id);
+        $primeraAportacioActual = $peticioActualitzada->aportacionsDocumentals->find($primeraAportacio->id);
+        $segonaAportacioActual = $peticioActualitzada->aportacionsDocumentals->find($segonaAportacio->id);
+        $this->assertNotNull($documentActual);
+        $this->assertNotNull($primeraAportacioActual);
+        $this->assertNotNull($segonaAportacioActual);
+        $this->assertSame($documentLlegat['path'], $documentActual->path);
+        $rutes = [
+            $documentActual->path,
+            $primeraAportacioActual->path,
+            $segonaAportacioActual->path,
+        ];
+        $this->assertCount(3, array_unique($rutes));
+        $this->assertSame($contingutExpedient, Storage::disk('convalidacions')->get($documentLlegat['path']));
+        $this->assertSame($contingutPrl, Storage::disk('convalidacions')->get($primeraAportacioActual->path));
+        $this->assertSame($contingutDni, Storage::disk('convalidacions')->get($segonaAportacioActual->path));
+        $this->get(route('convalidacions.direction.show', $sollicitud))
+            ->assertOk()
+            ->assertSee('Expedient acadèmic de l’alumne')
+            ->assertSee('Certificat PRL entregat presencialment')
+            ->assertSee('DNI entregat presencialment');
+    }
+
     public function test_secretaria_pot_afegir_diversos_documents_amb_descripcio_per_fitxer(): void
     {
         DB::table('profesores')->insert([
