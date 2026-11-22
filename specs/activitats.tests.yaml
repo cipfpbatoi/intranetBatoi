@@ -1,0 +1,9 @@
+spec: specs/activitats.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/ActividadControllerFeatureTest.php
+    - tests/Feature/ActividadDireccionPanelTest.php
+    - tests/Feature/ActividadFechaImpresionBackfillTest.php
+    - tests/Feature/ActividadPdfViewTest.php
+  browser: []

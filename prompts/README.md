@@ -12,6 +12,7 @@ Plantilles per a tasques que es repeteixen. **Regla de les 3 vegades**: si has d
 
 | Fitxer | Tasca |
 |---|---|
+| [`plantilla-siso.md`](plantilla-siso.md) | Plantilla canònica amb les sis capes per a prompts nous |
 | [`nou-controlador.md`](nou-controlador.md) | Nou controlador (BaseController CRUD o personalitzat) |
 | [`nova-entitat.md`](nova-entitat.md) | Nova entitat Eloquent + Policy + migració |
 | [`nou-test-feature.md`](nou-test-feature.md) | Nou test Feature PHPUnit |

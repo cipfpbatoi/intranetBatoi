@@ -80,3 +80,9 @@ Quan copies text d'una issue, d'un comentari de PR o d'un fitxer extern per incl
 ## Responsabilitat
 
 La IA ajuda i actua, però **tu ets el responsable** de les accions. Cada commit que fas porta la teua firma, no la de l'agent.
+
+## Rols especialitzats i treball en paral·lel
+
+Per a tasques amb diversos agents, separa els rols d'implementació, verificació de proves i revisió. El verificador comprova la cobertura dels escenaris i executa les proves rellevants; el revisor ha de ser diferent de qui ha implementat i reporta problemes sense reescriure el codi.
+
+`git worktree` és útil quan eixos rols treballen en paral·lel sobre canvis independents: cada agent ha de tindre un worktree propi i els canvis s'integren després de revisar-los. Per a una tasca seqüencial o amb fitxers compartits, usa un únic worktree per evitar conflictes i duplicació.

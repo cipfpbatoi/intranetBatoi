@@ -1,0 +1,9 @@
+spec: specs/comisions.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/ApiComisionControllerFeatureTest.php
+    - tests/Feature/ComisionControllerFeatureTest.php
+    - tests/Feature/ComisionDireccionPanelTest.php
+  browser:
+    - tests/Browser/ComisionViewSmokeTest.php

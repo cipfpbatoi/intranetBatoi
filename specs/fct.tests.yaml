@@ -1,0 +1,12 @@
+spec: specs/fct.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/ApiAlumnoFctControllerFeatureTest.php
+    - tests/Feature/ApiFctControllerFeatureTest.php
+    - tests/Feature/ColaboracionStoreFeatureTest.php
+    - tests/Feature/ColaboracionViewPresentationTest.php
+    - tests/Feature/EmpresaGerentNifMigrationTest.php
+    - tests/Feature/FctAlumnosPartialFeatureTest.php
+    - tests/Feature/FctStatsViewTest.php
+  browser: []

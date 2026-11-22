@@ -1,0 +1,6 @@
+spec: specs/perfils.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/PerfilControllerTest.php
+  browser: []
