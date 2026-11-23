@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Queue;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDocumentService;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDireccionQueryService;
+use Intranet\Application\AssumpteParticular\AssumpteParticularService;
+use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Intranet\Livewire\AssumpteParticularDireccionPanel;
@@ -22,7 +24,7 @@ use Mockery;
 use Tests\TestCase;
 
 /**
- * Proves del panell diari d'assumptes particulars de Direcció.
+ * Proves dels panells de pendents i de l'històric amb anul·lació de concessions.
  */
 class DireccionPanelTest extends TestCase
 {
@@ -186,6 +188,156 @@ class DireccionPanelTest extends TestCase
             ->call('netejarFiltres')
             ->assertSee('01/10/2026')
             ->assertSee('18/09/2026');
+    }
+
+    /** L'anul·lació elimina els artefactes, retorna saldo i conserva els filtres i l'auditoria. */
+    public function test_anulla_una_concessio_des_de_l_historic(): void
+    {
+        $peticio = $this->crearConcessio();
+        $faltaId = $peticio->falta_id;
+        $document = $peticio->resolucio_document;
+        $service = app(AssumpteParticularService::class);
+        $this->assertSame(2.0, $service->saldo('PROF01', '2026-2027', AssumpteParticular::TIPUS_LECTIU));
+        $this->crearPeticio('PROF02', '2026-10-01', AssumpteParticular::ESTAT_PENDENT);
+        $query = app(AssumpteParticularDireccionQueryService::class);
+        $this->assertSame(1, $query->grupsPendents('2026-10-01')[0]['autoritzades_total']);
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->set('filtreProfessor', 'PROF01')
+            ->set('filtreData', '2026-10-01')
+            ->assertSeeHtml('wire:click="obrirAnulacio(' . $peticio->id . ')"')
+            ->call('obrirAnulacio', $peticio->id)
+            ->assertSet('resumAnulacio', 'Professor 01 — 01/10/2026')
+            ->set('motiuAnulacio', ' Error en la concessió ')
+            ->call('confirmarAnulacio')
+            ->assertHasNoErrors()
+            ->assertSet('anullarId', null)
+            ->assertSet('historial', [])
+            ->assertSet('filtreProfessor', 'PROF01')
+            ->assertSet('filtreData', '2026-10-01')
+            ->assertSet('missatge', __('assumptes_particulars.anulacio.completada'));
+
+        $this->assertDatabaseMissing('faltas', ['id' => $faltaId]);
+        $this->assertDatabaseMissing('documentos', ['fichero' => $document]);
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => $peticio->id,
+            'estat' => AssumpteParticular::ESTAT_CANCEL_LADA,
+            'resolucio' => 'Anul·lada per Direcció (DIR001): Error en la concessió',
+            'falta_id' => null,
+            'resolucio_document' => null,
+        ]);
+        $this->assertNotNull($peticio->fresh()->cancel_lada_at);
+        $this->assertSame(3.0, $service->saldo('PROF01', '2026-2027', AssumpteParticular::TIPUS_LECTIU));
+        $this->assertSame(0, $query->grupsPendents('2026-10-01')[0]['autoritzades_total']);
+        Storage::disk('local')->assertMissing($document);
+    }
+
+    /** El formulari requerix un motiu real i es pot tancar sense efectes. */
+    public function test_anullacio_requerix_motiu_i_es_pot_cancelar(): void
+    {
+        $peticio = $this->crearConcessio();
+
+        Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->call('obrirAnulacio', $peticio->id)
+            ->set('motiuAnulacio', '   ')
+            ->call('confirmarAnulacio')
+            ->assertHasErrors(['motiuAnulacio' => 'required'])
+            ->call('cancelarAnulacio')
+            ->assertHasNoErrors()
+            ->assertSet('anullarId', null)
+            ->assertSet('motiuAnulacio', '');
+
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->fresh()->estat);
+        $this->assertDatabaseHas('faltas', ['id' => $peticio->falta_id]);
+        Storage::disk('local')->assertExists($peticio->resolucio_document);
+    }
+
+    /** La pantalla identifica les faltes tancades i rebutja també l'acció directa. */
+    public function test_no_permet_obrir_anullacio_de_faltes_tancades(): void
+    {
+        foreach ([['estado' => 4], ['idDocumento' => 42]] as $canvis) {
+            $peticio = $this->crearConcessio();
+            DB::table('faltas')->where('id', $peticio->falta_id)->update($canvis);
+
+            Livewire::actingAs($this->professor('DIR001'), 'profesor')
+                ->test(AssumpteParticularHistoricPanel::class)
+                ->assertSee(__('assumptes_particulars.anulacio.tancada'))
+                ->assertDontSeeHtml('wire:click="obrirAnulacio(' . $peticio->id . ')"')
+                ->call('obrirAnulacio', $peticio->id)
+                ->assertForbidden();
+
+            $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->fresh()->estat);
+            Storage::disk('local')->assertExists($peticio->resolucio_document);
+        }
+    }
+
+    /** Un tancament posterior a l'obertura del formulari també impedix confirmar. */
+    public function test_revalida_el_tancament_en_confirmar_anullacio(): void
+    {
+        $peticio = $this->crearConcessio();
+        $component = Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->call('obrirAnulacio', $peticio->id)
+            ->set('motiuAnulacio', 'Error');
+
+        DB::table('faltas')->where('id', $peticio->falta_id)->update(['estado' => 4]);
+        $component->call('confirmarAnulacio')->assertForbidden();
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->fresh()->estat);
+        Storage::disk('local')->assertExists($peticio->resolucio_document);
+    }
+
+    /** Les accions revaliden el rol encara que la pantalla ja estiguera oberta. */
+    public function test_revalida_direccio_en_les_accions_d_anullacio(): void
+    {
+        $peticio = $this->crearConcessio();
+        foreach (['PROF01', 'ADM001'] as $dni) {
+            foreach (['obrirAnulacio', 'confirmarAnulacio'] as $accio) {
+                $component = Livewire::actingAs($this->professor('DIR001'), 'profesor')
+                    ->test(AssumpteParticularHistoricPanel::class)
+                    ->call('obrirAnulacio', $peticio->id)
+                    ->set('motiuAnulacio', 'Error');
+                $this->actingAs($this->professor($dni), 'profesor');
+                $arguments = $accio === 'obrirAnulacio' ? [$peticio->id] : [];
+                $component->call($accio, ...$arguments)->assertForbidden();
+            }
+        }
+        $this->assertSame(AssumpteParticular::ESTAT_AUTORITZADA, $peticio->fresh()->estat);
+    }
+
+    /** Una concessió anul·lada per altra persona no es torna a processar. */
+    public function test_no_repetix_una_anullacio_ja_executada(): void
+    {
+        $peticio = $this->crearConcessio();
+        $component = Livewire::actingAs($this->professor('DIR001'), 'profesor')
+            ->test(AssumpteParticularHistoricPanel::class)
+            ->call('obrirAnulacio', $peticio->id)
+            ->set('motiuAnulacio', 'Segon intent');
+
+        app(FaltaAnulacioService::class)->annullar($peticio->falta_id, 'Primer motiu', 'DIR001');
+        $component->call('confirmarAnulacio')->assertHasErrors('motiuAnulacio');
+        $this->assertSame('Anul·lada per Direcció (DIR001): Primer motiu', $peticio->fresh()->resolucio);
+    }
+
+    /** L'acció està limitada a sol·licituds autoritzades del curs amb falta associada. */
+    public function test_no_anulla_regularitzacions_ni_altres_cursos_o_estats(): void
+    {
+        foreach ([
+            ['origen' => AssumpteParticular::ORIGEN_REGULARITZACIO],
+            ['curs' => '2025-2026'],
+            ['estat' => AssumpteParticular::ESTAT_PENDENT],
+            ['falta_id' => null],
+        ] as $canvis) {
+            $peticio = $this->crearConcessio();
+            $peticio->forceFill($canvis)->save();
+            Livewire::actingAs($this->professor('DIR001'), 'profesor')
+                ->test(AssumpteParticularHistoricPanel::class)
+                ->assertDontSeeHtml('wire:click="obrirAnulacio(' . $peticio->id . ')"')
+                ->call('obrirAnulacio', $peticio->id)
+                ->assertHasErrors('motiuAnulacio');
+            Storage::disk('local')->assertExists($peticio->resolucio_document);
+        }
     }
 
     /** El panell mostra per defecte el seté dia natural i manté el filtre manual. */
@@ -553,6 +705,7 @@ class DireccionPanelTest extends TestCase
             $table->string('motivos', 2);
             $table->string('observaciones', 200)->nullable();
             $table->tinyInteger('estado')->default(0);
+            $table->integer('idDocumento')->nullable();
             $table->string('fichero', 100)->nullable();
             $table->time('hora_ini')->nullable();
             $table->time('hora_fin')->nullable();
@@ -656,6 +809,36 @@ class DireccionPanelTest extends TestCase
             'dia_semana' => 'J',
             'sesion_orden' => $sessio,
         ]);
+    }
+
+    /** Prepara una concessió completa per a comprovar l'anul·lació i els seus efectes. */
+    private function crearConcessio(): AssumpteParticular
+    {
+        $peticio = $this->crearPeticio('PROF01', '2026-10-01', AssumpteParticular::ESTAT_AUTORITZADA);
+        $document = 'assumptes-particulars/resolucions/' . $peticio->id . '.pdf';
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'PROF01',
+            'desde' => '2026-10-01',
+            'hasta' => '2026-10-01',
+            'motivos' => '10',
+            'estado' => 3,
+            'fichero' => $document,
+        ]);
+        $peticio->forceFill([
+            'falta_id' => $faltaId,
+            'resolucio_document' => $document,
+            'resolta_per' => 'DIR001',
+            'resolta_at' => now(),
+        ])->save();
+        Storage::disk('local')->put($document, 'PDF firmat');
+        DB::table('documentos')->insert([
+            'tipoDocumento' => 'AssumpteParticular',
+            'curso' => '2026-2027',
+            'descripcion' => 'Resolució',
+            'fichero' => $document,
+        ]);
+
+        return $peticio;
     }
 
     private function crearPeticio(

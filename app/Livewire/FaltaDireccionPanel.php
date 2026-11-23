@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
@@ -15,10 +16,11 @@ use Intranet\Mail\ReminderFaltaJustificant;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
+use Livewire\Attributes\Locked;
 use Livewire\WithFileUploads;
 
 /**
- * Panell Livewire de faltes de Direcció i continuació de baixes amb altre motiu.
+ * Panell de faltes amb actualització, esborrat abans d'imprimir i continuació de baixes.
  */
 class FaltaDireccionPanel extends Component
 {
@@ -46,6 +48,9 @@ class FaltaDireccionPanel extends Component
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
     public ?int $anullarId = null;
+    /** Diferencia l'esborrat general de l'anul·lació d'una autorització. */
+    #[Locked]
+    public bool $esborrant = false;
     public string $motiuAnulacio = '';
     public bool $showFormModal = false;
     public bool $isEditing = false;
@@ -100,6 +105,14 @@ class FaltaDireccionPanel extends Component
      */
     public function updatedFilterEstat(): void
     {
+        $this->reloadFaltes();
+    }
+
+    /** Consulta les dades actuals i els recomptes sense reiniciar els filtres ni formularis. */
+    public function actualitzarDades(): void
+    {
+        $this->isDireccion = authUser() !== null && esRol(authUser()->rol, config('roles.rol.direccion'));
+        $this->loadFilterOptions();
         $this->reloadFaltes();
     }
 
@@ -446,7 +459,7 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
-     * Esborra una falta només si està no enviada o pendent de tramitació.
+     * Demana motiu a Direcció; conserva l'esborrat de pendents per als altres rols autoritzats.
      */
     public function esborrar(int $id): void
     {
@@ -458,17 +471,31 @@ class FaltaDireccionPanel extends Component
             return;
         }
 
+        if (authUser() !== null && esRol(authUser()->rol, config('roles.rol.direccion'))) {
+            $this->authorize('deleteBeforePrint', $falta);
+            $this->resetValidation();
+            $this->anullarId = $id;
+            $this->esborrant = true;
+            $this->motiuAnulacio = '';
+            return;
+        }
+
         if (!in_array((int) $falta->estado, [0, 1, 2], true)) {
             $this->error = 'Només es poden esborrar faltes sense autoritzar.';
             return;
         }
 
-        if ((int) $falta->estado === 0 && !$this->isDireccion) {
+        if ((int) $falta->estado === 0) {
             $this->error = 'No tens permisos per esborrar faltes no enviades.';
             return;
         }
 
-        $falta->delete();
+        $this->authorize('delete', $falta);
+        DB::transaction(function () use ($id): void {
+            $actual = Falta::query()->lockForUpdate()->findOrFail($id);
+            abort_unless(in_array((int) $actual->estado, [1, 2], true) && $actual->idDocumento === null, 403);
+            $actual->delete();
+        });
         $this->message = 'Falta esborrada correctament.';
         $this->reloadFaltes();
     }
@@ -479,6 +506,7 @@ class FaltaDireccionPanel extends Component
         $this->resetFeedback();
         $falta = Falta::query()->findOrFail($id);
         $this->authorize('annul', $falta);
+        $this->esborrant = false;
         $this->anullarId = $id;
         $this->motiuAnulacio = '';
     }
@@ -487,19 +515,27 @@ class FaltaDireccionPanel extends Component
     public function cancelarAnulacio(): void
     {
         $this->anullarId = null;
+        $this->esborrant = false;
         $this->motiuAnulacio = '';
+        $this->resetValidation('motiuAnulacio');
     }
 
     /** Anul·la la falta i allibera el dia, amb comprovació final dins del servei. */
     public function confirmarAnulacio(FaltaAnulacioService $service): void
     {
         $this->resetFeedback();
+        $this->motiuAnulacio = trim($this->motiuAnulacio);
         $this->validate(['motiuAnulacio' => 'required|string|max:1000']);
         $falta = Falta::query()->findOrFail($this->anullarId);
-        $this->authorize('annul', $falta);
-        $service->annullar((int) $falta->id, $this->motiuAnulacio, (string) AuthUser()->dni);
+        $this->authorize($this->esborrant ? 'deleteBeforePrint' : 'annul', $falta);
+        $esborrant = $this->esborrant;
+        if ($esborrant) {
+            $service->esborrar((int) $falta->id, $this->motiuAnulacio, (string) authUser()->dni);
+        } else {
+            $service->annullar((int) $falta->id, $this->motiuAnulacio, (string) authUser()->dni);
+        }
         $this->cancelarAnulacio();
-        $this->message = 'Falta anul·lada i dia alliberat correctament.';
+        $this->message = $esborrant ? __('falta.esborrat.completat') : 'Falta anul·lada i dia alliberat correctament.';
         $this->reloadFaltes();
     }
 
@@ -539,6 +575,10 @@ class FaltaDireccionPanel extends Component
                 'estado' => (int) $falta->estado,
                 'situacion' => (string) $falta->situacion,
                 'hasDocument' => !empty($falta->fichero),
+                'canDelete' => auth()->user()?->can('deleteBeforePrint', $falta)
+                    || (in_array((int) $falta->estado, [1, 2], true)
+                        && $falta->idDocumento === null
+                        && auth()->user()?->can('delete', $falta)),
                 'canAnnul' => $this->isDireccion && (int) $falta->estado === 3 && $falta->idDocumento === null,
                 'canEdit' => $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA,
                 'canLongLeave' => auth()->user()?->can('longLeave', $falta)

@@ -5,14 +5,14 @@
 
     @if ($anullarId !== null)
         <div class="card border-danger" style="margin-top: 20px;">
-            <div class="card-header"><strong>Anul·lar falta #{{ $anullarId }}</strong></div>
+            <div class="card-header"><strong>{{ $esborrant ? __('falta.esborrat.titol') : 'Anul·lar falta' }} #{{ $anullarId }}</strong></div>
             <div class="card-body">
-                <p>Esta acció esborrarà la falta i el PDF firmat. Si és un assumpte particular, el dia quedarà disponible de nou.</p>
+                <p>{{ __('falta.esborrat.consequencies') }}</p>
                 <label for="motiuAnulacio">Motiu de l’anul·lació</label>
                 <textarea id="motiuAnulacio" class="form-control" wire:model="motiuAnulacio"></textarea>
                 @error('motiuAnulacio') <span class="text-danger">{{ $message }}</span> @enderror
                 <div class="mt-2">
-                    <button class="btn btn-danger" type="button" wire:click="confirmarAnulacio" onclick="return confirm('Confirmes l’anul·lació definitiva de la falta i del PDF?');">Confirmar anul·lació</button>
+                    <button class="btn btn-danger" type="button" wire:click="confirmarAnulacio" wire:loading.attr="disabled" wire:confirm="{{ __('falta.esborrat.confirmacio') }}">{{ $esborrant ? __('falta.esborrat.confirmar') : 'Confirmar anul·lació' }}</button>
                     <button class="btn btn-secondary" type="button" wire:click="cancelarAnulacio">Cancel·lar</button>
                 </div>
             </div>
@@ -32,6 +32,11 @@
         >
             <i class="fa fa-plus" aria-hidden="true"></i>
             Nova
+        </button>
+        <button type="button" class="btn btn-outline-secondary" wire:click="actualitzarDades"
+            wire:loading.attr="disabled" wire:target="actualitzarDades">
+            <i class="fa fa-refresh" aria-hidden="true" wire:loading.class="fa-spin" wire:target="actualitzarDades"></i>
+            {{ __('falta.actualitzar') }}
         </button>
     </div>
 
@@ -116,12 +121,12 @@
                         </button>
                     @endif
 
-                    @if (in_array((int) $falta['estado'], [1, 2], true) || ((int) $falta['estado'] === 0 && $isDireccion))
+                    @if ($falta['canDelete'])
                         <button
                             type="button"
                             class="btn btn-danger btn-xs"
                             wire:click="esborrar({{ $falta['id'] }})"
-                            onclick="return confirm('Segur que vols esborrar esta falta?');"
+                            @if (!$isDireccion) wire:confirm="Segur que vols esborrar esta falta?" @endif
                             title="Esborrar"
                         >
                             <i class="fa fa-trash" aria-hidden="true"></i>

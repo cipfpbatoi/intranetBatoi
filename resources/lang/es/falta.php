@@ -1,6 +1,15 @@
 <?php
 
 return [
+    'actualitzar' => 'Actualitzar dades',
+    'esborrat' => [
+        'titol' => 'Esborrar falta',
+        'confirmar' => 'Confirmar esborrat',
+        'confirmacio' => 'Confirmes l’esborrat definitiu de la falta i del document associat?',
+        'consequencies' => 'S’esborraran la falta i el document associat. Si és un assumpte particular, es cancel·larà la concessió i es recuperarà el saldo. Esborrar una baixa llarga no tramita l’alta del professor.',
+        'completat' => 'Falta esborrada correctament.',
+        'informe_impres' => 'No es pot esborrar la falta perquè l’informe mensual ja s’ha imprés.',
+    ],
     'canvi_motiu' => [
         'boto' => 'Canv. Motiu',
         'titol' => 'Seguir amb altre motiu',

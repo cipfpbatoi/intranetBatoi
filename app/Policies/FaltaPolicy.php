@@ -6,7 +6,7 @@ use Intranet\Entities\Falta;
 use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
- * Policy d'autorització per a la gestió de faltes i continuacions de baixes.
+ * Autoritza la gestió de faltes, la continuació de baixes i l'esborrat abans d'imprimir.
  */
 class FaltaPolicy
 {
@@ -62,6 +62,14 @@ class FaltaPolicy
     public function delete($user, Falta $falta): bool
     {
         return $this->ownsOrIsDirectionOrAdmin($user, (string) $falta->idProfesor);
+    }
+
+    /** Només Direcció pot esborrar qualsevol estat abans d'imprimir l'informe mensual. */
+    public function deleteBeforePrint($user, Falta $falta): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion')
+            && (int) $falta->estado !== 4
+            && $falta->idDocumento === null;
     }
 
     /** Només Direcció pot anul·lar una falta autoritzada no tancada. */

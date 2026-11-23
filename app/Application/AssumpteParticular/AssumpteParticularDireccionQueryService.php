@@ -6,10 +6,11 @@ namespace Intranet\Application\AssumpteParticular;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Intranet\Entities\AssumpteParticular;
 
 /**
- * Prepara el panell diari de peticions pendents per a Direcció.
+ * Prepara les peticions pendents i l'històric amb les accions disponibles per a Direcció.
  */
 class AssumpteParticularDireccionQueryService
 {
@@ -113,7 +114,7 @@ class AssumpteParticularDireccionQueryService
     ): array
     {
         return AssumpteParticular::query()
-            ->with(['profesor', 'resolutor'])
+            ->with(['profesor', 'resolutor', 'falta'])
             ->where('curs', $curs)
             ->where('estat', AssumpteParticular::ESTAT_AUTORITZADA)
             ->when(filled($professor), static fn ($query) => $query->where('idProfesor', $professor))
@@ -133,6 +134,11 @@ class AssumpteParticularDireccionQueryService
                 'resolta_at' => $peticio->resolta_at?->format('d/m/Y H:i') ?? '—',
                 'resolta_per' => $peticio->resolutor?->fullName ?? $peticio->resolta_per ?? '—',
                 'te_document' => filled($peticio->resolucio_document),
+                'anullable' => $peticio->origen === AssumpteParticular::ORIGEN_SOLLICITUD
+                    && $peticio->falta !== null
+                    && Gate::allows('annul', $peticio->falta),
+                'tancada' => $peticio->falta !== null
+                    && ((int) $peticio->falta->estado === 4 || $peticio->falta->idDocumento !== null),
             ])
             ->all();
     }

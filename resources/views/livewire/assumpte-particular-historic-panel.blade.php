@@ -125,6 +125,36 @@
         </div>
     </section>
 
+    @if ($anullarId !== null)
+        <section class="card border-danger mb-3" aria-labelledby="titol-anulacio">
+            <div class="card-header" id="titol-anulacio">{{ __('assumptes_particulars.anulacio.titol') }}</div>
+            <div class="card-body">
+                <p class="fw-semibold">{{ $resumAnulacio }}</p>
+                <p>{{ __('assumptes_particulars.anulacio.consequencies') }}</p>
+                <form wire:submit="confirmarAnulacio">
+                    <label for="motiu-anulacio" class="form-label">{{ __('assumptes_particulars.anulacio.motiu') }}</label>
+                    <textarea id="motiu-anulacio" wire:model="motiuAnulacio" maxlength="1000" required
+                        class="form-control @error('motiuAnulacio') is-invalid @enderror" rows="3"></textarea>
+                    @error('motiuAnulacio')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-danger" wire:loading.attr="disabled">
+                            {{ __('assumptes_particulars.anulacio.confirmar') }}
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" wire:click="cancelarAnulacio" wire:loading.attr="disabled">
+                            {{ __('assumptes_particulars.anulacio.cancelar') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    @else
+        @error('motiuAnulacio')
+            <div class="alert alert-danger" role="alert">{{ $message }}</div>
+        @enderror
+    @endif
+
     <section class="card">
         @if ($historial === [])
             <div class="card-body text-muted">No hi ha autoritzacions que coincidisquen amb els filtres.</div>
@@ -140,6 +170,7 @@
                             <th>Tramitada per</th>
                             <th>Data de tramitació</th>
                             <th class="text-end">Resolució</th>
+                            <th class="text-end">{{ __('assumptes_particulars.anulacio.accions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -168,6 +199,18 @@
                                         >
                                             Descarregar
                                         </a>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    @if ($peticio['anullable'])
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            wire:click="obrirAnulacio({{ $peticio['id'] }})" wire:loading.attr="disabled">
+                                            {{ __('assumptes_particulars.anulacio.accio') }}
+                                        </button>
+                                    @elseif ($peticio['tancada'])
+                                        <span class="small text-muted">{{ __('assumptes_particulars.anulacio.tancada') }}</span>
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif

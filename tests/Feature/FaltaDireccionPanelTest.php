@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\Falta;
 use Intranet\Mail\ReminderFaltaJustificant;
 use Intranet\Entities\Profesor;
@@ -18,7 +21,7 @@ use Intranet\Livewire\FaltaDireccionPanel;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-/** Verifica el panell de Direcció, les baixes i la continuació amb altre motiu. */
+/** Verifica les baixes, l'esborrat abans d'imprimir i l'actualització del panell de Direcció. */
 class FaltaDireccionPanelTest extends TestCase
 {
     private string $sqlitePath;
@@ -192,23 +195,149 @@ class FaltaDireccionPanelTest extends TestCase
         ]);
     }
 
-    public function test_esborrar_permet_estat_0_1_o_2_i_rebutja_autoritzades(): void
+    /** Direcció pot esborrar qualsevol estat no imprés, però sempre amb motiu i confirmació. */
+    public function test_direccio_esborra_qualsevol_estat_abans_d_imprimir(): void
     {
-        DB::connection('sqlite')->table('faltas')->where('id', 1)->update(['estado' => 0]);
+        Log::spy();
+        foreach ([0, 1, 2, 3, 5, 6] as $estat) {
+            $id = DB::table('faltas')->insertGetId([
+                'idProfesor' => 'PF100', 'estado' => $estat, 'desde' => '2026-03-12', 'motivos' => 1,
+            ]);
+            $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+                ->test(FaltaDireccionPanel::class)
+                ->assertSeeHtml('wire:click="esborrar(' . $id . ')"')
+                ->call('esborrar', $id)
+                ->assertSet('anullarId', $id)
+                ->assertSet('esborrant', true);
+            $this->assertDatabaseHas('faltas', ['id' => $id]);
+            $component->set('motiuAnulacio', 'Error en el registre')
+                ->call('confirmarAnulacio')
+                ->assertHasNoErrors()
+                ->assertSet('message', 'Falta esborrada correctament.')
+                ->assertSet('anullarId', null);
+            $this->assertDatabaseMissing('faltas', ['id' => $id]);
+        }
+        Log::shouldHaveReceived('info')->with('Falta esborrada per Direcció', \Mockery::on(
+            fn (array $context): bool => $context['direccio_dni'] === 'DIR001' && $context['motiu'] === 'Error en el registre'
+        ))->times(6);
+    }
 
+    /** Sense motiu no es confirma; cancel·lar deixa intacta la falta i el document. */
+    public function test_esborrar_requerix_motiu_i_es_pot_cancelar(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->put('faltas/doc.pdf', 'PDF');
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('esborrar', 2)
+            ->set('motiuAnulacio', '   ')
+            ->call('confirmarAnulacio')
+            ->assertHasErrors(['motiuAnulacio' => 'required'])
+            ->call('cancelarAnulacio')
+            ->assertHasNoErrors()
+            ->assertSet('anullarId', null);
+        $this->assertDatabaseHas('faltas', ['id' => 2]);
+        Storage::disk('local')->assertExists('faltas/doc.pdf');
+    }
+
+    /** El document ordinari també es retira quan es confirma l'esborrat. */
+    public function test_esborrar_retira_el_justificant_ordinari(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->put('faltas/doc.pdf', 'PDF');
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('esborrar', 2)
+            ->set('motiuAnulacio', 'Duplicada')
+            ->call('confirmarAnulacio')
+            ->assertHasNoErrors();
+        Storage::disk('local')->assertMissing('faltas/doc.pdf');
+        $this->assertDatabaseMissing('faltas', ['id' => 2]);
+    }
+
+    /** Estat imprés o vincle documental impedixen tant el botó com l'acció directa. */
+    public function test_no_esborra_faltes_incloses_en_un_informe_impres(): void
+    {
+        foreach ([['estado' => 4, 'idDocumento' => null], ['estado' => 5, 'idDocumento' => 12]] as $canvis) {
+            DB::table('faltas')->where('id', 3)->update($canvis);
+            Livewire::actingAs($this->direccionUser(), 'profesor')
+                ->test(FaltaDireccionPanel::class)
+                ->assertDontSeeHtml('wire:click="esborrar(3)"')
+                ->call('esborrar', 3)
+                ->assertForbidden();
+            $this->assertDatabaseHas('faltas', ['id' => 3]);
+        }
+    }
+
+    /** Si s'imprimix durant la confirmació, el servidor rebutja l'esborrat. */
+    public function test_revalida_la_impressio_en_confirmar_esborrat(): void
+    {
         $component = Livewire::actingAs($this->direccionUser(), 'profesor')
-            ->test(FaltaDireccionPanel::class);
+            ->test(FaltaDireccionPanel::class)
+            ->call('esborrar', 3)
+            ->set('motiuAnulacio', 'Duplicada');
+        DB::table('faltas')->where('id', 3)->update(['idDocumento' => 12]);
+        $component->call('confirmarAnulacio')->assertForbidden();
+        $this->assertDatabaseHas('faltas', ['id' => 3]);
 
-        $component->call('esborrar', 1)
-            ->assertSet('error', '')
-            ->assertSet('message', 'Falta esborrada correctament.');
+        try {
+            app(FaltaAnulacioService::class)->esborrar(3, 'Duplicada', 'DIR001');
+            $this->fail('El servei també ha de rebutjar una falta impresa.');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('motiuAnulacio', $exception->errors());
+        }
+        $this->assertDatabaseHas('faltas', ['id' => 3]);
+    }
 
-        $this->assertNull(DB::connection('sqlite')->table('faltas')->where('id', 1)->first());
+    /** Esborrar el registre de baixa no modifica la situació laboral del professor. */
+    public function test_esborrar_baixa_llarga_no_tramita_l_alta(): void
+    {
+        $this->prepararBaixaLlarga();
+        Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('esborrar', 2)
+            ->set('motiuAnulacio', 'Registre duplicat')
+            ->call('confirmarAnulacio')
+            ->assertHasNoErrors();
+        $this->assertDatabaseMissing('faltas', ['id' => 2]);
+        $this->assertDatabaseHas('profesores', ['dni' => 'PF100', 'fecha_baja' => '2026-03-01']);
+    }
 
-        $component->call('esborrar', 3)
-            ->assertSet('error', 'Només es poden esborrar faltes sense autoritzar.');
+    /** Una identitat sense Direcció no pot confirmar l'esborrat d'una autoritzada. */
+    public function test_esborrar_revalida_el_rol_en_confirmar(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->call('esborrar', 3)
+            ->set('motiuAnulacio', 'Error');
+        $this->actingAs(Profesor::findOrFail('PF100'), 'profesor');
+        $component->call('confirmarAnulacio')->assertForbidden();
+        $this->assertDatabaseHas('faltas', ['id' => 3]);
+    }
 
-        $this->assertNotNull(DB::connection('sqlite')->table('faltas')->where('id', 3)->first());
+    /** Una actualització recupera dades externes i recomptes, mantenint els filtres. */
+    public function test_actualitza_dades_sense_perdre_filtres(): void
+    {
+        $component = Livewire::actingAs($this->direccionUser(), 'profesor')
+            ->test(FaltaDireccionPanel::class)
+            ->assertSee('Actualitzar dades')
+            ->set('filterProfessor', 'PF100')
+            ->set('filterEstat', '1');
+        DB::table('faltas')->where('id', 1)->update(['estado' => 4, 'idDocumento' => 42]);
+        DB::table('faltas')->where('id', 2)->update(['estado' => 1]);
+        DB::table('profesores')->where('dni', 'PF100')->update(['nombre' => 'Maria Actualitzada']);
+
+        $component->call('actualitzarDades')
+            ->assertSet('filterProfessor', 'PF100')
+            ->assertSet('filterEstat', '1')
+            ->assertSet('faltes', fn (array $faltes): bool => count($faltes) === 1 && $faltes[0]['id'] === 2)
+            ->assertSee('Maria Actualitzada');
+        $this->assertStringContainsString('Maria Actualitzada', $component->get('professorOptions')['PF100']);
+        $this->assertEstatOptionCounts($component->get('estatOptions'), ['1' => 1, '2' => 0, '4' => 1]);
+
+        $component->set('filterEstat', '')
+            ->assertDontSeeHtml('wire:click="esborrar(1)"')
+            ->assertSeeHtml('wire:click="esborrar(2)"');
     }
 
     public function test_direccio_pot_anullar_una_falta_autoritzada_amb_motiu(): void
