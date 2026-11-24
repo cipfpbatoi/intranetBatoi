@@ -24,8 +24,14 @@ class ItacaFctImportRecordTest extends TestCase
         $this->assertTrue($record->autoritzacio);
         $this->assertSame(380, $record->horesPrevistes);
         $this->assertSame(120, $record->horesRealitzades);
-        $this->assertStringStartsWith('itaca-fe:', $record->identityKey());
-        $this->assertSame($record->identityKey(), ItacaFctImportRecord::fromItaca($this->validRecord())->identityKey());
+        $this->assertCount(1, $record->estades);
+        $this->assertStringStartsWith('itaca-fe:', $record->identityKey($record->estades[0]));
+        $this->assertSame(
+            $record->identityKey($record->estades[0]),
+            ItacaFctImportRecord::fromItaca($this->validRecord())->identityKey(
+                ItacaFctImportRecord::fromItaca($this->validRecord())->estades[0]
+            )
+        );
     }
 
     #[Test]
@@ -33,10 +39,17 @@ class ItacaFctImportRecordTest extends TestCase
     {
         $original = ItacaFctImportRecord::fromItaca($this->validRecord());
         $changed = ItacaFctImportRecord::fromItaca(array_merge($this->validRecord(), [
-            'centre_treball' => 'Un altre centre',
+            'estades' => [[
+                'cif_empresa' => 'B12345678',
+                'centre_treball' => 'Un altre centre',
+                'nif_instructor' => '12345678Z',
+            ]],
         ]));
 
-        $this->assertNotSame($original->identityKey(), $changed->identityKey());
+        $this->assertNotSame(
+            $original->identityKey($original->estades[0]),
+            $changed->identityKey($changed->estades[0])
+        );
     }
 
     #[Test]
@@ -74,6 +87,11 @@ class ItacaFctImportRecordTest extends TestCase
             'confirmacio' => 'Pendent',
             'hores_previstes' => '380',
             'hores_realitzades' => '120',
+            'estades' => [[
+                'cif_empresa' => 'B12345678',
+                'centre_treball' => 'Centre de proves',
+                'nif_instructor' => '12345678Z',
+            ]],
         ];
     }
 }

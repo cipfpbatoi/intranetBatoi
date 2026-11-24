@@ -8,21 +8,17 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 
 /**
- * Contracte normalitzat d'una formació en empresa llegida des d'ITACA SAO.
+ * Contracte normalitzat d'una FE d'ITACA i de les seues estades.
  *
- * Esta classe és deliberadament independent de Selenium, Playwright i
- * Eloquent. La persistència decidirà més avant on guardar la clau externa.
+ * Una FE pot contindre més d'una estada en empresa. Esta classe no depén de
+ * Selenium ni d'Eloquent perquè el lector i la persistència siguen separats.
  */
 final class ItacaFctImportRecord
 {
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param list<ItacaFePlacement> $estades */
     private function __construct(
         public readonly string $nia,
         public readonly string $cicle,
-        public readonly string $centreTreball,
-        public readonly string $tutor,
         public readonly string $dataInici,
         public readonly string $dataFi,
         public readonly string $tipus,
@@ -30,21 +26,21 @@ final class ItacaFctImportRecord
         public readonly int $horesPrevistes,
         public readonly ?string $confirmacio,
         public readonly ?int $horesRealitzades,
+        public readonly array $estades,
     ) {
     }
 
-    /**
-     * Normalitza la dada llegida del llistat FE d'ITACA SAO.
-     *
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     public static function fromItaca(array $source): self
     {
+        $estades = $source['estades'] ?? null;
+        if (!is_array($estades) || $estades === []) {
+            throw new InvalidArgumentException("La FE d'ITACA ha de tindre almenys una estada.");
+        }
+
         return new self(
             self::requiredText($source, 'nia'),
             self::requiredText($source, 'cicle'),
-            self::requiredText($source, 'centre_treball'),
-            self::requiredText($source, 'tutor'),
             self::normalizeDate($source, 'data_inici'),
             self::normalizeDate($source, 'data_fi'),
             self::requiredText($source, 'tipus'),
@@ -52,33 +48,32 @@ final class ItacaFctImportRecord
             self::normalizeHours($source, 'hores_previstes'),
             self::optionalText($source, 'confirmacio'),
             self::optionalHours($source, 'hores_realitzades'),
+            array_map(
+                static fn (mixed $estada): ItacaFePlacement => ItacaFePlacement::fromItaca(
+                    is_array($estada) ? $estada : []
+                ),
+                array_values($estades)
+            ),
         );
     }
 
-    /**
-     * Retorna una empremta determinista mentre ITACA no expose un ID de FE.
-     *
-     * La clau no substituïx `idSao`, que continua reservat als fluxos de
-     * documents llegats. Una tasca posterior decidirà el seu emmagatzematge.
-     */
-    public function identityKey(): string
+    /** Retorna una clau idempotent per a una estada concreta. */
+    public function identityKey(ItacaFePlacement $estada): string
     {
-        $parts = [
+        return 'itaca-fe:' . hash('sha256', implode("\x1F", [
             $this->nia,
-            $this->cicle,
-            $this->centreTreball,
+            self::keyText($this->cicle),
+            self::keyText($estada->cifEmpresa),
+            self::keyText($estada->centreTreball),
+            self::keyText($estada->nifInstructor),
             $this->dataInici,
             $this->dataFi,
-            $this->tipus,
+            self::keyText($this->tipus),
             (string) $this->horesPrevistes,
-        ];
-
-        return 'itaca-fe:' . hash('sha256', implode("\x1F", $parts));
+        ]));
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function requiredText(array $source, string $field): string
     {
         $value = self::optionalText($source, $field);
@@ -89,26 +84,15 @@ final class ItacaFctImportRecord
         return $value;
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function optionalText(array $source, string $field): ?string
     {
         $value = trim((string) ($source[$field] ?? ''));
-        if ($value === '') {
-            return null;
-        }
 
-        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
-
-        return function_exists('mb_strtolower')
-            ? mb_strtolower($value, 'UTF-8')
-            : strtolower($value);
+        return $value === '' ? null : preg_replace('/\s+/u', ' ', $value);
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function normalizeDate(array $source, string $field): string
     {
         $value = self::requiredText($source, $field);
@@ -122,23 +106,17 @@ final class ItacaFctImportRecord
         throw new InvalidArgumentException("La data d'ITACA no és vàlida: $field.");
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function normalizeAuthorization(array $source): bool
     {
-        $value = self::requiredText($source, 'autoritzacio');
-
-        return match ($value) {
+        return match (mb_strtolower(self::requiredText($source, 'autoritzacio'), 'UTF-8')) {
             'sí', 'si', 'true', '1' => true,
             'no', 'false', '0' => false,
             default => throw new InvalidArgumentException("L'autorització d'ITACA no és vàlida."),
         };
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function normalizeHours(array $source, string $field): int
     {
         $value = self::requiredText($source, $field);
@@ -149,15 +127,14 @@ final class ItacaFctImportRecord
         return (int) $value;
     }
 
-    /**
-     * @param array<string, mixed> $source
-     */
+    /** @param array<string, mixed> $source */
     private static function optionalHours(array $source, string $field): ?int
     {
-        if (self::optionalText($source, $field) === null) {
-            return null;
-        }
+        return self::optionalText($source, $field) === null ? null : self::normalizeHours($source, $field);
+    }
 
-        return self::normalizeHours($source, $field);
+    private static function keyText(string $value): string
+    {
+        return mb_strtolower(trim($value), 'UTF-8');
     }
 }
