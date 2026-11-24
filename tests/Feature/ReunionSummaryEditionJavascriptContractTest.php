@@ -23,5 +23,11 @@ class ReunionSummaryEditionJavascriptContractTest extends TestCase
         $this->assertStringContainsString('function synchroniseRichEditors(row)', $editor);
         $this->assertStringContainsString('synchroniseRichEditors(row);', $editor);
         $this->assertStringContainsString('validationMessage(json)', $editor);
+
+        $richText = file_get_contents(public_path('js/Reunion/richText.js'));
+
+        $this->assertIsString($richText);
+        $this->assertStringContainsString("editor.addEventListener('paste'", $richText);
+        $this->assertStringContainsString('syncToTextarea(editor, textarea);', $richText);
     }
 }
