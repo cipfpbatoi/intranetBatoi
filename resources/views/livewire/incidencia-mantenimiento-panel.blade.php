@@ -8,7 +8,7 @@
     @endif
 
     <div class="row" style="margin-bottom: 15px;">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <label for="incidencia-filter-text">Descripció, tipus, creador o responsable</label>
             <input
                 id="incidencia-filter-text"
@@ -16,6 +16,17 @@
                 class="form-control"
                 placeholder="Escriu per filtrar"
                 wire:model.live.debounce.300ms="filterText"
+            >
+        </div>
+        <div class="col-md-3">
+            <label for="incidencia-filter-id">ID</label>
+            <input
+                id="incidencia-filter-id"
+                type="number"
+                min="1"
+                class="form-control"
+                placeholder="ID"
+                wire:model.live.debounce.300ms="filterId"
             >
         </div>
         <div class="col-md-3">

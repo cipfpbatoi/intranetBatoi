@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Profesor;
+use Intranet\Livewire\IncidenciaMantenimientoPanel;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 /**
@@ -176,6 +178,35 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->assertSame('111A', $incidencia->idProfesor);
         $this->assertSame(1, (int) $incidencia->estado);
         $this->assertSame('PINC032', $incidencia->responsable);
+    }
+
+    public function test_filtra_incidencies_de_manteniment_per_id(): void
+    {
+        $this->insertProfesor('PINC051', config('roles.rol.profesor'));
+        $this->insertProfesor('PINC052', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('PINC052');
+        $this->insertTipoIncidencia(6, 'PINC052');
+
+        $idObjectiu = $this->insertIncidencia([
+            'tipo' => 6,
+            'idProfesor' => 'PINC051',
+            'descripcion' => 'Incidència objectiu',
+            'estado' => 1,
+        ]);
+        $this->insertIncidencia([
+            'tipo' => 6,
+            'idProfesor' => 'PINC051',
+            'descripcion' => 'Una altra incidència',
+            'estado' => 1,
+        ]);
+
+        $component = Livewire::test(IncidenciaMantenimientoPanel::class)
+            ->set('filterId', (string) $idObjectiu);
+
+        $incidencies = $component->get('incidencies');
+
+        $this->assertCount(1, $incidencies);
+        $this->assertSame($idObjectiu, $incidencies[0]['id']);
     }
 
     public function test_destroy_denega_quan_no_es_ni_creador_ni_responsable(): void
