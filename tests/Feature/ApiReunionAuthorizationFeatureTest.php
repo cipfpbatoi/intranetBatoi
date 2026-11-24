@@ -132,6 +132,23 @@ class ApiReunionAuthorizationFeatureTest extends TestCase
         $this->putJson('/api/ordenreunion/11', ['resumen' => 'Intent alié'])->assertForbidden();
     }
 
+    public function test_update_d_un_punt_retorna_l_error_de_validacio_del_resum_i_no_perd_el_valor_guardat(): void
+    {
+        $this->authenticate('P1');
+        DB::table('ordenes_reuniones')->where('id', 11)->update(['resumen' => 'Resum original']);
+
+        $this->putJson('/api/ordenreunion/11', [
+            'resumen' => str_repeat('a', 65536),
+        ])
+            ->assertUnprocessable()
+            ->assertJsonStructure(['errors' => ['resumen']]);
+
+        $this->assertDatabaseHas('ordenes_reuniones', [
+            'id' => 11,
+            'resumen' => 'Resum original',
+        ]);
+    }
+
     public function test_assistencia_valida_autoritzacio_i_pertinenca(): void
     {
         $this->authenticate('P1');
