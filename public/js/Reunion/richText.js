@@ -85,6 +85,15 @@
             syncToTextarea(editor, textarea);
         });
 
+        // Alguns navegadors no propaguen el pegat com a esdeveniment input
+        // en un contenteditable. Esperem que el navegador inserisca el text
+        // i després sincronitzem el valor que es guardarà.
+        editor.addEventListener('paste', function () {
+            window.setTimeout(function () {
+                syncToTextarea(editor, textarea);
+            }, 0);
+        });
+
         editor.addEventListener('blur', function () {
             syncToTextarea(editor, textarea);
         });
