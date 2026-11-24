@@ -24,6 +24,8 @@ class ReunionSummaryEditionJavascriptContractTest extends TestCase
         $this->assertStringContainsString('role="alert"', $view);
         $this->assertStringContainsString("<div class='textarea' name='resumen'>", $orders);
         $this->assertStringContainsString("source.classList.contains('textarea')", $editor);
+        $this->assertStringContainsString("span.dataset.tableditEditor = 'true';", $editor);
+        $this->assertStringContainsString('span.editando[data-tabledit-editor="true"]', $editor);
         $this->assertStringContainsString('function synchroniseRichEditors(row)', $editor);
         $this->assertStringContainsString('synchroniseRichEditors(row);', $editor);
         $this->assertStringContainsString('validationMessage(json)', $editor);

@@ -105,7 +105,7 @@
             return;
         }
 
-        row.querySelectorAll('span.editando').forEach(function (editingNode) {
+        row.querySelectorAll('span.editando[data-tabledit-editor="true"]').forEach(function (editingNode) {
             var original = editingNode.previousElementSibling;
             if (original) {
                 original.style.display = '';
@@ -130,6 +130,7 @@
     function createEditWrapper() {
         var span = document.createElement('span');
         span.className = 'editando';
+        span.dataset.tableditEditor = 'true';
         return span;
     }
 
@@ -265,7 +266,7 @@
 
         synchroniseRichEditors(row);
 
-        row.querySelectorAll('span.editando [name]').forEach(function (input) {
+        row.querySelectorAll('span.editando[data-tabledit-editor="true"] [name]').forEach(function (input) {
             datos[input.getAttribute('name')] = input.value;
         });
 
@@ -299,7 +300,7 @@
                 }
 
                 var optionsMap = getOptionsMap();
-                row.querySelectorAll('span.editando').forEach(function (editingNode) {
+                row.querySelectorAll('span.editando[data-tabledit-editor="true"]').forEach(function (editingNode) {
                     var original = editingNode.previousElementSibling;
                     if (!original) {
                         return;
