@@ -63,12 +63,49 @@
         errorBox.style.display = 'block';
     }
 
+    /**
+     * Retorna el primer missatge detallat de validació de la resposta API.
+     *
+     * Laravel agrupa els errors per camp; mostrar-ne un és suficient perquè
+     * l'usuari puga corregir la fila sense perdre el contingut en edició.
+     */
+    function validationMessage(json) {
+        var errors = json && json.errors;
+        if (!errors || typeof errors !== 'object') {
+            return '';
+        }
+
+        var fields = Object.keys(errors);
+        if (fields.length === 0) {
+            return '';
+        }
+
+        var messages = errors[fields[0]];
+        return Array.isArray(messages) && messages.length > 0 ? messages[0] : '';
+    }
+
+    /**
+     * Sincronitza l'editor ric amb la textarea que es transmet a l'API.
+     *
+     * El botó de guardar no envia un formulari, de manera que esta
+     * sincronització final evita dependre només dels esdeveniments d'edició.
+     */
+    function synchroniseRichEditors(row) {
+        row.querySelectorAll('.reunion-richtext-editor').forEach(function (editor) {
+            var wrapper = editor.closest('.reunion-richtext-wrapper');
+            var textarea = wrapper ? wrapper.querySelector('textarea[name]') : null;
+            if (textarea) {
+                textarea.value = editor.innerHTML.trim();
+            }
+        });
+    }
+
     function clearEdition(row) {
         if (!row) {
             return;
         }
 
-        row.querySelectorAll('span.editando').forEach(function (editingNode) {
+        row.querySelectorAll('span.editando[data-tabledit-editor="true"]').forEach(function (editingNode) {
             var original = editingNode.previousElementSibling;
             if (original) {
                 original.style.display = '';
@@ -93,6 +130,7 @@
     function createEditWrapper() {
         var span = document.createElement('span');
         span.className = 'editando';
+        span.dataset.tableditEditor = 'true';
         return span;
     }
 
@@ -118,7 +156,7 @@
 
         row.querySelectorAll('td').forEach(function (cell) {
             var source = cell.firstElementChild;
-            if (!source || source.tagName !== 'SPAN') {
+            if (!source || (source.tagName !== 'SPAN' && !source.classList.contains('textarea'))) {
                 return;
             }
 
@@ -226,7 +264,9 @@
             return;
         }
 
-        row.querySelectorAll('span.editando [name]').forEach(function (input) {
+        synchroniseRichEditors(row);
+
+        row.querySelectorAll('span.editando[data-tabledit-editor="true"] [name]').forEach(function (input) {
             datos[input.getAttribute('name')] = input.value;
         });
 
@@ -247,7 +287,7 @@
                     return {};
                 }).then(function (json) {
                     if (!response.ok) {
-                        throw new Error(json.message || ('HTTP ' + response.status));
+                        throw new Error(validationMessage(json) || json.message || ('HTTP ' + response.status));
                     }
                     return json;
                 });
@@ -260,7 +300,7 @@
                 }
 
                 var optionsMap = getOptionsMap();
-                row.querySelectorAll('span.editando').forEach(function (editingNode) {
+                row.querySelectorAll('span.editando[data-tabledit-editor="true"]').forEach(function (editingNode) {
                     var original = editingNode.previousElementSibling;
                     if (!original) {
                         return;

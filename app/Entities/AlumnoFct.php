@@ -17,7 +17,7 @@ class AlumnoFct extends Model
 
     use \Intranet\Entities\Concerns\BatoiModels;
 
-    protected $fillable = ['id', 'desde', 'hasta', 'horas', 'beca', 'autorizacion', 'flexible', 'valoracio'];
+    protected $fillable = ['id', 'idFct', 'idAlumno', 'idProfesor', 'desde', 'hasta', 'horas', 'beca', 'autorizacion', 'flexible', 'valoracio', 'itacaImportKey'];
 
     protected $rules = [
         'id' => 'required',

@@ -179,6 +179,20 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 **Quan** es crea o s'edita
 **Aleshores** el camp `numero` mostra i conserva la fase d'avaluació.
 
+### ✅ Escenari 26: Guardar i reobrir un resum pegat
+
+**Donat** un usuari que pega text en l'editor ric del resum d'un punt d'acta
+**Quan** guarda el punt i el torna a editar
+**Aleshores** el contingut pegat es guarda i torna a mostrar-se dins de l'editor
+**I** no cal afegir ni esborrar manualment cap caràcter per sincronitzar-lo.
+
+### ✅ Escenari 27: Informar els errors de guardat del resum
+
+**Donat** un resum que l'API no pot guardar
+**Quan** l'usuari prem guardar
+**Aleshores** la pantalla mostra el motiu de l'error
+**I** conserva el contingut en edició perquè es puga corregir.
+
 ## Regles de negoci
 
 - La continuïtat només usa actes arxivades anteriors del mateix grup i curs.
@@ -197,3 +211,5 @@ Especificació funcional de la creació, continuïtat i arxivament de les actes 
 - La generació de punts només usa resolutors explícits registrats i rep el convocant de manera explícita.
 - El número d'acta l'assigna exclusivament el servidor per la combinació de curs i òrgan, i el seu comptador no retrocedeix.
 - El camp `numero` només representa una fase funcional per a les reunions d'avaluació; no forma part de les reunions ordinàries.
+- El resum es sincronitza també després d'un pegat i abans d'enviar-lo a l'API.
+- Un error de guardat d'un resum no pot ser silenciós ni descartar-ne el contingut en edició.

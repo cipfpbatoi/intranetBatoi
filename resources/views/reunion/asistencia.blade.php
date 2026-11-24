@@ -64,6 +64,9 @@
 </style>
 @endsection
 @section('content')
+<div id="error" class="alert alert-danger" role="alert" aria-live="assertive" style="display: none">
+    <span></span>
+</div>
 <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
