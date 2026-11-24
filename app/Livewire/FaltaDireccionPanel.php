@@ -4,7 +4,9 @@ namespace Intranet\Livewire;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
@@ -14,10 +16,11 @@ use Intranet\Mail\ReminderFaltaJustificant;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Intranet\Services\General\AutorizacionStateService;
 use Livewire\Component;
+use Livewire\Attributes\Locked;
 use Livewire\WithFileUploads;
 
 /**
- * Panell Livewire de faltes de Direcció.
+ * Panell de faltes amb actualització, esborrat abans d'imprimir i continuació de baixes.
  */
 class FaltaDireccionPanel extends Component
 {
@@ -45,6 +48,9 @@ class FaltaDireccionPanel extends Component
     public ?int $rebutjarId = null;
     public string $motiuRebutjar = '';
     public ?int $anullarId = null;
+    /** Diferencia l'esborrat general de l'anul·lació d'una autorització. */
+    #[Locked]
+    public bool $esborrant = false;
     public string $motiuAnulacio = '';
     public bool $showFormModal = false;
     public bool $isEditing = false;
@@ -61,6 +67,17 @@ class FaltaDireccionPanel extends Component
     public string $formObservaciones = '';
     public ?TemporaryUploadedFile $formFichero = null;
     public string $existingFichero = '';
+
+    /** Identificador i camps editables del diàleg de llarga durada. */
+    public ?int $llargaDuradaId = null;
+    public string $llargaDuradaMotiu = '';
+    public string $llargaDuradaDataBaixa = '';
+
+    /** Identificador i camps del diàleg de continuació d'una baixa llarga. */
+    public ?int $canviMotiuId = null;
+    public string $canviMotiuDataFi = '';
+    public string $canviMotiuNouMotiu = '';
+    public string $canviMotiuDataInici = '';
 
     private ?FaltaService $faltaService = null;
 
@@ -88,6 +105,14 @@ class FaltaDireccionPanel extends Component
      */
     public function updatedFilterEstat(): void
     {
+        $this->reloadFaltes();
+    }
+
+    /** Consulta les dades actuals i els recomptes sense reiniciar els filtres ni formularis. */
+    public function actualitzarDades(): void
+    {
+        $this->isDireccion = authUser() !== null && esRol(authUser()->rol, config('roles.rol.direccion'));
+        $this->loadFilterOptions();
         $this->reloadFaltes();
     }
 
@@ -209,6 +234,106 @@ class FaltaDireccionPanel extends Component
 
         $this->faltas()->alta($id);
         $this->message = 'S\\\'ha tramitat l\\\'alta correctament.';
+        $this->reloadFaltes();
+    }
+
+    /** Obri el diàleg amb el motiu i la data actual de baixa del professor. */
+    public function obrirLlargaDurada(int $id): void
+    {
+        $this->resetFeedback();
+        $this->resetValidation();
+        $falta = Falta::with(['Profesor', 'assumpteParticular'])->findOrFail($id);
+        $this->authorize('longLeave', $falta);
+
+        if (!$this->faltas()->potConvertirLlargaDurada($falta)) {
+            $this->error = __('falta.llarga_durada.no_disponible');
+            return;
+        }
+
+        $dataBaixa = $falta->Profesor?->getRawOriginal('fecha_baja');
+        $this->llargaDuradaId = $id;
+        $this->llargaDuradaMotiu = (string) $falta->motivos;
+        $this->llargaDuradaDataBaixa = empty($dataBaixa) || $dataBaixa === '0000-00-00'
+            ? today()->toDateString()
+            : substr((string) $dataBaixa, 0, 10);
+        $this->dispatch('show-llarga-durada-modal');
+    }
+
+    /** Tanca el diàleg sense guardar els canvis. */
+    public function cancelarLlargaDurada(): void
+    {
+        $this->reset('llargaDuradaId', 'llargaDuradaMotiu', 'llargaDuradaDataBaixa');
+        $this->resetValidation();
+        $this->dispatch('hide-llarga-durada-modal');
+    }
+
+    /** Guarda la conversió i recarrega les accions disponibles. */
+    public function guardarLlargaDurada(): void
+    {
+        $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($this->llargaDuradaId);
+        $this->authorize('longLeave', $falta);
+        $this->faltas()->convertirLlargaDurada(
+            (int) $falta->id,
+            $this->llargaDuradaMotiu,
+            $this->llargaDuradaDataBaixa
+        );
+        $this->cancelarLlargaDurada();
+        $this->message = __('falta.llarga_durada.guardada');
+        $this->reloadFaltes();
+    }
+
+    /** Obri el diàleg per a tancar la baixa actual i continuar amb un altre motiu. */
+    public function obrirCanviMotiu(int $id): void
+    {
+        $this->resetFeedback();
+        $this->resetValidation();
+        $falta = Falta::query()->findOrFail($id);
+        $this->authorize('continueWithReason', $falta);
+
+        if (!$this->faltas()->potContinuarAmbAltreMotiu($falta)) {
+            $this->error = __('falta.canvi_motiu.no_disponible');
+            return;
+        }
+
+        $this->canviMotiuId = $id;
+        $this->canviMotiuDataFi = today()->toDateString();
+        $this->canviMotiuNouMotiu = '';
+        $this->canviMotiuDataInici = today()->addDay()->toDateString();
+        $this->dispatch('show-canvi-motiu-modal');
+    }
+
+    /** Proposa l'endemà com a inici quan s'edita la finalització. */
+    public function updatedCanviMotiuDataFi(string $value): void
+    {
+        if (validator(['data' => $value], ['data' => 'required|date_format:Y-m-d'])->passes()) {
+            $this->canviMotiuDataInici = Carbon::parse($value)->addDay()->toDateString();
+        }
+    }
+
+    /** Tanca el diàleg sense modificar les absències. */
+    public function cancelarCanviMotiu(): void
+    {
+        $this->reset('canviMotiuId', 'canviMotiuDataFi', 'canviMotiuNouMotiu', 'canviMotiuDataInici');
+        $this->resetValidation();
+        $this->dispatch('hide-canvi-motiu-modal');
+    }
+
+    /** Guarda el tancament i la continuació amb comprovació final dins del servei. */
+    public function guardarCanviMotiu(): void
+    {
+        $this->resetFeedback();
+        $falta = Falta::query()->findOrFail($this->canviMotiuId);
+        $this->authorize('continueWithReason', $falta);
+        $this->faltas()->continuarAmbAltreMotiu(
+            (int) $falta->id,
+            $this->canviMotiuDataFi,
+            $this->canviMotiuNouMotiu,
+            $this->canviMotiuDataInici
+        );
+
+        $this->cancelarCanviMotiu();
+        $this->message = __('falta.canvi_motiu.guardada');
         $this->reloadFaltes();
     }
 
@@ -334,7 +459,7 @@ class FaltaDireccionPanel extends Component
     }
 
     /**
-     * Esborra una falta només si està no enviada o pendent de tramitació.
+     * Demana motiu a Direcció; conserva l'esborrat de pendents per als altres rols autoritzats.
      */
     public function esborrar(int $id): void
     {
@@ -346,17 +471,31 @@ class FaltaDireccionPanel extends Component
             return;
         }
 
+        if (authUser() !== null && esRol(authUser()->rol, config('roles.rol.direccion'))) {
+            $this->authorize('deleteBeforePrint', $falta);
+            $this->resetValidation();
+            $this->anullarId = $id;
+            $this->esborrant = true;
+            $this->motiuAnulacio = '';
+            return;
+        }
+
         if (!in_array((int) $falta->estado, [0, 1, 2], true)) {
             $this->error = 'Només es poden esborrar faltes sense autoritzar.';
             return;
         }
 
-        if ((int) $falta->estado === 0 && !$this->isDireccion) {
+        if ((int) $falta->estado === 0) {
             $this->error = 'No tens permisos per esborrar faltes no enviades.';
             return;
         }
 
-        $falta->delete();
+        $this->authorize('delete', $falta);
+        DB::transaction(function () use ($id): void {
+            $actual = Falta::query()->lockForUpdate()->findOrFail($id);
+            abort_unless(in_array((int) $actual->estado, [1, 2], true) && $actual->idDocumento === null, 403);
+            $actual->delete();
+        });
         $this->message = 'Falta esborrada correctament.';
         $this->reloadFaltes();
     }
@@ -367,6 +506,7 @@ class FaltaDireccionPanel extends Component
         $this->resetFeedback();
         $falta = Falta::query()->findOrFail($id);
         $this->authorize('annul', $falta);
+        $this->esborrant = false;
         $this->anullarId = $id;
         $this->motiuAnulacio = '';
     }
@@ -375,19 +515,27 @@ class FaltaDireccionPanel extends Component
     public function cancelarAnulacio(): void
     {
         $this->anullarId = null;
+        $this->esborrant = false;
         $this->motiuAnulacio = '';
+        $this->resetValidation('motiuAnulacio');
     }
 
     /** Anul·la la falta i allibera el dia, amb comprovació final dins del servei. */
     public function confirmarAnulacio(FaltaAnulacioService $service): void
     {
         $this->resetFeedback();
+        $this->motiuAnulacio = trim($this->motiuAnulacio);
         $this->validate(['motiuAnulacio' => 'required|string|max:1000']);
         $falta = Falta::query()->findOrFail($this->anullarId);
-        $this->authorize('annul', $falta);
-        $service->annullar((int) $falta->id, $this->motiuAnulacio, (string) AuthUser()->dni);
+        $this->authorize($this->esborrant ? 'deleteBeforePrint' : 'annul', $falta);
+        $esborrant = $this->esborrant;
+        if ($esborrant) {
+            $service->esborrar((int) $falta->id, $this->motiuAnulacio, (string) authUser()->dni);
+        } else {
+            $service->annullar((int) $falta->id, $this->motiuAnulacio, (string) authUser()->dni);
+        }
         $this->cancelarAnulacio();
-        $this->message = 'Falta anul·lada i dia alliberat correctament.';
+        $this->message = $esborrant ? __('falta.esborrat.completat') : 'Falta anul·lada i dia alliberat correctament.';
         $this->reloadFaltes();
     }
 
@@ -422,13 +570,21 @@ class FaltaDireccionPanel extends Component
                 'idProfesor' => (string) $falta->idProfesor,
                 'professor' => $falta->Profesor->fullName ?? (string) $falta->idProfesor,
                 'desde' => (string) $falta->desde,
-                'hasta' => (string) $falta->hasta,
+                'hasta' => $falta->getRawOriginal('hasta') ? (string) $falta->hasta : '',
                 'motivo' => (string) $falta->motivo,
                 'estado' => (int) $falta->estado,
                 'situacion' => (string) $falta->situacion,
                 'hasDocument' => !empty($falta->fichero),
+                'canDelete' => auth()->user()?->can('deleteBeforePrint', $falta)
+                    || (in_array((int) $falta->estado, [1, 2], true)
+                        && $falta->idDocumento === null
+                        && auth()->user()?->can('delete', $falta)),
                 'canAnnul' => $this->isDireccion && (int) $falta->estado === 3 && $falta->idDocumento === null,
                 'canEdit' => $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA,
+                'canLongLeave' => auth()->user()?->can('longLeave', $falta)
+                    && $this->faltas()->potConvertirLlargaDurada($falta),
+                'canContinueWithReason' => auth()->user()?->can('continueWithReason', $falta)
+                    && $this->faltas()->potContinuarAmbAltreMotiu($falta),
             ];
         })->all();
 

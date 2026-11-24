@@ -3,7 +3,6 @@
     @foreach ($todos as $elemento)
         <div class="page">
             @include('pdf.partials.cabecera')
-            <br/><br/><br/>
             <div class="container" style="width:95%;clear:right;text-align: justify">
                 <p><strong>PART D'AMONESTACIÓ</strong></p>
                 <p style="text-indent: 30px">ALUMNE/A: <strong>{{$elemento->Alumno->FullName??'Desconegut'}}</strong></p>

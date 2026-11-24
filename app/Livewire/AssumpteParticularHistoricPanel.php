@@ -6,15 +6,18 @@ namespace Intranet\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Intranet\Application\AssumpteParticular\AssumpteParticularDireccionQueryService;
 use Intranet\Application\AssumpteParticular\AssumpteParticularException;
 use Intranet\Application\AssumpteParticular\AssumpteParticularService;
+use Intranet\Application\Falta\FaltaAnulacioService;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Profesor;
 use Livewire\Component;
+use Livewire\Attributes\Locked;
 
 /**
- * Històric filtrable d'autoritzacions d'assumptes particulars de Direcció.
+ * Històric de Direcció amb filtres, regularització i anul·lació de concessions.
  */
 class AssumpteParticularHistoricPanel extends Component
 {
@@ -31,17 +34,20 @@ class AssumpteParticularHistoricPanel extends Component
     public string $tipusRegularitzacio = AssumpteParticular::TIPUS_LECTIU;
     public string $missatge = '';
     public string $error = '';
+    /** Identificador de la concessió seleccionada, protegit de canvis del client. */
+    #[Locked]
+    public ?int $anullarId = null;
+    /** Resum informatiu de la concessió que es confirmarà. */
+    public string $resumAnulacio = '';
+    /** Motiu obligatori que es conservarà en la petició cancel·lada. */
+    public string $motiuAnulacio = '';
 
     /**
      * Comprova l'accés exclusiu de Direcció i prepara els filtres.
      */
     public function mount(): void
     {
-        $user = authUser();
-        abort_unless(
-            $user !== null && esRol($user->rol, config('roles.rol.direccion')),
-            403
-        );
+        $this->comprovarAccesDireccio();
 
         $this->professors = Profesor::query()
             ->activo()
@@ -124,6 +130,70 @@ class AssumpteParticularHistoricPanel extends Component
         $this->tipusRegularitzacio = AssumpteParticular::TIPUS_LECTIU;
         $this->missatge = 'El dia ja gaudit s’ha incorporat a l’històric i al saldo.';
         $this->recarregar();
+    }
+
+    /** Obri la confirmació després de validar la concessió i la falta associada. */
+    public function obrirAnulacio(int $id): void
+    {
+        $this->comprovarAccesDireccio();
+        $this->reset(['missatge', 'error']);
+        $this->cancelarAnulacio();
+        $peticio = $this->peticioAnullable($id);
+        $this->anullarId = $id;
+        $this->resumAnulacio = sprintf(
+            '%s — %s',
+            trim($peticio->profesor?->fullName ?? $peticio->idProfesor),
+            $peticio->data_gaudi->format('d/m/Y')
+        );
+    }
+
+    /** Tanca la confirmació sense modificar la concessió. */
+    public function cancelarAnulacio(): void
+    {
+        $this->reset(['anullarId', 'resumAnulacio', 'motiuAnulacio']);
+        $this->resetValidation('motiuAnulacio');
+    }
+
+    /** Revalida i anul·la amb el mateix servei que el panell de faltes. */
+    public function confirmarAnulacio(FaltaAnulacioService $service): void
+    {
+        $this->comprovarAccesDireccio();
+        $this->reset(['missatge', 'error']);
+        $this->motiuAnulacio = trim($this->motiuAnulacio);
+        $this->validate(['motiuAnulacio' => ['required', 'string', 'max:1000']]);
+        $peticio = $this->peticioAnullable($this->anullarId);
+        $service->annullar((int) $peticio->falta_id, $this->motiuAnulacio, (string) authUser()->dni);
+        $this->cancelarAnulacio();
+        $this->missatge = __('assumptes_particulars.anulacio.completada');
+        $this->recarregar();
+    }
+
+    /** Restringix també les accions Livewire posteriors al muntatge a Direcció. */
+    private function comprovarAccesDireccio(): void
+    {
+        $user = authUser();
+        abort_unless($user !== null && esRol($user->rol, config('roles.rol.direccion')), 403);
+    }
+
+    /** Recupera l'estat actual i impedix anul·lar altres orígens, cursos o faltes tancades. */
+    private function peticioAnullable(?int $id): AssumpteParticular
+    {
+        $peticio = AssumpteParticular::query()->with(['profesor', 'falta'])->find($id);
+        if (
+            $peticio === null
+            || $peticio->estat !== AssumpteParticular::ESTAT_AUTORITZADA
+            || $peticio->origen !== AssumpteParticular::ORIGEN_SOLLICITUD
+            || $peticio->curs !== app(AssumpteParticularService::class)->cursVigent()
+            || $peticio->falta === null
+        ) {
+            throw ValidationException::withMessages([
+                'motiuAnulacio' => __('assumptes_particulars.anulacio.no_disponible'),
+            ]);
+        }
+
+        Gate::authorize('annul', $peticio->falta);
+
+        return $peticio;
     }
 
     /** Renderitza la pantalla històrica de Direcció. */

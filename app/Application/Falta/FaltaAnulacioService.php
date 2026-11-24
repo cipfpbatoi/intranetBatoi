@@ -13,20 +13,37 @@ use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Falta;
 
-/** Anul·la faltes autoritzades encara no incloses en un tancament mensual. */
+/** Retira faltes abans d'imprimir l'informe mensual i allibera les concessions associades. */
 class FaltaAnulacioService
 {
     /** Allibera el dia d'assumptes particulars i retira el justificant, si correspon. */
     public function annullar(int $id, string $motiu, string $dniDireccio): void
+    {
+        $this->retirar($id, $motiu, $dniDireccio, true);
+    }
+
+    /** Esborra una falta de qualsevol estat mentre no s'haja imprés l'informe mensual. */
+    public function esborrar(int $id, string $motiu, string $dniDireccio): void
+    {
+        $this->retirar($id, $motiu, $dniDireccio, false);
+    }
+
+    /** Revalida el tancament amb bloqueig i compartix la neteja i el registre de l'operació. */
+    private function retirar(int $id, string $motiu, string $dniDireccio, bool $nomesAutoritzada): void
     {
         $motiu = trim($motiu);
         if ($motiu === '') {
             throw ValidationException::withMessages(['motiuAnulacio' => 'Cal indicar el motiu de l’anul·lació.']);
         }
 
-        $ruta = DB::transaction(function () use ($id, $motiu, $dniDireccio): ?string {
+        $ruta = DB::transaction(function () use ($id, $motiu, $dniDireccio, $nomesAutoritzada): ?string {
             $falta = Falta::query()->lockForUpdate()->findOrFail($id);
-            if ((int) $falta->estado !== 3 || $falta->idDocumento !== null) {
+            if ($falta->idDocumento !== null || (int) $falta->estado === 4) {
+                throw ValidationException::withMessages([
+                    'motiuAnulacio' => __('falta.esborrat.informe_impres'),
+                ]);
+            }
+            if ($nomesAutoritzada && (int) $falta->estado !== 3) {
                 throw ValidationException::withMessages([
                     'motiuAnulacio' => 'Només es pot anul·lar una falta autoritzada que no estiga tancada mensualment.',
                 ]);
@@ -52,7 +69,7 @@ class FaltaAnulacioService
             }
 
             $falta->delete();
-            Log::info('Falta autoritzada anul·lada per Direcció', [
+            Log::info($nomesAutoritzada ? 'Falta autoritzada anul·lada per Direcció' : 'Falta esborrada per Direcció', [
                 'falta_id' => $id,
                 'direccio_dni' => $dniDireccio,
                 'motiu' => $motiu,

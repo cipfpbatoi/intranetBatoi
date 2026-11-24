@@ -6,6 +6,8 @@ namespace Intranet\Application\Falta;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Intranet\Entities\AssumpteParticular;
 use Intranet\Entities\Falta;
@@ -15,11 +17,122 @@ use Intranet\Services\School\TeacherSubstitutionService;
 use Illuminate\Support\Carbon;
 
 /**
- * Casos d'ús d'aplicació per al domini de faltes de professorat.
+ * Casos d'ús de faltes de professorat i continuïtat de baixes de llarga durada.
  */
 class FaltaService
 {
     private const MOTIU_ASSUMPTE_PARTICULAR = 'PERMÍS RETRIBUÏT PER ASSUMPTES PARTICULARS';
+
+    /** Comprova el termini i les proteccions per a convertir una falta en baixa llarga. */
+    public function potConvertirLlargaDurada(Falta $falta): bool
+    {
+        $desde = $falta->getRawOriginal('desde');
+        $hasta = $falta->getRawOriginal('hasta');
+
+        return (int) $falta->baja !== 1
+            && in_array((int) $falta->estado, [0, 1, 2, 3], true)
+            && !empty($desde)
+            && Carbon::parse($desde)->startOfDay()->lte(today())
+            && (empty($hasta) || Carbon::parse($hasta)->startOfDay()->gte(today()->subDay()))
+            && $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA;
+    }
+
+    /** Converteix una falta vigent en baixa llarga amb la data de professor indicada. */
+    public function convertirLlargaDurada(int $id, string $motiu, string $dataBaixa): Falta
+    {
+        Validator::make([
+            'llargaDuradaMotiu' => $motiu,
+            'llargaDuradaDataBaixa' => $dataBaixa,
+        ], [
+            'llargaDuradaMotiu' => ['required', Rule::in(array_keys(Falta::getMotivosOptions()))],
+            'llargaDuradaDataBaixa' => ['required', 'date_format:Y-m-d'],
+        ], [], [
+            'llargaDuradaMotiu' => __('falta.llarga_durada.motiu'),
+            'llargaDuradaDataBaixa' => __('falta.llarga_durada.data_baixa'),
+        ])->validate();
+
+        return DB::transaction(function () use ($id, $motiu, $dataBaixa): Falta {
+            $falta = Falta::query()->lockForUpdate()->findOrFail($id);
+            if (!$this->potConvertirLlargaDurada($falta)) {
+                throw ValidationException::withMessages([
+                    'llargaDuradaMotiu' => __('falta.llarga_durada.no_disponible'),
+                ]);
+            }
+
+            $falta->fill([
+                'motivos' => $motiu,
+                'hasta' => null,
+                'baja' => 1,
+                'estado' => 5,
+                'dia_completo' => 1,
+                'hora_ini' => null,
+                'hora_fin' => null,
+            ])->save();
+
+            app(TeacherSubstitutionService::class)->markLeave((string) $falta->idProfesor, $dataBaixa);
+
+            return $falta->fresh();
+        });
+    }
+
+    /** Determina si una baixa llarga continua oberta i permet canviar de motiu. */
+    public function potContinuarAmbAltreMotiu(Falta $falta): bool
+    {
+        $hasta = $falta->getRawOriginal('hasta');
+
+        return (int) $falta->estado === 5
+            && (int) $falta->baja === 1
+            && (empty($hasta) || $hasta === '0000-00-00')
+            && $falta->assumpteParticular?->estat !== AssumpteParticular::ESTAT_AUTORITZADA;
+    }
+
+    /** Tanca una baixa i crea la continuació sense donar d'alta el professor. */
+    public function continuarAmbAltreMotiu(int $id, string $dataFi, string $motiu, string $dataInici): Falta
+    {
+        return DB::transaction(function () use ($id, $dataFi, $motiu, $dataInici): Falta {
+            $falta = Falta::query()->lockForUpdate()->findOrFail($id);
+
+            if (!$this->potContinuarAmbAltreMotiu($falta)) {
+                throw ValidationException::withMessages([
+                    'canviMotiuNouMotiu' => __('falta.canvi_motiu.no_disponible'),
+                ]);
+            }
+
+            Validator::make([
+                'canviMotiuDataFi' => $dataFi,
+                'canviMotiuNouMotiu' => $motiu,
+                'canviMotiuDataInici' => $dataInici,
+            ], [
+                'canviMotiuDataFi' => [
+                    'required', 'date_format:Y-m-d', 'after_or_equal:' . $falta->getRawOriginal('desde'),
+                ],
+                'canviMotiuNouMotiu' => ['required', Rule::in(array_keys(Falta::getMotivosOptions()))],
+                'canviMotiuDataInici' => ['required', 'date_format:Y-m-d', 'after:canviMotiuDataFi'],
+            ], [], [
+                'canviMotiuDataFi' => __('falta.canvi_motiu.data_fi'),
+                'canviMotiuNouMotiu' => __('falta.canvi_motiu.nou_motiu'),
+                'canviMotiuDataInici' => __('falta.canvi_motiu.data_inici'),
+            ])->validate();
+
+            $falta->fill([
+                'hasta' => $dataFi,
+                'estado' => 3,
+                'baja' => 0,
+            ])->save();
+
+            return Falta::query()->create([
+                'idProfesor' => $falta->idProfesor,
+                'desde' => $dataInici,
+                'hasta' => null,
+                'motivos' => $motiu,
+                'estado' => 5,
+                'baja' => 1,
+                'dia_completo' => 1,
+                'hora_ini' => null,
+                'hora_fin' => null,
+            ]);
+        });
+    }
 
     /**
      * Crea una falta de professorat.

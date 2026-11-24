@@ -5,14 +5,14 @@
 
     @if ($anullarId !== null)
         <div class="card border-danger" style="margin-top: 20px;">
-            <div class="card-header"><strong>Anul·lar falta #{{ $anullarId }}</strong></div>
+            <div class="card-header"><strong>{{ $esborrant ? __('falta.esborrat.titol') : 'Anul·lar falta' }} #{{ $anullarId }}</strong></div>
             <div class="card-body">
-                <p>Esta acció esborrarà la falta i el PDF firmat. Si és un assumpte particular, el dia quedarà disponible de nou.</p>
+                <p>{{ __('falta.esborrat.consequencies') }}</p>
                 <label for="motiuAnulacio">Motiu de l’anul·lació</label>
                 <textarea id="motiuAnulacio" class="form-control" wire:model="motiuAnulacio"></textarea>
                 @error('motiuAnulacio') <span class="text-danger">{{ $message }}</span> @enderror
                 <div class="mt-2">
-                    <button class="btn btn-danger" type="button" wire:click="confirmarAnulacio" onclick="return confirm('Confirmes l’anul·lació definitiva de la falta i del PDF?');">Confirmar anul·lació</button>
+                    <button class="btn btn-danger" type="button" wire:click="confirmarAnulacio" wire:loading.attr="disabled" wire:confirm="{{ __('falta.esborrat.confirmacio') }}">{{ $esborrant ? __('falta.esborrat.confirmar') : 'Confirmar anul·lació' }}</button>
                     <button class="btn btn-secondary" type="button" wire:click="cancelarAnulacio">Cancel·lar</button>
                 </div>
             </div>
@@ -32,6 +32,11 @@
         >
             <i class="fa fa-plus" aria-hidden="true"></i>
             Nova
+        </button>
+        <button type="button" class="btn btn-outline-secondary" wire:click="actualitzarDades"
+            wire:loading.attr="disabled" wire:target="actualitzarDades">
+            <i class="fa fa-refresh" aria-hidden="true" wire:loading.class="fa-spin" wire:target="actualitzarDades"></i>
+            {{ __('falta.actualitzar') }}
         </button>
     </div>
 
@@ -99,6 +104,12 @@
                 <td>{{ $falta['motivo'] }}</td>
                 <td>{{ $falta['situacion'] }}</td>
                 <td>
+                    @if ($falta['canLongLeave'])
+                        <button type="button" class="btn btn-primary btn-xs" wire:click="obrirLlargaDurada({{ $falta['id'] }})" title="{{ __('falta.llarga_durada.titol') }}">
+                            {{ __('falta.llarga_durada.boto') }}
+                        </button>
+                    @endif
+
                     @if ($falta['canEdit'])
                         <button
                             type="button"
@@ -110,12 +121,12 @@
                         </button>
                     @endif
 
-                    @if (in_array((int) $falta['estado'], [1, 2], true) || ((int) $falta['estado'] === 0 && $isDireccion))
+                    @if ($falta['canDelete'])
                         <button
                             type="button"
                             class="btn btn-danger btn-xs"
                             wire:click="esborrar({{ $falta['id'] }})"
-                            onclick="return confirm('Segur que vols esborrar esta falta?');"
+                            @if (!$isDireccion) wire:confirm="Segur que vols esborrar esta falta?" @endif
                             title="Esborrar"
                         >
                             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -163,6 +174,12 @@
                         >
                             <i class="fa fa-envelope" aria-hidden="true" wire:loading.remove wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
                             <i class="fa fa-spinner fa-spin" aria-hidden="true" wire:loading wire:target="enviarRecordatoriJustificant({{ $falta['id'] }})"></i>
+                        </button>
+                    @endif
+
+                    @if ($falta['canContinueWithReason'])
+                        <button type="button" class="btn btn-info btn-xs" wire:click="obrirCanviMotiu({{ $falta['id'] }})" title="{{ __('falta.canvi_motiu.titol') }}">
+                            {{ __('falta.canvi_motiu.boto') }}
                         </button>
                     @endif
 
@@ -282,6 +299,78 @@
         </div>
     </div>
 
+    <div id="llargaDuradaModal" class="modal fade" tabindex="-1" aria-labelledby="llargaDuradaTitle" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="guardarLlargaDurada">
+                    <div class="modal-header">
+                        <h5 id="llargaDuradaTitle" class="modal-title">{{ __('falta.llarga_durada.titol') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cancelarLlargaDurada" aria-label="{{ __('falta.llarga_durada.tancar') }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="llargaDuradaMotiu">{{ __('falta.llarga_durada.motiu') }}</label>
+                            <select id="llargaDuradaMotiu" class="form-control" wire:model="llargaDuradaMotiu">
+                                @foreach (\Intranet\Entities\Falta::getMotivosOptions() as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('llargaDuradaMotiu') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="llargaDuradaDataBaixa">{{ __('falta.llarga_durada.data_baixa') }}</label>
+                            <input id="llargaDuradaDataBaixa" type="date" class="form-control" wire:model="llargaDuradaDataBaixa">
+                            @error('llargaDuradaDataBaixa') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cancelarLlargaDurada">{{ __('falta.llarga_durada.cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="guardarLlargaDurada">{{ __('falta.llarga_durada.guardar') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="canviMotiuModal" class="modal fade" tabindex="-1" aria-labelledby="canviMotiuTitle" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form wire:submit.prevent="guardarCanviMotiu">
+                    <div class="modal-header">
+                        <h5 id="canviMotiuTitle" class="modal-title">{{ __('falta.canvi_motiu.titol') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="cancelarCanviMotiu" aria-label="{{ __('falta.llarga_durada.tancar') }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="canviMotiuDataFi">{{ __('falta.canvi_motiu.data_fi') }}</label>
+                            <input id="canviMotiuDataFi" type="date" class="form-control" wire:model.live="canviMotiuDataFi">
+                            @error('canviMotiuDataFi') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="canviMotiuNouMotiu">{{ __('falta.canvi_motiu.nou_motiu') }}</label>
+                            <select id="canviMotiuNouMotiu" class="form-control" wire:model="canviMotiuNouMotiu">
+                                <option value="">{{ __('falta.canvi_motiu.seleccionar_motiu') }}</option>
+                                @foreach (\Intranet\Entities\Falta::getMotivosOptions() as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('canviMotiuNouMotiu') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="canviMotiuDataInici">{{ __('falta.canvi_motiu.data_inici') }}</label>
+                            <input id="canviMotiuDataInici" type="date" class="form-control" wire:model="canviMotiuDataInici">
+                            @error('canviMotiuDataInici') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" wire:click="cancelarCanviMotiu">{{ __('falta.llarga_durada.cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="guardarCanviMotiu">{{ __('falta.llarga_durada.guardar') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function () {
             if (window.__faltaLivewireUiInit) {
@@ -318,6 +407,22 @@
             }
 
             document.addEventListener('livewire:init', function () {
+                Livewire.on('show-canvi-motiu-modal', function () {
+                    showModalById('canviMotiuModal');
+                });
+
+                Livewire.on('hide-canvi-motiu-modal', function () {
+                    hideModalById('canviMotiuModal');
+                });
+
+                Livewire.on('show-llarga-durada-modal', function () {
+                    showModalById('llargaDuradaModal');
+                });
+
+                Livewire.on('hide-llarga-durada-modal', function () {
+                    hideModalById('llargaDuradaModal');
+                });
+
                 Livewire.on('show-falta-modal', function () {
                     showModalById('faltaFormModal');
                 });

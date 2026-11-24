@@ -38,6 +38,9 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 - Una regularització representa una autorització prèvia externa, consumix saldo i queda diferenciada de les sol·licituds ordinàries.
 - Les regularitzacions no creen `Falta`, PDF, entrada documental ni notificació; l'arxiu de curs les ignora.
 - Només Direcció pot regularitzar dies ja gaudits del curs vigent, amb saldo disponible i sense cap registre previ del professor en la mateixa data.
+- Direcció pot anul·lar des de l'històric una sol·licitud autoritzada del curs vigent amb falta associada no tancada mensualment, indicant un motiu obligatori de fins a 1000 caràcters. Es reutilitza el circuit d'anul·lació de faltes: recupera saldo i contingent, elimina falta, PDF i entrada documental, i conserva la petició cancel·lada amb data, motiu i identitat de qui l'ha anul·lada.
+- L'anul·lació des de l'històric revalida permisos, estat i tancament en confirmar; conserva els filtres i no s'aplica a regularitzacions.
+- L'esborrat de Direcció des del panell de faltes, abans d'imprimir l'informe mensual, aplica la mateixa cancel·lació de la concessió, recuperació de saldo i retirada de documents; el comportament del panell es descriu en `specs/faltes.md`.
 
 ## Escenaris
 
@@ -352,3 +355,43 @@ Especificació del bounded context que gestiona els permisos retribuïts per ass
 **When** Direcció intenta regularitzar-la
 
 **Then** l'operació es rebutja amb un missatge específic.
+
+### Direcció anul·la una concessió des de l'històric
+
+**Given** una sol·licitud autoritzada del curs vigent amb falta associada no tancada mensualment
+
+**When** Direcció selecciona «Anul·lar concessió» i confirma amb un motiu vàlid
+
+**Then** es cancel·la la petició amb data, motiu i identitat de Direcció, s'eliminen falta, PDF i entrada documental, es recuperen saldo i contingent i la concessió desapareix de l'històric mantenint els filtres.
+
+### L'anul·lació requerix motiu i es pot cancel·lar
+
+**Given** el formulari de confirmació d'una concessió obert
+
+**When** Direcció intenta confirmar amb el motiu buit o format només per espais, o cancel·la el formulari
+
+**Then** la confirmació sense motiu mostra un error i cancel·lar tanca el formulari sense modificar la concessió ni els seus artefactes.
+
+### L'històric impedix anul·lar faltes tancades
+
+**Given** una concessió amb falta tancada mensualment, o que es tanca després d'obrir la confirmació
+
+**When** Direcció consulta les accions o intenta confirmar l'anul·lació
+
+**Then** la pantalla identifica la falta tancada sense oferir el botó i l'acció en servidor rebutja l'anul·lació conservant petició, falta i PDF.
+
+### Les accions d'anul·lació revaliden el rol de Direcció
+
+**Given** una pantalla històrica prèviament oberta amb rol de Direcció
+
+**When** una identitat sense eixe rol intenta obrir o confirmar l'anul·lació
+
+**Then** es denega l'accés sense modificar dades.
+
+### L'anul·lació no es repetix ni afecta altres concessions
+
+**Given** una concessió ja anul·lada per altra persona, una regularització, una petició d'altre curs o estat, o una sol·licitud sense falta associada
+
+**When** Direcció intenta obrir o confirmar l'anul·lació des de l'històric
+
+**Then** l'operació es rebutja sense efectes addicionals ni alteració del motiu d'una anul·lació anterior.

@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
 use Intranet\Services\UI\AppAlert as Alert;
 
 /**
- * Class GrupoController
+ * Gestiona els grups i els seus documents, inclosos els carnets d'alumnat amb foto.
  * @package Intranet\Http\Controllers
  */
 class GrupoController extends IntranetController
@@ -192,12 +192,16 @@ class GrupoController extends IntranetController
     }*/
 
     /**
-     * @param $grupo
+     * Genera els carnets del grup només per a l'alumnat amb foto informada.
+     *
+     * @param string $grupo Codi del grup.
      * @return mixed
      */
     public function carnet($grupo)
     {
         return $this->hazPdf('pdf.carnet', Alumno::QGrupo($grupo)
+            ->whereNotNull('foto')
+            ->where('foto', '<>', '')
             ->OrderBy('apellido1')
             ->OrderBy('apellido2')
             ->get(), [Carbon::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();

@@ -682,6 +682,30 @@ class AssumpteParticularServiceTest extends TestCase
         }
     }
 
+    /** L'esborrat general usa el mateix circuit per a retornar el saldo i retirar els artefactes. */
+    public function test_esborrar_falta_cancel_la_la_concessio_i_recupera_saldo(): void
+    {
+        $this->crearProfesor('PROF001');
+        $peticio = $this->crearPeticio('PROF001', '2026-10-15');
+        $document = 'assumptes-particulars/resolucions/esborrada.pdf';
+        Storage::disk('local')->put($document, 'PDF firmat');
+        $resolta = $this->service->autoritzar($peticio->id, 'DIRE001', $document);
+
+        app(FaltaAnulacioService::class)->esborrar((int) $resolta->falta_id, 'Duplicada', 'DIRE001');
+
+        $this->assertDatabaseMissing('faltas', ['id' => $resolta->falta_id]);
+        $this->assertDatabaseMissing('documentos', ['fichero' => $document]);
+        $this->assertDatabaseHas('assumptes_particulars', [
+            'id' => $peticio->id,
+            'estat' => AssumpteParticular::ESTAT_CANCEL_LADA,
+            'resolucio' => 'Anul·lada per Direcció (DIRE001): Duplicada',
+            'falta_id' => null,
+            'resolucio_document' => null,
+        ]);
+        $this->assertSame(3.0, $this->service->saldo('PROF001', '2026-2027', AssumpteParticular::TIPUS_LECTIU));
+        Storage::disk('local')->assertMissing($document);
+    }
+
     public function test_l_arxiu_sobreviu_al_buidatge_del_curs_sense_duplicats(): void
     {
         $this->crearProfesor('PROF001');

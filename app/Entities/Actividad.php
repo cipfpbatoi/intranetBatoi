@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Intranet\Presentation\Crud\ActividadCrudSchema;
 use Illuminate\Support\Carbon;
 use Intranet\Events\ActivityReport;
@@ -13,7 +14,8 @@ use Intranet\Events\ActivityReport;
  * Model d'activitats extraescolars/complementàries.
  *
  * Inclou relacions amb grups, professors i autoritzacions de menors,
- * i accessors de presentació per a dates i situació.
+ * i accessors de presentació per a dates i situació, amb registre d'impressió
+ * i selecció d'activitats pendents de llistat per a ITACA.
  */
 class Actividad extends Model
 {
@@ -26,6 +28,11 @@ class Actividad extends Model
     use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'actividades';
+
+    /**
+     * @var array<string, string> Dates gestionades internament pel flux d'impressió.
+     */
+    protected $casts = ['fecha_impresion' => 'date'];
     protected $fillable = [
         'name',
         'tipo_actividad_id',
@@ -151,6 +158,16 @@ class Actividad extends Model
         $today = time();
         $ahora = date("Y-m-d", $today);
         return $query->where('desde', '>', $ahora);
+    }
+
+    /**
+     * Selecciona les activitats valorades i finalitzades pendents del llistat ITACA.
+     */
+    public function scopePendientesItaca(Builder $query): Builder
+    {
+        return $query->where('extraescolar', 1)
+            ->where('estado', 4)
+            ->where('hasta', '<', Carbon::now());
     }
 
     /**

@@ -44,6 +44,16 @@ class RouteNameContractTest extends TestCase
         $this->assertNotContains('role:profesor', $route->gatherMiddleware());
     }
 
+    public function test_sso_nm_te_url_estable_i_requerix_rol_professorat(): void
+    {
+        $route = Route::getRoutes()->getByName('sso.nm.login');
+
+        $this->assertNotNull($route);
+        $this->assertSame('/sso/nm/login', route('sso.nm.login', absolute: false));
+        $this->assertSame(['GET', 'HEAD'], $route->methods());
+        $this->assertContains('role:profesor', $route->gatherMiddleware());
+    }
+
     public function test_rutes_legacy_d_activitat_continuen_resolent(): void
     {
         $this->assertSame('/actividad/create', route('actividad.store', absolute: false));
@@ -53,6 +63,28 @@ class RouteNameContractTest extends TestCase
         $this->assertSame('/actividadorientacion/create', route('actividad.createOrientacion', absolute: false));
         $this->assertSame('/actividadorientacion/create', route('actividad.storeOrientacion', absolute: false));
         $this->assertSame('/autorizacion/12345678A/actividad/1', route('actividad.menor.autorizacion', ['nia' => '12345678A', 'id' => 1], false));
+    }
+
+    public function test_rutes_d_espais_accepten_el_formulari_modal_i_l_edicio(): void
+    {
+        $this->assertSame('/espacio/create', route('espacio.store', absolute: false));
+        $this->assertSame('/espacio/A101/edit', route('espacio.update', ['espacio' => 'A101'], false));
+
+        $this->assertContains('POST', Route::getRoutes()->getByName('espacio.store')->methods());
+        $this->assertContains('PUT', Route::getRoutes()->getByName('espacio.update')->methods());
+    }
+
+    /**
+     * La generació del llistat ITACA muta estats i requerix POST i rol de Direcció.
+     */
+    public function test_llistat_itaca_requerix_post_i_direccio(): void
+    {
+        $route = Route::getRoutes()->getByName('actividad.direccion.itaca.pdf');
+
+        $this->assertNotNull($route);
+        $this->assertSame(['POST'], $route->methods());
+        $this->assertSame('direccion/actividad/itaca/pdf', $route->uri());
+        $this->assertContains('role:direccion', $route->gatherMiddleware());
     }
 
     public function test_rutes_de_lot_de_direccio_accepten_modal_i_legacy(): void

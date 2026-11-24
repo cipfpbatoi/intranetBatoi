@@ -116,6 +116,66 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 - La ubicació diferencia `Dins del centre`, `Fora del centre amb transport` i `Fora del centre sense transport`
 - No s'usa l'etiqueta ambigua `No complementària`
 
+## Llistat per a ITACA3
+
+Proposta aprovada per l'usuari: botó de llistat per a ITACA i data d'impressió
+guardada en cada activitat. El pas a ITACA indica generació del llistat de treball,
+no una transferència automàtica de dades al sistema extern.
+
+### Escenari 15: Guardar la data del llistat d'autorització ✅
+
+**Given** activitats autoritzades pendents d'impressió
+**When** es genera correctament el PDF del llistat d'autoritzades
+**Then** les activitats incloses passen a Impressa i guarden la mateixa data
+en `fecha_impresion`. Si es tornen a autoritzar i imprimir, s'actualitza la data.
+Si falla la generació del PDF, no es registra la impressió ni es canvia l'estat.
+
+### Escenari 16: Disponibilitat i selecció del llistat ITACA ✅
+
+**Given** el panell d'activitats de Direcció
+**When** es calcula la disponibilitat d'«Imprimir Llistat Valorades per Itaca», situat a la dreta de la barra d'accions
+**Then** el botó només està actiu si existeixen activitats del flux d'extraescolars
+(`extraescolar = 1`) amb estat Valorada (`4`) i finalització (`hasta`) anterior
+a l'instant actual. El lot és global, independent dels filtres del panell.
+
+### Escenari 17: Contingut complet per a ITACA3 ✅
+
+**Given** activitats seleccionades per al llistat ITACA
+**When** Direcció genera el PDF
+**Then** inclou número, activitat, descripció, objectius, inici, finalització,
+ubicació/transport, comentaris, professorat i grups del llistat existent, més:
+- Categoria de `tipo_actividad.vliteral`, relacionada per `tipo_actividad_id`.
+- Nom complet del coordinador real (`actividad_profesor.coordinador = 1`).
+- Data d'impressió de l'autorització guardada en `fecha_impresion`.
+
+Sense categoria o coordinador es mostra «Sense assignar». Les activitats antigues
+sense data mostren «Sense data», sense assignar-los una data fictícia.
+
+### Escenari 18: Marcar únicament el lot generat com a ITACA ✅
+
+**Given** activitats valorades i ja finalitzades
+**When** es genera correctament el PDF per a ITACA
+**Then** únicament les incloses passen a ITACA (`5`), conservant la data
+d'impressió de l'autorització i el document d'autorització vinculat.
+No apareixen en una nova generació. Si falla el PDF, no canvia cap estat.
+Si no hi ha activitats disponibles, no es genera cap PDF ni es modifica cap registre.
+
+### Escenari 19: Recuperar la data històrica d'impressió ✅
+
+**Given** una activitat antiga amb `fecha_impresion` buida i un document vinculat
+per `idDocumento` amb `created_at` informat
+**When** s'aplica la migració de recuperació de dates
+**Then** es guarda en `fecha_impresion` la part de data de `documentos.created_at`,
+també si l'activitat ja ha passat a Valorada o ITACA. No es modifica l'estat
+ni la data d'última actualització de l'activitat.
+
+### Escenari 20: Respectar dates existents i dades desconegudes ✅
+
+**Given** activitats amb una data d'impressió guardada o sense document vàlid i datat
+**When** s'aplica la recuperació, inclosa una nova execució
+**Then** es conserven les dates existents i les desconegudes continuen buides.
+No s'usa `updated_at` ni la data actual com a substitut de la data d'impressió.
+
 ## Regles de negoci invariants
 
 - `complementaria` i `extraescolar` (llegat) no són el mateix camp; no intercanviar sense migració.
@@ -125,3 +185,5 @@ Especificació del comportament esperat per al domini Activitats. Tecnologia-agn
 - El coordinador sempre es determina per `actividad_profesor.coordinador = 1`, mai per posició.
 - El panell de Direcció mostra la ubicació a partir dels camps llegats `fueraCentro` i `transport`.
 - El panell de Direcció mostra el tipus a partir de `complementaria` amb les etiquetes `Complementària` i `Extraescolar`.
+- La data d'impressió de l'autorització es conserva en passar a Valorada o ITACA.
+- La generació del llistat ITACA requerix rol de Direcció i una petició POST.
