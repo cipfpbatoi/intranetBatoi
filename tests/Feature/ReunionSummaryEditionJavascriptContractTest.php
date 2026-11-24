@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+
+/**
+ * Protegeix el contracte d'edició dels resums d'una acta.
+ */
+class ReunionSummaryEditionJavascriptContractTest extends TestCase
+{
+    public function test_la_vista_mostra_els_errors_i_l_editor_se_sincronitza_abans_de_guardar(): void
+    {
+        $view = file_get_contents(resource_path('views/reunion/asistencia.blade.php'));
+        $editor = file_get_contents(public_path('js/tabledit.js'));
+
+        $this->assertIsString($view);
+        $this->assertIsString($editor);
+        $this->assertStringContainsString('id="error"', $view);
+        $this->assertStringContainsString('role="alert"', $view);
+        $this->assertStringContainsString('function synchroniseRichEditors(row)', $editor);
+        $this->assertStringContainsString('synchroniseRichEditors(row);', $editor);
+        $this->assertStringContainsString('validationMessage(json)', $editor);
+    }
+}
