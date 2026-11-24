@@ -155,7 +155,7 @@
 
         row.querySelectorAll('td').forEach(function (cell) {
             var source = cell.firstElementChild;
-            if (!source || source.tagName !== 'SPAN') {
+            if (!source || (source.tagName !== 'SPAN' && !source.classList.contains('textarea'))) {
                 return;
             }
 

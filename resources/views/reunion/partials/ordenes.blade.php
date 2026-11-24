@@ -28,7 +28,7 @@
                                 <span class='none'  name='descripcion'>{!! $orden->descripcion !!}</span>
                            @endif
                         </td>
-                        <td><span class='textarea' name='resumen'>{!! $orden->resumen !!}</span></td>
+                        <td><div class='textarea' name='resumen'>{!! $orden->resumen !!}</div></td>
                         <td><span class='botones'>
                                 @if ($formulario->getElemento()->modificable)
                                     <form method="POST"
