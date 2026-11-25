@@ -45,14 +45,16 @@ Dominis: annexos, signatures, SAO, expedients, empreses, col·laboracions.
 
 Les especificacions BDD (Given/When/Then) viuen a [`specs/`](../../specs/). Cada spec descriu el comportament esperat d'un bounded context, independent de la tecnologia.
 
-| Spec | Bounded context |
-|---|---|
-| [`specs/fct.md`](../../specs/fct.md) | FCT: annexos, signatura, expedients |
-| [`specs/activitats.md`](../../specs/activitats.md) | Activitats: creació, visites, PDF |
-| [`specs/comisions.md`](../../specs/comisions.md) | Comissions: estats, FCTs associades, PDF |
-| [`specs/guardies.md`](../../specs/guardies.md) | Guàrdies: presència, panell donde, coincidències |
-| [`specs/horaris.md`](../../specs/horaris.md) | Horaris: canvi temporal, proposta JSON, bulk apply |
-| [`specs/perfils.md`](../../specs/perfils.md) | Perfils: edició de dades i protecció de rols |
+Els manifests `specs/<domini>.tests.yaml` relacionen cada spec principal amb les suites Feature/Browser existents. Indiquen cobertura parcial quan les suites només cobreixen una part dels escenaris; no substitueixen la spec ni declaren cobert allò que no està verificat.
+
+| Spec | Bounded context | Manifest de proves |
+|---|---|---|
+| [`specs/fct.md`](../../specs/fct.md) | FCT: annexos, signatura, expedients | [`fct.tests.yaml`](../../specs/fct.tests.yaml) |
+| [`specs/activitats.md`](../../specs/activitats.md) | Activitats: creació, visites, PDF | [`activitats.tests.yaml`](../../specs/activitats.tests.yaml) |
+| [`specs/comisions.md`](../../specs/comisions.md) | Comissions: estats, FCTs associades, PDF | [`comisions.tests.yaml`](../../specs/comisions.tests.yaml) |
+| [`specs/guardies.md`](../../specs/guardies.md) | Guàrdies: presència, panell donde, coincidències | [`guardies.tests.yaml`](../../specs/guardies.tests.yaml) |
+| [`specs/horaris.md`](../../specs/horaris.md) | Horaris: canvi temporal, proposta JSON, bulk apply | [`horaris.tests.yaml`](../../specs/horaris.tests.yaml) |
+| [`specs/perfils.md`](../../specs/perfils.md) | Perfils: edició i protecció de rols | [`perfils.tests.yaml`](../../specs/perfils.tests.yaml) |
 
 ## ✅ Flux OpenSpec
 

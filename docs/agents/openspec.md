@@ -88,9 +88,10 @@ Valida que tot és correcte, actualitza la spec permanent i prepara el commit.
 
 1. Comprova que els tests passen (`php artisan test --filter=<NomTest>` o equivalent Docker). Si fallen: reporta quins i atura't amb `Status: tests_failing`.
 2. Actualitza `specs/<domini>.md` amb els escenaris nous/modificats i marca'ls amb `✅`.
-3. Comprova que `AGENTS.md` i `docs/agents/` no necessiten actualització pels canvis.
-4. Llista tots els fitxers modificats i escriu `Status: ready_to_commit`.
-5. **No fa el commit.** L'usuari revisa i confirma.
+3. Actualitza `specs/<domini>.tests.yaml` si canvia la correspondència entre escenaris i suites de proves.
+4. Comprova que `AGENTS.md` i `docs/agents/` no necessiten actualització pels canvis.
+5. Llista tots els fitxers modificats i escriu `Status: ready_to_commit`.
+6. **No fa el commit.** L'usuari revisa i confirma.
 
 Checklist de tancament:
 

@@ -24,7 +24,7 @@ Cada peça té una **font canònica única** i un lloc físic al repo. Quan l'ag
 | **1. Prompt (SISO)** | Entrada estructurada → eixida estructurada. Plantilles reutilitzables amb buits `{{...}}`. | [`prompts/`](../../prompts/) | Quan repeteixes el mateix encàrrec >3 vegades. |
 | **2. Router (`AGENTS.md`)** | Guia única i autoritzada per a **qualsevol** agent. Pre-flight, regles d'execució i índex cap a la resta. | [`AGENTS.md`](../../AGENTS.md) | Quan una norma apareix en >3 prompts (regla de les 3 vegades). |
 | **3. Docs vives** | Coneixement de domini amb alta cohesió i baix acoblament. | [`docs/agents/`](README.md) | Quan l'IA s'equivoca en un domini concret. |
-| **4. Specs + Tests** | Veritat immutable del **què** (no del com), en BDD Given/When/Then, agnòstica de tecnologia. | [`specs/`](../../specs/) + `tests/` | Quan canvia el comportament esperat. |
+| **4. Specs + Tests** | Veritat immutable del **què** (no del com), en BDD Given/When/Then, agnòstica de tecnologia. | [`specs/`](../../specs/) + [`manifests de proves`](../../specs/) + `tests/` | Quan canvia el comportament esperat. |
 
 ```
         Prompt (SISO)

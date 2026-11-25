@@ -1,0 +1,8 @@
+spec: specs/horaris.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/ApiHorarioControllerFeatureTest.php
+    - tests/Feature/HorariProfessorCanviTest.php
+    - tests/Feature/HorarioControllerFeatureTest.php
+  browser: []

@@ -1,0 +1,9 @@
+spec: specs/guardies.md
+coverage: partial
+suites:
+  feature:
+    - tests/Feature/ApiGuardiaControllerFeatureTest.php
+    - tests/Feature/AssumpteParticular/DireccionPanelTest.php
+    - tests/Feature/FaltaControllerFeatureTest.php
+    - tests/Feature/FaltaDireccionPanelTest.php
+  browser: []
