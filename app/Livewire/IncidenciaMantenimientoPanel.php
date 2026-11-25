@@ -29,6 +29,7 @@ class IncidenciaMantenimientoPanel extends Component
     public array $estatOptions = [];
 
     public string $filterText = '';
+    public string $filterId = '';
     public string $filterEstat = '';
     public string $error = '';
     public string $message = '';
@@ -56,6 +57,14 @@ class IncidenciaMantenimientoPanel extends Component
      * Reacciona als canvis de filtre de text.
      */
     public function updatedFilterText(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reacciona als canvis de filtre per ID.
+     */
+    public function updatedFilterId(): void
     {
         $this->resetPage();
     }
@@ -308,6 +317,10 @@ class IncidenciaMantenimientoPanel extends Component
 
         if ($this->filterEstat !== '') {
             $query->where('estado', (int) $this->filterEstat);
+        }
+
+        if (trim($this->filterId) !== '') {
+            $query->whereKey((int) $this->filterId);
         }
 
         if (trim($this->filterText) !== '') {
