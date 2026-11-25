@@ -209,6 +209,35 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->assertSame($idObjectiu, $incidencies[0]['id']);
     }
 
+    public function test_filtra_incidencies_de_manteniment_per_id_parcial(): void
+    {
+        $this->insertProfesor('PINC061', config('roles.rol.profesor'));
+        $this->insertProfesor('PINC062', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('PINC062');
+        $this->insertTipoIncidencia(7, 'PINC062');
+
+        $ids = [];
+        foreach (range(1, 12) as $numero) {
+            $ids[] = $this->insertIncidencia([
+                'tipo' => 7,
+                'idProfesor' => 'PINC061',
+                'descripcion' => 'Incidència ' . $numero,
+                'estado' => 1,
+            ]);
+        }
+
+        $component = Livewire::test(IncidenciaMantenimientoPanel::class)
+            ->set('filterId', '1');
+
+        $incidencies = $component->get('incidencies');
+        $idsEsperats = array_values(array_filter(
+            $ids,
+            fn (int $id): bool => str_contains((string) $id, '1')
+        ));
+
+        $this->assertEqualsCanonicalizing($idsEsperats, array_column($incidencies, 'id'));
+    }
+
     public function test_destroy_denega_quan_no_es_ni_creador_ni_responsable(): void
     {
         $this->insertProfesor('PINC041', config('roles.rol.profesor'));

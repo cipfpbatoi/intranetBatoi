@@ -19,13 +19,13 @@
             >
         </div>
         <div class="col-md-3">
-            <label for="incidencia-filter-id">ID</label>
+            <label for="incidencia-filter-id">ID (també parcial)</label>
             <input
                 id="incidencia-filter-id"
-                type="number"
-                min="1"
+                type="text"
+                inputmode="numeric"
                 class="form-control"
-                placeholder="ID"
+                placeholder="Escriu l'ID complet o parcial"
                 wire:model.live.debounce.300ms="filterId"
             >
         </div>
