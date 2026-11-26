@@ -320,7 +320,7 @@ class IncidenciaMantenimientoPanel extends Component
         }
 
         if (trim($this->filterId) !== '') {
-            $query->whereKey((int) $this->filterId);
+            $query->where('id', 'like', '%' . trim($this->filterId) . '%');
         }
 
         if (trim($this->filterText) !== '') {

@@ -23,9 +23,10 @@
             <input
                 id="incidencia-filter-id"
                 type="number"
-                min="1"
+                inputmode="numeric"
+                min="0"
                 class="form-control"
-                placeholder="ID"
+                placeholder="Escriu l'ID complet o parcial"
                 wire:model.live.debounce.300ms="filterId"
             >
         </div>
